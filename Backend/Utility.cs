@@ -1,0 +1,37 @@
+﻿using System;
+
+namespace Infirmary_Integrated {
+
+    public static class _ {
+
+        public static float Time {
+            get { return float.Parse (DateTime.UtcNow.ToString ("yyMMddHHmmssfff")); }
+        }
+
+        public static float Clamp (float value, float min, float max) {
+            return (value < min) ? min : (value > max) ? max : value;
+        }
+
+        public static int Clamp (int value, int min, int max) {
+            return (value < min) ? min : (value > max) ? max : value;
+        }
+
+        public static float Clamp (float value) {
+            return (value < 0) ? 0: (value > 1) ? 1 : value;
+        }
+
+        public static float Lerp (float min, float max, float t) {
+            return min * t + max * (1 - t);
+        }
+
+        public static float InverseLerp(float min, float max, float current) {
+            return (current - min) / (max - min);
+        }
+
+        public static float RandomFloat(float min, float max) {
+            Random r = new Random ();
+            return (float)r.NextDouble () * (max - min) + min;
+        }
+
+    }
+}
