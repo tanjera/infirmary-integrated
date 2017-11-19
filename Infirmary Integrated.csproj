@@ -48,8 +48,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Backend\Patient.cs" />
-    <Compile Include="Backend\Strip_Renderer.cs" />
     <Compile Include="Backend\Strip.cs" />
+    <Compile Include="Backend\Tracing.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Backend\Utility.cs" />
     <Compile Include="Forms\Device_Monitor.cs">
       <SubType>Form</SubType>

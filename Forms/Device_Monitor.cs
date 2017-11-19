@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Drawing;
+using System.Reflection;
 using System.Windows.Forms;
 
 using Infirmary_Integrated.Rhythms;
@@ -9,29 +9,33 @@ namespace Infirmary_Integrated
 {
     public partial class Device_Monitor : Form
     {
-        Strip stripECG = new Strip ();
-        Strip_Renderer renderECG;
+        Strip stripECG;
+        Strip.Renderer renderECG;
 
-        Patient _Patient;
+        Patient _Patient = new Patient();
+
 
         public Device_Monitor()
         {
             InitializeComponent();
 
-            renderECG = new Strip_Renderer (ecgTracing.CreateGraphics (), ref stripECG,
-                new Pen (Color.Green, 1f));           
+            timerDraw.Interval = _.Draw_Refresh;
+
+            stripECG = new Strip ();
+            renderECG = new Strip.Renderer (ecgTracing, ref stripECG, new Pen (Color.Green, 1f));
         }
 
-        public void onTick () {
+        private void onTick (object sender, EventArgs e) {
             stripECG.Scroll ();
-            renderECG.Draw ();
+            ecgTracing.Invalidate ();
+            
+            // HARDCODE: populate strip with NSR
+            Rhythm.EKG_Rhythm__Normal_Sinus (ref stripECG, 80, 0f);
         }
 
-        private void ecgTracing_Paint (object sender, PaintEventArgs e) {
-            renderECG.Draw ();
+        private void ECGTracing_Paint (object sender, PaintEventArgs e) {
+            renderECG.Draw (e);
         }
 
-        private void ecgNumerics_Paint (object sender, PaintEventArgs e) {
-        }
     }
 }

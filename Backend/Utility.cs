@@ -4,8 +4,11 @@ namespace Infirmary_Integrated {
 
     public static class _ {
 
+        public const float Draw_Resolve = 0.01f;
+        public const int Draw_Refresh = 10;
+
         public static float Time {
-            get { return float.Parse (DateTime.UtcNow.ToString ("yyMMddHHmmssfff")); }
+            get { return (float)(DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess ().StartTime.ToUniversalTime ()).TotalSeconds; }
         }
 
         public static float Clamp (float value, float min, float max) {

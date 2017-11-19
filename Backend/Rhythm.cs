@@ -7,8 +7,6 @@ namespace Infirmary_Integrated.Rhythms {
 
     public static class Rhythm {
         
-        static float Drawing_Resolution = 0.01f;
-
         public static int BP__MAP(int _Systolic, int _Diastolic) {
             return _Diastolic + ((_Systolic - _Diastolic) / 3);
         }
@@ -388,13 +386,13 @@ namespace Infirmary_Integrated.Rhythms {
             float x;
             List<Vector2> _Out = new List<Vector2>();
 
-            for (i = 1; i * ((2 * Drawing_Resolution) / _Length) <= 1; i++) {
-                x = i * ((2 * Drawing_Resolution) / _Length);
+            for (i = 1; i * ((2 * _.Draw_Resolve) / _Length) <= 1; i++) {
+                x = i * ((2 * _.Draw_Resolve) / _Length);
                 _Out.Add(Bezier(new Vector2(0, _Start.Y), new Vector2(_Length / 4, _mV), new Vector2(_Length / 2, _mV), x));
             }
 
-            for (i = 1; i * ((2 * Drawing_Resolution) / _Length) <= 1; i++) {
-                x = i * ((2 * Drawing_Resolution) / _Length);
+            for (i = 1; i * ((2 * _.Draw_Resolve) / _Length) <= 1; i++) {
+                x = i * ((2 * _.Draw_Resolve) / _Length);
                 _Out.Add(Bezier(new Vector2(_Length / 2, _mV), new Vector2(_Length / 4 * 3, _mV), new Vector2(_Length, _mV_End), x));
             }
 
@@ -408,13 +406,13 @@ namespace Infirmary_Integrated.Rhythms {
             float x;
             List<Vector2> _Out = new List<Vector2>();
 
-            for (i = 1; i * ((2 * Drawing_Resolution) / _Length) <= 1; i++) {
-                x = i * ((2 * Drawing_Resolution) / _Length);
+            for (i = 1; i * ((2 * _.Draw_Resolve) / _Length) <= 1; i++) {
+                x = i * ((2 * _.Draw_Resolve) / _Length);
                 _Out.Add(Bezier(new Vector2(0, _Start.Y), new Vector2(_Length / 3, _mV / 1), new Vector2(_Length / 2, _mV), x));
             }
 
-            for (i = 1; i * ((2 * Drawing_Resolution) / _Length) <= 1; i++) {
-                x = i * ((2 * Drawing_Resolution) / _Length);
+            for (i = 1; i * ((2 * _.Draw_Resolve) / _Length) <= 1; i++) {
+                x = i * ((2 * _.Draw_Resolve) / _Length);
                 _Out.Add(Bezier(new Vector2(_Length / 2, _mV), new Vector2(_Length / 5 * 3, _mV / 1), new Vector2(_Length, _mV_End), x));
             }
 
