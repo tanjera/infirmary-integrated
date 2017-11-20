@@ -50,5 +50,9 @@ namespace Infirmary_Integrated {
 
             Heart_Rhythm = Rhythm.Normal_Sinus;
         }
+
+        public void MAP_Calculate () {
+            MAP = DBP + ((SBP - DBP) / 3);
+        }
     }
 }

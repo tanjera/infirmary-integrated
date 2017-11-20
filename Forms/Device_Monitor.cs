@@ -29,13 +29,15 @@ namespace Infirmary_Integrated
             stripECG.Scroll ();
             ecgTracing.Invalidate ();
             
-            // HARDCODE: populate strip with NSR
-            Rhythm.EKG_Rhythm__Normal_Sinus (ref stripECG, 80, 0f);
+            stripECG.Add_Beat (_Patient);
         }
 
         private void ECGTracing_Paint (object sender, PaintEventArgs e) {
             renderECG.Draw (e);
         }
 
+        private void comboBox1_TextUpdate (object sender, EventArgs e) {
+            _Patient.Heart_Rhythm = (Patient.Rhythm) Enum.Parse(typeof(Patient.Rhythm), comboBox1.Text);            
+        }
     }
 }

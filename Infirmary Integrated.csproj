@@ -47,19 +47,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Backend\Patient.cs" />
-    <Compile Include="Backend\Strip.cs" />
-    <Compile Include="Backend\Tracing.cs">
+    <Compile Include="Classes\Patient.cs" />
+    <Compile Include="Classes\Strip.cs" />
+    <Compile Include="Controls\Tracing.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Backend\Utility.cs" />
+    <Compile Include="Classes\Utility.cs" />
     <Compile Include="Forms\Device_Monitor.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\Device_Monitor.Designer.cs">
       <DependentUpon>Device_Monitor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Backend\Rhythm.cs" />
+    <Compile Include="Classes\Rhythm.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\Device_Monitor.resx">

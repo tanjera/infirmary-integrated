@@ -1,7 +1,6 @@
 ﻿
 * Next Steps:
-	- Add next beat to rhythm strip *only if buffer is running low/empty!*
-	- Dynamically populate strip with rhythm beats based on patient rhythm
+	- Fix Strip.Reset() ... ... ... timing problem?
 	- Add numerics (vital sign container/panel)
 
 
