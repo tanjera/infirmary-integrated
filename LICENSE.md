@@ -672,3 +672,22 @@ may consider it more useful to permit linking proprietary applications with
 the library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.  But first, please read
 <http://www.gnu.org/philosophy/why-not-lgpl.html>.
+
+
+
+
+					MEDICAL AND EDUCATIONAL LIABILITY ADDENDUM
+
+The program (Infirmary Integrated) is an educational tool only, to be used only
+for educational and instructional purposes. Although every reasonable attempt is made to 
+ensure accuracy in the program's educational and simulation content, inaccuracies
+may occur. Creators of the program cannot be held liable for any damages that occur
+as a result of inaccuracies in educational or instructional content provided by
+the program. When using the program for training purposes, it is strongly recommended 
+that the program is used only with a trained and licensed instructor following an 
+accredited curriculum, using the program only as an adjunct training tool.
+
+The program and its content is not to be used for medical decisions or diagnosis. 
+Creators of the program cannot be held liable for any damages that occur as a 
+result of the use of this program, including errors in patient treatment or 
+errors in diagnosis of medical conditions. 

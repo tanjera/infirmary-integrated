@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Numerics;
 using System.Windows.Forms;
 
-namespace Infirmary_Integrated.Rhythms {
+namespace II.Rhythms {
 
     public class Strip {
         
@@ -64,14 +64,14 @@ namespace Infirmary_Integrated.Rhythms {
 
         public class Renderer {
 
-            Panel panel;
+            Control panel;
             Pen p;
             Strip s;
 
             int offX, offY;
             float multX, multY;
             
-            public Renderer (Panel _Panel, ref Strip _Strip, Pen _Pen) {
+            public Renderer (Control _Panel, ref Strip _Strip, Pen _Pen) {
                 panel = _Panel;
                 p = _Pen;
                 s = _Strip;

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
 
-namespace Infirmary_Integrated.Rhythms {
+namespace II.Rhythms {
 
     public class Point {
         public float X, Y;
@@ -62,9 +62,11 @@ namespace Infirmary_Integrated.Rhythms {
                                 Name_Short;
         public Cardiac_Rhythms  Name_Enum;
         public bool             Pulse;
-        public Range            Max_Rate,
-                                Default_Rate,
-                                Default_SpO2;
+        public Range            Range_HR,
+                                Range_SpO2,
+                                Range_SBP,
+                                Range_DBP;
+            
         public Beat             Beat_ECG,
                                 Beat_SpO2;
 
@@ -72,18 +74,27 @@ namespace Infirmary_Integrated.Rhythms {
 
         public _Rhythm (Cardiac_Rhythms nameEnum, string nameLong, string nameShort,
                     bool hasPulse,
-                    Range defaultRate, Range maxRate, Range defaultSpO2,
+                    Range rangeHR, Range rangeSpO2, Range rangeSBP, Range rangeDBP,
                     Beat delECG, Beat delSpO2) {
 
             Name_Long = nameLong;
             Name_Short = nameShort;
             Name_Enum = nameEnum;
             Pulse = hasPulse;
-            Max_Rate = maxRate;
-            Default_Rate = defaultRate;
-            Default_SpO2 = defaultSpO2;
+            Range_HR = rangeHR;
+            Range_SpO2 = rangeSpO2;
+            Range_SBP = rangeSBP;
+            Range_DBP = rangeDBP;
             Beat_ECG = delECG;
             Beat_SpO2 = delSpO2;
+        }
+
+        public void Vitals (Patient p) {
+            p.HR = _.Clamp (p.HR, Range_HR.Min, Range_HR.Max);
+            p.SpO2 = _.Clamp (p.SpO2, Range_SpO2.Min, Range_SpO2.Max);
+            p.SBP = _.Clamp (p.SBP, Range_SBP.Min, Range_SBP.Max);
+            p.DBP = _.Clamp (p.DBP, Range_DBP.Min, Range_DBP.Max);
+            p.calcMAP ();
         }
     }
 
@@ -96,115 +107,115 @@ namespace Infirmary_Integrated.Rhythms {
         static List<_Rhythm> _Rhythms = new List<_Rhythm> (new _Rhythm[] {
             new _Rhythm (Cardiac_Rhythms.Asystole, "Asystole", "ASYS",
                 false,
-                new Range (0, 0), new Range (0, 0), new Range (0, 0),
+                new Range (0, 0), new Range (0, 0), new Range (0, 30), new Range (0, 15),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Asystole (1f, 0f)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Absent(1f)); }),
 
             new _Rhythm (Cardiac_Rhythms.Atrial_Fibrillation, "Atrial Fibrillation", "AFIB",
                 true,
-                new Range (60, 100), new Range (1, 160), new Range (90, 96),
+                new Range (50, 160), new Range (90, 96), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Atrial_Fibrillation (p.HR, 0f, .3f, p.HR / 2)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
 
             new _Rhythm (Cardiac_Rhythms.Atrial_Flutter, "Atrial Flutter", "AFLUT",
                 true,
-                new Range (60, 100), new Range (1, 160), new Range (92, 98),
+                new Range (50, 160), new Range (92, 98), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Atrial_Flutter (p.HR, 0f)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
 
             new _Rhythm (Cardiac_Rhythms.AV_Block__1st_Degree, "AV Block, 1st Degree", "AVB-1D",
                 true,
-                new Range (60, 100), new Range (1, 160), new Range (94, 100),
+                new Range (30, 120), new Range (94, 100), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__AV_Block__1st_Degree (p.HR, 0f)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
 
             new _Rhythm (Cardiac_Rhythms.AV_Block__3rd_Degree, "AV Block, 3rd Degree", "AVB-3D",
                 true,
-                new Range (60, 80), new Range (10, 140), new Range (88, 96),
+                new Range (30, 100), new Range (88, 96), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__AV_Block__3rd_Degree (p.HR, 0f)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
 
             new _Rhythm (Cardiac_Rhythms.AV_Block__Mobitz_II, "AV Block, Mobitz II", "AVB-MOB2",
                 true,
-                new Range (60, 100), new Range (1, 160), new Range (92, 97),
+                new Range (30, 140), new Range (92, 97), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__AV_Block__Mobitz_II (p.HR, 0f, .3f)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
 
             new _Rhythm (Cardiac_Rhythms.AV_Block__Wenckebach, "AV Block, Wenckebach", "ABV-WEN",
                 true,
-                new Range (60, 100), new Range (1, 160), new Range (92, 98),
+                new Range (30, 100),new Range (92, 98), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__AV_Block__Wenckebach (p.HR, 0f, 4)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
 
             new _Rhythm (Cardiac_Rhythms.Block__Bundle_Branch, "Bundle Branch Block", "BBB",
                 true,
-                new Range (60, 100), new Range (1, 160), new Range (94, 100),
+                new Range (30, 140), new Range (94, 100), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Block__Bundle_Branch (p.HR, 0f)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
 
             new _Rhythm (Cardiac_Rhythms.Idioventricular, "Idioventricular", "IDIO",
                 true,
-                new Range (20, 40), new Range (1, 100), new Range (85, 95),
+                new Range (20, 60), new Range (85, 95), new Range (50, 140), new Range (30, 100),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Idioventricular (p.HR, 0f)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
 
             new _Rhythm (Cardiac_Rhythms.Junctional, "Junctional", "JUNC",
                 true,
-                new Range (40, 60), new Range (1, 160), new Range (90, 96),
+                new Range (40, 100), new Range (90, 96), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Junctional (p.HR, 0f)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
 
             new _Rhythm (Cardiac_Rhythms.Normal_Sinus, "Normal Sinus", "NSR",
                 true,
-                new Range (60, 100), new Range (60, 100), new Range (95, 100),
+                new Range (60, 100), new Range (95, 100), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Normal_Sinus (p.HR, 0f)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
 
             new _Rhythm (Cardiac_Rhythms.Premature_Atrial_Contractions, "Premature Atrial Contractions", "PAC",
                 true,
-                new Range (60, 100), new Range (1, 160), new Range (95, 100),
+                new Range (60, 100), new Range (95, 100), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Premature_Atrial_Contractions (p.HR, 0f, .4f, p.HR / 2)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
 
             new _Rhythm (Cardiac_Rhythms.Premature_Junctional_Contractions, "Premature Junctional Contractions", "PJC",
                 true,
-                new Range (60, 100), new Range (1, 160), new Range (92, 98),
+                new Range (60, 100), new Range (92, 98), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Premature_Junctional_Contractions (p.HR, 0f, .4f, p.HR / 2)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
 
             new _Rhythm (Cardiac_Rhythms.Premature_Ventricular_Contractions, "Premature Ventricular Contractions", "PVC",
                 true,
-                new Range (60, 100), new Range (1, 160), new Range (92, 98),
+                new Range (60, 100), new Range (92, 98), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Premature_Ventricular_Contractions (p.HR, 0f, .4f, p.HR / 2)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
 
             new _Rhythm (Cardiac_Rhythms.Sinus_Bradycardia, "Sinus Bradycardia", "BRADY",
                 true,
-                new Range (40, 50), new Range (1, 59), new Range (95, 100),
+                new Range (40, 55), new Range (95, 100), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Normal_Sinus (p.HR, 0f)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
 
             new _Rhythm (Cardiac_Rhythms.Sinus_Tachycardia, "Sinus Tachycardia", "TACHY",
                 true,
-                new Range (110, 130), new Range (101, 160), new Range (95, 100),
+                new Range (110, 140), new Range (95, 100), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Normal_Sinus (p.HR, 0f)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
 
             new _Rhythm (Cardiac_Rhythms.Supraventricular_Tachycardia, "Supraventricular Tachycardia", "SVT",
                 true,
-                new Range (190, 210), new Range (160, 240), new Range (86, 94),
+                new Range (150, 210), new Range (86, 94), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Supraventricular_Tachycardia (p.HR, 0f)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
 
             new _Rhythm (Cardiac_Rhythms.Ventricular_Fibrillation, "Ventricular Fibrillation", "VFIB",
                 false,
-                new Range (200, 300), new Range (160, 400), new Range (0, 0),
+                new Range (200, 300), new Range (0, 0), new Range (0, 30), new Range (0, 15),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Ventricular_Fibrillation (1f, 0f)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Absent (1f)); }),
 
             new _Rhythm (Cardiac_Rhythms.Ventricular_Standstill, "Ventricular Standstill", "VSS",
                 false,
-                new Range (60, 100), new Range (1, 160), new Range (0, 0),
+                new Range (30, 100), new Range (0, 0), new Range (0, 30), new Range (0, 15),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Ventricular_Standstill (p.HR, 0f)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Absent (60 / p.HR)); })
         });

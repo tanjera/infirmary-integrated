@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace Infirmary_Integrated.Controls {
+namespace II.Controls {
     public partial class Values_BP : UserControl {
 
         public enum ControlType {

@@ -1,4 +1,4 @@
-﻿namespace Infirmary_Integrated
+﻿namespace II.Forms
 {
     partial class Device_Monitor
     {
@@ -38,10 +38,13 @@
             this.patientToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_EditPatient = new System.Windows.Forms.ToolStripMenuItem();
             this.timerVitals = new System.Windows.Forms.Timer(this.components);
-            this.ecgValues = new Infirmary_Integrated.Controls.Values_HR();
-            this.ecgTracing = new Infirmary_Integrated.Controls.Tracing();
-            this.spO2Values = new Infirmary_Integrated.Controls.Values_HR();
-            this.bpValues = new Infirmary_Integrated.Controls.Values_BP();
+            this.ecgValues = new II.Controls.Values_HR();
+            this.ecgTracing = new II.Controls.Tracing();
+            this.spO2Values = new II.Controls.Values_HR();
+            this.bpValues = new II.Controls.Values_BP();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_About = new System.Windows.Forms.ToolStripMenuItem();
+            this.deviceOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -54,7 +57,9 @@
             // 
             this.menuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.patientToolStripMenuItem});
+            this.patientToolStripMenuItem,
+            this.deviceOptionsToolStripMenuItem,
+            this.helpToolStripMenuItem});
             this.menuMain.Location = new System.Drawing.Point(0, 0);
             this.menuMain.Name = "menuMain";
             this.menuMain.Size = new System.Drawing.Size(759, 24);
@@ -101,7 +106,7 @@
             // menuItem_EditPatient
             // 
             this.menuItem_EditPatient.Name = "menuItem_EditPatient";
-            this.menuItem_EditPatient.Size = new System.Drawing.Size(134, 22);
+            this.menuItem_EditPatient.Size = new System.Drawing.Size(152, 22);
             this.menuItem_EditPatient.Text = "Edit Patient";
             this.menuItem_EditPatient.Click += new System.EventHandler(this.menuItem_EditPatient_Click);
             // 
@@ -142,6 +147,27 @@
             this.bpValues.Size = new System.Drawing.Size(132, 126);
             this.bpValues.TabIndex = 5;
             // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItem_About});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // menuItem_About
+            // 
+            this.menuItem_About.Name = "menuItem_About";
+            this.menuItem_About.Size = new System.Drawing.Size(215, 22);
+            this.menuItem_About.Text = "About Infirmary Integrated";
+            this.menuItem_About.Click += new System.EventHandler(this.menuItem_About_Click);
+            // 
+            // deviceOptionsToolStripMenuItem
+            // 
+            this.deviceOptionsToolStripMenuItem.Name = "deviceOptionsToolStripMenuItem";
+            this.deviceOptionsToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
+            this.deviceOptionsToolStripMenuItem.Text = "Device";
+            // 
             // Device_Monitor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -165,7 +191,7 @@
 
         #endregion
 
-        private Infirmary_Integrated.Controls.Tracing ecgTracing;
+        private II.Controls.Tracing ecgTracing;
         private System.Windows.Forms.Timer timerTracing;
         private System.Windows.Forms.MenuStrip menuMain;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
@@ -174,10 +200,13 @@
         private System.Windows.Forms.ToolStripMenuItem menuItem_Exit;
         private System.Windows.Forms.ToolStripMenuItem patientToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menuItem_EditPatient;
-        private Infirmary_Integrated.Controls.Values_HR ecgValues;
+        private II.Controls.Values_HR ecgValues;
         private System.Windows.Forms.Timer timerVitals;
         private Controls.Values_HR spO2Values;
         private Controls.Values_BP bpValues;
+        private System.Windows.Forms.ToolStripMenuItem deviceOptionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_About;
     }
 }
 

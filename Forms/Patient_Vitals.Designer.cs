@@ -1,4 +1,4 @@
-﻿namespace Infirmary_Integrated.Forms {
+﻿namespace II.Forms {
     partial class Patient_Vitals {
         /// <summary>
         /// Required designer variable.
@@ -24,7 +24,6 @@
         /// </summary>
         private void InitializeComponent () {
             this.comboRhythm = new System.Windows.Forms.ComboBox();
-            this.buttonApply = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -34,6 +33,8 @@
             this.numDBP = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this.numSpO2 = new System.Windows.Forms.NumericUpDown();
+            this.buttonApply = new System.Windows.Forms.Button();
+            this.checkNormalRange = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.numHR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numSBP)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numDBP)).BeginInit();
@@ -69,16 +70,6 @@
             this.comboRhythm.TabIndex = 4;
             this.comboRhythm.Text = "Normal_Sinus";
             this.comboRhythm.SelectedIndexChanged += new System.EventHandler(this.Vitals_ValueChanged);
-            // 
-            // buttonApply
-            // 
-            this.buttonApply.Location = new System.Drawing.Point(3, 137);
-            this.buttonApply.Name = "buttonApply";
-            this.buttonApply.Size = new System.Drawing.Size(287, 23);
-            this.buttonApply.TabIndex = 5;
-            this.buttonApply.Text = "Apply";
-            this.buttonApply.UseVisualStyleBackColor = true;
-            this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
             // 
             // label1
             // 
@@ -182,7 +173,7 @@
             // numSpO2
             // 
             this.numSpO2.Increment = new decimal(new int[] {
-            5,
+            2,
             0,
             0,
             0});
@@ -192,11 +183,35 @@
             this.numSpO2.TabIndex = 7;
             this.numSpO2.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
+            // buttonApply
+            // 
+            this.buttonApply.Location = new System.Drawing.Point(12, 118);
+            this.buttonApply.Name = "buttonApply";
+            this.buttonApply.Size = new System.Drawing.Size(276, 24);
+            this.buttonApply.TabIndex = 8;
+            this.buttonApply.Text = "Apply Changes";
+            this.buttonApply.UseVisualStyleBackColor = true;
+            this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
+            // 
+            // checkNormalRange
+            // 
+            this.checkNormalRange.AutoSize = true;
+            this.checkNormalRange.Checked = true;
+            this.checkNormalRange.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkNormalRange.Location = new System.Drawing.Point(167, 160);
+            this.checkNormalRange.Name = "checkNormalRange";
+            this.checkNormalRange.Size = new System.Drawing.Size(121, 17);
+            this.checkNormalRange.TabIndex = 9;
+            this.checkNormalRange.Text = "Use Normal Ranges";
+            this.checkNormalRange.UseVisualStyleBackColor = true;
+            // 
             // Patient_Vitals
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(300, 169);
+            this.ClientSize = new System.Drawing.Size(300, 184);
+            this.Controls.Add(this.checkNormalRange);
+            this.Controls.Add(this.buttonApply);
             this.Controls.Add(this.numDBP);
             this.Controls.Add(this.numSpO2);
             this.Controls.Add(this.numSBP);
@@ -206,7 +221,6 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
-            this.Controls.Add(this.buttonApply);
             this.Controls.Add(this.comboRhythm);
             this.Name = "Patient_Vitals";
             this.Text = "Patient_Vitals";
@@ -222,7 +236,6 @@
         #endregion
 
         private System.Windows.Forms.ComboBox comboRhythm;
-        private System.Windows.Forms.Button buttonApply;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
@@ -232,5 +245,7 @@
         private System.Windows.Forms.NumericUpDown numDBP;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.NumericUpDown numSpO2;
+        private System.Windows.Forms.Button buttonApply;
+        private System.Windows.Forms.CheckBox checkNormalRange;
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Infirmary_Integrated {
+namespace II {
 
     public static class _ {
 

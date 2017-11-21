@@ -2,9 +2,9 @@
 using System.Drawing;
 using System.Windows.Forms;
 
-using Infirmary_Integrated.Rhythms;
+using II.Rhythms;
 
-namespace Infirmary_Integrated
+namespace II.Forms
 {
     public partial class Device_Monitor : Form
     {
@@ -36,9 +36,9 @@ namespace Infirmary_Integrated
         }
 
         private void onTick_Vitals (object sender, EventArgs e) {
-            ecgValues.Update (tPatient, Infirmary_Integrated.Controls.Values_HR.ControlType.HR);
-            spO2Values.Update (tPatient, Infirmary_Integrated.Controls.Values_HR.ControlType.SpO2);
-            bpValues.Update (tPatient, Infirmary_Integrated.Controls.Values_BP.ControlType.NIBP);
+            ecgValues.Update (tPatient, II.Controls.Values_HR.ControlType.HR);
+            spO2Values.Update (tPatient, II.Controls.Values_HR.ControlType.SpO2);
+            bpValues.Update (tPatient, II.Controls.Values_BP.ControlType.NIBP);
         }
 
         private void ECGTracing_Paint (object sender, PaintEventArgs e) {
@@ -62,7 +62,12 @@ namespace Infirmary_Integrated
 
         private void onPatientEdited (object sender, Forms.Patient_Vitals.PatientEdited_EventArgs e) {
             tPatient = e.Patient;
-            ecgStrip.Reset ();            
+            ecgStrip.Clear_Future ();
+        }
+
+        private void menuItem_About_Click (object sender, EventArgs e) {
+            Forms.About about = new Forms.About ();
+            about.Show ();
         }
     }
 }

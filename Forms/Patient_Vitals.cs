@@ -7,13 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-namespace Infirmary_Integrated.Forms {
+namespace II.Forms {
     public partial class Patient_Vitals : Form {
 
-        Patient tPatient;
-
+        bool updatingVitals;
+        Patient lPatient, bufPatient;
+        
         public event EventHandler<PatientEdited_EventArgs> PatientEdited;
-
         public class PatientEdited_EventArgs : EventArgs {
             public Patient Patient { get; set; }
             public PatientEdited_EventArgs (Patient patient) { Patient = patient; }
@@ -22,26 +22,44 @@ namespace Infirmary_Integrated.Forms {
         public Patient_Vitals (Patient p) {
             InitializeComponent ();
 
-            tPatient = p;
+            lPatient = p;
+            bufPatient = new Patient (p);
 
-            numHR.Value = tPatient.HR;
-            numSBP.Value = tPatient.SBP;
-            numDBP.Value = tPatient.DBP;
-            numSpO2.Value = tPatient.SpO2;
+            Vitals_Update (lPatient);
+        }
+
+        private void Vitals_Update (Patient p) {
+            updatingVitals = true;
+
+            numHR.Value = p.HR;
+            numSBP.Value = p.SBP;
+            numDBP.Value = p.DBP;
+            numSpO2.Value = p.SpO2;
+
+            updatingVitals = false;
         }
 
         private void Vitals_ValueChanged (object sender, EventArgs e) {
-            tPatient.HR = (int)numHR.Value;
-            tPatient.SBP = (int)numSBP.Value;
-            tPatient.DBP = (int)numDBP.Value;
-            tPatient.MAP_Calculate ();
-            tPatient.SpO2 = (int)numSpO2.Value;        
-            tPatient.Heart_Rhythm = (Rhythms.Cardiac_Rhythms)Enum.Parse (typeof (Rhythms.Cardiac_Rhythms), comboRhythm.Text);
+            if (updatingVitals)
+                return;
+            
+            bufPatient.HR = (int)numHR.Value;
+            bufPatient.SBP = (int)numSBP.Value;
+            bufPatient.DBP = (int)numDBP.Value;
+            bufPatient.calcMAP ();
+            bufPatient.SpO2 = (int)numSpO2.Value;
+
+            bufPatient.Heart_Rhythm = (Rhythms.Cardiac_Rhythms)Enum.Parse (typeof (Rhythms.Cardiac_Rhythms), comboRhythm.Text);
+
+            if (checkNormalRange.Checked)
+                Rhythms.Rhythm_Index.Get_Rhythm (bufPatient.Heart_Rhythm).Vitals (bufPatient);
+
+            Vitals_Update (bufPatient);
         }
 
         private void buttonApply_Click (object sender, EventArgs e) {
-            PatientEdited (this, new PatientEdited_EventArgs (tPatient));
+            lPatient = new Patient(bufPatient);
+            PatientEdited (this, new PatientEdited_EventArgs (lPatient));
         }
-        
     }
 }

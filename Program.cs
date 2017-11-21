@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Infirmary_Integrated
+namespace II
 {
     static class Program
     {
@@ -16,7 +16,7 @@ namespace Infirmary_Integrated
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Device_Monitor());
+            Application.Run(new Forms.Device_Monitor());
         }
     }
 }

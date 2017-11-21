@@ -1,4 +1,4 @@
-﻿namespace Infirmary_Integrated.Controls {
+﻿namespace II.Controls {
     partial class Values_BP {
         /// <summary> 
         /// Required designer variable.
