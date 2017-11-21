@@ -1,6 +1,10 @@
 ﻿
 * Next Steps:
-	- Add numerics (vital sign container/panel)
+	- SpO2 tracing
+	- ABP tracing
+	- PA tracing
+	- Dynamic channel/tracing adding/removing
+	- More ECG leads
 
 
 

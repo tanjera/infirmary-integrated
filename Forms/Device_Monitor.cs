@@ -18,17 +18,27 @@ namespace Infirmary_Integrated
         {
             InitializeComponent();
 
-            timerDraw.Interval = _.Draw_Refresh;
+            timerTracing.Interval = _.Draw_Refresh;
+            timerVitals.Interval = 1000;
 
             ecgStrip = new Strip ();
             ecgRender = new Strip.Renderer (ecgTracing, ref ecgStrip, new Pen (Color.Green, 1f));
+
+            // Populate vital signs
+            onTick_Vitals (null, new EventArgs ());
         }
 
-        private void onTick (object sender, EventArgs e) {
+        private void onTick_Tracing (object sender, EventArgs e) {
             ecgStrip.Scroll ();
             ecgTracing.Invalidate ();
             
             ecgStrip.Add_Beat (tPatient);
+        }
+
+        private void onTick_Vitals (object sender, EventArgs e) {
+            ecgValues.Update (tPatient, Infirmary_Integrated.Controls.Values_HR.ControlType.HR);
+            spO2Values.Update (tPatient, Infirmary_Integrated.Controls.Values_HR.ControlType.SpO2);
+            bpValues.Update (tPatient, Infirmary_Integrated.Controls.Values_BP.ControlType.NIBP);
         }
 
         private void ECGTracing_Paint (object sender, PaintEventArgs e) {
@@ -52,7 +62,7 @@ namespace Infirmary_Integrated
 
         private void onPatientEdited (object sender, Forms.Patient_Vitals.PatientEdited_EventArgs e) {
             tPatient = e.Patient;
-            ecgStrip.Reset ();
+            ecgStrip.Reset ();            
         }
     }
 }

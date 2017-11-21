@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            this.timerDraw = new System.Windows.Forms.Timer(this.components);
+            this.timerTracing = new System.Windows.Forms.Timer(this.components);
             this.menuMain = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_NewPatient = new System.Windows.Forms.ToolStripMenuItem();
@@ -37,14 +37,18 @@
             this.menuItem_Exit = new System.Windows.Forms.ToolStripMenuItem();
             this.patientToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_EditPatient = new System.Windows.Forms.ToolStripMenuItem();
-            this.ecgTracing = new Infirmary_Integrated.Tracing();
+            this.timerVitals = new System.Windows.Forms.Timer(this.components);
+            this.ecgValues = new Infirmary_Integrated.Controls.Values_HR();
+            this.ecgTracing = new Infirmary_Integrated.Controls.Tracing();
+            this.spO2Values = new Infirmary_Integrated.Controls.Values_HR();
+            this.bpValues = new Infirmary_Integrated.Controls.Values_BP();
             this.menuMain.SuspendLayout();
             this.SuspendLayout();
             // 
-            // timerDraw
+            // timerTracing
             // 
-            this.timerDraw.Enabled = true;
-            this.timerDraw.Tick += new System.EventHandler(this.onTick);
+            this.timerTracing.Enabled = true;
+            this.timerTracing.Tick += new System.EventHandler(this.onTick_Tracing);
             // 
             // menuMain
             // 
@@ -97,23 +101,56 @@
             // menuItem_EditPatient
             // 
             this.menuItem_EditPatient.Name = "menuItem_EditPatient";
-            this.menuItem_EditPatient.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_EditPatient.Size = new System.Drawing.Size(134, 22);
             this.menuItem_EditPatient.Text = "Edit Patient";
             this.menuItem_EditPatient.Click += new System.EventHandler(this.menuItem_EditPatient_Click);
             // 
+            // timerVitals
+            // 
+            this.timerVitals.Enabled = true;
+            this.timerVitals.Tick += new System.EventHandler(this.onTick_Vitals);
+            // 
+            // ecgValues
+            // 
+            this.ecgValues.BackColor = System.Drawing.Color.Black;
+            this.ecgValues.Location = new System.Drawing.Point(12, 60);
+            this.ecgValues.Name = "ecgValues";
+            this.ecgValues.Size = new System.Drawing.Size(132, 126);
+            this.ecgValues.TabIndex = 5;
+            // 
             // ecgTracing
             // 
-            this.ecgTracing.Location = new System.Drawing.Point(12, 60);
+            this.ecgTracing.Location = new System.Drawing.Point(150, 60);
             this.ecgTracing.Name = "ecgTracing";
-            this.ecgTracing.Size = new System.Drawing.Size(735, 126);
+            this.ecgTracing.Size = new System.Drawing.Size(597, 126);
             this.ecgTracing.TabIndex = 1;
             this.ecgTracing.Paint += new System.Windows.Forms.PaintEventHandler(this.ECGTracing_Paint);
+            // 
+            // spO2Values
+            // 
+            this.spO2Values.BackColor = System.Drawing.Color.Black;
+            this.spO2Values.Location = new System.Drawing.Point(12, 192);
+            this.spO2Values.Name = "spO2Values";
+            this.spO2Values.Size = new System.Drawing.Size(132, 126);
+            this.spO2Values.TabIndex = 5;
+            // 
+            // bpValues
+            // 
+            this.bpValues.BackColor = System.Drawing.Color.Black;
+            this.bpValues.Location = new System.Drawing.Point(12, 324);
+            this.bpValues.Name = "bpValues";
+            this.bpValues.Size = new System.Drawing.Size(132, 126);
+            this.bpValues.TabIndex = 5;
             // 
             // Device_Monitor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(759, 466);
+            this.Controls.Add(this.bpValues);
+            this.Controls.Add(this.spO2Values);
+            this.Controls.Add(this.ecgValues);
             this.Controls.Add(this.ecgTracing);
             this.Controls.Add(this.menuMain);
             this.MainMenuStrip = this.menuMain;
@@ -128,8 +165,8 @@
 
         #endregion
 
-        private Infirmary_Integrated.Tracing ecgTracing;
-        private System.Windows.Forms.Timer timerDraw;
+        private Infirmary_Integrated.Controls.Tracing ecgTracing;
+        private System.Windows.Forms.Timer timerTracing;
         private System.Windows.Forms.MenuStrip menuMain;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menuItem_NewPatient;
@@ -137,6 +174,10 @@
         private System.Windows.Forms.ToolStripMenuItem menuItem_Exit;
         private System.Windows.Forms.ToolStripMenuItem patientToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menuItem_EditPatient;
+        private Infirmary_Integrated.Controls.Values_HR ecgValues;
+        private System.Windows.Forms.Timer timerVitals;
+        private Controls.Values_HR spO2Values;
+        private Controls.Values_BP bpValues;
     }
 }
 

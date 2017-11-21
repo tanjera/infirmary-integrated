@@ -48,6 +48,18 @@
   <ItemGroup>
     <Compile Include="Classes\Patient.cs" />
     <Compile Include="Classes\Strip.cs" />
+    <Compile Include="Controls\Values_BP.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Values_BP.Designer.cs">
+      <DependentUpon>Values_BP.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Values_HR.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Values_HR.Designer.cs">
+      <DependentUpon>Values_HR.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Tracing.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -67,6 +79,12 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Controls\Values_BP.resx">
+      <DependentUpon>Values_BP.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Values_HR.resx">
+      <DependentUpon>Values_HR.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Device_Monitor.resx">
       <DependentUpon>Device_Monitor.cs</DependentUpon>
     </EmbeddedResource>

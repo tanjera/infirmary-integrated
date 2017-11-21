@@ -1,6 +1,6 @@
 ﻿using System.Windows.Forms;
 
-namespace Infirmary_Integrated {
+namespace Infirmary_Integrated.Controls {
 
     public class Tracing : Panel {
 
