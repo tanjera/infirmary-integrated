@@ -7,210 +7,74 @@ using System.Windows.Forms;
 namespace Infirmary_Integrated.Rhythms {
 
     public class Strip {
+        
+        public List<Point> Points;
 
-        float Time_Elapsed;                             // Elapsed time for scrolling        
-        static float Time_Length = 5.0f;                // Strip length (typically 5 seconds)        
-
-        // Three arrays for the strip, draw functions use _Current
-        // and Scroll() keeps them flowing
-        public List<Vector2> Buffer, Current;
-
+        static float Time_Length = 5.0f;                // Strip length in seconds
+        
         public Strip () {
-            Buffer = new List<Vector2> ();
-            Current = new List<Vector2> ();
+            Points = new List<Point> ();
         }
 
         public void Reset () {
-            Buffer.Clear ();
-            Current.Clear ();
-            Time_Elapsed = 0f;
+            Points.Clear ();
         }
 
-        public void Stop () {
-            Buffer.Clear ();
+        public void Clear_Future () {
+            for (int i = Points.Count - 1; i >= 0; i--) {
+                if (Points[i].X > Time_Length)
+                    Points.RemoveAt (i);
+            }
         }
 
-        Vector2 Last (List<Vector2> _In) {
+        public Point Last (List<Point> _In) {
             if (_In.Count < 1)
-                return new Vector2 (0, 0);
+                // New vectors are added to Points beginning at 5 seconds to marquee backwards to 0
+                return new Point (Time_Length, 0);
             else
                 return _In[_In.Count - 1];
         }
 
-        public void Concatenate (List<Vector2> _Addition) {
+        public void Concatenate (List<Point> _Addition) {
             if (_Addition.Count == 0)
                 return;
-            else
-                _Addition = Timed_Waveform (_Addition);
-
-            float _Offset = 0f;
-            if (Buffer.Count > 0)
-                _Offset = Last (Buffer).X;
-
-            foreach (Vector2 eachVector in _Addition)
-                Buffer.Add (new Vector2 (eachVector.X + _Offset, eachVector.Y));
+            
+            float offsetX = Last (Points).X;
+    
+            foreach (Point eachVector in _Addition)
+                Points.Add (new Point (eachVector.X + offsetX, eachVector.Y));
         }
-
-        List<Vector2> Timed_Waveform (List<Vector2> _Buffer) {
-            List<Vector2> _Out = new List<Vector2> ();
-            float _Length = Last (_Buffer).X;
-
-            if (_Buffer.Count == 0)
-                return new List<Vector2> ();
-
-            _Out.Add (_Buffer[0]);
-            float i = _Buffer[0].X + _.Draw_Resolve;
-            int n = 0;
-
-            while (i < _Length) {
-                if ((_Buffer[n].X <= i) && (_Buffer[n + 1].X >= i)) {
-                    _Out.Add (Vector2.Lerp (_Buffer[n], _Buffer[n + 1],
-                        _.InverseLerp (_Buffer[n].X, _Buffer[n + 1].X, i)));
-                    i += _.Draw_Resolve;
-                } else if (i < _Buffer[n].X) {
-                    i += _.Draw_Resolve;
-                } else if (i > _Buffer[n].X) {
-                    if (n < _Buffer.Count - 1)
-                        n++;
-                    else
-                        break;
-                }
-            }
-
-            return _Out;
-        }
-
         public void Scroll () {
-            // Knock the future strip into the current strip and/or clean
-            // up leftovers, but don't overshoot into the future
-            Time_Elapsed = _.Time;
-
-            if (Buffer.Count > 0) {
-                for (int i = 0; i < Buffer.Count; i++) {
-                    if (Buffer[i].X > Time_Elapsed) {
-                        continue;
-                    } else if (Buffer[i].X < Time_Elapsed - Time_Length) {
-                        Buffer.RemoveAt (i);
-                        i--;
-                    } else if (Buffer[i].X >= Time_Elapsed - Time_Length
-                            && Buffer[i].X <= Time_Elapsed) {
-                        Current.Add (Buffer[i]);
-                        Buffer.RemoveAt (i);
-                        i--;
-                    }
-                }
-            }
-
-            if (Current.Count > 0) {
-                for (int i = 0; i < Current.Count; i++) {
-                    if (Current[i].X < Time_Elapsed - Time_Length) {
-                        Current.RemoveAt (i);
-                        i--;
-                    }
-                }
-            }
+            foreach (Point eachVector in Points)
+                eachVector.X -= _.Draw_Resolve;
+            
+            for (int i = Points.Count - 1; i >= 0; i--) {
+                if (Points[i].X < -Time_Length)
+                    Points.RemoveAt (i);
+            }    
         }
-
-        public void Add_Beat (Patient _Patient) {
-            if (Buffer.Count > 100)
+        
+        public void Add_Beat (Patient _Patient) {            
+            if (Last(Points).X > Time_Length * 2)
                 return;
 
-            switch (_Patient.Heart_Rhythm) {
-                default:
-                case Patient.Rhythm.Normal_Sinus:
-                    Concatenate(Rhythm.EKG_Rhythm__Normal_Sinus (_Patient.HR, 0f));
-                    break;
-
-                case Patient.Rhythm.Sinus_Tachycardia:
-                    Concatenate (Rhythm.EKG_Rhythm__Normal_Sinus (_Patient.HR, 0f));
-                    break;
-
-                case Patient.Rhythm.Sinus_Bradycardia:
-                    Concatenate (Rhythm.EKG_Rhythm__Normal_Sinus (_Patient.HR, 0f));
-                    break;
-
-                case Patient.Rhythm.Atrial_Flutter:
-                    Concatenate (Rhythm.EKG_Rhythm__Atrial_Flutter (_Patient.HR, 0f));
-                    break;
-
-                case Patient.Rhythm.Atrial_Fibrillation:
-                    Concatenate (Rhythm.EKG_Rhythm__Atrial_Fibrillation (_Patient.HR, 0f, .3f, _Patient.HR / 2));
-                    break;
-
-                case Patient.Rhythm.Premature_Atrial_Contractions:
-                    Concatenate (Rhythm.EKG_Rhythm__Premature_Atrial_Contractions (_Patient.HR, 0f, .4f, _Patient.HR / 2));
-                    break;
-
-                case Patient.Rhythm.Supraventricular_Tachycardia:
-                    Concatenate (Rhythm.EKG_Rhythm__Supraventricular_Tachycardia (_Patient.HR, 0f));
-                    break;
-
-                case Patient.Rhythm.AV_Block__1st_Degree:
-                    Concatenate (Rhythm.EKG_Rhythm__AV_Block__1st_Degree (_Patient.HR, 0f));
-                    break;
-
-                case Patient.Rhythm.AV_Block__Wenckebach:
-                    Concatenate (Rhythm.EKG_Rhythm__AV_Block__Wenckebach (_Patient.HR, 0f, 4));
-                    break;
-
-                case Patient.Rhythm.AV_Block__Mobitz_II:
-                    Concatenate (Rhythm.EKG_Rhythm__AV_Block__Mobitz_II (_Patient.HR, 0f, .3f));
-                    break;
-
-                case Patient.Rhythm.AV_Block__3rd_Degree:
-                    Concatenate (Rhythm.EKG_Rhythm__AV_Block__3rd_Degree (_Patient.HR, 0f));
-                    break;
-
-                case Patient.Rhythm.Junctional:
-                    Concatenate (Rhythm.EKG_Rhythm__Junctional (_Patient.HR, 0f));
-                    break;
-
-                case Patient.Rhythm.Premature_Junctional_Contractions:
-                    Concatenate (Rhythm.EKG_Rhythm__Premature_Junctional_Contractions (_Patient.HR, 0f, .4f, _Patient.HR / 2));
-                    break;
-
-                case Patient.Rhythm.Block__Bundle_Branch:
-                    Concatenate (Rhythm.EKG_Rhythm__Block__Bundle_Branch (_Patient.HR, 0f));
-                    break;
-
-                case Patient.Rhythm.Premature_Ventricular_Contractions:
-                    Concatenate (Rhythm.EKG_Rhythm__Premature_Ventricular_Contractions (_Patient.HR, 0f, .4f, _Patient.HR / 2));
-                    break;
-
-                case Patient.Rhythm.Idioventricular:
-                    Concatenate (Rhythm.EKG_Rhythm__Idioventricular (_Patient.HR, 0f));
-                    break;
-
-                case Patient.Rhythm.Ventricular_Fibrillation:
-                    Concatenate (Rhythm.EKG_Rhythm__Ventricular_Fibrillation (1f, 0f));
-                    break;
-
-                case Patient.Rhythm.Ventricular_Standstill:
-                    Concatenate (Rhythm.EKG_Rhythm__Ventricular_Standstill (_Patient.HR, 0f));
-                    break;
-
-                case Patient.Rhythm.Asystole:
-                    Concatenate (Rhythm.EKG_Rhythm__Asystole (1f, 0f));
-                    break;
-            }
-
+            Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG(_Patient, this);            
         }
 
 
         public class Renderer {
 
             Panel panel;
-            Pen pen;
-            Strip strip;
+            Pen p;
+            Strip s;
 
             int offX, offY;
             float multX, multY;
-
-
+            
             public Renderer (Panel _Panel, ref Strip _Strip, Pen _Pen) {
                 panel = _Panel;
-                pen = _Pen;
-                strip = _Strip;
+                p = _Pen;
+                s = _Strip;
             }
 
             public void Draw (PaintEventArgs e) {
@@ -218,15 +82,25 @@ namespace Infirmary_Integrated.Rhythms {
 
                 offX = 0;
                 offY = panel.Height / 2;
-                multX = panel.Width / (Time_Length / _.Draw_Resolve);
+                multX = panel.Width / Time_Length;
                 multY = -panel.Height / 2;
 
-                Point lastPoint = new Point (0, offY);
-                for (int i = 0; i < strip.Current.Count; i++) {
-                    Point thisPoint = new Point (
-                        (int)(i * multX) + offX,
-                        (int)(strip.Current[i].Y * multY) + offY);
-                    e.Graphics.DrawLine (pen, lastPoint, thisPoint);
+                if (s.Points.Count < 2)
+                    return;
+                
+                System.Drawing.Point lastPoint = new System.Drawing.Point (
+                        (int)(s.Points[0].X * multX) + offX,
+                        (int)(s.Points[0].Y * multY) + offY);
+
+                for (int i = 1; i < s.Points.Count; i++) {
+                    if (s.Points[i].X > Time_Length * 2)
+                        continue;
+
+                    System.Drawing.Point thisPoint = new System.Drawing.Point (
+                        (int)(s.Points[i].X * multX) + offX,
+                        (int)(s.Points[i].Y * multY) + offY);
+
+                    e.Graphics.DrawLine (p, lastPoint, thisPoint);
                     lastPoint = thisPoint;
                 }
             }

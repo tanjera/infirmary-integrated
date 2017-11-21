@@ -4,8 +4,8 @@ namespace Infirmary_Integrated {
 
     public static class _ {
 
-        public const float Draw_Resolve = 0.01f;
-        public const int Draw_Refresh = 10;
+        public const float  Draw_Resolve = 0.01f;       // Tracing resolution (seconds per drawing point) in seconds
+        public const int    Draw_Refresh = 10;          // Tracing draw refresh time in milliseconds
 
         public static float Time {
             get { return (float)(DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess ().StartTime.ToUniversalTime ()).TotalSeconds; }

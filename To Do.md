@@ -1,7 +1,10 @@
 ﻿
 * Next Steps:
-	- Fix Strip.Reset() ... ... ... timing problem?
 	- Add numerics (vital sign container/panel)
+
+
+
+* Debug:
 
 
 

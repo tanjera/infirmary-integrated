@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Reflection;
 using System.Windows.Forms;
 
 using Infirmary_Integrated.Rhythms;
@@ -9,10 +8,10 @@ namespace Infirmary_Integrated
 {
     public partial class Device_Monitor : Form
     {
-        Strip stripECG;
-        Strip.Renderer renderECG;
+        Strip ecgStrip;
+        Strip.Renderer ecgRender;
 
-        Patient _Patient = new Patient();
+        Patient tPatient = new Patient();
 
 
         public Device_Monitor()
@@ -21,23 +20,39 @@ namespace Infirmary_Integrated
 
             timerDraw.Interval = _.Draw_Refresh;
 
-            stripECG = new Strip ();
-            renderECG = new Strip.Renderer (ecgTracing, ref stripECG, new Pen (Color.Green, 1f));
+            ecgStrip = new Strip ();
+            ecgRender = new Strip.Renderer (ecgTracing, ref ecgStrip, new Pen (Color.Green, 1f));
         }
 
         private void onTick (object sender, EventArgs e) {
-            stripECG.Scroll ();
+            ecgStrip.Scroll ();
             ecgTracing.Invalidate ();
             
-            stripECG.Add_Beat (_Patient);
+            ecgStrip.Add_Beat (tPatient);
         }
 
         private void ECGTracing_Paint (object sender, PaintEventArgs e) {
-            renderECG.Draw (e);
+            ecgRender.Draw (e);
+        }
+        
+        private void menuItem_NewPatient_Click (object sender, EventArgs e) {
+            ecgStrip.Reset ();
+            tPatient = new Patient ();        
         }
 
-        private void comboBox1_TextUpdate (object sender, EventArgs e) {
-            _Patient.Heart_Rhythm = (Patient.Rhythm) Enum.Parse(typeof(Patient.Rhythm), comboBox1.Text);            
+        private void menuItem_Exit_Click (object sender, EventArgs e) {
+            Application.Exit ();
+        }
+
+        private void menuItem_EditPatient_Click (object sender, EventArgs e) {
+            Forms.Patient_Vitals pv = new Forms.Patient_Vitals (tPatient);
+            pv.Show ();
+            pv.PatientEdited += onPatientEdited;
+        }
+
+        private void onPatientEdited (object sender, Forms.Patient_Vitals.PatientEdited_EventArgs e) {
+            tPatient = e.Patient;
+            ecgStrip.Reset ();
         }
     }
 }
