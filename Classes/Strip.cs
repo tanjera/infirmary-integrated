@@ -7,12 +7,35 @@ using System.Windows.Forms;
 namespace II.Rhythms {
 
     public class Strip {
-        
-        public List<Point> Points;
+        Waveform sType;
+        static float timeLength = 5.0f;                // Strip length in seconds
 
-        static float Time_Length = 5.0f;                // Strip length in seconds
+        public List<Point> Points;
         
-        public Strip () {
+        
+        public enum Waveform {
+            ECG_L1,
+            ECG_L2,
+            ECG_L3,
+            ECG_LAVR,
+            ECG_LAVL,
+            ECG_LAVF,
+            ECG_LV1,
+            ECG_LV2,
+            ECG_LV3,
+            ECG_LV4,
+            ECG_LV5,
+            ECG_LV6,
+
+            SPO2,
+            CVP,
+            ABP,
+            PA,
+            IABP
+        }
+
+        public Strip (Waveform w) {
+            sType = w;
             Points = new List<Point> ();
         }
 
@@ -22,7 +45,7 @@ namespace II.Rhythms {
 
         public void Clear_Future () {
             for (int i = Points.Count - 1; i >= 0; i--) {
-                if (Points[i].X > Time_Length)
+                if (Points[i].X > timeLength)
                     Points.RemoveAt (i);
             }
         }
@@ -30,7 +53,7 @@ namespace II.Rhythms {
         public Point Last (List<Point> _In) {
             if (_In.Count < 1)
                 // New vectors are added to Points beginning at 5 seconds to marquee backwards to 0
-                return new Point (Time_Length, 0);
+                return new Point (timeLength, 0);
             else
                 return _In[_In.Count - 1];
         }
@@ -49,16 +72,64 @@ namespace II.Rhythms {
                 eachVector.X -= _.Draw_Resolve;
             
             for (int i = Points.Count - 1; i >= 0; i--) {
-                if (Points[i].X < -Time_Length)
+                if (Points[i].X < -timeLength)
                     Points.RemoveAt (i);
             }    
         }
         
         public void Add_Beat (Patient _Patient) {            
-            if (Last(Points).X > Time_Length * 2)
+            if (Last(Points).X > timeLength * 2)
                 return;
 
-            Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG(_Patient, this);            
+            switch (sType) {
+                default:
+                case Waveform.ECG_L1:
+                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_L1 (_Patient, this);
+                    break;
+                case Waveform.ECG_L2:
+                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_L2 (_Patient, this);
+                    break;
+                case Waveform.ECG_L3:
+                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_L3 (_Patient, this);
+                    break;
+                case Waveform.ECG_LAVR:
+                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_LaVR (_Patient, this);
+                    break;
+                case Waveform.ECG_LAVL:
+                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_LaVL (_Patient, this);
+                    break;
+                case Waveform.ECG_LAVF:
+                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_LaVF (_Patient, this);
+                    break;
+                case Waveform.ECG_LV1:
+                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_LV1 (_Patient, this);
+                    break;
+                case Waveform.ECG_LV2:
+                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_LV2 (_Patient, this);
+                    break;
+                case Waveform.ECG_LV3:
+                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_LV3 (_Patient, this);
+                    break;
+                case Waveform.ECG_LV4:
+                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_LV4 (_Patient, this);
+                    break;
+                case Waveform.ECG_LV5:
+                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_LV5 (_Patient, this);
+                    break;
+                case Waveform.ECG_LV6:
+                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_LV6 (_Patient, this);
+                    break;
+
+                case Waveform.SPO2:
+                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_SpO2 (_Patient, this);
+                    break;
+
+
+                case Waveform.CVP: break;
+                case Waveform.ABP: break;
+                case Waveform.PA: break;
+                case Waveform.IABP: break;
+            }         
         }
 
 
@@ -82,7 +153,7 @@ namespace II.Rhythms {
 
                 offX = 0;
                 offY = panel.Height / 2;
-                multX = panel.Width / Time_Length;
+                multX = panel.Width / timeLength;
                 multY = -panel.Height / 2;
 
                 if (s.Points.Count < 2)
@@ -93,7 +164,7 @@ namespace II.Rhythms {
                         (int)(s.Points[0].Y * multY) + offY);
 
                 for (int i = 1; i < s.Points.Count; i++) {
-                    if (s.Points[i].X > Time_Length * 2)
+                    if (s.Points[i].X > timeLength * 2)
                         continue;
 
                     System.Drawing.Point thisPoint = new System.Drawing.Point (

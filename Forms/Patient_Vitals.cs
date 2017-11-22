@@ -49,7 +49,7 @@ namespace II.Forms {
             bufPatient.calcMAP ();
             bufPatient.SpO2 = (int)numSpO2.Value;
 
-            bufPatient.Heart_Rhythm = (Rhythms.Cardiac_Rhythms)Enum.Parse (typeof (Rhythms.Cardiac_Rhythms), comboRhythm.Text);
+            bufPatient.Heart_Rhythm = (Rhythms.Cardiac_Rhythm)Enum.Parse (typeof (Rhythms.Cardiac_Rhythm), comboRhythm.Text);
 
             if (checkNormalRange.Checked)
                 Rhythms.Rhythm_Index.Get_Rhythm (bufPatient.Heart_Rhythm).Vitals (bufPatient);

@@ -79,7 +79,7 @@
     <Compile Include="Forms\Device_Monitor.Designer.cs">
       <DependentUpon>Device_Monitor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Classes\Rhythm.cs" />
+    <Compile Include="Classes\Rhythms.cs" />
     <Compile Include="Forms\Patient_Vitals.cs">
       <SubType>Form</SubType>
     </Compile>

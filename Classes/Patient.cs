@@ -9,7 +9,7 @@ namespace II {
         
         public int HR, SBP, DBP, MAP, SpO2;
         public float T;
-        public Rhythms.Cardiac_Rhythms Heart_Rhythm;
+        public Rhythms.Cardiac_Rhythm Heart_Rhythm;
 
         public Patient() {
             HR = 80;
@@ -18,7 +18,7 @@ namespace II {
             MAP = 95;
             SpO2 = 98;
             T = 38;
-            Heart_Rhythm = Rhythms.Cardiac_Rhythms.Normal_Sinus;
+            Heart_Rhythm = Rhythms.Cardiac_Rhythm.Normal_Sinus;
         }
 
         public Patient (Patient p) {

@@ -27,9 +27,13 @@ II-CM Roadmap:
 
 
 * References:
-Original I3D cardiac monitor line renderer, machine states, rhythm generation -> List<Vector2>
-	https://github.com/tanjera/infirmary-3d/blob/cade40fa678d328fcfbe0f688d422929ee907c59/Unity/Assets/Scripts/Objects/Cardiac_Monitor.cs
-Original I3D cardiac rhythm function caller
-	https://github.com/tanjera/infirmary-3d/blob/cade40fa678d328fcfbe0f688d422929ee907c59/Unity/Assets/Scripts/Classes/Cardiac_Rhythms.cs
-Drawing graphics in C#
-	http://www.techotopia.com/index.php/Drawing_Graphics_in_C_Sharp
+- 12 lead ECG waveforms
+	https://ekg.academy/
+- ABP waveforms
+	http://www.derangedphysiology.com/main/core-topics-intensive-care/haemodynamic-monitoring/Chapter%201.1.5/normal-arterial-line-waveforms
+- CVP waveform
+	http://www.dynapulse.com/educator/webcurriculum/chapter%203/abnormal%20ekg%20and%20waveform.htm
+- PA waveforms
+	http://mdnxs.com/topics-2/procedures/swan-ganz-catheter/
+- IABP waveforms
+	https://rk.md/2017/intra-aortic-balloon-pump-arterial-line-ekg-waveforms/

@@ -21,7 +21,7 @@ namespace II.Forms
             timerTracing.Interval = _.Draw_Refresh;
             timerVitals.Interval = 1000;
 
-            ecgStrip = new Strip ();
+            ecgStrip = new Strip (Strip.Waveform.ECG_L2);
             ecgRender = new Strip.Renderer (ecgTracing, ref ecgStrip, new Pen (Color.Green, 1f));
 
             // Populate vital signs
