@@ -6,36 +6,14 @@ using System.Windows.Forms;
 
 namespace II.Rhythms {
 
-    public class Strip {
-        Waveform sType;
+    public class Strip {        
         static float timeLength = 5.0f;                // Strip length in seconds
 
+        public Leads Lead;
         public List<Point> Points;
         
-        
-        public enum Waveform {
-            ECG_L1,
-            ECG_L2,
-            ECG_L3,
-            ECG_LAVR,
-            ECG_LAVL,
-            ECG_LAVF,
-            ECG_LV1,
-            ECG_LV2,
-            ECG_LV3,
-            ECG_LV4,
-            ECG_LV5,
-            ECG_LV6,
-
-            SPO2,
-            CVP,
-            ABP,
-            PA,
-            IABP
-        }
-
-        public Strip (Waveform w) {
-            sType = w;
+        public Strip (Leads w) {
+            Lead = w;
             Points = new List<Point> ();
         }
 
@@ -81,54 +59,31 @@ namespace II.Rhythms {
             if (Last(Points).X > timeLength * 2)
                 return;
 
-            switch (sType) {
+            switch (Lead) {
                 default:
-                case Waveform.ECG_L1:
-                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_L1 (_Patient, this);
+                case Leads.ECG_L1:
+                case Leads.ECG_L2:
+                case Leads.ECG_L3:
+                case Leads.ECG_LAVR:
+                case Leads.ECG_LAVL:
+                case Leads.ECG_LAVF:
+                case Leads.ECG_LV1:
+                case Leads.ECG_LV2:
+                case Leads.ECG_LV3:
+                case Leads.ECG_LV4:
+                case Leads.ECG_LV5:
+                case Leads.ECG_LV6:
+                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG (_Patient, this);
                     break;
-                case Waveform.ECG_L2:
-                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_L2 (_Patient, this);
-                    break;
-                case Waveform.ECG_L3:
-                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_L3 (_Patient, this);
-                    break;
-                case Waveform.ECG_LAVR:
-                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_LaVR (_Patient, this);
-                    break;
-                case Waveform.ECG_LAVL:
-                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_LaVL (_Patient, this);
-                    break;
-                case Waveform.ECG_LAVF:
-                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_LaVF (_Patient, this);
-                    break;
-                case Waveform.ECG_LV1:
-                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_LV1 (_Patient, this);
-                    break;
-                case Waveform.ECG_LV2:
-                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_LV2 (_Patient, this);
-                    break;
-                case Waveform.ECG_LV3:
-                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_LV3 (_Patient, this);
-                    break;
-                case Waveform.ECG_LV4:
-                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_LV4 (_Patient, this);
-                    break;
-                case Waveform.ECG_LV5:
-                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_LV5 (_Patient, this);
-                    break;
-                case Waveform.ECG_LV6:
-                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG_LV6 (_Patient, this);
-                    break;
-
-                case Waveform.SPO2:
+                    
+                case Leads.SPO2:
                     Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_SpO2 (_Patient, this);
                     break;
-
-
-                case Waveform.CVP: break;
-                case Waveform.ABP: break;
-                case Waveform.PA: break;
-                case Waveform.IABP: break;
+                    
+                case Leads.CVP: break;
+                case Leads.ABP: break;
+                case Leads.PA: break;
+                case Leads.IABP: break;
             }         
         }
 
