@@ -26,6 +26,10 @@ namespace II.Forms {
             bufPatient = new Patient (p);
 
             Vitals_Update (lPatient);
+
+            foreach (Rhythms.Cardiac_Rhythm el in Enum.GetValues (typeof (Rhythms.Cardiac_Rhythm))) {
+                comboRhythm.Items.Add (el.ToString ());
+            }
         }
 
         private void Vitals_Update (Patient p) {

@@ -66,10 +66,12 @@ namespace II.Rhythms {
 
         Block__Bundle_Branch,
         Premature_Ventricular_Contractions,
-        Idioventricular,
-        Ventricular_Fibrillation,
 
+        Idioventricular,
+        Ventricular_Tachycardia,
+        Ventricular_Fibrillation,
         Ventricular_Standstill,
+        Pulseless_Electrical_Activity,
         Asystole
     }
     
@@ -88,14 +90,15 @@ namespace II.Rhythms {
                                 Range_SBP,
                                 Range_DBP;            
         public Beat             Beat_ECG,
-                                Beat_SpO2;
+                                Beat_SpO2,
+                                Beat_ABP;
 
         public delegate void Beat (Patient p, Strip s);
 
         public _Rhythm (Cardiac_Rhythm nameEnum, string nameLong, string nameShort,
                     bool hasPulse,
                     Range rangeHR, Range rangeSpO2, Range rangeSBP, Range rangeDBP,
-                    Beat delECG, Beat delSpO2) {
+                    Beat delECG, Beat delSpO2, Beat delABP) {
 
             Name_Long = nameLong;
             Name_Short = nameShort;
@@ -106,9 +109,9 @@ namespace II.Rhythms {
             Range_SBP = rangeSBP;
             Range_DBP = rangeDBP;
             
-            Beat_ECG = delECG;
-            
+            Beat_ECG = delECG;            
             Beat_SpO2 = delSpO2;
+            Beat_ABP = delABP;
         }
 
         public void Vitals (Patient p) {
@@ -131,139 +134,178 @@ namespace II.Rhythms {
                 false,
                 new Range (0, 0), new Range (0, 0), new Range (0, 30), new Range (0, 15),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Asystole (s.Lead, 1f, 0f)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Absent(1f)); }),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm(1f, 0f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm(1f, 0f)); }),
 
             new _Rhythm (Cardiac_Rhythm.Atrial_Fibrillation, "Atrial Fibrillation", "AFIB",
                 true,
                 new Range (50, 160), new Range (90, 96), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Atrial_Fibrillation (s.Lead, p.HR, 0f, .3f, p.HR / 2)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 1f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 1f)); }),
 
             new _Rhythm (Cardiac_Rhythm.Atrial_Flutter, "Atrial Flutter", "AFLUT",
                 true,
                 new Range (50, 160), new Range (92, 98), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Atrial_Flutter (s.Lead, p.HR, 0f)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 1f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 1f)); }),
 
             new _Rhythm (Cardiac_Rhythm.AV_Block__1st_Degree, "AV Block, 1st Degree", "AVB-1D",
                 true,
                 new Range (30, 120), new Range (94, 100), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__AV_Block__1st_Degree (s.Lead, p.HR, 0f)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 1f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 1f)); }),
 
             new _Rhythm (Cardiac_Rhythm.AV_Block__3rd_Degree, "AV Block, 3rd Degree", "AVB-3D",
                 true,
                 new Range (30, 100), new Range (88, 96), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__AV_Block__3rd_Degree (s.Lead, p.HR, 0f)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 1f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 1f)); }),
 
             new _Rhythm (Cardiac_Rhythm.AV_Block__Mobitz_II, "AV Block, Mobitz II", "AVB-MOB2",
                 true,
                 new Range (30, 140), new Range (92, 97), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__AV_Block__Mobitz_II (s.Lead, p.HR, 0f, .3f)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 1f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 1f)); }),
 
             new _Rhythm (Cardiac_Rhythm.AV_Block__Wenckebach, "AV Block, Wenckebach", "ABV-WEN",
                 true,
                 new Range (30, 100),new Range (92, 98), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__AV_Block__Wenckebach (s.Lead, p.HR, 0f, 4)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 1f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 1f)); }),
 
             new _Rhythm (Cardiac_Rhythm.Block__Bundle_Branch, "Bundle Branch Block", "BBB",
                 true,
                 new Range (30, 140), new Range (94, 100), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Block__Bundle_Branch (s.Lead, p.HR, 0f)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 1f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 1f)); }),
 
             new _Rhythm (Cardiac_Rhythm.Idioventricular, "Idioventricular", "IDIO",
                 true,
                 new Range (20, 60), new Range (85, 95), new Range (50, 140), new Range (30, 100),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Idioventricular (s.Lead, p.HR, 0f)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 1f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 1f)); }),
 
             new _Rhythm (Cardiac_Rhythm.Junctional, "Junctional", "JUNC",
                 true,
                 new Range (40, 100), new Range (90, 96), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Junctional (s.Lead, p.HR, 0f)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 1f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 1f)); }),
 
             new _Rhythm (Cardiac_Rhythm.Normal_Sinus, "Normal Sinus", "NSR",
                 true,
                 new Range (60, 100), new Range (95, 100), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Normal_Sinus (s.Lead, p.HR, 0f)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 1f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 1f)); }),
 
             new _Rhythm (Cardiac_Rhythm.Premature_Atrial_Contractions, "Premature Atrial Contractions", "PAC",
                 true,
                 new Range (60, 100), new Range (95, 100), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Premature_Atrial_Contractions (s.Lead, p.HR, 0f, .4f, p.HR / 2)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 1f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 1f)); }),
 
             new _Rhythm (Cardiac_Rhythm.Premature_Junctional_Contractions, "Premature Junctional Contractions", "PJC",
                 true,
                 new Range (60, 100), new Range (92, 98), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Premature_Junctional_Contractions (s.Lead, p.HR, 0f, .4f, p.HR / 2)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 1f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 1f)); }),
 
             new _Rhythm (Cardiac_Rhythm.Premature_Ventricular_Contractions, "Premature Ventricular Contractions", "PVC",
                 true,
                 new Range (60, 100), new Range (92, 98), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Premature_Ventricular_Contractions (s.Lead, p.HR, 0f, .4f, p.HR / 2)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 1f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 1f)); }),
+
+            new _Rhythm (Cardiac_Rhythm.Pulseless_Electrical_Activity, "Pulseless Electrical Activity", "PEA",
+                false,
+                new Range (40, 120), new Range (0, 0), new Range (0, 30), new Range (0, 15),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Normal_Sinus (s.Lead, p.HR, 0f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 0f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 0f)); }),
 
             new _Rhythm (Cardiac_Rhythm.Sinus_Bradycardia, "Sinus Bradycardia", "BRADY",
                 true,
                 new Range (40, 55), new Range (95, 100), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Normal_Sinus (s.Lead, p.HR, 0f)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 1f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 1f)); }),
 
             new _Rhythm (Cardiac_Rhythm.Sinus_Tachycardia, "Sinus Tachycardia", "TACHY",
                 true,
                 new Range (110, 140), new Range (95, 100), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Normal_Sinus (s.Lead, p.HR, 0f)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 0.8f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 1f)); }),
 
             new _Rhythm (Cardiac_Rhythm.Supraventricular_Tachycardia, "Supraventricular Tachycardia", "SVT",
                 true,
                 new Range (150, 210), new Range (86, 94), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Supraventricular_Tachycardia (s.Lead, p.HR, 0f)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Normal (p.HR)); }),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 0.6f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 1f)); }),
 
             new _Rhythm (Cardiac_Rhythm.Ventricular_Fibrillation, "Ventricular Fibrillation", "VFIB",
                 false,
                 new Range (200, 300), new Range (0, 0), new Range (0, 30), new Range (0, 15),
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Ventricular_Fibrillation (s.Lead, 1f, 0f)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Absent (1f)); }),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Ventricular_Fibrillation (s.Lead, 0.5f, 0f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (0.5f, 0f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (0.5f, 0f)); }),
+
+            new _Rhythm (Cardiac_Rhythm.Ventricular_Tachycardia, "Ventricular Tachycardia", "VTACH",
+                false,
+                new Range (60, 180), new Range (0, 0), new Range (0, 30), new Range (0, 15),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Ventricular_Tachycardia (s.Lead, p.HR, 0f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 0f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 0f)); }),
 
             new _Rhythm (Cardiac_Rhythm.Ventricular_Standstill, "Ventricular Standstill", "VSS",
                 false,
                 new Range (30, 100), new Range (0, 0), new Range (0, 30), new Range (0, 15),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Ventricular_Standstill (s.Lead, p.HR, 0f)); },
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm__Absent (60 / p.HR)); })
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 0f)); },
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 0f)); })
         });
     }
     
 
     public static class Rhythm {
-        public static List<Point> SpO2_Rhythm__Absent (float _Length) {
-            /* SpO2 waveform non-existant
-		     */
-
-            List<Point> thisBeat = new List<Point> ();
-            thisBeat.Add (new Point (0, 0));
-            thisBeat = Concatenate (thisBeat, Line (_Length, 0.0f, new Point (0, 0)));
-            return thisBeat;
-        }
-        public static List<Point> SpO2_Rhythm__Normal(float _Rate) {
-            /* SpO2 during normal sinus perfusion is similar to a sine wave leaning right
+        public static List<Point> SpO2_Rhythm(float _Rate, float _Amplitude) {
+            /* SpO2 during normal sinus perfusion is similar to a sine wave leaning right with dicrotic notch
 		     */
             float _Length = 60 / _Rate;
+            float _Portion = _Length / 6;
 
             List<Point> thisBeat = new List<Point>();
-            thisBeat = Concatenate(thisBeat, Curve(_Length / 2, 0.5f, 0.0f, Last(thisBeat)));
-            thisBeat = Concatenate(thisBeat, Line(_Length / 2, 0.0f, Last(thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Length / 2, 0.0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.5f * _Amplitude, 0.4f * _Amplitude, Last(thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion * 2, 0.3f * _Amplitude, 0.0f, Last (thisBeat)));
             return thisBeat;
-        }        
+        }
+        public static List<Point> ABP_Rhythm (float _Rate, float _Amplitude) {
+            /* ABP during normal sinus perfusion is similar to a sine wave leaning right with dicrotic notch
+		     */
+            float _Length = 60 / _Rate;
+            float _Portion = _Length / 4;
+
+            List<Point> thisBeat = new List<Point> ();
+            thisBeat = Concatenate (thisBeat, Line (_Portion, 0.2f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion, 0.0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.8f * _Amplitude, 0.7f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.6f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));            
+            return thisBeat;
+        }
         public static List<Point> EKG_Rhythm__Asystole (Leads Lead, float _Length, float _Isoelectric) {
             /* Asystole is the absence of electrical activity.
 		     */
@@ -285,8 +327,7 @@ namespace II.Rhythms {
                     QT = _.Lerp (0.235f, 0.4f, lerpCoeff);
 
             float _Wave = 0f,
-                    // Atrial fibrillations are typically +/- 0.01mV around isoelectric.
-                    _Amplitude = _.RandomFloat(-0.01f, 0.01f);
+                    _Amplitude = 0.02f;
             /* Vary TQ interval since AFIB intermittently leads to shortened RR intervals
              * To maintain the stated rate (that is printed on the cardiac monitor...) the
              * model needs to account for % of time rate is increased with premature firing,
@@ -301,12 +342,11 @@ namespace II.Rhythms {
 
             while (TQ > 0f) {
                 // Fibrillate!
-                // Each atrial fibrillation lasts from 0.04 to 0.08 seconds
-                _Wave = _.RandomFloat(0.04f, 0.08f);
+                _Wave = 0.04f;
 
                 thisBeat = Concatenate (thisBeat, Curve (_Wave, _Isoelectric + _Amplitude, _Isoelectric, Last (thisBeat)));
                 // Flip the amplitude's sign *without* crawling
-                _Amplitude = (_Amplitude <= 0 ? 1 : -1) * _.RandomFloat(0.02f, 0.10f);
+                _Amplitude = -_Amplitude;
                 TQ -= _Wave;
             }
 
@@ -337,7 +377,7 @@ namespace II.Rhythms {
             List<Point> thisBeat = new List<Point>();
             thisBeat = Concatenate(thisBeat, ECG_P(Lead, TP / _Flutters, _Isoelectric + .1f, _Isoelectric, new Point(0, _Isoelectric)));
             for (int i = 1; i < _Flutters; i++)
-                thisBeat = Concatenate(thisBeat, ECG_P(Lead, TP / _Flutters, _Isoelectric + .1f, _Isoelectric, Last(thisBeat)));
+                thisBeat = Concatenate(thisBeat, ECG_P(Lead, TP / _Flutters, _Isoelectric + .08f, _Isoelectric, Last(thisBeat)));
 
             thisBeat = Concatenate(thisBeat, ECG_Q(Lead, QRS / 4, _Isoelectric - 0.1f, Last(thisBeat)));
             thisBeat = Concatenate(thisBeat, ECG_R(Lead, QRS / 4, _Isoelectric + 0.9f, Last(thisBeat)));
@@ -678,18 +718,39 @@ namespace II.Rhythms {
             thisBeat = Concatenate (thisBeat, ECG_ST (Lead, ((QT - QRS) * 2) / 5, _Isoelectric - 0.06f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, ECG_T (Lead, ((QT - QRS) * 3) / 5, _Isoelectric + 0.15f, _Isoelectric, Last (thisBeat)));
             return thisBeat;
-        }        
+        }
+        public static List<Point> EKG_Rhythm__Ventricular_Tachycardia (Leads Lead, float _Rate, float _Isoelectric) {
+            /* Ventricular tachycardia is an accelerated ventricular rhythm.
+		     */
+
+            float _Length = 60 / _Rate;
+
+            List<Point> thisBeat = new List<Point> ();
+            thisBeat = Concatenate (thisBeat, Curve (_Length / 4,
+                _Isoelectric - 0.1f * leadCoeff[(int)Lead, (int)wavePart.Q],
+                _Isoelectric - 0.2f * leadCoeff[(int)Lead, (int)wavePart.Q], Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Length / 4,
+                _Isoelectric - 1f * leadCoeff[(int)Lead, (int)wavePart.R],
+                _Isoelectric - 0.3f * leadCoeff[(int)Lead, (int)wavePart.R], Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Length / 4,
+                _Isoelectric + 0.1f * leadCoeff[(int)Lead, (int)wavePart.T],
+                _Isoelectric + 0.1f* leadCoeff[(int)Lead, (int)wavePart.T],
+                Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Length / 4,
+                _Isoelectric + 0.4f * leadCoeff[(int)Lead, (int)wavePart.T],
+                _Isoelectric * leadCoeff[(int)Lead, (int)wavePart.T],
+                Last (thisBeat)));
+            return thisBeat;
+        }
         public static List<Point> EKG_Rhythm__Ventricular_Fibrillation(Leads Lead, float _Length, float _Isoelectric) {
             /* Ventricular fibrillation is random peaks/curves with no recognizable waves, no regularity.
 		     */
 
-            float _Wave = 0f,
-                    _Amplitude = _.RandomFloat(-0.6f, 0.6f);
+            float _Wave = _Length / 5,
+                    _Amplitude = _.RandomFloat(0.3f, 0.6f);
             List<Point> thisBeat = new List<Point>();
 
             while (_Length > 0f) {
-                _Wave = _.RandomFloat(0.1f, 0.2f);
-
                 thisBeat = Concatenate(thisBeat, Curve(_Wave, _Isoelectric + _Amplitude, _Isoelectric, Last(thisBeat)));
                 // Flip the sign of amplitude and randomly crawl larger/smaller, models the
                 // flippant waves in v-fib.

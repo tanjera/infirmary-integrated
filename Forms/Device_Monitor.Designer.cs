@@ -37,7 +37,6 @@
             this.menuItem_Exit = new System.Windows.Forms.ToolStripMenuItem();
             this.patientToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_EditPatient = new System.Windows.Forms.ToolStripMenuItem();
-            this.deviceOptionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_About = new System.Windows.Forms.ToolStripMenuItem();
             this.timerVitals = new System.Windows.Forms.Timer(this.components);
@@ -55,7 +54,6 @@
             this.menuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.patientToolStripMenuItem,
-            this.deviceOptionsToolStripMenuItem,
             this.helpToolStripMenuItem});
             this.menuMain.Location = new System.Drawing.Point(0, 0);
             this.menuMain.Name = "menuMain";
@@ -107,12 +105,6 @@
             this.menuItem_EditPatient.Text = "Edit Patient";
             this.menuItem_EditPatient.Click += new System.EventHandler(this.menuItem_EditPatient_Click);
             // 
-            // deviceOptionsToolStripMenuItem
-            // 
-            this.deviceOptionsToolStripMenuItem.Name = "deviceOptionsToolStripMenuItem";
-            this.deviceOptionsToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
-            this.deviceOptionsToolStripMenuItem.Text = "Device";
-            // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -139,19 +131,23 @@
             this.mainLayout.ColumnCount = 2;
             this.mainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 22.22222F));
             this.mainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 77.77778F));
-            this.mainLayout.Location = new System.Drawing.Point(12, 27);
+            this.mainLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.mainLayout.Location = new System.Drawing.Point(0, 24);
             this.mainLayout.Name = "mainLayout";
+            this.mainLayout.Padding = new System.Windows.Forms.Padding(10);
             this.mainLayout.RowCount = 3;
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.mainLayout.Size = new System.Drawing.Size(735, 427);
+            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.mainLayout.Size = new System.Drawing.Size(759, 442);
             this.mainLayout.TabIndex = 6;
             // 
             // Device_Monitor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(759, 466);
             this.Controls.Add(this.mainLayout);
@@ -176,7 +172,6 @@
         private System.Windows.Forms.ToolStripMenuItem patientToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menuItem_EditPatient;
         private System.Windows.Forms.Timer timerVitals;
-        private System.Windows.Forms.ToolStripMenuItem deviceOptionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menuItem_About;
         private System.Windows.Forms.TableLayoutPanel mainLayout;

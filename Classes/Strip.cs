@@ -91,7 +91,9 @@ namespace II.Rhythms {
                     break;
                     
                 case Leads.CVP: break;
-                case Leads.ABP: break;
+                case Leads.ABP:
+                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ABP (_Patient, this);
+                    break;
                 case Leads.PA: break;
                 case Leads.IABP: break;
             }         

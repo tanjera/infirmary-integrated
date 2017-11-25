@@ -44,26 +44,6 @@
             // comboRhythm
             // 
             this.comboRhythm.FormattingEnabled = true;
-            this.comboRhythm.Items.AddRange(new object[] {
-            "Normal_Sinus",
-            "Sinus_Tachycardia",
-            "Sinus_Bradycardia",
-            "Atrial_Flutter",
-            "Atrial_Fibrillation",
-            "Premature_Atrial_Contractions",
-            "Supraventricular_Tachycardia",
-            "AV_Block__1st_Degree",
-            "AV_Block__Wenckebach",
-            "AV_Block__Mobitz_II",
-            "AV_Block__3rd_Degree",
-            "Junctional",
-            "Premature_Junctional_Contractions",
-            "Block__Bundle_Branch",
-            "Premature_Ventricular_Contractions",
-            "Idioventricular",
-            "Ventricular_Fibrillation",
-            "Ventricular_Standstill",
-            "Asystole"});
             this.comboRhythm.Location = new System.Drawing.Point(97, 91);
             this.comboRhythm.Name = "comboRhythm";
             this.comboRhythm.Size = new System.Drawing.Size(193, 21);
