@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -8,14 +9,22 @@ namespace II.Forms
 {
     public partial class Device_Monitor : Form
     {
-        Strip ecgStrip;
-        Strip.Renderer ecgRender;
-
-        Strip ecgT1;
-        Strip.Renderer ecgT1Render;
-
+        
         Patient tPatient = new Patient();
+        List<Channel> tChannels = new List<Channel> ();
+        List<II.Controls.Values> tValues = new List<II.Controls.Values> ();
 
+        public class Channel {
+            public Strip cStrip;
+            public Strip.Renderer cRenderer;
+            public Controls.Tracing cTracing;
+
+            public Channel(Strip s, Strip.Renderer r, Controls.Tracing t) {
+                cStrip = s;
+                cRenderer = r;
+                cTracing = t;
+            }
+        }
 
         public Device_Monitor()
         {
@@ -24,38 +33,73 @@ namespace II.Forms
             timerTracing.Interval = _.Draw_Refresh;
             timerVitals.Interval = 1000;
 
-            ecgStrip = new Strip (Leads.ECG_L2);
-            ecgRender = new Strip.Renderer (ecgTracing, ref ecgStrip, new Pen (Color.Green, 1f));
-
-            ecgT1 = new Strip (Leads.ECG_L1);
-            ecgT1Render = new Strip.Renderer (tracing1, ref ecgT1, new Pen (Color.Green, 1f));
-
+            onLayoutChange ();
+            
             // Populate vital signs
             onTick_Vitals (null, new EventArgs ());
         }
-
+        
         private void onTick_Tracing (object sender, EventArgs e) {
-            ecgStrip.Scroll ();
-            ecgTracing.Invalidate ();
-            
-            ecgStrip.Add_Beat (tPatient);
-
-
-            ecgT1.Scroll ();
-            tracing1.Invalidate ();
-
-            ecgT1.Add_Beat (tPatient);
+            foreach(Channel c in tChannels) {
+                c.cStrip.Scroll ();
+                c.cStrip.Add_Beat (tPatient);
+                c.cTracing.Invalidate ();
+            }
         }
 
         private void onTick_Vitals (object sender, EventArgs e) {
-            ecgValues.Update (tPatient, II.Controls.Values_HR.ControlType.HR);
-            spO2Values.Update (tPatient, II.Controls.Values_HR.ControlType.SpO2);
-            bpValues.Update (tPatient, II.Controls.Values_BP.ControlType.NIBP);
+            foreach (II.Controls.Values v in tValues)
+                v.Update (tPatient);
+        }
+
+        private void onLayoutChange() {
+            for (int i = 0; i < mainLayout.RowCount; i++) {
+                if (tChannels.Count <= i) {
+                    Strip newStrip;
+                    II.Controls.Values newValue;
+                    switch (i) {
+                        default:
+                        case 0:
+                            newStrip = new Strip (Leads.ECG_L2);
+                            newValue = new Controls.Values (II.Controls.Values.ControlType.ECG);
+                            break;
+                        case 1:
+                            newStrip = new Strip (Leads.ECG_L3);
+                            newValue = new Controls.Values (II.Controls.Values.ControlType.NIBP);
+                            break;
+                        case 2:
+                            newStrip = new Strip (Leads.SPO2);
+                            newValue = new Controls.Values (II.Controls.Values.ControlType.SPO2);
+                            break;
+                        case 3:
+                            newStrip = new Strip (Leads.CVP);
+                            newValue = new Controls.Values (II.Controls.Values.ControlType.CVP);
+                            break;
+                        case 4:
+                            newStrip = new Strip (Leads.ABP);
+                            newValue = new Controls.Values (II.Controls.Values.ControlType.ART);
+                            break;
+                    }
+
+                    II.Controls.Tracing newTracing = new II.Controls.Tracing (newStrip.Lead);
+                    Strip.Renderer newRenderer = new Strip.Renderer (newTracing, ref newStrip,
+                        new Pen (Strip.stripColors(newStrip.Lead), 1f));
+                    newTracing.Paint += delegate (object s, PaintEventArgs e) { newRenderer.Draw (e); };
+                    newTracing.TracingEdited += onTracingEdited;
+
+                    tChannels.Add (new Channel (newStrip, newRenderer, newTracing));
+                    tValues.Add (newValue);
+
+                    mainLayout.Controls.Add (newValue, 0, i);
+                    mainLayout.Controls.Add (newTracing, 1, i);
+                }
+            }
         }
         
         private void menuItem_NewPatient_Click (object sender, EventArgs e) {
-            ecgStrip.Reset ();
-            ecgT1.Reset ();
+            foreach (Channel c in tChannels)
+                c.cStrip.Reset ();
+
             tPatient = new Patient ();        
         }
 
@@ -71,26 +115,26 @@ namespace II.Forms
 
         private void onPatientEdited (object sender, Forms.Patient_Vitals.PatientEdited_EventArgs e) {
             tPatient = e.Patient;
-            ecgStrip.Clear_Future ();
-            ecgT1.Clear_Future ();
+
+            foreach (Channel c in tChannels)
+                c.cStrip.clearFuture ();            
+        }
+
+        private void onTracingEdited (object sender, Controls.Tracing.TracingEdited_EventArgs e) {
+            foreach (Channel c in tChannels) {
+                if (c.cTracing == sender) {
+                    c.cTracing.setLead (e.Lead);                    
+                    c.cRenderer.pen = new Pen (Strip.stripColors (e.Lead), 1f);
+                    c.cStrip.Lead = e.Lead;                    
+                }
+
+                c.cStrip.Reset ();
+            }
         }
 
         private void menuItem_About_Click (object sender, EventArgs e) {
             Forms.About about = new Forms.About ();
             about.Show ();
-        }
-        
-        private void ECGTracing_Paint (object sender, PaintEventArgs e) {
-            ecgRender.Draw (e);            
-        }
-
-        private void tracing1_Paint (object sender, PaintEventArgs e) {
-            ecgT1Render.Draw (e);
-        }
-
-        private void numericUpDown1_ValueChanged (object sender, EventArgs e) {
-            ecgT1.Lead = (Leads)numericUpDown1.Value;
-            ecgT1.Clear_Future ();
-        }
+        }        
     }
 }

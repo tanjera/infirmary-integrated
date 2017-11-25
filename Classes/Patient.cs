@@ -7,7 +7,11 @@ using System.Threading.Tasks;
 namespace II {
     public class Patient {
         
-        public int HR, SBP, DBP, MAP, SpO2;
+        public int  HR,
+                    SBP, DBP, MAP, 
+                    SpO2, 
+                    CVP,
+                    PSP, PDP, PMP;
         public float T;
         public Rhythms.Cardiac_Rhythm Heart_Rhythm;
 
@@ -28,6 +32,12 @@ namespace II {
             MAP = p.MAP;
             SpO2 = p.SpO2;
             T = p.T;
+
+            CVP = 6;
+            PSP = 22;
+            PDP = 12;
+            PMP = 16;
+
             Heart_Rhythm = p.Heart_Rhythm;
         }
 

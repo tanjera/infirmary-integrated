@@ -5,13 +5,23 @@ using System.Numerics;
 using System.Windows.Forms;
 
 namespace II.Rhythms {
-
     public class Strip {        
         static float timeLength = 5.0f;                // Strip length in seconds
 
         public Leads Lead;
         public List<Point> Points;
-        
+
+        static public Color stripColors (Leads l) {
+            switch (l) {
+                default: return Color.Green;
+                case Leads.SPO2: return Color.Orange;
+                case Leads.CVP: return Color.Blue;
+                case Leads.ABP: return Color.Red;
+                case Leads.PA: return Color.Yellow;
+                case Leads.IABP: return Color.Blue;
+            }
+        }
+
         public Strip (Leads w) {
             Lead = w;
             Points = new List<Point> ();
@@ -21,7 +31,7 @@ namespace II.Rhythms {
             Points.Clear ();
         }
 
-        public void Clear_Future () {
+        public void clearFuture () {
             for (int i = Points.Count - 1; i >= 0; i--) {
                 if (Points[i].X > timeLength)
                     Points.RemoveAt (i);
@@ -90,16 +100,16 @@ namespace II.Rhythms {
 
         public class Renderer {
 
-            Control panel;
-            Pen p;
+            Control panel;            
             Strip s;
+            public Pen pen;
 
             int offX, offY;
             float multX, multY;
             
             public Renderer (Control _Panel, ref Strip _Strip, Pen _Pen) {
                 panel = _Panel;
-                p = _Pen;
+                pen = _Pen;
                 s = _Strip;
             }
 
@@ -126,7 +136,7 @@ namespace II.Rhythms {
                         (int)(s.Points[i].X * multX) + offX,
                         (int)(s.Points[i].Y * multY) + offY);
 
-                    e.Graphics.DrawLine (p, lastPoint, thisPoint);
+                    e.Graphics.DrawLine (pen, lastPoint, thisPoint);
                     lastPoint = thisPoint;
                 }
             }

@@ -41,14 +41,8 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_About = new System.Windows.Forms.ToolStripMenuItem();
             this.timerVitals = new System.Windows.Forms.Timer(this.components);
-            this.bpValues = new II.Controls.Values_BP();
-            this.spO2Values = new II.Controls.Values_HR();
-            this.ecgValues = new II.Controls.Values_HR();
-            this.ecgTracing = new II.Controls.Tracing();
-            this.tracing1 = new II.Controls.Tracing();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.mainLayout = new System.Windows.Forms.TableLayoutPanel();
             this.menuMain.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
             // timerTracing
@@ -139,58 +133,20 @@
             this.timerVitals.Enabled = true;
             this.timerVitals.Tick += new System.EventHandler(this.onTick_Vitals);
             // 
-            // bpValues
+            // mainLayout
             // 
-            this.bpValues.BackColor = System.Drawing.Color.Black;
-            this.bpValues.Location = new System.Drawing.Point(12, 324);
-            this.bpValues.Name = "bpValues";
-            this.bpValues.Size = new System.Drawing.Size(132, 126);
-            this.bpValues.TabIndex = 5;
-            // 
-            // spO2Values
-            // 
-            this.spO2Values.BackColor = System.Drawing.Color.Black;
-            this.spO2Values.Location = new System.Drawing.Point(12, 192);
-            this.spO2Values.Name = "spO2Values";
-            this.spO2Values.Size = new System.Drawing.Size(132, 126);
-            this.spO2Values.TabIndex = 5;
-            // 
-            // ecgValues
-            // 
-            this.ecgValues.BackColor = System.Drawing.Color.Black;
-            this.ecgValues.Location = new System.Drawing.Point(12, 60);
-            this.ecgValues.Name = "ecgValues";
-            this.ecgValues.Size = new System.Drawing.Size(132, 126);
-            this.ecgValues.TabIndex = 5;
-            // 
-            // ecgTracing
-            // 
-            this.ecgTracing.Location = new System.Drawing.Point(150, 60);
-            this.ecgTracing.Name = "ecgTracing";
-            this.ecgTracing.Size = new System.Drawing.Size(597, 126);
-            this.ecgTracing.TabIndex = 1;
-            this.ecgTracing.Paint += new System.Windows.Forms.PaintEventHandler(this.ECGTracing_Paint);
-            // 
-            // tracing1
-            // 
-            this.tracing1.Location = new System.Drawing.Point(150, 233);
-            this.tracing1.Name = "tracing1";
-            this.tracing1.Size = new System.Drawing.Size(597, 126);
-            this.tracing1.TabIndex = 1;
-            this.tracing1.Paint += new System.Windows.Forms.PaintEventHandler(this.tracing1_Paint);
-            // 
-            // numericUpDown1
-            // 
-            this.numericUpDown1.Location = new System.Drawing.Point(504, 394);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
-            11,
-            0,
-            0,
-            0});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown1.TabIndex = 6;
-            this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
+            this.mainLayout.AutoSize = true;
+            this.mainLayout.ColumnCount = 2;
+            this.mainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 22.22222F));
+            this.mainLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 77.77778F));
+            this.mainLayout.Location = new System.Drawing.Point(12, 27);
+            this.mainLayout.Name = "mainLayout";
+            this.mainLayout.RowCount = 3;
+            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.mainLayout.Size = new System.Drawing.Size(735, 427);
+            this.mainLayout.TabIndex = 6;
             // 
             // Device_Monitor
             // 
@@ -198,27 +154,19 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(759, 466);
-            this.Controls.Add(this.numericUpDown1);
-            this.Controls.Add(this.bpValues);
-            this.Controls.Add(this.spO2Values);
-            this.Controls.Add(this.ecgValues);
-            this.Controls.Add(this.tracing1);
-            this.Controls.Add(this.ecgTracing);
+            this.Controls.Add(this.mainLayout);
             this.Controls.Add(this.menuMain);
             this.MainMenuStrip = this.menuMain;
             this.Name = "Device_Monitor";
             this.Text = "Infirmary Integrated: Cardiac Monitor";
             this.menuMain.ResumeLayout(false);
             this.menuMain.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-
-        private II.Controls.Tracing ecgTracing;
         private System.Windows.Forms.Timer timerTracing;
         private System.Windows.Forms.MenuStrip menuMain;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
@@ -227,15 +175,11 @@
         private System.Windows.Forms.ToolStripMenuItem menuItem_Exit;
         private System.Windows.Forms.ToolStripMenuItem patientToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menuItem_EditPatient;
-        private II.Controls.Values_HR ecgValues;
         private System.Windows.Forms.Timer timerVitals;
-        private Controls.Values_HR spO2Values;
-        private Controls.Values_BP bpValues;
         private System.Windows.Forms.ToolStripMenuItem deviceOptionsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menuItem_About;
-        private Controls.Tracing tracing1;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.TableLayoutPanel mainLayout;
     }
 }
 

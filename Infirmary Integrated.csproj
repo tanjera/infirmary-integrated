@@ -54,17 +54,11 @@
     <Compile Include="Controls\Tracing.Designer.cs">
       <DependentUpon>Tracing.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\Values_BP.cs">
+    <Compile Include="Controls\Values.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\Values_BP.Designer.cs">
-      <DependentUpon>Values_BP.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\Values_HR.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Controls\Values_HR.Designer.cs">
-      <DependentUpon>Values_HR.cs</DependentUpon>
+    <Compile Include="Controls\Values.Designer.cs">
+      <DependentUpon>Values.cs</DependentUpon>
     </Compile>
     <Compile Include="Classes\Utility.cs" />
     <Compile Include="Forms\About.cs">
@@ -88,11 +82,11 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Controls\Values_BP.resx">
-      <DependentUpon>Values_BP.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\Tracing.resx">
+      <DependentUpon>Tracing.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Values_HR.resx">
-      <DependentUpon>Values_HR.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\Values.resx">
+      <DependentUpon>Values.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\About.resx">
       <DependentUpon>About.cs</DependentUpon>

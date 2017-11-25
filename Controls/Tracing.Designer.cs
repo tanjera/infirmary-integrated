@@ -23,10 +23,35 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent () {
-            components = new System.ComponentModel.Container ();
+            this.labelType = new System.Windows.Forms.Label();
+            this.SuspendLayout();
+            // 
+            // labelType
+            // 
+            this.labelType.AutoSize = true;
+            this.labelType.Dock = System.Windows.Forms.DockStyle.Right;
+            this.labelType.ForeColor = System.Drawing.Color.White;
+            this.labelType.Location = new System.Drawing.Point(150, 0);
+            this.labelType.Name = "labelType";
+            this.labelType.Size = new System.Drawing.Size(0, 13);
+            this.labelType.TabIndex = 0;
+            this.labelType.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // Tracing
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.Black;
+            this.Controls.Add(this.labelType);
+            this.Name = "Tracing";
+            this.Click += new System.EventHandler(this.Tracing_Click);
+            this.ResumeLayout(false);
+            this.PerformLayout();
+
         }
 
         #endregion
+
+        private System.Windows.Forms.Label labelType;
     }
 }

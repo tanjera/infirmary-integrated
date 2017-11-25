@@ -285,8 +285,8 @@ namespace II.Rhythms {
                     QT = _.Lerp (0.235f, 0.4f, lerpCoeff);
 
             float _Wave = 0f,
-                    // Atrial fibrillations are typically +/- 0.1mV around isoelectric.
-                    _Amplitude = _.RandomFloat(-0.1f, 0.1f);
+                    // Atrial fibrillations are typically +/- 0.01mV around isoelectric.
+                    _Amplitude = _.RandomFloat(-0.01f, 0.01f);
             /* Vary TQ interval since AFIB intermittently leads to shortened RR intervals
              * To maintain the stated rate (that is printed on the cardiac monitor...) the
              * model needs to account for % of time rate is increased with premature firing,
