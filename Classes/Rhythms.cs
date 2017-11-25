@@ -27,18 +27,9 @@ namespace II.Rhythms {
     }
 
     public enum Leads {
-        ECG_L1,
-        ECG_L2,
-        ECG_L3,
-        ECG_LAVR,
-        ECG_LAVL,
-        ECG_LAVF,
-        ECG_LV1,
-        ECG_LV2,
-        ECG_LV3,
-        ECG_LV4,
-        ECG_LV5,
-        ECG_LV6,
+        ECG_L1, ECG_L2, ECG_L3,
+        ECG_LAVR, ECG_LAVL, ECG_LAVF,
+        ECG_LV1, ECG_LV2, ECG_LV3, ECG_LV4, ECG_LV5, ECG_LV6,
 
         SPO2,
         CVP,
@@ -265,7 +256,7 @@ namespace II.Rhythms {
 
             new _Rhythm (Cardiac_Rhythm.Ventricular_Tachycardia, "Ventricular Tachycardia", "VTACH",
                 false,
-                new Range (60, 180), new Range (0, 0), new Range (0, 30), new Range (0, 15),
+                new Range (100, 160), new Range (0, 0), new Range (0, 30), new Range (0, 15),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.EKG_Rhythm__Ventricular_Tachycardia (s.Lead, p.HR, 0f)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.SpO2_Rhythm (p.HR, 0f)); },
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.ABP_Rhythm (p.HR, 0f)); }),

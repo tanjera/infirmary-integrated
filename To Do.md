@@ -1,11 +1,35 @@
 ﻿
 * Next Steps:
+	- Dynamic adding of mainLayout rows... grr...
+
+	- More tracings: CVP, ETCO2, PA, RR, paced rhythms (VVI, DDI)
+	- Expand Patient class and Edit Patient form
+		- Include all vital signs, hemodynamic variables
+			- NIBP *and* ABP (and a "clone values" functionality)
+			- Temperature, RR
+			- ETCO2, CVP, PA
+			- Thermodilution profile
+		- Include ECG variables
+			- ST elevation (per individual lead...)
+			- Axis shift
+
+	- Update vital signs with +/- 2.5% variation (HR, NIBP (interval?), ABP, CVP, PA)
+	- Different Controls for vital sign values (HR, RR/ETCO2, ABP, CVP, PA)
+		- Buttons specific to each type of vital sign on the vital sign's Control
+			- HR: Run 12 lead
+				- -> new Form for 12 lead
+			- BP: Cycle BP
+			- PA: Thermodilution
+				- -> new Form for thermodilution hemodynamic values
+
+
+II-CM Roadmap:	
 	- Polish tracing context menu for selecting waveforms
 	- Match ECG rhythm to SpO2/ABP tracing timing
+	- Additional PA waveforms (RA, RV, PA, PAW)
+		- And option to select waveform ("placement" of PA cath?)
+	- IABP device, waveforms
 
-
-II-CM Roadmap:
-	- More tracings: CVP, PA	
 	- Save/Load functionality (file extension .ii)
 		- Read-only option, password protected 
 			- Patient vitals, device tracings all un-editable
