@@ -65,6 +65,16 @@ namespace II.Rhythms {
         Pulseless_Electrical_Activity,
         Asystole
     }
+
+    public enum Cardiac_Axis_Shifts
+    {
+        Normal,
+        Left_Physiologic,
+        Left_Pathologic,
+        Right,
+        Extreme,
+        Indeterminate
+    }
     
     public struct Range {
         public int Min, Max;
@@ -108,9 +118,13 @@ namespace II.Rhythms {
         public void Vitals (Patient p) {
             p.HR = _.Clamp (p.HR, Range_HR.Min, Range_HR.Max);
             p.SpO2 = _.Clamp (p.SpO2, Range_SpO2.Min, Range_SpO2.Max);
-            p.SBP = _.Clamp (p.SBP, Range_SBP.Min, Range_SBP.Max);
-            p.DBP = _.Clamp (p.DBP, Range_DBP.Min, Range_DBP.Max);
-            p.calcMAP ();
+            p.NSBP = _.Clamp (p.NSBP, Range_SBP.Min, Range_SBP.Max);
+            p.NDBP = _.Clamp (p.NDBP, Range_DBP.Min, Range_DBP.Max);
+            p.NMAP = Patient.calcMAP (p.NSBP, p.NDBP);
+
+            p.ASBP = _.Clamp(p.ASBP, Range_SBP.Min, Range_SBP.Max);
+            p.ADBP = _.Clamp(p.ADBP, Range_DBP.Min, Range_DBP.Max);
+            p.AMAP = Patient.calcMAP(p.ASBP, p.ADBP);
         }
     }
 

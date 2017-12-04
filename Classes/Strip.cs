@@ -83,16 +83,16 @@ namespace II.Rhythms {
                 case Leads.ECG_LV4:
                 case Leads.ECG_LV5:
                 case Leads.ECG_LV6:
-                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ECG (_Patient, this);
+                    Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_ECG (_Patient, this);
                     break;
                     
                 case Leads.SPO2:
-                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_SpO2 (_Patient, this);
+                    Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_SpO2 (_Patient, this);
                     break;
                     
                 case Leads.CVP: break;
                 case Leads.ABP:
-                    Rhythm_Index.Get_Rhythm (_Patient.Heart_Rhythm).Beat_ABP (_Patient, this);
+                    Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_ABP (_Patient, this);
                     break;
                 case Leads.PA: break;
                 case Leads.IABP: break;

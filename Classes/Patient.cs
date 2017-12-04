@@ -7,42 +7,51 @@ using System.Threading.Tasks;
 namespace II {
     public class Patient {
         
-        public int  HR,
-                    SBP, DBP, MAP, 
-                    SpO2, 
-                    CVP,
+        public int  HR, RR, ETCO2, SpO2, CVP,
+                    NSBP, NDBP, NMAP,
+                    ASBP, ADBP, AMAP,
                     PSP, PDP, PMP;
+                                       
         public float T;
-        public Rhythms.Cardiac_Rhythm Heart_Rhythm;
+        public float[] ST_Elevation, T_Elevation;
+        public Rhythms.Cardiac_Rhythm Cardiac_Rhythm;
+        public Rhythms.Cardiac_Axis_Shifts Cardiac_Axis_Shift;
 
+    
         public Patient() {
-            HR = 80;
-            SBP = 120;
-            DBP = 80;
-            MAP = 95;
-            SpO2 = 98;
-            T = 38;
-            Heart_Rhythm = Rhythms.Cardiac_Rhythm.Normal_Sinus;
-        }
+            HR = 80;        RR = 18;        SpO2 = 98;
+            T = 38.0f;      CVP = 6;        ETCO2 = 40;
 
+            NSBP = 120;     NDBP = 80;      NMAP = 95;
+            ASBP = 120;     ADBP = 80;      AMAP = 95;            
+            PSP = 22;       PDP = 12;       PMP = 16;
+
+            Cardiac_Rhythm = Rhythms.Cardiac_Rhythm.Normal_Sinus;
+            Cardiac_Axis_Shift = Rhythms.Cardiac_Axis_Shifts.Normal;
+
+            ST_Elevation = new float[] 
+                { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f };
+            T_Elevation = new float[]
+                { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f };
+        }
+        
         public Patient (Patient p) {
-            HR = p.HR;
-            SBP = p.SBP;
-            DBP = p.DBP;
-            MAP = p.MAP;
-            SpO2 = p.SpO2;
-            T = p.T;
+            HR = p.HR;          RR = p.RR;          SpO2 = p.SpO2;
+            T = p.T;            CVP = p.CVP;        ETCO2 = p.ETCO2;
 
-            CVP = 6;
-            PSP = 22;
-            PDP = 12;
-            PMP = 16;
+            NSBP = p.NSBP;      NDBP = p.NDBP;      NMAP = p.NMAP;
+            ASBP = p.ASBP;      ADBP = p.ADBP;      AMAP = p.AMAP;
+            PSP = p.PSP;        PDP = p.PDP;        PMP = p.PMP;
+            
+            Cardiac_Rhythm = p.Cardiac_Rhythm;
+            Cardiac_Axis_Shift = p.Cardiac_Axis_Shift;
 
-            Heart_Rhythm = p.Heart_Rhythm;
+            ST_Elevation = p.ST_Elevation;
+            T_Elevation = p.T_Elevation;
         }
 
-        public void calcMAP () {
-            MAP = DBP + ((SBP - DBP) / 3);
+        public static int calcMAP (int sbp, int dbp) {
+            return dbp + ((sbp - dbp) / 3);
         }
     }
 }

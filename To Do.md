@@ -2,18 +2,17 @@
 * Next Steps:
 	- Dynamic adding of mainLayout rows... grr...
 
-	- More tracings: CVP, ETCO2, PA, RR, paced rhythms (VVI, DDI)
-	- Expand Patient class and Edit Patient form
-		- Include all vital signs, hemodynamic variables
-			- NIBP *and* ABP (and a "clone values" functionality)
-			- Temperature, RR
-			- ETCO2, CVP, PA
-			- Thermodilution profile
-		- Include ECG variables
-			- ST elevation (per individual lead...)
-			- Axis shift
+	- Implement Patient_Vitals form variables into rhythm changes
+		- ST elevation, T wave elevation
+		- Axis deviation
+
+	- More tracings: CVP, ETCO2, PA, RR
+
+	- Expand Patient class and Edit Patient form	
+		- Add default Rhythm vital signs for all hemodynamic parameters (Get_Rhythm().Vitals())
 
 	- Update vital signs with +/- 2.5% variation (HR, NIBP (interval?), ABP, CVP, PA)
+
 	- Different Controls for vital sign values (HR, RR/ETCO2, ABP, CVP, PA)
 		- Buttons specific to each type of vital sign on the vital sign's Control
 			- HR: Run 12 lead
@@ -24,6 +23,9 @@
 
 
 II-CM Roadmap:	
+	- Include paced rhythms (VVI, DDI)
+	- Thermodilution profile
+
 	- Polish tracing context menu for selecting waveforms
 	- Match ECG rhythm to SpO2/ABP tracing timing
 	- Additional PA waveforms (RA, RV, PA, PAW)
@@ -47,6 +49,8 @@ II-CM Roadmap:
 * References:
 - 12 lead ECG waveforms
 	https://ekg.academy/
+- 12 lead axis interpretation
+	https://lifeinthefastlane.com/ecg-library/basics/axis/
 - ABP waveforms
 	http://www.derangedphysiology.com/main/core-topics-intensive-care/haemodynamic-monitoring/Chapter%201.1.5/normal-arterial-line-waveforms
 - CVP waveform

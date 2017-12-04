@@ -27,19 +27,30 @@ namespace II.Forms {
 
             Vitals_Update (lPatient);
 
-            foreach (Rhythms.Cardiac_Rhythm el in Enum.GetValues (typeof (Rhythms.Cardiac_Rhythm))) {
-                comboRhythm.Items.Add (el.ToString ());
-            }
+            foreach (Rhythms.Cardiac_Rhythm el in Enum.GetValues (typeof (Rhythms.Cardiac_Rhythm)))
+                comboCardiacRhythm.Items.Add (_.UnderscoreToSpace(el.ToString ()));
+
+            foreach (Rhythms.Cardiac_Axis_Shifts el in Enum.GetValues(typeof(Rhythms.Cardiac_Axis_Shifts)))
+                comboAxisShift.Items.Add(_.UnderscoreToSpace(el.ToString()));
         }
 
         private void Vitals_Update (Patient p) {
             updatingVitals = true;
 
             numHR.Value = p.HR;
-            numSBP.Value = p.SBP;
-            numDBP.Value = p.DBP;
+            numRR.Value = p.RR;
             numSpO2.Value = p.SpO2;
+            numT.Value = (decimal)p.T;
+            numCVP.Value = p.CVP;
+            numETCO2.Value = p.ETCO2;
 
+            numNSBP.Value = p.NSBP;
+            numNDBP.Value = p.NDBP;
+            numASBP.Value = p.ASBP;
+            numADBP.Value = p.ADBP;
+            numPSP.Value = p.PSP;
+            numPDP.Value = p.PDP;
+            
             updatingVitals = false;
         }
 
@@ -48,15 +59,29 @@ namespace II.Forms {
                 return;
             
             bufPatient.HR = (int)numHR.Value;
-            bufPatient.SBP = (int)numSBP.Value;
-            bufPatient.DBP = (int)numDBP.Value;
-            bufPatient.calcMAP ();
+            bufPatient.RR = (int)numRR.Value;
             bufPatient.SpO2 = (int)numSpO2.Value;
+            bufPatient.T = (float)numT.Value;
+            bufPatient.CVP = (int)numCVP.Value;
+            bufPatient.ETCO2 = (int)numETCO2.Value;
+            
+            bufPatient.NSBP = (int)numNSBP.Value;
+            bufPatient.NDBP = (int)numNDBP.Value;
+            bufPatient.NMAP = Patient.calcMAP((int)numNSBP.Value, (int)numNDBP.Value);
 
-            bufPatient.Heart_Rhythm = (Rhythms.Cardiac_Rhythm)Enum.Parse (typeof (Rhythms.Cardiac_Rhythm), comboRhythm.Text);
+            bufPatient.ASBP = (int)numASBP.Value;
+            bufPatient.ADBP = (int)numADBP.Value;
+            bufPatient.AMAP = Patient.calcMAP((int)numASBP.Value, (int)numADBP.Value);
 
-            if (checkNormalRange.Checked)
-                Rhythms.Rhythm_Index.Get_Rhythm (bufPatient.Heart_Rhythm).Vitals (bufPatient);
+            bufPatient.PSP = (int)numPSP.Value;
+            bufPatient.PDP = (int)numPDP.Value;
+            bufPatient.PMP = Patient.calcMAP((int)numPSP.Value, (int)numPDP.Value);
+            
+            bufPatient.Cardiac_Rhythm = (Rhythms.Cardiac_Rhythm)Enum.Parse (typeof (Rhythms.Cardiac_Rhythm), _.SpaceToUnderscore(comboCardiacRhythm.Text));
+            bufPatient.Cardiac_Axis_Shift = (Rhythms.Cardiac_Axis_Shifts)Enum.Parse(typeof(Rhythms.Cardiac_Axis_Shifts), _.SpaceToUnderscore(comboAxisShift.Text));
+
+            if (checkDefaultVitals.Checked)
+                Rhythms.Rhythm_Index.Get_Rhythm (bufPatient.Cardiac_Rhythm).Vitals (bufPatient);
 
             Vitals_Update (bufPatient);
         }

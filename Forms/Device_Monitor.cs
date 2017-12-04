@@ -77,7 +77,7 @@ namespace II.Forms
                             break;
                         case 4:
                             newStrip = new Strip (Leads.ABP);
-                            newValue = new Controls.Values (II.Controls.Values.ControlType.ART);
+                            newValue = new Controls.Values (II.Controls.Values.ControlType.ABP);
                             break;
                     }
 

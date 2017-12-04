@@ -36,5 +36,14 @@ namespace II {
             return (float)r.NextDouble () * (max - min) + min;
         }
 
+        public static string UnderscoreToSpace (string str)
+        {
+            return str.Replace('_', ' ');
+        }
+
+        public static string SpaceToUnderscore(string str)
+        {
+            return str.Replace(' ', '_');
+        }
     }
 }
