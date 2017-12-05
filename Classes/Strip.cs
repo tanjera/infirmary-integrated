@@ -14,7 +14,7 @@ namespace II.Rhythms {
         static public Color stripColors (Leads l) {
             switch (l) {
                 default: return Color.Green;
-                case Leads.SPO2: return Color.Orange;
+                case Leads.SpO2: return Color.Orange;
                 case Leads.CVP: return Color.Blue;
                 case Leads.ABP: return Color.Red;
                 case Leads.PA: return Color.Yellow;
@@ -87,7 +87,7 @@ namespace II.Rhythms {
                     Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_ECG (_Patient, this);
                     break;
                     
-                case Leads.SPO2:
+                case Leads.SpO2:
                     Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_SpO2 (_Patient, this);
                     break;
                     

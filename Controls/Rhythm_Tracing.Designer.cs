@@ -1,5 +1,5 @@
 ﻿namespace II.Controls {
-    partial class Tracing {
+    partial class Rhythm_Tracing {
         /// <summary> 
         /// Required designer variable.
         /// </summary>
@@ -36,15 +36,18 @@
             this.labelType.Size = new System.Drawing.Size(0, 13);
             this.labelType.TabIndex = 0;
             this.labelType.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            this.labelType.Click += new System.EventHandler(this.onClick);
             // 
-            // Tracing
+            // Rhythm_Tracing
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoSize = true;
             this.BackColor = System.Drawing.Color.Black;
             this.Controls.Add(this.labelType);
-            this.Name = "Tracing";
-            this.Click += new System.EventHandler(this.Tracing_Click);
+            this.MinimumSize = new System.Drawing.Size(100, 100);
+            this.Name = "Rhythm_Tracing";
+            this.Click += new System.EventHandler(this.onClick);
             this.ResumeLayout(false);
             this.PerformLayout();
 

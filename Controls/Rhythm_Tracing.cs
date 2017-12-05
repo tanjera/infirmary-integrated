@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace II.Controls {
-    public partial class Tracing : UserControl {
+    public partial class Rhythm_Tracing : UserControl {
 
         ContextMenu contextMenu = new ContextMenu ();
 
@@ -18,17 +18,24 @@ namespace II.Controls {
             public TracingEdited_EventArgs (Rhythms.Leads lead) { Lead = lead; }
         }
 
-        public Tracing (Rhythms.Leads l) {
+        public Rhythm_Tracing (Rhythms.Leads l) {
             InitializeComponent ();
             
-            this.DoubleBuffered = true;
+            this.DoubleBuffered = true;         
+            this.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             this.Dock = DockStyle.Fill;
 
+            contextMenu.MenuItems.Add("Select Input Source:");
+            contextMenu.MenuItems.Add("-");
+            MenuItem ecgList = new MenuItem("ECG Leads");
+            contextMenu.MenuItems.Add(ecgList);
             foreach (Rhythms.Leads el in Enum.GetValues (typeof (Rhythms.Leads))) {
-                MenuItem mi = new MenuItem (_.UnderscoreToSpace(el.ToString ()), contextMenu_Click);                
-                contextMenu.MenuItems.Add (mi);               
+                if (el.ToString().StartsWith("ECG"))
+                    ecgList.MenuItems.Add(new MenuItem(_.UnderscoreToSpace(el.ToString()), contextMenu_Click));
+                else
+                    contextMenu.MenuItems.Add(new MenuItem(_.UnderscoreToSpace(el.ToString()), contextMenu_Click));
             }
-
+                
             setLead (l);
         }
 
@@ -41,11 +48,13 @@ namespace II.Controls {
             Rhythms.Leads l = (Rhythms.Leads)Enum.Parse (typeof(Rhythms.Leads), _.SpaceToUnderscore(((MenuItem)sender).Text));
             TracingEdited (this, new TracingEdited_EventArgs (l));
         }
-
-        private void Tracing_Click (object sender, EventArgs e) {
+        
+        private void onClick(object sender, EventArgs e)
+        {
             MouseEventArgs me = (MouseEventArgs)e;
-            if (me.Button == MouseButtons.Right) {
-                contextMenu.Show (this, new Point (me.X, me.Y));
+            if (me.Button == MouseButtons.Right)
+            {
+                contextMenu.Show(this, new Point(me.X, me.Y));
             }
         }
     }

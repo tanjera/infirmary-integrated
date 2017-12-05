@@ -8,7 +8,7 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace II.Forms {
-    public partial class Patient_Vitals : Form {
+    public partial class Dialog_Patient : Form {
 
         bool updatingVitals;
         Patient lPatient, bufPatient;
@@ -19,7 +19,7 @@ namespace II.Forms {
             public PatientEdited_EventArgs (Patient patient) { Patient = patient; }
         }
 
-        public Patient_Vitals (Patient p) {
+        public Dialog_Patient (Patient p) {
             InitializeComponent ();
 
             lPatient = p;

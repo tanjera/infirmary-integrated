@@ -4,6 +4,8 @@ namespace II {
 
     public static class _ {
 
+        public const string Version = "0.50";
+
         public const float  Draw_Resolve = 0.01f;       // Tracing resolution (seconds per drawing point) in seconds
         public const int    Draw_Refresh = 10;          // Tracing draw refresh time in milliseconds
 
@@ -34,6 +36,10 @@ namespace II {
         public static float RandomFloat (float min, float max) {
             Random r = new Random ();
             return (float)r.NextDouble () * (max - min) + min;
+        }
+
+        public static float RandomPercentRange (float value, float percent) {            
+            return RandomFloat((value - (value * percent)), (value + (value * percent)));
         }
 
         public static string UnderscoreToSpace (string str)

@@ -1,5 +1,5 @@
 ﻿namespace II.Forms {
-    partial class Patient_Vitals {
+    partial class Dialog_Patient {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -292,9 +292,9 @@
             this.lblTempConversion.AutoSize = true;
             this.lblTempConversion.Location = new System.Drawing.Point(173, 119);
             this.lblTempConversion.Name = "lblTempConversion";
-            this.lblTempConversion.Size = new System.Drawing.Size(31, 13);
+            this.lblTempConversion.Size = new System.Drawing.Size(34, 13);
             this.lblTempConversion.TabIndex = 10;
-            this.lblTempConversion.Text = "(... F)";
+            this.lblTempConversion.Text = "(?? F)";
             // 
             // numT
             // 
@@ -1456,7 +1456,7 @@
             this.numCVP.TabIndex = 10;
             this.numCVP.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
-            // Patient_Vitals
+            // Dialog_Patient
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -1465,7 +1465,7 @@
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.buttonApply);
-            this.Name = "Patient_Vitals";
+            this.Name = "Dialog_Patient";
             this.Text = "Patient Vital Signs";
             ((System.ComponentModel.ISupportInitialize)(this.numHR)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numNSBP)).EndInit();

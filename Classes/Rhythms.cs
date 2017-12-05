@@ -31,7 +31,7 @@ namespace II.Rhythms {
         ECG_AVR, ECG_AVL, ECG_AVF,
         ECG_V1, ECG_V2, ECG_V3, ECG_V4, ECG_V5, ECG_V6,
 
-        SPO2,
+        SpO2,
         CVP,
         ABP,
         PA,

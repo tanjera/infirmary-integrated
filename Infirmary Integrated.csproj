@@ -48,24 +48,24 @@
   <ItemGroup>
     <Compile Include="Classes\Patient.cs" />
     <Compile Include="Classes\Strip.cs" />
-    <Compile Include="Controls\Tracing.cs">
+    <Compile Include="Controls\Rhythm_Tracing.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\Tracing.Designer.cs">
-      <DependentUpon>Tracing.cs</DependentUpon>
+    <Compile Include="Controls\Rhythm_Tracing.Designer.cs">
+      <DependentUpon>Rhythm_Tracing.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\Values.cs">
+    <Compile Include="Controls\Rhythm_Numerics.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\Values.Designer.cs">
-      <DependentUpon>Values.cs</DependentUpon>
+    <Compile Include="Controls\Rhythm_Numerics.Designer.cs">
+      <DependentUpon>Rhythm_Numerics.cs</DependentUpon>
     </Compile>
     <Compile Include="Classes\Utility.cs" />
-    <Compile Include="Forms\About.cs">
+    <Compile Include="Forms\Dialog_About.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\About.Designer.cs">
-      <DependentUpon>About.cs</DependentUpon>
+    <Compile Include="Forms\Dialog_About.Designer.cs">
+      <DependentUpon>Dialog_About.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\Device_Monitor.cs">
       <SubType>Form</SubType>
@@ -74,28 +74,28 @@
       <DependentUpon>Device_Monitor.cs</DependentUpon>
     </Compile>
     <Compile Include="Classes\Rhythms.cs" />
-    <Compile Include="Forms\Patient_Vitals.cs">
+    <Compile Include="Forms\Dialog_Patient.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Patient_Vitals.Designer.cs">
-      <DependentUpon>Patient_Vitals.cs</DependentUpon>
+    <Compile Include="Forms\Dialog_Patient.Designer.cs">
+      <DependentUpon>Dialog_Patient.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Controls\Tracing.resx">
-      <DependentUpon>Tracing.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\Rhythm_Tracing.resx">
+      <DependentUpon>Rhythm_Tracing.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Values.resx">
-      <DependentUpon>Values.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\Rhythm_Numerics.resx">
+      <DependentUpon>Rhythm_Numerics.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\About.resx">
-      <DependentUpon>About.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\Dialog_About.resx">
+      <DependentUpon>Dialog_About.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Device_Monitor.resx">
       <DependentUpon>Device_Monitor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Patient_Vitals.resx">
-      <DependentUpon>Patient_Vitals.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\Dialog_Patient.resx">
+      <DependentUpon>Dialog_Patient.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

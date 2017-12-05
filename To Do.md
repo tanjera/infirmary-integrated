@@ -1,46 +1,72 @@
-﻿
-* Next Steps:
-	- Dynamic adding of mainLayout rows... grr...
-	- Keyboard shortcuts...
-
-	- More tracings: CVP, ETCO2, PA, RR
-	- Implement axis deviation in ECG tracings
-
-	- Expand Patient class and Edit Patient form	
-		- Add default Rhythm vital signs for all hemodynamic parameters (Get_Rhythm().Vitals())
-
-	- Update vital signs with +/- 2.5% variation (HR, NIBP (interval?), ABP, CVP, PA)
-
-	- Different Controls for vital sign values (HR, RR/ETCO2, ABP, CVP, PA)
-		- Buttons specific to each type of vital sign on the vital sign's Control
-			- HR: Run 12 lead
-				- -> new Form for 12 lead
-			- BP: Cycle BP
-			- PA: Thermodilution
-				- -> new Form for thermodilution hemodynamic values
+﻿* Implemented, needs debugging before commit:
 
 
-II-CM Roadmap:	
-	- Include paced rhythms (VVI, DDI)
-	- Thermodilution profile
 
-	- Polish tracing context menu for selecting waveforms
-	- Match ECG rhythm to SpO2/ABP tracing timing
-	- Additional PA waveforms (RA, RV, PA, PAW)
-		- And option to select waveform ("placement" of PA cath?)
-	- IABP device, waveforms
+* Versions and features to implement:
+	- v 0.6	
+		- More tracings: CVP, ETCO2, PA, RR
+		- Paced rhythms (AAI, VVI, DDI)
+		
+		- Sync respiratory waveforms to inspiration/expiration events (e.g. ETCO2)
+		- Sync cardiac dependent waveforms to heartbeat event (e.g. SpO2, ABP, PA, CVP)		
+			- Event/delegate triggers onCardiac_PaceAtria, onCardiac_PaceVentricles
+			- Event/delegate triggers for onCardiac_Beat, onRespiratory_Inspiration, onRespiratory_Expiration
 
-	- Save/Load functionality (file extension .ii)
-		- Read-only option, password protected 
-			- Patient vitals, device tracings all un-editable
-			- e.g. for professors testing students
-		- SSH encrypt save files (for testing mode)
-		- Import invidual fields and assign to objects (not serialized out/in)
+		- Patient boolean for inspiration or expiration; also needs boolean for pos-pressure ventilation or natural neg-pressure ventilation
+		
+		- Expand Patient class and Edit Patient form	
+			- Add default Rhythm vital signs for all hemodynamic parameters (Get_Rhythm().Vitals())		
+
+
+	- v 0.7
+		- Numeric control improvements
+			- Add buttons for added functionality (e.g. zero ABP; cycle NiBP; run thermodilution; run 12 lead)
+			* Buttons can be disabled until functionality implemented...
+		- Cardiac monitor toolbar buttons (e.g. go fullscreen)
+
+
+	- v 0.8
+		- 12 lead ECG device form (Device_ECG)
+			- Fixed layout
+			- Option to pause for viewing, printing, or export to .pdf
+
+
+	- v 0.9
+		- Implement pulsus paradoxus 
+		- Implement axis deviation in ECG tracings 
+		- PA catheter improvements
+			- Thermodilution profile dialog form
+			- Additional PA waveforms (RA, RV, PA, PAW)
+			- Option to select waveform ("placement" of PA cath?)
+
+
+	- v 1.0
+		* General polish and debugging		
+		* Save/load functionality!!
+			- File extension .ii
+			- SSH encrypt save files (for testing mode)
+			- Import invidual fields and assign to objects (not serialized out/in)
 			- For backwards compatibility with save files...
-	 
+		- Installer package .msi ...
+		
+	
+	- v 1.1
+		- Defibrillator device form (Device_Defibrillator)
+			- Limited amount of tracing rows (limit 3?); less dynamic layout than cardiac monitor
+			- Faceplate with buttons for energy selection, charge, delivery shock
+			- Additional control for display of Joule amount selected... or add to ECG tracing corner
+			- Defibrillation rhythm waveform (can be 1 beat)
+		
+
+	- v 1.2
+		- IABP device form
+			- Faceplate with fixed layout/tracings
+		- IABP waveforms
 
 
-* Debug:
+
+* Feature ideas, needs placing in version plan:	
+	
 
 
 
