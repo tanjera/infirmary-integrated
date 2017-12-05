@@ -27,11 +27,17 @@ namespace II.Forms {
 
             Vitals_Update (lPatient);
 
+            updatingVitals = true;
+
             foreach (Rhythms.Cardiac_Rhythm el in Enum.GetValues (typeof (Rhythms.Cardiac_Rhythm)))
                 comboCardiacRhythm.Items.Add (_.UnderscoreToSpace(el.ToString ()));
+            comboCardiacRhythm.SelectedIndex = 0;
 
             foreach (Rhythms.Cardiac_Axis_Shifts el in Enum.GetValues(typeof(Rhythms.Cardiac_Axis_Shifts)))
                 comboAxisShift.Items.Add(_.UnderscoreToSpace(el.ToString()));
+            comboAxisShift.SelectedIndex = 0;
+
+            updatingVitals = false;
         }
 
         private void Vitals_Update (Patient p) {
@@ -50,7 +56,33 @@ namespace II.Forms {
             numADBP.Value = p.ADBP;
             numPSP.Value = p.PSP;
             numPDP.Value = p.PDP;
-            
+
+            numSTE_I.Value = (decimal)p.ST_Elevation[(int)Rhythms.Leads.ECG_I];
+            numSTE_II.Value = (decimal)p.ST_Elevation[(int)Rhythms.Leads.ECG_II]; 
+            numSTE_III.Value = (decimal)p.ST_Elevation[(int)Rhythms.Leads.ECG_III];
+            numSTE_aVR.Value = (decimal)p.ST_Elevation[(int)Rhythms.Leads.ECG_AVR]; 
+            numSTE_aVL.Value = (decimal)p.ST_Elevation[(int)Rhythms.Leads.ECG_AVL]; 
+            numSTE_aVF.Value = (decimal)p.ST_Elevation[(int)Rhythms.Leads.ECG_AVF];
+            numSTE_V1.Value = (decimal)p.ST_Elevation[(int)Rhythms.Leads.ECG_V1]; 
+            numSTE_V2.Value = (decimal)p.ST_Elevation[(int)Rhythms.Leads.ECG_V2]; 
+            numSTE_V3.Value = (decimal)p.ST_Elevation[(int)Rhythms.Leads.ECG_V3];
+            numSTE_V4.Value = (decimal)p.ST_Elevation[(int)Rhythms.Leads.ECG_V4]; 
+            numSTE_V5.Value = (decimal)p.ST_Elevation[(int)Rhythms.Leads.ECG_V5]; 
+            numSTE_V6.Value = (decimal)p.ST_Elevation[(int)Rhythms.Leads.ECG_V6];
+      
+            numTWE_I.Value = (decimal)p.T_Elevation[(int)Rhythms.Leads.ECG_I];
+            numTWE_II.Value = (decimal)p.T_Elevation[(int)Rhythms.Leads.ECG_II];
+            numTWE_III.Value = (decimal)p.T_Elevation[(int)Rhythms.Leads.ECG_III];
+            numTWE_aVR.Value = (decimal)p.T_Elevation[(int)Rhythms.Leads.ECG_AVR];
+            numTWE_aVL.Value = (decimal)p.T_Elevation[(int)Rhythms.Leads.ECG_AVL];
+            numTWE_aVF.Value = (decimal)p.T_Elevation[(int)Rhythms.Leads.ECG_AVF];
+            numTWE_V1.Value = (decimal)p.T_Elevation[(int)Rhythms.Leads.ECG_V1];
+            numTWE_V2.Value = (decimal)p.T_Elevation[(int)Rhythms.Leads.ECG_V2];
+            numTWE_V3.Value = (decimal)p.T_Elevation[(int)Rhythms.Leads.ECG_V3];
+            numTWE_V4.Value = (decimal)p.T_Elevation[(int)Rhythms.Leads.ECG_V4];
+            numTWE_V5.Value = (decimal)p.T_Elevation[(int)Rhythms.Leads.ECG_V5];
+            numTWE_V6.Value = (decimal)p.T_Elevation[(int)Rhythms.Leads.ECG_V6];
+
             updatingVitals = false;
         }
 
@@ -79,6 +111,20 @@ namespace II.Forms {
             
             bufPatient.Cardiac_Rhythm = (Rhythms.Cardiac_Rhythm)Enum.Parse (typeof (Rhythms.Cardiac_Rhythm), _.SpaceToUnderscore(comboCardiacRhythm.Text));
             bufPatient.Cardiac_Axis_Shift = (Rhythms.Cardiac_Axis_Shifts)Enum.Parse(typeof(Rhythms.Cardiac_Axis_Shifts), _.SpaceToUnderscore(comboAxisShift.Text));
+
+            bufPatient.ST_Elevation = new float[] {
+                (float)numSTE_I.Value, (float)numSTE_II.Value, (float)numSTE_III.Value,
+                (float)numSTE_aVR.Value, (float)numSTE_aVL.Value, (float)numSTE_aVF.Value,
+                (float)numSTE_V1.Value, (float)numSTE_V2.Value, (float)numSTE_V3.Value,
+                (float)numSTE_V4.Value, (float)numSTE_V5.Value, (float)numSTE_V6.Value
+            };
+
+            bufPatient.T_Elevation = new float[] {                
+                (float)numTWE_I.Value, (float)numTWE_II.Value, (float)numTWE_III.Value,
+                (float)numTWE_aVR.Value, (float)numTWE_aVL.Value, (float)numTWE_aVF.Value,
+                (float)numTWE_V1.Value, (float)numTWE_V2.Value, (float)numTWE_V3.Value,
+                (float)numTWE_V4.Value, (float)numTWE_V5.Value, (float)numTWE_V6.Value
+            };
 
             if (checkDefaultVitals.Checked)
                 Rhythms.Rhythm_Index.Get_Rhythm (bufPatient.Cardiac_Rhythm).Vitals (bufPatient);

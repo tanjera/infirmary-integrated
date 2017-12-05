@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace II.Rhythms {
     public class Strip {        
-        static float timeLength = 5.0f;                // Strip length in seconds
+        float Length = 5.0f;                // Strip length in seconds
 
         public Leads Lead;
         public List<Point> Points;
@@ -22,8 +22,9 @@ namespace II.Rhythms {
             }
         }
 
-        public Strip (Leads w) {
+        public Strip (float l, Leads w) {
             Lead = w;
+            Length = l;
             Points = new List<Point> ();
         }
 
@@ -33,7 +34,7 @@ namespace II.Rhythms {
 
         public void clearFuture () {
             for (int i = Points.Count - 1; i >= 0; i--) {
-                if (Points[i].X > timeLength)
+                if (Points[i].X > Length)
                     Points.RemoveAt (i);
             }
         }
@@ -41,7 +42,7 @@ namespace II.Rhythms {
         public Point Last (List<Point> _In) {
             if (_In.Count < 1)
                 // New vectors are added to Points beginning at 5 seconds to marquee backwards to 0
-                return new Point (timeLength, 0);
+                return new Point (Length, 0);
             else
                 return _In[_In.Count - 1];
         }
@@ -60,29 +61,29 @@ namespace II.Rhythms {
                 eachVector.X -= _.Draw_Resolve;
             
             for (int i = Points.Count - 1; i >= 0; i--) {
-                if (Points[i].X < -timeLength)
+                if (Points[i].X < -Length)
                     Points.RemoveAt (i);
             }    
         }
         
         public void Add_Beat (Patient _Patient) {            
-            if (Last(Points).X > timeLength * 2)
+            if (Last(Points).X > Length * 2)
                 return;
 
             switch (Lead) {
                 default:
-                case Leads.ECG_L1:
-                case Leads.ECG_L2:
-                case Leads.ECG_L3:
-                case Leads.ECG_LAVR:
-                case Leads.ECG_LAVL:
-                case Leads.ECG_LAVF:
-                case Leads.ECG_LV1:
-                case Leads.ECG_LV2:
-                case Leads.ECG_LV3:
-                case Leads.ECG_LV4:
-                case Leads.ECG_LV5:
-                case Leads.ECG_LV6:
+                case Leads.ECG_I:
+                case Leads.ECG_II:
+                case Leads.ECG_III:
+                case Leads.ECG_AVR:
+                case Leads.ECG_AVL:
+                case Leads.ECG_AVF:
+                case Leads.ECG_V1:
+                case Leads.ECG_V2:
+                case Leads.ECG_V3:
+                case Leads.ECG_V4:
+                case Leads.ECG_V5:
+                case Leads.ECG_V6:
                     Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_ECG (_Patient, this);
                     break;
                     
@@ -120,7 +121,7 @@ namespace II.Rhythms {
 
                 offX = 0;
                 offY = panel.Height / 2;
-                multX = panel.Width / timeLength;
+                multX = panel.Width / s.Length;
                 multY = -panel.Height / 2;
 
                 if (s.Points.Count < 2)
@@ -131,7 +132,7 @@ namespace II.Rhythms {
                         (int)(s.Points[0].Y * multY) + offY);
 
                 for (int i = 1; i < s.Points.Count; i++) {
-                    if (s.Points[i].X > timeLength * 2)
+                    if (s.Points[i].X > s.Length * 2)
                         continue;
 
                     System.Drawing.Point thisPoint = new System.Drawing.Point (

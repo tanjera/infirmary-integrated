@@ -60,23 +60,23 @@ namespace II.Forms
                     switch (i) {
                         default:
                         case 0:
-                            newStrip = new Strip (Leads.ECG_L2);
+                            newStrip = new Strip (5f, Leads.ECG_II);
                             newValue = new Controls.Values (II.Controls.Values.ControlType.ECG);
                             break;
                         case 1:
-                            newStrip = new Strip (Leads.ECG_L3);
+                            newStrip = new Strip (5f, Leads.ECG_III);
                             newValue = new Controls.Values (II.Controls.Values.ControlType.NIBP);
                             break;
                         case 2:
-                            newStrip = new Strip (Leads.SPO2);
+                            newStrip = new Strip (5f, Leads.SPO2);
                             newValue = new Controls.Values (II.Controls.Values.ControlType.SPO2);
                             break;
                         case 3:
-                            newStrip = new Strip (Leads.CVP);
+                            newStrip = new Strip (5f, Leads.CVP);
                             newValue = new Controls.Values (II.Controls.Values.ControlType.CVP);
                             break;
                         case 4:
-                            newStrip = new Strip (Leads.ABP);
+                            newStrip = new Strip (5f, Leads.ABP);
                             newValue = new Controls.Values (II.Controls.Values.ControlType.ABP);
                             break;
                     }

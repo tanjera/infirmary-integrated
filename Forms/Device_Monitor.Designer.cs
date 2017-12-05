@@ -74,19 +74,19 @@
             // menuItem_NewPatient
             // 
             this.menuItem_NewPatient.Name = "menuItem_NewPatient";
-            this.menuItem_NewPatient.Size = new System.Drawing.Size(138, 22);
+            this.menuItem_NewPatient.Size = new System.Drawing.Size(152, 22);
             this.menuItem_NewPatient.Text = "New Patient";
             this.menuItem_NewPatient.Click += new System.EventHandler(this.menuItem_NewPatient_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(135, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
             // 
             // menuItem_Exit
             // 
             this.menuItem_Exit.Name = "menuItem_Exit";
-            this.menuItem_Exit.Size = new System.Drawing.Size(138, 22);
+            this.menuItem_Exit.Size = new System.Drawing.Size(152, 22);
             this.menuItem_Exit.Text = "Exit";
             this.menuItem_Exit.Click += new System.EventHandler(this.menuItem_Exit_Click);
             // 

@@ -25,7 +25,7 @@ namespace II.Controls {
             this.Dock = DockStyle.Fill;
 
             foreach (Rhythms.Leads el in Enum.GetValues (typeof (Rhythms.Leads))) {
-                MenuItem mi = new MenuItem (el.ToString (), contextMenu_Click);                
+                MenuItem mi = new MenuItem (_.UnderscoreToSpace(el.ToString ()), contextMenu_Click);                
                 contextMenu.MenuItems.Add (mi);               
             }
 
@@ -33,14 +33,13 @@ namespace II.Controls {
         }
 
         public void setLead(Rhythms.Leads l) {
-            labelType.Text = l.ToString ();
+            labelType.Text = _.UnderscoreToSpace(l.ToString ());
             labelType.ForeColor = Rhythms.Strip.stripColors (l);
         }
 
         private void contextMenu_Click (object sender, EventArgs e) {
-            Rhythms.Leads l = (Rhythms.Leads)Enum.Parse (typeof(Rhythms.Leads), ((MenuItem)sender).Text);
+            Rhythms.Leads l = (Rhythms.Leads)Enum.Parse (typeof(Rhythms.Leads), _.SpaceToUnderscore(((MenuItem)sender).Text));
             TracingEdited (this, new TracingEdited_EventArgs (l));
-            
         }
 
         private void Tracing_Click (object sender, EventArgs e) {

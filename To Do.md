@@ -1,12 +1,10 @@
 ﻿
 * Next Steps:
 	- Dynamic adding of mainLayout rows... grr...
-
-	- Implement Patient_Vitals form variables into rhythm changes
-		- ST elevation, T wave elevation
-		- Axis deviation
+	- Keyboard shortcuts...
 
 	- More tracings: CVP, ETCO2, PA, RR
+	- Implement axis deviation in ECG tracings
 
 	- Expand Patient class and Edit Patient form	
 		- Add default Rhythm vital signs for all hemodynamic parameters (Get_Rhythm().Vitals())
