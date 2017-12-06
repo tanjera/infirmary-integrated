@@ -37,17 +37,21 @@
             this.menuItem_Exit = new System.Windows.Forms.ToolStripMenuItem();
             this.patientToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_EditPatient = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItem_About = new System.Windows.Forms.ToolStripMenuItem();
-            this.timerVitals = new System.Windows.Forms.Timer(this.components);
-            this.mainLayout = new System.Windows.Forms.TableLayoutPanel();
             this.deviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_PauseDevice = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.setRowAmountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_ColorScheme = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_About = new System.Windows.Forms.ToolStripMenuItem();
+            this.timerVitals = new System.Windows.Forms.Timer(this.components);
+            this.mainLayout = new System.Windows.Forms.TableLayoutPanel();
+            this.menuItem_Fullscreen = new System.Windows.Forms.ToolStripMenuItem();
             this.menuMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -112,10 +116,88 @@
             // menuItem_EditPatient
             // 
             this.menuItem_EditPatient.Name = "menuItem_EditPatient";
-            this.menuItem_EditPatient.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.P)));
-            this.menuItem_EditPatient.Size = new System.Drawing.Size(175, 22);
-            this.menuItem_EditPatient.Text = "Edit &Patient";
+            this.menuItem_EditPatient.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
+            this.menuItem_EditPatient.Size = new System.Drawing.Size(174, 22);
+            this.menuItem_EditPatient.Text = "&Edit Patient";
             this.menuItem_EditPatient.Click += new System.EventHandler(this.menuItem_EditPatient_Click);
+            // 
+            // deviceToolStripMenuItem
+            // 
+            this.deviceToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItem_PauseDevice,
+            this.toolStripSeparator2,
+            this.setRowAmountToolStripMenuItem,
+            this.menuItem_ColorScheme,
+            this.menuItem_Fullscreen});
+            this.deviceToolStripMenuItem.Name = "deviceToolStripMenuItem";
+            this.deviceToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
+            this.deviceToolStripMenuItem.Text = "&Device";
+            // 
+            // menuItem_PauseDevice
+            // 
+            this.menuItem_PauseDevice.Name = "menuItem_PauseDevice";
+            this.menuItem_PauseDevice.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
+            this.menuItem_PauseDevice.Size = new System.Drawing.Size(191, 22);
+            this.menuItem_PauseDevice.Text = "Pa&use Device";
+            this.menuItem_PauseDevice.Click += new System.EventHandler(this.onTogglePause);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(188, 6);
+            // 
+            // setRowAmountToolStripMenuItem
+            // 
+            this.setRowAmountToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem2,
+            this.toolStripMenuItem3,
+            this.toolStripMenuItem4,
+            this.toolStripMenuItem5,
+            this.toolStripMenuItem6});
+            this.setRowAmountToolStripMenuItem.Name = "setRowAmountToolStripMenuItem";
+            this.setRowAmountToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.setRowAmountToolStripMenuItem.Text = "Set Row &Amount";
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(80, 22);
+            this.toolStripMenuItem2.Text = "&1";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.menuItem_RowCount_Click);
+            // 
+            // toolStripMenuItem3
+            // 
+            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(80, 22);
+            this.toolStripMenuItem3.Text = "&2";
+            this.toolStripMenuItem3.Click += new System.EventHandler(this.menuItem_RowCount_Click);
+            // 
+            // toolStripMenuItem4
+            // 
+            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(80, 22);
+            this.toolStripMenuItem4.Text = "&3";
+            this.toolStripMenuItem4.Click += new System.EventHandler(this.menuItem_RowCount_Click);
+            // 
+            // toolStripMenuItem5
+            // 
+            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(80, 22);
+            this.toolStripMenuItem5.Text = "&4";
+            this.toolStripMenuItem5.Click += new System.EventHandler(this.menuItem_RowCount_Click);
+            // 
+            // toolStripMenuItem6
+            // 
+            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(80, 22);
+            this.toolStripMenuItem6.Text = "&5";
+            this.toolStripMenuItem6.Click += new System.EventHandler(this.menuItem_RowCount_Click);
+            // 
+            // menuItem_ColorScheme
+            // 
+            this.menuItem_ColorScheme.Name = "menuItem_ColorScheme";
+            this.menuItem_ColorScheme.Size = new System.Drawing.Size(191, 22);
+            this.menuItem_ColorScheme.Text = "Color Scheme";
             // 
             // helpToolStripMenuItem
             // 
@@ -149,65 +231,18 @@
             this.mainLayout.Padding = new System.Windows.Forms.Padding(10);
             this.mainLayout.RowCount = 1;
             this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 421F));
-            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 421F));
+            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 422F));
+            this.mainLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 422F));
             this.mainLayout.Size = new System.Drawing.Size(759, 442);
             this.mainLayout.TabIndex = 6;
             // 
-            // deviceToolStripMenuItem
+            // menuItem_Fullscreen
             // 
-            this.deviceToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.setRowAmountToolStripMenuItem});
-            this.deviceToolStripMenuItem.Name = "deviceToolStripMenuItem";
-            this.deviceToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
-            this.deviceToolStripMenuItem.Text = "&Device";
-            // 
-            // setRowAmountToolStripMenuItem
-            // 
-            this.setRowAmountToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem2,
-            this.toolStripMenuItem3,
-            this.toolStripMenuItem4,
-            this.toolStripMenuItem5,
-            this.toolStripMenuItem6});
-            this.setRowAmountToolStripMenuItem.Name = "setRowAmountToolStripMenuItem";
-            this.setRowAmountToolStripMenuItem.Size = new System.Drawing.Size(163, 22);
-            this.setRowAmountToolStripMenuItem.Text = "Set Row &Amount";
-            // 
-            // toolStripMenuItem2
-            // 
-            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem2.Text = "&1";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.menuItem_RowCount_Click);
-            // 
-            // toolStripMenuItem3
-            // 
-            this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem3.Text = "&2";
-            this.toolStripMenuItem3.Click += new System.EventHandler(this.menuItem_RowCount_Click);
-            // 
-            // toolStripMenuItem4
-            // 
-            this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem4.Text = "&3";
-            this.toolStripMenuItem4.Click += new System.EventHandler(this.menuItem_RowCount_Click);
-            // 
-            // toolStripMenuItem5
-            // 
-            this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem5.Text = "&4";
-            this.toolStripMenuItem5.Click += new System.EventHandler(this.menuItem_RowCount_Click);
-            // 
-            // toolStripMenuItem6
-            // 
-            this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(152, 22);
-            this.toolStripMenuItem6.Text = "&5";
-            this.toolStripMenuItem6.Click += new System.EventHandler(this.menuItem_RowCount_Click);
+            this.menuItem_Fullscreen.Name = "menuItem_Fullscreen";
+            this.menuItem_Fullscreen.ShortcutKeys = System.Windows.Forms.Keys.F11;
+            this.menuItem_Fullscreen.Size = new System.Drawing.Size(191, 22);
+            this.menuItem_Fullscreen.Text = "Toggle &Fullscreen";
+            this.menuItem_Fullscreen.Click += new System.EventHandler(this.menuItem_Fullscreen_Click);
             // 
             // Device_Monitor
             // 
@@ -249,6 +284,10 @@
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem5;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem6;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_PauseDevice;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_ColorScheme;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_Fullscreen;
     }
 }
 

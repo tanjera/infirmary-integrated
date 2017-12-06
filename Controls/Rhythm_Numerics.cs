@@ -7,13 +7,14 @@ namespace II.Controls {
 
         Patient lPatient;
         ContextMenu contextMenu = new ContextMenu();
-
+        
+        _.ColorScheme tColorScheme = _.ColorScheme.Normal;
+        
         Font fontLarge = new Font("Microsoft Sans Serif", 20f, FontStyle.Bold),
              fontSmall = new Font("Microsoft Sans Serif", 15f, FontStyle.Bold);
 
-
         public ControlType cType;
-
+        
         public enum ControlType {
             ECG,
             TEMP,
@@ -59,51 +60,70 @@ namespace II.Controls {
         public void Update (Patient p) {
             lPatient = p;
 
-            labelType.ForeColor = valueColors(cType);
-            label1.ForeColor = valueColors (cType);
-            label2.ForeColor = valueColors (cType);
-            label3.ForeColor = valueColors (cType);
+            Color tColorBack;
+            switch (tColorScheme) {
+                default:
+                case _.ColorScheme.Normal:
+                    tColorBack = Color.Black;
+                    this.BackColor = Color.Black;
 
+                    labelType.ForeColor = valueColors (cType);
+                    label1.ForeColor = valueColors (cType);
+                    label2.ForeColor = valueColors (cType);
+                    label3.ForeColor = valueColors (cType);
+                    break;
+
+                case _.ColorScheme.Monochrome:
+                    tColorBack = Color.White;
+                    this.BackColor = Color.White;
+
+                    labelType.ForeColor = Color.Black;
+                    label1.ForeColor = Color.Black;
+                    label2.ForeColor = Color.Black;
+                    label3.ForeColor = Color.Black;
+                    break;
+            }
+            
             switch (cType) {
                 default:
                 case ControlType.ECG:
                     labelType.Text = "ECG";
                     label1.Font = fontLarge;
                     label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.HR, 0.02f));  
-                    label2.ForeColor = Color.Black;
-                    label3.ForeColor = Color.Black;
+                    label2.ForeColor = tColorBack;
+                    label3.ForeColor = tColorBack;
                     break;
 
                 case ControlType.TEMP:
                     labelType.Text = "T";
                     label1.Font = fontLarge;
                     label1.Text = String.Format("{0:0.0} ºC", p.T);
-                    label2.ForeColor = Color.Black;
-                    label3.ForeColor = Color.Black;
+                    label2.ForeColor = tColorBack;
+                    label3.ForeColor = tColorBack;
                     break;
 
                 case ControlType.SPO2:
                     labelType.Text = "SpO2";
                     label1.Font = fontLarge;
                     label1.Text = String.Format("{0:0} %", _.RandomPercentRange(p.SpO2, 0.01f));
-                    label2.ForeColor = Color.Black;
-                    label3.ForeColor = Color.Black;
+                    label2.ForeColor = tColorBack;
+                    label3.ForeColor = tColorBack;
                     break;
                     
                 case ControlType.RR:
                     labelType.Text = "RR";
                     label1.Font = fontLarge;
                     label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.RR, 0.02f));
-                    label2.ForeColor = Color.Black;
-                    label3.ForeColor = Color.Black;
+                    label2.ForeColor = tColorBack;
+                    label3.ForeColor = tColorBack;
                     break;
 
                 case ControlType.ETCO2:
                     labelType.Text = "ETCO2";
                     label1.Font = fontLarge;
                     label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.ETCO2, 0.02f));
-                    label2.ForeColor = Color.Black;
-                    label3.ForeColor = Color.Black;
+                    label2.ForeColor = tColorBack;
+                    label3.ForeColor = tColorBack;
                     break;
 
                 case ControlType.NIBP:
@@ -130,8 +150,8 @@ namespace II.Controls {
                     labelType.Text = "CVP";
                     label1.Font = fontLarge;
                     label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.CVP, 0.02f));
-                    label2.ForeColor = Color.Black;
-                    label3.ForeColor = Color.Black;
+                    label2.ForeColor = tColorBack;
+                    label3.ForeColor = tColorBack;
                     break;
 
                 case ControlType.PA:
@@ -146,14 +166,17 @@ namespace II.Controls {
             }            
         }
 
-        private void contextMenu_Click(object sender, EventArgs e)
-        {
-            cType = (ControlType)Enum.Parse(typeof(ControlType), _.SpaceToUnderscore(((MenuItem)sender).Text));
+        public void setColorScheme (_.ColorScheme cs) {
+            tColorScheme = cs;
             Update (lPatient);
         }
 
-        private void onClick(object sender, EventArgs e)
-        {
+        private void contextMenu_Click(object sender, EventArgs e) {
+            cType = (ControlType)Enum.Parse(typeof(ControlType), _.SpaceToUnderscore(((MenuItem)sender).Text));
+            Update (lPatient);
+        }        
+
+        private void onClick(object sender, EventArgs e) {
             MouseEventArgs me = (MouseEventArgs)e;
             if (me.Button == MouseButtons.Right)
             {

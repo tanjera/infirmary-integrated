@@ -1,5 +1,4 @@
-﻿* Implemented, needs debugging before commit:
-
+﻿* Commit message:
 
 
 * Versions and features to implement:
@@ -19,10 +18,12 @@
 
 
 	- v 0.7
+		- Device options						
+			- Save screenshot
+			- Print screenshot			
 		- Numeric control improvements
 			- Add buttons for added functionality (e.g. zero ABP; cycle NiBP; run thermodilution; run 12 lead)
-			* Buttons can be disabled until functionality implemented...
-		- Cardiac monitor toolbar buttons (e.g. go fullscreen)
+			* Buttons can be disabled until functionality implemented...		
 
 
 	- v 0.8

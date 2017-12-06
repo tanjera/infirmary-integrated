@@ -4,10 +4,13 @@ namespace II {
 
     public static class _ {
 
-        public const string Version = "0.50";
-
+        public const string Version = "0.51";
         public const float  Draw_Resolve = 0.01f;       // Tracing resolution (seconds per drawing point) in seconds
         public const int    Draw_Refresh = 10;          // Tracing draw refresh time in milliseconds
+
+        public enum ColorScheme {
+            Normal, Monochrome
+        }    
 
         public static float Time {
             get { return (float)(DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess ().StartTime.ToUniversalTime ()).TotalSeconds; }
@@ -42,13 +45,11 @@ namespace II {
             return RandomFloat((value - (value * percent)), (value + (value * percent)));
         }
 
-        public static string UnderscoreToSpace (string str)
-        {
+        public static string UnderscoreToSpace (string str) {
             return str.Replace('_', ' ');
         }
 
-        public static string SpaceToUnderscore(string str)
-        {
+        public static string SpaceToUnderscore(string str) {
             return str.Replace(' ', '_');
         }
     }

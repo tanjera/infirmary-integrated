@@ -10,9 +10,13 @@ namespace II.Forms
     public partial class Device_Monitor : Form
     {
         int layoutRows = 3;
+        bool tPaused = false,
+             tFullscreen = false;
+
         Patient tPatient = new Patient();
         List<Channel> tChannels = new List<Channel> ();
         List<II.Controls.Rhythm_Numerics> tNumerics = new List<II.Controls.Rhythm_Numerics> ();
+        _.ColorScheme tColorScheme = _.ColorScheme.Normal;
 
         public class Channel {
             public Strip cStrip;
@@ -32,14 +36,18 @@ namespace II.Forms
 
             timerTracing.Interval = _.Draw_Refresh;
             timerVitals.Interval = 5000;
-                        
-            onLayoutChange ();
-            
-            // Populate vital signs
+
+            foreach (_.ColorScheme cs in Enum.GetValues (typeof (_.ColorScheme)))
+                menuItem_ColorScheme.DropDownItems.Add (_.UnderscoreToSpace (cs.ToString ()), null, menuItem_ColorScheme_Click);
+
+            onLayoutChange ();                        
             onTick_Vitals (null, new EventArgs ());
         }        
 
         private void onTick_Tracing (object sender, EventArgs e) {
+            if (tPaused)
+                return;
+
             foreach(Channel c in tChannels) {
                 c.cStrip.Scroll ();
                 c.cStrip.Add_Beat (tPatient);
@@ -48,6 +56,9 @@ namespace II.Forms
         }
 
         private void onTick_Vitals (object sender, EventArgs e) {
+            if (tPaused)
+                return;
+
             foreach (II.Controls.Rhythm_Numerics v in tNumerics)
                 v.Update (tPatient);
         }
@@ -86,8 +97,7 @@ namespace II.Forms
                     }
 
                     II.Controls.Rhythm_Tracing newTracing = new II.Controls.Rhythm_Tracing (newStrip.Lead);
-                    Strip.Renderer newRenderer = new Strip.Renderer (newTracing, ref newStrip,
-                        new Pen (Strip.stripColors(newStrip.Lead), 1f));
+                    Strip.Renderer newRenderer = new Strip.Renderer (newTracing, ref newStrip, Strip.stripColors(newStrip.Lead));
                     newTracing.Paint += delegate (object s, PaintEventArgs e) { newRenderer.Draw (e); };
                     newTracing.TracingEdited += onTracingEdited;
 
@@ -123,6 +133,29 @@ namespace II.Forms
             pv.PatientEdited += onPatientEdited;
         }
 
+        private void menuItem_ColorScheme_Click (object sender, EventArgs e) {
+            tColorScheme = (_.ColorScheme)Enum.Parse (typeof (_.ColorScheme), _.SpaceToUnderscore (((ToolStripMenuItem)sender).Text));
+
+            foreach (Channel c in tChannels) {
+                c.cTracing.setColorScheme (tColorScheme);
+                c.cRenderer.setColorScheme (tColorScheme);
+            }
+
+            foreach (II.Controls.Rhythm_Numerics n in tNumerics) {
+                n.setColorScheme (tColorScheme);
+            }
+
+            switch (tColorScheme) {
+                default:
+                case _.ColorScheme.Normal:
+                    mainLayout.BackColor = Color.Black;
+                    break;
+                case _.ColorScheme.Monochrome:
+                    mainLayout.BackColor = Color.White;
+                    break;
+            }
+        }
+
         private void onPatientEdited (object sender, Forms.Dialog_Patient.PatientEdited_EventArgs e) {
             tPatient = e.Patient;
 
@@ -136,7 +169,7 @@ namespace II.Forms
             foreach (Channel c in tChannels) {
                 if (c.cTracing == sender) {
                     c.cTracing.setLead (e.Lead);                    
-                    c.cRenderer.pen = new Pen (Strip.stripColors (e.Lead), 1f);
+                    c.cRenderer.pcolor = Strip.stripColors (e.Lead);
                     c.cStrip.Lead = e.Lead;                    
                 }
 
@@ -156,6 +189,31 @@ namespace II.Forms
 
         private void onFormResize(object sender, EventArgs e) {            
             onLayoutChange();
+        }
+
+        private void onTogglePause(object sender, EventArgs e) {
+            tPaused = !tPaused;
+            menuItem_PauseDevice.Checked = tPaused;
+        }
+
+        private void menuItem_Fullscreen_Click (object sender, EventArgs e) {
+            tFullscreen = !tFullscreen;
+            menuItem_Fullscreen.Checked = tFullscreen;
+
+            switch (tFullscreen) {
+                default:
+                case false:
+                    this.TopMost = false;
+                    this.FormBorderStyle = FormBorderStyle.Sizable;
+                    this.WindowState = FormWindowState.Maximized;
+                    break;
+
+                case true:
+                    this.TopMost = true;
+                    this.FormBorderStyle = FormBorderStyle.None;
+                    this.WindowState = FormWindowState.Maximized;
+                    break;
+            }
         }
     }
 }
