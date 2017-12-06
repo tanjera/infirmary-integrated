@@ -182,8 +182,8 @@ namespace II.Forms
             about.Show ();
         }
         
-        private void menuItem_RowCount_Click (object sender, EventArgs e) {
-            layoutRows = int.Parse(((ToolStripMenuItem)sender).Text);
+        private void menuItem_RowCount_Click (object sender, EventArgs e) {            
+            layoutRows = int.Parse(((ToolStripMenuItem)sender).Text.Replace ('&', ' ').Trim());
             onLayoutChange();
         }
 
