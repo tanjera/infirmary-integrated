@@ -1,6 +1,12 @@
 ﻿* Commit message:
 
 
+
+* To debug:
+	- In Dialog_Main, when button "Reset Patient" is clicked, combo box "Cardiac Rhythm" is not reset
+
+
+
 * Versions and features to implement:
 	- v 0.6	
 		- More tracings: CVP, ETCO2, PA, RR

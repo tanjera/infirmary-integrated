@@ -8,10 +8,11 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace II.Forms {
-    public partial class Dialog_Patient : Form {
+    public partial class Dialog_Main : Form {
 
         bool updatingVitals;
-        Patient lPatient, bufPatient;
+        Patient tPatient = new Patient (), 
+                bufPatient = new Patient ();
         
         public event EventHandler<PatientEdited_EventArgs> PatientEdited;
         public class PatientEdited_EventArgs : EventArgs {
@@ -19,13 +20,10 @@ namespace II.Forms {
             public PatientEdited_EventArgs (Patient patient) { Patient = patient; }
         }
 
-        public Dialog_Patient (Patient p) {
+        public Dialog_Main () {
             InitializeComponent ();
-
-            lPatient = p;
-            bufPatient = new Patient (p);
-
-            Vitals_Update (lPatient);
+            
+            Vitals_Update (tPatient);
 
             updatingVitals = true;
 
@@ -132,9 +130,52 @@ namespace II.Forms {
             Vitals_Update (bufPatient);
         }
 
+        public void requestExit() {
+            if (MessageBox.Show ("Are you sure you want to exit Infirmary Integrated? All unsaved work will be lost.", "Exit Infirmary Integrated", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                return;
+
+            Application.Exit ();
+        }
+
+        public Patient requestNewPatient() {
+            if (MessageBox.Show ("Are you sure you want to reset all patient parameters?", "Reset Patient Parameters", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                return tPatient;
+
+            tPatient = new Patient ();
+
+            Vitals_Update (tPatient);
+            PatientEdited?.Invoke (this, new PatientEdited_EventArgs (tPatient));
+
+            return tPatient;
+        }
+
+        private void buttonMonitor_Click (object sender, EventArgs e) {
+            if (Program.Device_Monitor == null || Program.Device_Monitor.IsDisposed) {
+                Program.Device_Monitor = new Device_Monitor ();
+                PatientEdited += Program.Device_Monitor.onPatientEdited;
+            }
+
+            Program.Device_Monitor.Show ();
+            Program.Device_Monitor.BringToFront ();
+        }
+
+        private void menuExit_Click(object sender, EventArgs e) {
+            requestExit ();
+        }
+
+        private void menuAbout_Click (object sender, EventArgs e) {
+            Forms.Dialog_About about = new Forms.Dialog_About ();
+            about.Show ();
+        }
+
+        private void buttonReset_Click (object sender, EventArgs e) {
+            requestNewPatient ();
+        }
+
         private void buttonApply_Click (object sender, EventArgs e) {
-            lPatient = new Patient(bufPatient);
-            PatientEdited (this, new PatientEdited_EventArgs (lPatient));
+            tPatient = new Patient(bufPatient);
+
+            PatientEdited?.Invoke (this, new PatientEdited_EventArgs (tPatient));
         }
     }
 }

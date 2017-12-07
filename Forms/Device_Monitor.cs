@@ -30,19 +30,25 @@ namespace II.Forms
             }
         }
 
-        public Device_Monitor()
-        {
+
+        public Device_Monitor() {
             InitializeComponent();
 
-            timerTracing.Interval = _.Draw_Refresh;
+            timerTracing.Interval = Rhythm.Draw_Refresh;
             timerVitals.Interval = 5000;
 
             foreach (_.ColorScheme cs in Enum.GetValues (typeof (_.ColorScheme)))
-                menuItem_ColorScheme.DropDownItems.Add (_.UnderscoreToSpace (cs.ToString ()), null, menuItem_ColorScheme_Click);
+                menuItem_ColorScheme.DropDownItems.Add (_.UnderscoreToSpace (cs.ToString ()), null, menuColorScheme_Click);
 
             onLayoutChange ();                        
             onTick_Vitals (null, new EventArgs ());
-        }        
+        }
+        
+
+        public void setPatient (Patient iPatient) {
+            tPatient = iPatient;
+        }
+
 
         private void onTick_Tracing (object sender, EventArgs e) {
             if (tPaused)
@@ -114,26 +120,55 @@ namespace II.Forms
             }            
         }
         
-        private void menuItem_NewPatient_Click (object sender, EventArgs e) {            
-            tPatient = new Patient ();
+        public void onPatientEdited (object sender, Forms.Dialog_Main.PatientEdited_EventArgs e) {
+            tPatient = e.Patient;
 
             foreach (Channel c in tChannels)
-                c.cStrip.Reset();
+                c.cStrip.clearFuture ();
             foreach (II.Controls.Rhythm_Numerics n in tNumerics)
-                n.Update(tPatient);
+                n.Update (tPatient);
         }
 
-        private void menuItem_Exit_Click (object sender, EventArgs e) {
-            Application.Exit ();
+        private void onTracingEdited (object sender, Controls.Rhythm_Tracing.TracingEdited_EventArgs e) {
+            foreach (Channel c in tChannels) {
+                if (c.cTracing == sender) {
+                    c.cTracing.setLead (e.Lead);
+                    c.cRenderer.pcolor = Strip.stripColors (e.Lead);
+                    c.cStrip.Lead = e.Lead;
+                }
+
+                c.cStrip.Reset ();
+            }
         }
 
-        private void menuItem_EditPatient_Click (object sender, EventArgs e) {
-            Forms.Dialog_Patient pv = new Forms.Dialog_Patient (tPatient);
-            pv.Show ();
-            pv.PatientEdited += onPatientEdited;
+        private void onFormResize (object sender, EventArgs e) {
+            onLayoutChange ();
         }
 
-        private void menuItem_ColorScheme_Click (object sender, EventArgs e) {
+
+        private void menuClose_Click (object sender, EventArgs e) {
+            this.Close ();
+        }
+
+        private void menuExit_Click (object sender, EventArgs e) {
+            Program.Dialog_Main.requestExit ();
+        }
+
+        private void menuNewPatient_Click (object sender, EventArgs e) {
+            tPatient = Program.Dialog_Main.requestNewPatient ();
+
+            foreach (Channel c in tChannels)
+                c.cStrip.Reset ();
+            foreach (II.Controls.Rhythm_Numerics n in tNumerics)
+                n.Update (tPatient);
+        }
+
+        private void menuEditPatient_Click (object sender, EventArgs e) {
+            Program.Dialog_Main.Show ();
+            Program.Dialog_Main.BringToFront ();
+        }
+
+        private void menuColorScheme_Click (object sender, EventArgs e) {
             tColorScheme = (_.ColorScheme)Enum.Parse (typeof (_.ColorScheme), _.SpaceToUnderscore (((ToolStripMenuItem)sender).Text));
 
             foreach (Channel c in tChannels) {
@@ -156,47 +191,17 @@ namespace II.Forms
             }
         }
 
-        private void onPatientEdited (object sender, Forms.Dialog_Patient.PatientEdited_EventArgs e) {
-            tPatient = e.Patient;
-
-            foreach (Channel c in tChannels)
-                c.cStrip.clearFuture ();
-            foreach (II.Controls.Rhythm_Numerics n in tNumerics)
-                n.Update(tPatient);
-        }
-
-        private void onTracingEdited (object sender, Controls.Rhythm_Tracing.TracingEdited_EventArgs e) {
-            foreach (Channel c in tChannels) {
-                if (c.cTracing == sender) {
-                    c.cTracing.setLead (e.Lead);                    
-                    c.cRenderer.pcolor = Strip.stripColors (e.Lead);
-                    c.cStrip.Lead = e.Lead;                    
-                }
-
-                c.cStrip.Reset ();
-            }
-        }
-
-        private void menuItem_About_Click (object sender, EventArgs e) {
-            Forms.Dialog_About about = new Forms.Dialog_About ();
-            about.Show ();
-        }
-        
-        private void menuItem_RowCount_Click (object sender, EventArgs e) {            
+        private void menuRowCount_Click (object sender, EventArgs e) {            
             layoutRows = int.Parse(((ToolStripMenuItem)sender).Text.Replace ('&', ' ').Trim());
             onLayoutChange();
         }
-
-        private void onFormResize(object sender, EventArgs e) {            
-            onLayoutChange();
-        }
-
-        private void onTogglePause(object sender, EventArgs e) {
+        
+        private void menuTogglePause_Click(object sender, EventArgs e) {
             tPaused = !tPaused;
             menuItem_PauseDevice.Checked = tPaused;
         }
 
-        private void menuItem_Fullscreen_Click (object sender, EventArgs e) {
+        private void menuFullscreen_Click (object sender, EventArgs e) {
             tFullscreen = !tFullscreen;
             menuItem_Fullscreen.Checked = tFullscreen;
 

@@ -6,17 +6,24 @@ using System.Windows.Forms;
 
 namespace II
 {
-    static class Program
+    public static class Program
     {
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
+        
+
+        public static Forms.Dialog_Main Dialog_Main;
+        public static Forms.Device_Monitor Device_Monitor;
+
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Forms.Device_Monitor());
+
+            Dialog_Main = new Forms.Dialog_Main ();
+            Application.Run(Dialog_Main);
         }
     }
 }

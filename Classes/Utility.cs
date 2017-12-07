@@ -4,13 +4,13 @@ namespace II {
 
     public static class _ {
 
-        public const string Version = "0.51";
-        public const float  Draw_Resolve = 0.01f;       // Tracing resolution (seconds per drawing point) in seconds
-        public const int    Draw_Refresh = 10;          // Tracing draw refresh time in milliseconds
+        public const string Version = "0.52";
+
 
         public enum ColorScheme {
             Normal, Monochrome
         }    
+
 
         public static float Time {
             get { return (float)(DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess ().StartTime.ToUniversalTime ()).TotalSeconds; }

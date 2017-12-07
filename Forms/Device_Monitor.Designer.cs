@@ -32,12 +32,6 @@
             this.timerTracing = new System.Windows.Forms.Timer(this.components);
             this.menuMain = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItem_NewPatient = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.menuItem_Exit = new System.Windows.Forms.ToolStripMenuItem();
-            this.patientToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItem_EditPatient = new System.Windows.Forms.ToolStripMenuItem();
-            this.deviceToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_PauseDevice = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.setRowAmountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,12 +40,16 @@
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItem_ColorScheme = new System.Windows.Forms.ToolStripMenuItem();
-            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuItem_About = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_Fullscreen = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_Exit = new System.Windows.Forms.ToolStripMenuItem();
+            this.patientToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_NewPatient = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_EditPatient = new System.Windows.Forms.ToolStripMenuItem();
             this.timerVitals = new System.Windows.Forms.Timer(this.components);
             this.mainLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.menuItem_Fullscreen = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_ColorScheme = new System.Windows.Forms.ToolStripMenuItem();
             this.menuMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -64,9 +62,7 @@
             // 
             this.menuMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.patientToolStripMenuItem,
-            this.deviceToolStripMenuItem,
-            this.helpToolStripMenuItem});
+            this.patientToolStripMenuItem});
             this.menuMain.Location = new System.Drawing.Point(0, 0);
             this.menuMain.Name = "menuMain";
             this.menuMain.Size = new System.Drawing.Size(759, 24);
@@ -76,62 +72,17 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuItem_NewPatient,
-            this.toolStripSeparator1,
-            this.menuItem_Exit});
-            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
-            this.fileToolStripMenuItem.Text = "&File";
-            // 
-            // menuItem_NewPatient
-            // 
-            this.menuItem_NewPatient.Name = "menuItem_NewPatient";
-            this.menuItem_NewPatient.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.menuItem_NewPatient.Size = new System.Drawing.Size(181, 22);
-            this.menuItem_NewPatient.Text = "&New Patient";
-            this.menuItem_NewPatient.Click += new System.EventHandler(this.menuItem_NewPatient_Click);
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(178, 6);
-            // 
-            // menuItem_Exit
-            // 
-            this.menuItem_Exit.Name = "menuItem_Exit";
-            this.menuItem_Exit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.menuItem_Exit.Size = new System.Drawing.Size(181, 22);
-            this.menuItem_Exit.Text = "&Exit";
-            this.menuItem_Exit.Click += new System.EventHandler(this.menuItem_Exit_Click);
-            // 
-            // patientToolStripMenuItem
-            // 
-            this.patientToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuItem_EditPatient});
-            this.patientToolStripMenuItem.Name = "patientToolStripMenuItem";
-            this.patientToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.patientToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
-            this.patientToolStripMenuItem.Text = "&Patient";
-            // 
-            // menuItem_EditPatient
-            // 
-            this.menuItem_EditPatient.Name = "menuItem_EditPatient";
-            this.menuItem_EditPatient.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.menuItem_EditPatient.Size = new System.Drawing.Size(174, 22);
-            this.menuItem_EditPatient.Text = "&Edit Patient";
-            this.menuItem_EditPatient.Click += new System.EventHandler(this.menuItem_EditPatient_Click);
-            // 
-            // deviceToolStripMenuItem
-            // 
-            this.deviceToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItem_PauseDevice,
             this.toolStripSeparator2,
             this.setRowAmountToolStripMenuItem,
             this.menuItem_ColorScheme,
-            this.menuItem_Fullscreen});
-            this.deviceToolStripMenuItem.Name = "deviceToolStripMenuItem";
-            this.deviceToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
-            this.deviceToolStripMenuItem.Text = "&Device";
+            this.menuItem_Fullscreen,
+            this.toolStripSeparator1,
+            this.closeToolStripMenuItem,
+            this.menuItem_Exit});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
+            this.fileToolStripMenuItem.Text = "&Device";
             // 
             // menuItem_PauseDevice
             // 
@@ -139,7 +90,7 @@
             this.menuItem_PauseDevice.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
             this.menuItem_PauseDevice.Size = new System.Drawing.Size(191, 22);
             this.menuItem_PauseDevice.Text = "Pa&use Device";
-            this.menuItem_PauseDevice.Click += new System.EventHandler(this.onTogglePause);
+            this.menuItem_PauseDevice.Click += new System.EventHandler(this.menuTogglePause_Click);
             // 
             // toolStripSeparator2
             // 
@@ -161,58 +112,92 @@
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(80, 22);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
             this.toolStripMenuItem2.Text = "&1";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.menuItem_RowCount_Click);
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.menuRowCount_Click);
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(80, 22);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(152, 22);
             this.toolStripMenuItem3.Text = "&2";
-            this.toolStripMenuItem3.Click += new System.EventHandler(this.menuItem_RowCount_Click);
+            this.toolStripMenuItem3.Click += new System.EventHandler(this.menuRowCount_Click);
             // 
             // toolStripMenuItem4
             // 
             this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(80, 22);
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(152, 22);
             this.toolStripMenuItem4.Text = "&3";
-            this.toolStripMenuItem4.Click += new System.EventHandler(this.menuItem_RowCount_Click);
+            this.toolStripMenuItem4.Click += new System.EventHandler(this.menuRowCount_Click);
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(80, 22);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(152, 22);
             this.toolStripMenuItem5.Text = "&4";
-            this.toolStripMenuItem5.Click += new System.EventHandler(this.menuItem_RowCount_Click);
+            this.toolStripMenuItem5.Click += new System.EventHandler(this.menuRowCount_Click);
             // 
             // toolStripMenuItem6
             // 
             this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(80, 22);
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(152, 22);
             this.toolStripMenuItem6.Text = "&5";
-            this.toolStripMenuItem6.Click += new System.EventHandler(this.menuItem_RowCount_Click);
+            this.toolStripMenuItem6.Click += new System.EventHandler(this.menuRowCount_Click);
             // 
-            // menuItem_ColorScheme
+            // menuItem_Fullscreen
             // 
-            this.menuItem_ColorScheme.Name = "menuItem_ColorScheme";
-            this.menuItem_ColorScheme.Size = new System.Drawing.Size(191, 22);
-            this.menuItem_ColorScheme.Text = "Color Scheme";
+            this.menuItem_Fullscreen.Name = "menuItem_Fullscreen";
+            this.menuItem_Fullscreen.ShortcutKeys = System.Windows.Forms.Keys.F11;
+            this.menuItem_Fullscreen.Size = new System.Drawing.Size(191, 22);
+            this.menuItem_Fullscreen.Text = "Toggle &Fullscreen";
+            this.menuItem_Fullscreen.Click += new System.EventHandler(this.menuFullscreen_Click);
             // 
-            // helpToolStripMenuItem
+            // toolStripSeparator1
             // 
-            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuItem_About});
-            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
-            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
-            this.helpToolStripMenuItem.Text = "&Help";
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(188, 6);
             // 
-            // menuItem_About
+            // closeToolStripMenuItem
             // 
-            this.menuItem_About.Name = "menuItem_About";
-            this.menuItem_About.Size = new System.Drawing.Size(215, 22);
-            this.menuItem_About.Text = "&About Infirmary Integrated";
-            this.menuItem_About.Click += new System.EventHandler(this.menuItem_About_Click);
+            this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
+            this.closeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F4)));
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(191, 22);
+            this.closeToolStripMenuItem.Text = "&Close Device";
+            this.closeToolStripMenuItem.Click += new System.EventHandler(this.menuClose_Click);
+            // 
+            // menuItem_Exit
+            // 
+            this.menuItem_Exit.Name = "menuItem_Exit";
+            this.menuItem_Exit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
+            this.menuItem_Exit.Size = new System.Drawing.Size(191, 22);
+            this.menuItem_Exit.Text = "E&xit Infirmary";
+            this.menuItem_Exit.Click += new System.EventHandler(this.menuExit_Click);
+            // 
+            // patientToolStripMenuItem
+            // 
+            this.patientToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItem_NewPatient,
+            this.menuItem_EditPatient});
+            this.patientToolStripMenuItem.Name = "patientToolStripMenuItem";
+            this.patientToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
+            this.patientToolStripMenuItem.Size = new System.Drawing.Size(56, 20);
+            this.patientToolStripMenuItem.Text = "&Patient";
+            // 
+            // menuItem_NewPatient
+            // 
+            this.menuItem_NewPatient.Name = "menuItem_NewPatient";
+            this.menuItem_NewPatient.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
+            this.menuItem_NewPatient.Size = new System.Drawing.Size(181, 22);
+            this.menuItem_NewPatient.Text = "&New Patient";
+            this.menuItem_NewPatient.Click += new System.EventHandler(this.menuNewPatient_Click);
+            // 
+            // menuItem_EditPatient
+            // 
+            this.menuItem_EditPatient.Name = "menuItem_EditPatient";
+            this.menuItem_EditPatient.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
+            this.menuItem_EditPatient.Size = new System.Drawing.Size(181, 22);
+            this.menuItem_EditPatient.Text = "&Edit Patient";
+            this.menuItem_EditPatient.Click += new System.EventHandler(this.menuEditPatient_Click);
             // 
             // timerVitals
             // 
@@ -236,13 +221,11 @@
             this.mainLayout.Size = new System.Drawing.Size(759, 442);
             this.mainLayout.TabIndex = 6;
             // 
-            // menuItem_Fullscreen
+            // menuItem_ColorScheme
             // 
-            this.menuItem_Fullscreen.Name = "menuItem_Fullscreen";
-            this.menuItem_Fullscreen.ShortcutKeys = System.Windows.Forms.Keys.F11;
-            this.menuItem_Fullscreen.Size = new System.Drawing.Size(191, 22);
-            this.menuItem_Fullscreen.Text = "Toggle &Fullscreen";
-            this.menuItem_Fullscreen.Click += new System.EventHandler(this.menuItem_Fullscreen_Click);
+            this.menuItem_ColorScheme.Name = "menuItem_ColorScheme";
+            this.menuItem_ColorScheme.Size = new System.Drawing.Size(191, 22);
+            this.menuItem_ColorScheme.Text = "Color Scheme";
             // 
             // Device_Monitor
             // 
@@ -268,26 +251,24 @@
         private System.Windows.Forms.Timer timerTracing;
         private System.Windows.Forms.MenuStrip menuMain;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem menuItem_NewPatient;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem menuItem_Exit;
         private System.Windows.Forms.ToolStripMenuItem patientToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menuItem_EditPatient;
         private System.Windows.Forms.Timer timerVitals;
-        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem menuItem_About;
         private System.Windows.Forms.TableLayoutPanel mainLayout;
-        private System.Windows.Forms.ToolStripMenuItem deviceToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_PauseDevice;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripMenuItem setRowAmountToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem4;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem5;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem6;
-        private System.Windows.Forms.ToolStripMenuItem menuItem_PauseDevice;
-        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
-        private System.Windows.Forms.ToolStripMenuItem menuItem_ColorScheme;
         private System.Windows.Forms.ToolStripMenuItem menuItem_Fullscreen;
+        private System.Windows.Forms.ToolStripMenuItem closeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_NewPatient;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_ColorScheme;
     }
 }
 

@@ -58,7 +58,7 @@ namespace II.Rhythms {
         }
         public void Scroll () {
             foreach (Point eachVector in Points)
-                eachVector.X -= _.Draw_Resolve;
+                eachVector.X -= Rhythm.Draw_Resolve;
             
             for (int i = Points.Count - 1; i >= 0; i--) {
                 if (Points[i].X < -Length)

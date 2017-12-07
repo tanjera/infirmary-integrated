@@ -75,6 +75,7 @@ namespace II.Rhythms {
         Extreme,
         Indeterminate
     }
+
     
     public struct Range {
         public int Min, Max;
@@ -286,6 +287,10 @@ namespace II.Rhythms {
     
 
     public static class Rhythm {
+
+        public const float Draw_Resolve = 0.01f;        // Tracing resolution (seconds per drawing point) in seconds
+        public const int Draw_Refresh = 10;             // Tracing draw refresh time in milliseconds
+
         public static List<Point> SpO2_Rhythm(Patient _P, float _Rate, float _Amplitude) {
             /* SpO2 during normal sinus perfusion is similar to a sine wave leaning right with dicrotic notch
 		     */
@@ -827,13 +832,13 @@ namespace II.Rhythms {
             float x;
             List<Point> _Out = new List<Point>();
 
-            for (i = 1; i * ((2 * _.Draw_Resolve) / _Length) <= 1; i++) {
-                x = i * ((2 * _.Draw_Resolve) / _Length);
+            for (i = 1; i * ((2 * Draw_Resolve) / _Length) <= 1; i++) {
+                x = i * ((2 * Draw_Resolve) / _Length);
                 _Out.Add(Bezier(new Point(0, _Start.Y), new Point(_Length / 4, _mV), new Point(_Length / 2, _mV), x));
             }
 
-            for (i = 1; i * ((2 * _.Draw_Resolve) / _Length) <= 1; i++) {
-                x = i * ((2 * _.Draw_Resolve) / _Length);
+            for (i = 1; i * ((2 * Draw_Resolve) / _Length) <= 1; i++) {
+                x = i * ((2 * Draw_Resolve) / _Length);
                 _Out.Add(Bezier(new Point(_Length / 2, _mV), new Point(_Length / 4 * 3, _mV), new Point(_Length, _mV_End), x));
             }
 
@@ -846,13 +851,13 @@ namespace II.Rhythms {
             float x;
             List<Point> _Out = new List<Point>();
 
-            for (i = 1; i * ((2 * _.Draw_Resolve) / _Length) <= 1; i++) {
-                x = i * ((2 * _.Draw_Resolve) / _Length);
+            for (i = 1; i * ((2 * Draw_Resolve) / _Length) <= 1; i++) {
+                x = i * ((2 * Draw_Resolve) / _Length);
                 _Out.Add(Bezier(new Point(0, _Start.Y), new Point(_Length / 3, _mV / 1), new Point(_Length / 2, _mV), x));
             }
 
-            for (i = 1; i * ((2 * _.Draw_Resolve) / _Length) <= 1; i++) {
-                x = i * ((2 * _.Draw_Resolve) / _Length);
+            for (i = 1; i * ((2 * Draw_Resolve) / _Length) <= 1; i++) {
+                x = i * ((2 * Draw_Resolve) / _Length);
                 _Out.Add(Bezier(new Point(_Length / 2, _mV), new Point(_Length / 5 * 3, _mV / 1), new Point(_Length, _mV_End), x));
             }
 

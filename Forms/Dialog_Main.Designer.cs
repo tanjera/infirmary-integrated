@@ -1,5 +1,5 @@
 ﻿namespace II.Forms {
-    partial class Dialog_Patient {
+    partial class Dialog_Main {
         /// <summary>
         /// Required designer variable.
         /// </summary>
@@ -108,6 +108,19 @@
             this.numPSP = new System.Windows.Forms.NumericUpDown();
             this.label9 = new System.Windows.Forms.Label();
             this.numCVP = new System.Windows.Forms.NumericUpDown();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.buttonDevice_Ventilator = new System.Windows.Forms.Button();
+            this.buttonDevice_IABP = new System.Windows.Forms.Button();
+            this.buttonDevice_Defibrillator = new System.Windows.Forms.Button();
+            this.buttonDevice_12ECG = new System.Windows.Forms.Button();
+            this.buttonDevice_Monitor = new System.Windows.Forms.Button();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_Exit = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_About = new System.Windows.Forms.ToolStripMenuItem();
+            this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.buttonReset = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numHR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numNSBP)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numNDBP)).BeginInit();
@@ -150,6 +163,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.numASBP)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numPSP)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numCVP)).BeginInit();
+            this.groupBox7.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
+            this.groupBox9.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -193,7 +209,7 @@
             0,
             0});
             this.numHR.Name = "numHR";
-            this.numHR.Size = new System.Drawing.Size(67, 20);
+            this.numHR.Size = new System.Drawing.Size(47, 20);
             this.numHR.TabIndex = 1;
             this.numHR.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
@@ -211,7 +227,7 @@
             0,
             0});
             this.numNSBP.Name = "numNSBP";
-            this.numNSBP.Size = new System.Drawing.Size(67, 20);
+            this.numNSBP.Size = new System.Drawing.Size(47, 20);
             this.numNSBP.TabIndex = 2;
             this.numNSBP.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
@@ -222,21 +238,21 @@
             0,
             0,
             0});
-            this.numNDBP.Location = new System.Drawing.Point(200, 47);
+            this.numNDBP.Location = new System.Drawing.Point(161, 47);
             this.numNDBP.Maximum = new decimal(new int[] {
             200,
             0,
             0,
             0});
             this.numNDBP.Name = "numNDBP";
-            this.numNDBP.Size = new System.Drawing.Size(67, 20);
+            this.numNDBP.Size = new System.Drawing.Size(47, 20);
             this.numNDBP.TabIndex = 3;
             this.numNDBP.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(173, 49);
+            this.label5.Location = new System.Drawing.Point(143, 49);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(12, 13);
             this.label5.TabIndex = 6;
@@ -251,15 +267,15 @@
             0});
             this.numSpO2.Location = new System.Drawing.Point(90, 94);
             this.numSpO2.Name = "numSpO2";
-            this.numSpO2.Size = new System.Drawing.Size(67, 20);
+            this.numSpO2.Size = new System.Drawing.Size(47, 20);
             this.numSpO2.TabIndex = 5;
             this.numSpO2.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // buttonApply
             // 
-            this.buttonApply.Location = new System.Drawing.Point(12, 317);
+            this.buttonApply.Location = new System.Drawing.Point(6, 308);
             this.buttonApply.Name = "buttonApply";
-            this.buttonApply.Size = new System.Drawing.Size(284, 37);
+            this.buttonApply.Size = new System.Drawing.Size(223, 27);
             this.buttonApply.TabIndex = 4;
             this.buttonApply.Text = "Apply Changes";
             this.buttonApply.UseVisualStyleBackColor = true;
@@ -280,9 +296,9 @@
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.numNSBP);
             this.groupBox1.Controls.Add(this.numHR);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
+            this.groupBox1.Location = new System.Drawing.Point(6, 19);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(284, 149);
+            this.groupBox1.Size = new System.Drawing.Size(223, 149);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Basic Vital Signs";
@@ -290,7 +306,7 @@
             // lblTempConversion
             // 
             this.lblTempConversion.AutoSize = true;
-            this.lblTempConversion.Location = new System.Drawing.Point(173, 119);
+            this.lblTempConversion.Location = new System.Drawing.Point(158, 119);
             this.lblTempConversion.Name = "lblTempConversion";
             this.lblTempConversion.Size = new System.Drawing.Size(34, 13);
             this.lblTempConversion.TabIndex = 10;
@@ -311,7 +327,7 @@
             0,
             0});
             this.numT.Name = "numT";
-            this.numT.Size = new System.Drawing.Size(67, 20);
+            this.numT.Size = new System.Drawing.Size(47, 20);
             this.numT.TabIndex = 6;
             this.numT.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
@@ -333,7 +349,7 @@
             0});
             this.numRR.Location = new System.Drawing.Point(90, 71);
             this.numRR.Name = "numRR";
-            this.numRR.Size = new System.Drawing.Size(67, 20);
+            this.numRR.Size = new System.Drawing.Size(47, 20);
             this.numRR.TabIndex = 4;
             this.numRR.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
@@ -355,7 +371,7 @@
             0});
             this.numETCO2.Location = new System.Drawing.Point(90, 24);
             this.numETCO2.Name = "numETCO2";
-            this.numETCO2.Size = new System.Drawing.Size(67, 20);
+            this.numETCO2.Size = new System.Drawing.Size(47, 20);
             this.numETCO2.TabIndex = 1;
             this.numETCO2.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
@@ -376,7 +392,7 @@
             this.groupBox2.Controls.Add(this.label14);
             this.groupBox2.Controls.Add(this.checkDefaultVitals);
             this.groupBox2.Controls.Add(this.comboCardiacRhythm);
-            this.groupBox2.Location = new System.Drawing.Point(330, 12);
+            this.groupBox2.Location = new System.Drawing.Point(235, 19);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(304, 342);
             this.groupBox2.TabIndex = 3;
@@ -405,6 +421,7 @@
             // 
             // comboAxisShift
             // 
+            this.comboAxisShift.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboAxisShift.FormattingEnabled = true;
             this.comboAxisShift.Location = new System.Drawing.Point(65, 19);
             this.comboAxisShift.Name = "comboAxisShift";
@@ -1282,8 +1299,6 @@
             // checkDefaultVitals
             // 
             this.checkDefaultVitals.AutoSize = true;
-            this.checkDefaultVitals.Checked = true;
-            this.checkDefaultVitals.CheckState = System.Windows.Forms.CheckState.Checked;
             this.checkDefaultVitals.Location = new System.Drawing.Point(31, 48);
             this.checkDefaultVitals.Name = "checkDefaultVitals";
             this.checkDefaultVitals.Size = new System.Drawing.Size(249, 17);
@@ -1293,6 +1308,7 @@
             // 
             // comboCardiacRhythm
             // 
+            this.comboCardiacRhythm.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboCardiacRhythm.FormattingEnabled = true;
             this.comboCardiacRhythm.Location = new System.Drawing.Point(97, 23);
             this.comboCardiacRhythm.Name = "comboCardiacRhythm";
@@ -1314,9 +1330,9 @@
             this.groupBox3.Controls.Add(this.label9);
             this.groupBox3.Controls.Add(this.numCVP);
             this.groupBox3.Controls.Add(this.label10);
-            this.groupBox3.Location = new System.Drawing.Point(12, 167);
+            this.groupBox3.Location = new System.Drawing.Point(6, 174);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(284, 128);
+            this.groupBox3.Size = new System.Drawing.Size(223, 128);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Advanced Hemodynamics";
@@ -1346,21 +1362,21 @@
             0,
             0,
             0});
-            this.numADBP.Location = new System.Drawing.Point(200, 47);
+            this.numADBP.Location = new System.Drawing.Point(161, 47);
             this.numADBP.Maximum = new decimal(new int[] {
             200,
             0,
             0,
             0});
             this.numADBP.Name = "numADBP";
-            this.numADBP.Size = new System.Drawing.Size(67, 20);
+            this.numADBP.Size = new System.Drawing.Size(47, 20);
             this.numADBP.TabIndex = 9;
             this.numADBP.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(173, 49);
+            this.label4.Location = new System.Drawing.Point(143, 49);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(12, 13);
             this.label4.TabIndex = 9;
@@ -1373,14 +1389,14 @@
             0,
             0,
             0});
-            this.numPDP.Location = new System.Drawing.Point(200, 95);
+            this.numPDP.Location = new System.Drawing.Point(161, 95);
             this.numPDP.Maximum = new decimal(new int[] {
             200,
             0,
             0,
             0});
             this.numPDP.Name = "numPDP";
-            this.numPDP.Size = new System.Drawing.Size(67, 20);
+            this.numPDP.Size = new System.Drawing.Size(47, 20);
             this.numPDP.TabIndex = 12;
             this.numPDP.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
@@ -1398,14 +1414,14 @@
             0,
             0});
             this.numASBP.Name = "numASBP";
-            this.numASBP.Size = new System.Drawing.Size(67, 20);
+            this.numASBP.Size = new System.Drawing.Size(47, 20);
             this.numASBP.TabIndex = 2;
             this.numASBP.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(173, 97);
+            this.label13.Location = new System.Drawing.Point(143, 97);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(12, 13);
             this.label13.TabIndex = 9;
@@ -1425,7 +1441,7 @@
             0,
             0});
             this.numPSP.Name = "numPSP";
-            this.numPSP.Size = new System.Drawing.Size(67, 20);
+            this.numPSP.Size = new System.Drawing.Size(47, 20);
             this.numPSP.TabIndex = 11;
             this.numPSP.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
@@ -1452,21 +1468,151 @@
             0,
             0});
             this.numCVP.Name = "numCVP";
-            this.numCVP.Size = new System.Drawing.Size(67, 20);
+            this.numCVP.Size = new System.Drawing.Size(47, 20);
             this.numCVP.TabIndex = 10;
             this.numCVP.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
-            // Dialog_Patient
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.buttonDevice_Ventilator);
+            this.groupBox7.Controls.Add(this.buttonDevice_IABP);
+            this.groupBox7.Controls.Add(this.buttonDevice_Defibrillator);
+            this.groupBox7.Controls.Add(this.buttonDevice_12ECG);
+            this.groupBox7.Controls.Add(this.buttonDevice_Monitor);
+            this.groupBox7.Location = new System.Drawing.Point(12, 27);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(223, 369);
+            this.groupBox7.TabIndex = 5;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Devices";
+            // 
+            // buttonDevice_Ventilator
+            // 
+            this.buttonDevice_Ventilator.Enabled = false;
+            this.buttonDevice_Ventilator.Location = new System.Drawing.Point(6, 104);
+            this.buttonDevice_Ventilator.Name = "buttonDevice_Ventilator";
+            this.buttonDevice_Ventilator.Size = new System.Drawing.Size(211, 24);
+            this.buttonDevice_Ventilator.TabIndex = 4;
+            this.buttonDevice_Ventilator.Text = "Ventilator";
+            this.buttonDevice_Ventilator.UseVisualStyleBackColor = true;
+            // 
+            // buttonDevice_IABP
+            // 
+            this.buttonDevice_IABP.Enabled = false;
+            this.buttonDevice_IABP.Location = new System.Drawing.Point(6, 164);
+            this.buttonDevice_IABP.Name = "buttonDevice_IABP";
+            this.buttonDevice_IABP.Size = new System.Drawing.Size(211, 24);
+            this.buttonDevice_IABP.TabIndex = 4;
+            this.buttonDevice_IABP.Text = "Intra-Aortic Balloon Pump (IABP)";
+            this.buttonDevice_IABP.UseVisualStyleBackColor = true;
+            // 
+            // buttonDevice_Defibrillator
+            // 
+            this.buttonDevice_Defibrillator.Enabled = false;
+            this.buttonDevice_Defibrillator.Location = new System.Drawing.Point(6, 134);
+            this.buttonDevice_Defibrillator.Name = "buttonDevice_Defibrillator";
+            this.buttonDevice_Defibrillator.Size = new System.Drawing.Size(211, 24);
+            this.buttonDevice_Defibrillator.TabIndex = 4;
+            this.buttonDevice_Defibrillator.Text = "Defibrillator";
+            this.buttonDevice_Defibrillator.UseVisualStyleBackColor = true;
+            // 
+            // buttonDevice_12ECG
+            // 
+            this.buttonDevice_12ECG.Enabled = false;
+            this.buttonDevice_12ECG.Location = new System.Drawing.Point(6, 49);
+            this.buttonDevice_12ECG.Name = "buttonDevice_12ECG";
+            this.buttonDevice_12ECG.Size = new System.Drawing.Size(211, 24);
+            this.buttonDevice_12ECG.TabIndex = 4;
+            this.buttonDevice_12ECG.Text = "12-Lead ECG";
+            this.buttonDevice_12ECG.UseVisualStyleBackColor = true;
+            // 
+            // buttonDevice_Monitor
+            // 
+            this.buttonDevice_Monitor.Location = new System.Drawing.Point(6, 19);
+            this.buttonDevice_Monitor.Name = "buttonDevice_Monitor";
+            this.buttonDevice_Monitor.Size = new System.Drawing.Size(211, 24);
+            this.buttonDevice_Monitor.TabIndex = 4;
+            this.buttonDevice_Monitor.Text = "Cardiac Monitor";
+            this.buttonDevice_Monitor.UseVisualStyleBackColor = true;
+            this.buttonDevice_Monitor.Click += new System.EventHandler(this.buttonMonitor_Click);
+            // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.helpToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(798, 24);
+            this.menuStrip1.TabIndex = 6;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItem_Exit});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // menuItem_Exit
+            // 
+            this.menuItem_Exit.Name = "menuItem_Exit";
+            this.menuItem_Exit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
+            this.menuItem_Exit.Size = new System.Drawing.Size(242, 22);
+            this.menuItem_Exit.Text = "Exit Infirmary Integrated";
+            this.menuItem_Exit.Click += new System.EventHandler(this.menuExit_Click);
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItem_About});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "&Help";
+            // 
+            // menuItem_About
+            // 
+            this.menuItem_About.Name = "menuItem_About";
+            this.menuItem_About.Size = new System.Drawing.Size(215, 22);
+            this.menuItem_About.Text = "&About Infirmary Integrated";
+            this.menuItem_About.Click += new System.EventHandler(this.menuAbout_Click);
+            // 
+            // groupBox9
+            // 
+            this.groupBox9.Controls.Add(this.groupBox1);
+            this.groupBox9.Controls.Add(this.buttonReset);
+            this.groupBox9.Controls.Add(this.buttonApply);
+            this.groupBox9.Controls.Add(this.groupBox2);
+            this.groupBox9.Controls.Add(this.groupBox3);
+            this.groupBox9.Location = new System.Drawing.Point(241, 27);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(547, 369);
+            this.groupBox9.TabIndex = 5;
+            this.groupBox9.TabStop = false;
+            this.groupBox9.Text = "Patient Parameters";
+            // 
+            // buttonReset
+            // 
+            this.buttonReset.Location = new System.Drawing.Point(6, 343);
+            this.buttonReset.Name = "buttonReset";
+            this.buttonReset.Size = new System.Drawing.Size(223, 26);
+            this.buttonReset.TabIndex = 4;
+            this.buttonReset.Text = "Reset Parameters";
+            this.buttonReset.UseVisualStyleBackColor = true;
+            this.buttonReset.Click += new System.EventHandler(this.buttonReset_Click);
+            // 
+            // Dialog_Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(643, 365);
-            this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
-            this.Controls.Add(this.buttonApply);
-            this.Name = "Dialog_Patient";
-            this.Text = "Patient Vital Signs";
+            this.ClientSize = new System.Drawing.Size(798, 404);
+            this.Controls.Add(this.groupBox9);
+            this.Controls.Add(this.groupBox7);
+            this.Controls.Add(this.menuStrip1);
+            this.MainMenuStrip = this.menuStrip1;
+            this.Name = "Dialog_Main";
+            this.Text = "Infirmary Integrated: Devices and Patient Parameters";
             ((System.ComponentModel.ISupportInitialize)(this.numHR)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numNSBP)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numNDBP)).EndInit();
@@ -1515,7 +1661,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.numASBP)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numPSP)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numCVP)).EndInit();
+            this.groupBox7.ResumeLayout(false);
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
+            this.groupBox9.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -1605,5 +1756,18 @@
         private System.Windows.Forms.GroupBox groupBox6;
         private System.Windows.Forms.Label label39;
         private System.Windows.Forms.ComboBox comboAxisShift;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.Button buttonDevice_IABP;
+        private System.Windows.Forms.Button buttonDevice_Defibrillator;
+        private System.Windows.Forms.Button buttonDevice_12ECG;
+        private System.Windows.Forms.Button buttonDevice_Monitor;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_Exit;
+        private System.Windows.Forms.GroupBox groupBox9;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_About;
+        private System.Windows.Forms.Button buttonDevice_Ventilator;
+        private System.Windows.Forms.Button buttonReset;
     }
 }
