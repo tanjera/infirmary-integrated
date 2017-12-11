@@ -46,7 +46,8 @@ namespace II.Controls {
 
         public void setLead(Rhythms.Leads l) {
             tLead = l;
-            labelType.Text = _.UnderscoreToSpace(l.ToString ());            
+            labelType.Text = _.UnderscoreToSpace(l.ToString ());
+            setColorScheme (tColorScheme);
         }
 
         public void setColorScheme(_.ColorScheme cs) {

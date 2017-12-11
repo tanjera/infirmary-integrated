@@ -13,7 +13,7 @@ namespace II.Forms
         bool tPaused = false,
              tFullscreen = false;
 
-        Patient tPatient = new Patient();
+        Patient tPatient;
         List<Channel> tChannels = new List<Channel> ();
         List<II.Controls.Rhythm_Numerics> tNumerics = new List<II.Controls.Rhythm_Numerics> ();
         _.ColorScheme tColorScheme = _.ColorScheme.Normal;
@@ -40,13 +40,13 @@ namespace II.Forms
             foreach (_.ColorScheme cs in Enum.GetValues (typeof (_.ColorScheme)))
                 menuItem_ColorScheme.DropDownItems.Add (_.UnderscoreToSpace (cs.ToString ()), null, menuColorScheme_Click);
 
-            onLayoutChange ();                        
-            onTick_Vitals (null, new EventArgs ());
+            onLayoutChange ();                                    
         }
         
 
-        public void setPatient (Patient iPatient) {
+        public void SetPatient (Patient iPatient) {
             tPatient = iPatient;
+            onTick_Vitals (null, new EventArgs ());
         }
 
 
@@ -56,7 +56,6 @@ namespace II.Forms
 
             foreach(Channel c in tChannels) {
                 c.cStrip.Scroll ();
-                c.cStrip.Add_Beat (tPatient);
                 c.cTracing.Invalidate ();
             }
         }
@@ -68,6 +67,7 @@ namespace II.Forms
             foreach (II.Controls.Rhythm_Numerics v in tNumerics)
                 v.Update (tPatient);
         }
+        
 
         private void onLayoutChange() {
             mainLayout.Controls.Clear();
@@ -81,23 +81,23 @@ namespace II.Forms
                     switch (i) {
                         default:
                         case 0:
-                            newStrip = new Strip (5f, Leads.ECG_II);
+                            newStrip = new Strip (6f, Leads.ECG_II);
                             newNum = new Controls.Rhythm_Numerics (II.Controls.Rhythm_Numerics.ControlType.ECG);
                             break;
                         case 1:
-                            newStrip = new Strip (5f, Leads.ECG_III);
+                            newStrip = new Strip (6f, Leads.ECG_III);
                             newNum = new Controls.Rhythm_Numerics (II.Controls.Rhythm_Numerics.ControlType.NIBP);
                             break;
                         case 2:
-                            newStrip = new Strip (5f, Leads.SpO2);
+                            newStrip = new Strip (6f, Leads.SpO2);
                             newNum = new Controls.Rhythm_Numerics (II.Controls.Rhythm_Numerics.ControlType.SPO2);
                             break;
                         case 3:
-                            newStrip = new Strip (5f, Leads.CVP);
+                            newStrip = new Strip (6f, Leads.CVP);
                             newNum = new Controls.Rhythm_Numerics (II.Controls.Rhythm_Numerics.ControlType.CVP);
                             break;
                         case 4:
-                            newStrip = new Strip (5f, Leads.ABP);
+                            newStrip = new Strip (6f, Leads.ABP);
                             newNum = new Controls.Rhythm_Numerics (II.Controls.Rhythm_Numerics.ControlType.ABP);
                             break;
                     }
@@ -120,13 +120,36 @@ namespace II.Forms
             }            
         }
         
-        public void onPatientEdited (object sender, Forms.Dialog_Main.PatientEdited_EventArgs e) {
-            tPatient = e.Patient;
+        public void onPatientEvent (object sender, Patient.PatientEvent_Args e) {
+            switch (e.EventType) {
+                default: break;
 
-            foreach (Channel c in tChannels)
-                c.cStrip.clearFuture ();
-            foreach (II.Controls.Rhythm_Numerics n in tNumerics)
-                n.Update (tPatient);
+                case Patient.PatientEvent_Args.EventTypes.Vitals_Change:
+                    tPatient = e.Patient;
+
+                    foreach (Channel c in tChannels) { 
+                        c.cStrip.clearFuture ();
+                        c.cStrip.Add_Beat__Baseline (tPatient);
+                    }
+                    foreach (II.Controls.Rhythm_Numerics n in tNumerics)
+                        n.Update (tPatient);
+                    break;
+
+                case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:                    
+                    foreach (Channel c in tChannels)
+                        c.cStrip.Add_Beat__Baseline (tPatient);
+                    break;
+
+                case Patient.PatientEvent_Args.EventTypes.Cardiac_Atrial:
+                    foreach (Channel c in tChannels)
+                        c.cStrip.Add_Beat__Atrial (tPatient);
+                    break;
+
+                case Patient.PatientEvent_Args.EventTypes.Cardiac_Ventricular:
+                    foreach (Channel c in tChannels)
+                        c.cStrip.Add_Beat__Ventricular (tPatient);                    
+                    break;                    
+            }            
         }
 
         private void onTracingEdited (object sender, Controls.Rhythm_Tracing.TracingEdited_EventArgs e) {
@@ -138,6 +161,7 @@ namespace II.Forms
                 }
 
                 c.cStrip.Reset ();
+                c.cStrip.Add_Beat__Baseline (tPatient);
             }
         }
 
@@ -151,11 +175,11 @@ namespace II.Forms
         }
 
         private void menuExit_Click (object sender, EventArgs e) {
-            Program.Dialog_Main.requestExit ();
+            Program.Dialog_Main.RequestExit ();
         }
 
         private void menuNewPatient_Click (object sender, EventArgs e) {
-            tPatient = Program.Dialog_Main.requestNewPatient ();
+            tPatient = Program.Dialog_Main.RequestNewPatient ();
 
             foreach (Channel c in tChannels)
                 c.cStrip.Reset ();

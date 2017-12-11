@@ -4,7 +4,7 @@ namespace II {
 
     public static class _ {
 
-        public const string Version = "0.52";
+        public const string Version = "0.522";
 
 
         public enum ColorScheme {

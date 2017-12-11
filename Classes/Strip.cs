@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Windows.Forms;
 
 namespace II.Rhythms {
-    public class Strip {        
+    public class Strip {
         float Length = 5.0f;                // Strip length in seconds
 
         public Leads Lead;
@@ -19,6 +19,8 @@ namespace II.Rhythms {
                 case Leads.ABP: return Color.Red;
                 case Leads.PA: return Color.Yellow;
                 case Leads.IABP: return Color.Blue;
+                case Leads.RR: return Color.Salmon;
+                case Leads.ETCO2: return Color.Aqua;                    
             }
         }
 
@@ -53,12 +55,42 @@ namespace II.Rhythms {
             
             float offsetX = Last (Points).X;
     
-            foreach (Point eachVector in _Addition)
-                Points.Add (new Point (eachVector.X + offsetX, eachVector.Y));
+            for (int i = 0; i < _Addition.Count; i++)
+                Points.Add (new Point (_Addition[i].X + offsetX, _Addition[i].Y));
+        }
+        public void Overwrite(List<Point> _Replacement) {            
+            if (_Replacement.Count == 0)
+                return;
+            
+            // Inserts into future of strip, which is X offset by Length
+            for (int i = 0; i < _Replacement.Count; i++)
+                _Replacement[i].X += Length;
+
+            float minX = _Replacement[0].X,
+                maxX = _Replacement[_Replacement.Count - 1].X;
+
+            for (int i = Points.Count - 1; i >= 0; i--)
+                if (Points[i].X > minX && Points[i].X < maxX)
+                    Points.RemoveAt (i);
+
+            Points.AddRange (_Replacement);
+        }
+        private void RemoveNull() {
+            for (int i = Points.Count - 1; i >= 0; i--)
+                if (Points[i] == null)
+                    Points.RemoveAt (i);
+        }
+        private void Sort() {            
+            Points.Sort (delegate (Point p1, Point p2) {
+                if (p1 == null && p2 == null) return 0;
+                else if (p1 == null) return -1;
+                else if (p2 == null) return 1;
+                else return p1.X.CompareTo (p2.X); });
         }
         public void Scroll () {
-            foreach (Point eachVector in Points)
-                eachVector.X -= Rhythm.Draw_Resolve;
+            Sort ();
+            for (int i = Points.Count - 1; i >= 0; i--)
+                Points[i].X -= Rhythm.Draw_Resolve;
             
             for (int i = Points.Count - 1; i >= 0; i--) {
                 if (Points[i].X < -Length)
@@ -66,40 +98,36 @@ namespace II.Rhythms {
             }    
         }
         
-        public void Add_Beat (Patient _Patient) {            
-            if (Last(Points).X > Length * 2)
-                return;
-
-            switch (Lead) {
-                default:
-                case Leads.ECG_I:
-                case Leads.ECG_II:
-                case Leads.ECG_III:
-                case Leads.ECG_AVR:
-                case Leads.ECG_AVL:
-                case Leads.ECG_AVF:
-                case Leads.ECG_V1:
-                case Leads.ECG_V2:
-                case Leads.ECG_V3:
-                case Leads.ECG_V4:
-                case Leads.ECG_V5:
-                case Leads.ECG_V6:
-                    Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_ECG (_Patient, this);
-                    break;
-                    
-                case Leads.SpO2:
-                    Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_SpO2 (_Patient, this);
-                    break;
-                    
-                case Leads.CVP: break;
-                case Leads.ABP:
-                    Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_ABP (_Patient, this);
-                    break;
-                case Leads.PA: break;
-                case Leads.IABP: break;
-            }         
+        public void Add_Beat__Baseline (Patient _Patient) {            
+            if (isECG())
+                Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_ECG_Isoelectric (_Patient, this);
+            else if (Lead == Leads.RR || Lead == Leads.ETCO2)
+                Concatenate (Rhythm.Waveform_Flatline ((60f / Math.Max (1, _Patient.RR)), 0f));
+            else if (Lead == Leads.SpO2)
+                Concatenate (Rhythm.Waveform_Flatline ((60f / Math.Max (1, _Patient.HR)), 0f));            
         }
 
+        public void Add_Beat__Atrial (Patient _Patient) {
+            if (isECG ())
+                Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_ECG_Atrial (_Patient, this);
+        }
+
+        public void Add_Beat__Ventricular (Patient _Patient) {
+            if (isECG ())
+                Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_ECG_Ventricular (_Patient, this);
+            else if (Lead == Leads.SpO2 && Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Pulse)
+                Overwrite (Rhythm.SpO2_Rhythm (_Patient, 1f));
+            else if (Lead == Leads.ABP && Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Pulse)
+                Overwrite (Rhythm.ABP_Rhythm (_Patient, 1f));
+        }
+        
+        private bool isECG() {
+            return Lead == Leads.ECG_I || Lead == Leads.ECG_II || Lead == Leads.ECG_III
+                || Lead == Leads.ECG_AVR || Lead == Leads.ECG_AVL || Lead == Leads.ECG_AVF
+                || Lead == Leads.ECG_V1 || Lead == Leads.ECG_V2 || Lead == Leads.ECG_V3
+                || Lead == Leads.ECG_V4 || Lead == Leads.ECG_V5 || Lead == Leads.ECG_V6;
+        }
+        
 
         public class Renderer {
 
@@ -142,6 +170,9 @@ namespace II.Rhythms {
 
                 if (strip.Points.Count < 2)
                     return;
+
+                strip.RemoveNull ();
+                strip.Sort ();
                 
                 System.Drawing.Point lastPoint = new System.Drawing.Point (
                         (int)(strip.Points[0].X * multX) + offX,

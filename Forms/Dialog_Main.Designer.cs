@@ -110,6 +110,7 @@
             this.numCVP = new System.Windows.Forms.NumericUpDown();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.buttonDevice_Ventilator = new System.Windows.Forms.Button();
+            this.buttonDevice_LabReport = new System.Windows.Forms.Button();
             this.buttonDevice_IABP = new System.Windows.Forms.Button();
             this.buttonDevice_Defibrillator = new System.Windows.Forms.Button();
             this.buttonDevice_12ECG = new System.Windows.Forms.Button();
@@ -211,7 +212,6 @@
             this.numHR.Name = "numHR";
             this.numHR.Size = new System.Drawing.Size(47, 20);
             this.numHR.TabIndex = 1;
-            this.numHR.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numNSBP
             // 
@@ -229,7 +229,6 @@
             this.numNSBP.Name = "numNSBP";
             this.numNSBP.Size = new System.Drawing.Size(47, 20);
             this.numNSBP.TabIndex = 2;
-            this.numNSBP.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numNDBP
             // 
@@ -247,7 +246,6 @@
             this.numNDBP.Name = "numNDBP";
             this.numNDBP.Size = new System.Drawing.Size(47, 20);
             this.numNDBP.TabIndex = 3;
-            this.numNDBP.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // label5
             // 
@@ -269,7 +267,6 @@
             this.numSpO2.Name = "numSpO2";
             this.numSpO2.Size = new System.Drawing.Size(47, 20);
             this.numSpO2.TabIndex = 5;
-            this.numSpO2.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // buttonApply
             // 
@@ -279,7 +276,7 @@
             this.buttonApply.TabIndex = 4;
             this.buttonApply.Text = "Apply Changes";
             this.buttonApply.UseVisualStyleBackColor = true;
-            this.buttonApply.Click += new System.EventHandler(this.buttonApply_Click);
+            this.buttonApply.Click += new System.EventHandler(this.buttonApplyParameters_Click);
             // 
             // groupBox1
             // 
@@ -329,7 +326,6 @@
             this.numT.Name = "numT";
             this.numT.Size = new System.Drawing.Size(47, 20);
             this.numT.TabIndex = 6;
-            this.numT.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // label6
             // 
@@ -351,7 +347,6 @@
             this.numRR.Name = "numRR";
             this.numRR.Size = new System.Drawing.Size(47, 20);
             this.numRR.TabIndex = 4;
-            this.numRR.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // label8
             // 
@@ -373,7 +368,6 @@
             this.numETCO2.Name = "numETCO2";
             this.numETCO2.Size = new System.Drawing.Size(47, 20);
             this.numETCO2.TabIndex = 1;
-            this.numETCO2.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // label10
             // 
@@ -427,7 +421,6 @@
             this.comboAxisShift.Name = "comboAxisShift";
             this.comboAxisShift.Size = new System.Drawing.Size(204, 21);
             this.comboAxisShift.TabIndex = 1;
-            this.comboAxisShift.SelectedIndexChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // groupBox5
             // 
@@ -565,7 +558,6 @@
             this.numTWE_V6.Name = "numTWE_V6";
             this.numTWE_V6.Size = new System.Drawing.Size(38, 20);
             this.numTWE_V6.TabIndex = 12;
-            this.numTWE_V6.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // label36
             // 
@@ -598,7 +590,6 @@
             this.numTWE_V3.Name = "numTWE_V3";
             this.numTWE_V3.Size = new System.Drawing.Size(38, 20);
             this.numTWE_V3.TabIndex = 9;
-            this.numTWE_V3.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // label37
             // 
@@ -631,7 +622,6 @@
             this.numTWE_V5.Name = "numTWE_V5";
             this.numTWE_V5.Size = new System.Drawing.Size(38, 20);
             this.numTWE_V5.TabIndex = 11;
-            this.numTWE_V5.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numTWE_aVF
             // 
@@ -655,7 +645,6 @@
             this.numTWE_aVF.Name = "numTWE_aVF";
             this.numTWE_aVF.Size = new System.Drawing.Size(38, 20);
             this.numTWE_aVF.TabIndex = 6;
-            this.numTWE_aVF.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numTWE_V2
             // 
@@ -679,7 +668,6 @@
             this.numTWE_V2.Name = "numTWE_V2";
             this.numTWE_V2.Size = new System.Drawing.Size(38, 20);
             this.numTWE_V2.TabIndex = 8;
-            this.numTWE_V2.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // label38
             // 
@@ -712,7 +700,6 @@
             this.numTWE_V4.Name = "numTWE_V4";
             this.numTWE_V4.Size = new System.Drawing.Size(38, 20);
             this.numTWE_V4.TabIndex = 10;
-            this.numTWE_V4.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numTWE_aVL
             // 
@@ -736,7 +723,6 @@
             this.numTWE_aVL.Name = "numTWE_aVL";
             this.numTWE_aVL.Size = new System.Drawing.Size(38, 20);
             this.numTWE_aVL.TabIndex = 5;
-            this.numTWE_aVL.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numTWE_V1
             // 
@@ -760,7 +746,6 @@
             this.numTWE_V1.Name = "numTWE_V1";
             this.numTWE_V1.Size = new System.Drawing.Size(38, 20);
             this.numTWE_V1.TabIndex = 7;
-            this.numTWE_V1.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numTWE_III
             // 
@@ -784,7 +769,6 @@
             this.numTWE_III.Name = "numTWE_III";
             this.numTWE_III.Size = new System.Drawing.Size(38, 20);
             this.numTWE_III.TabIndex = 3;
-            this.numTWE_III.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numTWE_aVR
             // 
@@ -808,7 +792,6 @@
             this.numTWE_aVR.Name = "numTWE_aVR";
             this.numTWE_aVR.Size = new System.Drawing.Size(38, 20);
             this.numTWE_aVR.TabIndex = 4;
-            this.numTWE_aVR.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numTWE_II
             // 
@@ -832,7 +815,6 @@
             this.numTWE_II.Name = "numTWE_II";
             this.numTWE_II.Size = new System.Drawing.Size(38, 20);
             this.numTWE_II.TabIndex = 2;
-            this.numTWE_II.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numTWE_I
             // 
@@ -856,7 +838,6 @@
             this.numTWE_I.Name = "numTWE_I";
             this.numTWE_I.Size = new System.Drawing.Size(38, 20);
             this.numTWE_I.TabIndex = 1;
-            this.numTWE_I.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // groupBox4
             // 
@@ -994,7 +975,6 @@
             this.numSTE_V6.Name = "numSTE_V6";
             this.numSTE_V6.Size = new System.Drawing.Size(38, 20);
             this.numSTE_V6.TabIndex = 12;
-            this.numSTE_V6.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // label21
             // 
@@ -1027,7 +1007,6 @@
             this.numSTE_V3.Name = "numSTE_V3";
             this.numSTE_V3.Size = new System.Drawing.Size(38, 20);
             this.numSTE_V3.TabIndex = 9;
-            this.numSTE_V3.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // label18
             // 
@@ -1060,7 +1039,6 @@
             this.numSTE_V5.Name = "numSTE_V5";
             this.numSTE_V5.Size = new System.Drawing.Size(38, 20);
             this.numSTE_V5.TabIndex = 11;
-            this.numSTE_V5.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numSTE_aVF
             // 
@@ -1084,7 +1062,6 @@
             this.numSTE_aVF.Name = "numSTE_aVF";
             this.numSTE_aVF.Size = new System.Drawing.Size(38, 20);
             this.numSTE_aVF.TabIndex = 6;
-            this.numSTE_aVF.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numSTE_V2
             // 
@@ -1108,7 +1085,6 @@
             this.numSTE_V2.Name = "numSTE_V2";
             this.numSTE_V2.Size = new System.Drawing.Size(38, 20);
             this.numSTE_V2.TabIndex = 8;
-            this.numSTE_V2.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // label11
             // 
@@ -1141,7 +1117,6 @@
             this.numSTE_V4.Name = "numSTE_V4";
             this.numSTE_V4.Size = new System.Drawing.Size(38, 20);
             this.numSTE_V4.TabIndex = 10;
-            this.numSTE_V4.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numSTE_aVL
             // 
@@ -1165,7 +1140,6 @@
             this.numSTE_aVL.Name = "numSTE_aVL";
             this.numSTE_aVL.Size = new System.Drawing.Size(38, 20);
             this.numSTE_aVL.TabIndex = 5;
-            this.numSTE_aVL.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numSTE_V1
             // 
@@ -1189,7 +1163,6 @@
             this.numSTE_V1.Name = "numSTE_V1";
             this.numSTE_V1.Size = new System.Drawing.Size(38, 20);
             this.numSTE_V1.TabIndex = 7;
-            this.numSTE_V1.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numSTE_III
             // 
@@ -1213,7 +1186,6 @@
             this.numSTE_III.Name = "numSTE_III";
             this.numSTE_III.Size = new System.Drawing.Size(38, 20);
             this.numSTE_III.TabIndex = 3;
-            this.numSTE_III.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numSTE_aVR
             // 
@@ -1237,7 +1209,6 @@
             this.numSTE_aVR.Name = "numSTE_aVR";
             this.numSTE_aVR.Size = new System.Drawing.Size(38, 20);
             this.numSTE_aVR.TabIndex = 4;
-            this.numSTE_aVR.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numSTE_II
             // 
@@ -1261,7 +1232,6 @@
             this.numSTE_II.Name = "numSTE_II";
             this.numSTE_II.Size = new System.Drawing.Size(38, 20);
             this.numSTE_II.TabIndex = 2;
-            this.numSTE_II.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numSTE_I
             // 
@@ -1285,7 +1255,6 @@
             this.numSTE_I.Name = "numSTE_I";
             this.numSTE_I.Size = new System.Drawing.Size(38, 20);
             this.numSTE_I.TabIndex = 1;
-            this.numSTE_I.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // label14
             // 
@@ -1314,7 +1283,6 @@
             this.comboCardiacRhythm.Name = "comboCardiacRhythm";
             this.comboCardiacRhythm.Size = new System.Drawing.Size(181, 21);
             this.comboCardiacRhythm.TabIndex = 1;
-            this.comboCardiacRhythm.SelectedIndexChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // groupBox3
             // 
@@ -1371,7 +1339,6 @@
             this.numADBP.Name = "numADBP";
             this.numADBP.Size = new System.Drawing.Size(47, 20);
             this.numADBP.TabIndex = 9;
-            this.numADBP.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // label4
             // 
@@ -1398,7 +1365,6 @@
             this.numPDP.Name = "numPDP";
             this.numPDP.Size = new System.Drawing.Size(47, 20);
             this.numPDP.TabIndex = 12;
-            this.numPDP.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // numASBP
             // 
@@ -1416,7 +1382,6 @@
             this.numASBP.Name = "numASBP";
             this.numASBP.Size = new System.Drawing.Size(47, 20);
             this.numASBP.TabIndex = 2;
-            this.numASBP.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // label13
             // 
@@ -1443,7 +1408,6 @@
             this.numPSP.Name = "numPSP";
             this.numPSP.Size = new System.Drawing.Size(47, 20);
             this.numPSP.TabIndex = 11;
-            this.numPSP.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // label9
             // 
@@ -1470,11 +1434,11 @@
             this.numCVP.Name = "numCVP";
             this.numCVP.Size = new System.Drawing.Size(47, 20);
             this.numCVP.TabIndex = 10;
-            this.numCVP.ValueChanged += new System.EventHandler(this.Vitals_ValueChanged);
             // 
             // groupBox7
             // 
             this.groupBox7.Controls.Add(this.buttonDevice_Ventilator);
+            this.groupBox7.Controls.Add(this.buttonDevice_LabReport);
             this.groupBox7.Controls.Add(this.buttonDevice_IABP);
             this.groupBox7.Controls.Add(this.buttonDevice_Defibrillator);
             this.groupBox7.Controls.Add(this.buttonDevice_12ECG);
@@ -1495,6 +1459,16 @@
             this.buttonDevice_Ventilator.TabIndex = 4;
             this.buttonDevice_Ventilator.Text = "Ventilator";
             this.buttonDevice_Ventilator.UseVisualStyleBackColor = true;
+            // 
+            // buttonDevice_LabReport
+            // 
+            this.buttonDevice_LabReport.Enabled = false;
+            this.buttonDevice_LabReport.Location = new System.Drawing.Point(6, 223);
+            this.buttonDevice_LabReport.Name = "buttonDevice_LabReport";
+            this.buttonDevice_LabReport.Size = new System.Drawing.Size(211, 24);
+            this.buttonDevice_LabReport.TabIndex = 4;
+            this.buttonDevice_LabReport.Text = "Laboratory Report";
+            this.buttonDevice_LabReport.UseVisualStyleBackColor = true;
             // 
             // buttonDevice_IABP
             // 
@@ -1600,7 +1574,7 @@
             this.buttonReset.TabIndex = 4;
             this.buttonReset.Text = "Reset Parameters";
             this.buttonReset.UseVisualStyleBackColor = true;
-            this.buttonReset.Click += new System.EventHandler(this.buttonReset_Click);
+            this.buttonReset.Click += new System.EventHandler(this.buttonResetParameters_Click);
             // 
             // Dialog_Main
             // 
@@ -1769,5 +1743,6 @@
         private System.Windows.Forms.ToolStripMenuItem menuItem_About;
         private System.Windows.Forms.Button buttonDevice_Ventilator;
         private System.Windows.Forms.Button buttonReset;
+        private System.Windows.Forms.Button buttonDevice_LabReport;
     }
 }

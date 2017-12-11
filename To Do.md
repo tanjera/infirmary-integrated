@@ -3,36 +3,29 @@
 
 
 * To debug:
-	- In Dialog_Main, when button "Reset Patient" is clicked, combo box "Cardiac Rhythm" is not reset
+	- If rhythm beats overlap in tracing (e.g. sinus tach @ 140), artifact lines
 
 
 
 * Versions and features to implement:
-	- v 0.6	
-		- More tracings: CVP, ETCO2, PA, RR
-		- Paced rhythms (AAI, VVI, DDI)
+	- v 0.6			
+		->>> Set timers (cardiac atrial, cardiac ventricular) based on Cardiac_Rhythm (use switch function)			
+
+		- Pass pause/unpause back to Main_Dialog and Patient
+		- Add default Rhythm vital signs for all hemodynamic parameters (Get_Rhythm().Vitals())
 		
-		- Sync respiratory waveforms to inspiration/expiration events (e.g. ETCO2)
-		- Sync cardiac dependent waveforms to heartbeat event (e.g. SpO2, ABP, PA, CVP)		
-			- Event/delegate triggers onCardiac_PaceAtria, onCardiac_PaceVentricles
-			- Event/delegate triggers for onCardiac_Beat, onRespiratory_Inspiration, onRespiratory_Expiration
-
-		- Patient boolean for inspiration or expiration; also needs boolean for pos-pressure ventilation or natural neg-pressure ventilation
 		
-		- Expand Patient class and Edit Patient form	
-			- Add default Rhythm vital signs for all hemodynamic parameters (Get_Rhythm().Vitals())		
-
-
-	- v 0.7
+	- v 0.7		
 		- Device options						
 			- Save screenshot
 			- Print screenshot			
 		- Numeric control improvements
 			- Add buttons for added functionality (e.g. zero ABP; cycle NiBP; run thermodilution; run 12 lead)
 			* Buttons can be disabled until functionality implemented...		
-
+		
 
 	- v 0.8
+		- More tracings: CVP, ETCO2, PA, RR	
 		- 12 lead ECG device form (Device_ECG)
 			- Fixed layout
 			- Option to pause for viewing, printing, or export to .pdf
@@ -69,6 +62,12 @@
 		- IABP device form
 			- Faceplate with fixed layout/tracings
 		- IABP waveforms
+
+
+	- v 1.3
+		- Timing indicators for strip tracings (3 second tick marks, etc)
+		- Paced rhythms (AAI, VVI, DDI)
+			- Event/delegate triggers onCardiac_PaceAtria, onCardiac_PaceVentricles
 
 
 
