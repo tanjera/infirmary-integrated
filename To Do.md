@@ -2,19 +2,16 @@
 
 
 
-* To debug:
-	- If rhythm beats overlap in tracing (e.g. sinus tach @ 140), artifact lines
-
+* To debug:	
+	- Aberrant complexes draw properly in L2 but the aberrant deflections don't portray in other leads
+	- Timers are not perfectly synchronous... during loading or CPU bogging
+		- Create synchronous timer state machine based on DateTime elapsed?
+	- If rhythm beats overlap in tracing (e.g. sinus tach @ 140), artifact lines?
+	
 
 
 * Versions and features to implement:
-	- v 0.6			
-		->>> Set timers (cardiac atrial, cardiac ventricular) based on Cardiac_Rhythm (use switch function)			
-
-		- Pass pause/unpause back to Main_Dialog and Patient
-		- Add default Rhythm vital signs for all hemodynamic parameters (Get_Rhythm().Vitals())
-		
-		
+	
 	- v 0.7		
 		- Device options						
 			- Save screenshot
@@ -34,6 +31,7 @@
 	- v 0.9
 		- Implement pulsus paradoxus 
 		- Implement axis deviation in ECG tracings 
+		- Add default Rhythm vital signs for all hemodynamic parameters (Get_Rhythm().Vitals())
 		- PA catheter improvements
 			- Thermodilution profile dialog form
 			- Additional PA waveforms (RA, RV, PA, PAW)

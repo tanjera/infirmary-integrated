@@ -10,8 +10,7 @@ namespace II.Forms
     public partial class Device_Monitor : Form
     {
         int layoutRows = 3;
-        bool tPaused = false,
-             tFullscreen = false;
+        bool tFullscreen = false;
 
         Patient tPatient;
         List<Channel> tChannels = new List<Channel> ();
@@ -51,7 +50,7 @@ namespace II.Forms
 
 
         private void onTick_Tracing (object sender, EventArgs e) {
-            if (tPaused)
+            if (tPatient.Paused)
                 return;
 
             foreach(Channel c in tChannels) {
@@ -61,7 +60,7 @@ namespace II.Forms
         }
 
         private void onTick_Vitals (object sender, EventArgs e) {
-            if (tPaused)
+            if (tPatient.Paused)
                 return;
 
             foreach (II.Controls.Rhythm_Numerics v in tNumerics)
@@ -221,8 +220,12 @@ namespace II.Forms
         }
         
         private void menuTogglePause_Click(object sender, EventArgs e) {
-            tPaused = !tPaused;
-            menuItem_PauseDevice.Checked = tPaused;
+            tPatient.TogglePause ();
+            menuItem_PauseDevice.Checked = tPatient.Paused;
+
+            if (!tPatient.Paused)
+                foreach (Channel c in tChannels)
+                    c.cStrip.Unpause ();
         }
 
         private void menuFullscreen_Click (object sender, EventArgs e) {

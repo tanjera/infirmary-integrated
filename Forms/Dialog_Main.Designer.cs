@@ -205,7 +205,7 @@
             0});
             this.numHR.Location = new System.Drawing.Point(90, 24);
             this.numHR.Maximum = new decimal(new int[] {
-            200,
+            240,
             0,
             0,
             0});
@@ -1268,6 +1268,9 @@
             // checkDefaultVitals
             // 
             this.checkDefaultVitals.AutoSize = true;
+            this.checkDefaultVitals.Checked = true;
+            this.checkDefaultVitals.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkDefaultVitals.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.checkDefaultVitals.Location = new System.Drawing.Point(31, 48);
             this.checkDefaultVitals.Name = "checkDefaultVitals";
             this.checkDefaultVitals.Size = new System.Drawing.Size(249, 17);
@@ -1283,6 +1286,7 @@
             this.comboCardiacRhythm.Name = "comboCardiacRhythm";
             this.comboCardiacRhythm.Size = new System.Drawing.Size(181, 21);
             this.comboCardiacRhythm.TabIndex = 1;
+            this.comboCardiacRhythm.SelectedIndexChanged += new System.EventHandler(this.onRhythmSelected);
             // 
             // groupBox3
             // 

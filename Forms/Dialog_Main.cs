@@ -100,17 +100,17 @@ namespace II.Forms {
                 (int)numPDP.Value, 
                 Patient.CalculateMAP ((int)numPSP.Value, (int)numPDP.Value),
                 
-                new float[] {
-                    (float)numSTE_I.Value, (float)numSTE_II.Value, (float)numSTE_III.Value,
-                    (float)numSTE_aVR.Value, (float)numSTE_aVL.Value, (float)numSTE_aVF.Value,
-                    (float)numSTE_V1.Value, (float)numSTE_V2.Value, (float)numSTE_V3.Value,
-                    (float)numSTE_V4.Value, (float)numSTE_V5.Value, (float)numSTE_V6.Value
+                new double[] {
+                    (double)numSTE_I.Value, (double)numSTE_II.Value, (double)numSTE_III.Value,
+                    (double)numSTE_aVR.Value, (double)numSTE_aVL.Value, (double)numSTE_aVF.Value,
+                    (double)numSTE_V1.Value, (double)numSTE_V2.Value, (double)numSTE_V3.Value,
+                    (double)numSTE_V4.Value, (double)numSTE_V5.Value, (double)numSTE_V6.Value
                 },
-                new float[] {
-                    (float)numTWE_I.Value, (float)numTWE_II.Value, (float)numTWE_III.Value,
-                    (float)numTWE_aVR.Value, (float)numTWE_aVL.Value, (float)numTWE_aVF.Value,
-                    (float)numTWE_V1.Value, (float)numTWE_V2.Value, (float)numTWE_V3.Value,
-                    (float)numTWE_V4.Value, (float)numTWE_V5.Value, (float)numTWE_V6.Value
+                new double[] {
+                    (double)numTWE_I.Value, (double)numTWE_II.Value, (double)numTWE_III.Value,
+                    (double)numTWE_aVR.Value, (double)numTWE_aVL.Value, (double)numTWE_aVF.Value,
+                    (double)numTWE_V1.Value, (double)numTWE_V2.Value, (double)numTWE_V3.Value,
+                    (double)numTWE_V4.Value, (double)numTWE_V5.Value, (double)numTWE_V6.Value
                 },
 
                 (Rhythms.Cardiac_Rhythm)Enum.Parse (typeof (Rhythms.Cardiac_Rhythm), _.SpaceToUnderscore (comboCardiacRhythm.Text)),
@@ -134,6 +134,9 @@ namespace II.Forms {
                 numADBP.Value = e.Patient.ADBP;
                 numPSP.Value = e.Patient.PSP;
                 numPDP.Value = e.Patient.PDP;
+                
+                comboCardiacRhythm.SelectedIndex = (int)e.Patient.Cardiac_Rhythm;
+                comboAxisShift.SelectedIndex = (int)e.Patient.Cardiac_Axis_Shift;
 
                 numSTE_I.Value = (decimal)e.Patient.ST_Elevation[(int)Rhythms.Leads.ECG_I];
                 numSTE_II.Value = (decimal)e.Patient.ST_Elevation[(int)Rhythms.Leads.ECG_II];
@@ -160,6 +163,20 @@ namespace II.Forms {
                 numTWE_V4.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_V4];
                 numTWE_V5.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_V5];
                 numTWE_V6.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_V6];                
+            }
+        }
+
+        private void onRhythmSelected (object sender, EventArgs e) {
+            if (checkDefaultVitals.Checked) {
+                Rhythms._Rhythm tRhythm = Rhythms.Rhythm_Index.Get_Rhythm (
+                    (Rhythms.Cardiac_Rhythm)Enum.Parse (typeof (Rhythms.Cardiac_Rhythm), _.SpaceToUnderscore (comboCardiacRhythm.Text)));
+                
+                numHR.Value = (decimal)_.Clamp ((double)numHR.Value, tRhythm.Range_HR.Min, tRhythm.Range_HR.Max);
+                numNSBP.Value = (decimal)_.Clamp ((double)numNSBP.Value, tRhythm.Range_SBP.Min, tRhythm.Range_SBP.Max);
+                numNDBP.Value = (decimal)_.Clamp ((double)numNDBP.Value, tRhythm.Range_DBP.Min, tRhythm.Range_DBP.Max);
+                numASBP.Value = (decimal)_.Clamp ((double)numASBP.Value, tRhythm.Range_SBP.Min, tRhythm.Range_SBP.Max);                
+                numADBP.Value = (decimal)_.Clamp ((double)numADBP.Value, tRhythm.Range_DBP.Min, tRhythm.Range_DBP.Max);
+                numSpO2.Value = (decimal)_.Clamp ((double)numSpO2.Value, tRhythm.Range_SpO2.Min, tRhythm.Range_SpO2.Max);
             }
         }
     }

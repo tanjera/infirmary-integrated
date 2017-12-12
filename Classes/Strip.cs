@@ -6,7 +6,10 @@ using System.Windows.Forms;
 
 namespace II.Rhythms {
     public class Strip {
-        float Length = 5.0f;                // Strip length in seconds
+        double Length = 5.0d;               // Strip length in seconds
+        double EdgeBuffer = 1.1d;           // Coefficient of Length to draw into future as "now" for buffer
+        DateTime Scrolled_Last = DateTime.UtcNow;
+        bool Scrolled_Unpausing = false;
 
         public Leads Lead;
         public List<Point> Points;
@@ -24,7 +27,7 @@ namespace II.Rhythms {
             }
         }
 
-        public Strip (float l, Leads w) {
+        public Strip (double l, Leads w) {
             Lead = w;
             Length = l;
             Points = new List<Point> ();
@@ -53,7 +56,7 @@ namespace II.Rhythms {
             if (_Addition.Count == 0)
                 return;
             
-            float offsetX = Last (Points).X;
+            double offsetX = Last (Points).X;
     
             for (int i = 0; i < _Addition.Count; i++)
                 Points.Add (new Point (_Addition[i].X + offsetX, _Addition[i].Y));
@@ -64,14 +67,35 @@ namespace II.Rhythms {
             
             // Inserts into future of strip, which is X offset by Length
             for (int i = 0; i < _Replacement.Count; i++)
-                _Replacement[i].X += Length;
+                _Replacement[i].X += Length * EdgeBuffer;
 
-            float minX = _Replacement[0].X,
+            double minX = _Replacement[0].X,
                 maxX = _Replacement[_Replacement.Count - 1].X;
 
             for (int i = Points.Count - 1; i >= 0; i--)
                 if (Points[i].X > minX && Points[i].X < maxX)
                     Points.RemoveAt (i);
+
+            Points.AddRange (_Replacement);
+        }
+        public void Underwrite (List<Point> _Replacement) {
+            if (_Replacement.Count == 0)
+                return;
+
+            // Inserts into future of strip, which is X offset by Length
+            for (int i = 0; i < _Replacement.Count; i++)
+                _Replacement[i].X += Length * EdgeBuffer;
+
+            double minX = _Replacement[0].X,
+                maxX = _Replacement[_Replacement.Count - 1].X;
+
+            for (int i = Points.Count - 1; i >= 0; i--)
+                if (Points[i].X > minX && Points[i].X < maxX) {
+                    if (Points[i].Y == 0f)
+                        Points.RemoveAt (i);
+                    else
+                        return;
+                }
 
             Points.AddRange (_Replacement);
         }
@@ -88,23 +112,34 @@ namespace II.Rhythms {
                 else return p1.X.CompareTo (p2.X); });
         }
         public void Scroll () {
-            Sort ();
+            if (Scrolled_Unpausing) {
+                Scrolled_Unpausing = false;
+                Scrolled_Last = DateTime.UtcNow;
+                return;
+            }
+
+            double scrollBy = (DateTime.UtcNow - Scrolled_Last).TotalMilliseconds / 1000;
+            Scrolled_Last = DateTime.UtcNow;
+
             for (int i = Points.Count - 1; i >= 0; i--)
-                Points[i].X -= Rhythm.Draw_Resolve;
+                Points[i].X -= scrollBy;
             
             for (int i = Points.Count - 1; i >= 0; i--) {
                 if (Points[i].X < -Length)
                     Points.RemoveAt (i);
             }    
         }
+        public void Unpause() {
+            Scrolled_Unpausing = true;
+        }
         
         public void Add_Beat__Baseline (Patient _Patient) {            
             if (isECG())
                 Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_ECG_Isoelectric (_Patient, this);
             else if (Lead == Leads.RR || Lead == Leads.ETCO2)
-                Concatenate (Rhythm.Waveform_Flatline ((60f / Math.Max (1, _Patient.RR)), 0f));
+                Concatenate (Rhythm.Waveform_Flatline (_Patient.RR_Seconds, 0f));
             else if (Lead == Leads.SpO2)
-                Concatenate (Rhythm.Waveform_Flatline ((60f / Math.Max (1, _Patient.HR)), 0f));            
+                Concatenate (Rhythm.Waveform_Flatline (_Patient.HR_Seconds, 0f));            
         }
 
         public void Add_Beat__Atrial (Patient _Patient) {
@@ -137,7 +172,7 @@ namespace II.Rhythms {
             _.ColorScheme scheme;
 
             int offX, offY;
-            float multX, multY;
+            double multX, multY;
             
             public Renderer (Control _Panel, ref Strip _Strip, Color _Color) {
                 panel = _Panel;
