@@ -44,7 +44,6 @@
 			- SSH encrypt save files (for testing mode)
 			- Import invidual fields and assign to objects (not serialized out/in)
 			- For backwards compatibility with save files...
-		- Installer package .msi ...
 
 
 	- v 1.1
