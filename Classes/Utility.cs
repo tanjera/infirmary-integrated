@@ -4,12 +4,12 @@ namespace II {
 
     public static class _ {
 
-        public const string Version = "0.6";
+        public const string Version = "0.65";
 
 
         public enum ColorScheme {
             Normal, Monochrome
-        }    
+        }
 
 
         public static double Time {
@@ -41,7 +41,7 @@ namespace II {
             return (double)r.NextDouble () * (max - min) + min;
         }
 
-        public static double RandomPercentRange (double value, double percent) {            
+        public static double RandomPercentRange (double value, double percent) {
             return RandomDouble((value - (value * percent)), (value + (value * percent)));
         }
 

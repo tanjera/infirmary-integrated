@@ -9,12 +9,12 @@ using System.Windows.Forms;
 
 namespace II.Forms {
     public partial class Dialog_Main : Form {
-        
+
         Patient tPatient;
-        
+
         public Dialog_Main () {
             InitializeComponent ();
-            
+
             foreach (Rhythms.Cardiac_Rhythm el in Enum.GetValues (typeof (Rhythms.Cardiac_Rhythm)))
                 comboCardiacRhythm.Items.Add (_.UnderscoreToSpace(el.ToString ()));
             comboCardiacRhythm.SelectedIndex = 0;
@@ -23,12 +23,16 @@ namespace II.Forms {
                 comboAxisShift.Items.Add(_.UnderscoreToSpace(el.ToString()));
             comboAxisShift.SelectedIndex = 0;
 
+            foreach (Rhythms.Respiratory_Rhythm el in Enum.GetValues (typeof (Rhythms.Respiratory_Rhythm)))
+                comboRespiratoryRhythm.Items.Add (_.UnderscoreToSpace (el.ToString ()));
+            comboRespiratoryRhythm.SelectedIndex = 0;
+
             initPatient ();
 
             // Debugging: auto-open cardiac monitor on program start
             buttonMonitor_Click (this, new EventArgs ());
         }
-        
+
 
         public void RequestExit() {
             if (MessageBox.Show ("Are you sure you want to exit Infirmary Integrated? All unsaved work will be lost.", "Exit Infirmary Integrated", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
@@ -61,7 +65,7 @@ namespace II.Forms {
         }
 
         private void buttonMonitor_Click (object sender, EventArgs e) {
-            initMonitor ();            
+            initMonitor ();
             Program.Device_Monitor.Show ();
             Program.Device_Monitor.BringToFront ();
         }
@@ -81,25 +85,25 @@ namespace II.Forms {
 
         private void buttonApplyParameters_Click (object sender, EventArgs e) {
             tPatient.UpdateVitals (
-                (int)numHR.Value, 
-                (int)numRR.Value, 
+                (int)numHR.Value,
+                (int)numRR.Value,
                 (int)numSpO2.Value,
                 (int)numT.Value,
                 (int)numCVP.Value,
                 (int)numETCO2.Value,
 
                 (int)numNSBP.Value,
-                (int)numNDBP.Value, 
+                (int)numNDBP.Value,
                 Patient.CalculateMAP ((int)numNSBP.Value, (int)numNDBP.Value),
-                
+
                 (int)numASBP.Value,
-                (int)numADBP.Value, 
+                (int)numADBP.Value,
                 Patient.CalculateMAP ((int)numASBP.Value, (int)numADBP.Value),
-                
+
                 (int)numPSP.Value,
-                (int)numPDP.Value, 
+                (int)numPDP.Value,
                 Patient.CalculateMAP ((int)numPSP.Value, (int)numPDP.Value),
-                
+
                 new double[] {
                     (double)numSTE_I.Value, (double)numSTE_II.Value, (double)numSTE_III.Value,
                     (double)numSTE_aVR.Value, (double)numSTE_aVL.Value, (double)numSTE_aVF.Value,
@@ -115,12 +119,15 @@ namespace II.Forms {
 
                 (Rhythms.Cardiac_Rhythm)Enum.Parse (typeof (Rhythms.Cardiac_Rhythm), _.SpaceToUnderscore (comboCardiacRhythm.Text)),
                 (Rhythms.Cardiac_Axis_Shifts)Enum.Parse (typeof (Rhythms.Cardiac_Axis_Shifts), _.SpaceToUnderscore (comboAxisShift.Text)),
-                
-                1);   // TODO: Add IE Ratio to form              
+
+                (Rhythms.Respiratory_Rhythm)Enum.Parse(typeof(Rhythms.Respiratory_Rhythm), _.SpaceToUnderscore(comboRespiratoryRhythm.Text)),
+                (int)numInspRatio.Value,
+                (int)numExpRatio.Value
+            );
         }
 
         private void updateFormParameters(object sender, Patient.PatientEvent_Args e) {
-            if (e.EventType == Patient.PatientEvent_Args.EventTypes.Vitals_Change) {                
+            if (e.EventType == Patient.PatientEvent_Args.EventTypes.Vitals_Change) {
                 numHR.Value = e.Patient.HR;
                 numRR.Value = e.Patient.RR;
                 numSpO2.Value = e.Patient.SpO2;
@@ -134,9 +141,14 @@ namespace II.Forms {
                 numADBP.Value = e.Patient.ADBP;
                 numPSP.Value = e.Patient.PSP;
                 numPDP.Value = e.Patient.PDP;
-                
+
                 comboCardiacRhythm.SelectedIndex = (int)e.Patient.Cardiac_Rhythm;
                 comboAxisShift.SelectedIndex = (int)e.Patient.Cardiac_Axis_Shift;
+
+                comboRespiratoryRhythm.SelectedIndex = (int)e.Patient.Respiratory_Rhythm;
+                numInspRatio.Value = (decimal)e.Patient.Respiratory_IERatio_I;
+                numExpRatio.Value = (decimal)e.Patient.Respiratory_IERatio_E;
+
 
                 numSTE_I.Value = (decimal)e.Patient.ST_Elevation[(int)Rhythms.Leads.ECG_I];
                 numSTE_II.Value = (decimal)e.Patient.ST_Elevation[(int)Rhythms.Leads.ECG_II];
@@ -162,7 +174,7 @@ namespace II.Forms {
                 numTWE_V3.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_V3];
                 numTWE_V4.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_V4];
                 numTWE_V5.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_V5];
-                numTWE_V6.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_V6];                
+                numTWE_V6.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_V6];
             }
         }
 
@@ -170,11 +182,11 @@ namespace II.Forms {
             if (checkDefaultVitals.Checked) {
                 Rhythms._Rhythm tRhythm = Rhythms.Rhythm_Index.Get_Rhythm (
                     (Rhythms.Cardiac_Rhythm)Enum.Parse (typeof (Rhythms.Cardiac_Rhythm), _.SpaceToUnderscore (comboCardiacRhythm.Text)));
-                
+
                 numHR.Value = (decimal)_.Clamp ((double)numHR.Value, tRhythm.Range_HR.Min, tRhythm.Range_HR.Max);
                 numNSBP.Value = (decimal)_.Clamp ((double)numNSBP.Value, tRhythm.Range_SBP.Min, tRhythm.Range_SBP.Max);
                 numNDBP.Value = (decimal)_.Clamp ((double)numNDBP.Value, tRhythm.Range_DBP.Min, tRhythm.Range_DBP.Max);
-                numASBP.Value = (decimal)_.Clamp ((double)numASBP.Value, tRhythm.Range_SBP.Min, tRhythm.Range_SBP.Max);                
+                numASBP.Value = (decimal)_.Clamp ((double)numASBP.Value, tRhythm.Range_SBP.Min, tRhythm.Range_SBP.Max);
                 numADBP.Value = (decimal)_.Clamp ((double)numADBP.Value, tRhythm.Range_DBP.Min, tRhythm.Range_DBP.Max);
                 numSpO2.Value = (decimal)_.Clamp ((double)numSpO2.Value, tRhythm.Range_SpO2.Min, tRhythm.Range_SpO2.Max);
             }

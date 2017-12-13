@@ -122,6 +122,13 @@
             this.menuItem_About = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.buttonReset = new System.Windows.Forms.Button();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.label45 = new System.Windows.Forms.Label();
+            this.comboRespiratoryRhythm = new System.Windows.Forms.ComboBox();
+            this.label41 = new System.Windows.Forms.Label();
+            this.numExpRatio = new System.Windows.Forms.NumericUpDown();
+            this.label44 = new System.Windows.Forms.Label();
+            this.numInspRatio = new System.Windows.Forms.NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)(this.numHR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numNSBP)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numNDBP)).BeginInit();
@@ -167,6 +174,9 @@
             this.groupBox7.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.groupBox9.SuspendLayout();
+            this.groupBox8.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numExpRatio)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numInspRatio)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -270,7 +280,7 @@
             // 
             // buttonApply
             // 
-            this.buttonApply.Location = new System.Drawing.Point(6, 308);
+            this.buttonApply.Location = new System.Drawing.Point(6, 391);
             this.buttonApply.Name = "buttonApply";
             this.buttonApply.Size = new System.Drawing.Size(223, 27);
             this.buttonApply.TabIndex = 4;
@@ -1449,7 +1459,7 @@
             this.groupBox7.Controls.Add(this.buttonDevice_Monitor);
             this.groupBox7.Location = new System.Drawing.Point(12, 27);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(223, 369);
+            this.groupBox7.Size = new System.Drawing.Size(223, 265);
             this.groupBox7.TabIndex = 5;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Devices";
@@ -1521,7 +1531,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(798, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(792, 24);
             this.menuStrip1.TabIndex = 6;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -1558,6 +1568,7 @@
             // 
             // groupBox9
             // 
+            this.groupBox9.Controls.Add(this.groupBox8);
             this.groupBox9.Controls.Add(this.groupBox1);
             this.groupBox9.Controls.Add(this.buttonReset);
             this.groupBox9.Controls.Add(this.buttonApply);
@@ -1565,14 +1576,14 @@
             this.groupBox9.Controls.Add(this.groupBox3);
             this.groupBox9.Location = new System.Drawing.Point(241, 27);
             this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(547, 369);
+            this.groupBox9.Size = new System.Drawing.Size(547, 458);
             this.groupBox9.TabIndex = 5;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Patient Parameters";
             // 
             // buttonReset
             // 
-            this.buttonReset.Location = new System.Drawing.Point(6, 343);
+            this.buttonReset.Location = new System.Drawing.Point(6, 424);
             this.buttonReset.Name = "buttonReset";
             this.buttonReset.Size = new System.Drawing.Size(223, 26);
             this.buttonReset.TabIndex = 4;
@@ -1580,11 +1591,106 @@
             this.buttonReset.UseVisualStyleBackColor = true;
             this.buttonReset.Click += new System.EventHandler(this.buttonResetParameters_Click);
             // 
+            // groupBox8
+            // 
+            this.groupBox8.Controls.Add(this.label45);
+            this.groupBox8.Controls.Add(this.comboRespiratoryRhythm);
+            this.groupBox8.Controls.Add(this.label41);
+            this.groupBox8.Controls.Add(this.numInspRatio);
+            this.groupBox8.Controls.Add(this.numExpRatio);
+            this.groupBox8.Controls.Add(this.label44);
+            this.groupBox8.Location = new System.Drawing.Point(6, 308);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(223, 77);
+            this.groupBox8.TabIndex = 5;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "Respiratory Profile";
+            // 
+            // label45
+            // 
+            this.label45.AutoSize = true;
+            this.label45.Location = new System.Drawing.Point(6, 26);
+            this.label45.Name = "label45";
+            this.label45.Size = new System.Drawing.Size(46, 13);
+            this.label45.TabIndex = 14;
+            this.label45.Text = "Rhythm:";
+            // 
+            // comboRespiratoryRhythm
+            // 
+            this.comboRespiratoryRhythm.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboRespiratoryRhythm.FormattingEnabled = true;
+            this.comboRespiratoryRhythm.Location = new System.Drawing.Point(58, 23);
+            this.comboRespiratoryRhythm.Name = "comboRespiratoryRhythm";
+            this.comboRespiratoryRhythm.Size = new System.Drawing.Size(159, 21);
+            this.comboRespiratoryRhythm.TabIndex = 13;
+            // 
+            // label41
+            // 
+            this.label41.AutoSize = true;
+            this.label41.Location = new System.Drawing.Point(111, 50);
+            this.label41.Name = "label41";
+            this.label41.Size = new System.Drawing.Size(10, 13);
+            this.label41.TabIndex = 9;
+            this.label41.Text = ":";
+            // 
+            // numExpRatio
+            // 
+            this.numExpRatio.Location = new System.Drawing.Point(127, 48);
+            this.numExpRatio.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.numExpRatio.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numExpRatio.Name = "numExpRatio";
+            this.numExpRatio.Size = new System.Drawing.Size(47, 20);
+            this.numExpRatio.TabIndex = 1;
+            this.numExpRatio.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
+            // label44
+            // 
+            this.label44.AutoSize = true;
+            this.label44.Location = new System.Drawing.Point(7, 50);
+            this.label44.Name = "label44";
+            this.label44.Size = new System.Drawing.Size(51, 13);
+            this.label44.TabIndex = 6;
+            this.label44.Text = "I:E Ratio:";
+            // 
+            // numInspRatio
+            // 
+            this.numInspRatio.Location = new System.Drawing.Point(58, 48);
+            this.numInspRatio.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.numInspRatio.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numInspRatio.Name = "numInspRatio";
+            this.numInspRatio.Size = new System.Drawing.Size(47, 20);
+            this.numInspRatio.TabIndex = 1;
+            this.numInspRatio.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
             // Dialog_Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(798, 404);
+            this.ClientSize = new System.Drawing.Size(792, 490);
             this.Controls.Add(this.groupBox9);
             this.Controls.Add(this.groupBox7);
             this.Controls.Add(this.menuStrip1);
@@ -1643,6 +1749,10 @@
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.groupBox9.ResumeLayout(false);
+            this.groupBox8.ResumeLayout(false);
+            this.groupBox8.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numExpRatio)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numInspRatio)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1748,5 +1858,12 @@
         private System.Windows.Forms.Button buttonDevice_Ventilator;
         private System.Windows.Forms.Button buttonReset;
         private System.Windows.Forms.Button buttonDevice_LabReport;
+        private System.Windows.Forms.GroupBox groupBox8;
+        private System.Windows.Forms.Label label45;
+        private System.Windows.Forms.ComboBox comboRespiratoryRhythm;
+        private System.Windows.Forms.Label label41;
+        private System.Windows.Forms.NumericUpDown numExpRatio;
+        private System.Windows.Forms.Label label44;
+        private System.Windows.Forms.NumericUpDown numInspRatio;
     }
 }

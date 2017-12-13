@@ -44,7 +44,7 @@ namespace II.Rhythms {
     public enum Cardiac_Rhythm {
         Asystole,
         Atrial_Flutter,
-        Atrial_Fibrillation,        
+        Atrial_Fibrillation,
         AV_Block__1st_Degree,
         AV_Block__Wenckebach,
         AV_Block__Mobitz_II,
@@ -52,21 +52,26 @@ namespace II.Rhythms {
         Block__Bundle_Branch,
         Idioventricular,
         Junctional,
-        Normal_Sinus,                
-        Premature_Atrial_Contractions,
-        Premature_Junctional_Contractions,
-        Premature_Ventricular_Contractions,
         Pulseless_Electrical_Activity,
-        Sinus_Tachycardia,
-        Sinus_Bradycardia,
-        Supraventricular_Tachycardia,        
+        Sinus_Rhythm,
+        Sinus_Rhythm_with_Bigeminy,
+        Sinus_Rhythm_with_Trigeminy,
+        Sinus_Rhythm_with_PACs,
+        Sinus_Rhythm_with_PJCs,
+        Sinus_Rhythm_with_PVCs_Multifocal,
+        Sinus_Rhythm_with_PVCs_Unifocal,
+        Supraventricular_Tachycardia,
         Ventricular_Tachycardia,
         Ventricular_Fibrillation,
-        Ventricular_Standstill  
+        Ventricular_Standstill
     }
 
-    public enum Cardiac_Axis_Shifts
-    {
+    public enum Respiratory_Rhythm {
+        Apnea,
+        Regular
+    }
+
+    public enum Cardiac_Axis_Shifts {
         Normal,
         Left_Physiologic,
         Left_Pathologic,
@@ -74,12 +79,13 @@ namespace II.Rhythms {
         Extreme,
         Indeterminate
     }
-    
+
 
     public struct Range {
         public int Min, Max;
         public Range (int min, int max) { Min = min; Max = max; }
     }
+
 
     public struct _Rhythm {
         public string           Name_Long,
@@ -89,7 +95,7 @@ namespace II.Rhythms {
         public Range            Range_HR,
                                 Range_SpO2,
                                 Range_SBP,
-                                Range_DBP;            
+                                Range_DBP;
         public Beat             Beat_ECG_Isoelectric,
                                 Beat_ECG_Atrial,
                                 Beat_ECG_Ventricular;
@@ -113,7 +119,7 @@ namespace II.Rhythms {
             Beat_ECG_Isoelectric = delECG_Iso;
             Beat_ECG_Atrial = delECG_Atria;
             Beat_ECG_Ventricular = delECG_Vent;
-            
+
         }
 
         public void Vitals (Patient p) {
@@ -131,11 +137,13 @@ namespace II.Rhythms {
 
 
     public static class Rhythm_Index {
+
         public static _Rhythm Get_Rhythm (Cardiac_Rhythm r) {
             return Cardiac_Rhythms.Find (x => { return x.Name_Enum == r; });
         }
 
         static List<_Rhythm> Cardiac_Rhythms = new List<_Rhythm> (new _Rhythm[] {
+
             new _Rhythm (Cardiac_Rhythm.Asystole, "Asystole", "ASYS",
                 false,
                 new Range (0, 0), new Range (0, 0), new Range (0, 30), new Range (0, 15),
@@ -169,7 +177,7 @@ namespace II.Rhythms {
                 new Range (30, 100), new Range (88, 96), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.Waveform_Flatline(p.HR_Seconds, 0f)); },
                 delegate (Patient p, Strip s) { s.Underwrite(Rhythm.ECG_Complex__P_Normal(p, s.Lead)); },
-                delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__QRST_Aberrant(p, s.Lead)); }),
+                delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__QRST_Aberrant_1(p, s.Lead)); }),
 
             new _Rhythm (Cardiac_Rhythm.AV_Block__Mobitz_II, "AV Block, Mobitz II", "AVB-MOB2",
                 true,
@@ -206,57 +214,83 @@ namespace II.Rhythms {
                 delegate (Patient p, Strip s) { return; },
                 delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__QRST_Normal(p, s.Lead)); }),
 
-            new _Rhythm (Cardiac_Rhythm.Normal_Sinus, "Normal Sinus", "NSR",
+            new _Rhythm (Cardiac_Rhythm.Sinus_Rhythm, "Sinus Rhythm", "SR",
+                true,
+                new Range (40, 130), new Range (95, 100), new Range (50, 300), new Range (30, 200),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.Waveform_Flatline(p.HR_Seconds, 0f)); },
+                delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__P_Normal(p, s.Lead)); },
+                delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__QRST_Normal(p, s.Lead)); }),
+
+            new _Rhythm (Cardiac_Rhythm.Sinus_Rhythm_with_Bigeminy, "Sinus Rhythm with Bigeminy", "SRBG",
+                true,
+                new Range (60, 100), new Range (95, 100), new Range (50, 300), new Range (30, 200),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.Waveform_Flatline(p.HR_Seconds, 0f)); },
+                delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__P_Normal(p, s.Lead)); },
+                delegate (Patient p, Strip s) {
+                    if (p.Cardiac_Rhythm__Flag) {
+                        s.Overwrite(Rhythm.ECG_Complex__QRST_Aberrant_1(p, s.Lead));
+                    } else
+                        s.Overwrite(Rhythm.ECG_Complex__QRST_Normal(p, s.Lead));
+                }),
+
+            new _Rhythm (Cardiac_Rhythm.Sinus_Rhythm_with_Trigeminy, "Sinus Rhythm with Trigeminy", "SRTG",
+                true,
+                new Range (60, 100), new Range (95, 100), new Range (50, 300), new Range (30, 200),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.Waveform_Flatline(p.HR_Seconds, 0f)); },
+                delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__P_Normal(p, s.Lead)); },
+                delegate (Patient p, Strip s) {
+                    if (p.Cardiac_Rhythm__Flag) {
+                        s.Overwrite(Rhythm.ECG_Complex__QRST_Aberrant_1(p, s.Lead));
+                    } else
+                        s.Overwrite(Rhythm.ECG_Complex__QRST_Normal(p, s.Lead));
+                }),
+
+            new _Rhythm (Cardiac_Rhythm.Sinus_Rhythm_with_PACs, "Sinus Rhythm with PACs", "SRPAC",
                 true,
                 new Range (60, 100), new Range (95, 100), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.Waveform_Flatline(p.HR_Seconds, 0f)); },
                 delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__P_Normal(p, s.Lead)); },
                 delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__QRST_Normal(p, s.Lead)); }),
 
-            new _Rhythm (Cardiac_Rhythm.Premature_Atrial_Contractions, "Premature Atrial Contractions", "PAC",
-                true,
-                new Range (60, 100), new Range (95, 100), new Range (50, 300), new Range (30, 200),
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.Waveform_Flatline(p.HR_Seconds, 0f)); },
-                delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__P_Normal(p, s.Lead)); },
-                delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__QRST_Normal(p, s.Lead)); }),
-
-            new _Rhythm (Cardiac_Rhythm.Premature_Junctional_Contractions, "Premature Junctional Contractions", "PJC",
+            new _Rhythm (Cardiac_Rhythm.Sinus_Rhythm_with_PJCs, "Sinus Rhythm with PJCs", "SRPJC",
                 true,
                 new Range (60, 100), new Range (92, 98), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.Waveform_Flatline(p.HR_Seconds, 0f)); },
                 delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__P_Normal(p, s.Lead)); },
                 delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__QRST_Normal(p, s.Lead)); }),
 
-            new _Rhythm (Cardiac_Rhythm.Premature_Ventricular_Contractions, "Premature Ventricular Contractions", "PVC",
+            new _Rhythm (Cardiac_Rhythm.Sinus_Rhythm_with_PVCs_Multifocal, "Sinus Rhythm with PVCs (Multifocal)", "SRPVCM",
                 true,
                 new Range (60, 100), new Range (92, 98), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.Waveform_Flatline(p.HR_Seconds, 0f)); },
                 delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__P_Normal(p, s.Lead)); },
                 delegate (Patient p, Strip s) {
                     if (p.Cardiac_Rhythm__Flag) {
-                        p.Cardiac_Rhythm__Flag = false;
-                        s.Overwrite(Rhythm.ECG_Complex__QRST_Aberrant(p, s.Lead));
-                    } else 
+                        switch (new Random().Next(0, 3)) {
+                            default:
+                            case 0: s.Overwrite(Rhythm.ECG_Complex__QRST_Aberrant_1(p, s.Lead)); break;
+                            case 1: s.Overwrite(Rhythm.ECG_Complex__QRST_Aberrant_2(p, s.Lead)); break;
+                            case 2: s.Overwrite(Rhythm.ECG_Complex__QRST_Aberrant_3(p, s.Lead)); break;
+                        }
+                    } else
+                        s.Overwrite(Rhythm.ECG_Complex__QRST_Normal(p, s.Lead));
+                }),
+
+            new _Rhythm (Cardiac_Rhythm.Sinus_Rhythm_with_PVCs_Unifocal, "Sinus Rhythm with PVCs (Unifocal)", "SRPVCU",
+                true,
+                new Range (60, 100), new Range (92, 98), new Range (50, 300), new Range (30, 200),
+                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.Waveform_Flatline(p.HR_Seconds, 0f)); },
+                delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__P_Normal(p, s.Lead)); },
+                delegate (Patient p, Strip s) {
+                    if (p.Cardiac_Rhythm__Flag) {
+                        s.Overwrite(Rhythm.ECG_Complex__QRST_Aberrant_3(p, s.Lead));
+                    } else
                         s.Overwrite(Rhythm.ECG_Complex__QRST_Normal(p, s.Lead));
                 }),
 
             new _Rhythm (Cardiac_Rhythm.Pulseless_Electrical_Activity, "Pulseless Electrical Activity", "PEA",
                 false,
                 new Range (40, 120), new Range (0, 0), new Range (0, 30), new Range (0, 15),
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.Waveform_Flatline(p.HR_Seconds, 0f)); },
-                delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__P_Normal(p, s.Lead)); },
-                delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__QRST_Normal(p, s.Lead)); }),
-
-            new _Rhythm (Cardiac_Rhythm.Sinus_Bradycardia, "Sinus Bradycardia", "BRADY",
-                true,
-                new Range (40, 55), new Range (95, 100), new Range (50, 300), new Range (30, 200),
-                delegate (Patient p, Strip s) { s.Concatenate(Rhythm.Waveform_Flatline(p.HR_Seconds, 0f)); },
-                delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__P_Normal(p, s.Lead)); },
-                delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__QRST_Normal(p, s.Lead)); }),
-
-            new _Rhythm (Cardiac_Rhythm.Sinus_Tachycardia, "Sinus Tachycardia", "TACHY",
-                true,
-                new Range (110, 140), new Range (95, 100), new Range (50, 300), new Range (30, 200),
                 delegate (Patient p, Strip s) { s.Concatenate(Rhythm.Waveform_Flatline(p.HR_Seconds, 0f)); },
                 delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__P_Normal(p, s.Lead)); },
                 delegate (Patient p, Strip s) { s.Overwrite(Rhythm.ECG_Complex__QRST_Normal(p, s.Lead)); }),
@@ -290,7 +324,7 @@ namespace II.Rhythms {
                 delegate (Patient p, Strip s) { return; })
         });
     }
-    
+
 
     public static class Rhythm {
 
@@ -300,26 +334,53 @@ namespace II.Rhythms {
         public static List<Point> Waveform_Flatline(double _Length, double _Isoelectric) {
             return Line_Long (_Length, _Isoelectric, new Point (0, _Isoelectric));
         }
+
         public static List<Point> SpO2_Rhythm(Patient _P, double _Amplitude) {
             /* SpO2 during normal sinus perfusion is similar to a sine wave leaning right with dicrotic notch
 		     */
-            double _Portion = _P.HR_Seconds / 5f;
+            double _Portion = _P.HR_Seconds / 4f;
 
             List<Point> thisBeat = new List<Point>();
-            thisBeat = Concatenate (thisBeat, Curve (_Portion * 2, 0.5f * _Amplitude, 0.4f * _Amplitude, Last(thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_Portion * 3, 0.25f * _Amplitude, 0.0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion , 0.65f * _Amplitude, 0.6f * _Amplitude, Last(thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.5f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion  * 2, 0f, Last (thisBeat)));
             return thisBeat;
         }
+
         public static List<Point> ABP_Rhythm (Patient _P, double _Amplitude) {
             /* ABP during normal sinus perfusion is similar to a sine wave leaning right with dicrotic notch
-		     */            
+		     */
             double _Portion = _P.HR_Seconds / 4;
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.8f * _Amplitude, 0.7f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.6f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));            
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.6f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line( _Portion * 2, 0f, Last (thisBeat)));
             return thisBeat;
-        }      
+        }
+
+        public static List<Point> RR_Rhythm (Patient _P, bool _Inspire) {
+            /* Respiratory rate/status indicator; on waveform shows as an open arrow
+             */
+            double _Portion = 0.1f;
+
+            List<Point> thisBeat = new List<Point> ();
+            thisBeat = Concatenate (thisBeat, Line (_Portion, 0.3f * (_Inspire ? 1 : -1), Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
+            return thisBeat;
+        }
+
+        public static List<Point> ETCO2_Rhythm (Patient _P) {
+            double _Length = _P.RR_Seconds_E,
+                    _Portion = 0.2d;
+
+            List<Point> thisBeat = new List<Point> ();
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.6f, 0.65f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Length - (_Portion * 2), 0.7f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.7f, 0f, Last (thisBeat)));
+            return thisBeat;
+        }
+
         public static List<Point> ECG_Isoelectric__Atrial_Fibrillation (Patient _P, Leads _L) {
             int Fibrillations = (int)Math.Ceiling (_P.HR_Seconds / 0.06);
 
@@ -327,21 +388,24 @@ namespace II.Rhythms {
             for (int i = 1; i < Fibrillations; i++)
                 thisBeat = Concatenate (thisBeat, ECG_P (_P, _L, 0.06f, .04f, 0f, Last (thisBeat)));
             return thisBeat;
-        }    
+        }
+
         public static List<Point> ECG_Isoelectric__Atrial_Flutter (Patient _P, Leads _L) {
             int Flutters = (int)Math.Ceiling(_P.HR_Seconds / 0.16f);
 
-            List<Point> thisBeat = new List<Point> ();            
+            List<Point> thisBeat = new List<Point> ();
             for (int i = 1; i < Flutters; i++)
                 thisBeat = Concatenate (thisBeat, ECG_P (_P, _L, 0.16f, .08f, 0f, Last (thisBeat)));
             return thisBeat;
         }
+
         public static List<Point> ECG_Complex__P_Normal (Patient _P, Leads _L) {
-            double PR = _.Lerp (0.16f, 0.2f, _.Clamp (_.InverseLerp (60, 160, _P.HR)));            
+            double PR = _.Lerp (0.16f, 0.2f, _.Clamp (_.InverseLerp (60, 160, _P.HR)));
             return ECG_P (_P, _L, (PR * 2) / 3, .1f, 0f, new Point (0, 0f));
         }
-        public static List<Point> ECG_Complex__QRST_Normal (Patient _P, Leads _L) {            
-            double lerpCoeff = _.Clamp (_.InverseLerp (60, 160, _P.HR)),                
+
+        public static List<Point> ECG_Complex__QRST_Normal (Patient _P, Leads _L) {
+            double lerpCoeff = _.Clamp (_.InverseLerp (60, 160, _P.HR)),
                 QRS = _.Lerp (0.08f, 0.12f, lerpCoeff),
                 QT = _.Lerp (0.235f, 0.4f, lerpCoeff);
 
@@ -351,24 +415,54 @@ namespace II.Rhythms {
             thisBeat = Concatenate (thisBeat, ECG_S (_P, _L, QRS / 4, -0.3f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, ECG_J (_P, _L, QRS / 4, -0.1f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, ECG_ST (_P, _L, ((QT - QRS) * 2) / 5, 0f, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, ECG_T (_P, _L, ((QT - QRS) * 3) / 5, 0.2f, 0f, Last (thisBeat)));            
+            thisBeat = Concatenate (thisBeat, ECG_T (_P, _L, ((QT - QRS) * 3) / 5, 0.2f, 0f, Last (thisBeat)));
             return thisBeat;
         }
-        public static List<Point> ECG_Complex__QRST_Aberrant (Patient _P, Leads _L) {
+
+        public static List<Point> ECG_Complex__QRST_Aberrant_1 (Patient _P, Leads _L) {
             double lerpCoeff = _.Clamp (_.InverseLerp (60, 160, _P.HR)),
                 QRS = _.Lerp (0.12f, 0.26f, lerpCoeff),
                 QT = _.Lerp (0.235f, 0.6f, lerpCoeff);
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, ECG_Q (_P, _L, QRS / 6, 0.1f, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, ECG_R (_P, _L, QRS / 6, -0.9f, Last (thisBeat)));            
+            thisBeat = Concatenate (thisBeat, ECG_R (_P, _L, QRS / 3, -0.9f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, ECG_S (_P, _L, QRS / 6, 0.3f, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, ECG_J (_P, _L, QRS / 6, 0.1f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, ECG_J (_P, _L, QRS / 3, 0.1f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, ECG_ST (_P, _L, ((QT - QRS) * 2) / 5, 0f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, ECG_T (_P, _L, ((QT - QRS) * 3) / 5, 0.1f, 0f, Last (thisBeat)));
             return thisBeat;
         }
-        public static List<Point> ECG_Complex__QRST_BBB (Patient _P, Leads _L) {            
+
+        public static List<Point> ECG_Complex__QRST_Aberrant_2 (Patient _P, Leads _L) {
+            double lerpCoeff = _.Clamp (_.InverseLerp (60, 160, _P.HR)),
+                QRS = _.Lerp (0.11f, 0.25f, lerpCoeff),
+                QT = _.Lerp (0.25f, 0.6f, lerpCoeff);
+
+            List<Point> thisBeat = new List<Point> ();
+            thisBeat = Concatenate (thisBeat, ECG_Q (_P, _L, QRS / 3, -0.8f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, ECG_R (_P, _L, QRS / 6, -0.2f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, ECG_J (_P, _L, QRS / 6, 0.1f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, ECG_ST (_P, _L, ((QT - QRS) * 2) / 5, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, ECG_T (_P, _L, ((QT - QRS) * 3) / 5, -0.1f, 0f, Last (thisBeat)));
+            return thisBeat;
+        }
+
+        public static List<Point> ECG_Complex__QRST_Aberrant_3 (Patient _P, Leads _L) {
+            double lerpCoeff = _.Clamp (_.InverseLerp (60, 160, _P.HR)),
+                QRS = _.Lerp (0.14f, 0.28f, lerpCoeff),
+                QT = _.Lerp (0.22f, 0.54f, lerpCoeff);
+
+            List<Point> thisBeat = new List<Point> ();
+            thisBeat = Concatenate (thisBeat, ECG_Q (_P, _L, QRS / 3, 0.1f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, ECG_R (_P, _L, QRS / 6, -0.7f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, ECG_J (_P, _L, QRS / 6, -0.6f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, ECG_ST (_P, _L, ((QT - QRS) * 2) / 5, 0.1f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, ECG_T (_P, _L, ((QT - QRS) * 3) / 5, 0.2f, 0f, Last (thisBeat)));
+            return thisBeat;
+        }
+
+        public static List<Point> ECG_Complex__QRST_BBB (Patient _P, Leads _L) {
             double lerpCoeff = _.Clamp (_.InverseLerp (60, 160, _P.HR)),
                 QRS = _.Lerp (0.12f, 0.22f, lerpCoeff),
                 QT = _.Lerp (0.235f, 0.4f, lerpCoeff);
@@ -383,16 +477,17 @@ namespace II.Rhythms {
             thisBeat = Concatenate (thisBeat, ECG_S (_P, _L, QRS / 6, -0.3f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, ECG_J (_P, _L, QRS / 6, -0.1f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, ECG_ST (_P, _L, ((QT - QRS) * 2) / 5, 0f, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, ECG_T (_P, _L, ((QT - QRS) * 3) / 5, 0.1f, 0f, Last (thisBeat)));            
+            thisBeat = Concatenate (thisBeat, ECG_T (_P, _L, ((QT - QRS) * 3) / 5, 0.1f, 0f, Last (thisBeat)));
             return thisBeat;
         }
+
         public static List<Point> ECG_Complex__QRST_SVT (Patient _P, Leads _L) {
             double _Length = _P.HR_Seconds;
             double lerpCoeff = _.Clamp (_.InverseLerp (160, 240, _P.HR)),
                         QRS = _.Lerp (0.05f, 0.12f, lerpCoeff),
                         QT = _.Lerp (0.22f, 0.36f, lerpCoeff);
 
-            List<Point> thisBeat = new List<Point> ();                        
+            List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, ECG_Q (_P, _L, QRS / 4, -0.1f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, ECG_R (_P, _L, QRS / 4, 0.9f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, ECG_S (_P, _L, QRS / 4, -0.3f, Last (thisBeat)));
@@ -402,28 +497,32 @@ namespace II.Rhythms {
             thisBeat = Concatenate (thisBeat, ECG_T (_P, _L, ((QT - QRS) * 2) / 5, 0.08f, 0f, Last (thisBeat)));
             return thisBeat;
         }
+
         public static List<Point> ECG_Complex__QRST_VT (Patient _P, Leads _L) {
             List<Point> thisBeat = new List<Point> ();
-            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 4,
+
+            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 5,
                 -0.1f * leadCoeff[(int)_L, (int)wavePart.Q],
                 -0.2f * leadCoeff[(int)_L, (int)wavePart.Q], Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 4,
+            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 5,
                 -1f * leadCoeff[(int)_L, (int)wavePart.R],
                 -0.3f * leadCoeff[(int)_L, (int)wavePart.R], Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 4,
+            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 5,
                 0.1f * leadCoeff[(int)_L, (int)wavePart.T],
                 0.1f * leadCoeff[(int)_L, (int)wavePart.T],
                 Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 4,
+            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 5,
                 0.4f * leadCoeff[(int)_L, (int)wavePart.T],
-                leadCoeff[(int)_L, (int)wavePart.T],
-                Last (thisBeat)));            
+                0.1f * leadCoeff[(int)_L, (int)wavePart.T],
+                Last (thisBeat)));
+
             return thisBeat;
         }
+
         public static List<Point> ECG_Complex__QRST_VF (Patient _P, Leads _L) {
             double _Length = _P.HR_Seconds,
-                    _Wave = _P.HR_Seconds / 5f,
-                    _Amplitude = _.RandomDouble (0.3f, 0.6f);
+                    _Wave = _P.HR_Seconds / 2f,
+                    _Amplitude = _.RandomDouble (0.3f, 0.6f) * _.InverseLerp(60, 240, _P.HR);
 
             List<Point> thisBeat = new List<Point> ();
             while (_Length > 0f) {
@@ -435,7 +534,8 @@ namespace II.Rhythms {
             }
             return thisBeat;
         }
-        public static List<Point> ECG_Complex__Idioventricular (Patient _P, Leads _L) {            
+
+        public static List<Point> ECG_Complex__Idioventricular (Patient _P, Leads _L) {
             double lerpCoeff = _.Clamp (_.InverseLerp (25, 75, _P.HR)),
                     QRS = _.Lerp (0.3f, 0.4f, lerpCoeff),
                     SQ = (_P.HR_Seconds - QRS);
@@ -448,13 +548,13 @@ namespace II.Rhythms {
                 -0.3f * leadCoeff[(int)_L, (int)wavePart.R],
                 -0.4f * leadCoeff[(int)_L, (int)wavePart.R], Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (SQ / 3,
-                0.1f * leadCoeff[(int)_L, (int)wavePart.T], 0, Last (thisBeat)));            
+                0.1f * leadCoeff[(int)_L, (int)wavePart.T], 0, Last (thisBeat)));
             return thisBeat;
         }
-        
 
-        /* 
-	     * Shaping and point plotting functions 
+
+        /*
+	     * Shaping and point plotting functions
 	     */
 
         static Point Last (List<Point> _Original) {
@@ -465,7 +565,7 @@ namespace II.Rhythms {
         }
         static List<Point> Concatenate(List<Point> _Original, List<Point> _Addition) {
             // Offsets the X value of a Point[] so that it can be placed at the end
-            // of an existing Point[] and continue from that point on. 
+            // of an existing Point[] and continue from that point on.
 
             // Nothing to add? Return something.
             if (_Original.Count == 0 && _Addition.Count == 0)
@@ -514,6 +614,7 @@ namespace II.Rhythms {
 
             return _Out;
         }
+
         static List<Point> Peak(double _Length, double _mV, double _mV_End, Point _Start) {
             if (_Length < 0)
                 return new List<Point> ();
@@ -536,6 +637,7 @@ namespace II.Rhythms {
 
             return _Out;
         }
+
         static List<Point> Line(double _Length, double _mV, Point _Start) {
             if (_Length < 0)
                 return new List<Point> ();
@@ -544,6 +646,7 @@ namespace II.Rhythms {
             _Out.Add(new Point(_Length, _mV));
             return _Out;
         }
+
         static List<Point> Line_Long (double _Length, double _mV, Point _Start) {
             if (_Length < 0)
                 return new List<Point> ();
@@ -555,11 +658,11 @@ namespace II.Rhythms {
         }
 
 
-        /* 
+        /*
 	     * Individual waveform functions for generating portions of an individual waveform- to be
-         * concatenated into a single beat. Default ECG waveform is based on Lead 2 inflections/deflections; 
+         * concatenated into a single beat. Default ECG waveform is based on Lead 2 inflections/deflections;
          * other leads use coefficients to scale or reverse inflections/deflections.
-         * 
+         *
          * _S == starting Point
          * _L == length (seconds)
          * _mV == inflection height
@@ -567,7 +670,7 @@ namespace II.Rhythms {
 	     */
 
         static List<Point> ECG_P(Patient p, Leads l, Point _S) { return ECG_P(p, l, .08f, .15f, 0f, _S); }
-        static List<Point> ECG_P(Patient p, Leads l, double _L, double _mV, double _mV_End, Point _S) {            
+        static List<Point> ECG_P(Patient p, Leads l, double _L, double _mV, double _mV_End, Point _S) {
             return Peak(_L, _mV * leadCoeff[(int)l, (int)wavePart.P], _mV_End, _S);
         }
 
@@ -620,7 +723,7 @@ namespace II.Rhythms {
             P, Q, R, S, J, T, PR, ST, TP
         }
 
-        static double[,] leadCoeff = new double[,] {   
+        static double[,] leadCoeff = new double[,] {
             // P through T are multipliers; segments are additions
             { 0.7f,     0.7f,   0.7f,   0.7f,   0.7f,   0.8f,       0f,     0f,     0f },     // L1
             { 1f,       1f,     1f,     1f,     1f,     1f,         0f,     0f,     0f },     // L2
@@ -633,7 +736,7 @@ namespace II.Rhythms {
             { 0.2f,     -3.0f,  -1.4f,  0f,     0f,     1.8f,       0f,     0.1f,   0f },     // V3
             { 0.7f,     -9.0f,  -0.8f,  0f,     0f,     1.4f,       0f,     0.1f,   0f },     // V4
             { 0.7f,     -10.0f, -0.2f,  0f,     0f,     1.0f,       0f,     0.1f,   0f },     // V5
-            { 1f,       -9.0f,  -0.1f,  0f,     0f,     0.8f,       0f,     0f,     0f }      // V6            
+            { 1f,       -9.0f,  -0.1f,  0f,     0f,     0.8f,       0f,     0f,     0f }      // V6
         };
     }
 }

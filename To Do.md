@@ -2,35 +2,34 @@
 
 
 
-* To debug:	
-	- Aberrant complexes draw properly in L2 but the aberrant deflections don't portray in other leads
+* To debug:
 	- Timers are not perfectly synchronous... during loading or CPU bogging
 		- Create synchronous timer state machine based on DateTime elapsed?
-	- If rhythm beats overlap in tracing (e.g. sinus tach @ 140), artifact lines?
-	
+	- Slower tracings (e.g. ETCO2) glitch during parameter changes
+
 
 
 * Versions and features to implement:
-	
-	- v 0.7		
-		- Device options						
-			- Save screenshot
-			- Print screenshot			
-		- Numeric control improvements
-			- Add buttons for added functionality (e.g. zero ABP; cycle NiBP; run thermodilution; run 12 lead)
-			* Buttons can be disabled until functionality implemented...		
-		
 
-	- v 0.8
-		- More tracings: CVP, ETCO2, PA, RR	
+	- v 0.7
+		- More tracings: CVP, PA
 		- 12 lead ECG device form (Device_ECG)
 			- Fixed layout
 			- Option to pause for viewing, printing, or export to .pdf
 
 
+	- v 0.8
+		- Device options
+			- Save screenshot
+			- Print screenshot
+		- Numeric control improvements
+			- Add buttons for added functionality (e.g. zero ABP; cycle NiBP; run thermodilution; run 12 lead)
+			* Buttons can be disabled until functionality implemented...
+
+
 	- v 0.9
-		- Implement pulsus paradoxus 
-		- Implement axis deviation in ECG tracings 
+		- Implement pulsus paradoxus
+		- Implement axis deviation in ECG tracings
 		- Add default Rhythm vital signs for all hemodynamic parameters (Get_Rhythm().Vitals())
 		- PA catheter improvements
 			- Thermodilution profile dialog form
@@ -39,22 +38,22 @@
 
 
 	- v 1.0
-		* General polish and debugging		
+		* General polish and debugging
 		* Save/load functionality!!
 			- File extension .ii
 			- SSH encrypt save files (for testing mode)
 			- Import invidual fields and assign to objects (not serialized out/in)
 			- For backwards compatibility with save files...
 		- Installer package .msi ...
-		
-	
+
+
 	- v 1.1
 		- Defibrillator device form (Device_Defibrillator)
 			- Limited amount of tracing rows (limit 3?); less dynamic layout than cardiac monitor
 			- Faceplate with buttons for energy selection, charge, delivery shock
 			- Additional control for display of Joule amount selected... or add to ECG tracing corner
 			- Defibrillation rhythm waveform (can be 1 beat)
-		
+
 
 	- v 1.2
 		- IABP device form
@@ -69,8 +68,9 @@
 
 
 
-* Feature ideas, needs placing in version plan:	
-	
+* Feature ideas, needs placing in version plan:
+	- More respiratory content
+		- ETCO2 waveform coefficients
 
 
 
@@ -79,11 +79,11 @@
 	https://ekg.academy/
 - 12 lead axis interpretation
 	https://lifeinthefastlane.com/ecg-library/basics/axis/
-- ABP waveforms
-	http://www.derangedphysiology.com/main/core-topics-intensive-care/haemodynamic-monitoring/Chapter%201.1.5/normal-arterial-line-waveforms
 - CVP waveform
 	http://www.dynapulse.com/educator/webcurriculum/chapter%203/abnormal%20ekg%20and%20waveform.htm
 - PA waveforms
 	http://mdnxs.com/topics-2/procedures/swan-ganz-catheter/
 - IABP waveforms
 	https://rk.md/2017/intra-aortic-balloon-pump-arterial-line-ekg-waveforms/
+- ETCO2 waveform interpretation
+	http://www.jems.com/articles/print/volume-42/issue-8/features/how-to-read-and-interpret-end-tidal-capnography-waveforms.html

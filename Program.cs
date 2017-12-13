@@ -11,7 +11,7 @@ namespace II
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
-        
+
 
         public static Forms.Dialog_Main Dialog_Main;
         public static Forms.Device_Monitor Device_Monitor;

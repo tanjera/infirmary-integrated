@@ -22,8 +22,8 @@ namespace II.Controls {
 
         public Rhythm_Tracing (Rhythms.Leads l) {
             InitializeComponent ();
-            
-            this.DoubleBuffered = true;         
+
+            this.DoubleBuffered = true;
             this.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             this.Dock = DockStyle.Fill;
 
@@ -65,13 +65,13 @@ namespace II.Controls {
                     labelType.BackColor = Color.White;
                     break;
             }
-        }        
+        }
 
         private void contextMenu_Click (object sender, EventArgs e) {
             tLead = (Rhythms.Leads)Enum.Parse (typeof(Rhythms.Leads), _.SpaceToUnderscore(((MenuItem)sender).Text));
             TracingEdited (this, new TracingEdited_EventArgs (tLead));
         }
-        
+
         private void onClick(object sender, EventArgs e)
         {
             MouseEventArgs me = (MouseEventArgs)e;

@@ -7,14 +7,14 @@ namespace II.Controls {
 
         Patient lPatient;
         ContextMenu contextMenu = new ContextMenu();
-        
+
         _.ColorScheme tColorScheme = _.ColorScheme.Normal;
-        
+
         Font fontLarge = new Font("Microsoft Sans Serif", 20f, FontStyle.Bold),
              fontSmall = new Font("Microsoft Sans Serif", 15f, FontStyle.Bold);
 
         public ControlType cType;
-        
+
         public enum ControlType {
             ECG,
             TEMP,
@@ -39,7 +39,7 @@ namespace II.Controls {
                 case ControlType.ABP: return Color.Red;
                 case ControlType.CVP: return Color.Blue;
                 case ControlType.PA: return Color.Yellow;
-            }            
+            }
         }
 
         public Rhythm_Numerics (ControlType t) {
@@ -54,7 +54,7 @@ namespace II.Controls {
             contextMenu.MenuItems.Add("Select Output Display:");
             contextMenu.MenuItems.Add("-");
             foreach (ControlType ct in Enum.GetValues(typeof(ControlType)))
-                contextMenu.MenuItems.Add(new MenuItem(_.UnderscoreToSpace(ct.ToString()), contextMenu_Click));          
+                contextMenu.MenuItems.Add(new MenuItem(_.UnderscoreToSpace(ct.ToString()), contextMenu_Click));
         }
 
         public void Update (Patient p) {
@@ -83,13 +83,13 @@ namespace II.Controls {
                     label3.ForeColor = Color.Black;
                     break;
             }
-            
+
             switch (cType) {
                 default:
                 case ControlType.ECG:
                     labelType.Text = "ECG";
                     label1.Font = fontLarge;
-                    label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.HR, 0.02f));  
+                    label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.HR, 0.02f));
                     label2.ForeColor = tColorBack;
                     label3.ForeColor = tColorBack;
                     break;
@@ -109,7 +109,7 @@ namespace II.Controls {
                     label2.ForeColor = tColorBack;
                     label3.ForeColor = tColorBack;
                     break;
-                    
+
                 case ControlType.RR:
                     labelType.Text = "RR";
                     label1.Font = fontLarge;
@@ -130,10 +130,10 @@ namespace II.Controls {
                     labelType.Text = "NiBP";
                     label1.Font = fontSmall;
                     label2.Font = fontSmall;
-                    label3.Font = fontSmall;                    
+                    label3.Font = fontSmall;
                     label1.Text = String.Format("{0:0}", p.NSBP);
                     label2.Text = String.Format("/ {0:0}", p.NDBP);
-                    label3.Text = String.Format("({0:0})", p.NMAP);                    
+                    label3.Text = String.Format("({0:0})", p.NMAP);
                     break;
 
                 case ControlType.ABP:
@@ -163,7 +163,7 @@ namespace II.Controls {
                     label2.Text = String.Format ("/ {0:0}", _.RandomPercentRange(p.PDP, 0.02f));
                     label3.Text = String.Format ("({0:0})", _.RandomPercentRange(p.PMP, 0.02f));
                     break;
-            }            
+            }
         }
 
         public void setColorScheme (_.ColorScheme cs) {
@@ -174,7 +174,7 @@ namespace II.Controls {
         private void contextMenu_Click(object sender, EventArgs e) {
             cType = (ControlType)Enum.Parse(typeof(ControlType), _.SpaceToUnderscore(((MenuItem)sender).Text));
             Update (lPatient);
-        }        
+        }
 
         private void onClick(object sender, EventArgs e) {
             MouseEventArgs me = (MouseEventArgs)e;

@@ -39,9 +39,9 @@ namespace II.Forms
             foreach (_.ColorScheme cs in Enum.GetValues (typeof (_.ColorScheme)))
                 menuItem_ColorScheme.DropDownItems.Add (_.UnderscoreToSpace (cs.ToString ()), null, menuColorScheme_Click);
 
-            onLayoutChange ();                                    
+            onLayoutChange ();
         }
-        
+
 
         public void SetPatient (Patient iPatient) {
             tPatient = iPatient;
@@ -66,7 +66,7 @@ namespace II.Forms
             foreach (II.Controls.Rhythm_Numerics v in tNumerics)
                 v.Update (tPatient);
         }
-        
+
 
         private void onLayoutChange() {
             mainLayout.Controls.Clear();
@@ -107,7 +107,7 @@ namespace II.Forms
                     newTracing.TracingEdited += onTracingEdited;
 
                     tChannels.Add (new Channel (newStrip, newRenderer, newTracing));
-                    tNumerics.Add (newNum);                    
+                    tNumerics.Add (newNum);
                 }
             }
 
@@ -115,10 +115,10 @@ namespace II.Forms
             for (int i = 0; i < layoutRows; i++) {
                 mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100 / layoutRows));
                 mainLayout.Controls.Add(tNumerics[i], 0, i);
-                mainLayout.Controls.Add(tChannels[i].cTracing, 1, i);                
-            }            
+                mainLayout.Controls.Add(tChannels[i].cTracing, 1, i);
+            }
         }
-        
+
         public void onPatientEvent (object sender, Patient.PatientEvent_Args e) {
             switch (e.EventType) {
                 default: break;
@@ -126,29 +126,44 @@ namespace II.Forms
                 case Patient.PatientEvent_Args.EventTypes.Vitals_Change:
                     tPatient = e.Patient;
 
-                    foreach (Channel c in tChannels) { 
+                    foreach (Channel c in tChannels) {
                         c.cStrip.clearFuture ();
-                        c.cStrip.Add_Beat__Baseline (tPatient);
+                        c.cStrip.Add_Beat__Cardiac_Baseline (tPatient);
                     }
                     foreach (II.Controls.Rhythm_Numerics n in tNumerics)
                         n.Update (tPatient);
                     break;
 
-                case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:                    
+                case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
                     foreach (Channel c in tChannels)
-                        c.cStrip.Add_Beat__Baseline (tPatient);
+                        c.cStrip.Add_Beat__Cardiac_Baseline (tPatient);
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Atrial:
                     foreach (Channel c in tChannels)
-                        c.cStrip.Add_Beat__Atrial (tPatient);
+                        c.cStrip.Add_Beat__Cardiac_Atrial (tPatient);
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Ventricular:
                     foreach (Channel c in tChannels)
-                        c.cStrip.Add_Beat__Ventricular (tPatient);                    
-                    break;                    
-            }            
+                        c.cStrip.Add_Beat__Cardiac_Ventricular (tPatient);
+                    break;
+
+                case Patient.PatientEvent_Args.EventTypes.Respiratory_Baseline:
+                    foreach (Channel c in tChannels)
+                        c.cStrip.Add_Beat__Respiratory_Baseline (tPatient);
+                    break;
+
+                case Patient.PatientEvent_Args.EventTypes.Respiratory_Inspiration:
+                    foreach (Channel c in tChannels)
+                        c.cStrip.Add_Beat__Respiratory_Inspiration (tPatient);
+                    break;
+
+                case Patient.PatientEvent_Args.EventTypes.Respiratory_Expiration:
+                    foreach (Channel c in tChannels)
+                        c.cStrip.Add_Beat__Respiratory_Expiration (tPatient);
+                    break;
+            }
         }
 
         private void onTracingEdited (object sender, Controls.Rhythm_Tracing.TracingEdited_EventArgs e) {
@@ -160,7 +175,8 @@ namespace II.Forms
                 }
 
                 c.cStrip.Reset ();
-                c.cStrip.Add_Beat__Baseline (tPatient);
+                c.cStrip.Add_Beat__Cardiac_Baseline (tPatient);
+                c.cStrip.Add_Beat__Respiratory_Baseline (tPatient);
             }
         }
 
@@ -214,11 +230,11 @@ namespace II.Forms
             }
         }
 
-        private void menuRowCount_Click (object sender, EventArgs e) {            
+        private void menuRowCount_Click (object sender, EventArgs e) {
             layoutRows = int.Parse(((ToolStripMenuItem)sender).Text.Replace ('&', ' ').Trim());
             onLayoutChange();
         }
-        
+
         private void menuTogglePause_Click(object sender, EventArgs e) {
             tPatient.TogglePause ();
             menuItem_PauseDevice.Checked = tPatient.Paused;

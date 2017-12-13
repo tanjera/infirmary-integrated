@@ -23,7 +23,7 @@ namespace II.Rhythms {
                 case Leads.PA: return Color.Yellow;
                 case Leads.IABP: return Color.Blue;
                 case Leads.RR: return Color.Salmon;
-                case Leads.ETCO2: return Color.Aqua;                    
+                case Leads.ETCO2: return Color.Aqua;
             }
         }
 
@@ -55,16 +55,16 @@ namespace II.Rhythms {
         public void Concatenate (List<Point> _Addition) {
             if (_Addition.Count == 0)
                 return;
-            
+
             double offsetX = Last (Points).X;
-    
+
             for (int i = 0; i < _Addition.Count; i++)
                 Points.Add (new Point (_Addition[i].X + offsetX, _Addition[i].Y));
         }
-        public void Overwrite(List<Point> _Replacement) {            
+        public void Overwrite(List<Point> _Replacement) {
             if (_Replacement.Count == 0)
                 return;
-            
+
             // Inserts into future of strip, which is X offset by Length
             for (int i = 0; i < _Replacement.Count; i++)
                 _Replacement[i].X += Length * EdgeBuffer;
@@ -104,7 +104,7 @@ namespace II.Rhythms {
                 if (Points[i] == null)
                     Points.RemoveAt (i);
         }
-        private void Sort() {            
+        private void Sort() {
             Points.Sort (delegate (Point p1, Point p2) {
                 if (p1 == null && p2 == null) return 0;
                 else if (p1 == null) return -1;
@@ -123,31 +123,32 @@ namespace II.Rhythms {
 
             for (int i = Points.Count - 1; i >= 0; i--)
                 Points[i].X -= scrollBy;
-            
+
             for (int i = Points.Count - 1; i >= 0; i--) {
                 if (Points[i].X < -Length)
                     Points.RemoveAt (i);
-            }    
+            }
         }
         public void Unpause() {
             Scrolled_Unpausing = true;
         }
-        
-        public void Add_Beat__Baseline (Patient _Patient) {            
-            if (isECG())
+
+        public void Add_Beat__Cardiac_Baseline (Patient _Patient) {
+            if (isECG ())
                 Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_ECG_Isoelectric (_Patient, this);
-            else if (Lead == Leads.RR || Lead == Leads.ETCO2)
-                Concatenate (Rhythm.Waveform_Flatline (_Patient.RR_Seconds, 0f));
-            else if (Lead == Leads.SpO2)
-                Concatenate (Rhythm.Waveform_Flatline (_Patient.HR_Seconds, 0f));            
+            else if (Lead != Leads.RR && Lead != Leads.ETCO2) {
+                // Fill waveform through to future buffer with flatline
+                double fill = (Length * EdgeBuffer) - Last (Points).X;
+                Concatenate (Rhythm.Waveform_Flatline (fill > _Patient.HR_Seconds ? fill : _Patient.HR_Seconds, 0f));
+            }
         }
 
-        public void Add_Beat__Atrial (Patient _Patient) {
+        public void Add_Beat__Cardiac_Atrial (Patient _Patient) {
             if (isECG ())
                 Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_ECG_Atrial (_Patient, this);
         }
 
-        public void Add_Beat__Ventricular (Patient _Patient) {
+        public void Add_Beat__Cardiac_Ventricular (Patient _Patient) {
             if (isECG ())
                 Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_ECG_Ventricular (_Patient, this);
             else if (Lead == Leads.SpO2 && Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Pulse)
@@ -155,25 +156,49 @@ namespace II.Rhythms {
             else if (Lead == Leads.ABP && Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Pulse)
                 Overwrite (Rhythm.ABP_Rhythm (_Patient, 1f));
         }
-        
+
+        public void Add_Beat__Respiratory_Baseline (Patient _Patient) {
+            if (Lead == Leads.RR || Lead == Leads.ETCO2) {
+                // Fill waveform through to future buffer with flatline
+                double fill = (Length * EdgeBuffer) - Last (Points).X;
+                Concatenate (Rhythm.Waveform_Flatline (fill > _Patient.RR_Seconds ? fill : _Patient.RR_Seconds, 0f));
+            }
+        }
+
+        public void Add_Beat__Respiratory_Inspiration (Patient _Patient) {
+            switch (Lead) {
+                default: break;
+                case Leads.RR: Overwrite (Rhythm.RR_Rhythm(_Patient, true)); break;
+                case Leads.ETCO2: break;    // End-tidal waveform is only present on expiration!! Is flatline on inspiration.
+            }
+        }
+
+        public void Add_Beat__Respiratory_Expiration (Patient _Patient) {
+            switch (Lead) {
+                default: break;
+                case Leads.RR: Overwrite (Rhythm.RR_Rhythm (_Patient, false)); break;
+                case Leads.ETCO2: Overwrite (Rhythm.ETCO2_Rhythm (_Patient)); break;
+            }
+        }
+
         private bool isECG() {
             return Lead == Leads.ECG_I || Lead == Leads.ECG_II || Lead == Leads.ECG_III
                 || Lead == Leads.ECG_AVR || Lead == Leads.ECG_AVL || Lead == Leads.ECG_AVF
                 || Lead == Leads.ECG_V1 || Lead == Leads.ECG_V2 || Lead == Leads.ECG_V3
                 || Lead == Leads.ECG_V4 || Lead == Leads.ECG_V5 || Lead == Leads.ECG_V6;
         }
-        
+
 
         public class Renderer {
 
-            Control panel;            
+            Control panel;
             Strip strip;
             public Color pcolor;
             _.ColorScheme scheme;
 
             int offX, offY;
             double multX, multY;
-            
+
             public Renderer (Control _Panel, ref Strip _Strip, Color _Color) {
                 panel = _Panel;
                 pcolor = _Color;
@@ -196,7 +221,7 @@ namespace II.Rhythms {
                         e.Graphics.Clear (Color.White);
                         pen = new Pen (Color.Black, 1f);
                         break;
-                }                
+                }
 
                 offX = 0;
                 offY = panel.Height / 2;
@@ -208,7 +233,7 @@ namespace II.Rhythms {
 
                 strip.RemoveNull ();
                 strip.Sort ();
-                
+
                 System.Drawing.Point lastPoint = new System.Drawing.Point (
                         (int)(strip.Points[0].X * multX) + offX,
                         (int)(strip.Points[0].Y * multY) + offY);
