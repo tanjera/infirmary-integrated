@@ -23,6 +23,7 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent () {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Dialog_Main));
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -121,14 +122,14 @@
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_About = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.buttonReset = new System.Windows.Forms.Button();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.label45 = new System.Windows.Forms.Label();
             this.comboRespiratoryRhythm = new System.Windows.Forms.ComboBox();
             this.label41 = new System.Windows.Forms.Label();
+            this.numInspRatio = new System.Windows.Forms.NumericUpDown();
             this.numExpRatio = new System.Windows.Forms.NumericUpDown();
             this.label44 = new System.Windows.Forms.Label();
-            this.numInspRatio = new System.Windows.Forms.NumericUpDown();
+            this.buttonReset = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numHR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numNSBP)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numNDBP)).BeginInit();
@@ -175,8 +176,8 @@
             this.menuStrip1.SuspendLayout();
             this.groupBox9.SuspendLayout();
             this.groupBox8.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numExpRatio)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numInspRatio)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numExpRatio)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -1581,16 +1582,6 @@
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Patient Parameters";
             // 
-            // buttonReset
-            // 
-            this.buttonReset.Location = new System.Drawing.Point(6, 424);
-            this.buttonReset.Name = "buttonReset";
-            this.buttonReset.Size = new System.Drawing.Size(223, 26);
-            this.buttonReset.TabIndex = 4;
-            this.buttonReset.Text = "Reset Parameters";
-            this.buttonReset.UseVisualStyleBackColor = true;
-            this.buttonReset.Click += new System.EventHandler(this.buttonResetParameters_Click);
-            // 
             // groupBox8
             // 
             this.groupBox8.Controls.Add(this.label45);
@@ -1633,6 +1624,28 @@
             this.label41.TabIndex = 9;
             this.label41.Text = ":";
             // 
+            // numInspRatio
+            // 
+            this.numInspRatio.Location = new System.Drawing.Point(58, 48);
+            this.numInspRatio.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.numInspRatio.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numInspRatio.Name = "numInspRatio";
+            this.numInspRatio.Size = new System.Drawing.Size(47, 20);
+            this.numInspRatio.TabIndex = 1;
+            this.numInspRatio.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            // 
             // numExpRatio
             // 
             this.numExpRatio.Location = new System.Drawing.Point(127, 48);
@@ -1664,27 +1677,15 @@
             this.label44.TabIndex = 6;
             this.label44.Text = "I:E Ratio:";
             // 
-            // numInspRatio
+            // buttonReset
             // 
-            this.numInspRatio.Location = new System.Drawing.Point(58, 48);
-            this.numInspRatio.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.numInspRatio.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numInspRatio.Name = "numInspRatio";
-            this.numInspRatio.Size = new System.Drawing.Size(47, 20);
-            this.numInspRatio.TabIndex = 1;
-            this.numInspRatio.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
+            this.buttonReset.Location = new System.Drawing.Point(6, 424);
+            this.buttonReset.Name = "buttonReset";
+            this.buttonReset.Size = new System.Drawing.Size(223, 26);
+            this.buttonReset.TabIndex = 4;
+            this.buttonReset.Text = "Reset Parameters";
+            this.buttonReset.UseVisualStyleBackColor = true;
+            this.buttonReset.Click += new System.EventHandler(this.buttonResetParameters_Click);
             // 
             // Dialog_Main
             // 
@@ -1694,6 +1695,7 @@
             this.Controls.Add(this.groupBox9);
             this.Controls.Add(this.groupBox7);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Dialog_Main";
             this.Text = "Infirmary Integrated: Devices and Patient Parameters";
@@ -1751,8 +1753,8 @@
             this.groupBox9.ResumeLayout(false);
             this.groupBox8.ResumeLayout(false);
             this.groupBox8.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numExpRatio)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numInspRatio)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numExpRatio)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

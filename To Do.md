@@ -74,6 +74,9 @@
 
 
 * References:
+- Assembly signing with certificate
+	https://www.linkedin.com/pulse/code-signing-visual-studio-jason-brower
+
 - 12 lead ECG waveforms
 	https://ekg.academy/
 - 12 lead axis interpretation

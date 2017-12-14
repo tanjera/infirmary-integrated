@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Device_Monitor));
             this.timerTracing = new System.Windows.Forms.Timer(this.components);
             this.menuMain = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -40,6 +41,7 @@
             this.toolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_ColorScheme = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_Fullscreen = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.closeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -49,7 +51,6 @@
             this.menuItem_EditPatient = new System.Windows.Forms.ToolStripMenuItem();
             this.timerVitals = new System.Windows.Forms.Timer(this.components);
             this.mainLayout = new System.Windows.Forms.TableLayoutPanel();
-            this.menuItem_ColorScheme = new System.Windows.Forms.ToolStripMenuItem();
             this.menuMain.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -112,37 +113,43 @@
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(152, 22);
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(80, 22);
             this.toolStripMenuItem2.Text = "&1";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.menuRowCount_Click);
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
-            this.toolStripMenuItem3.Size = new System.Drawing.Size(152, 22);
+            this.toolStripMenuItem3.Size = new System.Drawing.Size(80, 22);
             this.toolStripMenuItem3.Text = "&2";
             this.toolStripMenuItem3.Click += new System.EventHandler(this.menuRowCount_Click);
             // 
             // toolStripMenuItem4
             // 
             this.toolStripMenuItem4.Name = "toolStripMenuItem4";
-            this.toolStripMenuItem4.Size = new System.Drawing.Size(152, 22);
+            this.toolStripMenuItem4.Size = new System.Drawing.Size(80, 22);
             this.toolStripMenuItem4.Text = "&3";
             this.toolStripMenuItem4.Click += new System.EventHandler(this.menuRowCount_Click);
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
-            this.toolStripMenuItem5.Size = new System.Drawing.Size(152, 22);
+            this.toolStripMenuItem5.Size = new System.Drawing.Size(80, 22);
             this.toolStripMenuItem5.Text = "&4";
             this.toolStripMenuItem5.Click += new System.EventHandler(this.menuRowCount_Click);
             // 
             // toolStripMenuItem6
             // 
             this.toolStripMenuItem6.Name = "toolStripMenuItem6";
-            this.toolStripMenuItem6.Size = new System.Drawing.Size(152, 22);
+            this.toolStripMenuItem6.Size = new System.Drawing.Size(80, 22);
             this.toolStripMenuItem6.Text = "&5";
             this.toolStripMenuItem6.Click += new System.EventHandler(this.menuRowCount_Click);
+            // 
+            // menuItem_ColorScheme
+            // 
+            this.menuItem_ColorScheme.Name = "menuItem_ColorScheme";
+            this.menuItem_ColorScheme.Size = new System.Drawing.Size(191, 22);
+            this.menuItem_ColorScheme.Text = "Color Scheme";
             // 
             // menuItem_Fullscreen
             // 
@@ -221,12 +228,6 @@
             this.mainLayout.Size = new System.Drawing.Size(759, 442);
             this.mainLayout.TabIndex = 6;
             // 
-            // menuItem_ColorScheme
-            // 
-            this.menuItem_ColorScheme.Name = "menuItem_ColorScheme";
-            this.menuItem_ColorScheme.Size = new System.Drawing.Size(191, 22);
-            this.menuItem_ColorScheme.Text = "Color Scheme";
-            // 
             // Device_Monitor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -236,6 +237,7 @@
             this.ClientSize = new System.Drawing.Size(759, 466);
             this.Controls.Add(this.mainLayout);
             this.Controls.Add(this.menuMain);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuMain;
             this.Name = "Device_Monitor";
             this.Text = "Infirmary Integrated: Cardiac Monitor";

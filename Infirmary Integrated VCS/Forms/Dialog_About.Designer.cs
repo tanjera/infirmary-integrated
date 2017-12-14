@@ -66,7 +66,7 @@
             this.labelVersion.TabIndex = 1;
             this.labelVersion.Text = "Version ??";
             // 
-            // About
+            // Dialog_About
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -76,7 +76,7 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.Name = "About";
+            this.Name = "Dialog_About";
             this.Text = "About Infirmary Integrated";
             this.ResumeLayout(false);
             this.PerformLayout();
