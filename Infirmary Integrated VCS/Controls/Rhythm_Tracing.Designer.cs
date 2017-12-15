@@ -30,23 +30,26 @@
             // 
             this.labelType.AutoSize = true;
             this.labelType.Dock = System.Windows.Forms.DockStyle.Right;
+            this.labelType.Font = new System.Drawing.Font("Arial", 10F);
             this.labelType.ForeColor = System.Drawing.Color.White;
             this.labelType.Location = new System.Drawing.Point(150, 0);
             this.labelType.Name = "labelType";
-            this.labelType.Size = new System.Drawing.Size(0, 13);
+            this.labelType.Size = new System.Drawing.Size(0, 16);
             this.labelType.TabIndex = 0;
             this.labelType.TextAlign = System.Drawing.ContentAlignment.TopRight;
             this.labelType.Click += new System.EventHandler(this.onClick);
             // 
             // Rhythm_Tracing
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
             this.BackColor = System.Drawing.Color.Black;
             this.Controls.Add(this.labelType);
-            this.MinimumSize = new System.Drawing.Size(100, 100);
+            this.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.MinimumSize = new System.Drawing.Size(100, 108);
             this.Name = "Rhythm_Tracing";
+            this.Size = new System.Drawing.Size(150, 162);
             this.Click += new System.EventHandler(this.onClick);
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -10,8 +10,9 @@ namespace II.Controls {
 
         _.ColorScheme tColorScheme = _.ColorScheme.Normal;
 
-        Font fontLarge = new Font("Microsoft Sans Serif", 20f, FontStyle.Bold),
-             fontSmall = new Font("Microsoft Sans Serif", 15f, FontStyle.Bold);
+        Font fontLarge = new Font("Arial", 50f, FontStyle.Bold),
+             fontMedium = new Font("Arial", 25f, FontStyle.Bold),
+             fontSmall = new Font ("Arial", 15f, FontStyle.Bold);
 
         public ControlType cType;
 
@@ -84,53 +85,59 @@ namespace II.Controls {
                     break;
             }
 
+            label1.Show ();
+            label2.Show ();
+            label3.Show ();
+
             switch (cType) {
                 default:
                 case ControlType.ECG:
                     labelType.Text = "ECG";
                     label1.Font = fontLarge;
                     label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.HR, 0.02f));
-                    label2.ForeColor = tColorBack;
-                    label3.ForeColor = tColorBack;
+                    label2.Hide ();
+                    label3.Hide ();
                     break;
 
                 case ControlType.TEMP:
                     labelType.Text = "T";
                     label1.Font = fontLarge;
-                    label1.Text = String.Format("{0:0.0} ºC", p.T);
-                    label2.ForeColor = tColorBack;
-                    label3.ForeColor = tColorBack;
+                    label1.Text = String.Format("{0:0.0} C", p.T);
+                    label2.Hide ();
+                    label3.Hide ();
                     break;
 
                 case ControlType.SPO2:
                     labelType.Text = "SpO2";
                     label1.Font = fontLarge;
-                    label1.Text = String.Format("{0:0} %", _.RandomPercentRange(p.SpO2, 0.01f));
-                    label2.ForeColor = tColorBack;
-                    label3.ForeColor = tColorBack;
+                    label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.SpO2, 0.01f));
+                    label2.Font = fontSmall;
+                    label2.Text = String.Format ("HR: {0:0}", _.RandomPercentRange (p.HR, 0.01f));
+                    label3.Hide ();
                     break;
 
                 case ControlType.RR:
                     labelType.Text = "RR";
                     label1.Font = fontLarge;
                     label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.RR, 0.02f));
-                    label2.ForeColor = tColorBack;
-                    label3.ForeColor = tColorBack;
+                    label2.Hide ();
+                    label3.Hide ();
                     break;
 
                 case ControlType.ETCO2:
                     labelType.Text = "ETCO2";
                     label1.Font = fontLarge;
                     label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.ETCO2, 0.02f));
-                    label2.ForeColor = tColorBack;
-                    label3.ForeColor = tColorBack;
+                    label2.Font = fontSmall;
+                    label2.Text = String.Format ("RR: {0:0}", _.RandomPercentRange (p.RR, 0.02f));
+                    label3.Hide ();
                     break;
 
                 case ControlType.NIBP:
-                    labelType.Text = "NiBP";
-                    label1.Font = fontSmall;
-                    label2.Font = fontSmall;
-                    label3.Font = fontSmall;
+                    labelType.Text = "NIBP";
+                    label1.Font = fontMedium;
+                    label2.Font = fontMedium;
+                    label3.Font = fontMedium;
                     label1.Text = String.Format("{0:0}", p.NSBP);
                     label2.Text = String.Format("/ {0:0}", p.NDBP);
                     label3.Text = String.Format("({0:0})", p.NMAP);
@@ -138,9 +145,9 @@ namespace II.Controls {
 
                 case ControlType.ABP:
                     labelType.Text = "ABP";
-                    label1.Font = fontSmall;
-                    label2.Font = fontSmall;
-                    label3.Font = fontSmall;
+                    label1.Font = fontMedium;
+                    label2.Font = fontMedium;
+                    label3.Font = fontMedium;
                     label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.ASBP, 0.02f));
                     label2.Text = String.Format ("/ {0:0}", _.RandomPercentRange(p.ADBP, 0.02f));
                     label3.Text = String.Format ("({0:0})", _.RandomPercentRange(p.AMAP, 0.02f));
@@ -150,15 +157,13 @@ namespace II.Controls {
                     labelType.Text = "CVP";
                     label1.Font = fontLarge;
                     label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.CVP, 0.02f));
-                    label2.ForeColor = tColorBack;
-                    label3.ForeColor = tColorBack;
                     break;
 
                 case ControlType.PA:
                     labelType.Text = "PA";
-                    label1.Font = fontSmall;
-                    label2.Font = fontSmall;
-                    label3.Font = fontSmall;
+                    label1.Font = fontMedium;
+                    label2.Font = fontMedium;
+                    label3.Font = fontMedium;
                     label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.PSP, 0.02f));
                     label2.Text = String.Format ("/ {0:0}", _.RandomPercentRange(p.PDP, 0.02f));
                     label3.Text = String.Format ("({0:0})", _.RandomPercentRange(p.PMP, 0.02f));

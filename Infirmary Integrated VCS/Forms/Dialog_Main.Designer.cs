@@ -183,27 +183,27 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 26);
+            this.label1.Location = new System.Drawing.Point(6, 28);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(59, 13);
+            this.label1.Size = new System.Drawing.Size(57, 14);
             this.label1.TabIndex = 6;
             this.label1.Text = "HR (b/min)";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 49);
+            this.label2.Location = new System.Drawing.Point(6, 53);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(70, 13);
+            this.label2.Size = new System.Drawing.Size(69, 14);
             this.label2.TabIndex = 6;
             this.label2.Text = "NiBP (mmHg)";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 96);
+            this.label3.Location = new System.Drawing.Point(6, 103);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(51, 13);
+            this.label3.Size = new System.Drawing.Size(55, 14);
             this.label3.TabIndex = 6;
             this.label3.Text = "SpO2 (%)";
             // 
@@ -214,7 +214,7 @@
             0,
             0,
             0});
-            this.numHR.Location = new System.Drawing.Point(90, 24);
+            this.numHR.Location = new System.Drawing.Point(90, 26);
             this.numHR.Maximum = new decimal(new int[] {
             240,
             0,
@@ -231,7 +231,7 @@
             0,
             0,
             0});
-            this.numNSBP.Location = new System.Drawing.Point(90, 47);
+            this.numNSBP.Location = new System.Drawing.Point(90, 51);
             this.numNSBP.Maximum = new decimal(new int[] {
             300,
             0,
@@ -248,7 +248,7 @@
             0,
             0,
             0});
-            this.numNDBP.Location = new System.Drawing.Point(161, 47);
+            this.numNDBP.Location = new System.Drawing.Point(161, 51);
             this.numNDBP.Maximum = new decimal(new int[] {
             200,
             0,
@@ -261,9 +261,9 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(143, 49);
+            this.label5.Location = new System.Drawing.Point(143, 53);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(12, 13);
+            this.label5.Size = new System.Drawing.Size(10, 14);
             this.label5.TabIndex = 6;
             this.label5.Text = "/";
             // 
@@ -274,16 +274,16 @@
             0,
             0,
             0});
-            this.numSpO2.Location = new System.Drawing.Point(90, 94);
+            this.numSpO2.Location = new System.Drawing.Point(90, 101);
             this.numSpO2.Name = "numSpO2";
             this.numSpO2.Size = new System.Drawing.Size(47, 20);
             this.numSpO2.TabIndex = 5;
             // 
             // buttonApply
             // 
-            this.buttonApply.Location = new System.Drawing.Point(6, 391);
+            this.buttonApply.Location = new System.Drawing.Point(6, 421);
             this.buttonApply.Name = "buttonApply";
-            this.buttonApply.Size = new System.Drawing.Size(223, 27);
+            this.buttonApply.Size = new System.Drawing.Size(223, 29);
             this.buttonApply.TabIndex = 4;
             this.buttonApply.Text = "Apply Changes";
             this.buttonApply.UseVisualStyleBackColor = true;
@@ -304,9 +304,9 @@
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.numNSBP);
             this.groupBox1.Controls.Add(this.numHR);
-            this.groupBox1.Location = new System.Drawing.Point(6, 19);
+            this.groupBox1.Location = new System.Drawing.Point(6, 20);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(223, 149);
+            this.groupBox1.Size = new System.Drawing.Size(223, 160);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Basic Vital Signs";
@@ -314,9 +314,9 @@
             // lblTempConversion
             // 
             this.lblTempConversion.AutoSize = true;
-            this.lblTempConversion.Location = new System.Drawing.Point(158, 119);
+            this.lblTempConversion.Location = new System.Drawing.Point(158, 128);
             this.lblTempConversion.Name = "lblTempConversion";
-            this.lblTempConversion.Size = new System.Drawing.Size(34, 13);
+            this.lblTempConversion.Size = new System.Drawing.Size(36, 14);
             this.lblTempConversion.TabIndex = 10;
             this.lblTempConversion.Text = "(?? F)";
             // 
@@ -328,7 +328,7 @@
             0,
             0,
             65536});
-            this.numT.Location = new System.Drawing.Point(90, 117);
+            this.numT.Location = new System.Drawing.Point(90, 126);
             this.numT.Maximum = new decimal(new int[] {
             50,
             0,
@@ -341,9 +341,9 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 119);
+            this.label6.Location = new System.Drawing.Point(6, 128);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(57, 13);
+            this.label6.Size = new System.Drawing.Size(58, 14);
             this.label6.TabIndex = 8;
             this.label6.Text = "Temp (ºC):";
             // 
@@ -354,7 +354,7 @@
             0,
             0,
             0});
-            this.numRR.Location = new System.Drawing.Point(90, 71);
+            this.numRR.Location = new System.Drawing.Point(90, 76);
             this.numRR.Name = "numRR";
             this.numRR.Size = new System.Drawing.Size(47, 20);
             this.numRR.TabIndex = 4;
@@ -362,9 +362,9 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 73);
+            this.label8.Location = new System.Drawing.Point(6, 79);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(59, 13);
+            this.label8.Size = new System.Drawing.Size(57, 14);
             this.label8.TabIndex = 6;
             this.label8.Text = "RR (b/min)";
             // 
@@ -375,7 +375,7 @@
             0,
             0,
             0});
-            this.numETCO2.Location = new System.Drawing.Point(90, 24);
+            this.numETCO2.Location = new System.Drawing.Point(90, 26);
             this.numETCO2.Name = "numETCO2";
             this.numETCO2.Size = new System.Drawing.Size(47, 20);
             this.numETCO2.TabIndex = 1;
@@ -383,9 +383,9 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(6, 26);
+            this.label10.Location = new System.Drawing.Point(6, 28);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(81, 13);
+            this.label10.Size = new System.Drawing.Size(80, 14);
             this.label10.TabIndex = 6;
             this.label10.Text = "ETCO2 (mmHg)";
             // 
@@ -397,9 +397,9 @@
             this.groupBox2.Controls.Add(this.label14);
             this.groupBox2.Controls.Add(this.checkDefaultVitals);
             this.groupBox2.Controls.Add(this.comboCardiacRhythm);
-            this.groupBox2.Location = new System.Drawing.Point(235, 19);
+            this.groupBox2.Location = new System.Drawing.Point(235, 20);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(304, 342);
+            this.groupBox2.Size = new System.Drawing.Size(304, 368);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Cardiac Profile";
@@ -408,9 +408,9 @@
             // 
             this.groupBox6.Controls.Add(this.label39);
             this.groupBox6.Controls.Add(this.comboAxisShift);
-            this.groupBox6.Location = new System.Drawing.Point(9, 283);
+            this.groupBox6.Location = new System.Drawing.Point(9, 305);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(286, 50);
+            this.groupBox6.Size = new System.Drawing.Size(286, 54);
             this.groupBox6.TabIndex = 5;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Axis Shift";
@@ -418,9 +418,9 @@
             // label39
             // 
             this.label39.AutoSize = true;
-            this.label39.Location = new System.Drawing.Point(6, 22);
+            this.label39.Location = new System.Drawing.Point(6, 24);
             this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(53, 13);
+            this.label39.Size = new System.Drawing.Size(57, 14);
             this.label39.TabIndex = 7;
             this.label39.Text = "Axis Shift:";
             // 
@@ -428,9 +428,9 @@
             // 
             this.comboAxisShift.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboAxisShift.FormattingEnabled = true;
-            this.comboAxisShift.Location = new System.Drawing.Point(65, 19);
+            this.comboAxisShift.Location = new System.Drawing.Point(65, 20);
             this.comboAxisShift.Name = "comboAxisShift";
-            this.comboAxisShift.Size = new System.Drawing.Size(204, 21);
+            this.comboAxisShift.Size = new System.Drawing.Size(204, 22);
             this.comboAxisShift.TabIndex = 1;
             // 
             // groupBox5
@@ -459,9 +459,9 @@
             this.groupBox5.Controls.Add(this.numTWE_aVR);
             this.groupBox5.Controls.Add(this.numTWE_II);
             this.groupBox5.Controls.Add(this.numTWE_I);
-            this.groupBox5.Location = new System.Drawing.Point(6, 178);
+            this.groupBox5.Location = new System.Drawing.Point(9, 192);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(286, 99);
+            this.groupBox5.Size = new System.Drawing.Size(286, 107);
             this.groupBox5.TabIndex = 4;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "T Wave Elevation";
@@ -469,81 +469,81 @@
             // label27
             // 
             this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(212, 72);
+            this.label27.Location = new System.Drawing.Point(212, 78);
             this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(20, 13);
+            this.label27.Size = new System.Drawing.Size(21, 14);
             this.label27.TabIndex = 6;
             this.label27.Text = "V6";
             // 
             // label28
             // 
             this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(142, 72);
+            this.label28.Location = new System.Drawing.Point(142, 78);
             this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(20, 13);
+            this.label28.Size = new System.Drawing.Size(21, 14);
             this.label28.TabIndex = 6;
             this.label28.Text = "V3";
             // 
             // label29
             // 
             this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(66, 72);
+            this.label29.Location = new System.Drawing.Point(66, 78);
             this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(26, 13);
+            this.label29.Size = new System.Drawing.Size(27, 14);
             this.label29.TabIndex = 6;
             this.label29.Text = "aVF";
             // 
             // label30
             // 
             this.label30.AutoSize = true;
-            this.label30.Location = new System.Drawing.Point(6, 72);
+            this.label30.Location = new System.Drawing.Point(6, 78);
             this.label30.Name = "label30";
-            this.label30.Size = new System.Drawing.Size(16, 13);
+            this.label30.Size = new System.Drawing.Size(13, 14);
             this.label30.TabIndex = 6;
             this.label30.Text = "III";
             // 
             // label31
             // 
             this.label31.AutoSize = true;
-            this.label31.Location = new System.Drawing.Point(212, 49);
+            this.label31.Location = new System.Drawing.Point(212, 53);
             this.label31.Name = "label31";
-            this.label31.Size = new System.Drawing.Size(20, 13);
+            this.label31.Size = new System.Drawing.Size(21, 14);
             this.label31.TabIndex = 6;
             this.label31.Text = "V5";
             // 
             // label32
             // 
             this.label32.AutoSize = true;
-            this.label32.Location = new System.Drawing.Point(142, 49);
+            this.label32.Location = new System.Drawing.Point(142, 53);
             this.label32.Name = "label32";
-            this.label32.Size = new System.Drawing.Size(20, 13);
+            this.label32.Size = new System.Drawing.Size(21, 14);
             this.label32.TabIndex = 6;
             this.label32.Text = "V2";
             // 
             // label33
             // 
             this.label33.AutoSize = true;
-            this.label33.Location = new System.Drawing.Point(66, 49);
+            this.label33.Location = new System.Drawing.Point(66, 53);
             this.label33.Name = "label33";
-            this.label33.Size = new System.Drawing.Size(26, 13);
+            this.label33.Size = new System.Drawing.Size(27, 14);
             this.label33.TabIndex = 6;
             this.label33.Text = "aVL";
             // 
             // label34
             // 
             this.label34.AutoSize = true;
-            this.label34.Location = new System.Drawing.Point(6, 49);
+            this.label34.Location = new System.Drawing.Point(6, 53);
             this.label34.Name = "label34";
-            this.label34.Size = new System.Drawing.Size(13, 13);
+            this.label34.Size = new System.Drawing.Size(11, 14);
             this.label34.TabIndex = 6;
             this.label34.Text = "II";
             // 
             // label35
             // 
             this.label35.AutoSize = true;
-            this.label35.Location = new System.Drawing.Point(212, 26);
+            this.label35.Location = new System.Drawing.Point(212, 28);
             this.label35.Name = "label35";
-            this.label35.Size = new System.Drawing.Size(20, 13);
+            this.label35.Size = new System.Drawing.Size(21, 14);
             this.label35.TabIndex = 6;
             this.label35.Text = "V4";
             // 
@@ -555,7 +555,7 @@
             0,
             0,
             65536});
-            this.numTWE_V6.Location = new System.Drawing.Point(238, 70);
+            this.numTWE_V6.Location = new System.Drawing.Point(238, 75);
             this.numTWE_V6.Maximum = new decimal(new int[] {
             1,
             0,
@@ -573,9 +573,9 @@
             // label36
             // 
             this.label36.AutoSize = true;
-            this.label36.Location = new System.Drawing.Point(142, 26);
+            this.label36.Location = new System.Drawing.Point(142, 28);
             this.label36.Name = "label36";
-            this.label36.Size = new System.Drawing.Size(20, 13);
+            this.label36.Size = new System.Drawing.Size(21, 14);
             this.label36.TabIndex = 6;
             this.label36.Text = "V1";
             // 
@@ -587,7 +587,7 @@
             0,
             0,
             65536});
-            this.numTWE_V3.Location = new System.Drawing.Point(168, 70);
+            this.numTWE_V3.Location = new System.Drawing.Point(168, 75);
             this.numTWE_V3.Maximum = new decimal(new int[] {
             1,
             0,
@@ -605,9 +605,9 @@
             // label37
             // 
             this.label37.AutoSize = true;
-            this.label37.Location = new System.Drawing.Point(66, 26);
+            this.label37.Location = new System.Drawing.Point(66, 28);
             this.label37.Name = "label37";
-            this.label37.Size = new System.Drawing.Size(28, 13);
+            this.label37.Size = new System.Drawing.Size(28, 14);
             this.label37.TabIndex = 6;
             this.label37.Text = "aVR";
             // 
@@ -619,7 +619,7 @@
             0,
             0,
             65536});
-            this.numTWE_V5.Location = new System.Drawing.Point(238, 47);
+            this.numTWE_V5.Location = new System.Drawing.Point(238, 51);
             this.numTWE_V5.Maximum = new decimal(new int[] {
             1,
             0,
@@ -642,7 +642,7 @@
             0,
             0,
             65536});
-            this.numTWE_aVF.Location = new System.Drawing.Point(98, 70);
+            this.numTWE_aVF.Location = new System.Drawing.Point(98, 75);
             this.numTWE_aVF.Maximum = new decimal(new int[] {
             1,
             0,
@@ -665,7 +665,7 @@
             0,
             0,
             65536});
-            this.numTWE_V2.Location = new System.Drawing.Point(168, 47);
+            this.numTWE_V2.Location = new System.Drawing.Point(168, 51);
             this.numTWE_V2.Maximum = new decimal(new int[] {
             1,
             0,
@@ -683,9 +683,9 @@
             // label38
             // 
             this.label38.AutoSize = true;
-            this.label38.Location = new System.Drawing.Point(6, 26);
+            this.label38.Location = new System.Drawing.Point(6, 28);
             this.label38.Name = "label38";
-            this.label38.Size = new System.Drawing.Size(10, 13);
+            this.label38.Size = new System.Drawing.Size(9, 14);
             this.label38.TabIndex = 6;
             this.label38.Text = "I";
             // 
@@ -697,7 +697,7 @@
             0,
             0,
             65536});
-            this.numTWE_V4.Location = new System.Drawing.Point(238, 24);
+            this.numTWE_V4.Location = new System.Drawing.Point(238, 26);
             this.numTWE_V4.Maximum = new decimal(new int[] {
             1,
             0,
@@ -720,7 +720,7 @@
             0,
             0,
             65536});
-            this.numTWE_aVL.Location = new System.Drawing.Point(98, 47);
+            this.numTWE_aVL.Location = new System.Drawing.Point(98, 51);
             this.numTWE_aVL.Maximum = new decimal(new int[] {
             1,
             0,
@@ -743,7 +743,7 @@
             0,
             0,
             65536});
-            this.numTWE_V1.Location = new System.Drawing.Point(168, 24);
+            this.numTWE_V1.Location = new System.Drawing.Point(168, 26);
             this.numTWE_V1.Maximum = new decimal(new int[] {
             1,
             0,
@@ -766,7 +766,7 @@
             0,
             0,
             65536});
-            this.numTWE_III.Location = new System.Drawing.Point(22, 70);
+            this.numTWE_III.Location = new System.Drawing.Point(22, 75);
             this.numTWE_III.Maximum = new decimal(new int[] {
             1,
             0,
@@ -789,7 +789,7 @@
             0,
             0,
             65536});
-            this.numTWE_aVR.Location = new System.Drawing.Point(98, 24);
+            this.numTWE_aVR.Location = new System.Drawing.Point(98, 26);
             this.numTWE_aVR.Maximum = new decimal(new int[] {
             1,
             0,
@@ -812,7 +812,7 @@
             0,
             0,
             65536});
-            this.numTWE_II.Location = new System.Drawing.Point(22, 47);
+            this.numTWE_II.Location = new System.Drawing.Point(22, 51);
             this.numTWE_II.Maximum = new decimal(new int[] {
             1,
             0,
@@ -835,7 +835,7 @@
             0,
             0,
             65536});
-            this.numTWE_I.Location = new System.Drawing.Point(22, 24);
+            this.numTWE_I.Location = new System.Drawing.Point(22, 26);
             this.numTWE_I.Maximum = new decimal(new int[] {
             1,
             0,
@@ -876,9 +876,9 @@
             this.groupBox4.Controls.Add(this.numSTE_aVR);
             this.groupBox4.Controls.Add(this.numSTE_II);
             this.groupBox4.Controls.Add(this.numSTE_I);
-            this.groupBox4.Location = new System.Drawing.Point(9, 73);
+            this.groupBox4.Location = new System.Drawing.Point(9, 79);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(286, 99);
+            this.groupBox4.Size = new System.Drawing.Size(286, 107);
             this.groupBox4.TabIndex = 3;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "ST Segment Elevation";
@@ -886,81 +886,81 @@
             // label26
             // 
             this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(212, 72);
+            this.label26.Location = new System.Drawing.Point(212, 78);
             this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(20, 13);
+            this.label26.Size = new System.Drawing.Size(21, 14);
             this.label26.TabIndex = 6;
             this.label26.Text = "V6";
             // 
             // label23
             // 
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(142, 72);
+            this.label23.Location = new System.Drawing.Point(142, 78);
             this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(20, 13);
+            this.label23.Size = new System.Drawing.Size(21, 14);
             this.label23.TabIndex = 6;
             this.label23.Text = "V3";
             // 
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(66, 72);
+            this.label20.Location = new System.Drawing.Point(66, 78);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(26, 13);
+            this.label20.Size = new System.Drawing.Size(27, 14);
             this.label20.TabIndex = 6;
             this.label20.Text = "aVF";
             // 
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(6, 72);
+            this.label17.Location = new System.Drawing.Point(6, 78);
             this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(16, 13);
+            this.label17.Size = new System.Drawing.Size(13, 14);
             this.label17.TabIndex = 6;
             this.label17.Text = "III";
             // 
             // label25
             // 
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(212, 49);
+            this.label25.Location = new System.Drawing.Point(212, 53);
             this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(20, 13);
+            this.label25.Size = new System.Drawing.Size(21, 14);
             this.label25.TabIndex = 6;
             this.label25.Text = "V5";
             // 
             // label22
             // 
             this.label22.AutoSize = true;
-            this.label22.Location = new System.Drawing.Point(142, 49);
+            this.label22.Location = new System.Drawing.Point(142, 53);
             this.label22.Name = "label22";
-            this.label22.Size = new System.Drawing.Size(20, 13);
+            this.label22.Size = new System.Drawing.Size(21, 14);
             this.label22.TabIndex = 6;
             this.label22.Text = "V2";
             // 
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(66, 49);
+            this.label19.Location = new System.Drawing.Point(66, 53);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(26, 13);
+            this.label19.Size = new System.Drawing.Size(27, 14);
             this.label19.TabIndex = 6;
             this.label19.Text = "aVL";
             // 
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(6, 49);
+            this.label16.Location = new System.Drawing.Point(6, 53);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(13, 13);
+            this.label16.Size = new System.Drawing.Size(11, 14);
             this.label16.TabIndex = 6;
             this.label16.Text = "II";
             // 
             // label24
             // 
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(212, 26);
+            this.label24.Location = new System.Drawing.Point(212, 28);
             this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(20, 13);
+            this.label24.Size = new System.Drawing.Size(21, 14);
             this.label24.TabIndex = 6;
             this.label24.Text = "V4";
             // 
@@ -972,7 +972,7 @@
             0,
             0,
             65536});
-            this.numSTE_V6.Location = new System.Drawing.Point(238, 70);
+            this.numSTE_V6.Location = new System.Drawing.Point(238, 75);
             this.numSTE_V6.Maximum = new decimal(new int[] {
             1,
             0,
@@ -990,9 +990,9 @@
             // label21
             // 
             this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(142, 26);
+            this.label21.Location = new System.Drawing.Point(142, 28);
             this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(20, 13);
+            this.label21.Size = new System.Drawing.Size(21, 14);
             this.label21.TabIndex = 6;
             this.label21.Text = "V1";
             // 
@@ -1004,7 +1004,7 @@
             0,
             0,
             65536});
-            this.numSTE_V3.Location = new System.Drawing.Point(168, 70);
+            this.numSTE_V3.Location = new System.Drawing.Point(168, 75);
             this.numSTE_V3.Maximum = new decimal(new int[] {
             1,
             0,
@@ -1022,9 +1022,9 @@
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(66, 26);
+            this.label18.Location = new System.Drawing.Point(66, 28);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(28, 13);
+            this.label18.Size = new System.Drawing.Size(28, 14);
             this.label18.TabIndex = 6;
             this.label18.Text = "aVR";
             // 
@@ -1036,7 +1036,7 @@
             0,
             0,
             65536});
-            this.numSTE_V5.Location = new System.Drawing.Point(238, 47);
+            this.numSTE_V5.Location = new System.Drawing.Point(238, 51);
             this.numSTE_V5.Maximum = new decimal(new int[] {
             1,
             0,
@@ -1059,7 +1059,7 @@
             0,
             0,
             65536});
-            this.numSTE_aVF.Location = new System.Drawing.Point(98, 70);
+            this.numSTE_aVF.Location = new System.Drawing.Point(98, 75);
             this.numSTE_aVF.Maximum = new decimal(new int[] {
             1,
             0,
@@ -1082,7 +1082,7 @@
             0,
             0,
             65536});
-            this.numSTE_V2.Location = new System.Drawing.Point(168, 47);
+            this.numSTE_V2.Location = new System.Drawing.Point(168, 51);
             this.numSTE_V2.Maximum = new decimal(new int[] {
             1,
             0,
@@ -1100,9 +1100,9 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(6, 26);
+            this.label11.Location = new System.Drawing.Point(6, 28);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(10, 13);
+            this.label11.Size = new System.Drawing.Size(9, 14);
             this.label11.TabIndex = 6;
             this.label11.Text = "I";
             // 
@@ -1114,7 +1114,7 @@
             0,
             0,
             65536});
-            this.numSTE_V4.Location = new System.Drawing.Point(238, 24);
+            this.numSTE_V4.Location = new System.Drawing.Point(238, 26);
             this.numSTE_V4.Maximum = new decimal(new int[] {
             1,
             0,
@@ -1137,7 +1137,7 @@
             0,
             0,
             65536});
-            this.numSTE_aVL.Location = new System.Drawing.Point(98, 47);
+            this.numSTE_aVL.Location = new System.Drawing.Point(98, 51);
             this.numSTE_aVL.Maximum = new decimal(new int[] {
             1,
             0,
@@ -1160,7 +1160,7 @@
             0,
             0,
             65536});
-            this.numSTE_V1.Location = new System.Drawing.Point(168, 24);
+            this.numSTE_V1.Location = new System.Drawing.Point(168, 26);
             this.numSTE_V1.Maximum = new decimal(new int[] {
             1,
             0,
@@ -1183,7 +1183,7 @@
             0,
             0,
             65536});
-            this.numSTE_III.Location = new System.Drawing.Point(22, 70);
+            this.numSTE_III.Location = new System.Drawing.Point(22, 75);
             this.numSTE_III.Maximum = new decimal(new int[] {
             1,
             0,
@@ -1206,7 +1206,7 @@
             0,
             0,
             65536});
-            this.numSTE_aVR.Location = new System.Drawing.Point(98, 24);
+            this.numSTE_aVR.Location = new System.Drawing.Point(98, 26);
             this.numSTE_aVR.Maximum = new decimal(new int[] {
             1,
             0,
@@ -1229,7 +1229,7 @@
             0,
             0,
             65536});
-            this.numSTE_II.Location = new System.Drawing.Point(22, 47);
+            this.numSTE_II.Location = new System.Drawing.Point(22, 51);
             this.numSTE_II.Maximum = new decimal(new int[] {
             1,
             0,
@@ -1252,7 +1252,7 @@
             0,
             0,
             65536});
-            this.numSTE_I.Location = new System.Drawing.Point(22, 24);
+            this.numSTE_I.Location = new System.Drawing.Point(22, 26);
             this.numSTE_I.Maximum = new decimal(new int[] {
             1,
             0,
@@ -1270,9 +1270,9 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(6, 26);
+            this.label14.Location = new System.Drawing.Point(6, 28);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(85, 13);
+            this.label14.Size = new System.Drawing.Size(86, 14);
             this.label14.TabIndex = 6;
             this.label14.Text = "Cardiac Rhythm:";
             // 
@@ -1281,10 +1281,10 @@
             this.checkDefaultVitals.AutoSize = true;
             this.checkDefaultVitals.Checked = true;
             this.checkDefaultVitals.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkDefaultVitals.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkDefaultVitals.Location = new System.Drawing.Point(31, 48);
+            this.checkDefaultVitals.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Underline, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.checkDefaultVitals.Location = new System.Drawing.Point(31, 52);
             this.checkDefaultVitals.Name = "checkDefaultVitals";
-            this.checkDefaultVitals.Size = new System.Drawing.Size(249, 17);
+            this.checkDefaultVitals.Size = new System.Drawing.Size(258, 18);
             this.checkDefaultVitals.TabIndex = 2;
             this.checkDefaultVitals.Text = "Use default vital sign ranges for rythm changes.";
             this.checkDefaultVitals.UseVisualStyleBackColor = true;
@@ -1293,9 +1293,9 @@
             // 
             this.comboCardiacRhythm.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboCardiacRhythm.FormattingEnabled = true;
-            this.comboCardiacRhythm.Location = new System.Drawing.Point(97, 23);
+            this.comboCardiacRhythm.Location = new System.Drawing.Point(97, 25);
             this.comboCardiacRhythm.Name = "comboCardiacRhythm";
-            this.comboCardiacRhythm.Size = new System.Drawing.Size(181, 21);
+            this.comboCardiacRhythm.Size = new System.Drawing.Size(181, 22);
             this.comboCardiacRhythm.TabIndex = 1;
             this.comboCardiacRhythm.SelectedIndexChanged += new System.EventHandler(this.onRhythmSelected);
             // 
@@ -1313,9 +1313,9 @@
             this.groupBox3.Controls.Add(this.label9);
             this.groupBox3.Controls.Add(this.numCVP);
             this.groupBox3.Controls.Add(this.label10);
-            this.groupBox3.Location = new System.Drawing.Point(6, 174);
+            this.groupBox3.Location = new System.Drawing.Point(6, 187);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(223, 128);
+            this.groupBox3.Size = new System.Drawing.Size(223, 138);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Advanced Hemodynamics";
@@ -1323,18 +1323,18 @@
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(6, 49);
+            this.label15.Location = new System.Drawing.Point(6, 53);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(67, 13);
+            this.label15.Size = new System.Drawing.Size(68, 14);
             this.label15.TabIndex = 8;
             this.label15.Text = "ABP (mmHg)";
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(6, 97);
+            this.label12.Location = new System.Drawing.Point(6, 104);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(67, 13);
+            this.label12.Size = new System.Drawing.Size(66, 14);
             this.label12.TabIndex = 8;
             this.label12.Text = "PAP (mmHg)";
             // 
@@ -1345,7 +1345,7 @@
             0,
             0,
             0});
-            this.numADBP.Location = new System.Drawing.Point(161, 47);
+            this.numADBP.Location = new System.Drawing.Point(161, 51);
             this.numADBP.Maximum = new decimal(new int[] {
             200,
             0,
@@ -1358,9 +1358,9 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(143, 49);
+            this.label4.Location = new System.Drawing.Point(143, 53);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(12, 13);
+            this.label4.Size = new System.Drawing.Size(10, 14);
             this.label4.TabIndex = 9;
             this.label4.Text = "/";
             // 
@@ -1371,7 +1371,7 @@
             0,
             0,
             0});
-            this.numPDP.Location = new System.Drawing.Point(161, 95);
+            this.numPDP.Location = new System.Drawing.Point(161, 102);
             this.numPDP.Maximum = new decimal(new int[] {
             200,
             0,
@@ -1388,7 +1388,7 @@
             0,
             0,
             0});
-            this.numASBP.Location = new System.Drawing.Point(90, 47);
+            this.numASBP.Location = new System.Drawing.Point(90, 51);
             this.numASBP.Maximum = new decimal(new int[] {
             300,
             0,
@@ -1401,9 +1401,9 @@
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(143, 97);
+            this.label13.Location = new System.Drawing.Point(143, 104);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(12, 13);
+            this.label13.Size = new System.Drawing.Size(10, 14);
             this.label13.TabIndex = 9;
             this.label13.Text = "/";
             // 
@@ -1414,7 +1414,7 @@
             0,
             0,
             0});
-            this.numPSP.Location = new System.Drawing.Point(90, 95);
+            this.numPSP.Location = new System.Drawing.Point(90, 102);
             this.numPSP.Maximum = new decimal(new int[] {
             300,
             0,
@@ -1427,9 +1427,9 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 73);
+            this.label9.Location = new System.Drawing.Point(6, 79);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(67, 13);
+            this.label9.Size = new System.Drawing.Size(68, 14);
             this.label9.TabIndex = 6;
             this.label9.Text = "CVP (mmHg)";
             // 
@@ -1440,7 +1440,7 @@
             0,
             0,
             0});
-            this.numCVP.Location = new System.Drawing.Point(90, 71);
+            this.numCVP.Location = new System.Drawing.Point(90, 76);
             this.numCVP.Maximum = new decimal(new int[] {
             200,
             0,
@@ -1458,9 +1458,9 @@
             this.groupBox7.Controls.Add(this.buttonDevice_Defibrillator);
             this.groupBox7.Controls.Add(this.buttonDevice_12ECG);
             this.groupBox7.Controls.Add(this.buttonDevice_Monitor);
-            this.groupBox7.Location = new System.Drawing.Point(12, 27);
+            this.groupBox7.Location = new System.Drawing.Point(12, 29);
             this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(223, 265);
+            this.groupBox7.Size = new System.Drawing.Size(223, 285);
             this.groupBox7.TabIndex = 5;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Devices";
@@ -1468,9 +1468,9 @@
             // buttonDevice_Ventilator
             // 
             this.buttonDevice_Ventilator.Enabled = false;
-            this.buttonDevice_Ventilator.Location = new System.Drawing.Point(6, 104);
+            this.buttonDevice_Ventilator.Location = new System.Drawing.Point(6, 112);
             this.buttonDevice_Ventilator.Name = "buttonDevice_Ventilator";
-            this.buttonDevice_Ventilator.Size = new System.Drawing.Size(211, 24);
+            this.buttonDevice_Ventilator.Size = new System.Drawing.Size(211, 26);
             this.buttonDevice_Ventilator.TabIndex = 4;
             this.buttonDevice_Ventilator.Text = "Ventilator";
             this.buttonDevice_Ventilator.UseVisualStyleBackColor = true;
@@ -1478,9 +1478,9 @@
             // buttonDevice_LabReport
             // 
             this.buttonDevice_LabReport.Enabled = false;
-            this.buttonDevice_LabReport.Location = new System.Drawing.Point(6, 223);
+            this.buttonDevice_LabReport.Location = new System.Drawing.Point(6, 240);
             this.buttonDevice_LabReport.Name = "buttonDevice_LabReport";
-            this.buttonDevice_LabReport.Size = new System.Drawing.Size(211, 24);
+            this.buttonDevice_LabReport.Size = new System.Drawing.Size(211, 26);
             this.buttonDevice_LabReport.TabIndex = 4;
             this.buttonDevice_LabReport.Text = "Laboratory Report";
             this.buttonDevice_LabReport.UseVisualStyleBackColor = true;
@@ -1488,9 +1488,9 @@
             // buttonDevice_IABP
             // 
             this.buttonDevice_IABP.Enabled = false;
-            this.buttonDevice_IABP.Location = new System.Drawing.Point(6, 164);
+            this.buttonDevice_IABP.Location = new System.Drawing.Point(6, 177);
             this.buttonDevice_IABP.Name = "buttonDevice_IABP";
-            this.buttonDevice_IABP.Size = new System.Drawing.Size(211, 24);
+            this.buttonDevice_IABP.Size = new System.Drawing.Size(211, 26);
             this.buttonDevice_IABP.TabIndex = 4;
             this.buttonDevice_IABP.Text = "Intra-Aortic Balloon Pump (IABP)";
             this.buttonDevice_IABP.UseVisualStyleBackColor = true;
@@ -1498,9 +1498,9 @@
             // buttonDevice_Defibrillator
             // 
             this.buttonDevice_Defibrillator.Enabled = false;
-            this.buttonDevice_Defibrillator.Location = new System.Drawing.Point(6, 134);
+            this.buttonDevice_Defibrillator.Location = new System.Drawing.Point(6, 144);
             this.buttonDevice_Defibrillator.Name = "buttonDevice_Defibrillator";
-            this.buttonDevice_Defibrillator.Size = new System.Drawing.Size(211, 24);
+            this.buttonDevice_Defibrillator.Size = new System.Drawing.Size(211, 26);
             this.buttonDevice_Defibrillator.TabIndex = 4;
             this.buttonDevice_Defibrillator.Text = "Defibrillator";
             this.buttonDevice_Defibrillator.UseVisualStyleBackColor = true;
@@ -1508,18 +1508,18 @@
             // buttonDevice_12ECG
             // 
             this.buttonDevice_12ECG.Enabled = false;
-            this.buttonDevice_12ECG.Location = new System.Drawing.Point(6, 49);
+            this.buttonDevice_12ECG.Location = new System.Drawing.Point(6, 53);
             this.buttonDevice_12ECG.Name = "buttonDevice_12ECG";
-            this.buttonDevice_12ECG.Size = new System.Drawing.Size(211, 24);
+            this.buttonDevice_12ECG.Size = new System.Drawing.Size(211, 26);
             this.buttonDevice_12ECG.TabIndex = 4;
             this.buttonDevice_12ECG.Text = "12-Lead ECG";
             this.buttonDevice_12ECG.UseVisualStyleBackColor = true;
             // 
             // buttonDevice_Monitor
             // 
-            this.buttonDevice_Monitor.Location = new System.Drawing.Point(6, 19);
+            this.buttonDevice_Monitor.Location = new System.Drawing.Point(6, 20);
             this.buttonDevice_Monitor.Name = "buttonDevice_Monitor";
-            this.buttonDevice_Monitor.Size = new System.Drawing.Size(211, 24);
+            this.buttonDevice_Monitor.Size = new System.Drawing.Size(211, 26);
             this.buttonDevice_Monitor.TabIndex = 4;
             this.buttonDevice_Monitor.Text = "Cardiac Monitor";
             this.buttonDevice_Monitor.UseVisualStyleBackColor = true;
@@ -1575,9 +1575,9 @@
             this.groupBox9.Controls.Add(this.buttonApply);
             this.groupBox9.Controls.Add(this.groupBox2);
             this.groupBox9.Controls.Add(this.groupBox3);
-            this.groupBox9.Location = new System.Drawing.Point(241, 27);
+            this.groupBox9.Location = new System.Drawing.Point(241, 29);
             this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(547, 458);
+            this.groupBox9.Size = new System.Drawing.Size(547, 493);
             this.groupBox9.TabIndex = 5;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Patient Parameters";
@@ -1590,9 +1590,9 @@
             this.groupBox8.Controls.Add(this.numInspRatio);
             this.groupBox8.Controls.Add(this.numExpRatio);
             this.groupBox8.Controls.Add(this.label44);
-            this.groupBox8.Location = new System.Drawing.Point(6, 308);
+            this.groupBox8.Location = new System.Drawing.Point(6, 332);
             this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(223, 77);
+            this.groupBox8.Size = new System.Drawing.Size(223, 83);
             this.groupBox8.TabIndex = 5;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Respiratory Profile";
@@ -1600,9 +1600,9 @@
             // label45
             // 
             this.label45.AutoSize = true;
-            this.label45.Location = new System.Drawing.Point(6, 26);
+            this.label45.Location = new System.Drawing.Point(6, 28);
             this.label45.Name = "label45";
-            this.label45.Size = new System.Drawing.Size(46, 13);
+            this.label45.Size = new System.Drawing.Size(46, 14);
             this.label45.TabIndex = 14;
             this.label45.Text = "Rhythm:";
             // 
@@ -1610,23 +1610,23 @@
             // 
             this.comboRespiratoryRhythm.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboRespiratoryRhythm.FormattingEnabled = true;
-            this.comboRespiratoryRhythm.Location = new System.Drawing.Point(58, 23);
+            this.comboRespiratoryRhythm.Location = new System.Drawing.Point(58, 25);
             this.comboRespiratoryRhythm.Name = "comboRespiratoryRhythm";
-            this.comboRespiratoryRhythm.Size = new System.Drawing.Size(159, 21);
+            this.comboRespiratoryRhythm.Size = new System.Drawing.Size(159, 22);
             this.comboRespiratoryRhythm.TabIndex = 13;
             // 
             // label41
             // 
             this.label41.AutoSize = true;
-            this.label41.Location = new System.Drawing.Point(111, 50);
+            this.label41.Location = new System.Drawing.Point(111, 54);
             this.label41.Name = "label41";
-            this.label41.Size = new System.Drawing.Size(10, 13);
+            this.label41.Size = new System.Drawing.Size(10, 14);
             this.label41.TabIndex = 9;
             this.label41.Text = ":";
             // 
             // numInspRatio
             // 
-            this.numInspRatio.Location = new System.Drawing.Point(58, 48);
+            this.numInspRatio.Location = new System.Drawing.Point(58, 52);
             this.numInspRatio.Maximum = new decimal(new int[] {
             10,
             0,
@@ -1648,7 +1648,7 @@
             // 
             // numExpRatio
             // 
-            this.numExpRatio.Location = new System.Drawing.Point(127, 48);
+            this.numExpRatio.Location = new System.Drawing.Point(127, 52);
             this.numExpRatio.Maximum = new decimal(new int[] {
             10,
             0,
@@ -1671,17 +1671,17 @@
             // label44
             // 
             this.label44.AutoSize = true;
-            this.label44.Location = new System.Drawing.Point(7, 50);
+            this.label44.Location = new System.Drawing.Point(7, 54);
             this.label44.Name = "label44";
-            this.label44.Size = new System.Drawing.Size(51, 13);
+            this.label44.Size = new System.Drawing.Size(48, 14);
             this.label44.TabIndex = 6;
             this.label44.Text = "I:E Ratio:";
             // 
             // buttonReset
             // 
-            this.buttonReset.Location = new System.Drawing.Point(6, 424);
+            this.buttonReset.Location = new System.Drawing.Point(6, 457);
             this.buttonReset.Name = "buttonReset";
-            this.buttonReset.Size = new System.Drawing.Size(223, 26);
+            this.buttonReset.Size = new System.Drawing.Size(223, 28);
             this.buttonReset.TabIndex = 4;
             this.buttonReset.Text = "Reset Parameters";
             this.buttonReset.UseVisualStyleBackColor = true;
@@ -1689,12 +1689,13 @@
             // 
             // Dialog_Main
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(792, 490);
+            this.ClientSize = new System.Drawing.Size(792, 528);
             this.Controls.Add(this.groupBox9);
             this.Controls.Add(this.groupBox7);
             this.Controls.Add(this.menuStrip1);
+            this.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Dialog_Main";

@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Drawing;
 
 namespace II {
 
     public static class _ {
 
-        public const string Version = "0.65";
+        public const string Version = "0.66";
 
 
         public enum ColorScheme {
