@@ -13,9 +13,8 @@
 
 	- v 0.7
 		- More tracings: CVP, PA
-		- 12 lead ECG device form (Device_ECG)
-			- Fixed layout
-			- Option to pause for viewing, printing, or export to .pdf
+		- Cardiac monitor: split panel between two TableLayoutPanels
+			- Will allow for amount of numerics to != amount of tracings! And user resizing of columns
 
 
 	- v 0.8
@@ -28,13 +27,13 @@
 
 
 	- v 0.9
-		- Implement pulsus paradoxus
+		- 12 lead ECG device form (Device_ECG)
+			- Fixed layout
+			- Option to pause for viewing, printing, or export to .pdf
 		- Implement axis deviation in ECG tracings
+		- Implement pulsus paradoxus
 		- Add default Rhythm vital signs for all hemodynamic parameters (Get_Rhythm().Vitals())
-		- PA catheter improvements
-			- Thermodilution profile dialog form
-			- Additional PA waveforms (RA, RV, PA, PAW)
-			- Option to select waveform ("placement" of PA cath?)
+
 
 
 	- v 1.0
@@ -64,12 +63,17 @@
 		- Timing indicators for strip tracings (3 second tick marks, etc)
 		- Paced rhythms (AAI, VVI, DDI)
 			- Event/delegate triggers onCardiac_PaceAtria, onCardiac_PaceVentricles
+		- PA catheter improvements
+			- Thermodilution profile dialog form
+			- Additional PA waveforms (RA, RV, PA, PAW)
+			- Option to select waveform ("placement" of PA cath?)
 
 
 
 * Feature ideas, needs placing in version plan:
 	- More respiratory content
 		- ETCO2 waveform coefficients
+	- Ventilators... other devices...
 
 
 
