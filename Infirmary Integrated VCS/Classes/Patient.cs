@@ -15,11 +15,11 @@ namespace II {
         public double T;
 
         public double[] ST_Elevation, T_Elevation;
-        public Rhythms.Cardiac_Rhythm Cardiac_Rhythm;
+        public Cardiac_Rhythms Cardiac_Rhythm = new Cardiac_Rhythms();
         public bool Cardiac_Rhythm__Flag;               // Used for signaling aberrant beats as needed
-        public Rhythms.Cardiac_Axis_Shifts Cardiac_Axis_Shift;
+        public Cardiac_Axis_Shifts Cardiac_Axis_Shift;
 
-        public Rhythms.Respiratory_Rhythm Respiratory_Rhythm;
+        public Respiratory_Rhythms Respiratory_Rhythm;
         public bool Respiratory_Inflated;
         public int Respiratory_IERatio_I, Respiratory_IERatio_E;
 
@@ -70,9 +70,9 @@ namespace II {
                             22, 12, 16,
                             new double[] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
                             new double[] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
-                            Rhythms.Cardiac_Rhythm.Sinus_Rhythm,
-                            Rhythms.Cardiac_Axis_Shifts.Normal,
-                            Rhythms.Respiratory_Rhythm.Regular,
+                            Cardiac_Rhythms.Values.Sinus_Rhythm,
+                            Cardiac_Axis_Shifts.Normal,
+                            Respiratory_Rhythms.Regular,
                             1, 1);
 
             initTimers ();
@@ -103,9 +103,9 @@ namespace II {
                     int asbp,   int adbp,   int amap,
                     int psp,    int pdp,    int pmp,
                     double[] st_elev,        double[] t_elev,
-                    Rhythms.Cardiac_Rhythm      card_rhythm,
-                    Rhythms.Cardiac_Axis_Shifts card_axis_shift,
-                    Rhythms.Respiratory_Rhythm  resp_rhythm,
+                    Cardiac_Rhythms.Values  card_rhythm,
+                    Cardiac_Axis_Shifts     card_axis_shift,
+                    Respiratory_Rhythms     resp_rhythm,
                     int resp_ier_i, int resp_ier_e) {
 
             HR = hr;    RR = rr;    SpO2 = spo2;
@@ -116,7 +116,7 @@ namespace II {
             ASBP = asbp;    ADBP = adbp;    AMAP = amap;
             PSP = psp;      PDP = pdp;      PMP = pmp;
 
-            Cardiac_Rhythm = card_rhythm;
+            Cardiac_Rhythm.Value = card_rhythm;
             Cardiac_Axis_Shift = card_axis_shift;
             ST_Elevation = st_elev;
             T_Elevation = t_elev;
@@ -174,50 +174,52 @@ namespace II {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Baseline));
             timerCardiac_Baseline.Interval = (int)(HR_Seconds * 1000f);
 
-            switch (Cardiac_Rhythm) {
+            switch (Cardiac_Rhythm.Value) {
                 default:
-                case Rhythms.Cardiac_Rhythm.Asystole:
+                case Cardiac_Rhythms.Values.Asystole:
                     break;
 
                 // Traced as "regular V" Rhythms
-                case Rhythms.Cardiac_Rhythm.Atrial_Flutter:
-                case Rhythms.Cardiac_Rhythm.Junctional:
-                case Rhythms.Cardiac_Rhythm.Idioventricular:
-                case Rhythms.Cardiac_Rhythm.Supraventricular_Tachycardia:
-                case Rhythms.Cardiac_Rhythm.Ventricular_Tachycardia:
-                case Rhythms.Cardiac_Rhythm.Ventricular_Fibrillation:
+                case Cardiac_Rhythms.Values.Atrial_Flutter:
+                case Cardiac_Rhythms.Values.Junctional:
+                case Cardiac_Rhythms.Values.Idioventricular:
+                case Cardiac_Rhythms.Values.Supraventricular_Tachycardia:
+                case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Pulsed:
+                case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Pulseless:
+                case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Coarse:
+                case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Fine:
                     timerCardiac_Ventricular.Interval = 1;
                     timerCardiac_Ventricular.Start ();
                     break;
 
                 // Traced as "regular A" or "regular A -> V" Rhythms
-                case Rhythms.Cardiac_Rhythm.AV_Block__1st_Degree:
-                case Rhythms.Cardiac_Rhythm.AV_Block__Mobitz_II:
-                case Rhythms.Cardiac_Rhythm.AV_Block__Wenckebach:
-                case Rhythms.Cardiac_Rhythm.Block__Bundle_Branch:
-                case Rhythms.Cardiac_Rhythm.Sinus_Rhythm:
-                case Rhythms.Cardiac_Rhythm.Pulseless_Electrical_Activity:
-                case Rhythms.Cardiac_Rhythm.Ventricular_Standstill:
+                case Cardiac_Rhythms.Values.AV_Block__1st_Degree:
+                case Cardiac_Rhythms.Values.AV_Block__Mobitz_II:
+                case Cardiac_Rhythms.Values.AV_Block__Wenckebach:
+                case Cardiac_Rhythms.Values.Bundle_Branch_Block:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm:
+                case Cardiac_Rhythms.Values.Pulseless_Electrical_Activity:
+                case Cardiac_Rhythms.Values.Ventricular_Standstill:
                     timerCardiac_Atrial.Interval = 1;
                     timerCardiac_Atrial.Start ();
                     break;
 
                 // Traced as "irregular V" rhythms
-                case Rhythms.Cardiac_Rhythm.Atrial_Fibrillation:
+                case Cardiac_Rhythms.Values.Atrial_Fibrillation:
                     timerCardiac_Baseline.Interval = (int)(timerCardiac_Baseline.Interval * _.RandomDouble (0.6, 1.4));
                     timerCardiac_Ventricular.Interval = 1;
                     timerCardiac_Ventricular.Start ();
                     break;
 
                 /* Special Cases */
-                case Rhythms.Cardiac_Rhythm.AV_Block__3rd_Degree:
+                case Cardiac_Rhythms.Values.AV_Block__3rd_Degree:
                     timerCardiac_Atrial.Interval = (int)(timerCardiac_Baseline.Interval * 0.6);
                     timerCardiac_Atrial.Start ();
                     timerCardiac_Ventricular.Interval = 160;
                     timerCardiac_Ventricular.Start ();
                     break;
 
-                case Rhythms.Cardiac_Rhythm.Sinus_Rhythm_with_PACs:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PACs:
                     counterCardiac -= 1;
                     if (counterCardiac <= 0) {
                         counterCardiac = new Random ().Next (4, 8);
@@ -227,7 +229,7 @@ namespace II {
                     timerCardiac_Atrial.Start ();
                     break;
 
-                case Rhythms.Cardiac_Rhythm.Sinus_Rhythm_with_PJCs:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PJCs:
                     counterCardiac -= 1;
                     if (counterCardiac <= 0) {
                         counterCardiac = new Random ().Next (4, 8);
@@ -241,15 +243,15 @@ namespace II {
                     }
                     break;
 
-                case Rhythms.Cardiac_Rhythm.Sinus_Rhythm_with_Bigeminy:
-                case Rhythms.Cardiac_Rhythm.Sinus_Rhythm_with_Trigeminy:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_Bigeminy:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_Trigeminy:
                     counterCardiac -= 1;
                     if (counterCardiac == 0) {
                         timerCardiac_Baseline.Interval = (int)(timerCardiac_Baseline.Interval * 0.8);
                     } else if (counterCardiac < 0) {   // Then throw the PVC and reset the counters
-                        if (Cardiac_Rhythm == Rhythms.Cardiac_Rhythm.Sinus_Rhythm_with_Bigeminy)
+                        if (Cardiac_Rhythm.Value == Cardiac_Rhythms.Values.Sinus_Rhythm_with_Bigeminy)
                             counterCardiac = 1;
-                        else if (Cardiac_Rhythm == Rhythms.Cardiac_Rhythm.Sinus_Rhythm_with_Trigeminy)
+                        else if (Cardiac_Rhythm.Value == Cardiac_Rhythms.Values.Sinus_Rhythm_with_Trigeminy)
                             counterCardiac = 2;
                         Cardiac_Rhythm__Flag = true;
                         timerCardiac_Ventricular.Interval = 1;
@@ -260,8 +262,8 @@ namespace II {
                     timerCardiac_Atrial.Start ();
                     break;
 
-                case Rhythms.Cardiac_Rhythm.Sinus_Rhythm_with_PVCs_Unifocal:
-                case Rhythms.Cardiac_Rhythm.Sinus_Rhythm_with_PVCs_Multifocal:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PVCs_Unifocal:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PVCs_Multifocal:
                     counterCardiac -= 1;
                     if (counterCardiac == 0 || Cardiac_Rhythm__Flag) {  // Shorten the beat preceding the PVC, making it premature
                         timerCardiac_Baseline.Interval = (int)(timerCardiac_Baseline.Interval * 0.8);
@@ -282,26 +284,26 @@ namespace II {
         private void onCardiac_Atrial () {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Atrial));
 
-            switch (Cardiac_Rhythm) {
+            switch (Cardiac_Rhythm.Value) {
                 default:
-                case Rhythms.Cardiac_Rhythm.Asystole:
+                case Cardiac_Rhythms.Values.Asystole:
                     break;
 
                 // Regular A Rhythms
-                case Rhythms.Cardiac_Rhythm.Ventricular_Standstill:
+                case Cardiac_Rhythms.Values.Ventricular_Standstill:
                     timerCardiac_Atrial.Stop ();
                     break;
 
                 // Regular A -> V rhythms
-                case Rhythms.Cardiac_Rhythm.Block__Bundle_Branch:
-                case Rhythms.Cardiac_Rhythm.Sinus_Rhythm:
-                case Rhythms.Cardiac_Rhythm.Sinus_Rhythm_with_PACs:
-                case Rhythms.Cardiac_Rhythm.Sinus_Rhythm_with_PJCs:
-                case Rhythms.Cardiac_Rhythm.Sinus_Rhythm_with_Bigeminy:
-                case Rhythms.Cardiac_Rhythm.Sinus_Rhythm_with_Trigeminy:
-                case Rhythms.Cardiac_Rhythm.Sinus_Rhythm_with_PVCs_Unifocal:
-                case Rhythms.Cardiac_Rhythm.Sinus_Rhythm_with_PVCs_Multifocal:
-                case Rhythms.Cardiac_Rhythm.Pulseless_Electrical_Activity:
+                case Cardiac_Rhythms.Values.Bundle_Branch_Block:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PACs:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PJCs:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_Bigeminy:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_Trigeminy:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PVCs_Unifocal:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PVCs_Multifocal:
+                case Cardiac_Rhythms.Values.Pulseless_Electrical_Activity:
                     timerCardiac_Atrial.Stop ();
                     timerCardiac_Ventricular.Interval = 160;
                     timerCardiac_Ventricular.Start ();
@@ -309,13 +311,13 @@ namespace II {
 
                 /* Special cases */
 
-                case Rhythms.Cardiac_Rhythm.AV_Block__1st_Degree:
+                case Cardiac_Rhythms.Values.AV_Block__1st_Degree:
                     timerCardiac_Atrial.Stop ();
                     timerCardiac_Ventricular.Interval = 240;
                     timerCardiac_Ventricular.Start ();
                     break;
 
-                case Rhythms.Cardiac_Rhythm.AV_Block__Mobitz_II:
+                case Cardiac_Rhythms.Values.AV_Block__Mobitz_II:
                     timerCardiac_Atrial.Stop ();
                     counterCardiac += 1;
                     if (counterCardiac > 2) {
@@ -326,7 +328,7 @@ namespace II {
                     }
                     break;
 
-                case Rhythms.Cardiac_Rhythm.AV_Block__Wenckebach:
+                case Cardiac_Rhythms.Values.AV_Block__Wenckebach:
                     timerCardiac_Atrial.Stop ();
                     counterCardiac += 1;
                     if (counterCardiac >= 4) {
@@ -338,7 +340,7 @@ namespace II {
                     }
                     break;
 
-                case Rhythms.Cardiac_Rhythm.AV_Block__3rd_Degree:
+                case Cardiac_Rhythms.Values.AV_Block__3rd_Degree:
                     // Specifically let atrial timer continue to run and propogate P-waves!
                     break;
             }
@@ -347,12 +349,12 @@ namespace II {
         private void onCardiac_Ventricular () {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Ventricular));
 
-            switch (Cardiac_Rhythm) {
+            switch (Cardiac_Rhythm.Value) {
                 default:
                     Cardiac_Rhythm__Flag = false;
                     break;
 
-                case Rhythms.Cardiac_Rhythm.Sinus_Rhythm_with_PVCs_Unifocal:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PVCs_Unifocal:
                     Cardiac_Rhythm__Flag = new Random ().Next (0, 7) == 0;       // 1/7 chance to potentiate runs of PVCs
                     break;
             }
@@ -366,10 +368,10 @@ namespace II {
 
             switch (Respiratory_Rhythm) {
                 default:
-                case Rhythms.Respiratory_Rhythm.Apnea:
+                case Respiratory_Rhythms.Apnea:
                     break;
 
-                case Rhythms.Respiratory_Rhythm.Regular:
+                case Respiratory_Rhythms.Regular:
                     timerRespiratory_Inspiration.Interval = 1;
                     timerRespiratory_Inspiration.Start ();
                     break;
@@ -384,10 +386,10 @@ namespace II {
 
             switch (Respiratory_Rhythm) {
                 default:
-                case Rhythms.Respiratory_Rhythm.Apnea:
+                case Respiratory_Rhythms.Apnea:
                     break;
 
-                case Rhythms.Respiratory_Rhythm.Regular:
+                case Respiratory_Rhythms.Regular:
                     timerRespiratory_Expiration.Interval = (int)(RR_Seconds_I * 1000f);     // Expiration.Interval marks end inspiration
                     timerRespiratory_Expiration.Start ();
                     break;

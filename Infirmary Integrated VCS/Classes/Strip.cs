@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Numerics;
 using System.Windows.Forms;
 
-namespace II.Rhythms {
+namespace II.Rhythm {
     public class Strip {
         double Length = 5.0d;               // Strip length in seconds
         double EdgeBuffer = 1.1d;           // Coefficient of Length to draw into future as "now" for buffer
@@ -14,21 +14,9 @@ namespace II.Rhythms {
         public Leads Lead;
         public List<Point> Points;
 
-        static public Color stripColors (Leads l) {
-            switch (l) {
-                default: return Color.Green;
-                case Leads.SpO2: return Color.Orange;
-                case Leads.CVP: return Color.Blue;
-                case Leads.ABP: return Color.Red;
-                case Leads.PA: return Color.Yellow;
-                case Leads.IABP: return Color.Blue;
-                case Leads.RR: return Color.Salmon;
-                case Leads.ETCO2: return Color.Aqua;
-            }
-        }
 
-        public Strip (double l, Leads w) {
-            Lead = w;
+        public Strip (double l, Leads.Values v) {
+            Lead = new Leads(v);
             Length = l;
             Points = new List<Point> ();
         }
@@ -135,57 +123,59 @@ namespace II.Rhythms {
 
         public void Add_Beat__Cardiac_Baseline (Patient _Patient) {
             if (isECG ())
-                Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_ECG_Isoelectric (_Patient, this);
-            else if (Lead != Leads.RR && Lead != Leads.ETCO2) {
+                _Patient.Cardiac_Rhythm.ECG_Isoelectric (_Patient, this);
+            else if (Lead.Value != Leads.Values.RR && Lead.Value != Leads.Values.ETCO2) {
                 // Fill waveform through to future buffer with flatline
                 double fill = (Length * EdgeBuffer) - Last (Points).X;
-                Concatenate (Rhythm.Waveform_Flatline (fill > _Patient.HR_Seconds ? fill : _Patient.HR_Seconds, 0f));
+                Concatenate (Waveforms.Waveform_Flatline (fill > _Patient.HR_Seconds ? fill : _Patient.HR_Seconds, 0f));
             }
         }
 
         public void Add_Beat__Cardiac_Atrial (Patient _Patient) {
             if (isECG ())
-                Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_ECG_Atrial (_Patient, this);
+                _Patient.Cardiac_Rhythm.ECG_Atrial (_Patient, this);
         }
 
         public void Add_Beat__Cardiac_Ventricular (Patient _Patient) {
             if (isECG ())
-                Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Beat_ECG_Ventricular (_Patient, this);
-            else if (Lead == Leads.SpO2 && Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Pulse)
-                Overwrite (Rhythm.SpO2_Rhythm (_Patient, 1f));
-            else if (Lead == Leads.ABP && Rhythm_Index.Get_Rhythm (_Patient.Cardiac_Rhythm).Pulse)
-                Overwrite (Rhythm.ABP_Rhythm (_Patient, 1f));
+                _Patient.Cardiac_Rhythm.ECG_Ventricular (_Patient, this);
+            else if (Lead.Value == Leads.Values.SpO2 && _Patient.Cardiac_Rhythm.Pulse_Ventricular)
+                Overwrite (Waveforms.SpO2_Rhythm (_Patient, 1f));
+            else if (Lead.Value == Leads.Values.ABP && _Patient.Cardiac_Rhythm.Pulse_Ventricular)
+                Overwrite (Waveforms.ABP_Rhythm (_Patient, 1f));
         }
 
         public void Add_Beat__Respiratory_Baseline (Patient _Patient) {
-            if (Lead == Leads.RR || Lead == Leads.ETCO2) {
+            if (Lead.Value == Leads.Values.RR || Lead.Value == Leads.Values.ETCO2) {
                 // Fill waveform through to future buffer with flatline
                 double fill = (Length * EdgeBuffer) - Last (Points).X;
-                Concatenate (Rhythm.Waveform_Flatline (fill > _Patient.RR_Seconds ? fill : _Patient.RR_Seconds, 0f));
+                Concatenate (Waveforms.Waveform_Flatline (fill > _Patient.RR_Seconds ? fill : _Patient.RR_Seconds, 0f));
             }
         }
 
         public void Add_Beat__Respiratory_Inspiration (Patient _Patient) {
-            switch (Lead) {
+            switch (Lead.Value) {
                 default: break;
-                case Leads.RR: Overwrite (Rhythm.RR_Rhythm(_Patient, true)); break;
-                case Leads.ETCO2: break;    // End-tidal waveform is only present on expiration!! Is flatline on inspiration.
+                case Leads.Values.RR: Overwrite (Waveforms.RR_Rhythm(_Patient, true)); break;
+                case Leads.Values.ETCO2: break;    // End-tidal waveform is only present on expiration!! Is flatline on inspiration.
             }
         }
 
         public void Add_Beat__Respiratory_Expiration (Patient _Patient) {
-            switch (Lead) {
+            switch (Lead.Value) {
                 default: break;
-                case Leads.RR: Overwrite (Rhythm.RR_Rhythm (_Patient, false)); break;
-                case Leads.ETCO2: Overwrite (Rhythm.ETCO2_Rhythm (_Patient)); break;
+                case Leads.Values.RR: Overwrite (Waveforms.RR_Rhythm (_Patient, false)); break;
+                case Leads.Values.ETCO2: Overwrite (Waveforms.ETCO2_Rhythm (_Patient)); break;
             }
         }
 
         private bool isECG() {
-            return Lead == Leads.ECG_I || Lead == Leads.ECG_II || Lead == Leads.ECG_III
-                || Lead == Leads.ECG_AVR || Lead == Leads.ECG_AVL || Lead == Leads.ECG_AVF
-                || Lead == Leads.ECG_V1 || Lead == Leads.ECG_V2 || Lead == Leads.ECG_V3
-                || Lead == Leads.ECG_V4 || Lead == Leads.ECG_V5 || Lead == Leads.ECG_V6;
+            return Lead.Value ==  Leads.Values.ECG_I || Lead.Value ==  Leads.Values.ECG_II
+                || Lead.Value ==  Leads.Values.ECG_III || Lead.Value ==  Leads.Values.ECG_AVR
+                || Lead.Value ==  Leads.Values.ECG_AVL || Lead.Value ==  Leads.Values.ECG_AVF
+                || Lead.Value ==  Leads.Values.ECG_V1 || Lead.Value ==  Leads.Values.ECG_V2
+                || Lead.Value ==  Leads.Values.ECG_V3 || Lead.Value ==  Leads.Values.ECG_V4
+                || Lead.Value ==  Leads.Values.ECG_V5 || Lead.Value ==  Leads.Values.ECG_V6;
         }
 
 

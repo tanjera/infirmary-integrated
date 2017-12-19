@@ -1,5 +1,5 @@
 ﻿namespace II.Controls {
-    partial class Rhythm_Numerics {
+    partial class Numeric {
         /// <summary> 
         /// Required designer variable.
         /// </summary>

@@ -8,19 +8,19 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace II.Controls {
-    public partial class Rhythm_Tracing : UserControl {
+    public partial class Tracing : UserControl {
 
         ContextMenu contextMenu = new ContextMenu ();
         _.ColorScheme tColorScheme = _.ColorScheme.Normal;
-        Rhythms.Leads tLead;
+        Leads tLead;
 
         public event EventHandler<TracingEdited_EventArgs> TracingEdited;
         public class TracingEdited_EventArgs : EventArgs {
-            public Rhythms.Leads Lead { get; set; }
-            public TracingEdited_EventArgs (Rhythms.Leads lead) { Lead = lead; }
+            public Leads Lead { get; set; }
+            public TracingEdited_EventArgs (Leads lead) { Lead = lead; }
         }
 
-        public Rhythm_Tracing (Rhythms.Leads l) {
+        public Tracing (Leads l) {
             InitializeComponent ();
 
             this.DoubleBuffered = true;
@@ -31,22 +31,22 @@ namespace II.Controls {
 
             contextMenu.MenuItems.Add("Select Input Source:");
             contextMenu.MenuItems.Add("-");
-            MenuItem ecgList = new MenuItem("ECG Leads");
+            MenuItem ecgList = new MenuItem("Electrocardiograph (ECG) Leads");
             contextMenu.MenuItems.Add(ecgList);
-            foreach (Rhythms.Leads el in Enum.GetValues (typeof (Rhythms.Leads))) {
-                if (el.ToString().StartsWith("ECG"))
-                    ecgList.MenuItems.Add(new MenuItem(_.UnderscoreToSpace(el.ToString()), contextMenu_Click));
+            foreach (string mif in Leads.MenuItem_Formats) {
+                if (mif.StartsWith("ECG"))
+                    ecgList.MenuItems.Add(mif, contextMenu_Click);
                 else
-                    contextMenu.MenuItems.Add(new MenuItem(_.UnderscoreToSpace(el.ToString()), contextMenu_Click));
+                    contextMenu.MenuItems.Add(mif, contextMenu_Click);
             }
 
             setColorScheme (tColorScheme);
             setLead (tLead);
         }
 
-        public void setLead(Rhythms.Leads l) {
+        public void setLead(Leads l) {
             tLead = l;
-            labelType.Text = _.UnderscoreToSpace(l.ToString ());
+            labelType.Text = _.UnderscoreToSpace(l.Value.ToString());
             setColorScheme (tColorScheme);
         }
 
@@ -56,7 +56,7 @@ namespace II.Controls {
             switch (tColorScheme) {
                 default:
                 case _.ColorScheme.Normal:
-                    labelType.ForeColor = Rhythms.Strip.stripColors (tLead);
+                    labelType.ForeColor = tLead.Color;
                     labelType.BackColor = Color.Black;
                     break;
 
@@ -68,7 +68,7 @@ namespace II.Controls {
         }
 
         private void contextMenu_Click (object sender, EventArgs e) {
-            tLead = (Rhythms.Leads)Enum.Parse (typeof(Rhythms.Leads), _.SpaceToUnderscore(((MenuItem)sender).Text));
+            tLead = new Leads (Leads.Parse_MenuItem (((MenuItem)sender).Text));
             TracingEdited (this, new TracingEdited_EventArgs (tLead));
         }
 

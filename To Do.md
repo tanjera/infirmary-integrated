@@ -13,8 +13,10 @@
 
 	- v 0.7
 		- More tracings: CVP, PA
-		- Cardiac monitor: split panel between two TableLayoutPanels
-			- Will allow for amount of numerics to != amount of tracings! And user resizing of columns
+		- Reimplement default vital sign clamping...
+		- Color scheme issues and edge cases
+			- Edge case: In monochrome, when changing row amount of numerics, background set to black
+			- Issue: Split container seperator background color needs setting with color scheme changes
 
 
 	- v 0.8
@@ -33,7 +35,6 @@
 		- Implement axis deviation in ECG tracings
 		- Implement pulsus paradoxus
 		- Add default Rhythm vital signs for all hemodynamic parameters (Get_Rhythm().Vitals())
-
 
 
 	- v 1.0

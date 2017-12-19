@@ -54,7 +54,8 @@
     <ManifestCertificateThumbprint>37B238A874FB3704D8636FC4E4F74C42C7D0CD5A</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>Infirmary Integrated_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>
+    </ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>Icon.ico</ApplicationIcon>
@@ -77,18 +78,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\Patient.cs" />
+    <Compile Include="Classes\Leads.cs" />
+    <Compile Include="Classes\Rhythms.cs" />
     <Compile Include="Classes\Strip.cs" />
-    <Compile Include="Controls\Rhythm_Tracing.cs">
+    <Compile Include="Controls\Tracing.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\Rhythm_Tracing.Designer.cs">
-      <DependentUpon>Rhythm_Tracing.cs</DependentUpon>
+    <Compile Include="Controls\Tracing.Designer.cs">
+      <DependentUpon>Tracing.cs</DependentUpon>
     </Compile>
-    <Compile Include="Controls\Rhythm_Numerics.cs">
+    <Compile Include="Controls\Numeric.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Controls\Rhythm_Numerics.Designer.cs">
-      <DependentUpon>Rhythm_Numerics.cs</DependentUpon>
+    <Compile Include="Controls\Numeric.Designer.cs">
+      <DependentUpon>Numeric.cs</DependentUpon>
     </Compile>
     <Compile Include="Classes\Utility.cs" />
     <Compile Include="Forms\Dialog_About.cs">
@@ -103,7 +106,7 @@
     <Compile Include="Forms\Device_Monitor.Designer.cs">
       <DependentUpon>Device_Monitor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Classes\Rhythms.cs" />
+    <Compile Include="Classes\Waveforms.cs" />
     <Compile Include="Forms\Dialog_Main.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -112,11 +115,11 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Controls\Rhythm_Tracing.resx">
-      <DependentUpon>Rhythm_Tracing.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\Tracing.resx">
+      <DependentUpon>Tracing.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Controls\Rhythm_Numerics.resx">
-      <DependentUpon>Rhythm_Numerics.cs</DependentUpon>
+    <EmbeddedResource Include="Controls\Numeric.resx">
+      <DependentUpon>Numeric.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\Dialog_About.resx">
       <DependentUpon>Dialog_About.cs</DependentUpon>
@@ -137,7 +140,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="Infirmary Integrated_TemporaryKey.pfx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

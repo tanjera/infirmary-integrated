@@ -15,15 +15,15 @@ namespace II.Forms {
         public Dialog_Main () {
             InitializeComponent ();
 
-            foreach (Rhythms.Cardiac_Rhythm el in Enum.GetValues (typeof (Rhythms.Cardiac_Rhythm)))
-                comboCardiacRhythm.Items.Add (_.UnderscoreToSpace(el.ToString ()));
+            foreach (string el in Cardiac_Rhythms.Descriptions)
+                comboCardiacRhythm.Items.Add (el);
             comboCardiacRhythm.SelectedIndex = 0;
 
-            foreach (Rhythms.Cardiac_Axis_Shifts el in Enum.GetValues(typeof(Rhythms.Cardiac_Axis_Shifts)))
+            foreach (Cardiac_Axis_Shifts el in Enum.GetValues(typeof(Cardiac_Axis_Shifts)))
                 comboAxisShift.Items.Add(_.UnderscoreToSpace(el.ToString()));
             comboAxisShift.SelectedIndex = 0;
 
-            foreach (Rhythms.Respiratory_Rhythm el in Enum.GetValues (typeof (Rhythms.Respiratory_Rhythm)))
+            foreach (Respiratory_Rhythms el in Enum.GetValues (typeof (Respiratory_Rhythms)))
                 comboRespiratoryRhythm.Items.Add (_.UnderscoreToSpace (el.ToString ()));
             comboRespiratoryRhythm.SelectedIndex = 0;
 
@@ -117,10 +117,10 @@ namespace II.Forms {
                     (double)numTWE_V4.Value, (double)numTWE_V5.Value, (double)numTWE_V6.Value
                 },
 
-                (Rhythms.Cardiac_Rhythm)Enum.Parse (typeof (Rhythms.Cardiac_Rhythm), _.SpaceToUnderscore (comboCardiacRhythm.Text)),
-                (Rhythms.Cardiac_Axis_Shifts)Enum.Parse (typeof (Rhythms.Cardiac_Axis_Shifts), _.SpaceToUnderscore (comboAxisShift.Text)),
+                Cardiac_Rhythms.Parse_Description(comboCardiacRhythm.Text),
+                (Cardiac_Axis_Shifts)Enum.Parse (typeof (Cardiac_Axis_Shifts), _.SpaceToUnderscore (comboAxisShift.Text)),
 
-                (Rhythms.Respiratory_Rhythm)Enum.Parse(typeof(Rhythms.Respiratory_Rhythm), _.SpaceToUnderscore(comboRespiratoryRhythm.Text)),
+                (Respiratory_Rhythms)Enum.Parse(typeof(Respiratory_Rhythms), _.SpaceToUnderscore(comboRespiratoryRhythm.Text)),
                 (int)numInspRatio.Value,
                 (int)numExpRatio.Value
             );
@@ -142,7 +142,7 @@ namespace II.Forms {
                 numPSP.Value = e.Patient.PSP;
                 numPDP.Value = e.Patient.PDP;
 
-                comboCardiacRhythm.SelectedIndex = (int)e.Patient.Cardiac_Rhythm;
+                comboCardiacRhythm.SelectedIndex = (int)e.Patient.Cardiac_Rhythm.Value;
                 comboAxisShift.SelectedIndex = (int)e.Patient.Cardiac_Axis_Shift;
 
                 comboRespiratoryRhythm.SelectedIndex = (int)e.Patient.Respiratory_Rhythm;
@@ -150,45 +150,37 @@ namespace II.Forms {
                 numExpRatio.Value = (decimal)e.Patient.Respiratory_IERatio_E;
 
 
-                numSTE_I.Value = (decimal)e.Patient.ST_Elevation[(int)Rhythms.Leads.ECG_I];
-                numSTE_II.Value = (decimal)e.Patient.ST_Elevation[(int)Rhythms.Leads.ECG_II];
-                numSTE_III.Value = (decimal)e.Patient.ST_Elevation[(int)Rhythms.Leads.ECG_III];
-                numSTE_aVR.Value = (decimal)e.Patient.ST_Elevation[(int)Rhythms.Leads.ECG_AVR];
-                numSTE_aVL.Value = (decimal)e.Patient.ST_Elevation[(int)Rhythms.Leads.ECG_AVL];
-                numSTE_aVF.Value = (decimal)e.Patient.ST_Elevation[(int)Rhythms.Leads.ECG_AVF];
-                numSTE_V1.Value = (decimal)e.Patient.ST_Elevation[(int)Rhythms.Leads.ECG_V1];
-                numSTE_V2.Value = (decimal)e.Patient.ST_Elevation[(int)Rhythms.Leads.ECG_V2];
-                numSTE_V3.Value = (decimal)e.Patient.ST_Elevation[(int)Rhythms.Leads.ECG_V3];
-                numSTE_V4.Value = (decimal)e.Patient.ST_Elevation[(int)Rhythms.Leads.ECG_V4];
-                numSTE_V5.Value = (decimal)e.Patient.ST_Elevation[(int)Rhythms.Leads.ECG_V5];
-                numSTE_V6.Value = (decimal)e.Patient.ST_Elevation[(int)Rhythms.Leads.ECG_V6];
+                numSTE_I.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_I];
+                numSTE_II.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_II];
+                numSTE_III.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_III];
+                numSTE_aVR.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_AVR];
+                numSTE_aVL.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_AVL];
+                numSTE_aVF.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_AVF];
+                numSTE_V1.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_V1];
+                numSTE_V2.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_V2];
+                numSTE_V3.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_V3];
+                numSTE_V4.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_V4];
+                numSTE_V5.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_V5];
+                numSTE_V6.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_V6];
 
-                numTWE_I.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_I];
-                numTWE_II.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_II];
-                numTWE_III.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_III];
-                numTWE_aVR.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_AVR];
-                numTWE_aVL.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_AVL];
-                numTWE_aVF.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_AVF];
-                numTWE_V1.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_V1];
-                numTWE_V2.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_V2];
-                numTWE_V3.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_V3];
-                numTWE_V4.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_V4];
-                numTWE_V5.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_V5];
-                numTWE_V6.Value = (decimal)e.Patient.T_Elevation[(int)Rhythms.Leads.ECG_V6];
+                numTWE_I.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_I];
+                numTWE_II.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_II];
+                numTWE_III.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_III];
+                numTWE_aVR.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_AVR];
+                numTWE_aVL.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_AVL];
+                numTWE_aVF.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_AVF];
+                numTWE_V1.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_V1];
+                numTWE_V2.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_V2];
+                numTWE_V3.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_V3];
+                numTWE_V4.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_V4];
+                numTWE_V5.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_V5];
+                numTWE_V6.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_V6];
             }
         }
 
         private void onRhythmSelected (object sender, EventArgs e) {
             if (checkDefaultVitals.Checked) {
-                Rhythms._Rhythm tRhythm = Rhythms.Rhythm_Index.Get_Rhythm (
-                    (Rhythms.Cardiac_Rhythm)Enum.Parse (typeof (Rhythms.Cardiac_Rhythm), _.SpaceToUnderscore (comboCardiacRhythm.Text)));
-
-                numHR.Value = (decimal)_.Clamp ((double)numHR.Value, tRhythm.Range_HR.Min, tRhythm.Range_HR.Max);
-                numNSBP.Value = (decimal)_.Clamp ((double)numNSBP.Value, tRhythm.Range_SBP.Min, tRhythm.Range_SBP.Max);
-                numNDBP.Value = (decimal)_.Clamp ((double)numNDBP.Value, tRhythm.Range_DBP.Min, tRhythm.Range_DBP.Max);
-                numASBP.Value = (decimal)_.Clamp ((double)numASBP.Value, tRhythm.Range_SBP.Min, tRhythm.Range_SBP.Max);
-                numADBP.Value = (decimal)_.Clamp ((double)numADBP.Value, tRhythm.Range_DBP.Min, tRhythm.Range_DBP.Max);
-                numSpO2.Value = (decimal)_.Clamp ((double)numSpO2.Value, tRhythm.Range_SpO2.Min, tRhythm.Range_SpO2.Max);
+                // TO DO
             }
         }
     }

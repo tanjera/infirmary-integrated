@@ -1,5 +1,5 @@
 ﻿namespace II.Controls {
-    partial class Rhythm_Tracing {
+    partial class Tracing {
         /// <summary> 
         /// Required designer variable.
         /// </summary>

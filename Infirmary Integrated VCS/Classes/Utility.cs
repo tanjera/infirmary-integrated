@@ -1,17 +1,24 @@
 ﻿using System;
-using System.Drawing;
+using System.Collections.Generic;
 
 namespace II {
 
     public static class _ {
 
-        public const string Version = "0.66";
+        public const string Version = "0.68";
 
 
         public enum ColorScheme {
             Normal, Monochrome
         }
 
+        public class StringPair {
+            public string Index, Value;
+            public StringPair (string index, string value) {
+                Index = index;
+                Value = value;
+            }
+        }
 
         public static double Time {
             get { return (double)(DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess ().StartTime.ToUniversalTime ()).TotalSeconds; }

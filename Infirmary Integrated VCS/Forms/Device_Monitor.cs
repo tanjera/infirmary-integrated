@@ -3,26 +3,28 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
-using II.Rhythms;
+using II.Rhythm;
 
 namespace II.Forms
 {
     public partial class Device_Monitor : Form
     {
-        int layoutRows = 3;
+        int rowsTracings = 3,
+            rowsNumerics = 3;
         bool tFullscreen = false;
+        int tFontsize = 2;
 
         Patient tPatient;
         List<Channel> tChannels = new List<Channel> ();
-        List<II.Controls.Rhythm_Numerics> tNumerics = new List<II.Controls.Rhythm_Numerics> ();
+        List<II.Controls.Numeric> tNumerics = new List<II.Controls.Numeric> ();
         _.ColorScheme tColorScheme = _.ColorScheme.Normal;
 
         public class Channel {
             public Strip cStrip;
             public Strip.Renderer cRenderer;
-            public Controls.Rhythm_Tracing cTracing;
+            public Controls.Tracing cTracing;
 
-            public Channel(Strip s, Strip.Renderer r, Controls.Rhythm_Tracing t) {
+            public Channel(Strip s, Strip.Renderer r, Controls.Tracing t) {
                 cStrip = s;
                 cRenderer = r;
                 cTracing = t;
@@ -33,7 +35,7 @@ namespace II.Forms
         public Device_Monitor() {
             InitializeComponent();
 
-            timerTracing.Interval = Rhythm.Draw_Refresh;
+            timerTracing.Interval = Waveforms.Draw_Refresh;
             timerVitals.Interval = 5000;
 
             foreach (_.ColorScheme cs in Enum.GetValues (typeof (_.ColorScheme)))
@@ -63,59 +65,64 @@ namespace II.Forms
             if (tPatient.Paused)
                 return;
 
-            foreach (II.Controls.Rhythm_Numerics v in tNumerics)
+            foreach (II.Controls.Numeric v in tNumerics)
                 v.Update (tPatient);
         }
 
 
         private void onLayoutChange() {
-            mainLayout.Controls.Clear();
-            mainLayout.RowStyles.Clear();
-            mainLayout.GrowStyle = TableLayoutPanelGrowStyle.AddRows;
+            layoutTracings.Controls.Clear();
+            layoutTracings.RowStyles.Clear();
+            layoutTracings.GrowStyle = TableLayoutPanelGrowStyle.AddRows;
 
-            for (int i = 0; i < layoutRows; i++) {
+            layoutNumerics.Controls.Clear ();
+            layoutNumerics.RowStyles.Clear ();
+            layoutNumerics.GrowStyle = TableLayoutPanelGrowStyle.AddRows;
+
+            for (int i = 0; i < rowsNumerics; i++) {
+                II.Controls.Numeric newNum;
+                switch (i) {
+                    default:
+                    case 0: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.ECG);    break;
+                    case 1: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.NIBP);   break;
+                    case 2: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.SPO2);   break;
+                    case 3: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.CVP);    break;
+                    case 4: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.ABP);    break;
+                }
+                tNumerics.Add (newNum);
+            }
+
+            for (int i = 0; i < rowsTracings; i++) {
                 if (tChannels.Count <= i) {
                     Strip newStrip;
-                    II.Controls.Rhythm_Numerics newNum;
                     switch (i) {
                         default:
-                        case 0:
-                            newStrip = new Strip (6f, Leads.ECG_II);
-                            newNum = new Controls.Rhythm_Numerics (II.Controls.Rhythm_Numerics.ControlType.ECG);
-                            break;
-                        case 1:
-                            newStrip = new Strip (6f, Leads.ECG_III);
-                            newNum = new Controls.Rhythm_Numerics (II.Controls.Rhythm_Numerics.ControlType.NIBP);
-                            break;
-                        case 2:
-                            newStrip = new Strip (6f, Leads.SpO2);
-                            newNum = new Controls.Rhythm_Numerics (II.Controls.Rhythm_Numerics.ControlType.SPO2);
-                            break;
-                        case 3:
-                            newStrip = new Strip (6f, Leads.CVP);
-                            newNum = new Controls.Rhythm_Numerics (II.Controls.Rhythm_Numerics.ControlType.CVP);
-                            break;
-                        case 4:
-                            newStrip = new Strip (6f, Leads.ABP);
-                            newNum = new Controls.Rhythm_Numerics (II.Controls.Rhythm_Numerics.ControlType.ABP);
-                            break;
+                        case 0: newStrip = new Strip (6f, Leads.Values.ECG_II);    break;
+                        case 1: newStrip = new Strip (6f, Leads.Values.ECG_III);   break;
+                        case 2: newStrip = new Strip (6f, Leads.Values.SpO2);      break;
+                        case 3: newStrip = new Strip (6f, Leads.Values.CVP);       break;
+                        case 4: newStrip = new Strip (6f, Leads.Values.ABP);       break;
                     }
 
-                    II.Controls.Rhythm_Tracing newTracing = new II.Controls.Rhythm_Tracing (newStrip.Lead);
-                    Strip.Renderer newRenderer = new Strip.Renderer (newTracing, ref newStrip, Strip.stripColors(newStrip.Lead));
+                    Controls.Tracing newTracing = new Controls.Tracing (newStrip.Lead);
+                    Strip.Renderer newRenderer = new Strip.Renderer (newTracing, ref newStrip, newStrip.Lead.Color);
                     newTracing.Paint += delegate (object s, PaintEventArgs e) { newRenderer.Draw (e); };
                     newTracing.TracingEdited += onTracingEdited;
 
                     tChannels.Add (new Channel (newStrip, newRenderer, newTracing));
-                    tNumerics.Add (newNum);
                 }
             }
 
-            mainLayout.RowCount = layoutRows;
-            for (int i = 0; i < layoutRows; i++) {
-                mainLayout.RowStyles.Add(new RowStyle(SizeType.Percent, 100 / layoutRows));
-                mainLayout.Controls.Add(tNumerics[i], 0, i);
-                mainLayout.Controls.Add(tChannels[i].cTracing, 1, i);
+            layoutNumerics.RowCount = rowsNumerics;
+            for (int i = 0; i < rowsNumerics; i++) {
+                layoutNumerics.RowStyles.Add (new RowStyle (SizeType.Percent, 100 / rowsNumerics));
+                layoutNumerics.Controls.Add (tNumerics[i], 0, i);
+            }
+
+            layoutTracings.RowCount = rowsTracings;
+            for (int i = 0; i < rowsTracings; i++) {
+                layoutTracings.RowStyles.Add(new RowStyle(SizeType.Percent, 100 / rowsTracings));
+                layoutTracings.Controls.Add(tChannels[i].cTracing, 0, i);
             }
         }
 
@@ -130,7 +137,7 @@ namespace II.Forms
                         c.cStrip.clearFuture ();
                         c.cStrip.Add_Beat__Cardiac_Baseline (tPatient);
                     }
-                    foreach (II.Controls.Rhythm_Numerics n in tNumerics)
+                    foreach (II.Controls.Numeric n in tNumerics)
                         n.Update (tPatient);
                     break;
 
@@ -166,11 +173,11 @@ namespace II.Forms
             }
         }
 
-        private void onTracingEdited (object sender, Controls.Rhythm_Tracing.TracingEdited_EventArgs e) {
+        private void onTracingEdited (object sender, Controls.Tracing.TracingEdited_EventArgs e) {
             foreach (Channel c in tChannels) {
                 if (c.cTracing == sender) {
                     c.cTracing.setLead (e.Lead);
-                    c.cRenderer.pcolor = Strip.stripColors (e.Lead);
+                    c.cRenderer.pcolor = e.Lead.Color;
                     c.cStrip.Lead = e.Lead;
                 }
 
@@ -198,13 +205,25 @@ namespace II.Forms
 
             foreach (Channel c in tChannels)
                 c.cStrip.Reset ();
-            foreach (II.Controls.Rhythm_Numerics n in tNumerics)
+            foreach (II.Controls.Numeric n in tNumerics)
                 n.Update (tPatient);
         }
 
         private void menuEditPatient_Click (object sender, EventArgs e) {
             Program.Dialog_Main.Show ();
             Program.Dialog_Main.BringToFront ();
+        }
+
+        private void menuFontSize_Click(object sender, EventArgs e) {
+            switch (((ToolStripMenuItem)sender).Text) {
+                case "Small": tFontsize = 1; break;
+                case "Medium": tFontsize = 2; break;
+                case "Large": tFontsize = 3; break;
+                case "Extra Large": tFontsize = 4; break;
+            }
+
+            foreach (II.Controls.Numeric rn in tNumerics)
+                rn.SetFontSize (tFontsize * 0.5f);
         }
 
         private void menuColorScheme_Click (object sender, EventArgs e) {
@@ -215,24 +234,31 @@ namespace II.Forms
                 c.cRenderer.setColorScheme (tColorScheme);
             }
 
-            foreach (II.Controls.Rhythm_Numerics n in tNumerics) {
-                n.setColorScheme (tColorScheme);
+            foreach (II.Controls.Numeric n in tNumerics) {
+                n.SetColorScheme (tColorScheme);
             }
 
             switch (tColorScheme) {
                 default:
                 case _.ColorScheme.Normal:
-                    mainLayout.BackColor = Color.Black;
+                    layoutNumerics.BackColor = Color.Black;
+                    layoutTracings.BackColor = Color.Black;
                     break;
                 case _.ColorScheme.Monochrome:
-                    mainLayout.BackColor = Color.White;
+                    layoutNumerics.BackColor = Color.White;
+                    layoutTracings.BackColor = Color.White;
                     break;
             }
         }
 
-        private void menuRowCount_Click (object sender, EventArgs e) {
-            layoutRows = int.Parse(((ToolStripMenuItem)sender).Text.Replace ('&', ' ').Trim());
-            onLayoutChange();
+        private void menuNumericRowCount_Click (object sender, EventArgs e) {
+            rowsNumerics = int.Parse (((ToolStripMenuItem)sender).Text.Replace ('&', ' ').Trim ());
+            onLayoutChange ();
+        }
+
+        private void menuTracingRowCount_Click (object sender, EventArgs e) {
+            rowsTracings = int.Parse (((ToolStripMenuItem)sender).Text.Replace ('&', ' ').Trim ());
+            onLayoutChange ();
         }
 
         private void menuTogglePause_Click(object sender, EventArgs e) {

@@ -1,61 +1,91 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace II.Controls {
-    public partial class Rhythm_Numerics : UserControl {
+    public partial class Numeric : UserControl {
 
         Patient lPatient;
         ContextMenu contextMenu = new ContextMenu();
 
         _.ColorScheme tColorScheme = _.ColorScheme.Normal;
 
+        public ControlType controlType;
+
         Font fontLarge = new Font("Arial", 50f, FontStyle.Bold),
              fontMedium = new Font("Arial", 25f, FontStyle.Bold),
              fontSmall = new Font ("Arial", 15f, FontStyle.Bold);
 
-        public ControlType cType;
+        public class ControlType {
+            public Values Value;
+            public ControlType (Values v) { Value = v; }
 
-        public enum ControlType {
-            ECG,
-            TEMP,
-            RR,
-            ETCO2,
-            SPO2,
-            NIBP,
-            ABP,
-            CVP,
-            PA
-        };
-
-        static public Color valueColors(ControlType c) {
-            switch (c) {
-                default:
-                case ControlType.ECG: return Color.Green;
-                case ControlType.TEMP: return Color.LightGray;
-                case ControlType.RR: return Color.Salmon;
-                case ControlType.ETCO2: return Color.Aqua;
-                case ControlType.SPO2: return Color.Orange;
-                case ControlType.NIBP: return Color.White;
-                case ControlType.ABP: return Color.Red;
-                case ControlType.CVP: return Color.Blue;
-                case ControlType.PA: return Color.Yellow;
+            public enum Values {
+                ECG, T, RR, ETCO2,
+                SPO2, NIBP, ABP, CVP,
+                PA
             }
+
+            public string Description { get { return Descriptions[(int)Value]; } }
+            public Color Color { get { return Colors[(int)Value]; } }
+
+            public static List<string> MenuItem_Formats {
+                get{
+                    List<string> o = new List<string>();
+                    foreach (Values v in Enum.GetValues (typeof (Values)))
+                        o.Add (String.Format ("{0}: {1}", v.ToString (), Descriptions[(int)v]));
+                    return o;
+                }
+            }
+            public static Values Parse_MenuItem (string inc) {
+                string portion = inc.Substring (0, inc.IndexOf (':'));
+                return (Values)Enum.Parse (typeof (Values), portion);
+            }
+
+            public static string[] Descriptions = new string[] {
+                "Electrocardiograph",
+                "Temperature",
+                "Respiratory Rate",
+                "End-tidal Capnography",
+                "Pulse Oximetry",
+                "Non-invasive Blood Pressure",
+                "Arterial Blood Pressure",
+                "Central Venous Pressure",
+                "Pulmonary Artery Pressure"
+            };
+
+            public static Color[] Colors = new Color[] {
+                Color.Green,
+                Color.LightGray,
+                Color.Salmon,
+                Color.Aqua,
+                Color.Orange,
+                Color.White,
+                Color.Red,
+                Color.Blue,
+                Color.Yellow
+            };
         }
 
-        public Rhythm_Numerics (ControlType t) {
+
+        public Numeric (ControlType.Values v) {
             InitializeComponent ();
 
-            cType = t;
+            controlType = new ControlType(v);
+            labelType.Text = "";
+            label1.Text = "";
+            label2.Text = "";
+            label3.Text = "";
 
             this.DoubleBuffered = true;
             this.Anchor = (AnchorStyles.Top | AnchorStyles.Left);
             this.Dock = DockStyle.Fill;
 
-            contextMenu.MenuItems.Add("Select Output Display:");
-            contextMenu.MenuItems.Add("-");
-            foreach (ControlType ct in Enum.GetValues(typeof(ControlType)))
-                contextMenu.MenuItems.Add(new MenuItem(_.UnderscoreToSpace(ct.ToString()), contextMenu_Click));
+            contextMenu.MenuItems.Add ("Select Value to Display:");
+            contextMenu.MenuItems.Add ("-");
+            foreach (string mif in ControlType.MenuItem_Formats)
+                contextMenu.MenuItems.Add(new MenuItem(mif, contextValueSelect_Click));
         }
 
         public void Update (Patient p) {
@@ -68,10 +98,10 @@ namespace II.Controls {
                     tColorBack = Color.Black;
                     this.BackColor = Color.Black;
 
-                    labelType.ForeColor = valueColors (cType);
-                    label1.ForeColor = valueColors (cType);
-                    label2.ForeColor = valueColors (cType);
-                    label3.ForeColor = valueColors (cType);
+                    labelType.ForeColor = controlType.Color;
+                    label1.ForeColor = controlType.Color;
+                    label2.ForeColor = controlType.Color;
+                    label3.ForeColor = controlType.Color;
                     break;
 
                 case _.ColorScheme.Monochrome:
@@ -89,9 +119,9 @@ namespace II.Controls {
             label2.Show ();
             label3.Show ();
 
-            switch (cType) {
+            switch (controlType.Value) {
                 default:
-                case ControlType.ECG:
+                case ControlType.Values.ECG:
                     labelType.Text = "ECG";
                     label1.Font = fontLarge;
                     label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.HR, 0.02f));
@@ -99,7 +129,7 @@ namespace II.Controls {
                     label3.Hide ();
                     break;
 
-                case ControlType.TEMP:
+                case ControlType.Values.T:
                     labelType.Text = "T";
                     label1.Font = fontLarge;
                     label1.Text = String.Format("{0:0.0} C", p.T);
@@ -107,7 +137,7 @@ namespace II.Controls {
                     label3.Hide ();
                     break;
 
-                case ControlType.SPO2:
+                case ControlType.Values.SPO2:
                     labelType.Text = "SpO2";
                     label1.Font = fontLarge;
                     label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.SpO2, 0.01f));
@@ -116,7 +146,7 @@ namespace II.Controls {
                     label3.Hide ();
                     break;
 
-                case ControlType.RR:
+                case ControlType.Values.RR:
                     labelType.Text = "RR";
                     label1.Font = fontLarge;
                     label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.RR, 0.02f));
@@ -124,7 +154,7 @@ namespace II.Controls {
                     label3.Hide ();
                     break;
 
-                case ControlType.ETCO2:
+                case ControlType.Values.ETCO2:
                     labelType.Text = "ETCO2";
                     label1.Font = fontLarge;
                     label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.ETCO2, 0.02f));
@@ -133,7 +163,7 @@ namespace II.Controls {
                     label3.Hide ();
                     break;
 
-                case ControlType.NIBP:
+                case ControlType.Values.NIBP:
                     labelType.Text = "NIBP";
                     label1.Font = fontMedium;
                     label2.Font = fontMedium;
@@ -143,7 +173,7 @@ namespace II.Controls {
                     label3.Text = String.Format("({0:0})", p.NMAP);
                     break;
 
-                case ControlType.ABP:
+                case ControlType.Values.ABP:
                     labelType.Text = "ABP";
                     label1.Font = fontMedium;
                     label2.Font = fontMedium;
@@ -153,13 +183,13 @@ namespace II.Controls {
                     label3.Text = String.Format ("({0:0})", _.RandomPercentRange(p.AMAP, 0.02f));
                     break;
 
-                case ControlType.CVP:
+                case ControlType.Values.CVP:
                     labelType.Text = "CVP";
                     label1.Font = fontLarge;
                     label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.CVP, 0.02f));
                     break;
 
-                case ControlType.PA:
+                case ControlType.Values.PA:
                     labelType.Text = "PA";
                     label1.Font = fontMedium;
                     label2.Font = fontMedium;
@@ -171,13 +201,21 @@ namespace II.Controls {
             }
         }
 
-        public void setColorScheme (_.ColorScheme cs) {
+        public void SetColorScheme (_.ColorScheme cs) {
             tColorScheme = cs;
             Update (lPatient);
         }
 
-        private void contextMenu_Click(object sender, EventArgs e) {
-            cType = (ControlType)Enum.Parse(typeof(ControlType), _.SpaceToUnderscore(((MenuItem)sender).Text));
+        private void contextValueSelect_Click (object sender, EventArgs e) {
+            controlType.Value = ControlType.Parse_MenuItem (((MenuItem)sender).Text);
+            Update (lPatient);
+        }
+
+        public void SetFontSize (float mod) {
+            fontLarge = new Font ("Arial", 50 * mod, FontStyle.Bold);
+            fontMedium = new Font ("Arial", 25 * mod, FontStyle.Bold);
+            fontSmall = new Font ("Arial", 15 * mod, FontStyle.Bold);
+
             Update (lPatient);
         }
 
