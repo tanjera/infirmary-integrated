@@ -20,7 +20,7 @@ namespace II.Controls {
             public TracingEdited_EventArgs (Leads lead) { Lead = lead; }
         }
 
-        public Tracing (Leads l) {
+        public Tracing (Leads l, _.ColorScheme cs) {
             InitializeComponent ();
 
             this.DoubleBuffered = true;
@@ -28,6 +28,7 @@ namespace II.Controls {
             this.Dock = DockStyle.Fill;
 
             tLead = l;
+            tColorScheme = cs;
 
             contextMenu.MenuItems.Add("Select Input Source:");
             contextMenu.MenuItems.Add("-");
@@ -40,17 +41,17 @@ namespace II.Controls {
                     contextMenu.MenuItems.Add(mif, contextMenu_Click);
             }
 
-            setColorScheme (tColorScheme);
-            setLead (tLead);
+            SetColorScheme (tColorScheme);
+            SetLead (tLead);
         }
 
-        public void setLead(Leads l) {
+        public void SetLead(Leads l) {
             tLead = l;
             labelType.Text = _.UnderscoreToSpace(l.Value.ToString());
-            setColorScheme (tColorScheme);
+            SetColorScheme (tColorScheme);
         }
 
-        public void setColorScheme(_.ColorScheme cs) {
+        public void SetColorScheme(_.ColorScheme cs) {
             tColorScheme = cs;
 
             switch (tColorScheme) {

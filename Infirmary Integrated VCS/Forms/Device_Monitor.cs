@@ -1,23 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
+using System.Text;
 using System.Windows.Forms;
-
 using II.Rhythm;
+
 
 namespace II.Forms
 {
-    public partial class Device_Monitor : Form
-    {
+    public partial class Device_Monitor : Form {
+
         int rowsTracings = 3,
             rowsNumerics = 3;
-        bool tFullscreen = false;
         int tFontsize = 2;
+        bool tFullscreen = false;
+        _.ColorScheme tColorScheme = _.ColorScheme.Normal;
 
         Patient tPatient;
         List<Channel> tChannels = new List<Channel> ();
         List<II.Controls.Numeric> tNumerics = new List<II.Controls.Numeric> ();
-        _.ColorScheme tColorScheme = _.ColorScheme.Normal;
+
 
         public class Channel {
             public Strip cStrip;
@@ -44,12 +47,97 @@ namespace II.Forms
             onLayoutChange ();
         }
 
+        public string Save () {
+            StringBuilder sWrite = new StringBuilder ();
+
+            sWrite.AppendLine (String.Format("{0}:{1}", "rowsTracings", rowsTracings));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "rowsNumerics", rowsNumerics));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "tFontsize", tFontsize));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "tFullscreen", tFullscreen));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "tColorScheme", tColorScheme));
+
+            return sWrite.ToString ();
+        }
+
+        public void Load (string inc) {
+            StringReader sRead = new StringReader (inc);
+
+            string line;
+            while ((line = sRead.ReadLine ()) != null) {
+                if (line.StartsWith ("rowsTracings"))
+                    rowsTracings = int.Parse(line.Substring (line.IndexOf (':') + 1));
+                else if (line.StartsWith ("rowsNumerics"))
+                    rowsNumerics = int.Parse (line.Substring (line.IndexOf (':') + 1));
+                else if (line.StartsWith ("tFontsize"))
+                    tFontsize = int.Parse (line.Substring (line.IndexOf (':') + 1));
+                else if (line.StartsWith ("tFullscreen"))
+                    tFullscreen = bool.Parse (line.Substring (line.IndexOf (':') + 1));
+                else if (line.StartsWith ("tColorScheme"))
+                    tColorScheme = (_.ColorScheme)Enum.Parse (typeof(_.ColorScheme), line.Substring (line.IndexOf (':') + 1));
+            }
+
+            sRead.Close ();
+
+            onLayoutChange ();
+
+            applyColorScheme ();
+            applyFontSize ();
+        }
 
         public void SetPatient (Patient iPatient) {
             tPatient = iPatient;
             onTick_Vitals (null, new EventArgs ());
         }
 
+
+        private void applyFontSize () {
+            foreach (II.Controls.Numeric rn in tNumerics)
+                rn.SetFontSize (tFontsize * 0.5f);
+        }
+
+        private void applyFullScreen () {
+            menuItem_Fullscreen.Checked = tFullscreen;
+
+            switch (tFullscreen) {
+                default:
+                case false:
+                    this.TopMost = false;
+                    this.FormBorderStyle = FormBorderStyle.Sizable;
+                    this.WindowState = FormWindowState.Maximized;
+                    break;
+
+                case true:
+                    this.TopMost = true;
+                    this.FormBorderStyle = FormBorderStyle.None;
+                    this.WindowState = FormWindowState.Maximized;
+                    break;
+            }
+        }
+
+        private void applyColorScheme() {
+            foreach (Channel c in tChannels) {
+                c.cTracing.SetColorScheme (tColorScheme);
+                c.cRenderer.SetColorScheme (tColorScheme);
+            }
+
+            foreach (II.Controls.Numeric n in tNumerics) {
+                n.SetColorScheme (tColorScheme);
+            }
+
+            switch (tColorScheme) {
+                default:
+                case _.ColorScheme.Normal:
+                    layoutNumerics.BackColor = Color.Black;
+                    layoutTracings.BackColor = Color.Black;
+                    layoutSplit.BackColor = ColorTranslator.FromHtml ("#0A0A0A");
+                    break;
+                case _.ColorScheme.Monochrome:
+                    layoutNumerics.BackColor = Color.White;
+                    layoutTracings.BackColor = Color.White;
+                    layoutSplit.BackColor = ColorTranslator.FromHtml ("#FAFAFA");
+                    break;
+            }
+        }
 
         private void onTick_Tracing (object sender, EventArgs e) {
             if (tPatient.Paused)
@@ -83,11 +171,11 @@ namespace II.Forms
                 II.Controls.Numeric newNum;
                 switch (i) {
                     default:
-                    case 0: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.ECG);    break;
-                    case 1: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.NIBP);   break;
-                    case 2: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.SPO2);   break;
-                    case 3: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.CVP);    break;
-                    case 4: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.ABP);    break;
+                    case 0: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.ECG, tColorScheme);    break;
+                    case 1: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.NIBP, tColorScheme);   break;
+                    case 2: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.SPO2, tColorScheme);   break;
+                    case 3: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.CVP, tColorScheme);    break;
+                    case 4: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.ABP, tColorScheme);    break;
                 }
                 tNumerics.Add (newNum);
             }
@@ -104,8 +192,8 @@ namespace II.Forms
                         case 4: newStrip = new Strip (6f, Leads.Values.ABP);       break;
                     }
 
-                    Controls.Tracing newTracing = new Controls.Tracing (newStrip.Lead);
-                    Strip.Renderer newRenderer = new Strip.Renderer (newTracing, ref newStrip, newStrip.Lead.Color);
+                    Controls.Tracing newTracing = new Controls.Tracing (newStrip.Lead, tColorScheme);
+                    Strip.Renderer newRenderer = new Strip.Renderer (newTracing, ref newStrip, tColorScheme, newStrip.Lead.Color);
                     newTracing.Paint += delegate (object s, PaintEventArgs e) { newRenderer.Draw (e); };
                     newTracing.TracingEdited += onTracingEdited;
 
@@ -176,7 +264,7 @@ namespace II.Forms
         private void onTracingEdited (object sender, Controls.Tracing.TracingEdited_EventArgs e) {
             foreach (Channel c in tChannels) {
                 if (c.cTracing == sender) {
-                    c.cTracing.setLead (e.Lead);
+                    c.cTracing.SetLead (e.Lead);
                     c.cRenderer.pcolor = e.Lead.Color;
                     c.cStrip.Lead = e.Lead;
                 }
@@ -222,33 +310,12 @@ namespace II.Forms
                 case "Extra Large": tFontsize = 4; break;
             }
 
-            foreach (II.Controls.Numeric rn in tNumerics)
-                rn.SetFontSize (tFontsize * 0.5f);
+            applyFontSize ();
         }
 
         private void menuColorScheme_Click (object sender, EventArgs e) {
             tColorScheme = (_.ColorScheme)Enum.Parse (typeof (_.ColorScheme), _.SpaceToUnderscore (((ToolStripMenuItem)sender).Text));
-
-            foreach (Channel c in tChannels) {
-                c.cTracing.setColorScheme (tColorScheme);
-                c.cRenderer.setColorScheme (tColorScheme);
-            }
-
-            foreach (II.Controls.Numeric n in tNumerics) {
-                n.SetColorScheme (tColorScheme);
-            }
-
-            switch (tColorScheme) {
-                default:
-                case _.ColorScheme.Normal:
-                    layoutNumerics.BackColor = Color.Black;
-                    layoutTracings.BackColor = Color.Black;
-                    break;
-                case _.ColorScheme.Monochrome:
-                    layoutNumerics.BackColor = Color.White;
-                    layoutTracings.BackColor = Color.White;
-                    break;
-            }
+            applyColorScheme ();
         }
 
         private void menuNumericRowCount_Click (object sender, EventArgs e) {
@@ -272,22 +339,7 @@ namespace II.Forms
 
         private void menuFullscreen_Click (object sender, EventArgs e) {
             tFullscreen = !tFullscreen;
-            menuItem_Fullscreen.Checked = tFullscreen;
-
-            switch (tFullscreen) {
-                default:
-                case false:
-                    this.TopMost = false;
-                    this.FormBorderStyle = FormBorderStyle.Sizable;
-                    this.WindowState = FormWindowState.Maximized;
-                    break;
-
-                case true:
-                    this.TopMost = true;
-                    this.FormBorderStyle = FormBorderStyle.None;
-                    this.WindowState = FormWindowState.Maximized;
-                    break;
-            }
+            applyFullScreen ();
         }
     }
 }

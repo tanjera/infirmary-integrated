@@ -2,6 +2,12 @@
 
 
 
+v 0.7 To Do:
+- Save/Load functionality for tracings and numerics in cardiac monitor!
+	- And debug/test!!
+
+
+
 * To debug:
 	- Timers are not perfectly synchronous... during loading or CPU bogging
 		- Create synchronous timer state machine based on DateTime elapsed?
@@ -11,21 +17,22 @@
 
 * Versions and features to implement:
 
-	- v 0.7
+	- v 0.8
+		- Installer
+			- Associate .ii files with II? Give icons?
+
+		- First Run
+			- Add EULA
+
+		- Save/Load
+			- Cardiac monitor state/options...
+
 		- More tracings: CVP, PA
 		- Reimplement default vital sign clamping...
-		- Color scheme issues and edge cases
-			- Edge case: In monochrome, when changing row amount of numerics, background set to black
-			- Issue: Split container seperator background color needs setting with color scheme changes
 
-
-	- v 0.8
 		- Device options
 			- Save screenshot
 			- Print screenshot
-		- Numeric control improvements
-			- Add buttons for added functionality (e.g. zero ABP; cycle NiBP; run thermodilution; run 12 lead)
-			* Buttons can be disabled until functionality implemented...
 
 
 	- v 0.9
@@ -39,11 +46,6 @@
 
 	- v 1.0
 		* General polish and debugging
-		* Save/load functionality!!
-			- File extension .ii
-			- SSH encrypt save files (for testing mode)
-			- Import invidual fields and assign to objects (not serialized out/in)
-			- For backwards compatibility with save files...
 
 
 	- v 1.1
@@ -72,6 +74,10 @@
 
 
 * Feature ideas, needs placing in version plan:
+	- Numeric control improvements
+		- Add buttons for added functionality (e.g. zero ABP; cycle NiBP; run thermodilution; run 12 lead)
+		* Buttons can be disabled until functionality implemented...
+
 	- More respiratory content
 		- ETCO2 waveform coefficients
 	- Ventilators... other devices...

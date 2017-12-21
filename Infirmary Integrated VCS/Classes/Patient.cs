@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json;
+
 
 namespace II {
     public class Patient {
@@ -78,6 +76,16 @@ namespace II {
             initTimers ();
             setTimers ();
         }
+
+        public void Load(string json) {
+            JsonConvert.PopulateObject (json, this);
+
+            setTimers ();
+            onCardiac_Baseline ();
+            onRespiratory_Baseline ();
+            PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Vitals_Change));
+        }
+        public string Save() { return JsonConvert.SerializeObject (this, Formatting.Indented); }
 
         public void TogglePause() {
             _Paused = !_Paused;

@@ -118,6 +118,9 @@
             this.buttonDevice_Monitor = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadSimulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveSimulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.menuItem_Exit = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_About = new System.Windows.Forms.ToolStripMenuItem();
@@ -427,6 +430,7 @@
             // comboAxisShift
             // 
             this.comboAxisShift.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboAxisShift.Enabled = false;
             this.comboAxisShift.FormattingEnabled = true;
             this.comboAxisShift.Location = new System.Drawing.Point(65, 20);
             this.comboAxisShift.Name = "comboAxisShift";
@@ -1539,10 +1543,34 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.loadSimulationToolStripMenuItem,
+            this.saveSimulationToolStripMenuItem,
+            this.toolStripSeparator1,
             this.menuItem_Exit});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
+            // 
+            // loadSimulationToolStripMenuItem
+            // 
+            this.loadSimulationToolStripMenuItem.Name = "loadSimulationToolStripMenuItem";
+            this.loadSimulationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
+            this.loadSimulationToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.loadSimulationToolStripMenuItem.Text = "&Load Simulation";
+            this.loadSimulationToolStripMenuItem.Click += new System.EventHandler(this.menuLoadFile_Click);
+            // 
+            // saveSimulationToolStripMenuItem
+            // 
+            this.saveSimulationToolStripMenuItem.Name = "saveSimulationToolStripMenuItem";
+            this.saveSimulationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveSimulationToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
+            this.saveSimulationToolStripMenuItem.Text = "&Save Simulation";
+            this.saveSimulationToolStripMenuItem.Click += new System.EventHandler(this.menuSaveFile_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(239, 6);
             // 
             // menuItem_Exit
             // 
@@ -1868,5 +1896,8 @@
         private System.Windows.Forms.NumericUpDown numExpRatio;
         private System.Windows.Forms.Label label44;
         private System.Windows.Forms.NumericUpDown numInspRatio;
+        private System.Windows.Forms.ToolStripMenuItem loadSimulationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveSimulationToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
     }
 }

@@ -69,10 +69,12 @@ namespace II.Controls {
         }
 
 
-        public Numeric (ControlType.Values v) {
+        public Numeric (ControlType.Values v, _.ColorScheme cs) {
             InitializeComponent ();
 
             controlType = new ControlType(v);
+
+            applyColorScheme ();
             labelType.Text = "";
             label1.Text = "";
             label2.Text = "";
@@ -91,30 +93,7 @@ namespace II.Controls {
         public void Update (Patient p) {
             lPatient = p;
 
-            Color tColorBack;
-            switch (tColorScheme) {
-                default:
-                case _.ColorScheme.Normal:
-                    tColorBack = Color.Black;
-                    this.BackColor = Color.Black;
-
-                    labelType.ForeColor = controlType.Color;
-                    label1.ForeColor = controlType.Color;
-                    label2.ForeColor = controlType.Color;
-                    label3.ForeColor = controlType.Color;
-                    break;
-
-                case _.ColorScheme.Monochrome:
-                    tColorBack = Color.White;
-                    this.BackColor = Color.White;
-
-                    labelType.ForeColor = Color.Black;
-                    label1.ForeColor = Color.Black;
-                    label2.ForeColor = Color.Black;
-                    label3.ForeColor = Color.Black;
-                    break;
-            }
-
+            applyColorScheme ();
             label1.Show ();
             label2.Show ();
             label3.Show ();
@@ -204,6 +183,29 @@ namespace II.Controls {
         public void SetColorScheme (_.ColorScheme cs) {
             tColorScheme = cs;
             Update (lPatient);
+        }
+
+        private void applyColorScheme () {
+            switch (tColorScheme) {
+                default:
+                case _.ColorScheme.Normal:
+                    this.BackColor = Color.Black;
+
+                    labelType.ForeColor = controlType.Color;
+                    label1.ForeColor = controlType.Color;
+                    label2.ForeColor = controlType.Color;
+                    label3.ForeColor = controlType.Color;
+                    break;
+
+                case _.ColorScheme.Monochrome:
+                    this.BackColor = Color.White;
+
+                    labelType.ForeColor = Color.Black;
+                    label1.ForeColor = Color.Black;
+                    label2.ForeColor = Color.Black;
+                    label3.ForeColor = Color.Black;
+                    break;
+            }
         }
 
         private void contextValueSelect_Click (object sender, EventArgs e) {

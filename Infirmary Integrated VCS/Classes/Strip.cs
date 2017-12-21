@@ -189,13 +189,14 @@ namespace II.Rhythm {
             int offX, offY;
             double multX, multY;
 
-            public Renderer (Control _Panel, ref Strip _Strip, Color _Color) {
+            public Renderer (Control _Panel, ref Strip _Strip, _.ColorScheme _Scheme, Color _Color) {
                 panel = _Panel;
                 pcolor = _Color;
                 strip = _Strip;
+                scheme = _Scheme;
             }
 
-            public void setColorScheme (_.ColorScheme cs) {
+            public void SetColorScheme (_.ColorScheme cs) {
                 scheme = cs;
             }
 

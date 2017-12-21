@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 
@@ -181,6 +177,72 @@ namespace II.Forms {
         private void onRhythmSelected (object sender, EventArgs e) {
             if (checkDefaultVitals.Checked) {
                 // TO DO
+            }
+        }
+
+        private void menuSaveFile_Click (object sender, EventArgs e) {
+            Stream s;
+            SaveFileDialog dlgSave = new SaveFileDialog ();
+
+            dlgSave.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
+            dlgSave.FilterIndex = 1;
+            dlgSave.RestoreDirectory = true;
+
+            if (dlgSave.ShowDialog () == DialogResult.OK) {
+                if ((s = dlgSave.OpenFile ()) != null) {
+                    StreamWriter sWrite = new StreamWriter (s);
+
+                    sWrite.WriteLine ("> Begin: Patient");
+                    sWrite.WriteLine (tPatient.Save ());
+                    sWrite.WriteLine ("> End: Patient");
+
+                    if (Program.Device_Monitor != null && !Program.Device_Monitor.IsDisposed) {
+                        sWrite.WriteLine ("> Begin: Cardiac Monitor");
+                        sWrite.WriteLine (Program.Device_Monitor.Save ());
+                        sWrite.WriteLine ("> End: Cardiac Monitor");
+                    }
+
+                    sWrite.Close ();
+                    s.Close ();
+                }
+            }
+        }
+
+        private void menuLoadFile_Click (object sender, EventArgs e) {
+            Stream s;
+            OpenFileDialog dlgLoad = new OpenFileDialog ();
+
+            dlgLoad.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
+            dlgLoad.FilterIndex = 1;
+            dlgLoad.RestoreDirectory = true;
+
+            if (dlgLoad.ShowDialog () == DialogResult.OK) {
+                if ((s = dlgLoad.OpenFile ()) != null) {
+
+                    StreamReader sRead = new StreamReader (s);
+                    string line, pline;
+                    StringBuilder pbuffer;
+
+                    while ((line = sRead.ReadLine()) != null) {
+                        if (line == "> Begin: Patient") {
+                            pbuffer = new StringBuilder ();
+
+                            while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
+                                pbuffer.AppendLine (pline);
+
+                            tPatient.Load (pbuffer.ToString());
+
+                        } else if (line == "> Begin: Cardiac Monitor") {
+                            pbuffer = new StringBuilder ();
+
+                            while ((pline = sRead.ReadLine ()) != null && pline != "> End: Cardiac Monitor")
+                                pbuffer.AppendLine (pline);
+
+                            initMonitor ();
+                            Program.Device_Monitor.Load (pbuffer.ToString());
+                        }
+                    }
+                }
             }
         }
     }
