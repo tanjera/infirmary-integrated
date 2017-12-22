@@ -3,8 +3,11 @@
 
 
 v 0.7 To Do:
-- Save/Load functionality for tracings and numerics in cardiac monitor!
-	- And debug/test!!
+- Save/Load functionality
+	- For tracings and numerics in cardiac monitor
+
+- in Rhythms.cs: Cardiac_Axis_Shifts and Respiratory_Rhythms
+	- Create class, implement ParseDescription(), encapsulate in try{}
 
 
 
@@ -18,15 +21,6 @@ v 0.7 To Do:
 * Versions and features to implement:
 
 	- v 0.8
-		- Installer
-			- Associate .ii files with II? Give icons?
-
-		- First Run
-			- Add EULA
-
-		- Save/Load
-			- Cardiac monitor state/options...
-
 		- More tracings: CVP, PA
 		- Reimplement default vital sign clamping...
 

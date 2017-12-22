@@ -36,7 +36,15 @@ namespace II {
         }
         public static Values Parse_MenuItem (string inc) {
             string portion = _.SpaceToUnderscore (inc.Substring (0, inc.IndexOf (':')));
-            return (Values)Enum.Parse (typeof (Values), portion);
+            try {
+                return (Values)Enum.Parse (typeof (Values), portion);
+            } catch {
+                #if DEBUG
+                    throw new FormatException();
+                #endif
+
+                return Values.ECG_I;
+            }
         }
 
         public static string[] Descriptions = new string[] {

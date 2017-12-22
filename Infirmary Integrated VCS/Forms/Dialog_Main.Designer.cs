@@ -290,7 +290,7 @@
             this.buttonApply.TabIndex = 4;
             this.buttonApply.Text = "Apply Changes";
             this.buttonApply.UseVisualStyleBackColor = true;
-            this.buttonApply.Click += new System.EventHandler(this.buttonApplyParameters_Click);
+            this.buttonApply.Click += new System.EventHandler(this.ButtonApplyParameters_Click);
             // 
             // groupBox1
             // 
@@ -1301,7 +1301,7 @@
             this.comboCardiacRhythm.Name = "comboCardiacRhythm";
             this.comboCardiacRhythm.Size = new System.Drawing.Size(181, 22);
             this.comboCardiacRhythm.TabIndex = 1;
-            this.comboCardiacRhythm.SelectedIndexChanged += new System.EventHandler(this.onRhythmSelected);
+            this.comboCardiacRhythm.SelectedIndexChanged += new System.EventHandler(this.OnRhythmSelected);
             // 
             // groupBox3
             // 
@@ -1527,7 +1527,7 @@
             this.buttonDevice_Monitor.TabIndex = 4;
             this.buttonDevice_Monitor.Text = "Cardiac Monitor";
             this.buttonDevice_Monitor.UseVisualStyleBackColor = true;
-            this.buttonDevice_Monitor.Click += new System.EventHandler(this.buttonMonitor_Click);
+            this.buttonDevice_Monitor.Click += new System.EventHandler(this.ButtonMonitor_Click);
             // 
             // menuStrip1
             // 
@@ -1557,7 +1557,7 @@
             this.loadSimulationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
             this.loadSimulationToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
             this.loadSimulationToolStripMenuItem.Text = "&Load Simulation";
-            this.loadSimulationToolStripMenuItem.Click += new System.EventHandler(this.menuLoadFile_Click);
+            this.loadSimulationToolStripMenuItem.Click += new System.EventHandler(this.MenuLoadFile_Click);
             // 
             // saveSimulationToolStripMenuItem
             // 
@@ -1565,7 +1565,7 @@
             this.saveSimulationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveSimulationToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
             this.saveSimulationToolStripMenuItem.Text = "&Save Simulation";
-            this.saveSimulationToolStripMenuItem.Click += new System.EventHandler(this.menuSaveFile_Click);
+            this.saveSimulationToolStripMenuItem.Click += new System.EventHandler(this.MenuSaveFile_Click);
             // 
             // toolStripSeparator1
             // 
@@ -1578,7 +1578,7 @@
             this.menuItem_Exit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
             this.menuItem_Exit.Size = new System.Drawing.Size(242, 22);
             this.menuItem_Exit.Text = "Exit Infirmary Integrated";
-            this.menuItem_Exit.Click += new System.EventHandler(this.menuExit_Click);
+            this.menuItem_Exit.Click += new System.EventHandler(this.MenuExit_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -1593,7 +1593,7 @@
             this.menuItem_About.Name = "menuItem_About";
             this.menuItem_About.Size = new System.Drawing.Size(215, 22);
             this.menuItem_About.Text = "&About Infirmary Integrated";
-            this.menuItem_About.Click += new System.EventHandler(this.menuAbout_Click);
+            this.menuItem_About.Click += new System.EventHandler(this.MenuAbout_Click);
             // 
             // groupBox9
             // 
@@ -1713,7 +1713,7 @@
             this.buttonReset.TabIndex = 4;
             this.buttonReset.Text = "Reset Parameters";
             this.buttonReset.UseVisualStyleBackColor = true;
-            this.buttonReset.Click += new System.EventHandler(this.buttonResetParameters_Click);
+            this.buttonReset.Click += new System.EventHandler(this.ButtonResetParameters_Click);
             // 
             // Dialog_Main
             // 

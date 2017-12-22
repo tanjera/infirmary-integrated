@@ -51,22 +51,18 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>37B238A874FB3704D8636FC4E4F74C42C7D0CD5A</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>3239FB4B77EA646541BB01B3CB35EE55A8668441</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>
-    </ManifestKeyFile>
+    <ManifestKeyFile>Temp Signing Key.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
@@ -110,6 +106,12 @@
       <DependentUpon>Device_Monitor.cs</DependentUpon>
     </Compile>
     <Compile Include="Classes\Waveforms.cs" />
+    <Compile Include="Forms\Dialog_License.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Dialog_License.Designer.cs">
+      <DependentUpon>Dialog_License.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Dialog_Main.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -130,6 +132,9 @@
     <EmbeddedResource Include="Forms\Device_Monitor.resx">
       <DependentUpon>Device_Monitor.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Dialog_License.resx">
+      <DependentUpon>Dialog_License.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\Dialog_Main.resx">
       <DependentUpon>Dialog_Main.cs</DependentUpon>
     </EmbeddedResource>
@@ -143,6 +148,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -162,7 +168,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Icon.ico" />
+    <Content Include="Resources\Icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

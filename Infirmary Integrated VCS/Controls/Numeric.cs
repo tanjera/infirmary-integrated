@@ -31,7 +31,7 @@ namespace II.Controls {
             public Color Color { get { return Colors[(int)Value]; } }
 
             public static List<string> MenuItem_Formats {
-                get{
+                get {
                     List<string> o = new List<string>();
                     foreach (Values v in Enum.GetValues (typeof (Values)))
                         o.Add (String.Format ("{0}: {1}", v.ToString (), Descriptions[(int)v]));
@@ -40,7 +40,15 @@ namespace II.Controls {
             }
             public static Values Parse_MenuItem (string inc) {
                 string portion = inc.Substring (0, inc.IndexOf (':'));
-                return (Values)Enum.Parse (typeof (Values), portion);
+                try {
+                    return (Values)Enum.Parse (typeof (Values), portion);
+                } catch {
+                    #if DEBUG
+                        throw new FormatException ();
+                    #endif
+
+                    return Values.ECG;
+                }
             }
 
             public static string[] Descriptions = new string[] {
@@ -74,7 +82,7 @@ namespace II.Controls {
 
             controlType = new ControlType(v);
 
-            applyColorScheme ();
+            ApplyColorScheme ();
             labelType.Text = "";
             label1.Text = "";
             label2.Text = "";
@@ -87,13 +95,15 @@ namespace II.Controls {
             contextMenu.MenuItems.Add ("Select Value to Display:");
             contextMenu.MenuItems.Add ("-");
             foreach (string mif in ControlType.MenuItem_Formats)
-                contextMenu.MenuItems.Add(new MenuItem(mif, contextValueSelect_Click));
+                contextMenu.MenuItems.Add(new MenuItem(mif, MenuValueSelect_Click));
         }
 
         public void Update (Patient p) {
-            lPatient = p;
+            lPatient = (p == null ? lPatient : p);
+            if (lPatient == null)
+                return;
 
-            applyColorScheme ();
+            ApplyColorScheme ();
             label1.Show ();
             label2.Show ();
             label3.Show ();
@@ -185,7 +195,16 @@ namespace II.Controls {
             Update (lPatient);
         }
 
-        private void applyColorScheme () {
+        public void SetFontSize (float mod)
+        {
+            fontLarge = new Font ("Arial", 50 * mod, FontStyle.Bold);
+            fontMedium = new Font ("Arial", 25 * mod, FontStyle.Bold);
+            fontSmall = new Font ("Arial", 15 * mod, FontStyle.Bold);
+
+            Update (lPatient);
+        }
+
+        private void ApplyColorScheme () {
             switch (tColorScheme) {
                 default:
                 case _.ColorScheme.Normal:
@@ -208,20 +227,12 @@ namespace II.Controls {
             }
         }
 
-        private void contextValueSelect_Click (object sender, EventArgs e) {
+        private void MenuValueSelect_Click (object sender, EventArgs e) {
             controlType.Value = ControlType.Parse_MenuItem (((MenuItem)sender).Text);
             Update (lPatient);
         }
 
-        public void SetFontSize (float mod) {
-            fontLarge = new Font ("Arial", 50 * mod, FontStyle.Bold);
-            fontMedium = new Font ("Arial", 25 * mod, FontStyle.Bold);
-            fontSmall = new Font ("Arial", 15 * mod, FontStyle.Bold);
-
-            Update (lPatient);
-        }
-
-        private void onClick(object sender, EventArgs e) {
+        private void OnClick(object sender, EventArgs e) {
             MouseEventArgs me = (MouseEventArgs)e;
             if (me.Button == MouseButtons.Right)
             {

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Numerics;
 using System.Windows.Forms;
 
 namespace II.Rhythm {
@@ -25,7 +24,7 @@ namespace II.Rhythm {
             Points.Clear ();
         }
 
-        public void clearFuture () {
+        public void ClearFuture () {
             for (int i = Points.Count - 1; i >= 0; i--) {
                 if (Points[i].X > Length)
                     Points.RemoveAt (i);
@@ -49,6 +48,7 @@ namespace II.Rhythm {
             for (int i = 0; i < _Addition.Count; i++)
                 Points.Add (new Point (_Addition[i].X + offsetX, _Addition[i].Y));
         }
+
         public void Overwrite(List<Point> _Replacement) {
             if (_Replacement.Count == 0)
                 return;
@@ -66,6 +66,7 @@ namespace II.Rhythm {
 
             Points.AddRange (_Replacement);
         }
+
         public void Underwrite (List<Point> _Replacement) {
             if (_Replacement.Count == 0)
                 return;
@@ -87,11 +88,13 @@ namespace II.Rhythm {
 
             Points.AddRange (_Replacement);
         }
+
         private void RemoveNull() {
             for (int i = Points.Count - 1; i >= 0; i--)
                 if (Points[i] == null)
                     Points.RemoveAt (i);
         }
+
         private void Sort() {
             Points.Sort (delegate (Point p1, Point p2) {
                 if (p1 == null && p2 == null) return 0;
@@ -99,6 +102,7 @@ namespace II.Rhythm {
                 else if (p2 == null) return 1;
                 else return p1.X.CompareTo (p2.X); });
         }
+
         public void Scroll () {
             if (Scrolled_Unpausing) {
                 Scrolled_Unpausing = false;
@@ -117,12 +121,13 @@ namespace II.Rhythm {
                     Points.RemoveAt (i);
             }
         }
+
         public void Unpause() {
             Scrolled_Unpausing = true;
         }
 
         public void Add_Beat__Cardiac_Baseline (Patient _Patient) {
-            if (isECG ())
+            if (IsECG ())
                 _Patient.Cardiac_Rhythm.ECG_Isoelectric (_Patient, this);
             else if (Lead.Value != Leads.Values.RR && Lead.Value != Leads.Values.ETCO2) {
                 // Fill waveform through to future buffer with flatline
@@ -132,12 +137,12 @@ namespace II.Rhythm {
         }
 
         public void Add_Beat__Cardiac_Atrial (Patient _Patient) {
-            if (isECG ())
+            if (IsECG ())
                 _Patient.Cardiac_Rhythm.ECG_Atrial (_Patient, this);
         }
 
         public void Add_Beat__Cardiac_Ventricular (Patient _Patient) {
-            if (isECG ())
+            if (IsECG ())
                 _Patient.Cardiac_Rhythm.ECG_Ventricular (_Patient, this);
             else if (Lead.Value == Leads.Values.SpO2 && _Patient.Cardiac_Rhythm.Pulse_Ventricular)
                 Overwrite (Waveforms.SpO2_Rhythm (_Patient, 1f));
@@ -169,7 +174,7 @@ namespace II.Rhythm {
             }
         }
 
-        private bool isECG() {
+        private bool IsECG() {
             return Lead.Value ==  Leads.Values.ECG_I || Lead.Value ==  Leads.Values.ECG_II
                 || Lead.Value ==  Leads.Values.ECG_III || Lead.Value ==  Leads.Values.ECG_AVR
                 || Lead.Value ==  Leads.Values.ECG_AVL || Lead.Value ==  Leads.Values.ECG_AVF

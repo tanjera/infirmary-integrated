@@ -74,7 +74,7 @@
             // timerTracing
             // 
             this.timerTracing.Enabled = true;
-            this.timerTracing.Tick += new System.EventHandler(this.onTick_Tracing);
+            this.timerTracing.Tick += new System.EventHandler(this.OnTick_Tracing);
             // 
             // menuMain
             // 
@@ -110,7 +110,7 @@
             this.menuItem_PauseDevice.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.U)));
             this.menuItem_PauseDevice.Size = new System.Drawing.Size(193, 22);
             this.menuItem_PauseDevice.Text = "Pa&use Device";
-            this.menuItem_PauseDevice.Click += new System.EventHandler(this.menuTogglePause_Click);
+            this.menuItem_PauseDevice.Click += new System.EventHandler(this.MenuTogglePause_Click);
             // 
             // toolStripSeparator2
             // 
@@ -134,35 +134,35 @@
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
             this.toolStripMenuItem2.Size = new System.Drawing.Size(80, 22);
             this.toolStripMenuItem2.Text = "&1";
-            this.toolStripMenuItem2.Click += new System.EventHandler(this.menuNumericRowCount_Click);
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.MenuNumericRowCount_Click);
             // 
             // toolStripMenuItem3
             // 
             this.toolStripMenuItem3.Name = "toolStripMenuItem3";
             this.toolStripMenuItem3.Size = new System.Drawing.Size(80, 22);
             this.toolStripMenuItem3.Text = "&2";
-            this.toolStripMenuItem3.Click += new System.EventHandler(this.menuNumericRowCount_Click);
+            this.toolStripMenuItem3.Click += new System.EventHandler(this.MenuNumericRowCount_Click);
             // 
             // toolStripMenuItem4
             // 
             this.toolStripMenuItem4.Name = "toolStripMenuItem4";
             this.toolStripMenuItem4.Size = new System.Drawing.Size(80, 22);
             this.toolStripMenuItem4.Text = "&3";
-            this.toolStripMenuItem4.Click += new System.EventHandler(this.menuNumericRowCount_Click);
+            this.toolStripMenuItem4.Click += new System.EventHandler(this.MenuNumericRowCount_Click);
             // 
             // toolStripMenuItem5
             // 
             this.toolStripMenuItem5.Name = "toolStripMenuItem5";
             this.toolStripMenuItem5.Size = new System.Drawing.Size(80, 22);
             this.toolStripMenuItem5.Text = "&4";
-            this.toolStripMenuItem5.Click += new System.EventHandler(this.menuNumericRowCount_Click);
+            this.toolStripMenuItem5.Click += new System.EventHandler(this.MenuNumericRowCount_Click);
             // 
             // toolStripMenuItem6
             // 
             this.toolStripMenuItem6.Name = "toolStripMenuItem6";
             this.toolStripMenuItem6.Size = new System.Drawing.Size(80, 22);
             this.toolStripMenuItem6.Text = "&5";
-            this.toolStripMenuItem6.Click += new System.EventHandler(this.menuNumericRowCount_Click);
+            this.toolStripMenuItem6.Click += new System.EventHandler(this.MenuNumericRowCount_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -181,35 +181,35 @@
             this.toolStripMenuItem7.Name = "toolStripMenuItem7";
             this.toolStripMenuItem7.Size = new System.Drawing.Size(80, 22);
             this.toolStripMenuItem7.Text = "&1";
-            this.toolStripMenuItem7.Click += new System.EventHandler(this.menuTracingRowCount_Click);
+            this.toolStripMenuItem7.Click += new System.EventHandler(this.MenuTracingRowCount_Click);
             // 
             // toolStripMenuItem8
             // 
             this.toolStripMenuItem8.Name = "toolStripMenuItem8";
             this.toolStripMenuItem8.Size = new System.Drawing.Size(80, 22);
             this.toolStripMenuItem8.Text = "&2";
-            this.toolStripMenuItem8.Click += new System.EventHandler(this.menuTracingRowCount_Click);
+            this.toolStripMenuItem8.Click += new System.EventHandler(this.MenuTracingRowCount_Click);
             // 
             // toolStripMenuItem9
             // 
             this.toolStripMenuItem9.Name = "toolStripMenuItem9";
             this.toolStripMenuItem9.Size = new System.Drawing.Size(80, 22);
             this.toolStripMenuItem9.Text = "&3";
-            this.toolStripMenuItem9.Click += new System.EventHandler(this.menuTracingRowCount_Click);
+            this.toolStripMenuItem9.Click += new System.EventHandler(this.MenuTracingRowCount_Click);
             // 
             // toolStripMenuItem10
             // 
             this.toolStripMenuItem10.Name = "toolStripMenuItem10";
             this.toolStripMenuItem10.Size = new System.Drawing.Size(80, 22);
             this.toolStripMenuItem10.Text = "&4";
-            this.toolStripMenuItem10.Click += new System.EventHandler(this.menuTracingRowCount_Click);
+            this.toolStripMenuItem10.Click += new System.EventHandler(this.MenuTracingRowCount_Click);
             // 
             // toolStripMenuItem11
             // 
             this.toolStripMenuItem11.Name = "toolStripMenuItem11";
             this.toolStripMenuItem11.Size = new System.Drawing.Size(80, 22);
             this.toolStripMenuItem11.Text = "&5";
-            this.toolStripMenuItem11.Click += new System.EventHandler(this.menuTracingRowCount_Click);
+            this.toolStripMenuItem11.Click += new System.EventHandler(this.MenuTracingRowCount_Click);
             // 
             // fontSizeToolStripMenuItem
             // 
@@ -227,28 +227,28 @@
             this.smallToolStripMenuItem.Name = "smallToolStripMenuItem";
             this.smallToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.smallToolStripMenuItem.Text = "Small";
-            this.smallToolStripMenuItem.Click += new System.EventHandler(this.menuFontSize_Click);
+            this.smallToolStripMenuItem.Click += new System.EventHandler(this.MenuFontSize_Click);
             // 
             // mediumToolStripMenuItem
             // 
             this.mediumToolStripMenuItem.Name = "mediumToolStripMenuItem";
             this.mediumToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.mediumToolStripMenuItem.Text = "Medium";
-            this.mediumToolStripMenuItem.Click += new System.EventHandler(this.menuFontSize_Click);
+            this.mediumToolStripMenuItem.Click += new System.EventHandler(this.MenuFontSize_Click);
             // 
             // largeToolStripMenuItem
             // 
             this.largeToolStripMenuItem.Name = "largeToolStripMenuItem";
             this.largeToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.largeToolStripMenuItem.Text = "Large";
-            this.largeToolStripMenuItem.Click += new System.EventHandler(this.menuFontSize_Click);
+            this.largeToolStripMenuItem.Click += new System.EventHandler(this.MenuFontSize_Click);
             // 
             // extraLargeToolStripMenuItem
             // 
             this.extraLargeToolStripMenuItem.Name = "extraLargeToolStripMenuItem";
             this.extraLargeToolStripMenuItem.Size = new System.Drawing.Size(131, 22);
             this.extraLargeToolStripMenuItem.Text = "Extra Large";
-            this.extraLargeToolStripMenuItem.Click += new System.EventHandler(this.menuFontSize_Click);
+            this.extraLargeToolStripMenuItem.Click += new System.EventHandler(this.MenuFontSize_Click);
             // 
             // menuItem_ColorScheme
             // 
@@ -262,7 +262,7 @@
             this.menuItem_Fullscreen.ShortcutKeys = System.Windows.Forms.Keys.F11;
             this.menuItem_Fullscreen.Size = new System.Drawing.Size(193, 22);
             this.menuItem_Fullscreen.Text = "Toggle &Fullscreen";
-            this.menuItem_Fullscreen.Click += new System.EventHandler(this.menuFullscreen_Click);
+            this.menuItem_Fullscreen.Click += new System.EventHandler(this.MenuFullscreen_Click);
             // 
             // toolStripSeparator1
             // 
@@ -275,7 +275,7 @@
             this.closeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F4)));
             this.closeToolStripMenuItem.Size = new System.Drawing.Size(193, 22);
             this.closeToolStripMenuItem.Text = "&Close Device";
-            this.closeToolStripMenuItem.Click += new System.EventHandler(this.menuClose_Click);
+            this.closeToolStripMenuItem.Click += new System.EventHandler(this.MenuClose_Click);
             // 
             // menuItem_Exit
             // 
@@ -283,7 +283,7 @@
             this.menuItem_Exit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
             this.menuItem_Exit.Size = new System.Drawing.Size(193, 22);
             this.menuItem_Exit.Text = "E&xit Infirmary";
-            this.menuItem_Exit.Click += new System.EventHandler(this.menuExit_Click);
+            this.menuItem_Exit.Click += new System.EventHandler(this.MenuExit_Click);
             // 
             // patientToolStripMenuItem
             // 
@@ -301,7 +301,7 @@
             this.menuItem_NewPatient.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
             this.menuItem_NewPatient.Size = new System.Drawing.Size(181, 22);
             this.menuItem_NewPatient.Text = "&New Patient";
-            this.menuItem_NewPatient.Click += new System.EventHandler(this.menuNewPatient_Click);
+            this.menuItem_NewPatient.Click += new System.EventHandler(this.MenuNewPatient_Click);
             // 
             // menuItem_EditPatient
             // 
@@ -309,12 +309,12 @@
             this.menuItem_EditPatient.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
             this.menuItem_EditPatient.Size = new System.Drawing.Size(181, 22);
             this.menuItem_EditPatient.Text = "&Edit Patient";
-            this.menuItem_EditPatient.Click += new System.EventHandler(this.menuEditPatient_Click);
+            this.menuItem_EditPatient.Click += new System.EventHandler(this.MenuEditPatient_Click);
             // 
             // timerVitals
             // 
             this.timerVitals.Enabled = true;
-            this.timerVitals.Tick += new System.EventHandler(this.onTick_Vitals);
+            this.timerVitals.Tick += new System.EventHandler(this.OnTick_Vitals);
             // 
             // layoutTracings
             // 
@@ -383,7 +383,7 @@
             this.MainMenuStrip = this.menuMain;
             this.Name = "Device_Monitor";
             this.Text = "Infirmary Integrated: Cardiac Monitor";
-            this.SizeChanged += new System.EventHandler(this.onFormResize);
+            this.SizeChanged += new System.EventHandler(this.OnFormResize);
             this.menuMain.ResumeLayout(false);
             this.menuMain.PerformLayout();
             this.layoutSplit.Panel1.ResumeLayout(false);

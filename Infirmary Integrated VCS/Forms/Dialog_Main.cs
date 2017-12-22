@@ -8,78 +8,177 @@ namespace II.Forms {
 
         Patient tPatient;
 
-        public Dialog_Main () {
+        public Dialog_Main (string[] args) {
+
             InitializeComponent ();
 
             foreach (string el in Cardiac_Rhythms.Descriptions)
                 comboCardiacRhythm.Items.Add (el);
             comboCardiacRhythm.SelectedIndex = 0;
 
-            foreach (Cardiac_Axis_Shifts el in Enum.GetValues(typeof(Cardiac_Axis_Shifts)))
-                comboAxisShift.Items.Add(_.UnderscoreToSpace(el.ToString()));
+            foreach (Cardiac_Axis_Shifts el in Enum.GetValues (typeof (Cardiac_Axis_Shifts)))
+                comboAxisShift.Items.Add (_.UnderscoreToSpace (el.ToString ()));
             comboAxisShift.SelectedIndex = 0;
 
             foreach (Respiratory_Rhythms el in Enum.GetValues (typeof (Respiratory_Rhythms)))
                 comboRespiratoryRhythm.Items.Add (_.UnderscoreToSpace (el.ToString ()));
             comboRespiratoryRhythm.SelectedIndex = 0;
 
-            initPatient ();
+            InitPatient ();
+
+            if (args.Length > 0)
+                Load_Open (args [0]);
 
             // Debugging: auto-open cardiac monitor on program start
-            buttonMonitor_Click (this, new EventArgs ());
+            ButtonMonitor_Click (this, new EventArgs ());
         }
 
-
-        public void RequestExit() {
+        public void RequestExit () {
             if (MessageBox.Show ("Are you sure you want to exit Infirmary Integrated? All unsaved work will be lost.", "Exit Infirmary Integrated", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 return;
 
             Application.Exit ();
         }
 
-        public Patient RequestNewPatient() {
+        public Patient RequestNewPatient () {
             if (MessageBox.Show ("Are you sure you want to reset all patient parameters?", "Reset Patient Parameters", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 return tPatient;
 
-            initPatient ();
+            InitPatient ();
             return tPatient;
         }
 
-        private void initPatient() {
+        private void InitPatient () {
             tPatient = new Patient ();
-            tPatient.PatientEvent += updateFormParameters;
-            updateFormParameters (this, new Patient.PatientEvent_Args (tPatient, Patient.PatientEvent_Args.EventTypes.Vitals_Change));
+            tPatient.PatientEvent += FormUpdateFields;
+            FormUpdateFields (this, new Patient.PatientEvent_Args (tPatient, Patient.PatientEvent_Args.EventTypes.Vitals_Change));
         }
 
-        private void initMonitor() {
+        private void InitMonitor () {
             if (Program.Device_Monitor != null && !Program.Device_Monitor.IsDisposed)
                 return;
 
             Program.Device_Monitor = new Device_Monitor ();
             Program.Device_Monitor.SetPatient (tPatient);
-            tPatient.PatientEvent += Program.Device_Monitor.onPatientEvent;
+            tPatient.PatientEvent += Program.Device_Monitor.OnPatientEvent;
         }
 
-        private void buttonMonitor_Click (object sender, EventArgs e) {
-            initMonitor ();
-            Program.Device_Monitor.Show ();
-            Program.Device_Monitor.BringToFront ();
+        private void Load_Open (string fileName) {
+            if (File.Exists(fileName)) {
+                Stream s = new FileStream (fileName, FileMode.Open);
+                Load_Process (s);
+            } else {
+                MessageBox.Show (
+                    "The file passed to Infirmary Integrated to load does not appear to exist. Aborting loading process.",
+                    "Unable to Load File",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        private void menuExit_Click(object sender, EventArgs e) {
+        private void Load_Process(Stream incFile) {
+            StreamReader sRead = new StreamReader (incFile);
+            string line, pline;
+            StringBuilder pbuffer;
+
+            try {
+                while ((line = sRead.ReadLine ()) != null) {
+                    if (line == "> Begin: Patient") {
+                        pbuffer = new StringBuilder ();
+
+                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
+                            pbuffer.AppendLine (pline);
+
+                        tPatient.Load_Process (pbuffer.ToString ());
+
+                    } else if (line == "> Begin: Cardiac Monitor") {
+                        pbuffer = new StringBuilder ();
+
+                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Cardiac Monitor")
+                            pbuffer.AppendLine (pline);
+
+                        InitMonitor ();
+                        Program.Device_Monitor.Load_Process (pbuffer.ToString ());
+                    }
+                }
+            } catch (Exception ex) {
+                #if DEBUG
+                    throw ex;
+                #endif
+
+                MessageBox.Show (
+                    "The selected file was unable to be loaded. Perhaps the file was damaged or is no longer compatible?",
+                    "Unable to Load",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            sRead.Close ();
+        }
+
+        private void MenuLoadFile_Click (object sender, EventArgs e) {
+            Stream s;
+            OpenFileDialog dlgLoad = new OpenFileDialog ();
+
+            dlgLoad.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
+            dlgLoad.FilterIndex = 1;
+            dlgLoad.RestoreDirectory = true;
+
+            if (dlgLoad.ShowDialog () == DialogResult.OK) {
+                if ((s = dlgLoad.OpenFile ()) != null) {
+                    Load_Process (s);
+                    s.Close ();
+                }
+            }
+        }
+
+        private void MenuSaveFile_Click (object sender, EventArgs e) {
+            Stream s;
+            SaveFileDialog dlgSave = new SaveFileDialog ();
+
+            dlgSave.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
+            dlgSave.FilterIndex = 1;
+            dlgSave.RestoreDirectory = true;
+
+            if (dlgSave.ShowDialog () == DialogResult.OK) {
+                if ((s = dlgSave.OpenFile ()) != null) {
+                    StreamWriter sWrite = new StreamWriter (s);
+
+                    sWrite.WriteLine ("> Begin: Patient");
+                    sWrite.Write (tPatient.Save ());
+                    sWrite.WriteLine ("> End: Patient");
+
+                    if (Program.Device_Monitor != null && !Program.Device_Monitor.IsDisposed) {
+                        sWrite.WriteLine ("> Begin: Cardiac Monitor");
+                        sWrite.Write (Program.Device_Monitor.Save ());
+                        sWrite.WriteLine ("> End: Cardiac Monitor");
+                    }
+
+                    sWrite.Close ();
+                    s.Close ();
+                }
+            }
+        }
+
+        private void MenuExit_Click(object sender, EventArgs e) {
             RequestExit ();
         }
 
-        private void menuAbout_Click (object sender, EventArgs e) {
+        private void MenuAbout_Click (object sender, EventArgs e) {
             Forms.Dialog_About about = new Forms.Dialog_About ();
             about.Show ();
         }
 
-        private void buttonResetParameters_Click (object sender, EventArgs e) {
+        private void ButtonMonitor_Click (object sender, EventArgs e)
+        {
+            InitMonitor ();
+            Program.Device_Monitor.Show ();
+            Program.Device_Monitor.BringToFront ();
+        }
+
+        private void ButtonResetParameters_Click (object sender, EventArgs e) {
             RequestNewPatient ();
         }
 
-        private void buttonApplyParameters_Click (object sender, EventArgs e) {
+        private void ButtonApplyParameters_Click (object sender, EventArgs e) {
             tPatient.UpdateVitals (
                 (int)numHR.Value,
                 (int)numRR.Value,
@@ -122,7 +221,7 @@ namespace II.Forms {
             );
         }
 
-        private void updateFormParameters(object sender, Patient.PatientEvent_Args e) {
+        private void FormUpdateFields(object sender, Patient.PatientEvent_Args e) {
             if (e.EventType == Patient.PatientEvent_Args.EventTypes.Vitals_Change) {
                 numHR.Value = e.Patient.HR;
                 numRR.Value = e.Patient.RR;
@@ -174,75 +273,9 @@ namespace II.Forms {
             }
         }
 
-        private void onRhythmSelected (object sender, EventArgs e) {
+        private void OnRhythmSelected (object sender, EventArgs e) {
             if (checkDefaultVitals.Checked) {
                 // TO DO
-            }
-        }
-
-        private void menuSaveFile_Click (object sender, EventArgs e) {
-            Stream s;
-            SaveFileDialog dlgSave = new SaveFileDialog ();
-
-            dlgSave.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
-            dlgSave.FilterIndex = 1;
-            dlgSave.RestoreDirectory = true;
-
-            if (dlgSave.ShowDialog () == DialogResult.OK) {
-                if ((s = dlgSave.OpenFile ()) != null) {
-                    StreamWriter sWrite = new StreamWriter (s);
-
-                    sWrite.WriteLine ("> Begin: Patient");
-                    sWrite.WriteLine (tPatient.Save ());
-                    sWrite.WriteLine ("> End: Patient");
-
-                    if (Program.Device_Monitor != null && !Program.Device_Monitor.IsDisposed) {
-                        sWrite.WriteLine ("> Begin: Cardiac Monitor");
-                        sWrite.WriteLine (Program.Device_Monitor.Save ());
-                        sWrite.WriteLine ("> End: Cardiac Monitor");
-                    }
-
-                    sWrite.Close ();
-                    s.Close ();
-                }
-            }
-        }
-
-        private void menuLoadFile_Click (object sender, EventArgs e) {
-            Stream s;
-            OpenFileDialog dlgLoad = new OpenFileDialog ();
-
-            dlgLoad.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
-            dlgLoad.FilterIndex = 1;
-            dlgLoad.RestoreDirectory = true;
-
-            if (dlgLoad.ShowDialog () == DialogResult.OK) {
-                if ((s = dlgLoad.OpenFile ()) != null) {
-
-                    StreamReader sRead = new StreamReader (s);
-                    string line, pline;
-                    StringBuilder pbuffer;
-
-                    while ((line = sRead.ReadLine()) != null) {
-                        if (line == "> Begin: Patient") {
-                            pbuffer = new StringBuilder ();
-
-                            while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
-                                pbuffer.AppendLine (pline);
-
-                            tPatient.Load (pbuffer.ToString());
-
-                        } else if (line == "> Begin: Cardiac Monitor") {
-                            pbuffer = new StringBuilder ();
-
-                            while ((pline = sRead.ReadLine ()) != null && pline != "> End: Cardiac Monitor")
-                                pbuffer.AppendLine (pline);
-
-                            initMonitor ();
-                            Program.Device_Monitor.Load (pbuffer.ToString());
-                        }
-                    }
-                }
             }
         }
     }

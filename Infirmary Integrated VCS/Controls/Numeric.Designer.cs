@@ -41,7 +41,7 @@
             this.labelType.Size = new System.Drawing.Size(38, 16);
             this.labelType.TabIndex = 0;
             this.labelType.Text = "label";
-            this.labelType.Click += new System.EventHandler(this.onClick);
+            this.labelType.Click += new System.EventHandler(this.OnClick);
             // 
             // label1
             // 
@@ -53,7 +53,7 @@
             this.label1.Size = new System.Drawing.Size(78, 32);
             this.label1.TabIndex = 0;
             this.label1.Text = "label";
-            this.label1.Click += new System.EventHandler(this.onClick);
+            this.label1.Click += new System.EventHandler(this.OnClick);
             // 
             // label2
             // 
@@ -65,7 +65,7 @@
             this.label2.Size = new System.Drawing.Size(78, 32);
             this.label2.TabIndex = 0;
             this.label2.Text = "label";
-            this.label2.Click += new System.EventHandler(this.onClick);
+            this.label2.Click += new System.EventHandler(this.OnClick);
             // 
             // label3
             // 
@@ -77,7 +77,7 @@
             this.label3.Size = new System.Drawing.Size(78, 32);
             this.label3.TabIndex = 0;
             this.label3.Text = "label";
-            this.label3.Click += new System.EventHandler(this.onClick);
+            this.label3.Click += new System.EventHandler(this.OnClick);
             // 
             // tableLayoutPanel1
             // 
@@ -107,7 +107,7 @@
             this.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Name = "Rhythm_Numerics";
             this.Size = new System.Drawing.Size(116, 148);
-            this.Click += new System.EventHandler(this.onClick);
+            this.Click += new System.EventHandler(this.OnClick);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
