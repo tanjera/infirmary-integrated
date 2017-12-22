@@ -2,15 +2,6 @@
 
 
 
-v 0.7 To Do:
-- Save/Load functionality
-	- For tracings and numerics in cardiac monitor
-
-- in Rhythms.cs: Cardiac_Axis_Shifts and Respiratory_Rhythms
-	- Create class, implement ParseDescription(), encapsulate in try{}
-
-
-
 * To debug:
 	- Timers are not perfectly synchronous... during loading or CPU bogging
 		- Create synchronous timer state machine based on DateTime elapsed?
@@ -20,16 +11,16 @@ v 0.7 To Do:
 
 * Versions and features to implement:
 
-	- v 0.8
+	- V 0.8
 		- More tracings: CVP, PA
-		- Reimplement default vital sign clamping...
+		* Reimplement default vital sign clamping...
 
 		- Device options
 			- Save screenshot
 			- Print screenshot
 
 
-	- v 0.9
+	- V 0.9
 		- 12 lead ECG device form (Device_ECG)
 			- Fixed layout
 			- Option to pause for viewing, printing, or export to .pdf
@@ -38,11 +29,11 @@ v 0.7 To Do:
 		- Add default Rhythm vital signs for all hemodynamic parameters (Get_Rhythm().Vitals())
 
 
-	- v 1.0
+	- V 1.0
 		* General polish and debugging
 
 
-	- v 1.1
+	- V 1.1
 		- Defibrillator device form (Device_Defibrillator)
 			- Limited amount of tracing rows (limit 3?); less dynamic layout than cardiac monitor
 			- Faceplate with buttons for energy selection, charge, delivery shock
@@ -50,13 +41,13 @@ v 0.7 To Do:
 			- Defibrillation rhythm waveform (can be 1 beat)
 
 
-	- v 1.2
+	- V 1.2
 		- IABP device form
 			- Faceplate with fixed layout/tracings
 		- IABP waveforms
 
 
-	- v 1.3
+	- V 1.3
 		- Timing indicators for strip tracings (3 second tick marks, etc)
 		- Paced rhythms (AAI, VVI, DDI)
 			- Event/delegate triggers onCardiac_PaceAtria, onCardiac_PaceVentricles

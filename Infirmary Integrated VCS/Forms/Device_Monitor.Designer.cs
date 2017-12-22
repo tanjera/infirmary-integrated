@@ -323,6 +323,7 @@
             this.layoutTracings.ColumnCount = 1;
             this.layoutTracings.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.layoutTracings.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 75F));
+            this.layoutTracings.Dock = System.Windows.Forms.DockStyle.Fill;
             this.layoutTracings.Location = new System.Drawing.Point(0, 0);
             this.layoutTracings.Name = "layoutTracings";
             this.layoutTracings.Padding = new System.Windows.Forms.Padding(10, 11, 10, 11);
@@ -330,7 +331,7 @@
             this.layoutTracings.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.layoutTracings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 480F));
             this.layoutTracings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 480F));
-            this.layoutTracings.Size = new System.Drawing.Size(605, 502);
+            this.layoutTracings.Size = new System.Drawing.Size(605, 478);
             this.layoutTracings.TabIndex = 6;
             // 
             // layoutSplit
@@ -364,8 +365,8 @@
             this.layoutNumerics.Padding = new System.Windows.Forms.Padding(10, 11, 10, 11);
             this.layoutNumerics.RowCount = 1;
             this.layoutNumerics.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.layoutNumerics.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 480F));
-            this.layoutNumerics.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 480F));
+            this.layoutNumerics.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 456F));
+            this.layoutNumerics.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 456F));
             this.layoutNumerics.Size = new System.Drawing.Size(150, 478);
             this.layoutNumerics.TabIndex = 7;
             // 

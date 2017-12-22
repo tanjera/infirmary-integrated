@@ -16,12 +16,12 @@ namespace II.Forms {
                 comboCardiacRhythm.Items.Add (el);
             comboCardiacRhythm.SelectedIndex = 0;
 
-            foreach (Cardiac_Axis_Shifts el in Enum.GetValues (typeof (Cardiac_Axis_Shifts)))
-                comboAxisShift.Items.Add (_.UnderscoreToSpace (el.ToString ()));
+            foreach (string el in Cardiac_Axes.Descriptions)
+                comboAxisShift.Items.Add (el);
             comboAxisShift.SelectedIndex = 0;
 
-            foreach (Respiratory_Rhythms el in Enum.GetValues (typeof (Respiratory_Rhythms)))
-                comboRespiratoryRhythm.Items.Add (_.UnderscoreToSpace (el.ToString ()));
+            foreach (string el in Respiratory_Rhythms.Descriptions)
+                comboRespiratoryRhythm.Items.Add (el);
             comboRespiratoryRhythm.SelectedIndex = 0;
 
             InitPatient ();
@@ -80,7 +80,7 @@ namespace II.Forms {
             string line, pline;
             StringBuilder pbuffer;
 
-            try {
+            //try {
                 while ((line = sRead.ReadLine ()) != null) {
                     if (line == "> Begin: Patient") {
                         pbuffer = new StringBuilder ();
@@ -100,17 +100,13 @@ namespace II.Forms {
                         Program.Device_Monitor.Load_Process (pbuffer.ToString ());
                     }
                 }
-            } catch (Exception ex) {
-                #if DEBUG
-                    throw ex;
-                #endif
-
+            /*} catch {
                 MessageBox.Show (
                     "The selected file was unable to be loaded. Perhaps the file was damaged or is no longer compatible?",
                     "Unable to Load",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
+            */
             sRead.Close ();
         }
 
@@ -182,7 +178,7 @@ namespace II.Forms {
             tPatient.UpdateVitals (
                 (int)numHR.Value,
                 (int)numRR.Value,
-                (int)numSpO2.Value,
+                (int)numSPO2.Value,
                 (int)numT.Value,
                 (int)numCVP.Value,
                 (int)numETCO2.Value,
@@ -213,9 +209,9 @@ namespace II.Forms {
                 },
 
                 Cardiac_Rhythms.Parse_Description(comboCardiacRhythm.Text),
-                (Cardiac_Axis_Shifts)Enum.Parse (typeof (Cardiac_Axis_Shifts), _.SpaceToUnderscore (comboAxisShift.Text)),
+                Cardiac_Axes.Parse_Description(comboAxisShift.Text),
 
-                (Respiratory_Rhythms)Enum.Parse(typeof(Respiratory_Rhythms), _.SpaceToUnderscore(comboRespiratoryRhythm.Text)),
+                Respiratory_Rhythms.Parse_Description(comboRespiratoryRhythm.Text),
                 (int)numInspRatio.Value,
                 (int)numExpRatio.Value
             );
@@ -225,7 +221,7 @@ namespace II.Forms {
             if (e.EventType == Patient.PatientEvent_Args.EventTypes.Vitals_Change) {
                 numHR.Value = e.Patient.HR;
                 numRR.Value = e.Patient.RR;
-                numSpO2.Value = e.Patient.SpO2;
+                numSPO2.Value = e.Patient.SPO2;
                 numT.Value = (decimal)e.Patient.T;
                 numCVP.Value = e.Patient.CVP;
                 numETCO2.Value = e.Patient.ETCO2;
@@ -238,9 +234,9 @@ namespace II.Forms {
                 numPDP.Value = e.Patient.PDP;
 
                 comboCardiacRhythm.SelectedIndex = (int)e.Patient.Cardiac_Rhythm.Value;
-                comboAxisShift.SelectedIndex = (int)e.Patient.Cardiac_Axis_Shift;
+                comboAxisShift.SelectedIndex = (int)e.Patient.Cardiac_Axis.Value;
 
-                comboRespiratoryRhythm.SelectedIndex = (int)e.Patient.Respiratory_Rhythm;
+                comboRespiratoryRhythm.SelectedIndex = (int)e.Patient.Respiratory_Rhythm.Value;
                 numInspRatio.Value = (decimal)e.Patient.Respiratory_IERatio_I;
                 numExpRatio.Value = (decimal)e.Patient.Respiratory_IERatio_E;
 
@@ -277,6 +273,10 @@ namespace II.Forms {
             if (checkDefaultVitals.Checked) {
                 // TO DO
             }
+        }
+
+        private void OnNumUpDown_Enter (object sender, EventArgs e) {
+            ((NumericUpDown)sender).Select (0, ((NumericUpDown)sender).Text.Length);
         }
     }
 }

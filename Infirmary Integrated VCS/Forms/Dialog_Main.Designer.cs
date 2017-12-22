@@ -31,7 +31,7 @@
             this.numNSBP = new System.Windows.Forms.NumericUpDown();
             this.numNDBP = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
-            this.numSpO2 = new System.Windows.Forms.NumericUpDown();
+            this.numSPO2 = new System.Windows.Forms.NumericUpDown();
             this.buttonApply = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.lblTempConversion = new System.Windows.Forms.Label();
@@ -136,7 +136,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numHR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numNSBP)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numNDBP)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numSpO2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numSPO2)).BeginInit();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numT)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numRR)).BeginInit();
@@ -182,36 +182,36 @@
             ((System.ComponentModel.ISupportInitialize)(this.numInspRatio)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numExpRatio)).BeginInit();
             this.SuspendLayout();
-            // 
+            //
             // label1
-            // 
+            //
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(6, 28);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(57, 14);
             this.label1.TabIndex = 6;
             this.label1.Text = "HR (b/min)";
-            // 
+            //
             // label2
-            // 
+            //
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(6, 53);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(69, 14);
             this.label2.TabIndex = 6;
             this.label2.Text = "NiBP (mmHg)";
-            // 
+            //
             // label3
-            // 
+            //
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(6, 103);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(55, 14);
             this.label3.TabIndex = 6;
             this.label3.Text = "SpO2 (%)";
-            // 
+            //
             // numHR
-            // 
+            //
             this.numHR.Increment = new decimal(new int[] {
             5,
             0,
@@ -226,9 +226,10 @@
             this.numHR.Name = "numHR";
             this.numHR.Size = new System.Drawing.Size(47, 20);
             this.numHR.TabIndex = 1;
-            // 
+            this.numHR.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numNSBP
-            // 
+            //
             this.numNSBP.Increment = new decimal(new int[] {
             5,
             0,
@@ -243,9 +244,10 @@
             this.numNSBP.Name = "numNSBP";
             this.numNSBP.Size = new System.Drawing.Size(47, 20);
             this.numNSBP.TabIndex = 2;
-            // 
+            this.numNSBP.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numNDBP
-            // 
+            //
             this.numNDBP.Increment = new decimal(new int[] {
             5,
             0,
@@ -260,30 +262,32 @@
             this.numNDBP.Name = "numNDBP";
             this.numNDBP.Size = new System.Drawing.Size(47, 20);
             this.numNDBP.TabIndex = 3;
-            // 
+            this.numNDBP.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // label5
-            // 
+            //
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(143, 53);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(10, 14);
             this.label5.TabIndex = 6;
             this.label5.Text = "/";
-            // 
+            //
             // numSpO2
-            // 
-            this.numSpO2.Increment = new decimal(new int[] {
+            //
+            this.numSPO2.Increment = new decimal(new int[] {
             2,
             0,
             0,
             0});
-            this.numSpO2.Location = new System.Drawing.Point(90, 101);
-            this.numSpO2.Name = "numSpO2";
-            this.numSpO2.Size = new System.Drawing.Size(47, 20);
-            this.numSpO2.TabIndex = 5;
-            // 
+            this.numSPO2.Location = new System.Drawing.Point(90, 101);
+            this.numSPO2.Name = "numSPO2";
+            this.numSPO2.Size = new System.Drawing.Size(47, 20);
+            this.numSPO2.TabIndex = 5;
+            this.numSPO2.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // buttonApply
-            // 
+            //
             this.buttonApply.Location = new System.Drawing.Point(6, 421);
             this.buttonApply.Name = "buttonApply";
             this.buttonApply.Size = new System.Drawing.Size(223, 29);
@@ -291,9 +295,9 @@
             this.buttonApply.Text = "Apply Changes";
             this.buttonApply.UseVisualStyleBackColor = true;
             this.buttonApply.Click += new System.EventHandler(this.ButtonApplyParameters_Click);
-            // 
+            //
             // groupBox1
-            // 
+            //
             this.groupBox1.Controls.Add(this.lblTempConversion);
             this.groupBox1.Controls.Add(this.numT);
             this.groupBox1.Controls.Add(this.label6);
@@ -302,7 +306,7 @@
             this.groupBox1.Controls.Add(this.numNDBP);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.numRR);
-            this.groupBox1.Controls.Add(this.numSpO2);
+            this.groupBox1.Controls.Add(this.numSPO2);
             this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.numNSBP);
@@ -313,18 +317,18 @@
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Basic Vital Signs";
-            // 
+            //
             // lblTempConversion
-            // 
+            //
             this.lblTempConversion.AutoSize = true;
             this.lblTempConversion.Location = new System.Drawing.Point(158, 128);
             this.lblTempConversion.Name = "lblTempConversion";
             this.lblTempConversion.Size = new System.Drawing.Size(36, 14);
             this.lblTempConversion.TabIndex = 10;
             this.lblTempConversion.Text = "(?? F)";
-            // 
+            //
             // numT
-            // 
+            //
             this.numT.DecimalPlaces = 1;
             this.numT.Increment = new decimal(new int[] {
             2,
@@ -340,18 +344,19 @@
             this.numT.Name = "numT";
             this.numT.Size = new System.Drawing.Size(47, 20);
             this.numT.TabIndex = 6;
-            // 
+            this.numT.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // label6
-            // 
+            //
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(6, 128);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(58, 14);
             this.label6.TabIndex = 8;
             this.label6.Text = "Temp (ºC):";
-            // 
+            //
             // numRR
-            // 
+            //
             this.numRR.Increment = new decimal(new int[] {
             2,
             0,
@@ -361,18 +366,19 @@
             this.numRR.Name = "numRR";
             this.numRR.Size = new System.Drawing.Size(47, 20);
             this.numRR.TabIndex = 4;
-            // 
+            this.numRR.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // label8
-            // 
+            //
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(6, 79);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(57, 14);
             this.label8.TabIndex = 6;
             this.label8.Text = "RR (b/min)";
-            // 
+            //
             // numETCO2
-            // 
+            //
             this.numETCO2.Increment = new decimal(new int[] {
             2,
             0,
@@ -382,18 +388,19 @@
             this.numETCO2.Name = "numETCO2";
             this.numETCO2.Size = new System.Drawing.Size(47, 20);
             this.numETCO2.TabIndex = 1;
-            // 
+            this.numETCO2.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // label10
-            // 
+            //
             this.label10.AutoSize = true;
             this.label10.Location = new System.Drawing.Point(6, 28);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(80, 14);
             this.label10.TabIndex = 6;
             this.label10.Text = "ETCO2 (mmHg)";
-            // 
+            //
             // groupBox2
-            // 
+            //
             this.groupBox2.Controls.Add(this.groupBox6);
             this.groupBox2.Controls.Add(this.groupBox5);
             this.groupBox2.Controls.Add(this.groupBox4);
@@ -406,9 +413,9 @@
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Cardiac Profile";
-            // 
+            //
             // groupBox6
-            // 
+            //
             this.groupBox6.Controls.Add(this.label39);
             this.groupBox6.Controls.Add(this.comboAxisShift);
             this.groupBox6.Location = new System.Drawing.Point(9, 305);
@@ -417,18 +424,18 @@
             this.groupBox6.TabIndex = 5;
             this.groupBox6.TabStop = false;
             this.groupBox6.Text = "Axis Shift";
-            // 
+            //
             // label39
-            // 
+            //
             this.label39.AutoSize = true;
             this.label39.Location = new System.Drawing.Point(6, 24);
             this.label39.Name = "label39";
             this.label39.Size = new System.Drawing.Size(57, 14);
             this.label39.TabIndex = 7;
             this.label39.Text = "Axis Shift:";
-            // 
+            //
             // comboAxisShift
-            // 
+            //
             this.comboAxisShift.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboAxisShift.Enabled = false;
             this.comboAxisShift.FormattingEnabled = true;
@@ -436,9 +443,9 @@
             this.comboAxisShift.Name = "comboAxisShift";
             this.comboAxisShift.Size = new System.Drawing.Size(204, 22);
             this.comboAxisShift.TabIndex = 1;
-            // 
+            //
             // groupBox5
-            // 
+            //
             this.groupBox5.Controls.Add(this.label27);
             this.groupBox5.Controls.Add(this.label28);
             this.groupBox5.Controls.Add(this.label29);
@@ -469,90 +476,90 @@
             this.groupBox5.TabIndex = 4;
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "T Wave Elevation";
-            // 
+            //
             // label27
-            // 
+            //
             this.label27.AutoSize = true;
             this.label27.Location = new System.Drawing.Point(212, 78);
             this.label27.Name = "label27";
             this.label27.Size = new System.Drawing.Size(21, 14);
             this.label27.TabIndex = 6;
             this.label27.Text = "V6";
-            // 
+            //
             // label28
-            // 
+            //
             this.label28.AutoSize = true;
             this.label28.Location = new System.Drawing.Point(142, 78);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(21, 14);
             this.label28.TabIndex = 6;
             this.label28.Text = "V3";
-            // 
+            //
             // label29
-            // 
+            //
             this.label29.AutoSize = true;
             this.label29.Location = new System.Drawing.Point(66, 78);
             this.label29.Name = "label29";
             this.label29.Size = new System.Drawing.Size(27, 14);
             this.label29.TabIndex = 6;
             this.label29.Text = "aVF";
-            // 
+            //
             // label30
-            // 
+            //
             this.label30.AutoSize = true;
             this.label30.Location = new System.Drawing.Point(6, 78);
             this.label30.Name = "label30";
             this.label30.Size = new System.Drawing.Size(13, 14);
             this.label30.TabIndex = 6;
             this.label30.Text = "III";
-            // 
+            //
             // label31
-            // 
+            //
             this.label31.AutoSize = true;
             this.label31.Location = new System.Drawing.Point(212, 53);
             this.label31.Name = "label31";
             this.label31.Size = new System.Drawing.Size(21, 14);
             this.label31.TabIndex = 6;
             this.label31.Text = "V5";
-            // 
+            //
             // label32
-            // 
+            //
             this.label32.AutoSize = true;
             this.label32.Location = new System.Drawing.Point(142, 53);
             this.label32.Name = "label32";
             this.label32.Size = new System.Drawing.Size(21, 14);
             this.label32.TabIndex = 6;
             this.label32.Text = "V2";
-            // 
+            //
             // label33
-            // 
+            //
             this.label33.AutoSize = true;
             this.label33.Location = new System.Drawing.Point(66, 53);
             this.label33.Name = "label33";
             this.label33.Size = new System.Drawing.Size(27, 14);
             this.label33.TabIndex = 6;
             this.label33.Text = "aVL";
-            // 
+            //
             // label34
-            // 
+            //
             this.label34.AutoSize = true;
             this.label34.Location = new System.Drawing.Point(6, 53);
             this.label34.Name = "label34";
             this.label34.Size = new System.Drawing.Size(11, 14);
             this.label34.TabIndex = 6;
             this.label34.Text = "II";
-            // 
+            //
             // label35
-            // 
+            //
             this.label35.AutoSize = true;
             this.label35.Location = new System.Drawing.Point(212, 28);
             this.label35.Name = "label35";
             this.label35.Size = new System.Drawing.Size(21, 14);
             this.label35.TabIndex = 6;
             this.label35.Text = "V4";
-            // 
+            //
             // numTWE_V6
-            // 
+            //
             this.numTWE_V6.DecimalPlaces = 1;
             this.numTWE_V6.Increment = new decimal(new int[] {
             1,
@@ -573,18 +580,19 @@
             this.numTWE_V6.Name = "numTWE_V6";
             this.numTWE_V6.Size = new System.Drawing.Size(38, 20);
             this.numTWE_V6.TabIndex = 12;
-            // 
+            this.numTWE_V6.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // label36
-            // 
+            //
             this.label36.AutoSize = true;
             this.label36.Location = new System.Drawing.Point(142, 28);
             this.label36.Name = "label36";
             this.label36.Size = new System.Drawing.Size(21, 14);
             this.label36.TabIndex = 6;
             this.label36.Text = "V1";
-            // 
+            //
             // numTWE_V3
-            // 
+            //
             this.numTWE_V3.DecimalPlaces = 1;
             this.numTWE_V3.Increment = new decimal(new int[] {
             1,
@@ -605,18 +613,19 @@
             this.numTWE_V3.Name = "numTWE_V3";
             this.numTWE_V3.Size = new System.Drawing.Size(38, 20);
             this.numTWE_V3.TabIndex = 9;
-            // 
+            this.numTWE_V3.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // label37
-            // 
+            //
             this.label37.AutoSize = true;
             this.label37.Location = new System.Drawing.Point(66, 28);
             this.label37.Name = "label37";
             this.label37.Size = new System.Drawing.Size(28, 14);
             this.label37.TabIndex = 6;
             this.label37.Text = "aVR";
-            // 
+            //
             // numTWE_V5
-            // 
+            //
             this.numTWE_V5.DecimalPlaces = 1;
             this.numTWE_V5.Increment = new decimal(new int[] {
             1,
@@ -637,9 +646,10 @@
             this.numTWE_V5.Name = "numTWE_V5";
             this.numTWE_V5.Size = new System.Drawing.Size(38, 20);
             this.numTWE_V5.TabIndex = 11;
-            // 
+            this.numTWE_V5.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numTWE_aVF
-            // 
+            //
             this.numTWE_aVF.DecimalPlaces = 1;
             this.numTWE_aVF.Increment = new decimal(new int[] {
             1,
@@ -660,9 +670,10 @@
             this.numTWE_aVF.Name = "numTWE_aVF";
             this.numTWE_aVF.Size = new System.Drawing.Size(38, 20);
             this.numTWE_aVF.TabIndex = 6;
-            // 
+            this.numTWE_aVF.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numTWE_V2
-            // 
+            //
             this.numTWE_V2.DecimalPlaces = 1;
             this.numTWE_V2.Increment = new decimal(new int[] {
             1,
@@ -683,18 +694,19 @@
             this.numTWE_V2.Name = "numTWE_V2";
             this.numTWE_V2.Size = new System.Drawing.Size(38, 20);
             this.numTWE_V2.TabIndex = 8;
-            // 
+            this.numTWE_V2.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // label38
-            // 
+            //
             this.label38.AutoSize = true;
             this.label38.Location = new System.Drawing.Point(6, 28);
             this.label38.Name = "label38";
             this.label38.Size = new System.Drawing.Size(9, 14);
             this.label38.TabIndex = 6;
             this.label38.Text = "I";
-            // 
+            //
             // numTWE_V4
-            // 
+            //
             this.numTWE_V4.DecimalPlaces = 1;
             this.numTWE_V4.Increment = new decimal(new int[] {
             1,
@@ -715,9 +727,10 @@
             this.numTWE_V4.Name = "numTWE_V4";
             this.numTWE_V4.Size = new System.Drawing.Size(38, 20);
             this.numTWE_V4.TabIndex = 10;
-            // 
+            this.numTWE_V4.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numTWE_aVL
-            // 
+            //
             this.numTWE_aVL.DecimalPlaces = 1;
             this.numTWE_aVL.Increment = new decimal(new int[] {
             1,
@@ -738,9 +751,10 @@
             this.numTWE_aVL.Name = "numTWE_aVL";
             this.numTWE_aVL.Size = new System.Drawing.Size(38, 20);
             this.numTWE_aVL.TabIndex = 5;
-            // 
+            this.numTWE_aVL.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numTWE_V1
-            // 
+            //
             this.numTWE_V1.DecimalPlaces = 1;
             this.numTWE_V1.Increment = new decimal(new int[] {
             1,
@@ -761,9 +775,10 @@
             this.numTWE_V1.Name = "numTWE_V1";
             this.numTWE_V1.Size = new System.Drawing.Size(38, 20);
             this.numTWE_V1.TabIndex = 7;
-            // 
+            this.numTWE_V1.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numTWE_III
-            // 
+            //
             this.numTWE_III.DecimalPlaces = 1;
             this.numTWE_III.Increment = new decimal(new int[] {
             1,
@@ -784,9 +799,10 @@
             this.numTWE_III.Name = "numTWE_III";
             this.numTWE_III.Size = new System.Drawing.Size(38, 20);
             this.numTWE_III.TabIndex = 3;
-            // 
+            this.numTWE_III.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numTWE_aVR
-            // 
+            //
             this.numTWE_aVR.DecimalPlaces = 1;
             this.numTWE_aVR.Increment = new decimal(new int[] {
             1,
@@ -807,9 +823,10 @@
             this.numTWE_aVR.Name = "numTWE_aVR";
             this.numTWE_aVR.Size = new System.Drawing.Size(38, 20);
             this.numTWE_aVR.TabIndex = 4;
-            // 
+            this.numTWE_aVR.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numTWE_II
-            // 
+            //
             this.numTWE_II.DecimalPlaces = 1;
             this.numTWE_II.Increment = new decimal(new int[] {
             1,
@@ -830,9 +847,10 @@
             this.numTWE_II.Name = "numTWE_II";
             this.numTWE_II.Size = new System.Drawing.Size(38, 20);
             this.numTWE_II.TabIndex = 2;
-            // 
+            this.numTWE_II.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numTWE_I
-            // 
+            //
             this.numTWE_I.DecimalPlaces = 1;
             this.numTWE_I.Increment = new decimal(new int[] {
             1,
@@ -853,9 +871,10 @@
             this.numTWE_I.Name = "numTWE_I";
             this.numTWE_I.Size = new System.Drawing.Size(38, 20);
             this.numTWE_I.TabIndex = 1;
-            // 
+            this.numTWE_I.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // groupBox4
-            // 
+            //
             this.groupBox4.Controls.Add(this.label26);
             this.groupBox4.Controls.Add(this.label23);
             this.groupBox4.Controls.Add(this.label20);
@@ -886,90 +905,90 @@
             this.groupBox4.TabIndex = 3;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "ST Segment Elevation";
-            // 
+            //
             // label26
-            // 
+            //
             this.label26.AutoSize = true;
             this.label26.Location = new System.Drawing.Point(212, 78);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(21, 14);
             this.label26.TabIndex = 6;
             this.label26.Text = "V6";
-            // 
+            //
             // label23
-            // 
+            //
             this.label23.AutoSize = true;
             this.label23.Location = new System.Drawing.Point(142, 78);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(21, 14);
             this.label23.TabIndex = 6;
             this.label23.Text = "V3";
-            // 
+            //
             // label20
-            // 
+            //
             this.label20.AutoSize = true;
             this.label20.Location = new System.Drawing.Point(66, 78);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(27, 14);
             this.label20.TabIndex = 6;
             this.label20.Text = "aVF";
-            // 
+            //
             // label17
-            // 
+            //
             this.label17.AutoSize = true;
             this.label17.Location = new System.Drawing.Point(6, 78);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(13, 14);
             this.label17.TabIndex = 6;
             this.label17.Text = "III";
-            // 
+            //
             // label25
-            // 
+            //
             this.label25.AutoSize = true;
             this.label25.Location = new System.Drawing.Point(212, 53);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(21, 14);
             this.label25.TabIndex = 6;
             this.label25.Text = "V5";
-            // 
+            //
             // label22
-            // 
+            //
             this.label22.AutoSize = true;
             this.label22.Location = new System.Drawing.Point(142, 53);
             this.label22.Name = "label22";
             this.label22.Size = new System.Drawing.Size(21, 14);
             this.label22.TabIndex = 6;
             this.label22.Text = "V2";
-            // 
+            //
             // label19
-            // 
+            //
             this.label19.AutoSize = true;
             this.label19.Location = new System.Drawing.Point(66, 53);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(27, 14);
             this.label19.TabIndex = 6;
             this.label19.Text = "aVL";
-            // 
+            //
             // label16
-            // 
+            //
             this.label16.AutoSize = true;
             this.label16.Location = new System.Drawing.Point(6, 53);
             this.label16.Name = "label16";
             this.label16.Size = new System.Drawing.Size(11, 14);
             this.label16.TabIndex = 6;
             this.label16.Text = "II";
-            // 
+            //
             // label24
-            // 
+            //
             this.label24.AutoSize = true;
             this.label24.Location = new System.Drawing.Point(212, 28);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(21, 14);
             this.label24.TabIndex = 6;
             this.label24.Text = "V4";
-            // 
+            //
             // numSTE_V6
-            // 
+            //
             this.numSTE_V6.DecimalPlaces = 1;
             this.numSTE_V6.Increment = new decimal(new int[] {
             1,
@@ -990,18 +1009,19 @@
             this.numSTE_V6.Name = "numSTE_V6";
             this.numSTE_V6.Size = new System.Drawing.Size(38, 20);
             this.numSTE_V6.TabIndex = 12;
-            // 
+            this.numSTE_V6.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // label21
-            // 
+            //
             this.label21.AutoSize = true;
             this.label21.Location = new System.Drawing.Point(142, 28);
             this.label21.Name = "label21";
             this.label21.Size = new System.Drawing.Size(21, 14);
             this.label21.TabIndex = 6;
             this.label21.Text = "V1";
-            // 
+            //
             // numSTE_V3
-            // 
+            //
             this.numSTE_V3.DecimalPlaces = 1;
             this.numSTE_V3.Increment = new decimal(new int[] {
             1,
@@ -1022,18 +1042,19 @@
             this.numSTE_V3.Name = "numSTE_V3";
             this.numSTE_V3.Size = new System.Drawing.Size(38, 20);
             this.numSTE_V3.TabIndex = 9;
-            // 
+            this.numSTE_V3.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // label18
-            // 
+            //
             this.label18.AutoSize = true;
             this.label18.Location = new System.Drawing.Point(66, 28);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(28, 14);
             this.label18.TabIndex = 6;
             this.label18.Text = "aVR";
-            // 
+            //
             // numSTE_V5
-            // 
+            //
             this.numSTE_V5.DecimalPlaces = 1;
             this.numSTE_V5.Increment = new decimal(new int[] {
             1,
@@ -1054,9 +1075,10 @@
             this.numSTE_V5.Name = "numSTE_V5";
             this.numSTE_V5.Size = new System.Drawing.Size(38, 20);
             this.numSTE_V5.TabIndex = 11;
-            // 
+            this.numSTE_V5.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numSTE_aVF
-            // 
+            //
             this.numSTE_aVF.DecimalPlaces = 1;
             this.numSTE_aVF.Increment = new decimal(new int[] {
             1,
@@ -1077,9 +1099,10 @@
             this.numSTE_aVF.Name = "numSTE_aVF";
             this.numSTE_aVF.Size = new System.Drawing.Size(38, 20);
             this.numSTE_aVF.TabIndex = 6;
-            // 
+            this.numSTE_aVF.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numSTE_V2
-            // 
+            //
             this.numSTE_V2.DecimalPlaces = 1;
             this.numSTE_V2.Increment = new decimal(new int[] {
             1,
@@ -1100,18 +1123,19 @@
             this.numSTE_V2.Name = "numSTE_V2";
             this.numSTE_V2.Size = new System.Drawing.Size(38, 20);
             this.numSTE_V2.TabIndex = 8;
-            // 
+            this.numSTE_V2.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // label11
-            // 
+            //
             this.label11.AutoSize = true;
             this.label11.Location = new System.Drawing.Point(6, 28);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(9, 14);
             this.label11.TabIndex = 6;
             this.label11.Text = "I";
-            // 
+            //
             // numSTE_V4
-            // 
+            //
             this.numSTE_V4.DecimalPlaces = 1;
             this.numSTE_V4.Increment = new decimal(new int[] {
             1,
@@ -1132,9 +1156,10 @@
             this.numSTE_V4.Name = "numSTE_V4";
             this.numSTE_V4.Size = new System.Drawing.Size(38, 20);
             this.numSTE_V4.TabIndex = 10;
-            // 
+            this.numSTE_V4.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numSTE_aVL
-            // 
+            //
             this.numSTE_aVL.DecimalPlaces = 1;
             this.numSTE_aVL.Increment = new decimal(new int[] {
             1,
@@ -1155,9 +1180,10 @@
             this.numSTE_aVL.Name = "numSTE_aVL";
             this.numSTE_aVL.Size = new System.Drawing.Size(38, 20);
             this.numSTE_aVL.TabIndex = 5;
-            // 
+            this.numSTE_aVL.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numSTE_V1
-            // 
+            //
             this.numSTE_V1.DecimalPlaces = 1;
             this.numSTE_V1.Increment = new decimal(new int[] {
             1,
@@ -1178,9 +1204,10 @@
             this.numSTE_V1.Name = "numSTE_V1";
             this.numSTE_V1.Size = new System.Drawing.Size(38, 20);
             this.numSTE_V1.TabIndex = 7;
-            // 
+            this.numSTE_V1.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numSTE_III
-            // 
+            //
             this.numSTE_III.DecimalPlaces = 1;
             this.numSTE_III.Increment = new decimal(new int[] {
             1,
@@ -1201,9 +1228,10 @@
             this.numSTE_III.Name = "numSTE_III";
             this.numSTE_III.Size = new System.Drawing.Size(38, 20);
             this.numSTE_III.TabIndex = 3;
-            // 
+            this.numSTE_III.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numSTE_aVR
-            // 
+            //
             this.numSTE_aVR.DecimalPlaces = 1;
             this.numSTE_aVR.Increment = new decimal(new int[] {
             1,
@@ -1224,9 +1252,10 @@
             this.numSTE_aVR.Name = "numSTE_aVR";
             this.numSTE_aVR.Size = new System.Drawing.Size(38, 20);
             this.numSTE_aVR.TabIndex = 4;
-            // 
+            this.numSTE_aVR.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numSTE_II
-            // 
+            //
             this.numSTE_II.DecimalPlaces = 1;
             this.numSTE_II.Increment = new decimal(new int[] {
             1,
@@ -1247,9 +1276,10 @@
             this.numSTE_II.Name = "numSTE_II";
             this.numSTE_II.Size = new System.Drawing.Size(38, 20);
             this.numSTE_II.TabIndex = 2;
-            // 
+            this.numSTE_II.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numSTE_I
-            // 
+            //
             this.numSTE_I.DecimalPlaces = 1;
             this.numSTE_I.Increment = new decimal(new int[] {
             1,
@@ -1270,18 +1300,19 @@
             this.numSTE_I.Name = "numSTE_I";
             this.numSTE_I.Size = new System.Drawing.Size(38, 20);
             this.numSTE_I.TabIndex = 1;
-            // 
+            this.numSTE_I.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // label14
-            // 
+            //
             this.label14.AutoSize = true;
             this.label14.Location = new System.Drawing.Point(6, 28);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(86, 14);
             this.label14.TabIndex = 6;
             this.label14.Text = "Cardiac Rhythm:";
-            // 
+            //
             // checkDefaultVitals
-            // 
+            //
             this.checkDefaultVitals.AutoSize = true;
             this.checkDefaultVitals.Checked = true;
             this.checkDefaultVitals.CheckState = System.Windows.Forms.CheckState.Checked;
@@ -1292,9 +1323,9 @@
             this.checkDefaultVitals.TabIndex = 2;
             this.checkDefaultVitals.Text = "Use default vital sign ranges for rythm changes.";
             this.checkDefaultVitals.UseVisualStyleBackColor = true;
-            // 
+            //
             // comboCardiacRhythm
-            // 
+            //
             this.comboCardiacRhythm.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboCardiacRhythm.FormattingEnabled = true;
             this.comboCardiacRhythm.Location = new System.Drawing.Point(97, 25);
@@ -1302,9 +1333,9 @@
             this.comboCardiacRhythm.Size = new System.Drawing.Size(181, 22);
             this.comboCardiacRhythm.TabIndex = 1;
             this.comboCardiacRhythm.SelectedIndexChanged += new System.EventHandler(this.OnRhythmSelected);
-            // 
+            //
             // groupBox3
-            // 
+            //
             this.groupBox3.Controls.Add(this.label15);
             this.groupBox3.Controls.Add(this.label12);
             this.groupBox3.Controls.Add(this.numADBP);
@@ -1323,27 +1354,27 @@
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Advanced Hemodynamics";
-            // 
+            //
             // label15
-            // 
+            //
             this.label15.AutoSize = true;
             this.label15.Location = new System.Drawing.Point(6, 53);
             this.label15.Name = "label15";
             this.label15.Size = new System.Drawing.Size(68, 14);
             this.label15.TabIndex = 8;
             this.label15.Text = "ABP (mmHg)";
-            // 
+            //
             // label12
-            // 
+            //
             this.label12.AutoSize = true;
             this.label12.Location = new System.Drawing.Point(6, 104);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(66, 14);
             this.label12.TabIndex = 8;
             this.label12.Text = "PAP (mmHg)";
-            // 
+            //
             // numADBP
-            // 
+            //
             this.numADBP.Increment = new decimal(new int[] {
             5,
             0,
@@ -1358,18 +1389,19 @@
             this.numADBP.Name = "numADBP";
             this.numADBP.Size = new System.Drawing.Size(47, 20);
             this.numADBP.TabIndex = 9;
-            // 
+            this.numADBP.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // label4
-            // 
+            //
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(143, 53);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(10, 14);
             this.label4.TabIndex = 9;
             this.label4.Text = "/";
-            // 
+            //
             // numPDP
-            // 
+            //
             this.numPDP.Increment = new decimal(new int[] {
             5,
             0,
@@ -1384,9 +1416,10 @@
             this.numPDP.Name = "numPDP";
             this.numPDP.Size = new System.Drawing.Size(47, 20);
             this.numPDP.TabIndex = 12;
-            // 
+            this.numPDP.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numASBP
-            // 
+            //
             this.numASBP.Increment = new decimal(new int[] {
             5,
             0,
@@ -1401,18 +1434,19 @@
             this.numASBP.Name = "numASBP";
             this.numASBP.Size = new System.Drawing.Size(47, 20);
             this.numASBP.TabIndex = 2;
-            // 
+            this.numASBP.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // label13
-            // 
+            //
             this.label13.AutoSize = true;
             this.label13.Location = new System.Drawing.Point(143, 104);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(10, 14);
             this.label13.TabIndex = 9;
             this.label13.Text = "/";
-            // 
+            //
             // numPSP
-            // 
+            //
             this.numPSP.Increment = new decimal(new int[] {
             5,
             0,
@@ -1427,18 +1461,19 @@
             this.numPSP.Name = "numPSP";
             this.numPSP.Size = new System.Drawing.Size(47, 20);
             this.numPSP.TabIndex = 11;
-            // 
+            this.numPSP.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // label9
-            // 
+            //
             this.label9.AutoSize = true;
             this.label9.Location = new System.Drawing.Point(6, 79);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(68, 14);
             this.label9.TabIndex = 6;
             this.label9.Text = "CVP (mmHg)";
-            // 
+            //
             // numCVP
-            // 
+            //
             this.numCVP.Increment = new decimal(new int[] {
             5,
             0,
@@ -1453,9 +1488,10 @@
             this.numCVP.Name = "numCVP";
             this.numCVP.Size = new System.Drawing.Size(47, 20);
             this.numCVP.TabIndex = 10;
-            // 
+            this.numCVP.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // groupBox7
-            // 
+            //
             this.groupBox7.Controls.Add(this.buttonDevice_Ventilator);
             this.groupBox7.Controls.Add(this.buttonDevice_LabReport);
             this.groupBox7.Controls.Add(this.buttonDevice_IABP);
@@ -1468,9 +1504,9 @@
             this.groupBox7.TabIndex = 5;
             this.groupBox7.TabStop = false;
             this.groupBox7.Text = "Devices";
-            // 
+            //
             // buttonDevice_Ventilator
-            // 
+            //
             this.buttonDevice_Ventilator.Enabled = false;
             this.buttonDevice_Ventilator.Location = new System.Drawing.Point(6, 112);
             this.buttonDevice_Ventilator.Name = "buttonDevice_Ventilator";
@@ -1478,9 +1514,9 @@
             this.buttonDevice_Ventilator.TabIndex = 4;
             this.buttonDevice_Ventilator.Text = "Ventilator";
             this.buttonDevice_Ventilator.UseVisualStyleBackColor = true;
-            // 
+            //
             // buttonDevice_LabReport
-            // 
+            //
             this.buttonDevice_LabReport.Enabled = false;
             this.buttonDevice_LabReport.Location = new System.Drawing.Point(6, 240);
             this.buttonDevice_LabReport.Name = "buttonDevice_LabReport";
@@ -1488,9 +1524,9 @@
             this.buttonDevice_LabReport.TabIndex = 4;
             this.buttonDevice_LabReport.Text = "Laboratory Report";
             this.buttonDevice_LabReport.UseVisualStyleBackColor = true;
-            // 
+            //
             // buttonDevice_IABP
-            // 
+            //
             this.buttonDevice_IABP.Enabled = false;
             this.buttonDevice_IABP.Location = new System.Drawing.Point(6, 177);
             this.buttonDevice_IABP.Name = "buttonDevice_IABP";
@@ -1498,9 +1534,9 @@
             this.buttonDevice_IABP.TabIndex = 4;
             this.buttonDevice_IABP.Text = "Intra-Aortic Balloon Pump (IABP)";
             this.buttonDevice_IABP.UseVisualStyleBackColor = true;
-            // 
+            //
             // buttonDevice_Defibrillator
-            // 
+            //
             this.buttonDevice_Defibrillator.Enabled = false;
             this.buttonDevice_Defibrillator.Location = new System.Drawing.Point(6, 144);
             this.buttonDevice_Defibrillator.Name = "buttonDevice_Defibrillator";
@@ -1508,9 +1544,9 @@
             this.buttonDevice_Defibrillator.TabIndex = 4;
             this.buttonDevice_Defibrillator.Text = "Defibrillator";
             this.buttonDevice_Defibrillator.UseVisualStyleBackColor = true;
-            // 
+            //
             // buttonDevice_12ECG
-            // 
+            //
             this.buttonDevice_12ECG.Enabled = false;
             this.buttonDevice_12ECG.Location = new System.Drawing.Point(6, 53);
             this.buttonDevice_12ECG.Name = "buttonDevice_12ECG";
@@ -1518,9 +1554,9 @@
             this.buttonDevice_12ECG.TabIndex = 4;
             this.buttonDevice_12ECG.Text = "12-Lead ECG";
             this.buttonDevice_12ECG.UseVisualStyleBackColor = true;
-            // 
+            //
             // buttonDevice_Monitor
-            // 
+            //
             this.buttonDevice_Monitor.Location = new System.Drawing.Point(6, 20);
             this.buttonDevice_Monitor.Name = "buttonDevice_Monitor";
             this.buttonDevice_Monitor.Size = new System.Drawing.Size(211, 26);
@@ -1528,9 +1564,9 @@
             this.buttonDevice_Monitor.Text = "Cardiac Monitor";
             this.buttonDevice_Monitor.UseVisualStyleBackColor = true;
             this.buttonDevice_Monitor.Click += new System.EventHandler(this.ButtonMonitor_Click);
-            // 
+            //
             // menuStrip1
-            // 
+            //
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.helpToolStripMenuItem});
@@ -1539,9 +1575,9 @@
             this.menuStrip1.Size = new System.Drawing.Size(792, 24);
             this.menuStrip1.TabIndex = 6;
             this.menuStrip1.Text = "menuStrip1";
-            // 
+            //
             // fileToolStripMenuItem
-            // 
+            //
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.loadSimulationToolStripMenuItem,
             this.saveSimulationToolStripMenuItem,
@@ -1550,53 +1586,53 @@
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
-            // 
+            //
             // loadSimulationToolStripMenuItem
-            // 
+            //
             this.loadSimulationToolStripMenuItem.Name = "loadSimulationToolStripMenuItem";
             this.loadSimulationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.L)));
             this.loadSimulationToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
             this.loadSimulationToolStripMenuItem.Text = "&Load Simulation";
             this.loadSimulationToolStripMenuItem.Click += new System.EventHandler(this.MenuLoadFile_Click);
-            // 
+            //
             // saveSimulationToolStripMenuItem
-            // 
+            //
             this.saveSimulationToolStripMenuItem.Name = "saveSimulationToolStripMenuItem";
             this.saveSimulationToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveSimulationToolStripMenuItem.Size = new System.Drawing.Size(242, 22);
             this.saveSimulationToolStripMenuItem.Text = "&Save Simulation";
             this.saveSimulationToolStripMenuItem.Click += new System.EventHandler(this.MenuSaveFile_Click);
-            // 
+            //
             // toolStripSeparator1
-            // 
+            //
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(239, 6);
-            // 
+            //
             // menuItem_Exit
-            // 
+            //
             this.menuItem_Exit.Name = "menuItem_Exit";
             this.menuItem_Exit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
             this.menuItem_Exit.Size = new System.Drawing.Size(242, 22);
             this.menuItem_Exit.Text = "Exit Infirmary Integrated";
             this.menuItem_Exit.Click += new System.EventHandler(this.MenuExit_Click);
-            // 
+            //
             // helpToolStripMenuItem
-            // 
+            //
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItem_About});
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
             this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
             this.helpToolStripMenuItem.Text = "&Help";
-            // 
+            //
             // menuItem_About
-            // 
+            //
             this.menuItem_About.Name = "menuItem_About";
             this.menuItem_About.Size = new System.Drawing.Size(215, 22);
             this.menuItem_About.Text = "&About Infirmary Integrated";
             this.menuItem_About.Click += new System.EventHandler(this.MenuAbout_Click);
-            // 
+            //
             // groupBox9
-            // 
+            //
             this.groupBox9.Controls.Add(this.groupBox8);
             this.groupBox9.Controls.Add(this.groupBox1);
             this.groupBox9.Controls.Add(this.buttonReset);
@@ -1609,9 +1645,9 @@
             this.groupBox9.TabIndex = 5;
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Patient Parameters";
-            // 
+            //
             // groupBox8
-            // 
+            //
             this.groupBox8.Controls.Add(this.label45);
             this.groupBox8.Controls.Add(this.comboRespiratoryRhythm);
             this.groupBox8.Controls.Add(this.label41);
@@ -1624,36 +1660,36 @@
             this.groupBox8.TabIndex = 5;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Respiratory Profile";
-            // 
+            //
             // label45
-            // 
+            //
             this.label45.AutoSize = true;
             this.label45.Location = new System.Drawing.Point(6, 28);
             this.label45.Name = "label45";
             this.label45.Size = new System.Drawing.Size(46, 14);
             this.label45.TabIndex = 14;
             this.label45.Text = "Rhythm:";
-            // 
+            //
             // comboRespiratoryRhythm
-            // 
+            //
             this.comboRespiratoryRhythm.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboRespiratoryRhythm.FormattingEnabled = true;
             this.comboRespiratoryRhythm.Location = new System.Drawing.Point(58, 25);
             this.comboRespiratoryRhythm.Name = "comboRespiratoryRhythm";
             this.comboRespiratoryRhythm.Size = new System.Drawing.Size(159, 22);
             this.comboRespiratoryRhythm.TabIndex = 13;
-            // 
+            //
             // label41
-            // 
+            //
             this.label41.AutoSize = true;
             this.label41.Location = new System.Drawing.Point(111, 54);
             this.label41.Name = "label41";
             this.label41.Size = new System.Drawing.Size(10, 14);
             this.label41.TabIndex = 9;
             this.label41.Text = ":";
-            // 
+            //
             // numInspRatio
-            // 
+            //
             this.numInspRatio.Location = new System.Drawing.Point(58, 52);
             this.numInspRatio.Maximum = new decimal(new int[] {
             10,
@@ -1673,9 +1709,10 @@
             0,
             0,
             0});
-            // 
+            this.numInspRatio.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // numExpRatio
-            // 
+            //
             this.numExpRatio.Location = new System.Drawing.Point(127, 52);
             this.numExpRatio.Maximum = new decimal(new int[] {
             10,
@@ -1695,18 +1732,19 @@
             0,
             0,
             0});
-            // 
+            this.numExpRatio.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
+            //
             // label44
-            // 
+            //
             this.label44.AutoSize = true;
             this.label44.Location = new System.Drawing.Point(7, 54);
             this.label44.Name = "label44";
             this.label44.Size = new System.Drawing.Size(48, 14);
             this.label44.TabIndex = 6;
             this.label44.Text = "I:E Ratio:";
-            // 
+            //
             // buttonReset
-            // 
+            //
             this.buttonReset.Location = new System.Drawing.Point(6, 457);
             this.buttonReset.Name = "buttonReset";
             this.buttonReset.Size = new System.Drawing.Size(223, 28);
@@ -1714,9 +1752,9 @@
             this.buttonReset.Text = "Reset Parameters";
             this.buttonReset.UseVisualStyleBackColor = true;
             this.buttonReset.Click += new System.EventHandler(this.ButtonResetParameters_Click);
-            // 
+            //
             // Dialog_Main
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(792, 528);
@@ -1731,7 +1769,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numHR)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numNSBP)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numNDBP)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numSpO2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numSPO2)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numT)).EndInit();
@@ -1797,7 +1835,7 @@
         private System.Windows.Forms.NumericUpDown numNSBP;
         private System.Windows.Forms.NumericUpDown numNDBP;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.NumericUpDown numSpO2;
+        private System.Windows.Forms.NumericUpDown numSPO2;
         private System.Windows.Forms.Button buttonApply;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Label lblTempConversion;

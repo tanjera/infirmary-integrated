@@ -14,7 +14,7 @@ namespace II {
             ECG_V1, ECG_V2, ECG_V3,
             ECG_V4, ECG_V5, ECG_V6,
 
-            SpO2,
+            SPO2,
             CVP,
             ABP,
             PA,
@@ -39,10 +39,6 @@ namespace II {
             try {
                 return (Values)Enum.Parse (typeof (Values), portion);
             } catch {
-                #if DEBUG
-                    throw new FormatException();
-                #endif
-
                 return Values.ECG_I;
             }
         }

@@ -9,8 +9,7 @@ using II.Rhythm;
 
 namespace II.Forms
 {
-    public partial class Device_Monitor : Form
-    {
+    public partial class Device_Monitor : Form {
 
         int tRowsTracings = 3,
             tRowsNumerics = 3;
@@ -23,14 +22,12 @@ namespace II.Forms
         List<II.Controls.Numeric> tNumerics = new List<II.Controls.Numeric> ();
 
 
-        public class Channel
-        {
+        public class Channel {
             public Strip cStrip;
             public Strip.Renderer cRenderer;
             public Controls.Tracing cTracing;
 
-            public Channel (Strip s, Strip.Renderer r, Controls.Tracing t)
-            {
+            public Channel (Strip s, Strip.Renderer r, Controls.Tracing t) {
                 cStrip = s;
                 cRenderer = r;
                 cTracing = t;
@@ -38,8 +35,7 @@ namespace II.Forms
         }
 
 
-        public Device_Monitor ()
-        {
+        public Device_Monitor () {
             InitializeComponent ();
 
             timerTracing.Interval = Waveforms.Draw_Refresh;
@@ -51,9 +47,10 @@ namespace II.Forms
             OnLayoutChange ();
         }
 
-        public void Load_Process (string inc)
-        {
+        public void Load_Process (string inc) {
             StringReader sRead = new StringReader (inc);
+            List<string> numericTypes = new List<string> (),
+                         tracingTypes = new List<string> ();
 
             try {
                 string line;
@@ -68,28 +65,25 @@ namespace II.Forms
                             case "tFontsize": tFontsize = int.Parse (pValue); break;
                             case "tFullscreen": tFullscreen = bool.Parse (pValue); break;
                             case "tColorScheme": tColorScheme = (_.ColorScheme)Enum.Parse (typeof (_.ColorScheme), line.Substring (line.IndexOf (':') + 1)); break;
+                            case "numericTypes": numericTypes.AddRange (pValue.Split (',')); break;
+                            case "tracingTypes": tracingTypes.AddRange (pValue.Split (',')); break;
                         }
                     }
                 }
-            } catch (Exception ex) {
-#if DEBUG
-                throw ex;
-#endif
-
+            } catch {
                 sRead.Close ();
                 return;
             }
 
             sRead.Close ();
 
-            OnLayoutChange ();
+            OnLayoutChange (numericTypes, tracingTypes);
 
             ApplyColorScheme ();
             ApplyFontSize ();
         }
 
-        public string Save ()
-        {
+        public string Save () {
             StringBuilder sWrite = new StringBuilder ();
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "tRowsTracings", tRowsTracings));
@@ -98,23 +92,27 @@ namespace II.Forms
             sWrite.AppendLine (String.Format ("{0}:{1}", "tFullscreen", tFullscreen));
             sWrite.AppendLine (String.Format ("{0}:{1}", "tColorScheme", tColorScheme));
 
+            List<string> numericTypes = new List<string>(),
+                         tracingTypes = new List<string>();
+            tNumerics.ForEach (o => { numericTypes.Add (o.controlType.Value.ToString ()); });
+            tChannels.ForEach (o => { tracingTypes.Add (o.cStrip.Lead.Value.ToString ()); });
+            sWrite.AppendLine (String.Format ("{0}:{1}", "numericTypes", string.Join (",", numericTypes)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "tracingTypes", string.Join (",", tracingTypes)));
+
             return sWrite.ToString ();
         }
 
-        public void SetPatient (Patient iPatient)
-        {
+        public void SetPatient (Patient iPatient) {
             tPatient = iPatient;
             OnTick_Vitals (null, new EventArgs ());
         }
 
-        private void ApplyFontSize ()
-        {
+        private void ApplyFontSize () {
             foreach (II.Controls.Numeric rn in tNumerics)
                 rn.SetFontSize (tFontsize * 0.5f);
         }
 
-        private void ApplyFullScreen ()
-        {
+        private void ApplyFullScreen () {
             menuItem_Fullscreen.Checked = tFullscreen;
 
             switch (tFullscreen) {
@@ -133,8 +131,7 @@ namespace II.Forms
             }
         }
 
-        private void ApplyColorScheme ()
-        {
+        private void ApplyColorScheme () {
             foreach (Channel c in tChannels) {
                 c.cTracing.SetColorScheme (tColorScheme);
                 c.cRenderer.SetColorScheme (tColorScheme);
@@ -159,8 +156,7 @@ namespace II.Forms
             }
         }
 
-        private void ApplyPause ()
-        {
+        private void ApplyPause () {
             menuItem_PauseDevice.Checked = tPatient.Paused;
 
             if (!tPatient.Paused)
@@ -168,18 +164,15 @@ namespace II.Forms
                     c.cStrip.Unpause ();
         }
 
-        private void MenuClose_Click (object sender, EventArgs e)
-        {
+        private void MenuClose_Click (object sender, EventArgs e) {
             this.Close ();
         }
 
-        private void MenuExit_Click (object sender, EventArgs e)
-        {
+        private void MenuExit_Click (object sender, EventArgs e) {
             Program.Dialog_Main.RequestExit ();
         }
 
-        private void MenuNewPatient_Click (object sender, EventArgs e)
-        {
+        private void MenuNewPatient_Click (object sender, EventArgs e) {
             tPatient = Program.Dialog_Main.RequestNewPatient ();
 
             foreach (Channel c in tChannels)
@@ -188,14 +181,12 @@ namespace II.Forms
                 n.Update (tPatient);
         }
 
-        private void MenuEditPatient_Click (object sender, EventArgs e)
-        {
+        private void MenuEditPatient_Click (object sender, EventArgs e) {
             Program.Dialog_Main.Show ();
             Program.Dialog_Main.BringToFront ();
         }
 
-        private void MenuFontSize_Click (object sender, EventArgs e)
-        {
+        private void MenuFontSize_Click (object sender, EventArgs e) {
             switch (((ToolStripMenuItem)sender).Text) {
                 case "Small": tFontsize = 1; break;
                 case "Medium": tFontsize = 2; break;
@@ -206,59 +197,41 @@ namespace II.Forms
             ApplyFontSize ();
         }
 
-        private void MenuColorScheme_Click (object sender, EventArgs e)
-        {
+        private void MenuColorScheme_Click (object sender, EventArgs e) {
             try {
                 tColorScheme = (_.ColorScheme)Enum.Parse (typeof (_.ColorScheme), _.SpaceToUnderscore (((ToolStripMenuItem)sender).Text));
-            } catch {
-#if DEBUG
-                throw new FormatException ();
-#endif
-            }
+            } catch { }
 
             ApplyColorScheme ();
         }
 
-        private void MenuNumericRowCount_Click (object sender, EventArgs e)
-        {
+        private void MenuNumericRowCount_Click (object sender, EventArgs e) {
             try {
                 tRowsNumerics = int.Parse (((ToolStripMenuItem)sender).Text.Replace ('&', ' ').Trim ());
-            } catch {
-#if DEBUG
-                throw new FormatException ();
-#endif
-            }
+            } catch { }
 
             OnLayoutChange ();
         }
 
-        private void MenuTracingRowCount_Click (object sender, EventArgs e)
-        {
+        private void MenuTracingRowCount_Click (object sender, EventArgs e) {
             try {
                 tRowsTracings = int.Parse (((ToolStripMenuItem)sender).Text.Replace ('&', ' ').Trim ());
-            } catch {
-#if DEBUG
-                throw new FormatException ();
-#endif
-            }
+            } catch { }
 
             OnLayoutChange ();
         }
 
-        private void MenuTogglePause_Click (object sender, EventArgs e)
-        {
+        private void MenuTogglePause_Click (object sender, EventArgs e) {
             tPatient.TogglePause ();
             ApplyPause ();
         }
 
-        private void MenuFullscreen_Click (object sender, EventArgs e)
-        {
+        private void MenuFullscreen_Click (object sender, EventArgs e) {
             tFullscreen = !tFullscreen;
             ApplyFullScreen ();
         }
 
-        private void OnTick_Tracing (object sender, EventArgs e)
-        {
+        private void OnTick_Tracing (object sender, EventArgs e) {
             if (tPatient.Paused)
                 return;
 
@@ -268,8 +241,7 @@ namespace II.Forms
             }
         }
 
-        private void OnTick_Vitals (object sender, EventArgs e)
-        {
+        private void OnTick_Vitals (object sender, EventArgs e) {
             if (tPatient.Paused)
                 return;
 
@@ -277,8 +249,7 @@ namespace II.Forms
                 v.Update (tPatient);
         }
 
-        private void OnLayoutChange ()
-        {
+        private void OnLayoutChange (List<string> numericTypes = null, List<string> tracingTypes = null) {
             layoutTracings.Controls.Clear ();
             layoutTracings.RowStyles.Clear ();
             layoutTracings.GrowStyle = TableLayoutPanelGrowStyle.AddRows;
@@ -287,38 +258,45 @@ namespace II.Forms
             layoutNumerics.RowStyles.Clear ();
             layoutNumerics.GrowStyle = TableLayoutPanelGrowStyle.AddRows;
 
-            for (int i = 0; i < tRowsNumerics; i++) {
+            // If numericTypes or tracingTypes are not null... then we are loading a file; clear tNumerics and tChannels!
+            if (numericTypes != null)
+                tNumerics.Clear ();
+            if (tracingTypes != null)
+                tChannels.Clear ();
+
+            // Set default numeric types to populate
+            if (numericTypes == null || numericTypes.Count == 0)
+                numericTypes = new List<string> (new string [] { "ECG", "NIBP", "SPO2", "CVP", "ABP" });
+            else if (numericTypes.Count < tRowsNumerics) {
+                List<string> buffer = new List<string> (new string [] { "ECG", "NIBP", "SPO2", "CVP", "ABP" });
+                buffer.RemoveRange (0, numericTypes.Count);
+                numericTypes.AddRange (buffer);
+            }
+
+            for (int i = tNumerics.Count; i < tRowsNumerics && i < numericTypes.Count; i++) {
                 II.Controls.Numeric newNum;
-                switch (i) {
-                    default:
-                    case 0: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.ECG, tColorScheme); break;
-                    case 1: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.NIBP, tColorScheme); break;
-                    case 2: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.SPO2, tColorScheme); break;
-                    case 3: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.CVP, tColorScheme); break;
-                    case 4: newNum = new Controls.Numeric (II.Controls.Numeric.ControlType.Values.ABP, tColorScheme); break;
-                }
+                newNum = new II.Controls.Numeric ((II.Controls.Numeric.ControlType.Values) Enum.Parse(typeof (II.Controls.Numeric.ControlType.Values),
+                    numericTypes [i]) , tColorScheme);
                 tNumerics.Add (newNum);
             }
 
-            for (int i = 0; i < tRowsTracings; i++) {
-                if (tChannels.Count <= i) {
-                    Strip newStrip;
-                    switch (i) {
-                        default:
-                        case 0: newStrip = new Strip (6f, Leads.Values.ECG_II); break;
-                        case 1: newStrip = new Strip (6f, Leads.Values.ECG_III); break;
-                        case 2: newStrip = new Strip (6f, Leads.Values.SpO2); break;
-                        case 3: newStrip = new Strip (6f, Leads.Values.CVP); break;
-                        case 4: newStrip = new Strip (6f, Leads.Values.ABP); break;
-                    }
+            // Set default tracing types to populate
+            if (tracingTypes == null || tracingTypes.Count == 0)
+                tracingTypes = new List<string> (new string [] { "ECG_II", "ECG_III", "SPO2", "CVP", "ABP" });
+            else if (tracingTypes.Count < tRowsTracings) {
+                List<string> buffer = new List<string> (new string [] { "ECG_II", "ECG_III", "SPO2", "CVP", "ABP" });
+                buffer.RemoveRange (0, tracingTypes.Count);
+                tracingTypes.AddRange (buffer);
+            }
 
+            for (int i = tChannels.Count; i < tRowsTracings && i < tracingTypes.Count; i++) {
+                    Strip newStrip = new Strip (6f, (Leads.Values)Enum.Parse (typeof (Leads.Values), tracingTypes [i]));
                     Controls.Tracing newTracing = new Controls.Tracing (newStrip.Lead, tColorScheme);
                     Strip.Renderer newRenderer = new Strip.Renderer (newTracing, ref newStrip, tColorScheme, newStrip.Lead.Color);
                     newTracing.Paint += delegate (object s, PaintEventArgs e) { newRenderer.Draw (e); };
                     newTracing.TracingEdited += OnTracingEdited;
 
                     tChannels.Add (new Channel (newStrip, newRenderer, newTracing));
-                }
             }
 
             layoutNumerics.RowCount = tRowsNumerics;
@@ -334,8 +312,7 @@ namespace II.Forms
             }
         }
 
-        public void OnPatientEvent (object sender, Patient.PatientEvent_Args e)
-        {
+        public void OnPatientEvent (object sender, Patient.PatientEvent_Args e) {
             switch (e.EventType) {
                 default: break;
 
@@ -382,8 +359,7 @@ namespace II.Forms
             }
         }
 
-        private void OnTracingEdited (object sender, Controls.Tracing.TracingEdited_EventArgs e)
-        {
+        private void OnTracingEdited (object sender, Controls.Tracing.TracingEdited_EventArgs e) {
             foreach (Channel c in tChannels) {
                 if (c.cTracing == sender) {
                     c.cTracing.SetLead (e.Lead);
@@ -397,8 +373,7 @@ namespace II.Forms
             }
         }
 
-        private void OnFormResize (object sender, EventArgs e)
-        {
+        private void OnFormResize (object sender, EventArgs e) {
             OnLayoutChange ();
         }
     }

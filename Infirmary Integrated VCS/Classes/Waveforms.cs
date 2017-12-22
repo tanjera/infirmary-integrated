@@ -29,7 +29,7 @@ namespace II.Rhythm {
             return Line_Long (_Length, _Isoelectric, new Point (0, _Isoelectric));
         }
 
-        public static List<Point> SpO2_Rhythm(Patient _P, double _Amplitude) {
+        public static List<Point> SPO2_Rhythm(Patient _P, double _Amplitude) {
             /* SpO2 during normal sinus perfusion is similar to a sine wave leaning right with dicrotic notch
 		     */
             double _Portion = _P.HR_Seconds / 4f;

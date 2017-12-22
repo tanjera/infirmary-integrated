@@ -7,7 +7,7 @@ using System.Windows.Forms;
 namespace II {
     public class Patient {
 
-        public int  HR, RR, ETCO2, SpO2, CVP,
+        public int  HR, RR, ETCO2, SPO2, CVP,
                     NSBP, NDBP, NMAP,
                     ASBP, ADBP, AMAP,
                     PSP, PDP, PMP;
@@ -15,10 +15,10 @@ namespace II {
 
         public double[] ST_Elevation, T_Elevation;
         public Cardiac_Rhythms Cardiac_Rhythm = new Cardiac_Rhythms();
+        public Cardiac_Axes Cardiac_Axis = new Cardiac_Axes ();
         public bool Cardiac_Rhythm__Flag;               // Used for signaling aberrant beats as needed
-        public Cardiac_Axis_Shifts Cardiac_Axis_Shift;
 
-        public Respiratory_Rhythms Respiratory_Rhythm;
+        public Respiratory_Rhythms Respiratory_Rhythm = new Respiratory_Rhythms();
         public bool Respiratory_Inflated;
         public int Respiratory_IERatio_I, Respiratory_IERatio_E;
 
@@ -70,8 +70,8 @@ namespace II {
                             new double[] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
                             new double[] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
                             Cardiac_Rhythms.Values.Sinus_Rhythm,
-                            Cardiac_Axis_Shifts.Normal,
-                            Respiratory_Rhythms.Regular,
+                            Cardiac_Axes.Values.Normal,
+                            Respiratory_Rhythms.Values.Regular,
                             1, 1);
 
             InitTimers ();
@@ -92,7 +92,7 @@ namespace II {
                             case "HR": HR = int.Parse (pValue); break;
                             case "RR": RR = int.Parse (pValue); break;
                             case "ETCO2": ETCO2 = int.Parse (pValue); break;
-                            case "SpO2": SpO2 = int.Parse (pValue); break;
+                            case "SPO2": SPO2 = int.Parse (pValue); break;
                             case "CVP": CVP = int.Parse (pValue); break;
                             case "NSBP": NSBP = int.Parse (pValue); break;
                             case "NDBP": NDBP = int.Parse (pValue); break;
@@ -116,21 +116,15 @@ namespace II {
                                 break;
                             case "Cardiac_Rhythm": Cardiac_Rhythm.Value = (Cardiac_Rhythms.Values) Enum.Parse(typeof(Cardiac_Rhythms.Values), pValue); break;
                             case "Cardiac_Rhythm__Flag": Cardiac_Rhythm__Flag = bool.Parse (pValue); break;
-                            case "Cardiac_Axis_Shift": Cardiac_Axis_Shift = (Cardiac_Axis_Shifts) Enum.Parse (typeof(Cardiac_Axis_Shifts), pValue); break;
-                            case "Respiratory_Rhythm": Respiratory_Rhythm = (Respiratory_Rhythms) Enum.Parse (typeof(Respiratory_Rhythms), pValue); break;
+                            case "Cardiac_Axis_Shift": Cardiac_Axis.Value = (Cardiac_Axes.Values)Enum.Parse (typeof (Cardiac_Axes.Values), pValue); break;
+                            case "Respiratory_Rhythm": Respiratory_Rhythm.Value = (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), pValue); break;
                             case "Respiratory_Inflated": Respiratory_Inflated = bool.Parse (pValue); break;
                             case "Respiratory_IERatio_I": Respiratory_IERatio_I = int.Parse (pValue); break;
                             case "Respiratory_IERatio_E": Respiratory_IERatio_E = int.Parse (pValue); break;
-                            case "_Paused": _Paused = bool.Parse (pValue); break;
-                            case "counterCardiac": counterCardiac = int.Parse (pValue); break;
                         }
                     }
                 }
-            } catch (Exception ex) {
-                #if DEBUG
-                    throw ex;
-                #endif
-
+            } catch {
                 sRead.Close ();
                 return;
             }
@@ -142,8 +136,6 @@ namespace II {
             OnRespiratory_Baseline ();
 
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Vitals_Change));
-
-            ApplyPause ();
         }
 
         public string Save () {
@@ -152,7 +144,7 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "HR", HR));
             sWrite.AppendLine (String.Format ("{0}:{1}", "RR", RR));
             sWrite.AppendLine (String.Format ("{0}:{1}", "ETCO2", ETCO2));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "SpO2", SpO2));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "SPO2", SPO2));
             sWrite.AppendLine (String.Format ("{0}:{1}", "CVP", CVP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "NSBP", NSBP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "NDBP", NDBP));
@@ -164,17 +156,15 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "PDP", PDP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "PMP", PMP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "T", T));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "ST_Elevation", string.Join(", ", ST_Elevation)));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "T_Elevation", string.Join(", ", T_Elevation)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "ST_Elevation", string.Join(",", ST_Elevation)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "T_Elevation", string.Join(",", T_Elevation)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Rhythm", Cardiac_Rhythm.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Rhythm__Flag", Cardiac_Rhythm__Flag));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Axis_Shift", Cardiac_Axis_Shift));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_Rhythm", Respiratory_Rhythm));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Axis_Shift", Cardiac_Axis.Value));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_Rhythm", Respiratory_Rhythm.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_Inflated", Respiratory_Inflated));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_I", Respiratory_IERatio_I));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_E", Respiratory_IERatio_E));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "_Paused", _Paused));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "counterCardiac", counterCardiac));
 
             return sWrite.ToString ();
         }
@@ -206,12 +196,12 @@ namespace II {
                     int asbp,   int adbp,   int amap,
                     int psp,    int pdp,    int pmp,
                     double[] st_elev,        double[] t_elev,
-                    Cardiac_Rhythms.Values  card_rhythm,
-                    Cardiac_Axis_Shifts     card_axis_shift,
-                    Respiratory_Rhythms     resp_rhythm,
+                    Cardiac_Rhythms.Values      card_rhythm,
+                    Cardiac_Axes.Values         card_axis,
+                    Respiratory_Rhythms.Values  resp_rhythm,
                     int resp_ier_i, int resp_ier_e) {
 
-            HR = hr;    RR = rr;    SpO2 = spo2;
+            HR = hr;    RR = rr;    SPO2 = spo2;
             T = t;
             CVP = cvp;  ETCO2 = etco2;
 
@@ -220,11 +210,11 @@ namespace II {
             PSP = psp;      PDP = pdp;      PMP = pmp;
 
             Cardiac_Rhythm.Value = card_rhythm;
-            Cardiac_Axis_Shift = card_axis_shift;
+            Cardiac_Axis.Value = card_axis;
             ST_Elevation = st_elev;
             T_Elevation = t_elev;
 
-            Respiratory_Rhythm = resp_rhythm;
+            Respiratory_Rhythm.Value = resp_rhythm;
             Respiratory_IERatio_I = resp_ier_i;
             Respiratory_IERatio_E = resp_ier_e;
 
@@ -469,12 +459,12 @@ namespace II {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Respiratory_Baseline));
             timerRespiratory_Baseline.Interval = (int)(RR_Seconds * 1000f);
 
-            switch (Respiratory_Rhythm) {
+            switch (Respiratory_Rhythm.Value) {
                 default:
-                case Respiratory_Rhythms.Apnea:
+                case Respiratory_Rhythms.Values.Apnea:
                     break;
 
-                case Respiratory_Rhythms.Regular:
+                case Respiratory_Rhythms.Values.Regular:
                     timerRespiratory_Inspiration.Interval = 1;
                     timerRespiratory_Inspiration.Start ();
                     break;
@@ -487,12 +477,12 @@ namespace II {
 
             timerRespiratory_Inspiration.Stop ();
 
-            switch (Respiratory_Rhythm) {
+            switch (Respiratory_Rhythm.Value) {
                 default:
-                case Respiratory_Rhythms.Apnea:
+                case Respiratory_Rhythms.Values.Apnea:
                     break;
 
-                case Respiratory_Rhythms.Regular:
+                case Respiratory_Rhythms.Values.Regular:
                     timerRespiratory_Expiration.Interval = (int)(RR_Seconds_I * 1000f);     // Expiration.Interval marks end inspiration
                     timerRespiratory_Expiration.Start ();
                     break;

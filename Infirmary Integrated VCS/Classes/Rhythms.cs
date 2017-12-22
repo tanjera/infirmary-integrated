@@ -38,7 +38,8 @@ namespace II {
 
         public string Description { get { return Descriptions[(int)Value]; } }
         public static Values Parse_Description (string inc) {
-            return (Values)Enum.GetValues (typeof (Values)).GetValue (Array.IndexOf<string> (Descriptions, inc));
+            int i = Array.IndexOf<string> (Descriptions, inc);
+            return i >= 0 ? (Values)Enum.GetValues (typeof (Values)).GetValue (i) : Values.Sinus_Rhythm;
         }
 
         public static string[] Descriptions = new string[] {
@@ -66,7 +67,6 @@ namespace II {
             "Ventricular Standstill",
             "Ventricular Tachycardia (w/ pulse)",
             "Ventricular Tachycardia (w/out pulse)",
-
         };
 
         public bool Pulse_Atrial {
@@ -139,7 +139,6 @@ namespace II {
                 }
             }
         }
-
 
         public void DefaultVitals_Clamp (Patient p) {
             switch (Value) {
@@ -304,17 +303,58 @@ namespace II {
         }
     }
 
-    public enum Respiratory_Rhythms {
-        Apnea,
-        Regular
+
+    public class Respiratory_Rhythms {
+        public Values Value;
+        public Respiratory_Rhythms (Values v) { Value = v; }
+        public Respiratory_Rhythms () { Value = Values.Regular; }
+
+        public string Description { get { return Descriptions [(int)Value]; } }
+        public static Values Parse_Description (string inc) {
+            int i = Array.IndexOf<string> (Descriptions, inc);
+            return i >= 0 ? (Values)Enum.GetValues (typeof (Values)).GetValue (i) : Values.Regular;
+        }
+
+        public enum Values {
+            Apnea,
+            Regular
+        }
+
+        public static string [] Descriptions = new string [] {
+            "Apnea",
+            "Regular"
+        };
     }
 
-    public enum Cardiac_Axis_Shifts {
-        Normal,
-        Left_Physiologic,
-        Left_Pathologic,
-        Right,
-        Extreme,
-        Indeterminate
+
+    public class Cardiac_Axes {
+        public Values Value;
+        public Cardiac_Axes (Values v) { Value = v; }
+        public Cardiac_Axes () { Value = Values.Normal; }
+
+        public string Description { get { return Descriptions [(int)Value]; } }
+        public static Values Parse_Description (string inc) {
+            int i = Array.IndexOf<string> (Descriptions, inc);
+            return i >= 0 ? (Values)Enum.GetValues (typeof (Values)).GetValue (i) : Values.Normal;
+        }
+
+        public enum Values {
+            Normal,
+            Left_Physiologic,
+            Left_Pathologic,
+            Right,
+            Extreme,
+            Indeterminate
+        }
+
+        public static string [] Descriptions = new string [] {
+            "Normal",
+            "Left (Physiologic)",
+            "Left (Pathologic)",
+            "Right",
+            "Extreme",
+            "Indeterminate"
+        };
+
     }
 }

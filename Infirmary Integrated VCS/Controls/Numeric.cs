@@ -43,10 +43,6 @@ namespace II.Controls {
                 try {
                     return (Values)Enum.Parse (typeof (Values), portion);
                 } catch {
-                    #if DEBUG
-                        throw new FormatException ();
-                    #endif
-
                     return Values.ECG;
                 }
             }
@@ -81,6 +77,7 @@ namespace II.Controls {
             InitializeComponent ();
 
             controlType = new ControlType(v);
+            tColorScheme = cs;
 
             ApplyColorScheme ();
             labelType.Text = "";
@@ -129,7 +126,7 @@ namespace II.Controls {
                 case ControlType.Values.SPO2:
                     labelType.Text = "SpO2";
                     label1.Font = fontLarge;
-                    label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.SpO2, 0.01f));
+                    label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.SPO2, 0.01f));
                     label2.Font = fontSmall;
                     label2.Text = String.Format ("HR: {0:0}", _.RandomPercentRange (p.HR, 0.01f));
                     label3.Hide ();
@@ -192,7 +189,7 @@ namespace II.Controls {
 
         public void SetColorScheme (_.ColorScheme cs) {
             tColorScheme = cs;
-            Update (lPatient);
+            ApplyColorScheme ();
         }
 
         public void SetFontSize (float mod)

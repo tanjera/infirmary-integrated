@@ -144,8 +144,8 @@ namespace II.Rhythm {
         public void Add_Beat__Cardiac_Ventricular (Patient _Patient) {
             if (IsECG ())
                 _Patient.Cardiac_Rhythm.ECG_Ventricular (_Patient, this);
-            else if (Lead.Value == Leads.Values.SpO2 && _Patient.Cardiac_Rhythm.Pulse_Ventricular)
-                Overwrite (Waveforms.SpO2_Rhythm (_Patient, 1f));
+            else if (Lead.Value == Leads.Values.SPO2 && _Patient.Cardiac_Rhythm.Pulse_Ventricular)
+                Overwrite (Waveforms.SPO2_Rhythm (_Patient, 1f));
             else if (Lead.Value == Leads.Values.ABP && _Patient.Cardiac_Rhythm.Pulse_Ventricular)
                 Overwrite (Waveforms.ABP_Rhythm (_Patient, 1f));
         }

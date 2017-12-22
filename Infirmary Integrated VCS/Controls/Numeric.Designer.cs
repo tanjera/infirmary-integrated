@@ -82,6 +82,7 @@
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.AutoSize = true;
+            this.tableLayoutPanel1.BackColor = System.Drawing.Color.Transparent;
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Controls.Add(this.labelType, 0, 0);
@@ -99,13 +100,13 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(116, 148);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
-            // Rhythm_Numerics
+            // Numeric
             // 
             this.AutoSize = true;
             this.BackColor = System.Drawing.Color.Black;
             this.Controls.Add(this.tableLayoutPanel1);
             this.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Name = "Rhythm_Numerics";
+            this.Name = "Numeric";
             this.Size = new System.Drawing.Size(116, 148);
             this.Click += new System.EventHandler(this.OnClick);
             this.tableLayoutPanel1.ResumeLayout(false);
