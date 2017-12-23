@@ -1,11 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Text;
+
 
 namespace II {
 
     public static class _ {
 
-        public const string Version = "0.7";
+        public const string Version = "0.71";
 
         public enum ColorScheme {
             Normal, Monochrome
@@ -58,6 +60,26 @@ namespace II {
 
         public static string SpaceToUnderscore(string str) {
             return str.Replace(' ', '_');
+        }
+
+        public static string HashMD5 (string str) {
+            MD5 md5 = MD5.Create ();
+            byte [] bytes = System.Text.Encoding.ASCII.GetBytes (str);
+            byte [] hash = md5.ComputeHash (bytes);
+
+            StringBuilder sb = new StringBuilder ();
+            for (int i = 0; i < hash.Length; i++)
+                sb.Append (hash [i].ToString ("X2"));
+
+            return sb.ToString ();
+        }
+
+        public static string ObfuscateB64 (string str) {
+            return Convert.ToBase64String (Encoding.UTF8.GetBytes (str));
+        }
+
+        public static string UnobfuscateB64 (string str) {
+            return Encoding.UTF8.GetString (Convert.FromBase64String (str));
         }
     }
 }

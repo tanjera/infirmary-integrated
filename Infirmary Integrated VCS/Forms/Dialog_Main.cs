@@ -66,21 +66,48 @@ namespace II.Forms {
         private void Load_Open (string fileName) {
             if (File.Exists(fileName)) {
                 Stream s = new FileStream (fileName, FileMode.Open);
-                Load_Process (s);
+                Load_Init (s);
             } else {
-                MessageBox.Show (
-                    "The file passed to Infirmary Integrated to load does not appear to exist. Aborting loading process.",
-                    "Unable to Load File",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Load_Fail ();
             }
         }
 
-        private void Load_Process(Stream incFile) {
-            StreamReader sRead = new StreamReader (incFile);
+        private void Load_Init (Stream incFile) {
+            StreamReader sr = new StreamReader (incFile);
+
+            /* Read savefile metadata indicating data formatting
+             * Multiple data formats for forward compatibility
+             */
+            string metadata = sr.ReadLine ();
+            if (metadata.StartsWith (".ii:t1"))
+                Load_Validate_T1 (sr);
+            else
+                Load_Fail ();
+        }
+
+        private void Load_Validate_T1 (StreamReader sr) {
+            /* Savefile type 1: validated and obfuscated, not encrypted or data protected
+             * Line 1 is metadata (.ii:t1)
+             * Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
+             * Line 3 is savefile data obfuscated by Base64 encoding
+             */
+
+            string hash = sr.ReadLine ().Trim();
+            string file = _.UnobfuscateB64(sr.ReadToEnd ().Trim());
+            sr.Close ();
+
+            if (hash == _.HashMD5 (file))
+                Load_Process (file);
+            else
+                Load_Fail ();
+        }
+
+        private void Load_Process (string incFile) {
+            StringReader sRead = new StringReader (incFile);
             string line, pline;
             StringBuilder pbuffer;
 
-            //try {
+            try {
                 while ((line = sRead.ReadLine ()) != null) {
                     if (line == "> Begin: Patient") {
                         pbuffer = new StringBuilder ();
@@ -98,16 +125,42 @@ namespace II.Forms {
 
                         InitMonitor ();
                         Program.Device_Monitor.Load_Process (pbuffer.ToString ());
+                        Program.Device_Monitor.Show ();
+                        Program.Device_Monitor.BringToFront ();
                     }
                 }
-            /*} catch {
-                MessageBox.Show (
-                    "The selected file was unable to be loaded. Perhaps the file was damaged or is no longer compatible?",
-                    "Unable to Load",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            } catch {
+                Load_Fail ();
             }
-            */
             sRead.Close ();
+        }
+
+        private void Load_Fail () {
+            MessageBox.Show (
+                "The selected file was unable to be loaded. Perhaps the file was damaged or edited outside of Infirmary Integrated.",
+                "Unable to Load File",
+                MessageBoxButtons.OK, MessageBoxIcon.Error);
+        }
+
+        private void Save_T1 (Stream s) {
+            StringBuilder sb = new StringBuilder ();
+
+            sb.AppendLine ("> Begin: Patient");
+            sb.Append (tPatient.Save ());
+            sb.AppendLine ("> End: Patient");
+
+            if (Program.Device_Monitor != null && !Program.Device_Monitor.IsDisposed) {
+                sb.AppendLine ("> Begin: Cardiac Monitor");
+                sb.Append (Program.Device_Monitor.Save ());
+                sb.AppendLine ("> End: Cardiac Monitor");
+            }
+
+            StreamWriter sw = new StreamWriter (s);
+            sw.WriteLine (".ii:t1");                                // Metadata (type 1 savefile)
+            sw.WriteLine (_.HashMD5 (sb.ToString ().Trim ()));      // Hash for validation
+            sw.Write (_.ObfuscateB64 (sb.ToString ().Trim ()));     // Savefile data obfuscated with Base64
+            sw.Close ();
+            s.Close ();
         }
 
         private void MenuLoadFile_Click (object sender, EventArgs e) {
@@ -120,7 +173,7 @@ namespace II.Forms {
 
             if (dlgLoad.ShowDialog () == DialogResult.OK) {
                 if ((s = dlgLoad.OpenFile ()) != null) {
-                    Load_Process (s);
+                    Load_Init (s);
                     s.Close ();
                 }
             }
@@ -136,20 +189,7 @@ namespace II.Forms {
 
             if (dlgSave.ShowDialog () == DialogResult.OK) {
                 if ((s = dlgSave.OpenFile ()) != null) {
-                    StreamWriter sWrite = new StreamWriter (s);
-
-                    sWrite.WriteLine ("> Begin: Patient");
-                    sWrite.Write (tPatient.Save ());
-                    sWrite.WriteLine ("> End: Patient");
-
-                    if (Program.Device_Monitor != null && !Program.Device_Monitor.IsDisposed) {
-                        sWrite.WriteLine ("> Begin: Cardiac Monitor");
-                        sWrite.Write (Program.Device_Monitor.Save ());
-                        sWrite.WriteLine ("> End: Cardiac Monitor");
-                    }
-
-                    sWrite.Close ();
-                    s.Close ();
+                    Save_T1 (s);
                 }
             }
         }
