@@ -13,7 +13,7 @@ namespace II
         /// </summary>
 
 
-        public static Forms.Dialog_Main Dialog_Main;
+        public static Forms.Form_Editor Form_Editor;
         public static Forms.Device_Monitor Device_Monitor;
 
         [STAThread]
@@ -35,8 +35,8 @@ namespace II
                 }
             }
 
-            Dialog_Main = new Forms.Dialog_Main (args);
-            Application.Run(Dialog_Main);
+            Form_Editor = new Forms.Form_Editor (args);
+            Application.Run(Form_Editor);
         }
     }
 }

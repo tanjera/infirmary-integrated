@@ -4,11 +4,11 @@ using System.Text;
 using System.Windows.Forms;
 
 namespace II.Forms {
-    public partial class Dialog_Main : Form {
+    public partial class Form_Editor : Form {
 
         Patient tPatient;
 
-        public Dialog_Main (string[] args) {
+        public Form_Editor (string[] args) {
 
             InitializeComponent ();
 
@@ -111,18 +111,20 @@ namespace II.Forms {
                 while ((line = sRead.ReadLine ()) != null) {
                     if (line == "> Begin: Patient") {
                         pbuffer = new StringBuilder ();
-
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
                             pbuffer.AppendLine (pline);
-
                         tPatient.Load_Process (pbuffer.ToString ());
+
+                    } else if (line == "> Begin: Editor") {
+                        pbuffer = new StringBuilder ();
+                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Editor")
+                            pbuffer.AppendLine (pline);
+                        this.Load_Options (pbuffer.ToString ());
 
                     } else if (line == "> Begin: Cardiac Monitor") {
                         pbuffer = new StringBuilder ();
-
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Cardiac Monitor")
                             pbuffer.AppendLine (pline);
-
                         InitMonitor ();
                         Program.Device_Monitor.Load_Process (pbuffer.ToString ());
                         Program.Device_Monitor.Show ();
@@ -149,6 +151,10 @@ namespace II.Forms {
             sb.Append (tPatient.Save ());
             sb.AppendLine ("> End: Patient");
 
+            sb.AppendLine ("> Begin: Editor");
+            sb.Append (this.Save_Options ());
+            sb.AppendLine ("> End: Editor");
+
             if (Program.Device_Monitor != null && !Program.Device_Monitor.IsDisposed) {
                 sb.AppendLine ("> Begin: Cardiac Monitor");
                 sb.Append (Program.Device_Monitor.Save ());
@@ -161,6 +167,37 @@ namespace II.Forms {
             sw.Write (_.ObfuscateB64 (sb.ToString ().Trim ()));     // Savefile data obfuscated with Base64
             sw.Close ();
             s.Close ();
+        }
+
+        private void Load_Options (string inc) {
+            StringReader sRead = new StringReader (inc);
+
+            try {
+                string line;
+                while ((line = sRead.ReadLine ()) != null) {
+                    if (line.Contains (":")) {
+                        string pName = line.Substring (0, line.IndexOf (':')),
+                                pValue = line.Substring (line.IndexOf (':') + 1);
+                        switch (pName) {
+                            default: break;
+                            case "checkDefaultVitals": checkDefaultVitals.Checked = bool.Parse (pValue); break;
+                        }
+                    }
+                }
+            } catch {
+                sRead.Close ();
+                return;
+            }
+
+            sRead.Close ();
+        }
+
+        private string Save_Options () {
+            StringBuilder sWrite = new StringBuilder ();
+
+            sWrite.AppendLine (String.Format ("{0}:{1}", "checkDefaultVitals", checkDefaultVitals.Checked));
+
+            return sWrite.ToString ();
         }
 
         private void MenuLoadFile_Click (object sender, EventArgs e) {
@@ -310,8 +347,19 @@ namespace II.Forms {
         }
 
         private void OnRhythmSelected (object sender, EventArgs e) {
-            if (checkDefaultVitals.Checked) {
-                // TO DO
+            if (checkDefaultVitals.Checked && tPatient != null) {
+                Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals(
+                    Cardiac_Rhythms.Parse_Description(comboCardiacRhythm.Text));
+
+                numHR.Value = (decimal)_.Clamp ((double)numHR.Value, v.HRMin, v.HRMax);
+                numSPO2.Value = (decimal)_.Clamp ((double)numSPO2.Value, v.SPO2Min, v.SPO2Max);
+                numETCO2.Value = (decimal)_.Clamp ((double)numETCO2.Value, v.ETCO2Min, v.ETCO2Max);
+                numNSBP.Value = (decimal)_.Clamp ((double)numNSBP.Value, v.SBPMin, v.SBPMax);
+                numNDBP.Value = (decimal)_.Clamp ((double)numNDBP.Value, v.DBPMin, v.DBPMax);
+                numASBP.Value = (decimal)_.Clamp ((double)numASBP.Value, v.SBPMin, v.SBPMax);
+                numADBP.Value = (decimal)_.Clamp ((double)numADBP.Value, v.DBPMin, v.DBPMax);
+                numPSP.Value = (decimal)_.Clamp ((double)numPSP.Value, v.PSPMin, v.PSPMax);
+                numPDP.Value = (decimal)_.Clamp ((double)numPDP.Value, v.PDPMin, v.PDPMax);
             }
         }
 

@@ -329,9 +329,9 @@
             this.layoutTracings.Padding = new System.Windows.Forms.Padding(10, 11, 10, 11);
             this.layoutTracings.RowCount = 1;
             this.layoutTracings.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.layoutTracings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 480F));
-            this.layoutTracings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 480F));
-            this.layoutTracings.Size = new System.Drawing.Size(605, 478);
+            this.layoutTracings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 456F));
+            this.layoutTracings.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 456F));
+            this.layoutTracings.Size = new System.Drawing.Size(575, 478);
             this.layoutTracings.TabIndex = 6;
             // 
             // layoutSplit
@@ -349,7 +349,7 @@
             // 
             this.layoutSplit.Panel2.Controls.Add(this.layoutTracings);
             this.layoutSplit.Size = new System.Drawing.Size(759, 478);
-            this.layoutSplit.SplitterDistance = 150;
+            this.layoutSplit.SplitterDistance = 180;
             this.layoutSplit.TabIndex = 7;
             // 
             // layoutNumerics
@@ -367,7 +367,7 @@
             this.layoutNumerics.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.layoutNumerics.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 456F));
             this.layoutNumerics.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 456F));
-            this.layoutNumerics.Size = new System.Drawing.Size(150, 478);
+            this.layoutNumerics.Size = new System.Drawing.Size(180, 478);
             this.layoutNumerics.TabIndex = 7;
             // 
             // Device_Monitor

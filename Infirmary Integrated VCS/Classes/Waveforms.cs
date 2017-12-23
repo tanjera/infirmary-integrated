@@ -195,17 +195,13 @@ namespace II.Rhythm {
         public static List<Point> ECG_Complex__QRST_VT (Patient _P, Leads _L) {
             List<Point> thisBeat = new List<Point> ();
 
-            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 5,
+            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 4,
                 -0.1f * leadCoeff[(int)_L.Value, (int)WavePart.Q],
                 -0.2f * leadCoeff[(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 5,
+            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 4,
                 -1f * leadCoeff[(int)_L.Value, (int)WavePart.R],
                 -0.3f * leadCoeff[(int)_L.Value, (int)WavePart.R], Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 5,
-                0.1f * leadCoeff[(int)_L.Value, (int)WavePart.T],
-                0.1f * leadCoeff[(int)_L.Value, (int)WavePart.T],
-                Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 5,
+            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 2,
                 0.4f * leadCoeff[(int)_L.Value, (int)WavePart.T],
                 0.1f * leadCoeff[(int)_L.Value, (int)WavePart.T],
                 Last (thisBeat)));

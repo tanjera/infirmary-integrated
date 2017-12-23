@@ -32,8 +32,9 @@ namespace II {
             Ventricular_Fibrillation_Coarse,
             Ventricular_Fibrillation_Fine,
             Ventricular_Standstill,
-            Ventricular_Tachycardia_Pulsed,
-            Ventricular_Tachycardia_Pulseless
+            Ventricular_Tachycardia_Monomorphic_Pulsed,
+            Ventricular_Tachycardia_Monomorphic_Pulseless,
+            Ventricular_Tachycardia_Polymorphic
         }
 
         public string Description { get { return Descriptions[(int)Value]; } }
@@ -65,8 +66,9 @@ namespace II {
             "Ventricular Fibrillation (Coarse)",
             "Ventricular Fibrillation (Fine)",
             "Ventricular Standstill",
-            "Ventricular Tachycardia (w/ pulse)",
-            "Ventricular Tachycardia (w/out pulse)",
+            "Ventricular Tachycardia (Monomorphic, w/ pulse)",
+            "Ventricular Tachycardia (Monomorphic, w/out pulse)",
+            "Ventricular Tachycardia (Polymorphic)"
         };
 
         public bool Pulse_Atrial {
@@ -82,8 +84,9 @@ namespace II {
                     case Values.Supraventricular_Tachycardia:
                     case Values.Ventricular_Fibrillation_Coarse:
                     case Values.Ventricular_Fibrillation_Fine:
-                    case Values.Ventricular_Tachycardia_Pulsed:
-                    case Values.Ventricular_Tachycardia_Pulseless:
+                    case Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
+                    case Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
+                    case Values.Ventricular_Tachycardia_Polymorphic:
                         return false;
 
                     default:
@@ -113,7 +116,8 @@ namespace II {
                     case Values.Ventricular_Fibrillation_Coarse:
                     case Values.Ventricular_Fibrillation_Fine:
                     case Values.Ventricular_Standstill:
-                    case Values.Ventricular_Tachycardia_Pulseless:
+                    case Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
+                    case Values.Ventricular_Tachycardia_Polymorphic:
                         return false;
 
                     default:
@@ -134,53 +138,63 @@ namespace II {
                     case Values.Sinus_Rhythm_with_PVCs_Multifocal:
                     case Values.Sinus_Rhythm_with_PVCs_Unifocal:
                     case Values.Supraventricular_Tachycardia:
-                    case Values.Ventricular_Tachycardia_Pulsed:
+                    case Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
                         return true;
                 }
             }
         }
 
-        public void DefaultVitals_Clamp (Patient p) {
-            switch (Value) {
-                case Values.Asystole:
-                case Values.Atrial_Fibrillation:
-                case Values.Atrial_Flutter:
-                case Values.AV_Block__1st_Degree:
-                case Values.AV_Block__3rd_Degree:
-                case Values.AV_Block__Mobitz_II:
-                case Values.AV_Block__Wenckebach:
-                case Values.Bundle_Branch_Block:
-                case Values.Idioventricular:
-                case Values.Junctional:
-                case Values.Pulseless_Electrical_Activity:
-                case Values.Sinus_Rhythm:
-                case Values.Sinus_Rhythm_with_Bigeminy:
-                case Values.Sinus_Rhythm_with_Trigeminy:
-                case Values.Sinus_Rhythm_with_PACs:
-                case Values.Sinus_Rhythm_with_PJCs:
-                case Values.Sinus_Rhythm_with_PVCs_Multifocal:
-                case Values.Sinus_Rhythm_with_PVCs_Unifocal:
-                case Values.Supraventricular_Tachycardia:
-                case Values.Ventricular_Fibrillation_Coarse:
-                case Values.Ventricular_Fibrillation_Fine:
-                case Values.Ventricular_Standstill:
-                case Values.Ventricular_Tachycardia_Pulsed:
-                case Values.Ventricular_Tachycardia_Pulseless:
+        public class Default_Vitals {
+            public int  HRMin, HRMax,
+                        SPO2Min, SPO2Max,
+                        ETCO2Min, ETCO2Max,
+                        SBPMin, SBPMax, DBPMin, DBPMax,
+                        PSPMin, PSPMax, PDPMin, PDPMax;
 
-                    return;
+            public Default_Vitals (
+                    int hrMin, int hrMax,
+                    int spo2Min, int spo2Max,
+                    int etco2Min, int etco2Max,
+                    int sbpMin, int sbpMax, int dbpMin, int dbpMax,
+                    int pspMin, int pspMax, int pdpMin, int pdpMax) {
 
+                HRMin = hrMin; HRMax = hrMax;
+                SPO2Min = spo2Min; SPO2Max = spo2Max;
+                ETCO2Min = etco2Min; ETCO2Max = etco2Max;
+                SBPMin = sbpMin; SBPMax = sbpMax; DBPMin = dbpMin; DBPMax = dbpMax;
+                PSPMin = pspMin; PSPMax = pspMax; PDPMin = pdpMin; PDPMax = pdpMax;
             }
-            /*
-            p.HR = _.Clamp (p.HR, Range_HR.Min, Range_HR.Max);
-            p.SpO2 = _.Clamp (p.SpO2, Range_SpO2.Min, Range_SpO2.Max);
-            p.NSBP = _.Clamp (p.NSBP, Range_SBP.Min, Range_SBP.Max);
-            p.NDBP = _.Clamp (p.NDBP, Range_DBP.Min, Range_DBP.Max);
-            p.NMAP = Patient.CalculateMAP (p.NSBP, p.NDBP);
+        }
 
-            p.ASBP = _.Clamp (p.ASBP, Range_SBP.Min, Range_SBP.Max);
-            p.ADBP = _.Clamp (p.ADBP, Range_DBP.Min, Range_DBP.Max);
-            p.AMAP = Patient.CalculateMAP (p.ASBP, p.ADBP);
-            */
+        public static Default_Vitals DefaultVitals (Values Rhythm) {
+            switch (Rhythm) {
+                default: return new Default_Vitals (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                case Values.Asystole: return new Default_Vitals (0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
+                case Values.Atrial_Fibrillation: return new Default_Vitals (80, 140, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Atrial_Flutter: return new Default_Vitals (80, 140, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.AV_Block__1st_Degree: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.AV_Block__3rd_Degree: return new Default_Vitals (30, 50, 78, 82, 30, 35, 70, 80, 35, 40, 10, 20, 4, 6);
+                case Values.AV_Block__Mobitz_II: return new Default_Vitals (60, 80, 88, 98, 35, 45, 80, 120, 50, 70, 20, 30, 8, 12);
+                case Values.AV_Block__Wenckebach: return new Default_Vitals (60, 80, 88, 98, 35, 45, 80, 120, 50, 70, 20, 30, 8, 12);
+                case Values.Bundle_Branch_Block: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Idioventricular: return new Default_Vitals (20, 40, 78, 82, 30, 35, 70, 80, 35, 40, 10, 20, 4, 6);
+                case Values.Junctional: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Pulseless_Electrical_Activity: return new Default_Vitals (60, 100, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
+                case Values.Sinus_Rhythm: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Sinus_Rhythm_with_Bigeminy: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Sinus_Rhythm_with_Trigeminy: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Sinus_Rhythm_with_PACs: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Sinus_Rhythm_with_PJCs: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Sinus_Rhythm_with_PVCs_Multifocal: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Sinus_Rhythm_with_PVCs_Unifocal: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Supraventricular_Tachycardia: return new Default_Vitals (140, 280, 88, 98, 35, 45, 80, 120, 50, 70, 20, 30, 8, 12);
+                case Values.Ventricular_Fibrillation_Coarse: return new Default_Vitals (400, 500, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
+                case Values.Ventricular_Fibrillation_Fine: return new Default_Vitals (400, 500, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
+                case Values.Ventricular_Standstill: return new Default_Vitals (40, 100, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
+                case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: return new Default_Vitals (110, 250, 88, 98, 35, 45, 80, 110, 60, 80, 20, 30, 8, 12);
+                case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: return new Default_Vitals (110, 250, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
+                case Values.Ventricular_Tachycardia_Polymorphic: return new Default_Vitals (200, 240, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
+            }
         }
 
         public void ECG_Isoelectric (Patient p, Rhythm.Strip s) {
@@ -207,8 +221,9 @@ namespace II {
                 case Values.Ventricular_Fibrillation_Coarse: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
                 case Values.Ventricular_Fibrillation_Fine: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
                 case Values.Ventricular_Standstill: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Ventricular_Tachycardia_Pulsed: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Ventricular_Tachycardia_Pulseless: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
+                case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
+                case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
+                case Values.Ventricular_Tachycardia_Polymorphic: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
             }
         }
 
@@ -236,8 +251,9 @@ namespace II {
                 case Values.Ventricular_Fibrillation_Coarse: return;
                 case Values.Ventricular_Fibrillation_Fine: return;
                 case Values.Ventricular_Standstill: s.Overwrite (Rhythm.Waveforms.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Ventricular_Tachycardia_Pulsed: return;
-                case Values.Ventricular_Tachycardia_Pulseless: return;
+                case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: return;
+                case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: return;
+                case Values.Ventricular_Tachycardia_Polymorphic: return;
             }
         }
 
@@ -294,11 +310,12 @@ namespace II {
                     return;
 
                 case Values.Supraventricular_Tachycardia: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_SVT (p, s.Lead)); return;
-                case Values.Ventricular_Fibrillation_Coarse: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_VF (p, s.Lead, 1f)); return;
-                case Values.Ventricular_Fibrillation_Fine: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_VF (p, s.Lead, 0.2f)); return;
+                case Values.Ventricular_Fibrillation_Coarse: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_VF (p, s.Lead, 0.7f)); return;
+                case Values.Ventricular_Fibrillation_Fine: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_VF (p, s.Lead, 0.1f)); return;
                 case Values.Ventricular_Standstill: return;
-                case Values.Ventricular_Tachycardia_Pulsed: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_VT (p, s.Lead)); return;
-                case Values.Ventricular_Tachycardia_Pulseless: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_VT (p, s.Lead)); return;
+                case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_VT (p, s.Lead)); return;
+                case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_VT (p, s.Lead)); return;
+                case Values.Ventricular_Tachycardia_Polymorphic: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_VF (p, s.Lead, 1f)); return;
             }
         }
     }

@@ -169,11 +169,11 @@ namespace II.Forms
         }
 
         private void MenuExit_Click (object sender, EventArgs e) {
-            Program.Dialog_Main.RequestExit ();
+            Program.Form_Editor.RequestExit ();
         }
 
         private void MenuNewPatient_Click (object sender, EventArgs e) {
-            tPatient = Program.Dialog_Main.RequestNewPatient ();
+            tPatient = Program.Form_Editor.RequestNewPatient ();
 
             foreach (Channel c in tChannels)
                 c.cStrip.Reset ();
@@ -182,8 +182,8 @@ namespace II.Forms
         }
 
         private void MenuEditPatient_Click (object sender, EventArgs e) {
-            Program.Dialog_Main.Show ();
-            Program.Dialog_Main.BringToFront ();
+            Program.Form_Editor.Show ();
+            Program.Form_Editor.BringToFront ();
         }
 
         private void MenuFontSize_Click (object sender, EventArgs e) {

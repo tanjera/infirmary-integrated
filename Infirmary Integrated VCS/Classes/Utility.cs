@@ -7,7 +7,7 @@ namespace II {
 
     public static class _ {
 
-        public const string Version = "0.71";
+        public const string Version = "0.72";
 
         public enum ColorScheme {
             Normal, Monochrome

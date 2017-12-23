@@ -224,6 +224,35 @@ namespace II {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Vitals_Change));
         }
 
+        public void ClampVitals (
+                    int hrMin, int hrMax,
+                    int spo2Min, int spo2Max,
+                    int etco2Min, int etco2Max,
+                    int sbpMin, int sbpMax, int dbpMin, int dbpMax,
+                    int pspMin, int pspMax, int pdpMin, int pdpMax) {
+
+            HR = _.Clamp (HR, hrMin, hrMax);
+            SPO2 = _.Clamp (SPO2, spo2Min, spo2Max);
+            ETCO2 = _.Clamp (ETCO2, etco2Min, etco2Max);
+
+            NSBP = _.Clamp (NSBP, sbpMin, sbpMax);
+            NDBP = _.Clamp (NDBP, dbpMin, dbpMax);
+            NMAP = Patient.CalculateMAP (NSBP, NDBP);
+
+            ASBP = _.Clamp (ASBP, sbpMin, sbpMax);
+            ADBP = _.Clamp (ADBP, sbpMin, sbpMax);
+            AMAP = Patient.CalculateMAP (ASBP, ADBP);
+
+            PSP = _.Clamp (PSP, pspMin, pspMax);
+            PDP = _.Clamp (PDP, pdpMin, pdpMax);
+            PMP = Patient.CalculateMAP (PSP, PDP);
+
+            SetTimers ();
+            OnCardiac_Baseline ();
+            OnRespiratory_Baseline ();
+            PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Vitals_Change));
+        }
+
         private void InitTimers() {
             timerCardiac_Baseline.Tick += delegate {
                 OnCardiac_Baseline ();
@@ -277,8 +306,9 @@ namespace II {
                 case Cardiac_Rhythms.Values.Junctional:
                 case Cardiac_Rhythms.Values.Idioventricular:
                 case Cardiac_Rhythms.Values.Supraventricular_Tachycardia:
-                case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Pulsed:
-                case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Pulseless:
+                case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
+                case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
+                case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Polymorphic:
                 case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Coarse:
                 case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Fine:
                     timerCardiac_Ventricular.Interval = 1;

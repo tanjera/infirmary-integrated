@@ -13,7 +13,6 @@
 
 	- V 0.8
 		- More tracings: CVP, PA
-		* Reimplement default vital sign clamping...
 
 		- Device options
 			- Save screenshot
@@ -26,11 +25,11 @@
 			- Option to pause for viewing, printing, or export to .pdf
 		- Implement axis deviation in ECG tracings
 		- Implement pulsus paradoxus
-		- Add default Rhythm vital signs for all hemodynamic parameters (Get_Rhythm().Vitals())
 
 
 	- V 1.0
 		* General polish and debugging
+			- Icons? Tabbed editor window for vitals/parameters?
 
 
 	- V 1.1
