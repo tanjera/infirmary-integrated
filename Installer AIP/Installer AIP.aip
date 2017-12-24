@@ -6,16 +6,18 @@
   <COMPONENT cid="caphyon.advinst.msicomp.MsiPropsComponent">
     <ROW Property="AI_BITMAP_DISPLAY_MODE" Value="0"/>
     <ROW Property="AI_PROPPATH_DIR_PERBUILD_InfirmaryIntegrated.exe" Value="C:\Users\Ibi\Desktop\infirmary-integrated\Infirmary Integrated VCS\bin\Debug"/>
+    <ROW Property="AI_PROPPATH_DIR_PERBUILD_InfirmaryIntegrated.exe.config" Value="..\Infirmary Integrated VCS\bin\Release"/>
     <ROW Property="AI_PROPPATH_FILENAME_PERBUILD_InfirmaryIntegrated.exe" Value="Infirmary Integrated.exe"/>
+    <ROW Property="AI_PROPPATH_FILENAME_PERBUILD_InfirmaryIntegrated.exe.config" Value="Infirmary Integrated.exe.config"/>
     <ROW Property="ALLUSERS" Value="1"/>
     <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
     <ROW Property="ARPPRODUCTICON" Value="Icon_1.exe" Type="8"/>
     <ROW Property="CTRLS" Value="2"/>
     <ROW Property="Manufacturer" Value="Tanjera"/>
-    <ROW Property="ProductCode" Value="1033:{3F4BE917-03EF-4B59-AAE8-A3DABD3738FB} " Type="16"/>
+    <ROW Property="ProductCode" Value="1033:{299A0002-A2C7-4C8B-911F-72E8B7620619} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Infirmary Integrated"/>
-    <ROW Property="ProductVersion" Value="0.72" Type="32"/>
+    <ROW Property="ProductVersion" Value="0.73" Type="32"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
     <ROW Property="UpgradeCode" Value="{460D22AD-9207-431F-9691-116B34D43574}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>
@@ -42,7 +44,11 @@
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
-    <ROW File="InfirmaryIntegrated.exe" Component_="InfirmaryIntegrated_PrimaryOutput" FileName="INFIRM~1.EXE|[|AI_PROPPATH_FILENAME_PERBUILD_InfirmaryIntegrated.exe]" Attributes="0" SourcePath="..\Infirmary Integrated VCS\bin\Release\Infirmary Integrated.exe" SelfReg="false" DigSign="true"/>
+    <ROW File="InfirmaryIntegrated.exe" Component_="InfirmaryIntegrated_PrimaryOutput" FileName="INFIRM~1.EXE|[|AI_PROPPATH_FILENAME_PERBUILD_InfirmaryIntegrated.exe]" Attributes="0" SourcePath="..\Infirmary Integrated VCS\bin\Release\Infirmary Integrated.exe" SelfReg="false" NextFile="InfirmaryIntegrated.exe.config" DigSign="true"/>
+    <ROW File="InfirmaryIntegrated.exe.config" Component_="InfirmaryIntegrated_PrimaryOutput" FileName="INFIRM~2.CON|[|AI_PROPPATH_FILENAME_PERBUILD_InfirmaryIntegrated.exe.config]" Attributes="0" SourcePath="&lt;AI_APPPATH_PERBUILD_InfirmaryIntegrated.exe.config&gt;" SelfReg="false"/>
+  </COMPONENT>
+  <COMPONENT cid="caphyon.advinst.msicomp.AppPathsComponent">
+    <ROW Name="AI_APPPATH_PERBUILD_InfirmaryIntegrated.exe.config" Path="[|AI_PROPPATH_DIR_PERBUILD_InfirmaryIntegrated.exe.config]\[|AI_PROPPATH_FILENAME_PERBUILD_InfirmaryIntegrated.exe.config]" Type="2" Content="0"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BootstrOptComponent">
     <ROW BootstrOptKey="GlobalOptions" DownloadFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\prerequisites" Options="2"/>
@@ -170,5 +176,6 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.VsProjectComponent">
     <ROW ProjectId="{11242b40-7fca-44e2-8f0b-5d981f85ea59}" ProjectName="Infirmary Integrated" OutputGroup="PrimaryOutput" OutputFile="InfirmaryIntegrated.exe" OutputFileShortcut="InfirmaryIntegrated"/>
+    <ROW ProjectId="{11242b40-7fca-44e2-8f0b-5d981f85ea59}" ProjectName="Infirmary Integrated" OutputGroup="PrimaryOutput" OutputFile="InfirmaryIntegrated.exe.config"/>
   </COMPONENT>
 </DOCUMENT>

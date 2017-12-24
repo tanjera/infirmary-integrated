@@ -173,6 +173,8 @@ namespace II.Controls {
                     labelType.Text = "CVP";
                     label1.Font = fontLarge;
                     label1.Text = String.Format("{0:0}", _.RandomPercentRange(p.CVP, 0.02f));
+                    label2.Hide ();
+                    label3.Hide ();
                     break;
 
                 case ControlType.Values.PA:

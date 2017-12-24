@@ -139,6 +139,8 @@ namespace II.Rhythm {
         public void Add_Beat__Cardiac_Atrial (Patient _Patient) {
             if (IsECG ())
                 _Patient.Cardiac_Rhythm.ECG_Atrial (_Patient, this);
+            else if (Lead.Value == Leads.Values.CVP)
+                Overwrite (Waveforms.CVP_Rhythm (_Patient, 1f));
         }
 
         public void Add_Beat__Cardiac_Ventricular (Patient _Patient) {
@@ -148,6 +150,8 @@ namespace II.Rhythm {
                 Overwrite (Waveforms.SPO2_Rhythm (_Patient, 1f));
             else if (Lead.Value == Leads.Values.ABP && _Patient.Cardiac_Rhythm.Pulse_Ventricular)
                 Overwrite (Waveforms.ABP_Rhythm (_Patient, 1f));
+            else if (Lead.Value == Leads.Values.PA)
+                Overwrite (Waveforms.PA_Rhythm (_Patient, 1f));
         }
 
         public void Add_Beat__Respiratory_Baseline (Patient _Patient) {

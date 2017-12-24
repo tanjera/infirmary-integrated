@@ -30,26 +30,46 @@ namespace II.Rhythm {
         }
 
         public static List<Point> SPO2_Rhythm(Patient _P, double _Amplitude) {
-            /* SpO2 during normal sinus perfusion is similar to a sine wave leaning right with dicrotic notch
-		     */
             double _Portion = _P.HR_Seconds / 4f;
 
             List<Point> thisBeat = new List<Point>();
-            thisBeat = Concatenate (thisBeat, Curve (_Portion , 0.65f * _Amplitude, 0.6f * _Amplitude, Last(thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.5f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Line (_Portion  * 2, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.8f * _Amplitude, 0.7f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.6f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion * 2, 0f, Last (thisBeat)));
             return thisBeat;
         }
 
         public static List<Point> ABP_Rhythm (Patient _P, double _Amplitude) {
-            /* ABP during normal sinus perfusion is similar to a sine wave leaning right with dicrotic notch
-		     */
             double _Portion = _P.HR_Seconds / 4;
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.8f * _Amplitude, 0.7f * _Amplitude, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.6f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Line( _Portion * 2, 0f, Last (thisBeat)));
+            return thisBeat;
+        }
+
+        public static List<Point> CVP_Rhythm (Patient _P, double _Amplitude) {
+            double _Portion = _P.HR_Seconds / 5;
+
+            List<Point> thisBeat = new List<Point> ();
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.1f * _Amplitude, 0.2f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.5f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.4f * _Amplitude, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0f, 0.1f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.2f * _Amplitude, 0f, Last (thisBeat)));
+            return thisBeat;
+        }
+
+
+        public static List<Point> PA_Rhythm (Patient _P, double _Amplitude) {
+            /* ABP during normal sinus perfusion is similar to a sine wave leaning right with dicrotic notch
+		     */
+            double _Portion = _P.HR_Seconds / 2;
+
+            List<Point> thisBeat = new List<Point> ();
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.5 * _Amplitude, 0.3f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.15f * _Amplitude, 0f, Last (thisBeat)));
             return thisBeat;
         }
 

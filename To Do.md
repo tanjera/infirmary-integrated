@@ -12,8 +12,8 @@
 * Versions and features to implement:
 
 	- V 0.8
-		- More tracings: CVP, PA
-
+		- Respiratory rhythm vital sign clamping
+		- Respiratory rhythms: Kussmaul, Cheyne-Stokes
 		- Device options
 			- Save screenshot
 			- Print screenshot
@@ -30,6 +30,7 @@
 	- V 1.0
 		* General polish and debugging
 			- Icons? Tabbed editor window for vitals/parameters?
+		- Patient state/snapshots? For fast switching of patient parameters.
 
 
 	- V 1.1
