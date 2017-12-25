@@ -14,10 +14,10 @@
     <ROW Property="ARPPRODUCTICON" Value="Icon_1.exe" Type="8"/>
     <ROW Property="CTRLS" Value="2"/>
     <ROW Property="Manufacturer" Value="Tanjera"/>
-    <ROW Property="ProductCode" Value="1033:{299A0002-A2C7-4C8B-911F-72E8B7620619} " Type="16"/>
+    <ROW Property="ProductCode" Value="1033:{68CD2C76-7239-4018-8E20-FCD022760DED} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Infirmary Integrated"/>
-    <ROW Property="ProductVersion" Value="0.73" Type="32"/>
+    <ROW Property="ProductVersion" Value="0.8" Type="32"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
     <ROW Property="UpgradeCode" Value="{460D22AD-9207-431F-9691-116B34D43574}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>

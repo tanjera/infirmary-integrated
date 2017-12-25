@@ -47,6 +47,11 @@ namespace II.Forms
             OnLayoutChange ();
         }
 
+        private void Device_Monitor_FormClosing (object sender, FormClosingEventArgs e) {
+            if (e.CloseReason == CloseReason.UserClosing)
+                e.Cancel = !Program.Form_Editor.RequestExit ();
+        }
+
         public void Load_Process (string inc) {
             StringReader sRead = new StringReader (inc);
             List<string> numericTypes = new List<string> (),

@@ -70,7 +70,6 @@ namespace II {
                             new double[] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
                             new double[] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
                             Cardiac_Rhythms.Values.Sinus_Rhythm,
-                            Cardiac_Axes.Values.Normal,
                             Respiratory_Rhythms.Values.Regular,
                             1, 1);
 
@@ -197,7 +196,6 @@ namespace II {
                     int psp,    int pdp,    int pmp,
                     double[] st_elev,        double[] t_elev,
                     Cardiac_Rhythms.Values      card_rhythm,
-                    Cardiac_Axes.Values         card_axis,
                     Respiratory_Rhythms.Values  resp_rhythm,
                     int resp_ier_i, int resp_ier_e) {
 
@@ -210,7 +208,6 @@ namespace II {
             PSP = psp;      PDP = pdp;      PMP = pmp;
 
             Cardiac_Rhythm.Value = card_rhythm;
-            Cardiac_Axis.Value = card_axis;
             ST_Elevation = st_elev;
             T_Elevation = t_elev;
 

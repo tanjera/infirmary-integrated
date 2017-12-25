@@ -42,9 +42,6 @@
             this.numETCO2 = new System.Windows.Forms.NumericUpDown();
             this.label10 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.groupBox6 = new System.Windows.Forms.GroupBox();
-            this.label39 = new System.Windows.Forms.Label();
-            this.comboAxisShift = new System.Windows.Forms.ComboBox();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.label27 = new System.Windows.Forms.Label();
             this.label28 = new System.Windows.Forms.Label();
@@ -109,13 +106,6 @@
             this.numPSP = new System.Windows.Forms.NumericUpDown();
             this.label9 = new System.Windows.Forms.Label();
             this.numCVP = new System.Windows.Forms.NumericUpDown();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.buttonDevice_Ventilator = new System.Windows.Forms.Button();
-            this.buttonDevice_LabReport = new System.Windows.Forms.Button();
-            this.buttonDevice_IABP = new System.Windows.Forms.Button();
-            this.buttonDevice_Defibrillator = new System.Windows.Forms.Button();
-            this.buttonDevice_12ECG = new System.Windows.Forms.Button();
-            this.buttonDevice_Monitor = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadSimulationToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -142,7 +132,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numRR)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numETCO2)).BeginInit();
             this.groupBox2.SuspendLayout();
-            this.groupBox6.SuspendLayout();
             this.groupBox5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numTWE_V6)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numTWE_V3)).BeginInit();
@@ -175,7 +164,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numASBP)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numPSP)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numCVP)).BeginInit();
-            this.groupBox7.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.groupBox9.SuspendLayout();
             this.groupBox8.SuspendLayout();
@@ -401,7 +389,6 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.groupBox6);
             this.groupBox2.Controls.Add(this.groupBox5);
             this.groupBox2.Controls.Add(this.groupBox4);
             this.groupBox2.Controls.Add(this.label14);
@@ -409,40 +396,10 @@
             this.groupBox2.Controls.Add(this.comboCardiacRhythm);
             this.groupBox2.Location = new System.Drawing.Point(235, 20);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(304, 380);
+            this.groupBox2.Size = new System.Drawing.Size(304, 317);
             this.groupBox2.TabIndex = 3;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Cardiac Profile";
-            // 
-            // groupBox6
-            // 
-            this.groupBox6.Controls.Add(this.label39);
-            this.groupBox6.Controls.Add(this.comboAxisShift);
-            this.groupBox6.Location = new System.Drawing.Point(9, 314);
-            this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(286, 54);
-            this.groupBox6.TabIndex = 5;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Axis Shift";
-            // 
-            // label39
-            // 
-            this.label39.AutoSize = true;
-            this.label39.Location = new System.Drawing.Point(6, 24);
-            this.label39.Name = "label39";
-            this.label39.Size = new System.Drawing.Size(57, 14);
-            this.label39.TabIndex = 7;
-            this.label39.Text = "Axis Shift:";
-            // 
-            // comboAxisShift
-            // 
-            this.comboAxisShift.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboAxisShift.Enabled = false;
-            this.comboAxisShift.FormattingEnabled = true;
-            this.comboAxisShift.Location = new System.Drawing.Point(65, 20);
-            this.comboAxisShift.Name = "comboAxisShift";
-            this.comboAxisShift.Size = new System.Drawing.Size(204, 22);
-            this.comboAxisShift.TabIndex = 1;
             // 
             // groupBox5
             // 
@@ -1490,81 +1447,6 @@
             this.numCVP.TabIndex = 10;
             this.numCVP.Enter += new System.EventHandler(this.OnNumUpDown_Enter);
             // 
-            // groupBox7
-            // 
-            this.groupBox7.Controls.Add(this.buttonDevice_Ventilator);
-            this.groupBox7.Controls.Add(this.buttonDevice_LabReport);
-            this.groupBox7.Controls.Add(this.buttonDevice_IABP);
-            this.groupBox7.Controls.Add(this.buttonDevice_Defibrillator);
-            this.groupBox7.Controls.Add(this.buttonDevice_12ECG);
-            this.groupBox7.Controls.Add(this.buttonDevice_Monitor);
-            this.groupBox7.Location = new System.Drawing.Point(12, 29);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(223, 285);
-            this.groupBox7.TabIndex = 5;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "Devices";
-            // 
-            // buttonDevice_Ventilator
-            // 
-            this.buttonDevice_Ventilator.Enabled = false;
-            this.buttonDevice_Ventilator.Location = new System.Drawing.Point(6, 112);
-            this.buttonDevice_Ventilator.Name = "buttonDevice_Ventilator";
-            this.buttonDevice_Ventilator.Size = new System.Drawing.Size(211, 26);
-            this.buttonDevice_Ventilator.TabIndex = 4;
-            this.buttonDevice_Ventilator.Text = "Ventilator";
-            this.buttonDevice_Ventilator.UseVisualStyleBackColor = true;
-            // 
-            // buttonDevice_LabReport
-            // 
-            this.buttonDevice_LabReport.Enabled = false;
-            this.buttonDevice_LabReport.Location = new System.Drawing.Point(6, 240);
-            this.buttonDevice_LabReport.Name = "buttonDevice_LabReport";
-            this.buttonDevice_LabReport.Size = new System.Drawing.Size(211, 26);
-            this.buttonDevice_LabReport.TabIndex = 4;
-            this.buttonDevice_LabReport.Text = "Laboratory Report";
-            this.buttonDevice_LabReport.UseVisualStyleBackColor = true;
-            // 
-            // buttonDevice_IABP
-            // 
-            this.buttonDevice_IABP.Enabled = false;
-            this.buttonDevice_IABP.Location = new System.Drawing.Point(6, 177);
-            this.buttonDevice_IABP.Name = "buttonDevice_IABP";
-            this.buttonDevice_IABP.Size = new System.Drawing.Size(211, 26);
-            this.buttonDevice_IABP.TabIndex = 4;
-            this.buttonDevice_IABP.Text = "Intra-Aortic Balloon Pump (IABP)";
-            this.buttonDevice_IABP.UseVisualStyleBackColor = true;
-            // 
-            // buttonDevice_Defibrillator
-            // 
-            this.buttonDevice_Defibrillator.Enabled = false;
-            this.buttonDevice_Defibrillator.Location = new System.Drawing.Point(6, 144);
-            this.buttonDevice_Defibrillator.Name = "buttonDevice_Defibrillator";
-            this.buttonDevice_Defibrillator.Size = new System.Drawing.Size(211, 26);
-            this.buttonDevice_Defibrillator.TabIndex = 4;
-            this.buttonDevice_Defibrillator.Text = "Defibrillator";
-            this.buttonDevice_Defibrillator.UseVisualStyleBackColor = true;
-            // 
-            // buttonDevice_12ECG
-            // 
-            this.buttonDevice_12ECG.Enabled = false;
-            this.buttonDevice_12ECG.Location = new System.Drawing.Point(6, 53);
-            this.buttonDevice_12ECG.Name = "buttonDevice_12ECG";
-            this.buttonDevice_12ECG.Size = new System.Drawing.Size(211, 26);
-            this.buttonDevice_12ECG.TabIndex = 4;
-            this.buttonDevice_12ECG.Text = "12-Lead ECG";
-            this.buttonDevice_12ECG.UseVisualStyleBackColor = true;
-            // 
-            // buttonDevice_Monitor
-            // 
-            this.buttonDevice_Monitor.Location = new System.Drawing.Point(6, 20);
-            this.buttonDevice_Monitor.Name = "buttonDevice_Monitor";
-            this.buttonDevice_Monitor.Size = new System.Drawing.Size(211, 26);
-            this.buttonDevice_Monitor.TabIndex = 4;
-            this.buttonDevice_Monitor.Text = "Cardiac Monitor";
-            this.buttonDevice_Monitor.UseVisualStyleBackColor = true;
-            this.buttonDevice_Monitor.Click += new System.EventHandler(this.ButtonMonitor_Click);
-            // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1572,7 +1454,7 @@
             this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(792, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(570, 24);
             this.menuStrip1.TabIndex = 6;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -1639,7 +1521,7 @@
             this.groupBox9.Controls.Add(this.buttonApply);
             this.groupBox9.Controls.Add(this.groupBox2);
             this.groupBox9.Controls.Add(this.groupBox3);
-            this.groupBox9.Location = new System.Drawing.Point(241, 29);
+            this.groupBox9.Location = new System.Drawing.Point(12, 27);
             this.groupBox9.Name = "groupBox9";
             this.groupBox9.Size = new System.Drawing.Size(547, 493);
             this.groupBox9.TabIndex = 5;
@@ -1757,9 +1639,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 14F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(792, 528);
+            this.ClientSize = new System.Drawing.Size(570, 528);
             this.Controls.Add(this.groupBox9);
-            this.Controls.Add(this.groupBox7);
             this.Controls.Add(this.menuStrip1);
             this.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -1777,8 +1658,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numETCO2)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox6.ResumeLayout(false);
-            this.groupBox6.PerformLayout();
             this.groupBox5.ResumeLayout(false);
             this.groupBox5.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numTWE_V6)).EndInit();
@@ -1814,7 +1693,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numASBP)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numPSP)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numCVP)).EndInit();
-            this.groupBox7.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.groupBox9.ResumeLayout(false);
@@ -1910,23 +1788,13 @@
         private System.Windows.Forms.NumericUpDown numSTE_aVL;
         private System.Windows.Forms.NumericUpDown numSTE_V1;
         private System.Windows.Forms.NumericUpDown numSTE_aVR;
-        private System.Windows.Forms.GroupBox groupBox6;
-        private System.Windows.Forms.Label label39;
-        private System.Windows.Forms.ComboBox comboAxisShift;
-        private System.Windows.Forms.GroupBox groupBox7;
-        private System.Windows.Forms.Button buttonDevice_IABP;
-        private System.Windows.Forms.Button buttonDevice_Defibrillator;
-        private System.Windows.Forms.Button buttonDevice_12ECG;
-        private System.Windows.Forms.Button buttonDevice_Monitor;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menuItem_Exit;
         private System.Windows.Forms.GroupBox groupBox9;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem menuItem_About;
-        private System.Windows.Forms.Button buttonDevice_Ventilator;
         private System.Windows.Forms.Button buttonReset;
-        private System.Windows.Forms.Button buttonDevice_LabReport;
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.Label label45;
         private System.Windows.Forms.ComboBox comboRespiratoryRhythm;

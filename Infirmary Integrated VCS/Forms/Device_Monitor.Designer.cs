@@ -384,6 +384,7 @@
             this.MainMenuStrip = this.menuMain;
             this.Name = "Device_Monitor";
             this.Text = "Infirmary Integrated: Cardiac Monitor";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Device_Monitor_FormClosing);
             this.SizeChanged += new System.EventHandler(this.OnFormResize);
             this.menuMain.ResumeLayout(false);
             this.menuMain.PerformLayout();

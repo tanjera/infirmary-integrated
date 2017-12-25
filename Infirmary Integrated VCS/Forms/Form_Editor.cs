@@ -16,10 +16,6 @@ namespace II.Forms {
                 comboCardiacRhythm.Items.Add (el);
             comboCardiacRhythm.SelectedIndex = 0;
 
-            foreach (string el in Cardiac_Axes.Descriptions)
-                comboAxisShift.Items.Add (el);
-            comboAxisShift.SelectedIndex = 0;
-
             foreach (string el in Respiratory_Rhythms.Descriptions)
                 comboRespiratoryRhythm.Items.Add (el);
             comboRespiratoryRhythm.SelectedIndex = 0;
@@ -33,17 +29,12 @@ namespace II.Forms {
             ButtonMonitor_Click (this, new EventArgs ());
         }
 
-        public void RequestExit () {
-            if (MessageBox.Show ("Are you sure you want to exit Infirmary Integrated? All unsaved work will be lost.", "Exit Infirmary Integrated", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
-                return;
-
+        public bool RequestExit () {
             Application.Exit ();
+            return true;
         }
 
         public Patient RequestNewPatient () {
-            if (MessageBox.Show ("Are you sure you want to reset all patient parameters?", "Reset Patient Parameters", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
-                return tPatient;
-
             InitPatient ();
             return tPatient;
         }
@@ -286,7 +277,6 @@ namespace II.Forms {
                 },
 
                 Cardiac_Rhythms.Parse_Description(comboCardiacRhythm.Text),
-                Cardiac_Axes.Parse_Description(comboAxisShift.Text),
 
                 Respiratory_Rhythms.Parse_Description(comboRespiratoryRhythm.Text),
                 (int)numInspRatio.Value,
@@ -311,7 +301,6 @@ namespace II.Forms {
                 numPDP.Value = e.Patient.PDP;
 
                 comboCardiacRhythm.SelectedIndex = (int)e.Patient.Cardiac_Rhythm.Value;
-                comboAxisShift.SelectedIndex = (int)e.Patient.Cardiac_Axis.Value;
 
                 comboRespiratoryRhythm.SelectedIndex = (int)e.Patient.Respiratory_Rhythm.Value;
                 numInspRatio.Value = (decimal)e.Patient.Respiratory_IERatio_I;
