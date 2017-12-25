@@ -1,7 +1,6 @@
 ﻿* Commit message:
 
 
-
 * To debug:
 	- Timers are not perfectly synchronous... during loading or CPU bogging
 		- Create synchronous timer state machine based on DateTime elapsed?
@@ -11,19 +10,30 @@
 
 * Versions and features to implement:
 
-	- V 0.8
-		- Respiratory rhythm vital sign clamping
-		- Respiratory rhythms: Kussmaul, Cheyne-Stokes
+	V 0.9: Cross-platform rewrite
+		- Implement:
+			- Shared library (II_Core)
+				- Timer (thread-safe!)
+				- Patient modeling
+			- II_Windows
+				- Forms
+					- Editor (Patient Parameters)
+					- Cardiac Monitor
+					- About
+				- Controls
+					- Tracing
+					- Numerics
+			- II_OSX
+				- Forms
+					- Editor (Patient Parameters)
+					- Cardiac Monitor
+					- About
+				- Controls
+					- Tracing
+					- Numerics
 
 
 
-* Rewrite to multi-platform:
-	- XF? or Native UI?
-	- Individual VS projects for each platform
-		- Shared code in II.dll
-
-
-		
 * Planned features:
 	- Devices
 		- 12 lead ECG
@@ -32,7 +42,9 @@
 		- Ventilator
 		- Lab Values
 	- Clinical aspects
-		- Pacer spikes & rhythms 
+		- Respiratory Rhythms: Kussmaul, Cheyne-Stokes
+			- With vital sign clamping
+		- Pacer spikes & rhythms
 			- AAI, VVI, DDD
 		- ECG axis deviation
 		- Pulsus paradoxus

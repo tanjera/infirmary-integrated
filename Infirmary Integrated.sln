@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infirmary Integrated", "Infirmary Integrated VCS\Infirmary Integrated.csproj", "{11242B40-7FCA-44E2-8F0B-5D981F85EA59}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A98AA70B-3743-474D-9DBE-FA2FC55344C8}"
 	ProjectSection(SolutionItems) = preProject
 		License.rtf = License.rtf
@@ -12,27 +10,34 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		To Do.md = To Do.md
 	EndProjectSection
 EndProject
-Project("{840C416C-B8F3-42BC-B0DD-F6BB14C9F8CB}") = "Installer", "Installer AIP\Installer.aiproj", "{3C5272C1-259D-4C0E-AFEC-EBC50D229DA9}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "II_Core", "II_Core\II_Core.shproj", "{D6A13684-612C-49D6-B8B3-B9720D585A71}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II_Windows", "II_Windows\II_Windows.csproj", "{F66C5A84-D2A2-48FD-9E4A-984AEB4730AF}"
+EndProject
+Project("{840C416C-B8F3-42BC-B0DD-F6BB14C9F8CB}") = "Installer_Windows", "Installer_Windows\Installer_Windows.aiproj", "{83F1DE85-A5E9-46C2-A0C0-4B9B8D769049}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		II_Core\II_Core.projitems*{d6a13684-612c-49d6-b8b3-b9720d585a71}*SharedItemsImports = 13
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		DefaultBuild|Any CPU = DefaultBuild|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{11242B40-7FCA-44E2-8F0B-5D981F85EA59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{11242B40-7FCA-44E2-8F0B-5D981F85EA59}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{11242B40-7FCA-44E2-8F0B-5D981F85EA59}.DefaultBuild|Any CPU.ActiveCfg = Debug|Any CPU
-		{11242B40-7FCA-44E2-8F0B-5D981F85EA59}.DefaultBuild|Any CPU.Build.0 = Debug|Any CPU
-		{11242B40-7FCA-44E2-8F0B-5D981F85EA59}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{11242B40-7FCA-44E2-8F0B-5D981F85EA59}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3C5272C1-259D-4C0E-AFEC-EBC50D229DA9}.Debug|Any CPU.ActiveCfg = DefaultBuild
-		{3C5272C1-259D-4C0E-AFEC-EBC50D229DA9}.Debug|Any CPU.Build.0 = DefaultBuild
-		{3C5272C1-259D-4C0E-AFEC-EBC50D229DA9}.DefaultBuild|Any CPU.ActiveCfg = DefaultBuild
-		{3C5272C1-259D-4C0E-AFEC-EBC50D229DA9}.DefaultBuild|Any CPU.Build.0 = DefaultBuild
-		{3C5272C1-259D-4C0E-AFEC-EBC50D229DA9}.Release|Any CPU.ActiveCfg = DefaultBuild
-		{3C5272C1-259D-4C0E-AFEC-EBC50D229DA9}.Release|Any CPU.Build.0 = DefaultBuild
+		{F66C5A84-D2A2-48FD-9E4A-984AEB4730AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F66C5A84-D2A2-48FD-9E4A-984AEB4730AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F66C5A84-D2A2-48FD-9E4A-984AEB4730AF}.DefaultBuild|Any CPU.ActiveCfg = Debug|Any CPU
+		{F66C5A84-D2A2-48FD-9E4A-984AEB4730AF}.DefaultBuild|Any CPU.Build.0 = Debug|Any CPU
+		{F66C5A84-D2A2-48FD-9E4A-984AEB4730AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F66C5A84-D2A2-48FD-9E4A-984AEB4730AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83F1DE85-A5E9-46C2-A0C0-4B9B8D769049}.Debug|Any CPU.ActiveCfg = DefaultBuild
+		{83F1DE85-A5E9-46C2-A0C0-4B9B8D769049}.Debug|Any CPU.Build.0 = DefaultBuild
+		{83F1DE85-A5E9-46C2-A0C0-4B9B8D769049}.DefaultBuild|Any CPU.ActiveCfg = DefaultBuild
+		{83F1DE85-A5E9-46C2-A0C0-4B9B8D769049}.DefaultBuild|Any CPU.Build.0 = DefaultBuild
+		{83F1DE85-A5E9-46C2-A0C0-4B9B8D769049}.Release|Any CPU.ActiveCfg = DefaultBuild
+		{83F1DE85-A5E9-46C2-A0C0-4B9B8D769049}.Release|Any CPU.Build.0 = DefaultBuild
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

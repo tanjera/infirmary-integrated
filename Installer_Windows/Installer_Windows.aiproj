@@ -2,31 +2,23 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">All</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>3c5272c1-259d-4c0e-afec-ebc50d229da9</ProjectGuid>
+    <ProjectGuid>83f1de85-a5e9-46c2-a0c0-4b9b8d769049</ProjectGuid>
     <OutputType>msi</OutputType>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>Installer AIP.aip</StartupFile>
+    <StartupFile>Installer_Windows.aip</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <IsWindowsApplication>True</IsWindowsApplication>
-    <AssemblyName>Installer AIP</AssemblyName>
-    <Name>Installer</Name>
-    <RootNamespace>Installer AIP</RootNamespace>
+    <AssemblyName>Installer_Windows</AssemblyName>
+    <Name>Installer_Windows</Name>
+    <RootNamespace>Installer_Windows</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'DefaultBuild' " />
   <ItemGroup>
-    <Compile Include="Installer AIP.aip">
+    <Compile Include="Installer_Windows.aip">
       <SubType>Code</SubType>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Infirmary Integrated VCS\Infirmary Integrated.csproj">
-      <Name>Infirmary Integrated</Name>
-      <Project>{11242b40-7fca-44e2-8f0b-5d981f85ea59}</Project>
-      <Private>True</Private>
-      <OutputsToImport>PrimaryOutput</OutputsToImport>
-    </ProjectReference>
   </ItemGroup>
   <Import Condition="'$(AdvancedInstallerMSBuildTargets)' != ''" Project="$(AdvancedInstallerMSBuildTargets)\AdvInstExtTasks.Targets" />
   <Import Condition="'$(AdvancedInstallerMSBuildTargets)' == ''" Project="$(MSBuildExtensionsPath32)\Caphyon\Advanced Installer\AdvInstExtTasks.Targets" />
