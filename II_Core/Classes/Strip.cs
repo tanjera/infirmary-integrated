@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Windows.Forms;
 
 namespace II.Rhythm {
     public class Strip {
@@ -185,71 +183,6 @@ namespace II.Rhythm {
                 || Lead.Value ==  Leads.Values.ECG_V1 || Lead.Value ==  Leads.Values.ECG_V2
                 || Lead.Value ==  Leads.Values.ECG_V3 || Lead.Value ==  Leads.Values.ECG_V4
                 || Lead.Value ==  Leads.Values.ECG_V5 || Lead.Value ==  Leads.Values.ECG_V6;
-        }
-
-
-        public class Renderer {
-
-            Control panel;
-            Strip strip;
-            public Color pcolor;
-            _.ColorScheme scheme;
-
-            int offX, offY;
-            double multX, multY;
-
-            public Renderer (Control _Panel, ref Strip _Strip, _.ColorScheme _Scheme, Color _Color) {
-                panel = _Panel;
-                pcolor = _Color;
-                strip = _Strip;
-                scheme = _Scheme;
-            }
-
-            public void SetColorScheme (_.ColorScheme cs) {
-                scheme = cs;
-            }
-
-            public void Draw (PaintEventArgs e) {
-                Pen pen;
-                switch (scheme) {
-                    default:
-                    case _.ColorScheme.Normal:
-                        e.Graphics.Clear (Color.Black);
-                        pen = new Pen (pcolor, 1f);
-                        break;
-                    case _.ColorScheme.Monochrome:
-                        e.Graphics.Clear (Color.White);
-                        pen = new Pen (Color.Black, 1f);
-                        break;
-                }
-
-                offX = 0;
-                offY = panel.Height / 2;
-                multX = panel.Width / strip.Length;
-                multY = -panel.Height / 2;
-
-                if (strip.Points.Count < 2)
-                    return;
-
-                strip.RemoveNull ();
-                strip.Sort ();
-
-                System.Drawing.Point lastPoint = new System.Drawing.Point (
-                        (int)(strip.Points[0].X * multX) + offX,
-                        (int)(strip.Points[0].Y * multY) + offY);
-
-                for (int i = 1; i < strip.Points.Count; i++) {
-                    if (strip.Points[i].X > strip.Length * 2)
-                        continue;
-
-                    System.Drawing.Point thisPoint = new System.Drawing.Point (
-                        (int)(strip.Points[i].X * multX) + offX,
-                        (int)(strip.Points[i].Y * multY) + offY);
-
-                    e.Graphics.DrawLine (pen, lastPoint, thisPoint);
-                    lastPoint = thisPoint;
-                }
-            }
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-using System.Windows.Forms;
 
 
 namespace II {
@@ -75,6 +74,21 @@ namespace II {
 
             InitTimers ();
             SetTimers ();
+        }
+
+        public void Timers_Process (object sender, EventArgs e) {
+            /* For cross-platform compatibility with different timers ...
+             * When creating a Patient object, create a native thread-safe Timer object,
+             * short interval, and call this function on its Tick to process all Patient
+             * timers.
+             */
+
+            timerCardiac_Baseline.Process ();
+            timerCardiac_Atrial.Process ();
+            timerCardiac_Ventricular.Process ();
+            timerRespiratory_Baseline.Process ();
+            timerRespiratory_Inspiration.Process ();
+            timerRespiratory_Expiration.Process ();
         }
 
         public void Load_Process (string inc) {
@@ -228,20 +242,20 @@ namespace II {
                     int sbpMin, int sbpMax, int dbpMin, int dbpMax,
                     int pspMin, int pspMax, int pdpMin, int pdpMax) {
 
-            HR = _.Clamp (HR, hrMin, hrMax);
-            SPO2 = _.Clamp (SPO2, spo2Min, spo2Max);
-            ETCO2 = _.Clamp (ETCO2, etco2Min, etco2Max);
+            HR = Utility.Clamp (HR, hrMin, hrMax);
+            SPO2 = Utility.Clamp (SPO2, spo2Min, spo2Max);
+            ETCO2 = Utility.Clamp (ETCO2, etco2Min, etco2Max);
 
-            NSBP = _.Clamp (NSBP, sbpMin, sbpMax);
-            NDBP = _.Clamp (NDBP, dbpMin, dbpMax);
+            NSBP = Utility.Clamp (NSBP, sbpMin, sbpMax);
+            NDBP = Utility.Clamp (NDBP, dbpMin, dbpMax);
             NMAP = Patient.CalculateMAP (NSBP, NDBP);
 
-            ASBP = _.Clamp (ASBP, sbpMin, sbpMax);
-            ADBP = _.Clamp (ADBP, sbpMin, sbpMax);
+            ASBP = Utility.Clamp (ASBP, sbpMin, sbpMax);
+            ADBP = Utility.Clamp (ADBP, sbpMin, sbpMax);
             AMAP = Patient.CalculateMAP (ASBP, ADBP);
 
-            PSP = _.Clamp (PSP, pspMin, pspMax);
-            PDP = _.Clamp (PDP, pdpMin, pdpMax);
+            PSP = Utility.Clamp (PSP, pspMin, pspMax);
+            PDP = Utility.Clamp (PDP, pdpMin, pdpMax);
             PMP = Patient.CalculateMAP (PSP, PDP);
 
             SetTimers ();
@@ -326,7 +340,7 @@ namespace II {
 
                 // Traced as "irregular V" rhythms
                 case Cardiac_Rhythms.Values.Atrial_Fibrillation:
-                    timerCardiac_Baseline.Interval = (int)(timerCardiac_Baseline.Interval * _.RandomDouble (0.6, 1.4));
+                    timerCardiac_Baseline.Interval = (int)(timerCardiac_Baseline.Interval * Utility.RandomDouble (0.6, 1.4));
                     timerCardiac_Ventricular.Interval = 1;
                     timerCardiac_Ventricular.Start ();
                     break;
@@ -343,7 +357,7 @@ namespace II {
                     counterCardiac -= 1;
                     if (counterCardiac <= 0) {
                         counterCardiac = new Random ().Next (4, 8);
-                        timerCardiac_Baseline.Interval = (int)(timerCardiac_Baseline.Interval * _.RandomDouble (0.6, 0.8));
+                        timerCardiac_Baseline.Interval = (int)(timerCardiac_Baseline.Interval * Utility.RandomDouble (0.6, 0.8));
                     }
                     timerCardiac_Atrial.Interval = 1;
                     timerCardiac_Atrial.Start ();
@@ -357,7 +371,7 @@ namespace II {
                         timerCardiac_Ventricular.Start ();
                     } else {
                         if (counterCardiac == 1)
-                            timerCardiac_Baseline.Interval = (int)(timerCardiac_Baseline.Interval * _.RandomDouble (0.7, 0.9));
+                            timerCardiac_Baseline.Interval = (int)(timerCardiac_Baseline.Interval * Utility.RandomDouble (0.7, 0.9));
                         timerCardiac_Atrial.Interval = 1;
                         timerCardiac_Atrial.Start ();
                     }

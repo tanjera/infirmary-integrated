@@ -8,7 +8,7 @@ namespace II.Rhythm {
         public Point (double x, double y) { X = x; Y = y; }
 
         public static Point Lerp (Point a, Point b, double t) {
-            return new Point (_.Lerp(a.X, b.X, t), _.Lerp(a.Y, b.Y, t));
+            return new Point (Utility.Lerp(a.X, b.X, t), Utility.Lerp(a.Y, b.Y, t));
         }
 
         public static Point operator * (double f, Point p) {
@@ -114,14 +114,14 @@ namespace II.Rhythm {
         }
 
         public static List<Point> ECG_Complex__P_Normal (Patient _P, Leads _L) {
-            double PR = _.Lerp (0.16f, 0.2f, _.Clamp (_.InverseLerp (60, 160, _P.HR)));
+            double PR = Utility.Lerp (0.16f, 0.2f, Utility.Clamp (Utility.InverseLerp (60, 160, _P.HR)));
             return ECG_P (_P, _L, (PR * 2) / 3, .1f, 0f, new Point (0, 0f));
         }
 
         public static List<Point> ECG_Complex__QRST_Normal (Patient _P, Leads _L) {
-            double lerpCoeff = _.Clamp (_.InverseLerp (60, 160, _P.HR)),
-                QRS = _.Lerp (0.08f, 0.12f, lerpCoeff),
-                QT = _.Lerp (0.235f, 0.4f, lerpCoeff);
+            double lerpCoeff = Utility.Clamp (Utility.InverseLerp (60, 160, _P.HR)),
+                QRS = Utility.Lerp (0.08f, 0.12f, lerpCoeff),
+                QT = Utility.Lerp (0.235f, 0.4f, lerpCoeff);
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, ECG_Q (_P, _L, QRS / 4, -0.1f, Last (thisBeat)));
@@ -134,9 +134,9 @@ namespace II.Rhythm {
         }
 
         public static List<Point> ECG_Complex__QRST_Aberrant_1 (Patient _P, Leads _L) {
-            double lerpCoeff = _.Clamp (_.InverseLerp (60, 160, _P.HR)),
-                QRS = _.Lerp (0.12f, 0.26f, lerpCoeff),
-                QT = _.Lerp (0.235f, 0.6f, lerpCoeff);
+            double lerpCoeff = Utility.Clamp (Utility.InverseLerp (60, 160, _P.HR)),
+                QRS = Utility.Lerp (0.12f, 0.26f, lerpCoeff),
+                QT = Utility.Lerp (0.235f, 0.6f, lerpCoeff);
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, ECG_Q (_P, _L, QRS / 6, 0.1f, Last (thisBeat)));
@@ -149,9 +149,9 @@ namespace II.Rhythm {
         }
 
         public static List<Point> ECG_Complex__QRST_Aberrant_2 (Patient _P, Leads _L) {
-            double lerpCoeff = _.Clamp (_.InverseLerp (60, 160, _P.HR)),
-                QRS = _.Lerp (0.11f, 0.25f, lerpCoeff),
-                QT = _.Lerp (0.25f, 0.6f, lerpCoeff);
+            double lerpCoeff = Utility.Clamp (Utility.InverseLerp (60, 160, _P.HR)),
+                QRS = Utility.Lerp (0.11f, 0.25f, lerpCoeff),
+                QT = Utility.Lerp (0.25f, 0.6f, lerpCoeff);
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, ECG_Q (_P, _L, QRS / 3, -0.8f, Last (thisBeat)));
@@ -163,9 +163,9 @@ namespace II.Rhythm {
         }
 
         public static List<Point> ECG_Complex__QRST_Aberrant_3 (Patient _P, Leads _L) {
-            double lerpCoeff = _.Clamp (_.InverseLerp (60, 160, _P.HR)),
-                QRS = _.Lerp (0.14f, 0.28f, lerpCoeff),
-                QT = _.Lerp (0.22f, 0.54f, lerpCoeff);
+            double lerpCoeff = Utility.Clamp (Utility.InverseLerp (60, 160, _P.HR)),
+                QRS = Utility.Lerp (0.14f, 0.28f, lerpCoeff),
+                QT = Utility.Lerp (0.22f, 0.54f, lerpCoeff);
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, ECG_Q (_P, _L, QRS / 3, 0.1f, Last (thisBeat)));
@@ -177,9 +177,9 @@ namespace II.Rhythm {
         }
 
         public static List<Point> ECG_Complex__QRST_BBB (Patient _P, Leads _L) {
-            double lerpCoeff = _.Clamp (_.InverseLerp (60, 160, _P.HR)),
-                QRS = _.Lerp (0.12f, 0.22f, lerpCoeff),
-                QT = _.Lerp (0.235f, 0.4f, lerpCoeff);
+            double lerpCoeff = Utility.Clamp (Utility.InverseLerp (60, 160, _P.HR)),
+                QRS = Utility.Lerp (0.12f, 0.22f, lerpCoeff),
+                QT = Utility.Lerp (0.235f, 0.4f, lerpCoeff);
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, ECG_Q (_P, _L, QRS / 6, -0.1f, Last (thisBeat)));
@@ -197,9 +197,9 @@ namespace II.Rhythm {
 
         public static List<Point> ECG_Complex__QRST_SVT (Patient _P, Leads _L) {
             double _Length = _P.HR_Seconds;
-            double lerpCoeff = _.Clamp (_.InverseLerp (160, 240, _P.HR)),
-                        QRS = _.Lerp (0.05f, 0.12f, lerpCoeff),
-                        QT = _.Lerp (0.22f, 0.36f, lerpCoeff);
+            double lerpCoeff = Utility.Clamp (Utility.InverseLerp (160, 240, _P.HR)),
+                        QRS = Utility.Lerp (0.05f, 0.12f, lerpCoeff),
+                        QT = Utility.Lerp (0.22f, 0.36f, lerpCoeff);
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, ECG_Q (_P, _L, QRS / 4, -0.1f, Last (thisBeat)));
@@ -232,22 +232,22 @@ namespace II.Rhythm {
         public static List<Point> ECG_Complex__QRST_VF (Patient _P, Leads _L, float _Amp) {
             double _Length = _P.HR_Seconds,
                     _Wave = _P.HR_Seconds / 2f,
-                    _Amplitude = _.RandomDouble (0.3f, 0.6f) * _Amp;
+                    _Amplitude = Utility.RandomDouble (0.3f, 0.6f) * _Amp;
 
             List<Point> thisBeat = new List<Point> ();
             while (_Length > 0f) {
                 thisBeat = Concatenate (thisBeat, Curve (_Wave, _Amplitude, 0f, Last (thisBeat)));
                 // Flip the sign of amplitude and randomly crawl larger/smaller, models the
                 // flippant waves in v-fib.
-                _Amplitude = 0 - _.Clamp (_.RandomDouble (_Amplitude - 0.1f, _Amplitude + 0.1f), -1f, 1f);
+                _Amplitude = 0 - Utility.Clamp (Utility.RandomDouble (_Amplitude - 0.1f, _Amplitude + 0.1f), -1f, 1f);
                 _Length -= _Wave;
             }
             return thisBeat;
         }
 
         public static List<Point> ECG_Complex__Idioventricular (Patient _P, Leads _L) {
-            double lerpCoeff = _.Clamp (_.InverseLerp (25, 75, _P.HR)),
-                    QRS = _.Lerp (0.3f, 0.4f, lerpCoeff),
+            double lerpCoeff = Utility.Clamp (Utility.InverseLerp (25, 75, _P.HR)),
+                    QRS = Utility.Lerp (0.3f, 0.4f, lerpCoeff),
                     SQ = (_P.HR_Seconds - QRS);
 
             List<Point> thisBeat = new List<Point> ();

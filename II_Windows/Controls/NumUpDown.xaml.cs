@@ -13,13 +13,16 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace II_Windows {
+namespace II_Windows
+{
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for NumUpDown.xaml
     /// </summary>
-    public partial class MainWindow : Window {
-        public MainWindow () {
-            InitializeComponent ();
+    public partial class NumUpDown : UserControl
+    {
+        public NumUpDown()
+        {
+            InitializeComponent();
         }
     }
 }

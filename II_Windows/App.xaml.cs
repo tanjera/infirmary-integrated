@@ -11,5 +11,7 @@ namespace II_Windows {
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application {
+
+        // IMP: Language selection
     }
 }

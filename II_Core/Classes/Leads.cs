@@ -1,5 +1,5 @@
 using System;
-using System.Drawing;
+using System.Windows.Media;
 using System.Collections.Generic;
 
 namespace II {
@@ -24,18 +24,18 @@ namespace II {
         }
 
         public string Description { get { return Descriptions[(int)Value]; } }
-        public Color Color { get { return Colors[(int)Value]; } }
+        public Color Color { get { return Coloring[(int)Value]; } }
 
         public static List<string> MenuItem_Formats {
             get {
                 List<string> o = new List<string> ();
                 foreach (Values v in Enum.GetValues (typeof (Values)))
-                    o.Add (String.Format ("{0}: {1}", _.UnderscoreToSpace (v.ToString ()), Descriptions[(int)v]));
+                    o.Add (String.Format ("{0}: {1}", Utility.UnderscoreToSpace (v.ToString ()), Descriptions[(int)v]));
                 return o;
             }
         }
         public static Values Parse_MenuItem (string inc) {
-            string portion = _.SpaceToUnderscore (inc.Substring (0, inc.IndexOf (':')));
+            string portion = Utility.SpaceToUnderscore (inc.Substring (0, inc.IndexOf (':')));
             try {
                 return (Values)Enum.Parse (typeof (Values), portion);
             } catch {
@@ -58,19 +58,19 @@ namespace II {
             "End-tidal Capnography"
         };
 
-        public static Color[] Colors = new Color[] {
-            Color.Green, Color.Green, Color.Green,
-            Color.Green, Color.Green, Color.Green,
-            Color.Green, Color.Green, Color.Green,
-            Color.Green, Color.Green, Color.Green,
+        public static Color[] Coloring = new Color[] {
+            Colors.Green, Colors.Green, Colors.Green,
+            Colors.Green, Colors.Green, Colors.Green,
+            Colors.Green, Colors.Green, Colors.Green,
+            Colors.Green, Colors.Green, Colors.Green,
 
-            Color.Orange,
-            Color.Blue,
-            Color.Red,
-            Color.Yellow,
+            Colors.Orange,
+            Colors.Blue,
+            Colors.Red,
+            Colors.Yellow,
 
-            Color.Salmon,
-            Color.Aqua
+            Colors.Salmon,
+            Colors.Aqua
         };
     }
 }

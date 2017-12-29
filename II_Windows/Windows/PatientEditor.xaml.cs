@@ -1,36 +1,76 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Text;
-using System.Windows.Forms;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+using System.Windows.Threading;
 
-namespace II.Forms {
-    public partial class Form_Editor : Form {
+using II;
+using II.Localization;
+
+namespace II_Windows {
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
+    public partial class PatientEditor : Window {
 
         Patient tPatient;
 
-        public Form_Editor (string[] args) {
-
+        public PatientEditor () {
             InitializeComponent ();
 
-            foreach (string el in Cardiac_Rhythms.Descriptions)
-                comboCardiacRhythm.Items.Add (el);
-            comboCardiacRhythm.SelectedIndex = 0;
-
-            foreach (string el in Respiratory_Rhythms.Descriptions)
-                comboRespiratoryRhythm.Items.Add (el);
-            comboRespiratoryRhythm.SelectedIndex = 0;
-
+            InitUIStrings ();
             InitPatient ();
 
-            if (args.Length > 0)
-                Load_Open (args [0]);
+            // IMP: Loading Args[]
 
-            // Debugging: auto-open cardiac monitor on program start
-            ButtonMonitor_Click (this, new EventArgs ());
+            // IMP: Spawn cardiac monitor for debug
+        }
+
+        private void InitUIStrings () {
+            // IMP: Get language selection!
+            Languages l = new Languages (Languages.Values.EN);
+
+            btnDeviceMonitor.Content = Strings.Lookup (l.Value, "CardiacMonitor");
+
+            grpVitalSigns.Header = Strings.Lookup (l.Value, "VitalSigns");
+            lblHR.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "HeartRate"));
+            lblNIBP.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "BloodPressure"));
+            lblRR.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "RespiratoryRate"));
+            lblSPO2.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "PulseOximetry"));
+            lblT.Content = String.Format("{0}:", Strings.Lookup (l.Value, "Temperature"));
+            lblCardiacRhythm.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "CardiacRhythm"));
+            lblRespiratoryRhythm.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "RespiratoryRhythm"));
+            checkDefaultVitals.Content = Strings.Lookup (l.Value, "UseDefaultVitalSignRanges");
+
+            grpHemodynamics.Header = Strings.Lookup (l.Value, "AdvancedHemodynamics");
+            lblETCO2.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "EndTidalCO2"));
+            lblCVP.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "CentralVenousPressure"));
+            lblASBP.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "ArterialBloodPressure"));
+            lblPSBP.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "PulmonaryArteryPressure"));
+
+
+
+
+            grpRespiratoryProfile.Header = Strings.Lookup (l.Value, "RespiratoryProfile");
+            grpCardiacProfile.Header = Strings.Lookup (l.Value, "CardiacProfile");
+            lblInspiratoryRatio.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "InspiratoryExpiratoryRatio"));
+
+            // IMP: Populate comboCardiacRhythm and comboRespiratoryRhythm
         }
 
         public bool RequestExit () {
-            Application.Exit ();
+            Application.Current.Shutdown();
             return true;
         }
 
@@ -41,21 +81,28 @@ namespace II.Forms {
 
         private void InitPatient () {
             tPatient = new Patient ();
+
+            DispatcherTimer dt = new DispatcherTimer ();
+            dt.Interval = new TimeSpan(100000); // q 10 milliseconds
+            dt.Tick += tPatient.Timers_Process;
+
             tPatient.PatientEvent += FormUpdateFields;
             FormUpdateFields (this, new Patient.PatientEvent_Args (tPatient, Patient.PatientEvent_Args.EventTypes.Vitals_Change));
         }
 
         private void InitMonitor () {
+            /*
             if (Program.Device_Monitor != null && !Program.Device_Monitor.IsDisposed)
                 return;
 
             Program.Device_Monitor = new Device_Monitor ();
             Program.Device_Monitor.SetPatient (tPatient);
             tPatient.PatientEvent += Program.Device_Monitor.OnPatientEvent;
+            */
         }
 
         private void Load_Open (string fileName) {
-            if (File.Exists(fileName)) {
+            if (File.Exists (fileName)) {
                 Stream s = new FileStream (fileName, FileMode.Open);
                 Load_Init (s);
             } else {
@@ -67,8 +114,8 @@ namespace II.Forms {
             StreamReader sr = new StreamReader (incFile);
 
             /* Read savefile metadata indicating data formatting
-             * Multiple data formats for forward compatibility
-             */
+                * Multiple data formats for forward compatibility
+                */
             string metadata = sr.ReadLine ();
             if (metadata.StartsWith (".ii:t1"))
                 Load_Validate_T1 (sr);
@@ -78,16 +125,16 @@ namespace II.Forms {
 
         private void Load_Validate_T1 (StreamReader sr) {
             /* Savefile type 1: validated and obfuscated, not encrypted or data protected
-             * Line 1 is metadata (.ii:t1)
-             * Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
-             * Line 3 is savefile data obfuscated by Base64 encoding
-             */
+                * Line 1 is metadata (.ii:t1)
+                * Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
+                * Line 3 is savefile data obfuscated by Base64 encoding
+                */
 
-            string hash = sr.ReadLine ().Trim();
-            string file = _.UnobfuscateB64(sr.ReadToEnd ().Trim());
+            string hash = sr.ReadLine ().Trim ();
+            string file = Utility.UnobfuscateB64 (sr.ReadToEnd ().Trim ());
             sr.Close ();
 
-            if (hash == _.HashMD5 (file))
+            if (hash == Utility.HashMD5 (file))
                 Load_Process (file);
             else
                 Load_Fail ();
@@ -117,9 +164,13 @@ namespace II.Forms {
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Cardiac Monitor")
                             pbuffer.AppendLine (pline);
                         InitMonitor ();
+
+                        // IMP: Load file through cardiac monitor
+                        /*
                         Program.Device_Monitor.Load_Process (pbuffer.ToString ());
                         Program.Device_Monitor.Show ();
                         Program.Device_Monitor.BringToFront ();
+                        */
                     }
                 }
             } catch {
@@ -131,8 +182,7 @@ namespace II.Forms {
         private void Load_Fail () {
             MessageBox.Show (
                 "The selected file was unable to be loaded. Perhaps the file was damaged or edited outside of Infirmary Integrated.",
-                "Unable to Load File",
-                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                "Unable to Load File", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void Save_T1 (Stream s) {
@@ -146,16 +196,19 @@ namespace II.Forms {
             sb.Append (this.Save_Options ());
             sb.AppendLine ("> End: Editor");
 
+            // Imp: Reference cardiac monitor for save data
+            /*
             if (Program.Device_Monitor != null && !Program.Device_Monitor.IsDisposed) {
                 sb.AppendLine ("> Begin: Cardiac Monitor");
                 sb.Append (Program.Device_Monitor.Save ());
                 sb.AppendLine ("> End: Cardiac Monitor");
             }
+            */
 
             StreamWriter sw = new StreamWriter (s);
             sw.WriteLine (".ii:t1");                                // Metadata (type 1 savefile)
-            sw.WriteLine (_.HashMD5 (sb.ToString ().Trim ()));      // Hash for validation
-            sw.Write (_.ObfuscateB64 (sb.ToString ().Trim ()));     // Savefile data obfuscated with Base64
+            sw.WriteLine (Utility.HashMD5 (sb.ToString ().Trim ()));      // Hash for validation
+            sw.Write (Utility.ObfuscateB64 (sb.ToString ().Trim ()));     // Savefile data obfuscated with Base64
             sw.Close ();
             s.Close ();
         }
@@ -171,7 +224,8 @@ namespace II.Forms {
                                 pValue = line.Substring (line.IndexOf (':') + 1);
                         switch (pName) {
                             default: break;
-                            case "checkDefaultVitals": checkDefaultVitals.Checked = bool.Parse (pValue); break;
+                            // IMP
+                                //case "checkDefaultVitals": checkDefaultVitals.Checked = bool.Parse (pValue); break;
                         }
                     }
                 }
@@ -186,20 +240,21 @@ namespace II.Forms {
         private string Save_Options () {
             StringBuilder sWrite = new StringBuilder ();
 
-            sWrite.AppendLine (String.Format ("{0}:{1}", "checkDefaultVitals", checkDefaultVitals.Checked));
+            // IMP
+            //sWrite.AppendLine (String.Format ("{0}:{1}", "checkDefaultVitals", checkDefaultVitals.Checked));
 
             return sWrite.ToString ();
         }
 
         private void MenuLoadFile_Click (object sender, EventArgs e) {
             Stream s;
-            OpenFileDialog dlgLoad = new OpenFileDialog ();
+            Microsoft.Win32.OpenFileDialog dlgLoad = new Microsoft.Win32.OpenFileDialog ();
 
             dlgLoad.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
             dlgLoad.FilterIndex = 1;
             dlgLoad.RestoreDirectory = true;
 
-            if (dlgLoad.ShowDialog () == DialogResult.OK) {
+            if (dlgLoad.ShowDialog () == true) {
                 if ((s = dlgLoad.OpenFile ()) != null) {
                     Load_Init (s);
                     s.Close ();
@@ -209,40 +264,48 @@ namespace II.Forms {
 
         private void MenuSaveFile_Click (object sender, EventArgs e) {
             Stream s;
-            SaveFileDialog dlgSave = new SaveFileDialog ();
+            Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
 
             dlgSave.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
             dlgSave.FilterIndex = 1;
             dlgSave.RestoreDirectory = true;
 
-            if (dlgSave.ShowDialog () == DialogResult.OK) {
+            if (dlgSave.ShowDialog () == true) {
                 if ((s = dlgSave.OpenFile ()) != null) {
                     Save_T1 (s);
                 }
             }
         }
 
-        private void MenuExit_Click(object sender, EventArgs e) {
+        private void MenuExit_Click (object sender, EventArgs e) {
             RequestExit ();
         }
 
         private void MenuAbout_Click (object sender, EventArgs e) {
+            // IMP: Show "About" Window
+            /*
             Forms.Dialog_About about = new Forms.Dialog_About ();
             about.Show ();
+            */
         }
 
-        private void ButtonMonitor_Click (object sender, EventArgs e)
-        {
+        private void ButtonMonitor_Click (object sender, RoutedEventArgs e) {
             InitMonitor ();
+
+            // IMP: Show Cardiac Monitor
+            /*
             Program.Device_Monitor.Show ();
             Program.Device_Monitor.BringToFront ();
+            */
         }
 
-        private void ButtonResetParameters_Click (object sender, EventArgs e) {
+        private void ButtonResetParameters_Click (object sender, RoutedEventArgs e) {
             RequestNewPatient ();
         }
 
-        private void ButtonApplyParameters_Click (object sender, EventArgs e) {
+        private void ButtonApplyParameters_Click (object sender, RoutedEventArgs e) {
+            // IMP
+            /*
             tPatient.UpdateVitals (
                 (int)numHR.Value,
                 (int)numRR.Value,
@@ -263,28 +326,31 @@ namespace II.Forms {
                 (int)numPDP.Value,
                 Patient.CalculateMAP ((int)numPSP.Value, (int)numPDP.Value),
 
-                new double[] {
-                    (double)numSTE_I.Value, (double)numSTE_II.Value, (double)numSTE_III.Value,
-                    (double)numSTE_aVR.Value, (double)numSTE_aVL.Value, (double)numSTE_aVF.Value,
-                    (double)numSTE_V1.Value, (double)numSTE_V2.Value, (double)numSTE_V3.Value,
-                    (double)numSTE_V4.Value, (double)numSTE_V5.Value, (double)numSTE_V6.Value
+                new double [] {
+                (double)numSTE_I.Value, (double)numSTE_II.Value, (double)numSTE_III.Value,
+                (double)numSTE_aVR.Value, (double)numSTE_aVL.Value, (double)numSTE_aVF.Value,
+                (double)numSTE_V1.Value, (double)numSTE_V2.Value, (double)numSTE_V3.Value,
+                (double)numSTE_V4.Value, (double)numSTE_V5.Value, (double)numSTE_V6.Value
                 },
-                new double[] {
-                    (double)numTWE_I.Value, (double)numTWE_II.Value, (double)numTWE_III.Value,
-                    (double)numTWE_aVR.Value, (double)numTWE_aVL.Value, (double)numTWE_aVF.Value,
-                    (double)numTWE_V1.Value, (double)numTWE_V2.Value, (double)numTWE_V3.Value,
-                    (double)numTWE_V4.Value, (double)numTWE_V5.Value, (double)numTWE_V6.Value
+                new double [] {
+                (double)numTWE_I.Value, (double)numTWE_II.Value, (double)numTWE_III.Value,
+                (double)numTWE_aVR.Value, (double)numTWE_aVL.Value, (double)numTWE_aVF.Value,
+                (double)numTWE_V1.Value, (double)numTWE_V2.Value, (double)numTWE_V3.Value,
+                (double)numTWE_V4.Value, (double)numTWE_V5.Value, (double)numTWE_V6.Value
                 },
 
-                Cardiac_Rhythms.Parse_Description(comboCardiacRhythm.Text),
+                Cardiac_Rhythms.Parse_Description (comboCardiacRhythm.Text),
 
-                Respiratory_Rhythms.Parse_Description(comboRespiratoryRhythm.Text),
+                Respiratory_Rhythms.Parse_Description (comboRespiratoryRhythm.Text),
                 (int)numInspRatio.Value,
                 (int)numExpRatio.Value
             );
+            */
         }
 
-        private void FormUpdateFields(object sender, Patient.PatientEvent_Args e) {
+        private void FormUpdateFields (object sender, Patient.PatientEvent_Args e) {
+            // IMP
+            /*
             if (e.EventType == Patient.PatientEvent_Args.EventTypes.Vitals_Change) {
                 numHR.Value = e.Patient.HR;
                 numRR.Value = e.Patient.RR;
@@ -307,38 +373,41 @@ namespace II.Forms {
                 numExpRatio.Value = (decimal)e.Patient.Respiratory_IERatio_E;
 
 
-                numSTE_I.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_I];
-                numSTE_II.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_II];
-                numSTE_III.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_III];
-                numSTE_aVR.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_AVR];
-                numSTE_aVL.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_AVL];
-                numSTE_aVF.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_AVF];
-                numSTE_V1.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_V1];
-                numSTE_V2.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_V2];
-                numSTE_V3.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_V3];
-                numSTE_V4.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_V4];
-                numSTE_V5.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_V5];
-                numSTE_V6.Value = (decimal)e.Patient.ST_Elevation[(int)Leads.Values.ECG_V6];
+                numSTE_I.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_I];
+                numSTE_II.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_II];
+                numSTE_III.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_III];
+                numSTE_aVR.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_AVR];
+                numSTE_aVL.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_AVL];
+                numSTE_aVF.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_AVF];
+                numSTE_V1.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_V1];
+                numSTE_V2.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_V2];
+                numSTE_V3.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_V3];
+                numSTE_V4.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_V4];
+                numSTE_V5.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_V5];
+                numSTE_V6.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_V6];
 
-                numTWE_I.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_I];
-                numTWE_II.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_II];
-                numTWE_III.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_III];
-                numTWE_aVR.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_AVR];
-                numTWE_aVL.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_AVL];
-                numTWE_aVF.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_AVF];
-                numTWE_V1.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_V1];
-                numTWE_V2.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_V2];
-                numTWE_V3.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_V3];
-                numTWE_V4.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_V4];
-                numTWE_V5.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_V5];
-                numTWE_V6.Value = (decimal)e.Patient.T_Elevation[(int)Leads.Values.ECG_V6];
+                numTWE_I.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_I];
+                numTWE_II.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_II];
+                numTWE_III.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_III];
+                numTWE_aVR.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_AVR];
+                numTWE_aVL.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_AVL];
+                numTWE_aVF.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_AVF];
+                numTWE_V1.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V1];
+                numTWE_V2.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V2];
+                numTWE_V3.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V3];
+                numTWE_V4.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V4];
+                numTWE_V5.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V5];
+                numTWE_V6.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V6];
             }
+            */
         }
 
         private void OnRhythmSelected (object sender, EventArgs e) {
+            // IMP
+            /*
             if (checkDefaultVitals.Checked && tPatient != null) {
-                Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals(
-                    Cardiac_Rhythms.Parse_Description(comboCardiacRhythm.Text));
+                Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
+                    Cardiac_Rhythms.Parse_Description (comboCardiacRhythm.Text));
 
                 numHR.Value = (decimal)_.Clamp ((double)numHR.Value, v.HRMin, v.HRMax);
                 numSPO2.Value = (decimal)_.Clamp ((double)numSPO2.Value, v.SPO2Min, v.SPO2Max);
@@ -350,10 +419,15 @@ namespace II.Forms {
                 numPSP.Value = (decimal)_.Clamp ((double)numPSP.Value, v.PSPMin, v.PSPMax);
                 numPDP.Value = (decimal)_.Clamp ((double)numPDP.Value, v.PDPMin, v.PDPMax);
             }
+            */
         }
 
         private void OnNumUpDown_Enter (object sender, EventArgs e) {
+            // IMP
+            /*
             ((NumericUpDown)sender).Select (0, ((NumericUpDown)sender).Text.Length);
+            */
         }
+
     }
 }

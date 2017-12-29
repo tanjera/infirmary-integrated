@@ -1,10 +1,25 @@
 ﻿* Commit message:
 
 
+
+* Next steps:
+	- WPF UI
+		- Finish recreating UI
+		  - Patient editor
+			- All parameters
+			- Main menu
+		  - About program dialog
+		  - Language selection dialog
+		  - Cardiac monitor device window
+
+		- Implement NumUpDown functionality
+
+
+
 * To debug:
-	- Timers are not perfectly synchronous... during loading or CPU bogging
-		- Create synchronous timer state machine based on DateTime elapsed?
-	- Slower tracings (e.g. ETCO2) glitch during parameter changes
+	- Timer wrapper
+* Known bugs:
+	- PA catheter populates beats even on pulseless rhythms...
 
 
 
@@ -12,10 +27,9 @@
 
 	V 0.9: Cross-platform rewrite
 		- Implement:
-			- Shared library (II_Core)
-				- Timer (thread-safe!)
+			- Shared library (II_Core)				
 				- Patient modeling
-			- II_Windows
+			- II_Windows				
 				- Forms
 					- Editor (Patient Parameters)
 					- Cardiac Monitor

@@ -5,20 +5,12 @@ using System.Text;
 
 namespace II {
 
-    public static class _ {
+    public static class Utility {
 
         public const string Version = "0.8";
 
         public enum ColorScheme {
             Normal, Monochrome
-        }
-
-        public class StringPair {
-            public string Index, Value;
-            public StringPair (string index, string value) {
-                Index = index;
-                Value = value;
-            }
         }
 
         public static double Time {

@@ -6,7 +6,7 @@
     <SharedGUID>d6a13684-612c-49d6-b8b3-b9720d585a71</SharedGUID>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
-    <Import_RootNamespace>II_Core</Import_RootNamespace>
+    <Import_RootNamespace>II</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="$(MSBuildThisFileDirectory)Resources\Icon.ico" />
@@ -16,7 +16,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Patient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Rhythms.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Strip.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Timer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Utility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Waveforms.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Localization.cs" />
   </ItemGroup>
 </Project>
