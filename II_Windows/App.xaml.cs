@@ -12,6 +12,12 @@ namespace II_Windows {
     /// </summary>
     public partial class App : Application {
 
-        // IMP: Language selection
+        public static II.Localization.Languages Language;
+
+        public static PatientEditor Patient_Editor;
+        public static DeviceMonitor Device_Monitor;
+        public static DialogAbout Dialog_About;
+        public static DialogLanguage Dialog_Language;
+
     }
 }

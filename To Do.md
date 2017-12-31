@@ -2,18 +2,22 @@
 
 
 
+
 * Next steps:
 	- WPF UI
-		- Finish recreating UI
-		  - Patient editor
+		- Loading args[]
+		- About program dialog
+		- Language selection dialog
+			- Needs to set App.Language.Value in dialog before closing!
+		- Patient editor
 			- numUpDown value, interval, min, max
 			- Tie .xaml into .cs functions
-			- Debug .cs functions
-		  - About program dialog
-		  - Language selection dialog
-		  - Cardiac monitor device window
+		- Cardiac Monitor window
+			- Tie .xaml into .cs
+			- Layout, Menu, UI...
+			- Controls for numerics, tracings
 
-		- Implement NumUpDown functionality
+		- ComboBox descriptions via localization lookup table
 
 
 

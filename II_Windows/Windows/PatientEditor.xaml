@@ -6,15 +6,36 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:II_Windows"
         mc:Ignorable="d"
+        Name="wdwPatientEditor"
         Title="Infirmary Integrated: Patient Editor"
         Icon="{StaticResource Icon_Infirmary}"
         WindowStartupLocation="CenterScreen"
-        SizeToContent="Width" Height="600" d:DesignWidth="532" >
+        Height="650" Width="700"
+        Closed="OnClosed">
 
 
     <Window.Resources>
-        <Style x:Key="grpParameters" TargetType="GroupBox">
-            <Setter Property="Margin" Value="5,5,5,10" />
+        <Style x:Key="expParameters" TargetType="{x:Type Expander}">
+        </Style>
+
+        <Style x:Key="expBorder" TargetType="{x:Type Border}">
+            <Setter Property="BorderBrush" Value="Black" />
+            <Setter Property="BorderThickness" Value=".25" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Padding" Value="5,2" />
+        </Style>
+
+        <Style x:Key="expHeader" TargetType="{x:Type Label}">
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+
+        <Style x:Key="grpParameters" TargetType="{x:Type GroupBox}">
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="BorderBrush" Value="Black" />
+            <Setter Property="BorderThickness" Value=".5" />
         </Style>
 
         <Style x:Key="intUpDown" TargetType="{x:Type xctk:IntegerUpDown}">
@@ -69,10 +90,10 @@
     </Window.Resources>
 
 
-    <StackPanel Orientation="Vertical">
+    <DockPanel LastChildFill="True">
 
         <!-- Main Menu -->
-        <Menu Width="Auto" Height="22" Background="White">
+        <Menu DockPanel.Dock="Top" Width="Auto" Background="White">
             <MenuItem Name="menuFile">
                 <MenuItem Name="menuLoad" Click="MenuLoadFile_Click"/>
                 <MenuItem Name="menuSave" Click="MenuSaveFile_Click"/>
@@ -85,21 +106,14 @@
             </MenuItem>
         </Menu>
 
-        <!-- Main layout grid -->
-        <Grid Name="layoutMainGrid">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
+        <!-- Column for Devices (opening Cardiac Monitor, Ventilator, etc. -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <GroupBox Name="grpDeviceButtons" DockPanel.Dock="Left" Style="{StaticResource grpParameters}">
+                <GroupBox.Header>
+                    <Label Name="lblGroupDevices" Style="{StaticResource expHeader}"/>
+                </GroupBox.Header>
 
-            <!-- Column for Devices (opening Cardiac Monitor, Ventilator, etc. -->
-            <GroupBox Name="grpDeviceButtons" Grid.Column="0" Grid.Row="0"
-                      Header="Devices" Margin="5">
-                <StackPanel Margin="3">
-
+                <StackPanel Margin="3" Height="Auto">
                     <Button Name="btnDeviceMonitor" Click="ButtonDeviceMonitor_Click" Style="{StaticResource deviceButton}">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource Icon_DeviceMonitor}" Style="{StaticResource deviceImage}" />
@@ -150,14 +164,18 @@
                     </Button>
                 </StackPanel>
             </GroupBox>
+        </ScrollViewer>
 
-            <!-- Column for Patient Editor -->
-            <ScrollViewer Name="panelParameters" Grid.Column="1" Grid.Row="0"
-                          VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
-                          Height="{Binding ActualHeight, ElementName=layoutMainGrid}">
-                <StackPanel>
-                    <!-- Group for Basic Vital Signs -->
-                    <GroupBox Name="grpVitalSigns" Header="Vitals" Style="{StaticResource grpParameters}">
+        <!-- Column for Patient Editor -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <StackPanel Margin="3" Height="Auto">
+                <!-- Group for Basic Vital Signs -->
+                <Border Margin="5,18,5,5" Style="{StaticResource expBorder}">
+                    <Expander Name="expVitalSigns" IsExpanded="True" >
+                        <Expander.Header>
+                            <Label Name="lblGroupVitalSigns" Style="{StaticResource expHeader}"/>
+                        </Expander.Header>
+
                         <Grid Margin="3">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -199,10 +217,16 @@
 
                             <CheckBox Name="checkDefaultVitals" Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="4" Margin="0, 5, 0, 0" />
                         </Grid>
-                    </GroupBox>
+                    </Expander>
+                </Border>
 
-                    <!-- Group for Advanced Hemodynamics -->
-                    <GroupBox Name="grpHemodynamics" Header="Hemodynamics" Style="{StaticResource grpParameters}">
+                <!-- Group for Advanced Hemodynamics -->
+                <Border Style="{StaticResource expBorder}">
+                    <Expander Name="expHemodynamics" IsExpanded="False" Style="{StaticResource expParameters}">
+                        <Expander.Header>
+                            <Label Name="lblGroupHemodynamics" Style="{StaticResource expHeader}"/>
+                        </Expander.Header>
+
                         <Grid Margin="3">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -225,15 +249,21 @@
                             <xctk:IntegerUpDown Name="numASBP" Grid.Column="1" Grid.Row="2" Style="{StaticResource intUpDown}" />
                             <Label Name="lblADBP" Grid.Column="2" Grid.Row="2" Content="/" />
                             <xctk:IntegerUpDown Name="numADBP" Grid.Column="3" Grid.Row="2" Style="{StaticResource intUpDown}" />
-                            <Label Name="lblPSBP" Grid.Column="0" Grid.Row="3" />
-                            <xctk:IntegerUpDown Name="numPSBP" Grid.Column="1" Grid.Row="3" Style="{StaticResource intUpDown}" />
-                            <Label Name="lblPDBP" Grid.Column="2" Grid.Row="3" Content="/" />
-                            <xctk:IntegerUpDown Name="numPDBP" Grid.Column="3" Grid.Row="3" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblPSP" Grid.Column="0" Grid.Row="3" />
+                            <xctk:IntegerUpDown Name="numPSP" Grid.Column="1" Grid.Row="3" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblPDP" Grid.Column="2" Grid.Row="3" Content="/" />
+                            <xctk:IntegerUpDown Name="numPDP" Grid.Column="3" Grid.Row="3" Style="{StaticResource intUpDown}" />
                         </Grid>
-                    </GroupBox>
+                    </Expander>
+                </Border>
 
-                    <!-- Group for Respiratory Profile -->
-                    <GroupBox Name="grpRespiratoryProfile" Header="Respiratory" Style="{StaticResource grpParameters}">
+                <!-- Group for Respiratory Profile -->
+                <Border Style="{StaticResource expBorder}">
+                    <Expander Name="expRespiratoryProfile" IsExpanded="False" Style="{StaticResource expParameters}">
+                        <Expander.Header>
+                            <Label Name="lblGroupRespiratoryProfile" Style="{StaticResource expHeader}"/>
+                        </Expander.Header>
+
                         <Grid Margin="3">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -250,10 +280,16 @@
                             <Label Name="lblExpiratoryRatio" Grid.Column="2" Grid.Row="0" Content=":" />
                             <xctk:IntegerUpDown Name="numExpiratoryRatio" Grid.Column="3" Grid.Row="0" Style="{StaticResource intUpDown}" />
                         </Grid>
-                    </GroupBox>
+                    </Expander>
+                </Border>
 
-                    <!-- Group for Cardiac Profile -->
-                    <GroupBox Name="grpCardiacProfile" Header="Cardiac" Style="{StaticResource grpParameters}">
+                <!-- Group for Cardiac Profile -->
+                <Border Style="{StaticResource expBorder}">
+                    <Expander Name="expCardiacProfile" IsExpanded="False" Style="{StaticResource expParameters}">
+                        <Expander.Header>
+                            <Label Name="lblGroupCardiacProfile" Style="{StaticResource expHeader}"/>
+                        </Expander.Header>
+
                         <StackPanel Orientation="Vertical">
 
                             <!-- ST Segment Elevation -->
@@ -354,26 +390,27 @@
                                 </Grid>
                             </GroupBox>
                         </StackPanel>
-                    </GroupBox>
+                    </Expander>
+                </Border>
 
-                    <!-- Apply and Reset Buttons -->
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                        <Button Name="btnParametersReset" Click="ButtonResetParameters_Click" Style="{StaticResource btn}">
-                            <StackPanel Orientation="Horizontal">
-                                <Image Source="{StaticResource Icon_Cross_32}" Style="{StaticResource btnImage}" />
-                                <Label Name="lblParametersReset" Style="{StaticResource btnLabel}" />
-                            </StackPanel>
-                        </Button>
-                        <Button Name="btnParametersApply" Click="ButtonApplyParameters_Click" Style="{StaticResource btn}">
-                            <StackPanel Orientation="Horizontal">
-                                <Label Name="lblParametersApply" Style="{StaticResource btnLabel}" />
-                                <Image Source="{StaticResource Icon_Check_32}" Style="{StaticResource btnImage}" />
-                            </StackPanel>
-                        </Button>
-                    </StackPanel>
-
+                <!-- Apply and Reset Buttons -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Button Name="btnParametersReset" Click="ButtonResetParameters_Click" Style="{StaticResource btn}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource Icon_Cross_32}" Style="{StaticResource btnImage}" />
+                            <Label Name="lblParametersReset" Style="{StaticResource btnLabel}" />
+                        </StackPanel>
+                    </Button>
+                    <Button Name="btnParametersApply" Click="ButtonApplyParameters_Click" Style="{StaticResource btn}">
+                        <StackPanel Orientation="Horizontal">
+                            <Label Name="lblParametersApply" Style="{StaticResource btnLabel}" />
+                            <Image Source="{StaticResource Icon_Check_32}" Style="{StaticResource btnImage}" />
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
-            </ScrollViewer>
-        </Grid>
-    </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+
+    </DockPanel>
 </Window>

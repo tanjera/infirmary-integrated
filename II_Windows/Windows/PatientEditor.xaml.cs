@@ -29,12 +29,30 @@ namespace II_Windows {
         public PatientEditor () {
             InitializeComponent ();
 
+            InitLanguage ();
             InitUIStrings ();
             InitPatient ();
 
-            // IMP: Loading Args[]
+            //InitMonitor ();
+        }
 
-            // IMP: Spawn cardiac monitor for debug
+        private void InitLanguage () {
+
+            try {
+                if (Properties.Settings.Default.Language != null)
+                    App.Language.Value = (Languages.Values)Enum.Parse (typeof (Languages.Values), Properties.Settings.Default.Language);
+            } catch { }
+
+            if (Properties.Settings.Default.Language == null) {
+                App.Dialog_Language = new DialogLanguage ();
+                App.Dialog_Language.Activate ();
+                App.Dialog_Language.Show ();
+            }
+
+            /* IMP
+            Properties.Settings.Default.Language = App.Language.Value.ToString();
+            Properties.Settings.Default.Save ();
+            */
         }
 
         private void InitUIStrings () {
@@ -48,7 +66,7 @@ namespace II_Windows {
             menuHelp.Header = Strings.Lookup (l.Value, "Help");
             menuAbout.Header = Strings.Lookup (l.Value, "AboutProgram");
 
-            grpDeviceButtons.Header = Strings.Lookup (l.Value, "Devices");
+            lblGroupDevices.Content = Strings.Lookup (l.Value, "Devices");
             lblDeviceMonitor.Content = Strings.Lookup (l.Value, "CardiacMonitor");
             lblDevice12LeadECG.Content = Strings.Lookup (l.Value, "12LeadECG");
             lblDeviceDefibrillator.Content = Strings.Lookup (l.Value, "Defibrillator");
@@ -58,7 +76,7 @@ namespace II_Windows {
             lblDeviceIVPump.Content = Strings.Lookup (l.Value, "IVPump");
             lblDeviceLabResults.Content = Strings.Lookup (l.Value, "LabResults");
 
-            grpVitalSigns.Header = Strings.Lookup (l.Value, "VitalSigns");
+            lblGroupVitalSigns.Content = Strings.Lookup (l.Value, "VitalSigns");
             lblHR.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "HeartRate"));
             lblNIBP.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "BloodPressure"));
             lblRR.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "RespiratoryRate"));
@@ -68,23 +86,24 @@ namespace II_Windows {
             lblRespiratoryRhythm.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "RespiratoryRhythm"));
             checkDefaultVitals.Content = Strings.Lookup (l.Value, "UseDefaultVitalSignRanges");
 
-            grpHemodynamics.Header = Strings.Lookup (l.Value, "AdvancedHemodynamics");
+            lblGroupHemodynamics.Content = Strings.Lookup (l.Value, "AdvancedHemodynamics");
             lblETCO2.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "EndTidalCO2"));
             lblCVP.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "CentralVenousPressure"));
             lblASBP.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "ArterialBloodPressure"));
-            lblPSBP.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "PulmonaryArteryPressure"));
+            lblPSP.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "PulmonaryArteryPressure"));
 
-            grpRespiratoryProfile.Header = Strings.Lookup (l.Value, "RespiratoryProfile");
+            lblGroupRespiratoryProfile.Content = Strings.Lookup (l.Value, "RespiratoryProfile");
             lblInspiratoryRatio.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "InspiratoryExpiratoryRatio"));
 
-            grpCardiacProfile.Header = Strings.Lookup (l.Value, "CardiacProfile");
+            lblGroupCardiacProfile.Content = Strings.Lookup (l.Value, "CardiacProfile");
             grpSTSegmentElevation.Header = Strings.Lookup (l.Value, "STSegmentElevation");
             grpTWaveElevation.Header = Strings.Lookup (l.Value, "TWaveElevation");
 
             lblParametersApply.Content = Strings.Lookup (l.Value, "ApplyChanges");
             lblParametersReset.Content = Strings.Lookup (l.Value, "ResetParameters");
 
-            // IMP: Populate comboCardiacRhythm and comboRespiratoryRhythm
+            comboCardiacRhythm.ItemsSource = Cardiac_Rhythms.Descriptions;
+            comboRespiratoryRhythm.ItemsSource = Respiratory_Rhythms.Descriptions;
         }
 
         public bool RequestExit () {
@@ -109,14 +128,14 @@ namespace II_Windows {
         }
 
         private void InitMonitor () {
-            /*
-            if (Program.Device_Monitor != null && !Program.Device_Monitor.IsDisposed)
-                return;
+            if (App.Device_Monitor == null || !App.Device_Monitor.IsLoaded)
+                App.Device_Monitor = new DeviceMonitor ();
 
-            Program.Device_Monitor = new Device_Monitor ();
-            Program.Device_Monitor.SetPatient (tPatient);
-            tPatient.PatientEvent += Program.Device_Monitor.OnPatientEvent;
-            */
+            App.Device_Monitor.Activate ();
+            App.Device_Monitor.Show ();
+
+            App.Device_Monitor.SetPatient (tPatient);
+            tPatient.PatientEvent += App.Device_Monitor.OnPatientEvent;
         }
 
         private void Load_Open (string fileName) {
@@ -181,14 +200,9 @@ namespace II_Windows {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Cardiac Monitor")
                             pbuffer.AppendLine (pline);
-                        InitMonitor ();
 
-                        // IMP: Load file through cardiac monitor
-                        /*
-                        Program.Device_Monitor.Load_Process (pbuffer.ToString ());
-                        Program.Device_Monitor.Show ();
-                        Program.Device_Monitor.BringToFront ();
-                        */
+                        InitMonitor ();
+                        App.Device_Monitor.Load_Process (pbuffer.ToString ());
                     }
                 }
             } catch {
@@ -215,13 +229,13 @@ namespace II_Windows {
             sb.AppendLine ("> End: Editor");
 
             // Imp: Reference cardiac monitor for save data
-            /*
-            if (Program.Device_Monitor != null && !Program.Device_Monitor.IsDisposed) {
+
+            if (App.Device_Monitor != null && App.Device_Monitor.IsLoaded) {
                 sb.AppendLine ("> Begin: Cardiac Monitor");
-                sb.Append (Program.Device_Monitor.Save ());
+                sb.Append (App.Device_Monitor.Save ());
                 sb.AppendLine ("> End: Cardiac Monitor");
             }
-            */
+
 
             StreamWriter sw = new StreamWriter (s);
             sw.WriteLine (".ii:t1");                                // Metadata (type 1 savefile)
@@ -242,8 +256,7 @@ namespace II_Windows {
                                 pValue = line.Substring (line.IndexOf (':') + 1);
                         switch (pName) {
                             default: break;
-                            // IMP
-                                //case "checkDefaultVitals": checkDefaultVitals.Checked = bool.Parse (pValue); break;
+                            case "checkDefaultVitals": checkDefaultVitals.IsChecked = bool.Parse (pValue); break;
                         }
                     }
                 }
@@ -258,8 +271,7 @@ namespace II_Windows {
         private string Save_Options () {
             StringBuilder sWrite = new StringBuilder ();
 
-            // IMP
-            //sWrite.AppendLine (String.Format ("{0}:{1}", "checkDefaultVitals", checkDefaultVitals.Checked));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "checkDefaultVitals", checkDefaultVitals.IsChecked));
 
             return sWrite.ToString ();
         }
@@ -300,21 +312,13 @@ namespace II_Windows {
         }
 
         private void MenuAbout_Click (object sender, RoutedEventArgs e) {
-            // IMP: Show "About" Window
-            /*
-            Forms.Dialog_About about = new Forms.Dialog_About ();
-            about.Show ();
-            */
+            App.Dialog_About = new DialogAbout();
+            App.Dialog_About.Activate ();
+            App.Dialog_About.Show ();
         }
 
         private void ButtonDeviceMonitor_Click (object sender, RoutedEventArgs e) {
             InitMonitor ();
-
-            // IMP: Show Cardiac Monitor
-            /*
-            Program.Device_Monitor.Show ();
-            Program.Device_Monitor.BringToFront ();
-            */
         }
 
         private void ButtonResetParameters_Click (object sender, RoutedEventArgs e) {
@@ -322,8 +326,6 @@ namespace II_Windows {
         }
 
         private void ButtonApplyParameters_Click (object sender, RoutedEventArgs e) {
-            // IMP
-            /*
             tPatient.UpdateVitals (
                 (int)numHR.Value,
                 (int)numRR.Value,
@@ -360,15 +362,12 @@ namespace II_Windows {
                 Cardiac_Rhythms.Parse_Description (comboCardiacRhythm.Text),
 
                 Respiratory_Rhythms.Parse_Description (comboRespiratoryRhythm.Text),
-                (int)numInspRatio.Value,
-                (int)numExpRatio.Value
+                (int)numInspiratoryRatio.Value,
+                (int)numExpiratoryRatio.Value
             );
-            */
         }
 
         private void FormUpdateFields (object sender, Patient.PatientEvent_Args e) {
-            // IMP
-            /*
             if (e.EventType == Patient.PatientEvent_Args.EventTypes.Vitals_Change) {
                 numHR.Value = e.Patient.HR;
                 numRR.Value = e.Patient.RR;
@@ -387,8 +386,8 @@ namespace II_Windows {
                 comboCardiacRhythm.SelectedIndex = (int)e.Patient.Cardiac_Rhythm.Value;
 
                 comboRespiratoryRhythm.SelectedIndex = (int)e.Patient.Respiratory_Rhythm.Value;
-                numInspRatio.Value = (decimal)e.Patient.Respiratory_IERatio_I;
-                numExpRatio.Value = (decimal)e.Patient.Respiratory_IERatio_E;
+                numInspiratoryRatio.Value = e.Patient.Respiratory_IERatio_I;
+                numExpiratoryRatio.Value = e.Patient.Respiratory_IERatio_E;
 
 
                 numSTE_I.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_I];
@@ -417,27 +416,27 @@ namespace II_Windows {
                 numTWE_V5.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V5];
                 numTWE_V6.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V6];
             }
-            */
         }
 
         private void OnRhythmSelected (object sender, SelectionChangedEventArgs e) {
-            // IMP
-            /*
-            if (checkDefaultVitals.Checked && tPatient != null) {
+            if ((bool)checkDefaultVitals.IsChecked && tPatient != null) {
                 Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
                     Cardiac_Rhythms.Parse_Description (comboCardiacRhythm.Text));
 
-                numHR.Value = (decimal)_.Clamp ((double)numHR.Value, v.HRMin, v.HRMax);
-                numSPO2.Value = (decimal)_.Clamp ((double)numSPO2.Value, v.SPO2Min, v.SPO2Max);
-                numETCO2.Value = (decimal)_.Clamp ((double)numETCO2.Value, v.ETCO2Min, v.ETCO2Max);
-                numNSBP.Value = (decimal)_.Clamp ((double)numNSBP.Value, v.SBPMin, v.SBPMax);
-                numNDBP.Value = (decimal)_.Clamp ((double)numNDBP.Value, v.DBPMin, v.DBPMax);
-                numASBP.Value = (decimal)_.Clamp ((double)numASBP.Value, v.SBPMin, v.SBPMax);
-                numADBP.Value = (decimal)_.Clamp ((double)numADBP.Value, v.DBPMin, v.DBPMax);
-                numPSP.Value = (decimal)_.Clamp ((double)numPSP.Value, v.PSPMin, v.PSPMax);
-                numPDP.Value = (decimal)_.Clamp ((double)numPDP.Value, v.PDPMin, v.PDPMax);
+                numHR.Value = (int)Utility.Clamp ((double)numHR.Value, v.HRMin, v.HRMax);
+                numSPO2.Value = (int)Utility.Clamp ((double)numSPO2.Value, v.SPO2Min, v.SPO2Max);
+                numETCO2.Value = (int)Utility.Clamp ((double)numETCO2.Value, v.ETCO2Min, v.ETCO2Max);
+                numNSBP.Value = (int)Utility.Clamp ((double)numNSBP.Value, v.SBPMin, v.SBPMax);
+                numNDBP.Value = (int)Utility.Clamp ((double)numNDBP.Value, v.DBPMin, v.DBPMax);
+                numASBP.Value = (int)Utility.Clamp ((double)numASBP.Value, v.SBPMin, v.SBPMax);
+                numADBP.Value = (int)Utility.Clamp ((double)numADBP.Value, v.DBPMin, v.DBPMax);
+                numPSP.Value = (int)Utility.Clamp ((double)numPSP.Value, v.PSPMin, v.PSPMax);
+                numPDP.Value = (int)Utility.Clamp ((double)numPDP.Value, v.PDPMin, v.PDPMax);
             }
-            */
+        }
+
+        private void OnClosed (object sender, EventArgs e) {
+            RequestExit ();
         }
     }
 }

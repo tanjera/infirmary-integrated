@@ -93,6 +93,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Windows\DeviceMonitor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\DialogAbout.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\DialogLanguage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\PatientEditor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -100,6 +112,15 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Windows\DeviceMonitor.xaml.cs">
+      <DependentUpon>DeviceMonitor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\DialogAbout.xaml.cs">
+      <DependentUpon>DialogAbout.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\DialogLanguage.xaml.cs">
+      <DependentUpon>DialogLanguage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\PatientEditor.xaml.cs">
       <DependentUpon>PatientEditor.xaml</DependentUpon>
