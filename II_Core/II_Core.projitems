@@ -9,7 +9,9 @@
     <Import_RootNamespace>II</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)Resources\Icon.ico" />
+    <None Include="$(MSBuildThisFileDirectory)Resources\Icon_Infirmary.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Leads.cs" />

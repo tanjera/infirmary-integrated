@@ -6,8 +6,9 @@
 	- WPF UI
 		- Finish recreating UI
 		  - Patient editor
-			- All parameters
-			- Main menu
+			- numUpDown value, interval, min, max
+			- Tie .xaml into .cs functions
+			- Debug .cs functions
 		  - About program dialog
 		  - Language selection dialog
 		  - Cardiac monitor device window
@@ -25,11 +26,13 @@
 
 * Versions and features to implement:
 
+	* Purchase icons!!
+
 	V 0.9: Cross-platform rewrite
 		- Implement:
-			- Shared library (II_Core)				
+			- Shared library (II_Core)
 				- Patient modeling
-			- II_Windows				
+			- II_Windows
 				- Forms
 					- Editor (Patient Parameters)
 					- Cardiac Monitor
@@ -54,7 +57,9 @@
 		- Defibrillator
 		- IABP
 		- Ventilator
+		- FHM/Toco
 		- Lab Values
+		- IV Pump
 	- Clinical aspects
 		- Respiratory Rhythms: Kussmaul, Cheyne-Stokes
 			- With vital sign clamping
@@ -73,3 +78,6 @@
 * References:
 - Assembly signing with certificate
 	https://www.linkedin.com/pulse/code-signing-visual-studio-jason-brower
+
+- Icons: Blue Series by Nicola Simpson
+	https://www.iconfinder.com/families/blue-series

@@ -3,149 +3,377 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:local="clr-namespace:II_Windows"
         mc:Ignorable="d"
         Title="Infirmary Integrated: Patient Editor"
-        SizeToContent="WidthAndHeight" WindowStartupLocation="CenterScreen">
-
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-
-        <!-- Column for Devices (opening Cardiac Monitor, Ventilator, etc. -->
-        <StackPanel Grid.Column="0" Grid.Row="0" Margin="5, 5, 5, 5">
-            <Button Name="btnDeviceMonitor" Click="ButtonMonitor_Click" Padding="5, 5, 5, 5">Cardiac Monitor</Button>
-        </StackPanel>
-
-        <!-- Column for Patient Editor -->
-        <ScrollViewer Grid.Column="1" Grid.Row="0">
-            <StackPanel>
-                <!-- Group for Basic Vital Signs -->
-                <GroupBox Name="grpVitalSigns" Header="Vitals">
-                    <Grid Grid.Column="1" Grid.Row="0" Margin="5, 5, 5, 5">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-
-                        <Label Name="lblHR" Grid.Column="0" Grid.Row="0">HR</Label>
-                        <local:NumUpDown x:Name="numHR" Grid.Column="1" Grid.Row="0" MinWidth="60"></local:NumUpDown>
-                        <Label Name="lblNIBP" Grid.Column="0" Grid.Row="1">NIBP</Label>
-                        <local:NumUpDown x:Name="numNSBP" Grid.Column="1" Grid.Row="1" MinWidth="60"></local:NumUpDown>
-                        <Label Name="lblNDBP" Grid.Column="2" Grid.Row="1">/</Label>
-                        <local:NumUpDown x:Name="numNDBP" Grid.Column="3" Grid.Row="1" MinWidth="60"></local:NumUpDown>
-                        <Label Name="lblRR" Grid.Column="0" Grid.Row="2">RR</Label>
-                        <local:NumUpDown x:Name="numRR" Grid.Column="1" Grid.Row="2" MinWidth="60"></local:NumUpDown>
-                        <Label Name="lblSPO2" Grid.Column="0" Grid.Row="3">SPO2</Label>
-                        <local:NumUpDown x:Name="numSPO2" Grid.Column="1" Grid.Row="3" MinWidth="60"></local:NumUpDown>
-                        <Label Name="lblT" Grid.Column="0" Grid.Row="4">T</Label>
-                        <local:NumUpDown x:Name="numT" Grid.Column="1" Grid.Row="4" MinWidth="60"></local:NumUpDown>
-
-                        <Label Name="lblCardiacRhythm" Grid.Column="0" Grid.Row="5">Card Rhythm</Label>
-                        <ComboBox Name="comboCardiacRhythm" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="4"></ComboBox>
-
-                        <Label Name="lblRespiratoryRhythm" Grid.Column="0" Grid.Row="7">Resp Rythm</Label>
-                        <ComboBox Name="comboRespiratoryRhythm" Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="4"></ComboBox>
-
-                        <CheckBox Name="checkDefaultVitals" Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="4" Margin="0, 5, 0, 0">Default vitals</CheckBox>
-                    </Grid>
-                </GroupBox>
-
-                <!-- Group for Advanced Hemodynamics -->
-                <GroupBox Name="grpHemodynamics" Header="Hemodynamics">
-                    <Grid Grid.Column="1" Grid.Row="0" Margin="5, 5, 5, 5">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-
-                        <Label Name="lblETCO2" Grid.Column="0" Grid.Row="0">HR</Label>
-                        <local:NumUpDown x:Name="numETCO2" Grid.Column="1" Grid.Row="0" MinWidth="60"></local:NumUpDown>
-                        <Label Name="lblCVP" Grid.Column="0" Grid.Row="1">HR</Label>
-                        <local:NumUpDown x:Name="numCVP" Grid.Column="1" Grid.Row="1" MinWidth="60"></local:NumUpDown>
-                        <Label Name="lblASBP" Grid.Column="0" Grid.Row="2">NIBP</Label>
-                        <local:NumUpDown x:Name="numASBP" Grid.Column="1" Grid.Row="2" MinWidth="60"></local:NumUpDown>
-                        <Label Name="lblADBP" Grid.Column="2" Grid.Row="2">/</Label>
-                        <local:NumUpDown x:Name="numADBP" Grid.Column="3" Grid.Row="2" MinWidth="60"></local:NumUpDown>
-                        <Label Name="lblPSBP" Grid.Column="0" Grid.Row="3">NIBP</Label>
-                        <local:NumUpDown x:Name="numPSBP" Grid.Column="1" Grid.Row="3" MinWidth="60"></local:NumUpDown>
-                        <Label Name="lblPDBP" Grid.Column="2" Grid.Row="3">/</Label>
-                        <local:NumUpDown x:Name="numPDBP" Grid.Column="3" Grid.Row="3" MinWidth="60"></local:NumUpDown>
-                    </Grid>
-                </GroupBox>
-
-                <!-- Group for Respiratory Profile -->
-                <GroupBox Name="grpRespiratoryProfile" Header="Respiratory">
-                    <Grid Grid.Column="1" Grid.Row="0" Margin="5, 5, 5, 5">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-
-                        <Label Name="lblInspiratoryRatio" Grid.Column="0" Grid.Row="0">IE Ratio</Label>
-                        <local:NumUpDown x:Name="numInspiratoryRatio" Grid.Column="1" Grid.Row="0" MinWidth="60"></local:NumUpDown>
-                        <Label Name="lblExpiratoryRatio" Grid.Column="2" Grid.Row="0">:</Label>
-                        <local:NumUpDown x:Name="numExpiratoryRatio" Grid.Column="3" Grid.Row="0" MinWidth="60"></local:NumUpDown>
-                    </Grid>
-                </GroupBox>
+        Icon="{StaticResource Icon_Infirmary}"
+        WindowStartupLocation="CenterScreen"
+        SizeToContent="Width" Height="600" d:DesignWidth="532" >
 
 
+    <Window.Resources>
+        <Style x:Key="grpParameters" TargetType="GroupBox">
+            <Setter Property="Margin" Value="5,5,5,10" />
+        </Style>
 
-                <!-- Group for Cardiac Profile -->
-                <GroupBox Name="grpCardiacProfile" Header="Cardiac">
-                    <Grid Grid.Column="1" Grid.Row="0" Margin="5, 5, 5, 5">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
+        <Style x:Key="intUpDown" TargetType="{x:Type xctk:IntegerUpDown}">
+            <Setter Property="MinWidth" Value="60" />
+            <Setter Property="Height" Value="20" />
+        </Style>
+
+        <Style x:Key="decUpDown" TargetType="{x:Type xctk:DecimalUpDown}">
+            <Setter Property="MinWidth" Value="60" />
+            <Setter Property="Height" Value="20" />
+        </Style>
+
+        <Style x:Key="btn" TargetType="{x:Type Button}">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="White" />
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="Padding" Value="10,2" />
+        </Style>
+
+        <Style x:Key="btnLabel" TargetType="{x:Type Label}">
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+
+        <Style x:Key="btnImage" TargetType="{x:Type Image}">
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="Width" Value="24" />
+            <Setter Property="Height" Value="24" />
+        </Style>
+
+        <Style x:Key="deviceButton" TargetType="{x:Type Button}">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="White" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="Padding" Value="10,2" />
+        </Style>
+
+        <Style x:Key="deviceImage" TargetType="{x:Type Image}">
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="Width" Value="48" />
+            <Setter Property="Height" Value="48" />
+        </Style>
+
+        <Style x:Key="deviceLabel" TargetType="{x:Type Label}">
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="16" />
+        </Style>
+
+    </Window.Resources>
 
 
-                    </Grid>
-                </GroupBox>
+    <StackPanel Orientation="Vertical">
 
+        <!-- Main Menu -->
+        <Menu Width="Auto" Height="22" Background="White">
+            <MenuItem Name="menuFile">
+                <MenuItem Name="menuLoad" Click="MenuLoadFile_Click"/>
+                <MenuItem Name="menuSave" Click="MenuSaveFile_Click"/>
+                <Separator />
+                <MenuItem Name="menuExit" Click="MenuExit_Click"/>
+            </MenuItem>
 
+            <MenuItem Name="menuHelp">
+                <MenuItem Name="menuAbout" Click="MenuAbout_Click"/>
+            </MenuItem>
+        </Menu>
 
-            </StackPanel>
-        </ScrollViewer>
-    </Grid>
+        <!-- Main layout grid -->
+        <Grid Name="layoutMainGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <!-- Column for Devices (opening Cardiac Monitor, Ventilator, etc. -->
+            <GroupBox Name="grpDeviceButtons" Grid.Column="0" Grid.Row="0"
+                      Header="Devices" Margin="5">
+                <StackPanel Margin="3">
+
+                    <Button Name="btnDeviceMonitor" Click="ButtonDeviceMonitor_Click" Style="{StaticResource deviceButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource Icon_DeviceMonitor}" Style="{StaticResource deviceImage}" />
+                            <Label Name="lblDeviceMonitor" Style="{StaticResource deviceLabel}" />
+                        </StackPanel>
+                    </Button>
+                    <Button Name="btnDevice12LeadECG" Style="{StaticResource deviceButton}" IsEnabled="False">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource Icon_Device12LeadECG}" Style="{StaticResource deviceImage}" />
+                            <Label Name="lblDevice12LeadECG" Style="{StaticResource deviceLabel}" />
+                        </StackPanel>
+                    </Button>
+                    <Button Name="btnDeviceDefibrillator" Style="{StaticResource deviceButton}" IsEnabled="False">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource Icon_DeviceDefibrillator}" Style="{StaticResource deviceImage}" />
+                            <Label Name="lblDeviceDefibrillator" Style="{StaticResource deviceLabel}" />
+                        </StackPanel>
+                    </Button>
+                    <Button Name="btnDeviceVentilator" Style="{StaticResource deviceButton}" IsEnabled="False">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource Icon_DeviceVentilator}" Style="{StaticResource deviceImage}" />
+                            <Label Name="lblDeviceVentilator" Style="{StaticResource deviceLabel}" />
+                        </StackPanel>
+                    </Button>
+                    <Button Name="btnDeviceIABP" Style="{StaticResource deviceButton}" IsEnabled="False">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource Icon_DeviceIABP}" Style="{StaticResource deviceImage}" />
+                            <Label Name="lblDeviceIABP" Style="{StaticResource deviceLabel}" />
+                        </StackPanel>
+                    </Button>
+                    <Button Name="btnDeviceCardiotocograph" Style="{StaticResource deviceButton}" IsEnabled="False">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource Icon_DeviceCardiotocograph}" Style="{StaticResource deviceImage}" />
+                            <Label Name="lblDeviceCardiotocograph" Style="{StaticResource deviceLabel}" />
+                        </StackPanel>
+                    </Button>
+                    <Button Name="btnDeviceIVPump" Style="{StaticResource deviceButton}" IsEnabled="False">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource Icon_DeviceIVPump}" Style="{StaticResource deviceImage}" />
+                            <Label Name="lblDeviceIVPump" Style="{StaticResource deviceLabel}" />
+                        </StackPanel>
+                    </Button>
+                    <Button Name="btnDeviceLabResults" Style="{StaticResource deviceButton}" IsEnabled="False">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource Icon_DeviceLabResults}" Style="{StaticResource deviceImage}" />
+                            <Label Name="lblDeviceLabResults" Style="{StaticResource deviceLabel}" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </GroupBox>
+
+            <!-- Column for Patient Editor -->
+            <ScrollViewer Name="panelParameters" Grid.Column="1" Grid.Row="0"
+                          VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+                          Height="{Binding ActualHeight, ElementName=layoutMainGrid}">
+                <StackPanel>
+                    <!-- Group for Basic Vital Signs -->
+                    <GroupBox Name="grpVitalSigns" Header="Vitals" Style="{StaticResource grpParameters}">
+                        <Grid Margin="3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Name="lblHR" Grid.Column="0" Grid.Row="0" />
+                            <xctk:IntegerUpDown Name="numHR" Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblNIBP" Grid.Column="0" Grid.Row="1" />
+                            <xctk:IntegerUpDown Name="numNSBP" Grid.Column="1" Grid.Row="1" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblNDBP" Grid.Column="2" Grid.Row="1" Content="/" />
+                            <xctk:IntegerUpDown Name="numNDBP" Grid.Column="3" Grid.Row="1" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblRR" Grid.Column="0" Grid.Row="2" />
+                            <xctk:IntegerUpDown Name="numRR" Grid.Column="1" Grid.Row="2" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblSPO2" Grid.Column="0" Grid.Row="3" />
+                            <xctk:IntegerUpDown Name="numSPO2" Grid.Column="1" Grid.Row="3" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblT" Grid.Column="0" Grid.Row="4" />
+                            <xctk:DecimalUpDown Name="numT" Grid.Column="1" Grid.Row="4" Style="{StaticResource decUpDown}" />
+
+                            <Label Name="lblCardiacRhythm" Grid.Column="0" Grid.Row="5" />
+                            <ComboBox Name="comboCardiacRhythm" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="4" SelectionChanged="OnRhythmSelected" />
+
+                            <Label Name="lblRespiratoryRhythm" Grid.Column="0" Grid.Row="7" />
+                            <ComboBox Name="comboRespiratoryRhythm" Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="4" SelectionChanged="OnRhythmSelected"/>
+
+                            <CheckBox Name="checkDefaultVitals" Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="4" Margin="0, 5, 0, 0" />
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- Group for Advanced Hemodynamics -->
+                    <GroupBox Name="grpHemodynamics" Header="Hemodynamics" Style="{StaticResource grpParameters}">
+                        <Grid Margin="3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Name="lblETCO2" Grid.Column="0" Grid.Row="0" />
+                            <xctk:IntegerUpDown Name="numETCO2" Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblCVP" Grid.Column="0" Grid.Row="1" />
+                            <xctk:IntegerUpDown Name="numCVP" Grid.Column="1" Grid.Row="1" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblASBP" Grid.Column="0" Grid.Row="2" />
+                            <xctk:IntegerUpDown Name="numASBP" Grid.Column="1" Grid.Row="2" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblADBP" Grid.Column="2" Grid.Row="2" Content="/" />
+                            <xctk:IntegerUpDown Name="numADBP" Grid.Column="3" Grid.Row="2" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblPSBP" Grid.Column="0" Grid.Row="3" />
+                            <xctk:IntegerUpDown Name="numPSBP" Grid.Column="1" Grid.Row="3" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblPDBP" Grid.Column="2" Grid.Row="3" Content="/" />
+                            <xctk:IntegerUpDown Name="numPDBP" Grid.Column="3" Grid.Row="3" Style="{StaticResource intUpDown}" />
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- Group for Respiratory Profile -->
+                    <GroupBox Name="grpRespiratoryProfile" Header="Respiratory" Style="{StaticResource grpParameters}">
+                        <Grid Margin="3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Name="lblInspiratoryRatio" Grid.Column="0" Grid.Row="0" />
+                            <xctk:IntegerUpDown Name="numInspiratoryRatio" Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblExpiratoryRatio" Grid.Column="2" Grid.Row="0" Content=":" />
+                            <xctk:IntegerUpDown Name="numExpiratoryRatio" Grid.Column="3" Grid.Row="0" Style="{StaticResource intUpDown}" />
+                        </Grid>
+                    </GroupBox>
+
+                    <!-- Group for Cardiac Profile -->
+                    <GroupBox Name="grpCardiacProfile" Header="Cardiac" Style="{StaticResource grpParameters}">
+                        <StackPanel Orientation="Vertical">
+
+                            <!-- ST Segment Elevation -->
+                            <GroupBox Name="grpSTSegmentElevation" Style="{StaticResource grpParameters}">
+                                <Grid Margin="3">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Grid.Column="0" Grid.Row="0" Content="I"/>
+                                    <xctk:DecimalUpDown Name="numSTE_I" Grid.Column="1" Grid.Row="0" Style="{StaticResource decUpDown}" />
+                                    <Label Grid.Column="0" Grid.Row="1" Content="II"/>
+                                    <xctk:DecimalUpDown Name="numSTE_II" Grid.Column="1" Grid.Row="1" Style="{StaticResource decUpDown}" />
+                                    <Label Grid.Column="0" Grid.Row="2" Content="III"/>
+                                    <xctk:DecimalUpDown Name="numSTE_III" Grid.Column="1" Grid.Row="2" Style="{StaticResource decUpDown}" />
+
+                                    <Label Grid.Column="2" Grid.Row="0" Content="aVR"/>
+                                    <xctk:DecimalUpDown Name="numSTE_aVR" Grid.Column="3" Grid.Row="0" Style="{StaticResource decUpDown}" />
+                                    <Label Grid.Column="2" Grid.Row="1" Content="aVL"/>
+                                    <xctk:DecimalUpDown Name="numSTE_aVL" Grid.Column="3" Grid.Row="1" Style="{StaticResource decUpDown}" />
+                                    <Label Grid.Column="2" Grid.Row="2" Content="aVF"/>
+                                    <xctk:DecimalUpDown Name="numSTE_aVF" Grid.Column="3" Grid.Row="2" Style="{StaticResource decUpDown}" />
+
+                                    <Label Grid.Column="4" Grid.Row="0" Content="V1"/>
+                                    <xctk:DecimalUpDown Name="numSTE_V1" Grid.Column="5" Grid.Row="0" Style="{StaticResource decUpDown}" />
+                                    <Label Grid.Column="4" Grid.Row="1" Content="V2"/>
+                                    <xctk:DecimalUpDown Name="numSTE_V2" Grid.Column="5" Grid.Row="1" Style="{StaticResource decUpDown}" />
+                                    <Label Grid.Column="4" Grid.Row="2" Content="V3"/>
+                                    <xctk:DecimalUpDown Name="numSTE_V3" Grid.Column="5" Grid.Row="2" Style="{StaticResource decUpDown}" />
+
+                                    <Label Grid.Column="6" Grid.Row="0" Content="V4"/>
+                                    <xctk:DecimalUpDown Name="numSTE_V4" Grid.Column="7" Grid.Row="0" Style="{StaticResource decUpDown}" />
+                                    <Label Grid.Column="6" Grid.Row="1" Content="V5"/>
+                                    <xctk:DecimalUpDown Name="numSTE_V5" Grid.Column="7" Grid.Row="1" Style="{StaticResource decUpDown}" />
+                                    <Label Grid.Column="6" Grid.Row="2" Content="V6"/>
+                                    <xctk:DecimalUpDown Name="numSTE_V6" Grid.Column="7" Grid.Row="2" Style="{StaticResource decUpDown}" />
+                                </Grid>
+                            </GroupBox>
+
+                            <!-- T Wave Elevation -->
+                            <GroupBox Name="grpTWaveElevation" Style="{StaticResource grpParameters}">
+                                <Grid Margin="3">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <Label Grid.Column="0" Grid.Row="0" Content="I"/>
+                                    <xctk:DecimalUpDown Name="numTWE_I" Grid.Column="1" Grid.Row="0" Style="{StaticResource decUpDown}" />
+                                    <Label Grid.Column="0" Grid.Row="1" Content="II"/>
+                                    <xctk:DecimalUpDown Name="numTWE_II" Grid.Column="1" Grid.Row="1" Style="{StaticResource decUpDown}" />
+                                    <Label Grid.Column="0" Grid.Row="2" Content="III"/>
+                                    <xctk:DecimalUpDown Name="numTWE_III" Grid.Column="1" Grid.Row="2" Style="{StaticResource decUpDown}" />
+
+                                    <Label Grid.Column="2" Grid.Row="0" Content="aVR"/>
+                                    <xctk:DecimalUpDown Name="numTWE_aVR" Grid.Column="3" Grid.Row="0" Style="{StaticResource decUpDown}" />
+                                    <Label Grid.Column="2" Grid.Row="1" Content="aVL"/>
+                                    <xctk:DecimalUpDown Name="numTWE_aVL" Grid.Column="3" Grid.Row="1" Style="{StaticResource decUpDown}" />
+                                    <Label Grid.Column="2" Grid.Row="2" Content="aVF"/>
+                                    <xctk:DecimalUpDown Name="numTWE_aVF" Grid.Column="3" Grid.Row="2" Style="{StaticResource decUpDown}" />
+
+                                    <Label Grid.Column="4" Grid.Row="0" Content="V1"/>
+                                    <xctk:DecimalUpDown Name="numTWE_V1" Grid.Column="5" Grid.Row="0" Style="{StaticResource decUpDown}" />
+                                    <Label Grid.Column="4" Grid.Row="1" Content="V2"/>
+                                    <xctk:DecimalUpDown Name="numTWE_V2" Grid.Column="5" Grid.Row="1" Style="{StaticResource decUpDown}" />
+                                    <Label Grid.Column="4" Grid.Row="2" Content="V3"/>
+                                    <xctk:DecimalUpDown Name="numTWE_V3" Grid.Column="5" Grid.Row="2" Style="{StaticResource decUpDown}" />
+
+                                    <Label Grid.Column="6" Grid.Row="0" Content="V4"/>
+                                    <xctk:DecimalUpDown Name="numTWE_V4" Grid.Column="7" Grid.Row="0" Style="{StaticResource decUpDown}" />
+                                    <Label Grid.Column="6" Grid.Row="1" Content="V5"/>
+                                    <xctk:DecimalUpDown Name="numTWE_V5" Grid.Column="7" Grid.Row="1" Style="{StaticResource decUpDown}" />
+                                    <Label Grid.Column="6" Grid.Row="2" Content="V6"/>
+                                    <xctk:DecimalUpDown Name="numTWE_V6" Grid.Column="7" Grid.Row="2" Style="{StaticResource decUpDown}" />
+                                </Grid>
+                            </GroupBox>
+                        </StackPanel>
+                    </GroupBox>
+
+                    <!-- Apply and Reset Buttons -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <Button Name="btnParametersReset" Click="ButtonResetParameters_Click" Style="{StaticResource btn}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="{StaticResource Icon_Cross_32}" Style="{StaticResource btnImage}" />
+                                <Label Name="lblParametersReset" Style="{StaticResource btnLabel}" />
+                            </StackPanel>
+                        </Button>
+                        <Button Name="btnParametersApply" Click="ButtonApplyParameters_Click" Style="{StaticResource btn}">
+                            <StackPanel Orientation="Horizontal">
+                                <Label Name="lblParametersApply" Style="{StaticResource btnLabel}" />
+                                <Image Source="{StaticResource Icon_Check_32}" Style="{StaticResource btnImage}" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </StackPanel>
 </Window>

@@ -41,7 +41,22 @@ namespace II_Windows {
             // IMP: Get language selection!
             Languages l = new Languages (Languages.Values.EN);
 
-            btnDeviceMonitor.Content = Strings.Lookup (l.Value, "CardiacMonitor");
+            menuFile.Header = Strings.Lookup (l.Value, "File");
+            menuLoad.Header = Strings.Lookup (l.Value, "LoadSimulation");
+            menuSave.Header = Strings.Lookup (l.Value, "SaveSimulation");
+            menuExit.Header = Strings.Lookup (l.Value, "ExitProgram");
+            menuHelp.Header = Strings.Lookup (l.Value, "Help");
+            menuAbout.Header = Strings.Lookup (l.Value, "AboutProgram");
+
+            grpDeviceButtons.Header = Strings.Lookup (l.Value, "Devices");
+            lblDeviceMonitor.Content = Strings.Lookup (l.Value, "CardiacMonitor");
+            lblDevice12LeadECG.Content = Strings.Lookup (l.Value, "12LeadECG");
+            lblDeviceDefibrillator.Content = Strings.Lookup (l.Value, "Defibrillator");
+            lblDeviceVentilator.Content = Strings.Lookup (l.Value, "Ventilator");
+            lblDeviceIABP.Content = Strings.Lookup (l.Value, "IABP");
+            lblDeviceCardiotocograph.Content = Strings.Lookup (l.Value, "Cardiotocograph");
+            lblDeviceIVPump.Content = Strings.Lookup (l.Value, "IVPump");
+            lblDeviceLabResults.Content = Strings.Lookup (l.Value, "LabResults");
 
             grpVitalSigns.Header = Strings.Lookup (l.Value, "VitalSigns");
             lblHR.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "HeartRate"));
@@ -59,12 +74,15 @@ namespace II_Windows {
             lblASBP.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "ArterialBloodPressure"));
             lblPSBP.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "PulmonaryArteryPressure"));
 
-
-
-
             grpRespiratoryProfile.Header = Strings.Lookup (l.Value, "RespiratoryProfile");
-            grpCardiacProfile.Header = Strings.Lookup (l.Value, "CardiacProfile");
             lblInspiratoryRatio.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "InspiratoryExpiratoryRatio"));
+
+            grpCardiacProfile.Header = Strings.Lookup (l.Value, "CardiacProfile");
+            grpSTSegmentElevation.Header = Strings.Lookup (l.Value, "STSegmentElevation");
+            grpTWaveElevation.Header = Strings.Lookup (l.Value, "TWaveElevation");
+
+            lblParametersApply.Content = Strings.Lookup (l.Value, "ApplyChanges");
+            lblParametersReset.Content = Strings.Lookup (l.Value, "ResetParameters");
 
             // IMP: Populate comboCardiacRhythm and comboRespiratoryRhythm
         }
@@ -246,7 +264,7 @@ namespace II_Windows {
             return sWrite.ToString ();
         }
 
-        private void MenuLoadFile_Click (object sender, EventArgs e) {
+        private void MenuLoadFile_Click (object sender, RoutedEventArgs e) {
             Stream s;
             Microsoft.Win32.OpenFileDialog dlgLoad = new Microsoft.Win32.OpenFileDialog ();
 
@@ -262,7 +280,7 @@ namespace II_Windows {
             }
         }
 
-        private void MenuSaveFile_Click (object sender, EventArgs e) {
+        private void MenuSaveFile_Click (object sender, RoutedEventArgs e) {
             Stream s;
             Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
 
@@ -277,11 +295,11 @@ namespace II_Windows {
             }
         }
 
-        private void MenuExit_Click (object sender, EventArgs e) {
+        private void MenuExit_Click (object sender, RoutedEventArgs e) {
             RequestExit ();
         }
 
-        private void MenuAbout_Click (object sender, EventArgs e) {
+        private void MenuAbout_Click (object sender, RoutedEventArgs e) {
             // IMP: Show "About" Window
             /*
             Forms.Dialog_About about = new Forms.Dialog_About ();
@@ -289,7 +307,7 @@ namespace II_Windows {
             */
         }
 
-        private void ButtonMonitor_Click (object sender, RoutedEventArgs e) {
+        private void ButtonDeviceMonitor_Click (object sender, RoutedEventArgs e) {
             InitMonitor ();
 
             // IMP: Show Cardiac Monitor
@@ -402,7 +420,7 @@ namespace II_Windows {
             */
         }
 
-        private void OnRhythmSelected (object sender, EventArgs e) {
+        private void OnRhythmSelected (object sender, SelectionChangedEventArgs e) {
             // IMP
             /*
             if (checkDefaultVitals.Checked && tPatient != null) {
@@ -421,13 +439,5 @@ namespace II_Windows {
             }
             */
         }
-
-        private void OnNumUpDown_Enter (object sender, EventArgs e) {
-            // IMP
-            /*
-            ((NumericUpDown)sender).Select (0, ((NumericUpDown)sender).Text.Length);
-            */
-        }
-
     }
 }
