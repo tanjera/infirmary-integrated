@@ -2,10 +2,8 @@
 
 
 
-
 * Next steps:
 	- WPF UI
-		- Loading args[]
 		- About program dialog
 		- Language selection dialog
 			- Needs to set App.Language.Value in dialog before closing!

@@ -26,18 +26,27 @@ namespace II_Windows {
 
         Patient tPatient;
 
+        // Define WPF UI commands for binding
+        private ICommand icLoadFile, icSaveFile, icExit;
+        public ICommand IC_LoadFile { get { return icLoadFile; } }
+        public ICommand IC_SaveFile { get { return icLoadFile; } }
+        public ICommand IC_Exit { get { return icLoadFile; } }
+
         public PatientEditor () {
             InitializeComponent ();
+            DataContext = this;
 
             InitLanguage ();
-            InitUIStrings ();
+            InitInterface ();
             InitPatient ();
+
+            if (App.Start_Args.Length > 0)
+                Load_Open (App.Start_Args [0]);
 
             //InitMonitor ();
         }
 
         private void InitLanguage () {
-
             try {
                 if (Properties.Settings.Default.Language != null)
                     App.Language.Value = (Languages.Values)Enum.Parse (typeof (Languages.Values), Properties.Settings.Default.Language);
@@ -55,16 +64,21 @@ namespace II_Windows {
             */
         }
 
-        private void InitUIStrings () {
+        private void InitInterface () {
+            // Initiate ICommands for KeyBindings
+            icLoadFile = new ActionCommand (() => MenuLoadFile ());
+            icSaveFile = new ActionCommand (() => MenuSaveFile ());
+            icExit = new ActionCommand (() => RequestExit ());
+
             // IMP: Get language selection!
             Languages l = new Languages (Languages.Values.EN);
 
-            menuFile.Header = Strings.Lookup (l.Value, "File");
-            menuLoad.Header = Strings.Lookup (l.Value, "LoadSimulation");
-            menuSave.Header = Strings.Lookup (l.Value, "SaveSimulation");
-            menuExit.Header = Strings.Lookup (l.Value, "ExitProgram");
-            menuHelp.Header = Strings.Lookup (l.Value, "Help");
-            menuAbout.Header = Strings.Lookup (l.Value, "AboutProgram");
+            menuFile.Header = Strings.Lookup (l.Value, "MenuFile");
+            menuLoad.Header = Strings.Lookup (l.Value, "MenuLoadSimulation");
+            menuSave.Header = Strings.Lookup (l.Value, "MenuSaveSimulation");
+            menuExit.Header = Strings.Lookup (l.Value, "MenuExitProgram");
+            menuHelp.Header = Strings.Lookup (l.Value, "MenuHelp");
+            menuAbout.Header = Strings.Lookup (l.Value, "MenuAboutProgram");
 
             lblGroupDevices.Content = Strings.Lookup (l.Value, "Devices");
             lblDeviceMonitor.Content = Strings.Lookup (l.Value, "CardiacMonitor");
@@ -276,7 +290,7 @@ namespace II_Windows {
             return sWrite.ToString ();
         }
 
-        private void MenuLoadFile_Click (object sender, RoutedEventArgs e) {
+        private void MenuLoadFile () {
             Stream s;
             Microsoft.Win32.OpenFileDialog dlgLoad = new Microsoft.Win32.OpenFileDialog ();
 
@@ -292,7 +306,7 @@ namespace II_Windows {
             }
         }
 
-        private void MenuSaveFile_Click (object sender, RoutedEventArgs e) {
+        private void MenuSaveFile() {
             Stream s;
             Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
 
@@ -305,6 +319,14 @@ namespace II_Windows {
                     Save_T1 (s);
                 }
             }
+        }
+
+        private void MenuLoadFile_Click (object sender, RoutedEventArgs e) {
+            MenuLoadFile ();
+        }
+
+        private void MenuSaveFile_Click (object sender, RoutedEventArgs e) {
+            MenuSaveFile ();
         }
 
         private void MenuExit_Click (object sender, RoutedEventArgs e) {

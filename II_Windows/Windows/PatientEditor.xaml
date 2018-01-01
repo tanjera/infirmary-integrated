@@ -13,6 +13,10 @@
         Height="650" Width="700"
         Closed="OnClosed">
 
+    <Window.InputBindings>
+        <KeyBinding Key="L" Modifiers="Ctrl" Command="{Binding IC_LoadFile}" />
+        <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding IC_SaveFile}" />
+    </Window.InputBindings>
 
     <Window.Resources>
         <Style x:Key="expParameters" TargetType="{x:Type Expander}">
@@ -95,10 +99,10 @@
         <!-- Main Menu -->
         <Menu DockPanel.Dock="Top" Width="Auto" Background="White">
             <MenuItem Name="menuFile">
-                <MenuItem Name="menuLoad" Click="MenuLoadFile_Click"/>
-                <MenuItem Name="menuSave" Click="MenuSaveFile_Click"/>
+                <MenuItem Name="menuLoad" Click="MenuLoadFile_Click" InputGestureText="Ctrl+L"/>
+                <MenuItem Name="menuSave" Click="MenuSaveFile_Click" InputGestureText="Ctrl+S"/>
                 <Separator />
-                <MenuItem Name="menuExit" Click="MenuExit_Click"/>
+                <MenuItem Name="menuExit" Click="MenuExit_Click" InputGestureText="Alt-F4"/>
             </MenuItem>
 
             <MenuItem Name="menuHelp">

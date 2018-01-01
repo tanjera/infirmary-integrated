@@ -92,12 +92,13 @@ namespace II.Localization {
         };
 
         static List<Pair> EN = new List<Pair> {
-            new Pair("File",                                    "File"),
-            new Pair("LoadSimulation",                          "Load Simulation"),
-            new Pair("SaveSimulation",                          "Save Simulation"),
-            new Pair("ExitProgram",                             "Exit Infirmary Integrated"),
-            new Pair("Help",                                    "Help"),
-            new Pair("AboutProgram",                            "About Infirmary Integrated"),
+            new Pair("MenuFile",                                "_File"),
+            new Pair("MenuLoadSimulation",                      "_Load Simulation"),
+            new Pair("MenuSaveSimulation",                      "_Save Simulation"),
+            new Pair("MenuExitProgram",                         "E_xit Infirmary Integrated"),
+            new Pair("MenuHelp",                                "_Help"),
+            new Pair("MenuAboutProgram",                        "_About Infirmary Integrated"),
+
             new Pair("HeartRate",                               "Heart Rate"),
             new Pair("BloodPressure",                           "Blood Pressure"),
             new Pair("RespiratoryRate",                         "Respiratory Rate"),
@@ -130,17 +131,17 @@ namespace II.Localization {
             new Pair("IVPump",                                  "IV Pump"),
             new Pair("LabResults",                              "Laboratory Results"),
 
-            new Pair("DeviceOptions",                           "Device Options"),
-            new Pair("PauseDevice",                             "Pause Device"),
-            new Pair("NumericRowAmounts",                       "Numeric Row Amounts"),
-            new Pair("TracingRowAmounts",                       "Tracing Row Amounts"),
-            new Pair("FontSize",                                "Font Size"),
-            new Pair("ColorScheme",                             "Color Scheme"),
-            new Pair("ToggleFullscreen",                        "Toggle Fullscreen"),
-            new Pair("CloseDevice",                             "Close Device"),
-            new Pair("PatientOptions",                          "Patient Options"),
-            new Pair("NewPatient",                              "New Patient"),
-            new Pair("EditPatient",                             "Edit Patient"),
+            new Pair("MenuDeviceOptions",                       "_Device Options"),
+            new Pair("MenuPauseDevice",                         "_Pause Device"),
+            new Pair("MenuNumericRowAmounts",                   "_Numeric Row Amounts"),
+            new Pair("MenuTracingRowAmounts",                   "_Tracing Row Amounts"),
+            new Pair("MenuFontSize",                            "F_ont Size"),
+            new Pair("MenuColorScheme",                         "Color _Scheme"),
+            new Pair("MenuToggleFullscreen",                    "Toggle _Fullscreen"),
+            new Pair("MenuCloseDevice",                         "_Close Device"),
+            new Pair("MenuPatientOptions",                      "_Patient Options"),
+            new Pair("MenuNewPatient",                          "_New Patient"),
+            new Pair("MenuEditPatient",                         "_Edit Patient"),
         };
 
         static List<Pair> ES = new List<Pair> {

@@ -12,6 +12,8 @@ namespace II_Windows {
     /// </summary>
     public partial class App : Application {
 
+        public static string [] Start_Args;
+
         public static II.Localization.Languages Language;
 
         public static PatientEditor Patient_Editor;
@@ -19,5 +21,8 @@ namespace II_Windows {
         public static DialogAbout Dialog_About;
         public static DialogLanguage Dialog_Language;
 
+        private void App_Startup (object sender, StartupEventArgs e) {
+            Start_Args = e.Args;
+        }
     }
 }

@@ -113,6 +113,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Classes\ActionCommand.cs" />
     <Compile Include="Windows\DeviceMonitor.xaml.cs">
       <DependentUpon>DeviceMonitor.xaml</DependentUpon>
     </Compile>
