@@ -4,9 +4,6 @@
 
 * Next steps:
 	- WPF UI
-		- About program dialog
-		- Language selection dialog
-			- Needs to set App.Language.Value in dialog before closing!
 		- Patient editor
 			- numUpDown value, interval, min, max
 			- Tie .xaml into .cs functions
@@ -15,7 +12,7 @@
 			- Layout, Menu, UI...
 			- Controls for numerics, tracings
 
-		- ComboBox descriptions via localization lookup table
+		- ComboBox descriptions via localization lookup table...
 
 
 

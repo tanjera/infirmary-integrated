@@ -14,7 +14,7 @@ namespace II_Windows {
 
         public static string [] Start_Args;
 
-        public static II.Localization.Languages Language;
+        public static II.Localization.Languages Language = new II.Localization.Languages();
 
         public static PatientEditor Patient_Editor;
         public static DeviceMonitor Device_Monitor;

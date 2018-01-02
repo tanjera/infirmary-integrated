@@ -47,87 +47,74 @@ namespace II_Windows {
         }
 
         private void InitLanguage () {
-            try {
-                if (Properties.Settings.Default.Language != null)
-                    App.Language.Value = (Languages.Values)Enum.Parse (typeof (Languages.Values), Properties.Settings.Default.Language);
-            } catch { }
+            string setLang = Properties.Settings.Default.Language;
 
-            if (Properties.Settings.Default.Language == null) {
-                App.Dialog_Language = new DialogLanguage ();
-                App.Dialog_Language.Activate ();
-                App.Dialog_Language.Show ();
+            if (setLang == null || setLang == ""
+                || !Enum.TryParse<Languages.Values>(setLang, out App.Language.Value)) {
+                App.Language = new Languages ();
+                Dialog_Language ();
             }
-
-            /* IMP
-            Properties.Settings.Default.Language = App.Language.Value.ToString();
-            Properties.Settings.Default.Save ();
-            */
         }
 
         private void InitInterface () {
             // Initiate ICommands for KeyBindings
-            icLoadFile = new ActionCommand (() => MenuLoadFile ());
-            icSaveFile = new ActionCommand (() => MenuSaveFile ());
+            icLoadFile = new ActionCommand (() => Load_File ());
+            icSaveFile = new ActionCommand (() => Save_File ());
             icExit = new ActionCommand (() => RequestExit ());
 
-            // IMP: Get language selection!
-            Languages l = new Languages (Languages.Values.EN);
+            // Populate UI strings per language selection
+            Languages.Values l = App.Language.Value;
 
-            menuFile.Header = Strings.Lookup (l.Value, "MenuFile");
-            menuLoad.Header = Strings.Lookup (l.Value, "MenuLoadSimulation");
-            menuSave.Header = Strings.Lookup (l.Value, "MenuSaveSimulation");
-            menuExit.Header = Strings.Lookup (l.Value, "MenuExitProgram");
-            menuHelp.Header = Strings.Lookup (l.Value, "MenuHelp");
-            menuAbout.Header = Strings.Lookup (l.Value, "MenuAboutProgram");
+            wdwPatientEditor.Title = Strings.Lookup (l, "PE:WindowTitle");
+            menuFile.Header = Strings.Lookup (l, "PE:MenuFile");
+            menuLoad.Header = Strings.Lookup (l, "PE:MenuLoadSimulation");
+            menuSave.Header = Strings.Lookup (l, "PE:MenuSaveSimulation");
+            menuExit.Header = Strings.Lookup (l, "PE:MenuExitProgram");
 
-            lblGroupDevices.Content = Strings.Lookup (l.Value, "Devices");
-            lblDeviceMonitor.Content = Strings.Lookup (l.Value, "CardiacMonitor");
-            lblDevice12LeadECG.Content = Strings.Lookup (l.Value, "12LeadECG");
-            lblDeviceDefibrillator.Content = Strings.Lookup (l.Value, "Defibrillator");
-            lblDeviceVentilator.Content = Strings.Lookup (l.Value, "Ventilator");
-            lblDeviceIABP.Content = Strings.Lookup (l.Value, "IABP");
-            lblDeviceCardiotocograph.Content = Strings.Lookup (l.Value, "Cardiotocograph");
-            lblDeviceIVPump.Content = Strings.Lookup (l.Value, "IVPump");
-            lblDeviceLabResults.Content = Strings.Lookup (l.Value, "LabResults");
+            menuSettings.Header = Strings.Lookup (l, "PE:MenuSettings");
+            menuSetLanguage.Header = Strings.Lookup (l, "PE:MenuSetLanguage");
 
-            lblGroupVitalSigns.Content = Strings.Lookup (l.Value, "VitalSigns");
-            lblHR.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "HeartRate"));
-            lblNIBP.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "BloodPressure"));
-            lblRR.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "RespiratoryRate"));
-            lblSPO2.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "PulseOximetry"));
-            lblT.Content = String.Format("{0}:", Strings.Lookup (l.Value, "Temperature"));
-            lblCardiacRhythm.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "CardiacRhythm"));
-            lblRespiratoryRhythm.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "RespiratoryRhythm"));
-            checkDefaultVitals.Content = Strings.Lookup (l.Value, "UseDefaultVitalSignRanges");
+            menuHelp.Header = Strings.Lookup (l, "PE:MenuHelp");
+            menuAbout.Header = Strings.Lookup (l, "PE:MenuAboutProgram");
 
-            lblGroupHemodynamics.Content = Strings.Lookup (l.Value, "AdvancedHemodynamics");
-            lblETCO2.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "EndTidalCO2"));
-            lblCVP.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "CentralVenousPressure"));
-            lblASBP.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "ArterialBloodPressure"));
-            lblPSP.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "PulmonaryArteryPressure"));
+            lblGroupDevices.Content = Strings.Lookup (l, "PE:Devices");
+            lblDeviceMonitor.Content = Strings.Lookup (l, "PE:CardiacMonitor");
+            lblDevice12LeadECG.Content = Strings.Lookup (l, "PE:12LeadECG");
+            lblDeviceDefibrillator.Content = Strings.Lookup (l, "PE:Defibrillator");
+            lblDeviceVentilator.Content = Strings.Lookup (l, "PE:Ventilator");
+            lblDeviceIABP.Content = Strings.Lookup (l, "PE:IABP");
+            lblDeviceCardiotocograph.Content = Strings.Lookup (l, "PE:Cardiotocograph");
+            lblDeviceIVPump.Content = Strings.Lookup (l, "PE:IVPump");
+            lblDeviceLabResults.Content = Strings.Lookup (l, "PE:LabResults");
 
-            lblGroupRespiratoryProfile.Content = Strings.Lookup (l.Value, "RespiratoryProfile");
-            lblInspiratoryRatio.Content = String.Format ("{0}:", Strings.Lookup (l.Value, "InspiratoryExpiratoryRatio"));
+            lblGroupVitalSigns.Content = Strings.Lookup (l, "PE:VitalSigns");
+            lblHR.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:HeartRate"));
+            lblNIBP.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:BloodPressure"));
+            lblRR.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:RespiratoryRate"));
+            lblSPO2.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:PulseOximetry"));
+            lblT.Content = String.Format("{0}:", Strings.Lookup (l, "PE:Temperature"));
+            lblCardiacRhythm.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:CardiacRhythm"));
+            lblRespiratoryRhythm.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:RespiratoryRhythm"));
+            checkDefaultVitals.Content = Strings.Lookup (l, "PE:UseDefaultVitalSignRanges");
 
-            lblGroupCardiacProfile.Content = Strings.Lookup (l.Value, "CardiacProfile");
-            grpSTSegmentElevation.Header = Strings.Lookup (l.Value, "STSegmentElevation");
-            grpTWaveElevation.Header = Strings.Lookup (l.Value, "TWaveElevation");
+            lblGroupHemodynamics.Content = Strings.Lookup (l, "PE:AdvancedHemodynamics");
+            lblETCO2.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:EndTidalCO2"));
+            lblCVP.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:CentralVenousPressure"));
+            lblASBP.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:ArterialBloodPressure"));
+            lblPSP.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:PulmonaryArteryPressure"));
 
-            lblParametersApply.Content = Strings.Lookup (l.Value, "ApplyChanges");
-            lblParametersReset.Content = Strings.Lookup (l.Value, "ResetParameters");
+            lblGroupRespiratoryProfile.Content = Strings.Lookup (l, "PE:RespiratoryProfile");
+            lblInspiratoryRatio.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:InspiratoryExpiratoryRatio"));
+
+            lblGroupCardiacProfile.Content = Strings.Lookup (l, "PE:CardiacProfile");
+            grpSTSegmentElevation.Header = Strings.Lookup (l, "PE:STSegmentElevation");
+            grpTWaveElevation.Header = Strings.Lookup (l, "PE:TWaveElevation");
+
+            lblParametersApply.Content = Strings.Lookup (l, "BUTTON:ApplyChanges");
+            lblParametersReset.Content = Strings.Lookup (l, "BUTTON:ResetParameters");
 
             comboCardiacRhythm.ItemsSource = Cardiac_Rhythms.Descriptions;
             comboRespiratoryRhythm.ItemsSource = Respiratory_Rhythms.Descriptions;
-        }
-
-        public bool RequestExit () {
-            Application.Current.Shutdown();
-            return true;
-        }
-
-        public Patient RequestNewPatient () {
-            InitPatient ();
-            return tPatient;
         }
 
         private void InitPatient () {
@@ -150,6 +137,21 @@ namespace II_Windows {
 
             App.Device_Monitor.SetPatient (tPatient);
             tPatient.PatientEvent += App.Device_Monitor.OnPatientEvent;
+        }
+
+        private void Dialog_Language(bool reloadUI = false) {
+            App.Dialog_Language = new DialogLanguage ();
+            App.Dialog_Language.Activate ();
+            App.Dialog_Language.ShowDialog ();
+
+            if (reloadUI)
+                InitInterface ();
+        }
+
+        private void Dialog_About (bool reloadUI = false) {
+            App.Dialog_About = new DialogAbout();
+            App.Dialog_About.Activate ();
+            App.Dialog_About.ShowDialog ();
         }
 
         private void Load_Open (string fileName) {
@@ -290,7 +292,7 @@ namespace II_Windows {
             return sWrite.ToString ();
         }
 
-        private void MenuLoadFile () {
+        private void Load_File () {
             Stream s;
             Microsoft.Win32.OpenFileDialog dlgLoad = new Microsoft.Win32.OpenFileDialog ();
 
@@ -306,7 +308,7 @@ namespace II_Windows {
             }
         }
 
-        private void MenuSaveFile() {
+        private void Save_File () {
             Stream s;
             Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
 
@@ -321,22 +323,35 @@ namespace II_Windows {
             }
         }
 
+        public bool RequestExit () {
+            Application.Current.Shutdown ();
+            return true;
+        }
+
+        public Patient RequestNewPatient () {
+            InitPatient ();
+            return tPatient;
+        }
+
+
         private void MenuLoadFile_Click (object sender, RoutedEventArgs e) {
-            MenuLoadFile ();
+            Load_File ();
         }
 
         private void MenuSaveFile_Click (object sender, RoutedEventArgs e) {
-            MenuSaveFile ();
+            Save_File ();
         }
 
         private void MenuExit_Click (object sender, RoutedEventArgs e) {
             RequestExit ();
         }
 
+        private void MenuSetLanguage_Click (object sender, RoutedEventArgs e) {
+            Dialog_Language (true);
+        }
+
         private void MenuAbout_Click (object sender, RoutedEventArgs e) {
-            App.Dialog_About = new DialogAbout();
-            App.Dialog_About.Activate ();
-            App.Dialog_About.Show ();
+            Dialog_About ();
         }
 
         private void ButtonDeviceMonitor_Click (object sender, RoutedEventArgs e) {

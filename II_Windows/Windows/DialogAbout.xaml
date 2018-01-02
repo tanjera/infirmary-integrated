@@ -5,8 +5,75 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:II_Windows"
         mc:Ignorable="d"
-        Title="DialogAbout" Height="300" Width="300">
-    <Grid>
+        Title="DialogAbout"
+        Name="dlgAbout"
+        Icon="{StaticResource Icon_Infirmary}"
+        WindowStartupLocation="CenterScreen"
+        Height="200" Width="550" SizeToContent="Height">
+
+
+    <Grid HorizontalAlignment="Center" Margin="10, 5, 50, 10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Image Name="imgIcon" Source="{StaticResource Icon_Infirmary}"
+               Grid.Column="0" Grid.Row="0"
+               VerticalAlignment="Center" HorizontalAlignment="Center"
+               Margin="10"
+               Height="100" Width="100"/>
+
+
+
+        <StackPanel
+            Grid.Column="1" Grid.Row="0">
+
+            <Label Name="lblInfirmaryIntegrated"
+                   Padding="5" Margin="5"
+                   VerticalAlignment="Bottom" HorizontalAlignment="Left"
+                   FontSize="22" FontWeight="Bold" />
+
+            <Label Name="lblVersion"
+                   Padding="5,2,5,0" Margin="5,0"
+                   HorizontalAlignment="Left" />
+
+            <Label Padding="5,0,5,2" Margin="5,0"
+                   HorizontalAlignment="Left"
+                   Content="Ibi Keller, 2017"/>
+
+            <TextBlock Name="tblDescription"
+                   Padding="5,2" Margin="5"
+                   VerticalAlignment="Top" HorizontalAlignment="Left"
+                   TextWrapping="Wrap" />
+
+            <Label Padding="5,2,5,0" Margin="5,5,5,0"
+                   HorizontalAlignment="Left" >
+                <Hyperlink NavigateUri="http://www.tanjera.com/"
+                           RequestNavigate="Hyperlink_RequestNavigate">
+                    http://www.tanjera.com/
+                </Hyperlink>
+            </Label>
+
+            <Label Padding="5,0,5,2" Margin="5,0,5,5"
+                   HorizontalAlignment="Left" >
+                <Hyperlink NavigateUri="https://github.com/tanjera/infirmary-integrated"
+                           RequestNavigate="Hyperlink_RequestNavigate">
+                    https://github.com/tanjera/infirmary-integrated
+                </Hyperlink>
+            </Label>
+
+        </StackPanel>
+
+
+
+
 
     </Grid>
+
+
 </Window>

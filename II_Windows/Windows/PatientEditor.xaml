@@ -7,10 +7,10 @@
         xmlns:local="clr-namespace:II_Windows"
         mc:Ignorable="d"
         Name="wdwPatientEditor"
-        Title="Infirmary Integrated: Patient Editor"
+        Title="PatientEditor"
         Icon="{StaticResource Icon_Infirmary}"
         WindowStartupLocation="CenterScreen"
-        Height="650" Width="700"
+        Height="650" Width="700" SizeToContent="Width"
         Closed="OnClosed">
 
     <Window.InputBindings>
@@ -103,6 +103,10 @@
                 <MenuItem Name="menuSave" Click="MenuSaveFile_Click" InputGestureText="Ctrl+S"/>
                 <Separator />
                 <MenuItem Name="menuExit" Click="MenuExit_Click" InputGestureText="Alt-F4"/>
+            </MenuItem>
+
+            <MenuItem Name="menuSettings">
+                <MenuItem Name="menuSetLanguage" Click="MenuSetLanguage_Click"/>
             </MenuItem>
 
             <MenuItem Name="menuHelp">

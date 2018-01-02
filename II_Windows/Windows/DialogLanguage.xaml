@@ -5,8 +5,38 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:II_Windows"
         mc:Ignorable="d"
-        Title="DialogLanguage" Height="300" Width="300">
-    <Grid>
+        Title="DialogLanguage"
+        Name="dlgLanguage"
+        Icon="{StaticResource Icon_Infirmary}"
+        WindowStartupLocation="CenterScreen"
+        Height="200" Width="400" SizeToContent="WidthAndHeight">
+
+    <Grid HorizontalAlignment="Center" Margin="50, 5, 50, 10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Label Name="lblChooseLanguage"
+               Grid.Column="0" Grid.Row="0"
+               Padding="5,2" Margin="5"
+               VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+
+        <ComboBox Name="cmbLanguages"
+                  Grid.Column="0" Grid.Row="1"
+                  Padding="5,2" Margin="5"
+                  HorizontalAlignment="Center"/>
+
+        <Button Name="btnContinue"
+                Grid.Column="0" Grid.Row="2"
+                Padding="5,2" Margin="5" Background="White"
+                VerticalAlignment="Top" HorizontalAlignment="Right"
+                Click="OnClick_Continue" />
 
     </Grid>
 </Window>
