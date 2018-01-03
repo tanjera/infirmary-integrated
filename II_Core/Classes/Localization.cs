@@ -173,6 +173,8 @@ namespace II.Localization {
             new Pair("BUTTON:ApplyChanges",                     "Apply Changes"),
             new Pair("BUTTON:ResetParameters",                  "Reset Parameters"),
 
+            new Pair("PROG:Title",                              "Infirmary Integrated"),
+
             new Pair("PE:WindowTitle",                          "Infirmary Integrated: Patient Editor"),
             new Pair("PE:MenuFile",                             "_File"),
             new Pair("PE:MenuLoadSimulation",                   "_Load Simulation"),
@@ -213,17 +215,18 @@ namespace II.Localization {
             new Pair("PE:STSegmentElevation",                   "ST Segment Elevation"),
             new Pair("PE:TWaveElevation",                       "T Wave Elevation"),
 
+            new Pair("CM:WindowTitle",                          "Infirmary Integrated: Cardiac Monitor"),
             new Pair("CM:MenuDeviceOptions",                    "_Device Options"),
             new Pair("CM:MenuPauseDevice",                      "_Pause Device"),
-            new Pair("CM:MenuNumericRowAmounts",                "_Numeric Row Amounts"),
-            new Pair("CM:MenuTracingRowAmounts",                "_Tracing Row Amounts"),
+            new Pair("CM:MenuAddTracing",                       "Add _Numeric"),
+            new Pair("CM:MenuAddNumeric",                       "Add _Tracing"),
             new Pair("CM:MenuFontSize",                         "F_ont Size"),
+            new Pair("CM:MenuFontSizeDecrease",                 "_Increase Size"),
+            new Pair("CM:MenuFontSizeIncrease",                 "_Decrease Size"),
             new Pair("CM:MenuColorScheme",                      "Color _Scheme"),
             new Pair("CM:MenuToggleFullscreen",                 "Toggle _Fullscreen"),
             new Pair("CM:MenuCloseDevice",                      "_Close Device"),
-            new Pair("CM:MenuPatientOptions",                   "_Patient Options"),
-            new Pair("CM:MenuNewPatient",                       "_New Patient"),
-            new Pair("CM:MenuEditPatient",                      "_Edit Patient"),
+            new Pair("CM:MenuExitProgram",                      "E_xit Infirmary Integrated"),
 
             new Pair("ABOUT:AboutProgram",                      "About Infirmary Integrated"),
             new Pair("ABOUT:InfirmaryIntegrated",               "Infirmary Integrated"),

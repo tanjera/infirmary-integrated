@@ -7,7 +7,7 @@ namespace II {
 
     public static class Utility {
 
-        public const string Version = "0.8";
+        public const string Version = "0.9";
 
         public enum ColorScheme {
             Normal, Monochrome

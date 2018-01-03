@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 
 namespace II.Rhythm {
+
     public class Strip {
-        double Length = 5.0d;               // Strip length in seconds
+
+        public double Length = 5.0d;               // Strip length in seconds
         double EdgeBuffer = 1.1d;           // Coefficient of Length to draw into future as "now" for buffer
         DateTime Scrolled_Last = DateTime.UtcNow;
         bool Scrolled_Unpausing = false;
@@ -87,13 +89,13 @@ namespace II.Rhythm {
             Points.AddRange (_Replacement);
         }
 
-        private void RemoveNull() {
+        public void RemoveNull() {
             for (int i = Points.Count - 1; i >= 0; i--)
                 if (Points[i] == null)
                     Points.RemoveAt (i);
         }
 
-        private void Sort() {
+        public void Sort() {
             Points.Sort (delegate (Point p1, Point p2) {
                 if (p1 == null && p2 == null) return 0;
                 else if (p1 == null) return -1;

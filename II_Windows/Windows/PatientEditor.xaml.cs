@@ -27,14 +27,14 @@ namespace II_Windows {
         Patient tPatient;
 
         // Define WPF UI commands for binding
-        private ICommand icLoadFile, icSaveFile, icExit;
+        private ICommand icLoadFile, icSaveFile;
         public ICommand IC_LoadFile { get { return icLoadFile; } }
         public ICommand IC_SaveFile { get { return icLoadFile; } }
-        public ICommand IC_Exit { get { return icLoadFile; } }
 
         public PatientEditor () {
             InitializeComponent ();
             DataContext = this;
+            App.Patient_Editor = this;
 
             InitLanguage ();
             InitInterface ();
@@ -60,7 +60,6 @@ namespace II_Windows {
             // Initiate ICommands for KeyBindings
             icLoadFile = new ActionCommand (() => Load_File ());
             icSaveFile = new ActionCommand (() => Save_File ());
-            icExit = new ActionCommand (() => RequestExit ());
 
             // Populate UI strings per language selection
             Languages.Values l = App.Language.Value;

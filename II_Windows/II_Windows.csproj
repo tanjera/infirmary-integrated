@@ -93,6 +93,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\Numeric.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Tracing.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\DeviceMonitor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -114,6 +122,12 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Classes\ActionCommand.cs" />
+    <Compile Include="Controls\Numeric.xaml.cs">
+      <DependentUpon>Numeric.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Tracing.xaml.cs">
+      <DependentUpon>Tracing.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\DeviceMonitor.xaml.cs">
       <DependentUpon>DeviceMonitor.xaml</DependentUpon>
     </Compile>
@@ -170,9 +184,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Controls\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Third Party\Icon_Device12LeadECG_48.png" />
     <Resource Include="Third Party\Icon_DeviceCardiotocograph_48.png" />

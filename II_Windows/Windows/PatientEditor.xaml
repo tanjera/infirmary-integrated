@@ -205,17 +205,23 @@
                             </Grid.ColumnDefinitions>
 
                             <Label Name="lblHR" Grid.Column="0" Grid.Row="0" />
-                            <xctk:IntegerUpDown Name="numHR" Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
+                            <xctk:IntegerUpDown Name="numHR" Increment="5" Minimum="0" Maximum="500"
+                                                Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
                             <Label Name="lblNIBP" Grid.Column="0" Grid.Row="1" />
-                            <xctk:IntegerUpDown Name="numNSBP" Grid.Column="1" Grid.Row="1" Style="{StaticResource intUpDown}" />
+                            <xctk:IntegerUpDown Name="numNSBP" Increment="5" Minimum="0" Maximum="300"
+                                                Grid.Column="1" Grid.Row="1" Style="{StaticResource intUpDown}" />
                             <Label Name="lblNDBP" Grid.Column="2" Grid.Row="1" Content="/" />
-                            <xctk:IntegerUpDown Name="numNDBP" Grid.Column="3" Grid.Row="1" Style="{StaticResource intUpDown}" />
+                            <xctk:IntegerUpDown Name="numNDBP" Increment="5" Minimum="0" Maximum="200"
+                                                Grid.Column="3" Grid.Row="1" Style="{StaticResource intUpDown}" />
                             <Label Name="lblRR" Grid.Column="0" Grid.Row="2" />
-                            <xctk:IntegerUpDown Name="numRR" Grid.Column="1" Grid.Row="2" Style="{StaticResource intUpDown}" />
+                            <xctk:IntegerUpDown Name="numRR" Increment="2" Minimum="0" Maximum="100"
+                                                Grid.Column="1" Grid.Row="2" Style="{StaticResource intUpDown}" />
                             <Label Name="lblSPO2" Grid.Column="0" Grid.Row="3" />
-                            <xctk:IntegerUpDown Name="numSPO2" Grid.Column="1" Grid.Row="3" Style="{StaticResource intUpDown}" />
+                            <xctk:IntegerUpDown Name="numSPO2" Increment="2" Minimum="0" Maximum="100"
+                                                Grid.Column="1" Grid.Row="3" Style="{StaticResource intUpDown}" />
                             <Label Name="lblT" Grid.Column="0" Grid.Row="4" />
-                            <xctk:DecimalUpDown Name="numT" Grid.Column="1" Grid.Row="4" Style="{StaticResource decUpDown}" />
+                            <xctk:DecimalUpDown Name="numT" Increment="0.2" Minimum="0" Maximum="100"
+                                                Grid.Column="1" Grid.Row="4" Style="{StaticResource decUpDown}" />
 
                             <Label Name="lblCardiacRhythm" Grid.Column="0" Grid.Row="5" />
                             <ComboBox Name="comboCardiacRhythm" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="4" SelectionChanged="OnRhythmSelected" />
@@ -250,17 +256,23 @@
                             </Grid.ColumnDefinitions>
 
                             <Label Name="lblETCO2" Grid.Column="0" Grid.Row="0" />
-                            <xctk:IntegerUpDown Name="numETCO2" Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
+                            <xctk:IntegerUpDown Name="numETCO2" Increment="2" Minimum="0" Maximum="100"
+                                                Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
                             <Label Name="lblCVP" Grid.Column="0" Grid.Row="1" />
-                            <xctk:IntegerUpDown Name="numCVP" Grid.Column="1" Grid.Row="1" Style="{StaticResource intUpDown}" />
+                            <xctk:IntegerUpDown Name="numCVP" Increment="1" Minimum="-50" Maximum="50"
+                                                Grid.Column="1" Grid.Row="1" Style="{StaticResource intUpDown}" />
                             <Label Name="lblASBP" Grid.Column="0" Grid.Row="2" />
-                            <xctk:IntegerUpDown Name="numASBP" Grid.Column="1" Grid.Row="2" Style="{StaticResource intUpDown}" />
+                            <xctk:IntegerUpDown Name="numASBP" Increment="5" Minimum="0" Maximum="300"
+                                                Grid.Column="1" Grid.Row="2" Style="{StaticResource intUpDown}" />
                             <Label Name="lblADBP" Grid.Column="2" Grid.Row="2" Content="/" />
-                            <xctk:IntegerUpDown Name="numADBP" Grid.Column="3" Grid.Row="2" Style="{StaticResource intUpDown}" />
+                            <xctk:IntegerUpDown Name="numADBP" Increment="5" Minimum="0" Maximum="200"
+                                                Grid.Column="3" Grid.Row="2" Style="{StaticResource intUpDown}" />
                             <Label Name="lblPSP" Grid.Column="0" Grid.Row="3" />
-                            <xctk:IntegerUpDown Name="numPSP" Grid.Column="1" Grid.Row="3" Style="{StaticResource intUpDown}" />
+                            <xctk:IntegerUpDown Name="numPSP" Increment="2" Minimum="0" Maximum="200"
+                                                Grid.Column="1" Grid.Row="3" Style="{StaticResource intUpDown}" />
                             <Label Name="lblPDP" Grid.Column="2" Grid.Row="3" Content="/" />
-                            <xctk:IntegerUpDown Name="numPDP" Grid.Column="3" Grid.Row="3" Style="{StaticResource intUpDown}" />
+                            <xctk:IntegerUpDown Name="numPDP" Increment="2" Minimum="0" Maximum="200"
+                                                Grid.Column="3" Grid.Row="3" Style="{StaticResource intUpDown}" />
                         </Grid>
                     </Expander>
                 </Border>
@@ -284,9 +296,11 @@
                             </Grid.ColumnDefinitions>
 
                             <Label Name="lblInspiratoryRatio" Grid.Column="0" Grid.Row="0" />
-                            <xctk:IntegerUpDown Name="numInspiratoryRatio" Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
+                            <xctk:IntegerUpDown Name="numInspiratoryRatio" Increment="1" Minimum="0" Maximum="50"
+                                                Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
                             <Label Name="lblExpiratoryRatio" Grid.Column="2" Grid.Row="0" Content=":" />
-                            <xctk:IntegerUpDown Name="numExpiratoryRatio" Grid.Column="3" Grid.Row="0" Style="{StaticResource intUpDown}" />
+                            <xctk:IntegerUpDown Name="numExpiratoryRatio" Increment="1" Minimum="0" Maximum="50"
+                                                Grid.Column="3" Grid.Row="0" Style="{StaticResource intUpDown}" />
                         </Grid>
                     </Expander>
                 </Border>
@@ -320,32 +334,44 @@
                                     </Grid.ColumnDefinitions>
 
                                     <Label Grid.Column="0" Grid.Row="0" Content="I"/>
-                                    <xctk:DecimalUpDown Name="numSTE_I" Grid.Column="1" Grid.Row="0" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numSTE_I" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="1" Grid.Row="0" Style="{StaticResource decUpDown}" />
                                     <Label Grid.Column="0" Grid.Row="1" Content="II"/>
-                                    <xctk:DecimalUpDown Name="numSTE_II" Grid.Column="1" Grid.Row="1" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numSTE_II" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="1" Grid.Row="1" Style="{StaticResource decUpDown}" />
                                     <Label Grid.Column="0" Grid.Row="2" Content="III"/>
-                                    <xctk:DecimalUpDown Name="numSTE_III" Grid.Column="1" Grid.Row="2" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numSTE_III" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="1" Grid.Row="2" Style="{StaticResource decUpDown}" />
 
                                     <Label Grid.Column="2" Grid.Row="0" Content="aVR"/>
-                                    <xctk:DecimalUpDown Name="numSTE_aVR" Grid.Column="3" Grid.Row="0" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numSTE_aVR" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="3" Grid.Row="0" Style="{StaticResource decUpDown}" />
                                     <Label Grid.Column="2" Grid.Row="1" Content="aVL"/>
-                                    <xctk:DecimalUpDown Name="numSTE_aVL" Grid.Column="3" Grid.Row="1" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numSTE_aVL" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="3" Grid.Row="1" Style="{StaticResource decUpDown}" />
                                     <Label Grid.Column="2" Grid.Row="2" Content="aVF"/>
-                                    <xctk:DecimalUpDown Name="numSTE_aVF" Grid.Column="3" Grid.Row="2" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numSTE_aVF" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="3" Grid.Row="2" Style="{StaticResource decUpDown}" />
 
                                     <Label Grid.Column="4" Grid.Row="0" Content="V1"/>
-                                    <xctk:DecimalUpDown Name="numSTE_V1" Grid.Column="5" Grid.Row="0" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numSTE_V1" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="5" Grid.Row="0" Style="{StaticResource decUpDown}" />
                                     <Label Grid.Column="4" Grid.Row="1" Content="V2"/>
-                                    <xctk:DecimalUpDown Name="numSTE_V2" Grid.Column="5" Grid.Row="1" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numSTE_V2" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="5" Grid.Row="1" Style="{StaticResource decUpDown}" />
                                     <Label Grid.Column="4" Grid.Row="2" Content="V3"/>
-                                    <xctk:DecimalUpDown Name="numSTE_V3" Grid.Column="5" Grid.Row="2" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numSTE_V3" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="5" Grid.Row="2" Style="{StaticResource decUpDown}" />
 
                                     <Label Grid.Column="6" Grid.Row="0" Content="V4"/>
-                                    <xctk:DecimalUpDown Name="numSTE_V4" Grid.Column="7" Grid.Row="0" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numSTE_V4" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="7" Grid.Row="0" Style="{StaticResource decUpDown}" />
                                     <Label Grid.Column="6" Grid.Row="1" Content="V5"/>
-                                    <xctk:DecimalUpDown Name="numSTE_V5" Grid.Column="7" Grid.Row="1" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numSTE_V5" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="7" Grid.Row="1" Style="{StaticResource decUpDown}" />
                                     <Label Grid.Column="6" Grid.Row="2" Content="V6"/>
-                                    <xctk:DecimalUpDown Name="numSTE_V6" Grid.Column="7" Grid.Row="2" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numSTE_V6" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="7" Grid.Row="2" Style="{StaticResource decUpDown}" />
                                 </Grid>
                             </GroupBox>
 
@@ -369,32 +395,44 @@
                                     </Grid.ColumnDefinitions>
 
                                     <Label Grid.Column="0" Grid.Row="0" Content="I"/>
-                                    <xctk:DecimalUpDown Name="numTWE_I" Grid.Column="1" Grid.Row="0" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numTWE_I" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="1" Grid.Row="0" Style="{StaticResource decUpDown}" />
                                     <Label Grid.Column="0" Grid.Row="1" Content="II"/>
-                                    <xctk:DecimalUpDown Name="numTWE_II" Grid.Column="1" Grid.Row="1" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numTWE_II" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="1" Grid.Row="1" Style="{StaticResource decUpDown}" />
                                     <Label Grid.Column="0" Grid.Row="2" Content="III"/>
-                                    <xctk:DecimalUpDown Name="numTWE_III" Grid.Column="1" Grid.Row="2" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numTWE_III" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="1" Grid.Row="2" Style="{StaticResource decUpDown}" />
 
                                     <Label Grid.Column="2" Grid.Row="0" Content="aVR"/>
-                                    <xctk:DecimalUpDown Name="numTWE_aVR" Grid.Column="3" Grid.Row="0" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numTWE_aVR" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="3" Grid.Row="0" Style="{StaticResource decUpDown}" />
                                     <Label Grid.Column="2" Grid.Row="1" Content="aVL"/>
-                                    <xctk:DecimalUpDown Name="numTWE_aVL" Grid.Column="3" Grid.Row="1" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numTWE_aVL" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="3" Grid.Row="1" Style="{StaticResource decUpDown}" />
                                     <Label Grid.Column="2" Grid.Row="2" Content="aVF"/>
-                                    <xctk:DecimalUpDown Name="numTWE_aVF" Grid.Column="3" Grid.Row="2" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numTWE_aVF" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="3" Grid.Row="2" Style="{StaticResource decUpDown}" />
 
                                     <Label Grid.Column="4" Grid.Row="0" Content="V1"/>
-                                    <xctk:DecimalUpDown Name="numTWE_V1" Grid.Column="5" Grid.Row="0" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numTWE_V1" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="5" Grid.Row="0" Style="{StaticResource decUpDown}" />
                                     <Label Grid.Column="4" Grid.Row="1" Content="V2"/>
-                                    <xctk:DecimalUpDown Name="numTWE_V2" Grid.Column="5" Grid.Row="1" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numTWE_V2" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="5" Grid.Row="1" Style="{StaticResource decUpDown}" />
                                     <Label Grid.Column="4" Grid.Row="2" Content="V3"/>
-                                    <xctk:DecimalUpDown Name="numTWE_V3" Grid.Column="5" Grid.Row="2" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numTWE_V3" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="5" Grid.Row="2" Style="{StaticResource decUpDown}" />
 
                                     <Label Grid.Column="6" Grid.Row="0" Content="V4"/>
-                                    <xctk:DecimalUpDown Name="numTWE_V4" Grid.Column="7" Grid.Row="0" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numTWE_V4" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="7" Grid.Row="0" Style="{StaticResource decUpDown}" />
                                     <Label Grid.Column="6" Grid.Row="1" Content="V5"/>
-                                    <xctk:DecimalUpDown Name="numTWE_V5" Grid.Column="7" Grid.Row="1" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numTWE_V5" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="7" Grid.Row="1" Style="{StaticResource decUpDown}" />
                                     <Label Grid.Column="6" Grid.Row="2" Content="V6"/>
-                                    <xctk:DecimalUpDown Name="numTWE_V6" Grid.Column="7" Grid.Row="2" Style="{StaticResource decUpDown}" />
+                                    <xctk:DecimalUpDown Name="numTWE_V6" Increment="0.1" Minimum="-1.0" Maximum="1.0"
+                                                        Grid.Column="7" Grid.Row="2" Style="{StaticResource decUpDown}" />
                                 </Grid>
                             </GroupBox>
                         </StackPanel>

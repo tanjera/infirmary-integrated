@@ -4,12 +4,8 @@
 
 * Next steps:
 	- WPF UI
-		- Patient editor
-			- numUpDown value, interval, min, max
-			- Tie .xaml into .cs functions
 		- Cardiac Monitor window
-			- Tie .xaml into .cs
-			- Layout, Menu, UI...
+			- Layout 
 			- Controls for numerics, tracings
 
 		- ComboBox descriptions via localization lookup table...

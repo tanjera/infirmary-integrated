@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 
 using II;
 using II.Rhythm;
-
+using II.Localization;
 
 namespace II_Windows {
     /// <summary>
@@ -32,28 +32,30 @@ namespace II_Windows {
 
         Patient tPatient;
         List<Channel> tChannels = new List<Channel> ();
+        List<Controls.Numeric> tNumerics = new List<Controls.Numeric> ();
 
-        // IMP
-        //List<II.Controls.Numeric> tNumerics = new List<II.Controls.Numeric> ();
+        // Define WPF UI commands for binding
+        private ICommand icPauseDevice, icCloseDevice, icExitProgram;
+        public ICommand IC_PauseDevice { get { return icPauseDevice; } }
+        public ICommand IC_CloseDevice { get { return icCloseDevice; } }
+        public ICommand IC_ExitProgram { get { return icExitProgram; } }
+
 
 
         public class Channel {
             public Strip cStrip;
-
-            /* IMP
-            public Strip.Renderer cRenderer;
             public Controls.Tracing cTracing;
 
-            public Channel (Strip s, Strip.Renderer r, Controls.Tracing t) {
+            public Channel (Strip s, Controls.Tracing t) {
                 cStrip = s;
-                cRenderer = r;
                 cTracing = t;
             }
-            */
         }
 
         public DeviceMonitor () {
             InitializeComponent ();
+
+            InitInterface ();
 
             /* IMP
             timerTracing.Interval = Waveforms.Draw_Refresh;
@@ -65,12 +67,33 @@ namespace II_Windows {
 
             OnLayoutChange ();
         }
-        /* IMP
-        private void Device_Monitor_FormClosing (object sender, FormClosingEventArgs e) {
-            if (e.CloseReason == CloseReason.UserClosing)
-                e.Cancel = !Program.Form_Editor.RequestExit ();
+
+        private void InitInterface () {
+            // Initiate ICommands for KeyBindings
+            icPauseDevice = new ActionCommand (() => {
+                tPatient.TogglePause ();
+                ApplyPause ();
+            });
+            icCloseDevice = new ActionCommand (() => this.Close ());
+            icExitProgram = new ActionCommand (() => App.Patient_Editor.RequestExit ());
+
+
+            // Populate UI strings per language selection
+            Languages.Values l = App.Language.Value;
+
+            wdwDeviceMonitor.Title = Strings.Lookup (l, "CM:WindowTitle");
+            menuDevice.Header = Strings.Lookup (l, "CM:MenuDeviceOptions");
+            menuPauseDevice.Header = Strings.Lookup (l, "CM:MenuPauseDevice");
+            menuAddNumeric.Header = Strings.Lookup (l, "CM:MenuAddNumeric");
+            menuAddTracing.Header = Strings.Lookup (l, "CM:MenuAddTracing");
+            menuFontSize.Header = Strings.Lookup (l, "CM:MenuFontSize");
+            menuFontSizeDecrease.Header = Strings.Lookup (l, "CM:MenuFontSizeDecrease");
+            menuFontSizeIncrease.Header = Strings.Lookup (l, "CM:MenuFontSizeIncrease");
+            menuToggleFullscreen.Header = Strings.Lookup (l, "CM:MenuToggleFullscreen");
+            menuCloseDevice.Header = Strings.Lookup (l, "CM:MenuCloseDevice");
+            menuExitProgram.Header = Strings.Lookup (l, "CM:MenuExitProgram");
         }
-        */
+
         public void Load_Process (string inc) {
             StringReader sRead = new StringReader (inc);
             List<string> numericTypes = new List<string> (),
@@ -103,7 +126,6 @@ namespace II_Windows {
 
             OnLayoutChange (numericTypes, tracingTypes);
 
-            ApplyColorScheme ();
             ApplyFontSize ();
         }
 
@@ -118,7 +140,8 @@ namespace II_Windows {
 
             List<string> numericTypes = new List<string> (),
                          tracingTypes = new List<string> ();
-            //IMP
+
+            throw new NotImplementedException();
             //tNumerics.ForEach (o => { numericTypes.Add (o.controlType.Value.ToString ()); });
             tChannels.ForEach (o => { tracingTypes.Add (o.cStrip.Lead.Value.ToString ()); });
             sWrite.AppendLine (String.Format ("{0}:{1}", "numericTypes", string.Join (",", numericTypes)));
@@ -133,6 +156,7 @@ namespace II_Windows {
         }
 
         private void ApplyFontSize () {
+            throw new NotImplementedException ();
             /* IMP
             foreach (II.Controls.Numeric rn in tNumerics)
                 rn.SetFontSize (tFontsize * 0.5f);
@@ -140,6 +164,7 @@ namespace II_Windows {
         }
 
         private void ApplyFullScreen () {
+            throw new NotImplementedException ();
             /* IMP
             menuItem_Fullscreen.Checked = tFullscreen;
 
@@ -160,34 +185,9 @@ namespace II_Windows {
             */
         }
 
-        private void ApplyColorScheme () {
-            /* IMP
-            foreach (Channel c in tChannels) {
-                c.cTracing.SetColorScheme (tColorScheme);
-                c.cRenderer.SetColorScheme (tColorScheme);
-            }
-
-            foreach (II.Controls.Numeric n in tNumerics) {
-                n.SetColorScheme (tColorScheme);
-            }
-
-            switch (tColorScheme) {
-                default:
-                case Utility.ColorScheme.Normal:
-                    layoutNumerics.BackColor = Color.Black;
-                    layoutTracings.BackColor = Color.Black;
-                    layoutSplit.BackColor = ColorTranslator.FromHtml ("#0A0A0A");
-                    break;
-                case Utility.ColorScheme.Monochrome:
-                    layoutNumerics.BackColor = Color.White;
-                    layoutTracings.BackColor = Color.White;
-                    layoutSplit.BackColor = ColorTranslator.FromHtml ("#FAFAFA");
-                    break;
-            }
-            */
-        }
 
         private void ApplyPause () {
+            throw new NotImplementedException ();
             // IMP
             //menuItem_PauseDevice.Checked = tPatient.Paused;
 
@@ -196,86 +196,50 @@ namespace II_Windows {
                     c.cStrip.Unpause ();
         }
 
-        private void MenuClose_Click (object sender, EventArgs e) {
+        private void MenuClose_Click (object sender, RoutedEventArgs e) {
             this.Close ();
         }
 
-        private void MenuExit_Click (object sender, EventArgs e) {
-            // IMP
-            //Program.Form_Editor.RequestExit ();
+        private void MenuExit_Click (object sender, RoutedEventArgs e) {
+            App.Patient_Editor.RequestExit ();
         }
 
-        private void MenuNewPatient_Click (object sender, EventArgs e) {
-            tPatient = App.Patient_Editor.RequestNewPatient ();
-
-            foreach (Channel c in tChannels)
-                c.cStrip.Reset ();
-            /* IMP
-            foreach (II.Controls.Numeric n in tNumerics)
-                n.Update (tPatient);
-            */
-        }
-
-        private void MenuEditPatient_Click (object sender, EventArgs e) {
-            App.Patient_Editor.Activate ();
-            App.Patient_Editor.Show ();
-        }
-
-        private void MenuFontSize_Click (object sender, EventArgs e) {
-            /* IMP
-            switch (((ToolStripMenuItem)sender).Text) {
-                case "Small": tFontsize = 1; break;
-                case "Medium": tFontsize = 2; break;
-                case "Large": tFontsize = 3; break;
-                case "Extra Large": tFontsize = 4; break;
+        private void MenuFontSize_Click (object sender, RoutedEventArgs e) {
+            switch (((MenuItem)sender).Name) {
+                case "menuFontSizeDecrease": tFontsize = Utility.Clamp(tFontsize - 1, 1, 5); break;
+                case "menuFontSizeIncrease": tFontsize = Utility.Clamp (tFontsize + 1, 1, 5); break;
             }
-            */
+
             ApplyFontSize ();
         }
 
-        private void MenuColorScheme_Click (object sender, EventArgs e) {
-            try {
-                //IMP
-                //tColorScheme = (Utility.ColorScheme)Enum.Parse (typeof (Utility.ColorScheme), Utility.SpaceToUnderscore (((ToolStripMenuItem)sender).Text));
-            } catch { }
-
-            ApplyColorScheme ();
-        }
-
-        private void MenuNumericRowCount_Click (object sender, EventArgs e) {
-            try {
-                // IMP
-                //tRowsNumerics = int.Parse (((ToolStripMenuItem)sender).Text.Replace ('&', ' ').Trim ());
-            } catch { }
-
+        private void MenuAddNumeric_Click (object sender, RoutedEventArgs e) {
+            throw new NotImplementedException ();
             OnLayoutChange ();
         }
 
-        private void MenuTracingRowCount_Click (object sender, EventArgs e) {
-            try {
-                // IMP
-                //tRowsTracings = int.Parse (((ToolStripMenuItem)sender).Text.Replace ('&', ' ').Trim ());
-            } catch { }
-
+        private void MenuAddTracing_Click (object sender, RoutedEventArgs e) {
+            throw new NotImplementedException ();
             OnLayoutChange ();
         }
 
-        private void MenuTogglePause_Click (object sender, EventArgs e) {
+        private void MenuTogglePause_Click (object sender, RoutedEventArgs e) {
             tPatient.TogglePause ();
             ApplyPause ();
         }
 
-        private void MenuFullscreen_Click (object sender, EventArgs e) {
+        private void MenuFullscreen_Click (object sender, RoutedEventArgs e) {
             tFullscreen = !tFullscreen;
             ApplyFullScreen ();
         }
 
-        private void OnTick_Tracing (object sender, EventArgs e) {
+        private void OnTick_Tracing (object sender, RoutedEventArgs e) {
             if (tPatient.Paused)
                 return;
 
             foreach (Channel c in tChannels) {
                 c.cStrip.Scroll ();
+                throw new NotImplementedException ();
                 // IMP
                 //c.cTracing.Invalidate ();
             }
@@ -284,7 +248,7 @@ namespace II_Windows {
         private void OnTick_Vitals (object sender, EventArgs e) {
             if (tPatient.Paused)
                 return;
-
+            throw new NotImplementedException ();
             /* IMP
             foreach (II.Controls.Numeric v in tNumerics)
                 v.Update (tPatient);
@@ -292,6 +256,7 @@ namespace II_Windows {
         }
 
         private void OnLayoutChange (List<string> numericTypes = null, List<string> tracingTypes = null) {
+            throw new NotImplementedException ();
             /* IMP
             layoutTracings.Controls.Clear ();
             layoutTracings.RowStyles.Clear ();
@@ -337,7 +302,7 @@ namespace II_Windows {
                 Strip newStrip = new Strip (6f, (Leads.Values)Enum.Parse (typeof (Leads.Values), tracingTypes [i]));
                 Controls.Tracing newTracing = new Controls.Tracing (newStrip.Lead, tColorScheme);
                 Strip.Renderer newRenderer = new Strip.Renderer (newTracing, ref newStrip, tColorScheme, newStrip.Lead.Color);
-                newTracing.Paint += delegate (object s, PaintEventArgs e) { newRenderer.Draw (e); };
+                newTracing.Paint += delegate (object s, PaintRoutedEventArgs e) { newRenderer.Draw (e); };
                 newTracing.TracingEdited += OnTracingEdited;
 
                 tChannels.Add (new Channel (newStrip, newRenderer, newTracing));
@@ -359,6 +324,7 @@ namespace II_Windows {
         }
 
         public void OnPatientEvent (object sender, Patient.PatientEvent_Args e) {
+            throw new NotImplementedException ();
             switch (e.EventType) {
                 default: break;
                 /* IMP
@@ -404,23 +370,25 @@ namespace II_Windows {
                     break;
             }
         }
-        /* IMP
+
+
         private void OnTracingEdited (object sender, Controls.Tracing.TracingEdited_EventArgs e) {
+            throw new NotImplementedException ();
+            /* IMP
             foreach (Channel c in tChannels) {
-                if (c.cTracing == sender) {
-                    c.cTracing.SetLead (e.Lead);
-                    c.cRenderer.pcolor = e.Lead.Color;
-                    c.cStrip.Lead = e.Lead;
-                }
+               if (c.cTracing == sender) {
+                   c.cTracing.SetLead (e.Lead);
+                   c.cRenderer.pcolor = e.Lead.Color;
+                   c.cStrip.Lead = e.Lead;
+               }
 
-                c.cStrip.Reset ();
-                c.cStrip.Add_Beat__Cardiac_Baseline (tPatient);
-                c.cStrip.Add_Beat__Respiratory_Baseline (tPatient);
-            }
+               c.cStrip.Reset ();
+               c.cStrip.Add_Beat__Cardiac_Baseline (tPatient);
+               c.cStrip.Add_Beat__Respiratory_Baseline (tPatient);
+           } */
         }
-        */
 
-        private void OnFormResize (object sender, EventArgs e) {
+        private void OnFormResize (object sender, RoutedEventArgs e) {
             OnLayoutChange ();
         }
     }
