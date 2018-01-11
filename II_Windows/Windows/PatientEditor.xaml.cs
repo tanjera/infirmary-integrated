@@ -13,7 +13,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Threading;
 
 using II;
 using II.Localization;
@@ -43,7 +42,7 @@ namespace II_Windows {
             if (App.Start_Args.Length > 0)
                 Load_Open (App.Start_Args [0]);
 
-            //InitMonitor ();
+            InitMonitor ();
         }
 
         private void InitLanguage () {
@@ -112,17 +111,22 @@ namespace II_Windows {
             lblParametersApply.Content = Strings.Lookup (l, "BUTTON:ApplyChanges");
             lblParametersReset.Content = Strings.Lookup (l, "BUTTON:ResetParameters");
 
-            comboCardiacRhythm.ItemsSource = Cardiac_Rhythms.Descriptions;
-            comboRespiratoryRhythm.ItemsSource = Respiratory_Rhythms.Descriptions;
+            List<string> stringsCardiacRhythms = new List<string> (),
+                            stringsRespiratoryRhythms = new List<string> ();
+
+            foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
+                stringsCardiacRhythms.Add (Strings.Lookup (l, Cardiac_Rhythms.LookupString (v)));
+            comboCardiacRhythm.ItemsSource = stringsCardiacRhythms;
+
+            foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
+                stringsRespiratoryRhythms.Add (Strings.Lookup (l, Respiratory_Rhythms.LookupString (v)));
+            comboRespiratoryRhythm.ItemsSource = stringsRespiratoryRhythms;
         }
 
         private void InitPatient () {
             tPatient = new Patient ();
 
-            DispatcherTimer dt = new DispatcherTimer ();
-            dt.Interval = new TimeSpan(100000); // q 10 milliseconds
-            dt.Tick += tPatient.Timers_Process;
-
+            App.Timer_Main.Tick += tPatient.Timers_Process;
             tPatient.PatientEvent += FormUpdateFields;
             FormUpdateFields (this, new Patient.PatientEvent_Args (tPatient, Patient.PatientEvent_Args.EventTypes.Vitals_Change));
         }
@@ -395,9 +399,9 @@ namespace II_Windows {
                 (double)numTWE_V4.Value, (double)numTWE_V5.Value, (double)numTWE_V6.Value
                 },
 
-                Cardiac_Rhythms.Parse_Description (comboCardiacRhythm.Text),
+                (Cardiac_Rhythms.Values)Enum.GetValues(typeof(Cardiac_Rhythms.Values)).GetValue(comboCardiacRhythm.SelectedIndex),
+                (Respiratory_Rhythms.Values)Enum.GetValues (typeof (Respiratory_Rhythms.Values)).GetValue (comboRespiratoryRhythm.SelectedIndex),
 
-                Respiratory_Rhythms.Parse_Description (comboRespiratoryRhythm.Text),
                 (int)numInspiratoryRatio.Value,
                 (int)numExpiratoryRatio.Value
             );
@@ -456,8 +460,14 @@ namespace II_Windows {
 
         private void OnRhythmSelected (object sender, SelectionChangedEventArgs e) {
             if ((bool)checkDefaultVitals.IsChecked && tPatient != null) {
+
+                int si = comboCardiacRhythm.SelectedIndex;
+                Array ev = Enum.GetValues (typeof (Cardiac_Rhythms.Values));
+                if (si < 0 || si > ev.Length - 1)
+                    return;
+
                 Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
-                    Cardiac_Rhythms.Parse_Description (comboCardiacRhythm.Text));
+                    (Cardiac_Rhythms.Values)ev.GetValue (si));
 
                 numHR.Value = (int)Utility.Clamp ((double)numHR.Value, v.HRMin, v.HRMax);
                 numSPO2.Value = (int)Utility.Clamp ((double)numSPO2.Value, v.SPO2Min, v.SPO2Max);

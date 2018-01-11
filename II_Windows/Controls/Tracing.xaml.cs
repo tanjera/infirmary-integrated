@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 
 using II;
 using II.Rhythm;
+using II.Localization;
 
 namespace II_Windows.Controls {
     /// <summary>
@@ -22,7 +23,8 @@ namespace II_Windows.Controls {
     /// </summary>
     public partial class Tracing : UserControl {
 
-        Strip rStrip;
+        public Strip rStrip;
+        Brush tBrush;
 
         // Tracing Point offsets and multipliers
         int offX, offY;
@@ -34,22 +36,36 @@ namespace II_Windows.Controls {
             public TracingEdited_EventArgs (Leads lead) { Lead = lead; }
         }
 
-        public Tracing (ref Strip strip) {
+        public Tracing (Strip strip) {
             InitializeComponent ();
 
             rStrip = strip;
+            SetLead (rStrip.Lead.Value);
+        }
+
+
+        public void SetLead (Leads.Values l) {
+            rStrip.Lead.Value = l;
+            lblLead.Content = Strings.Lookup(App.Language.Value, Leads.LookupString(l));
+
+            switch (l) {
+                default: tBrush = Brushes.Green; break;
+                case Leads.Values.ABP: tBrush = Brushes.Red; break;
+                case Leads.Values.CVP: tBrush = Brushes.Blue; break;
+                case Leads.Values.PA: tBrush = Brushes.Yellow; break;
+                case Leads.Values.RR: tBrush = Brushes.Salmon; break;
+                case Leads.Values.ETCO2: tBrush = Brushes.Aqua; break;
+                case Leads.Values.SPO2: tBrush = Brushes.Orange; break;
+            }
+
+            lblLead.Foreground = tBrush;
         }
 
         public void Draw () {
-            Pen pen;
-            //e.Graphics.Clear (Color.Black);
-            //pen = new Pen (pcolor, 1f);
-
-
             offX = 0;
-            //offY = panel.Height / 2;
-            //multX = panel.Width / rStrip.Length;
-            //multY = -panel.Height / 2;
+            offY = (int)canvasTracing.ActualHeight / 2;
+            multX = (int)canvasTracing.ActualWidth / rStrip.Length;
+            multY = -(int)canvasTracing.ActualHeight / 2;
 
             if (rStrip.Points.Count < 2)
                 return;
@@ -57,21 +73,31 @@ namespace II_Windows.Controls {
             rStrip.RemoveNull ();
             rStrip.Sort ();
 
-            System.Drawing.Point lastPoint = new System.Drawing.Point (
+            Path sp = new Path { Stroke = tBrush, StrokeThickness = 1 };
+            StreamGeometry sg = new StreamGeometry { FillRule = FillRule.EvenOdd };
+
+            using (StreamGeometryContext sgc = sg.Open()) {
+                sgc.BeginFigure (new System.Windows.Point (
                     (int)(rStrip.Points [0].X * multX) + offX,
-                    (int)(rStrip.Points [0].Y * multY) + offY);
+                    (int)(rStrip.Points [0].Y * multY) + offY),
+                    true, false);
 
-            for (int i = 1; i < rStrip.Points.Count; i++) {
-                if (rStrip.Points [i].X > rStrip.Length * 2)
-                    continue;
+                for (int i = 1; i < rStrip.Points.Count; i++) {
+                    if (rStrip.Points [i].X > rStrip.Length * 2)
+                        continue;
 
-                System.Drawing.Point thisPoint = new System.Drawing.Point (
-                    (int)(rStrip.Points [i].X * multX) + offX,
-                    (int)(rStrip.Points [i].Y * multY) + offY);
-
-                //e.Graphics.DrawLine (pen, lastPoint, thisPoint);
-                lastPoint = thisPoint;
+                    sgc.LineTo(new System.Windows.Point (
+                        (int)(rStrip.Points [i].X * multX) + offX,
+                        (int)(rStrip.Points [i].Y * multY) + offY),
+                        true, true);
+                }
             }
+
+            sg.Freeze ();
+            sp.Data = sg;
+
+            canvasTracing.Children.Clear ();
+            canvasTracing.Children.Add (sp);
         }
     }
 }

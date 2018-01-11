@@ -229,7 +229,7 @@
                             <Label Name="lblRespiratoryRhythm" Grid.Column="0" Grid.Row="7" />
                             <ComboBox Name="comboRespiratoryRhythm" Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="4" SelectionChanged="OnRhythmSelected"/>
 
-                            <CheckBox Name="checkDefaultVitals" Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="4" Margin="0, 5, 0, 0" />
+                            <CheckBox Name="checkDefaultVitals" Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="4" Margin="0, 5, 0, 0" IsChecked="True" />
                         </Grid>
                     </Expander>
                 </Border>

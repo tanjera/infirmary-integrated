@@ -28,7 +28,7 @@ namespace II_Windows {
             Languages.Values l = App.Language.Value;
 
             dlgAbout.Title = Strings.Lookup (l, "ABOUT:AboutProgram");
-            lblInfirmaryIntegrated.Content = Strings.Lookup (l, "ABOUT:InfirmaryIntegrated");
+            lblInfirmaryIntegrated.Content = Strings.Lookup (l, "II:InfirmaryIntegrated");
             lblVersion.Content = String.Format(Strings.Lookup (l, "ABOUT:Version"), II.Utility.Version);
             tblDescription.Text = Strings.Lookup (l, "ABOUT:Description");
         }

@@ -9,10 +9,6 @@ namespace II {
 
         public const string Version = "0.9";
 
-        public enum ColorScheme {
-            Normal, Monochrome
-        }
-
         public static double Time {
             get { return (double)(DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess ().StartTime.ToUniversalTime ()).TotalSeconds; }
         }

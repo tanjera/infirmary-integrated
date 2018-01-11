@@ -82,7 +82,6 @@ namespace II {
              * short interval, and call this function on its Tick to process all Patient
              * timers.
              */
-
             timerCardiac_Baseline.Process ();
             timerCardiac_Atrial.Process ();
             timerCardiac_Ventricular.Process ();
@@ -416,6 +415,7 @@ namespace II {
         }
 
         private void OnCardiac_Atrial () {
+
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Atrial));
 
             switch (Cardiac_Rhythm.Value) {
@@ -515,7 +515,6 @@ namespace II {
         private void OnRespiratory_Inspiration() {
             Respiratory_Inflated = true;
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Respiratory_Inspiration));
-
             timerRespiratory_Inspiration.Stop ();
 
             switch (Respiratory_Rhythm.Value) {
@@ -533,7 +532,6 @@ namespace II {
         private void OnRespiratory_Expiration() {
             Respiratory_Inflated = false;
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Respiratory_Expiration));
-
             timerRespiratory_Expiration.Stop ();
         }
 

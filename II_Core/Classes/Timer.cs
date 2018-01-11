@@ -25,10 +25,13 @@ namespace II
             if (!Running)
                 return;
 
-            if ((DateTime.Now - Last).TotalSeconds > Interval) {
+            if ((DateTime.Now - Last).TotalSeconds * 1000 > Interval) {
                 Last = DateTime.Now;
-                Tick (this, new EventArgs());
+                Tick?.Invoke (this, new EventArgs());
             }
         }
+
+        public void Process (object sender, EventArgs e) => Process();
+
     }
 }

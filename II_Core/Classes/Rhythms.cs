@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using System.Collections.Generic;
 
 namespace II {
@@ -37,39 +36,9 @@ namespace II {
             Ventricular_Tachycardia_Polymorphic
         }
 
-        public string Description { get { return Descriptions[(int)Value]; } }
-        public static Values Parse_Description (string inc) {
-            int i = Array.IndexOf<string> (Descriptions, inc);
-            return i >= 0 ? (Values)Enum.GetValues (typeof (Values)).GetValue (i) : Values.Sinus_Rhythm;
+        public static string LookupString (Values value) {
+            return String.Format("RHYTHM:{0}", Enum.GetValues(typeof(Values)).GetValue((int)value).ToString());
         }
-
-        public static string[] Descriptions = new string[] {
-            "Asystole",
-            "Atrial Fibrillation",
-            "Atrial Flutter",
-            "AV Block, 1st Degree",
-            "AV Block, 3rd Degree",
-            "AV Block, Mobitz II",
-            "AV Block, Wenckebach",
-            "Bundle Branch Block",
-            "Idioventricular",
-            "Junctional",
-            "Pulseless Electrical Activity",
-            "Sinus Rhythm",
-            "Sinus Rhythm with Bigeminy",
-            "Sinus Rhythm with Trigeminy",
-            "Sinus Rhythm with PACs",
-            "Sinus Rhythm with PJCs",
-            "Sinus Rhythm with PVCs (Multifocal)",
-            "Sinus Rhythm with PVCs (Unifocal)",
-            "Supraventricular Tachycardia",
-            "Ventricular Fibrillation (Coarse)",
-            "Ventricular Fibrillation (Fine)",
-            "Ventricular Standstill",
-            "Ventricular Tachycardia (Monomorphic, w/ pulse)",
-            "Ventricular Tachycardia (Monomorphic, w/out pulse)",
-            "Ventricular Tachycardia (Polymorphic)"
-        };
 
         public bool Pulse_Atrial {
             get {
@@ -326,21 +295,14 @@ namespace II {
         public Respiratory_Rhythms (Values v) { Value = v; }
         public Respiratory_Rhythms () { Value = Values.Regular; }
 
-        public string Description { get { return Descriptions [(int)Value]; } }
-        public static Values Parse_Description (string inc) {
-            int i = Array.IndexOf<string> (Descriptions, inc);
-            return i >= 0 ? (Values)Enum.GetValues (typeof (Values)).GetValue (i) : Values.Regular;
+        public static string LookupString (Values value) {
+            return String.Format ("RHYTHM:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString());
         }
 
         public enum Values {
             Apnea,
             Regular
         }
-
-        public static string [] Descriptions = new string [] {
-            "Apnea",
-            "Regular"
-        };
     }
 
 

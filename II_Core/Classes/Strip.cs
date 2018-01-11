@@ -6,7 +6,7 @@ namespace II.Rhythm {
     public class Strip {
 
         public double Length = 5.0d;               // Strip length in seconds
-        double EdgeBuffer = 1.1d;           // Coefficient of Length to draw into future as "now" for buffer
+        double EdgeBuffer = 1.1d;                  // Coefficient of Length to draw into future as "now" for buffer
         DateTime Scrolled_Last = DateTime.UtcNow;
         bool Scrolled_Unpausing = false;
 

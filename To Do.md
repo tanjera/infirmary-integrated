@@ -2,18 +2,25 @@
 
 
 
+
 * Next steps:
-	- WPF UI
-		- Cardiac Monitor window
-			- Layout 
-			- Controls for numerics, tracings
+	- Controls.Numeric & Controls.Tracing context menus!
+		- Needs complete re-implementation for context menu handling
 
-		- ComboBox descriptions via localization lookup table...
+	- Cardiac Monitor layout polish & debugging
+		- Fix buggy "Add Tracing" and "Add Numeric" functionality
+		- UIElement positioning... stretching, etc
+		- Adjust clamping for "Increase Font Size" to allow for bigger/smaller screens?
+			- Test on different window sizes??
+		- Implement "Increase Tracing Size"?
 
+	- Fix localization errors, formatting
 
+	- Add splash screen?
+		- Compiler #if release version only...
 
 * To debug:
-	- Timer wrapper
+
 * Known bugs:
 	- PA catheter populates beats even on pulseless rhythms...
 

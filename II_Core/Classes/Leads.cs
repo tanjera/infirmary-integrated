@@ -1,5 +1,4 @@
 using System;
-using System.Windows.Media;
 using System.Collections.Generic;
 
 namespace II {
@@ -23,54 +22,8 @@ namespace II {
             ETCO2
         }
 
-        public string Description { get { return Descriptions[(int)Value]; } }
-        public Color Color { get { return Coloring[(int)Value]; } }
-
-        public static List<string> MenuItem_Formats {
-            get {
-                List<string> o = new List<string> ();
-                foreach (Values v in Enum.GetValues (typeof (Values)))
-                    o.Add (String.Format ("{0}: {1}", Utility.UnderscoreToSpace (v.ToString ()), Descriptions[(int)v]));
-                return o;
-            }
+        public static string LookupString (Values value) {
+            return String.Format ("LEAD:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
         }
-        public static Values Parse_MenuItem (string inc) {
-            string portion = Utility.SpaceToUnderscore (inc.Substring (0, inc.IndexOf (':')));
-            try {
-                return (Values)Enum.Parse (typeof (Values), portion);
-            } catch {
-                return Values.ECG_I;
-            }
-        }
-
-        public static string[] Descriptions = new string[] {
-            "Electrocardiograph Lead I", "Electrocardiograph Lead II", "Electrocardiograph Lead III",
-            "Electrocardiograph Lead aVR", "Electrocardiograph Lead aVL", "Electrocardiograph Lead aVF",
-            "Electrocardiograph Lead V1", "Electrocardiograph Lead V2", "Electrocardiograph Lead V3",
-            "Electrocardiograph Lead V4", "Electrocardiograph Lead V5", "Electrocardiograph Lead V6",
-
-            "Pulse Oximetry",
-            "Central Venous Pressure",
-            "Arterial Blood Pressure",
-            "Pulmonary Artery Pressure",
-
-            "Respiratory Rate",
-            "End-tidal Capnography"
-        };
-
-        public static Color[] Coloring = new Color[] {
-            Colors.Green, Colors.Green, Colors.Green,
-            Colors.Green, Colors.Green, Colors.Green,
-            Colors.Green, Colors.Green, Colors.Green,
-            Colors.Green, Colors.Green, Colors.Green,
-
-            Colors.Orange,
-            Colors.Blue,
-            Colors.Red,
-            Colors.Yellow,
-
-            Colors.Salmon,
-            Colors.Aqua
-        };
     }
 }

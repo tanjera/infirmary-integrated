@@ -36,9 +36,10 @@ namespace StringPairing {
 
             string eachI1, eachI2;
             while ((eachI1 = srI1.ReadLine ()) != null && (eachI2 = srI2.ReadLine ()) != null) {
-                if (eachI1 == "" && eachI2 == "")
-                    sbOut.AppendLine ("");
-                else
+                if ((eachI1 == "" && eachI2 == "")
+                    || eachI1.ToUpper() == "KEY") {
+                    //sbOut.AppendLine ("");
+                } else
                     sbOut.AppendLine (String.Format ("{0,-55}{1}",
                         String.Format(formI1, eachI1),
                         String.Format(formI2, eachI2)

@@ -23,7 +23,7 @@ namespace II.Rhythm {
     public static class Waveforms {
 
         public const double Draw_Resolve = 0.01f;        // Tracing resolution (seconds per drawing point) in seconds
-        public const int Draw_Refresh = 10;             // Tracing draw refresh time in milliseconds
+        public const int Draw_Refresh = 17;              // Tracing draw refresh time in milliseconds (60 fps = ~17ms)
 
         public static List<Point> Waveform_Flatline(double _Length, double _Isoelectric) {
             return Line_Long (_Length, _Isoelectric, new Point (0, _Isoelectric));
