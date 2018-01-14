@@ -22,8 +22,10 @@ namespace II {
             ETCO2
         }
 
-        public static string LookupString (Values value) {
-            return String.Format ("LEAD:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
+        public static string LookupString (Values value, bool shortName = false) {
+            return String.Format ("LEAD:{0}{1}",
+                Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString (),
+                shortName ? "__SHORT" : "");
         }
     }
 }

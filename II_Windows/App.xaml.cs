@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
+using II;
+
 namespace II_Windows {
     /// <summary>
     /// Interaction logic for App.xaml
@@ -17,8 +19,11 @@ namespace II_Windows {
 
         public static II.Localization.Languages Language = new II.Localization.Languages();
 
+        public static Patient Patient;
+
         public static PatientEditor Patient_Editor;
         public static DeviceMonitor Device_Monitor;
+        public static DeviceECG Device_ECG;
         public static DialogAbout Dialog_About;
         public static DialogLanguage Dialog_Language;
 

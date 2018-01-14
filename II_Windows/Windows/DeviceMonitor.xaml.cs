@@ -24,14 +24,13 @@ namespace II_Windows {
     /// </summary>
     public partial class DeviceMonitor : Window {
 
-        int lRowsTracings = 3,
-            lRowsNumerics = 3;
-        int lFontsize = 2;
-        bool lFullscreen = false;
+        int rowsTracings = 3,
+            rowsNumerics = 3;
+        bool isFullscreen = false,
+             isPaused = false;
 
-        Patient rPatient;
-        List<Controls.Tracing> listTracings = new List<Controls.Tracing> ();
-        List<Controls.Numeric> listNumerics = new List<Controls.Numeric> ();
+        List<Controls.MonitorTracing> listTracings = new List<Controls.MonitorTracing> ();
+        List<Controls.MonitorNumeric> listNumerics = new List<Controls.MonitorNumeric> ();
 
         Timer timerTracing = new Timer (),
               timerVitals = new Timer ();
@@ -45,6 +44,7 @@ namespace II_Windows {
 
         public DeviceMonitor () {
             InitializeComponent ();
+            DataContext = this;
 
             InitInterface ();
 
@@ -59,17 +59,14 @@ namespace II_Windows {
             timerVitals.Start ();
 
             OnLayoutChange ();
+            OnTick_Vitals (null, new EventArgs ());
         }
 
         private void InitInterface () {
             // Initiate ICommands for KeyBindings
-            icPauseDevice = new ActionCommand (() => {
-                rPatient.TogglePause ();
-                ApplyPause ();
-            });
+            icPauseDevice = new ActionCommand (() => TogglePause ());
             icCloseDevice = new ActionCommand (() => this.Close ());
             icExitProgram = new ActionCommand (() => App.Patient_Editor.RequestExit ());
-
 
             // Populate UI strings per language selection
             Languages.Values l = App.Language.Value;
@@ -79,9 +76,6 @@ namespace II_Windows {
             menuPauseDevice.Header = Strings.Lookup (l, "CM:MenuPauseDevice");
             menuAddNumeric.Header = Strings.Lookup (l, "CM:MenuAddNumeric");
             menuAddTracing.Header = Strings.Lookup (l, "CM:MenuAddTracing");
-            menuFontSize.Header = Strings.Lookup (l, "CM:MenuFontSize");
-            menuFontSizeDecrease.Header = Strings.Lookup (l, "CM:MenuFontSizeDecrease");
-            menuFontSizeIncrease.Header = Strings.Lookup (l, "CM:MenuFontSizeIncrease");
             menuToggleFullscreen.Header = Strings.Lookup (l, "CM:MenuToggleFullscreen");
             menuCloseDevice.Header = Strings.Lookup (l, "CM:MenuCloseDevice");
             menuExitProgram.Header = Strings.Lookup (l, "CM:MenuExitProgram");
@@ -100,10 +94,10 @@ namespace II_Windows {
                                 pValue = line.Substring (line.IndexOf (':') + 1);
                         switch (pName) {
                             default: break;
-                            case "tRowsTracings": lRowsTracings = int.Parse (pValue); break;
-                            case "tRowsNumerics": lRowsNumerics = int.Parse (pValue); break;
-                            case "tFontsize": lFontsize = int.Parse (pValue); break;
-                            case "tFullscreen": lFullscreen = bool.Parse (pValue); break;
+                            case "rowsTracings": rowsTracings = int.Parse (pValue); break;
+                            case "rowsNumerics": rowsNumerics = int.Parse (pValue); break;
+                            case "isPaused": isPaused = bool.Parse (pValue); break;
+                            case "isFullscreen": isFullscreen = bool.Parse (pValue); break;
                             case "numericTypes": numericTypes.AddRange (pValue.Split (',')); break;
                             case "tracingTypes": tracingTypes.AddRange (pValue.Split (',')); break;
                         }
@@ -117,43 +111,31 @@ namespace II_Windows {
             sRead.Close ();
 
             OnLayoutChange (numericTypes, tracingTypes);
-
-            ApplyFontSize ();
         }
 
         public string Save () {
             StringBuilder sWrite = new StringBuilder ();
 
-            sWrite.AppendLine (String.Format ("{0}:{1}", "tRowsTracings", lRowsTracings));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "tRowsNumerics", lRowsNumerics));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "tFontsize", lFontsize));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "tFullscreen", lFullscreen));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "rowsTracings", rowsTracings));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "rowsNumerics", rowsNumerics));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", isPaused));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "isFullscreen", isFullscreen));
 
             List<string> numericTypes = new List<string> (),
                          tracingTypes = new List<string> ();
 
             listNumerics.ForEach (o => { numericTypes.Add (o.controlType.Value.ToString ()); });
-            listTracings.ForEach (o => { tracingTypes.Add (o.rStrip.Lead.Value.ToString ()); });
+            listTracings.ForEach (o => { tracingTypes.Add (o.wfStrip.Lead.Value.ToString ()); });
             sWrite.AppendLine (String.Format ("{0}:{1}", "numericTypes", string.Join (",", numericTypes)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "tracingTypes", string.Join (",", tracingTypes)));
 
             return sWrite.ToString ();
         }
 
-        public void SetPatient (Patient iPatient) {
-            rPatient = iPatient;
-            OnTick_Vitals (null, new EventArgs ());
-        }
-
-        private void ApplyFontSize () {
-            foreach (Controls.Numeric rn in listNumerics)
-                rn.SetFontSize (lFontsize * 0.5f);
-        }
-
         private void ApplyFullScreen () {
-            menuToggleFullscreen.IsChecked = lFullscreen;
+            menuToggleFullscreen.IsChecked = isFullscreen;
 
-            switch (lFullscreen) {
+            switch (isFullscreen) {
                 default:
                 case false:
                     wdwDeviceMonitor.WindowStyle = WindowStyle.SingleBorderWindow;
@@ -169,66 +151,64 @@ namespace II_Windows {
             }
         }
 
+        private void TogglePause () {
+            isPaused = !isPaused;
+            menuPauseDevice.IsChecked = isPaused;
 
-        private void ApplyPause () {
-            menuPauseDevice.IsChecked = rPatient.Paused;
-
-            if (!rPatient.Paused)
-                foreach (Controls.Tracing c in listTracings)
-                    c.rStrip.Unpause ();
+            if (!isPaused)
+                foreach (Controls.MonitorTracing c in listTracings)
+                    c.wfStrip.Unpause ();
         }
 
-        private void MenuClose_Click (object sender, RoutedEventArgs e) {
-            this.Close ();
-        }
-
-        private void MenuExit_Click (object sender, RoutedEventArgs e) {
-            App.Patient_Editor.RequestExit ();
-        }
-
-        private void MenuFontSize_Click (object sender, RoutedEventArgs e) {
-            switch (((MenuItem)sender).Name) {
-                case "menuFontSizeDecrease": lFontsize = Utility.Clamp (lFontsize - 1, 1, 5); break;
-                case "menuFontSizeIncrease": lFontsize = Utility.Clamp (lFontsize + 1, 1, 5); break;
-            }
-
-            ApplyFontSize ();
-        }
-
-        private void MenuAddNumeric_Click (object sender, RoutedEventArgs e) {
+        public void AddTracing () {
+            rowsTracings += 1;
             OnLayoutChange ();
         }
 
-        private void MenuAddTracing_Click (object sender, RoutedEventArgs e) {
+        public void RemoveTracing (Controls.MonitorTracing requestSender) {
+            rowsTracings -= 1;
+            listTracings.Remove (requestSender);
             OnLayoutChange ();
         }
 
-        private void MenuTogglePause_Click (object sender, RoutedEventArgs e) {
-            rPatient.TogglePause ();
-            ApplyPause ();
+        public void AddNumeric () {
+            rowsNumerics += 1;
+            OnLayoutChange ();
         }
+
+        public void RemoveNumeric (Controls.MonitorNumeric requestSender) {
+            rowsNumerics-= 1;
+            listNumerics.Remove (requestSender);
+            OnLayoutChange ();
+        }
+
+        private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
+        private void MenuExit_Click (object s, RoutedEventArgs e) => App.Patient_Editor.RequestExit ();
+        private void MenuAddNumeric_Click (object s, RoutedEventArgs e) => AddNumeric ();
+        private void MenuAddTracing_Click (object s, RoutedEventArgs e) => AddTracing ();
+        private void MenuTogglePause_Click (object s, RoutedEventArgs e) => TogglePause ();
 
         private void MenuFullscreen_Click (object sender, RoutedEventArgs e) {
-            lFullscreen = !lFullscreen;
+            isFullscreen = !isFullscreen;
             ApplyFullScreen ();
         }
 
         private void OnTick_Tracing (object sender, EventArgs e) {
-            if (rPatient.Paused)
+            if (isPaused)
                 return;
 
-            foreach (Controls.Tracing c in listTracings) {
-                c.rStrip.Scroll ();
+            foreach (Controls.MonitorTracing c in listTracings) {
+                c.wfStrip.Scroll ();
                 c.Draw ();
             }
         }
 
         private void OnTick_Vitals (object sender, EventArgs e) {
-            if (rPatient.Paused)
+            if (isPaused)
                 return;
 
-            foreach (Controls.Numeric v in listNumerics)
-                v.Update (rPatient);
+            foreach (Controls.MonitorNumeric v in listNumerics)
+                v.UpdateVitals ();
         }
 
         private void OnLayoutChange (List<string> numericTypes = null, List<string> tracingTypes = null) {
@@ -241,44 +221,45 @@ namespace II_Windows {
             // Set default numeric types to populate
             if (numericTypes == null || numericTypes.Count == 0)
                 numericTypes = new List<string> (new string [] { "ECG", "NIBP", "SPO2", "CVP", "ABP" });
-            else if (numericTypes.Count < lRowsNumerics) {
+            else if (numericTypes.Count < rowsNumerics) {
                 List<string> buffer = new List<string> (new string [] { "ECG", "NIBP", "SPO2", "CVP", "ABP" });
                 buffer.RemoveRange (0, numericTypes.Count);
                 numericTypes.AddRange (buffer);
             }
 
-            for (int i = listNumerics.Count; i < lRowsNumerics && i < numericTypes.Count; i++) {
-                Controls.Numeric newNum;
-                newNum = new Controls.Numeric ((Controls.Numeric.ControlType.Values)Enum.Parse (typeof (Controls.Numeric.ControlType.Values), numericTypes [i]));
+            for (int i = listNumerics.Count; i < rowsNumerics && i < numericTypes.Count; i++) {
+                Controls.MonitorNumeric newNum;
+                newNum = new Controls.MonitorNumeric ((Controls.MonitorNumeric.ControlType.Values)Enum.Parse (typeof (Controls.MonitorNumeric.ControlType.Values), numericTypes [i]));
                 listNumerics.Add (newNum);
             }
 
             // Set default tracing types to populate
             if (tracingTypes == null || tracingTypes.Count == 0)
                 tracingTypes = new List<string> (new string [] { "ECG_II", "ECG_III", "SPO2", "CVP", "ABP" });
-            else if (tracingTypes.Count < lRowsTracings) {
+            else if (tracingTypes.Count < rowsTracings) {
                 List<string> buffer = new List<string> (new string [] { "ECG_II", "ECG_III", "SPO2", "CVP", "ABP" });
                 buffer.RemoveRange (0, tracingTypes.Count);
                 tracingTypes.AddRange (buffer);
             }
 
-            for (int i = listTracings.Count; i < lRowsTracings && i < tracingTypes.Count; i++) {
+            for (int i = listTracings.Count; i < rowsTracings && i < tracingTypes.Count; i++) {
                 Strip newStrip = new Strip (6f, (Leads.Values)Enum.Parse (typeof (Leads.Values), tracingTypes [i]));
-                Controls.Tracing newTracing = new Controls.Tracing (newStrip);
-                newTracing.TracingEdited += OnTracingEdited;
+                Controls.MonitorTracing newTracing = new Controls.MonitorTracing (newStrip);
                 listTracings.Add (newTracing);
             }
 
             // Reset the UI container and repopulate with the UI elements
             gridNumerics.Children.Clear ();
-            for (int i = 0; i < lRowsNumerics && i < listNumerics.Count; i++) {
+            gridNumerics.RowDefinitions.Clear ();
+            for (int i = 0; i < rowsNumerics && i < listNumerics.Count; i++) {
                 gridNumerics.RowDefinitions.Add(new RowDefinition ());
                 listNumerics [i].SetValue (Grid.RowProperty, i);
                 gridNumerics.Children.Add (listNumerics [i]);
             }
 
             gridTracings.Children.Clear ();
-            for (int i = 0; i < lRowsTracings && i < listTracings.Count; i++) {
+            gridTracings.RowDefinitions.Clear ();
+            for (int i = 0; i < rowsTracings && i < listTracings.Count; i++) {
                 gridTracings.RowDefinitions.Add (new RowDefinition ());
                 listTracings [i].SetValue (Grid.RowProperty, i);
                 gridTracings.Children.Add (listTracings [i]);
@@ -289,63 +270,47 @@ namespace II_Windows {
             switch (e.EventType) {
                 default: break;
                 case Patient.PatientEvent_Args.EventTypes.Vitals_Change:
-                    rPatient = e.Patient;
-
-                    foreach (Controls.Tracing c in listTracings) {
-                        c.rStrip.ClearFuture ();
-                        c.rStrip.Add_Beat__Cardiac_Baseline (rPatient);
+                    foreach (Controls.MonitorTracing c in listTracings) {
+                        c.wfStrip.ClearFuture ();
+                        c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
                     }
-                    foreach (Controls.Numeric n in listNumerics)
-                        n.Update (rPatient);
+                    foreach (Controls.MonitorNumeric n in listNumerics)
+                        n.UpdateVitals ();
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
-                    foreach (Controls.Tracing c in listTracings)
-                        c.rStrip.Add_Beat__Cardiac_Baseline (rPatient);
+                    foreach (Controls.MonitorTracing c in listTracings)
+                        c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Atrial:
-                    foreach (Controls.Tracing c in listTracings)
-                        c.rStrip.Add_Beat__Cardiac_Atrial (rPatient);
+                    foreach (Controls.MonitorTracing c in listTracings)
+                        c.wfStrip.Add_Beat__Cardiac_Atrial (App.Patient);
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Ventricular:
-                    foreach (Controls.Tracing c in listTracings)
-                        c.rStrip.Add_Beat__Cardiac_Ventricular (rPatient);
+                    foreach (Controls.MonitorTracing c in listTracings)
+                        c.wfStrip.Add_Beat__Cardiac_Ventricular (App.Patient);
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Respiratory_Baseline:
-                    foreach (Controls.Tracing c in listTracings)
-                        c.rStrip.Add_Beat__Respiratory_Baseline (rPatient);
+                    foreach (Controls.MonitorTracing c in listTracings)
+                        c.wfStrip.Add_Beat__Respiratory_Baseline (App.Patient);
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Respiratory_Inspiration:
-                    foreach (Controls.Tracing c in listTracings)
-                        c.rStrip.Add_Beat__Respiratory_Inspiration (rPatient);
+                    foreach (Controls.MonitorTracing c in listTracings)
+                        c.wfStrip.Add_Beat__Respiratory_Inspiration (App.Patient);
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Respiratory_Expiration:
-                    foreach (Controls.Tracing c in listTracings)
-                        c.rStrip.Add_Beat__Respiratory_Expiration (rPatient);
+                    foreach (Controls.MonitorTracing c in listTracings)
+                        c.wfStrip.Add_Beat__Respiratory_Expiration (App.Patient);
                     break;
             }
         }
 
+        private void OnFormResize (object sender, RoutedEventArgs e) => OnLayoutChange ();
 
-        private void OnTracingEdited (object sender, Controls.Tracing.TracingEdited_EventArgs e) {
-            foreach (Controls.Tracing c in listTracings) {
-               if (c == sender) {
-                   c.SetLead (e.Lead.Value);
-               }
-
-               c.rStrip.Reset ();
-               c.rStrip.Add_Beat__Cardiac_Baseline (rPatient);
-               c.rStrip.Add_Beat__Respiratory_Baseline (rPatient);
-           }
-        }
-
-        private void OnFormResize (object sender, RoutedEventArgs e) {
-            OnLayoutChange ();
-        }
     }
 }

@@ -1,12 +1,12 @@
-﻿<Window x:Class="II_Windows.DeviceMonitor"
+﻿<Window x:Class="II_Windows.DeviceECG"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:II_Windows"
         mc:Ignorable="d"
-        Name="wdwDeviceMonitor"
-        Title="DeviceMonitor"
+        Name="wdwDeviceECG"
+        Title="DeviceECG"
         Icon="{StaticResource Icon_Infirmary}"
         WindowStartupLocation="CenterScreen"
         Width="1200" Height="800"
@@ -26,8 +26,6 @@
             <MenuItem Name="menuDevice">
                 <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" InputGestureText="Ctrl+U"/>
                 <Separator />
-                <MenuItem Name="menuAddNumeric" Click="MenuAddNumeric_Click"/>
-                <MenuItem Name="menuAddTracing" Click="MenuAddTracing_Click" />
                 <MenuItem Name="menuToggleFullscreen" Click="MenuFullscreen_Click" />
                 <Separator />
                 <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGestureText="Ctrl-F4"/>
@@ -35,21 +33,8 @@
             </MenuItem>
         </Menu>
 
-        <Grid Name="layoutGrid">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-
-            <Grid Name="gridNumerics"
-                        Grid.Column="0" />
-
-            <Grid Name="gridTracings"
-                        Grid.Column="1" />
-        </Grid>
+        <!-- 12 Lead ECG Tracings added to layoutGrid programmatically -->
+        <Grid Name="layoutGrid" />
 
     </DockPanel>
 

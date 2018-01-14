@@ -23,7 +23,7 @@ bld/
 [Ll]og/
 
 # Advanced Installer cache
-Installer AIP-cache/
+Installer_Windows-cache/
 
 # Visual Studio 2015 cache/options directory
 .vs/

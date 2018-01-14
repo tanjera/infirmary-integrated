@@ -23,12 +23,10 @@ namespace II_Windows {
     /// </summary>
     public partial class PatientEditor : Window {
 
-        Patient tPatient;
-
         // Define WPF UI commands for binding
         private ICommand icLoadFile, icSaveFile;
         public ICommand IC_LoadFile { get { return icLoadFile; } }
-        public ICommand IC_SaveFile { get { return icLoadFile; } }
+        public ICommand IC_SaveFile { get { return icSaveFile; } }
 
         public PatientEditor () {
             InitializeComponent ();
@@ -40,9 +38,11 @@ namespace II_Windows {
             InitPatient ();
 
             if (App.Start_Args.Length > 0)
-                Load_Open (App.Start_Args [0]);
+                LoadOpen (App.Start_Args [0]);
 
-            InitMonitor ();
+            // For debugging. Automatically open window being worked on, hide patient editor.
+            //InitDeviceECG ();
+            //WindowState = WindowState.Minimized;
         }
 
         private void InitLanguage () {
@@ -51,14 +51,14 @@ namespace II_Windows {
             if (setLang == null || setLang == ""
                 || !Enum.TryParse<Languages.Values>(setLang, out App.Language.Value)) {
                 App.Language = new Languages ();
-                Dialog_Language ();
+                DialogLanguage ();
             }
         }
 
         private void InitInterface () {
             // Initiate ICommands for KeyBindings
-            icLoadFile = new ActionCommand (() => Load_File ());
-            icSaveFile = new ActionCommand (() => Save_File ());
+            icLoadFile = new ActionCommand (() => LoadFile ());
+            icSaveFile = new ActionCommand (() => SaveFile ());
 
             // Populate UI strings per language selection
             Languages.Values l = App.Language.Value;
@@ -124,25 +124,34 @@ namespace II_Windows {
         }
 
         private void InitPatient () {
-            tPatient = new Patient ();
+            App.Patient = new Patient ();
 
-            App.Timer_Main.Tick += tPatient.Timers_Process;
-            tPatient.PatientEvent += FormUpdateFields;
-            FormUpdateFields (this, new Patient.PatientEvent_Args (tPatient, Patient.PatientEvent_Args.EventTypes.Vitals_Change));
+            App.Timer_Main.Tick += App.Patient.Timers_Process;
+            App.Patient.PatientEvent += FormUpdateFields;
+            FormUpdateFields (this, new Patient.PatientEvent_Args (App.Patient, Patient.PatientEvent_Args.EventTypes.Vitals_Change));
         }
 
-        private void InitMonitor () {
+        private void InitDeviceMonitor () {
             if (App.Device_Monitor == null || !App.Device_Monitor.IsLoaded)
                 App.Device_Monitor = new DeviceMonitor ();
 
             App.Device_Monitor.Activate ();
             App.Device_Monitor.Show ();
 
-            App.Device_Monitor.SetPatient (tPatient);
-            tPatient.PatientEvent += App.Device_Monitor.OnPatientEvent;
+            App.Patient.PatientEvent += App.Device_Monitor.OnPatientEvent;
         }
 
-        private void Dialog_Language(bool reloadUI = false) {
+        private void InitDeviceECG () {
+            if (App.Device_ECG == null || !App.Device_ECG.IsLoaded)
+                App.Device_ECG = new DeviceECG ();
+
+            App.Device_ECG.Activate ();
+            App.Device_ECG.Show ();
+
+            App.Patient.PatientEvent += App.Device_ECG.OnPatientEvent;
+        }
+
+        private void DialogLanguage(bool reloadUI = false) {
             App.Dialog_Language = new DialogLanguage ();
             App.Dialog_Language.Activate ();
             App.Dialog_Language.ShowDialog ();
@@ -151,22 +160,22 @@ namespace II_Windows {
                 InitInterface ();
         }
 
-        private void Dialog_About (bool reloadUI = false) {
+        private void DialogAbout (bool reloadUI = false) {
             App.Dialog_About = new DialogAbout();
             App.Dialog_About.Activate ();
             App.Dialog_About.ShowDialog ();
         }
 
-        private void Load_Open (string fileName) {
+        private void LoadOpen (string fileName) {
             if (File.Exists (fileName)) {
                 Stream s = new FileStream (fileName, FileMode.Open);
-                Load_Init (s);
+                LoadInit (s);
             } else {
-                Load_Fail ();
+                LoadFail ();
             }
         }
 
-        private void Load_Init (Stream incFile) {
+        private void LoadInit (Stream incFile) {
             StreamReader sr = new StreamReader (incFile);
 
             /* Read savefile metadata indicating data formatting
@@ -174,12 +183,12 @@ namespace II_Windows {
                 */
             string metadata = sr.ReadLine ();
             if (metadata.StartsWith (".ii:t1"))
-                Load_Validate_T1 (sr);
+                LoadValidateT1 (sr);
             else
-                Load_Fail ();
+                LoadFail ();
         }
 
-        private void Load_Validate_T1 (StreamReader sr) {
+        private void LoadValidateT1 (StreamReader sr) {
             /* Savefile type 1: validated and obfuscated, not encrypted or data protected
                 * Line 1 is metadata (.ii:t1)
                 * Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
@@ -191,12 +200,12 @@ namespace II_Windows {
             sr.Close ();
 
             if (hash == Utility.HashMD5 (file))
-                Load_Process (file);
+                LoadProcess (file);
             else
-                Load_Fail ();
+                LoadFail ();
         }
 
-        private void Load_Process (string incFile) {
+        private void LoadProcess (string incFile) {
             StringReader sRead = new StringReader (incFile);
             string line, pline;
             StringBuilder pbuffer;
@@ -207,44 +216,44 @@ namespace II_Windows {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
                             pbuffer.AppendLine (pline);
-                        tPatient.Load_Process (pbuffer.ToString ());
+                        App.Patient.Load_Process (pbuffer.ToString ());
 
                     } else if (line == "> Begin: Editor") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Editor")
                             pbuffer.AppendLine (pline);
-                        this.Load_Options (pbuffer.ToString ());
+                        this.LoadOptions (pbuffer.ToString ());
 
                     } else if (line == "> Begin: Cardiac Monitor") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Cardiac Monitor")
                             pbuffer.AppendLine (pline);
 
-                        InitMonitor ();
+                        InitDeviceMonitor ();
                         App.Device_Monitor.Load_Process (pbuffer.ToString ());
                     }
                 }
             } catch {
-                Load_Fail ();
+                LoadFail ();
             }
             sRead.Close ();
         }
 
-        private void Load_Fail () {
+        private void LoadFail () {
             MessageBox.Show (
                 "The selected file was unable to be loaded. Perhaps the file was damaged or edited outside of Infirmary Integrated.",
                 "Unable to Load File", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        private void Save_T1 (Stream s) {
+        private void SaveT1 (Stream s) {
             StringBuilder sb = new StringBuilder ();
 
             sb.AppendLine ("> Begin: Patient");
-            sb.Append (tPatient.Save ());
+            sb.Append (App.Patient.Save ());
             sb.AppendLine ("> End: Patient");
 
             sb.AppendLine ("> Begin: Editor");
-            sb.Append (this.Save_Options ());
+            sb.Append (this.SaveOptions ());
             sb.AppendLine ("> End: Editor");
 
             // Imp: Reference cardiac monitor for save data
@@ -264,7 +273,7 @@ namespace II_Windows {
             s.Close ();
         }
 
-        private void Load_Options (string inc) {
+        private void LoadOptions (string inc) {
             StringReader sRead = new StringReader (inc);
 
             try {
@@ -287,7 +296,7 @@ namespace II_Windows {
             sRead.Close ();
         }
 
-        private string Save_Options () {
+        private string SaveOptions () {
             StringBuilder sWrite = new StringBuilder ();
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "checkDefaultVitals", checkDefaultVitals.IsChecked));
@@ -295,7 +304,7 @@ namespace II_Windows {
             return sWrite.ToString ();
         }
 
-        private void Load_File () {
+        private void LoadFile () {
             Stream s;
             Microsoft.Win32.OpenFileDialog dlgLoad = new Microsoft.Win32.OpenFileDialog ();
 
@@ -305,13 +314,13 @@ namespace II_Windows {
 
             if (dlgLoad.ShowDialog () == true) {
                 if ((s = dlgLoad.OpenFile ()) != null) {
-                    Load_Init (s);
+                    LoadInit (s);
                     s.Close ();
                 }
             }
         }
 
-        private void Save_File () {
+        private void SaveFile () {
             Stream s;
             Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
 
@@ -321,7 +330,7 @@ namespace II_Windows {
 
             if (dlgSave.ShowDialog () == true) {
                 if ((s = dlgSave.OpenFile ()) != null) {
-                    Save_T1 (s);
+                    SaveT1 (s);
                 }
             }
         }
@@ -333,40 +342,20 @@ namespace II_Windows {
 
         public Patient RequestNewPatient () {
             InitPatient ();
-            return tPatient;
+            return App.Patient;
         }
 
-
-        private void MenuLoadFile_Click (object sender, RoutedEventArgs e) {
-            Load_File ();
-        }
-
-        private void MenuSaveFile_Click (object sender, RoutedEventArgs e) {
-            Save_File ();
-        }
-
-        private void MenuExit_Click (object sender, RoutedEventArgs e) {
-            RequestExit ();
-        }
-
-        private void MenuSetLanguage_Click (object sender, RoutedEventArgs e) {
-            Dialog_Language (true);
-        }
-
-        private void MenuAbout_Click (object sender, RoutedEventArgs e) {
-            Dialog_About ();
-        }
-
-        private void ButtonDeviceMonitor_Click (object sender, RoutedEventArgs e) {
-            InitMonitor ();
-        }
-
-        private void ButtonResetParameters_Click (object sender, RoutedEventArgs e) {
-            RequestNewPatient ();
-        }
+        private void MenuLoadFile_Click (object s, RoutedEventArgs e) => LoadFile ();
+        private void MenuSaveFile_Click (object s, RoutedEventArgs e) => SaveFile ();
+        private void MenuExit_Click (object s, RoutedEventArgs e) => RequestExit ();
+        private void MenuSetLanguage_Click (object s, RoutedEventArgs e) => DialogLanguage (true);
+        private void MenuAbout_Click (object s, RoutedEventArgs e) => DialogAbout ();
+        private void ButtonDeviceMonitor_Click (object s, RoutedEventArgs e) => InitDeviceMonitor ();
+        private void ButtonDeviceECG_Click (object s, RoutedEventArgs e) => InitDeviceECG ();
+        private void ButtonResetParameters_Click (object s, RoutedEventArgs e) => RequestNewPatient ();
 
         private void ButtonApplyParameters_Click (object sender, RoutedEventArgs e) {
-            tPatient.UpdateVitals (
+            App.Patient.UpdateVitals (
                 (int)numHR.Value,
                 (int)numRR.Value,
                 (int)numSPO2.Value,
@@ -459,7 +448,7 @@ namespace II_Windows {
         }
 
         private void OnRhythmSelected (object sender, SelectionChangedEventArgs e) {
-            if ((bool)checkDefaultVitals.IsChecked && tPatient != null) {
+            if ((bool)checkDefaultVitals.IsChecked && App.Patient != null) {
 
                 int si = comboCardiacRhythm.SelectedIndex;
                 Array ev = Enum.GetValues (typeof (Cardiac_Rhythms.Values));
@@ -481,8 +470,7 @@ namespace II_Windows {
             }
         }
 
-        private void OnClosed (object sender, EventArgs e) {
-            RequestExit ();
-        }
+        private void OnClosed (object sender, EventArgs e) => RequestExit ();
+
     }
 }

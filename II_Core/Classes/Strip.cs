@@ -5,18 +5,17 @@ namespace II.Rhythm {
 
     public class Strip {
 
-        public double Length = 5.0d;               // Strip length in seconds
-        double EdgeBuffer = 1.1d;                  // Coefficient of Length to draw into future as "now" for buffer
-        DateTime Scrolled_Last = DateTime.UtcNow;
-        bool Scrolled_Unpausing = false;
+        public double lengthSeconds = 5.0d;               // Strip length in seconds
+        double forwardEdgeBuffer = 1.1d;                  // Coefficient of Length to draw into future as "now" for buffer
+        DateTime scrolledLast = DateTime.UtcNow;
+        bool scrollingUnpausing = false;
 
         public Leads Lead;
         public List<Point> Points;
 
-
         public Strip (double l, Leads.Values v) {
             Lead = new Leads(v);
-            Length = l;
+            lengthSeconds = l;
             Points = new List<Point> ();
         }
 
@@ -26,7 +25,7 @@ namespace II.Rhythm {
 
         public void ClearFuture () {
             for (int i = Points.Count - 1; i >= 0; i--) {
-                if (Points[i].X > Length)
+                if (Points[i].X > lengthSeconds)
                     Points.RemoveAt (i);
             }
         }
@@ -34,7 +33,7 @@ namespace II.Rhythm {
         public Point Last (List<Point> _In) {
             if (_In.Count < 1)
                 // New vectors are added to Points beginning at 5 seconds to marquee backwards to 0
-                return new Point (Length, 0);
+                return new Point (lengthSeconds, 0);
             else
                 return _In[_In.Count - 1];
         }
@@ -55,7 +54,7 @@ namespace II.Rhythm {
 
             // Inserts into future of strip, which is X offset by Length
             for (int i = 0; i < _Replacement.Count; i++)
-                _Replacement[i].X += Length * EdgeBuffer;
+                _Replacement[i].X += lengthSeconds * forwardEdgeBuffer;
 
             double minX = _Replacement[0].X,
                 maxX = _Replacement[_Replacement.Count - 1].X;
@@ -73,7 +72,7 @@ namespace II.Rhythm {
 
             // Inserts into future of strip, which is X offset by Length
             for (int i = 0; i < _Replacement.Count; i++)
-                _Replacement[i].X += Length * EdgeBuffer;
+                _Replacement[i].X += lengthSeconds * forwardEdgeBuffer;
 
             double minX = _Replacement[0].X,
                 maxX = _Replacement[_Replacement.Count - 1].X;
@@ -104,26 +103,26 @@ namespace II.Rhythm {
         }
 
         public void Scroll () {
-            if (Scrolled_Unpausing) {
-                Scrolled_Unpausing = false;
-                Scrolled_Last = DateTime.UtcNow;
+            if (scrollingUnpausing) {
+                scrollingUnpausing = false;
+                scrolledLast = DateTime.UtcNow;
                 return;
             }
 
-            double scrollBy = (DateTime.UtcNow - Scrolled_Last).TotalMilliseconds / 1000;
-            Scrolled_Last = DateTime.UtcNow;
+            double scrollBy = (DateTime.UtcNow - scrolledLast).TotalMilliseconds / 1000;
+            scrolledLast = DateTime.UtcNow;
 
             for (int i = Points.Count - 1; i >= 0; i--)
                 Points[i].X -= scrollBy;
 
             for (int i = Points.Count - 1; i >= 0; i--) {
-                if (Points[i].X < -Length)
+                if (Points[i].X < -lengthSeconds)
                     Points.RemoveAt (i);
             }
         }
 
         public void Unpause() {
-            Scrolled_Unpausing = true;
+            scrollingUnpausing = true;
         }
 
         public void Add_Beat__Cardiac_Baseline (Patient _Patient) {
@@ -131,7 +130,7 @@ namespace II.Rhythm {
                 _Patient.Cardiac_Rhythm.ECG_Isoelectric (_Patient, this);
             else if (Lead.Value != Leads.Values.RR && Lead.Value != Leads.Values.ETCO2) {
                 // Fill waveform through to future buffer with flatline
-                double fill = (Length * EdgeBuffer) - Last (Points).X;
+                double fill = (lengthSeconds * forwardEdgeBuffer) - Last (Points).X;
                 Concatenate (Waveforms.Waveform_Flatline (fill > _Patient.HR_Seconds ? fill : _Patient.HR_Seconds, 0f));
             }
         }
@@ -157,7 +156,7 @@ namespace II.Rhythm {
         public void Add_Beat__Respiratory_Baseline (Patient _Patient) {
             if (Lead.Value == Leads.Values.RR || Lead.Value == Leads.Values.ETCO2) {
                 // Fill waveform through to future buffer with flatline
-                double fill = (Length * EdgeBuffer) - Last (Points).X;
+                double fill = (lengthSeconds * forwardEdgeBuffer) - Last (Points).X;
                 Concatenate (Waveforms.Waveform_Flatline (fill > _Patient.RR_Seconds ? fill : _Patient.RR_Seconds, 0f));
             }
         }

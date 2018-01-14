@@ -21,13 +21,10 @@ namespace II {
         public bool Respiratory_Inflated;
         public int Respiratory_IERatio_I, Respiratory_IERatio_E;
 
-        public bool Paused { get { return _Paused; } }
         public double HR_Seconds { get { return 60d / Math.Max (1, HR); } }
         public double RR_Seconds { get { return 60d / Math.Max (1, RR); } }
         public double RR_Seconds_I { get { return (RR_Seconds / (Respiratory_IERatio_I + Respiratory_IERatio_E)) * Respiratory_IERatio_I; } }
         public double RR_Seconds_E { get { return (RR_Seconds / (Respiratory_IERatio_I + Respiratory_IERatio_E)) * Respiratory_IERatio_E; } }
-
-        private bool _Paused = false;
 
         private Timer timerCardiac_Baseline = new Timer (),
                         timerCardiac_Atrial = new Timer (),
@@ -179,25 +176,6 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_E", Respiratory_IERatio_E));
 
             return sWrite.ToString ();
-        }
-
-        public void TogglePause() {
-            _Paused = !_Paused;
-            ApplyPause ();
-        }
-
-        private void ApplyPause() {
-            switch (_Paused) {
-                case true:
-                    timerCardiac_Baseline.Stop ();
-                    timerRespiratory_Baseline.Stop ();
-                    break;
-
-                case false:
-                    timerCardiac_Baseline.Start ();
-                    timerRespiratory_Baseline.Start ();
-                    break;
-            }
         }
 
         public void UpdateVitals(

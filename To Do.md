@@ -4,20 +4,10 @@
 
 
 * Next steps:
-	- Controls.Numeric & Controls.Tracing context menus!
-		- Needs complete re-implementation for context menu handling
-
-	- Cardiac Monitor layout polish & debugging
-		- Fix buggy "Add Tracing" and "Add Numeric" functionality
-		- UIElement positioning... stretching, etc
-		- Adjust clamping for "Increase Font Size" to allow for bigger/smaller screens?
-			- Test on different window sizes??
-		- Implement "Increase Tracing Size"?
-
-	- Fix localization errors, formatting
-
 	- Add splash screen?
 		- Compiler #if release version only...
+	- Strips X axis not time-based, locked to DateTime...
+		- Causes "arrhythmia" on CPU load/window dragging
 
 * To debug:
 
@@ -28,28 +18,17 @@
 
 * Versions and features to implement:
 
-	* Purchase icons!!
+	- Purchase icons ...
 
-	V 0.9: Cross-platform rewrite
-		- Implement:
-			- Shared library (II_Core)
-				- Patient modeling
-			- II_Windows
-				- Forms
-					- Editor (Patient Parameters)
-					- Cardiac Monitor
-					- About
-				- Controls
-					- Tracing
-					- Numerics
-			- II_OSX
-				- Forms
-					- Editor (Patient Parameters)
-					- Cardiac Monitor
-					- About
-				- Controls
-					- Tracing
-					- Numerics
+	- II_OSX (OS X cross-platform port)
+		- Windows
+			- Patient Editor (Patient Parameters)
+			- DeviceMonitor
+			- DialogAbout
+			- DialogLanguage
+		- Controls
+			- MonitorTracing
+			- MonitorNumerics
 
 
 

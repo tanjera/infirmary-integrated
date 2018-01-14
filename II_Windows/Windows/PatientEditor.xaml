@@ -128,7 +128,7 @@
                             <Label Name="lblDeviceMonitor" Style="{StaticResource deviceLabel}" />
                         </StackPanel>
                     </Button>
-                    <Button Name="btnDevice12LeadECG" Style="{StaticResource deviceButton}" IsEnabled="False">
+                    <Button Name="btnDevice12LeadECG" Click="ButtonDeviceECG_Click" Style="{StaticResource deviceButton}">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource Icon_Device12LeadECG}" Style="{StaticResource deviceImage}" />
                             <Label Name="lblDevice12LeadECG" Style="{StaticResource deviceLabel}" />
