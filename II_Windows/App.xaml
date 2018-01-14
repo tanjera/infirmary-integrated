@@ -1,0 +1,27 @@
+﻿<Application x:Class="II_Windows.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:II_Windows"
+             StartupUri="Windows/PatientEditor.xaml"
+             Startup="App_Startup">
+
+    <Application.Resources>
+
+        <!-- Icon for Infirmary Integrated-->
+        <BitmapImage x:Key="Icon_Infirmary" UriSource="/Infirmary Integrated;component/Resources/Icon_Infirmary.ico"></BitmapImage>
+
+        <!-- Icons for Patient Editor -->
+        <BitmapImage x:Key="Icon_Check_32" UriSource="/Infirmary Integrated;component/Resources/Icon_Check_32.png"></BitmapImage>
+        <BitmapImage x:Key="Icon_Cross_32" UriSource="/Infirmary Integrated;component/Resources/Icon_Cross_32.png"></BitmapImage>
+
+        <BitmapImage x:Key="Icon_DeviceDefibrillator" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceDefibrillator_48.png"></BitmapImage>
+        <BitmapImage x:Key="Icon_Device12LeadECG" UriSource="/Infirmary Integrated;component/Third Party/Icon_Device12LeadECG_48.png"></BitmapImage>
+        <BitmapImage x:Key="Icon_DeviceCardiotocograph" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceCardiotocograph_48.png"></BitmapImage>
+        <BitmapImage x:Key="Icon_DeviceIABP" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceIABP_48.png"></BitmapImage>
+        <BitmapImage x:Key="Icon_DeviceIVPump" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceIVPump_48.png"></BitmapImage>
+        <BitmapImage x:Key="Icon_DeviceLabResults" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceLabResults_48.png"></BitmapImage>
+        <BitmapImage x:Key="Icon_DeviceMonitor" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceMonitor_48.png"></BitmapImage>
+        <BitmapImage x:Key="Icon_DeviceVentilator" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceVentilator_48.png"></BitmapImage>
+
+    </Application.Resources>
+</Application>

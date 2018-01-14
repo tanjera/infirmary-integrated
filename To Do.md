@@ -2,37 +2,49 @@
 
 
 
+
+* Next steps:
+	- Add splash screen?
+		- Compiler #if release version only...
+	- Strips X axis not time-based, locked to DateTime...
+		- Causes "arrhythmia" on CPU load/window dragging
+
 * To debug:
-	- Timers are not perfectly synchronous... during loading or CPU bogging
-		- Create synchronous timer state machine based on DateTime elapsed?
-	- Slower tracings (e.g. ETCO2) glitch during parameter changes
+
+* Known bugs:
+	- PA catheter populates beats even on pulseless rhythms...
 
 
 
 * Versions and features to implement:
 
-	- V 0.8
-		- Respiratory rhythm vital sign clamping
-		- Respiratory rhythms: Kussmaul, Cheyne-Stokes
+	- Purchase icons ...
+
+	- II_OSX (OS X cross-platform port)
+		- Windows
+			- Patient Editor (Patient Parameters)
+			- DeviceMonitor
+			- DialogAbout
+			- DialogLanguage
+		- Controls
+			- MonitorTracing
+			- MonitorNumerics
 
 
 
-* Rewrite to multi-platform:
-	- XF? or Native UI?
-	- Individual VS projects for each platform
-		- Shared code in II.dll
-
-
-		
 * Planned features:
 	- Devices
 		- 12 lead ECG
 		- Defibrillator
 		- IABP
 		- Ventilator
+		- FHM/Toco
 		- Lab Values
+		- IV Pump
 	- Clinical aspects
-		- Pacer spikes & rhythms 
+		- Respiratory Rhythms: Kussmaul, Cheyne-Stokes
+			- With vital sign clamping
+		- Pacer spikes & rhythms
 			- AAI, VVI, DDD
 		- ECG axis deviation
 		- Pulsus paradoxus
@@ -47,3 +59,6 @@
 * References:
 - Assembly signing with certificate
 	https://www.linkedin.com/pulse/code-signing-visual-studio-jason-brower
+
+- Icons: Blue Series by Nicola Simpson
+	https://www.iconfinder.com/families/blue-series
