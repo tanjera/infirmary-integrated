@@ -108,6 +108,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\EFMTracing.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\MonitorNumeric.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -119,6 +123,10 @@
     <Page Include="Controls\MonitorTracing.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\DeviceEFM.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\DeviceECG.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -145,6 +153,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Classes\ActionCommand.cs" />
+    <Compile Include="Controls\EFMTracing.xaml.cs">
+      <DependentUpon>EFMTracing.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\MonitorNumeric.xaml.cs">
       <DependentUpon>MonitorNumeric.xaml</DependentUpon>
     </Compile>
@@ -153,6 +164,9 @@
     </Compile>
     <Compile Include="Controls\MonitorTracing.xaml.cs">
       <DependentUpon>MonitorTracing.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\DeviceEFM.xaml.cs">
+      <DependentUpon>DeviceEFM.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\DeviceECG.xaml.cs">
       <DependentUpon>DeviceECG.xaml</DependentUpon>
@@ -218,7 +232,7 @@
   <ItemGroup />
   <ItemGroup>
     <Resource Include="Third Party\Icon_Device12LeadECG_48.png" />
-    <Resource Include="Third Party\Icon_DeviceCardiotocograph_48.png" />
+    <Resource Include="Third Party\Icon_DeviceEFM_48.png" />
     <Resource Include="Third Party\Icon_DeviceDefibrillator_48.png" />
     <Resource Include="Third Party\Icon_DeviceIABP_48.png" />
     <Resource Include="Third Party\Icon_DeviceIVPump_48.png" />

@@ -127,7 +127,7 @@ namespace II.Rhythm {
 
         public void Add_Beat__Cardiac_Baseline (Patient _Patient) {
             if (IsECG ())
-                _Patient.Cardiac_Rhythm.ECG_Isoelectric (_Patient, this);
+                _Patient.CardiacRhythm.ECG_Isoelectric (_Patient, this);
             else if (Lead.Value != Leads.Values.RR && Lead.Value != Leads.Values.ETCO2) {
                 // Fill waveform through to future buffer with flatline
                 double fill = (lengthSeconds * forwardEdgeBuffer) - Last (Points).X;
@@ -137,17 +137,17 @@ namespace II.Rhythm {
 
         public void Add_Beat__Cardiac_Atrial (Patient _Patient) {
             if (IsECG ())
-                _Patient.Cardiac_Rhythm.ECG_Atrial (_Patient, this);
+                _Patient.CardiacRhythm.ECG_Atrial (_Patient, this);
             else if (Lead.Value == Leads.Values.CVP)
                 Overwrite (Waveforms.CVP_Rhythm (_Patient, 1f));
         }
 
         public void Add_Beat__Cardiac_Ventricular (Patient _Patient) {
             if (IsECG ())
-                _Patient.Cardiac_Rhythm.ECG_Ventricular (_Patient, this);
-            else if (Lead.Value == Leads.Values.SPO2 && _Patient.Cardiac_Rhythm.Pulse_Ventricular)
+                _Patient.CardiacRhythm.ECG_Ventricular (_Patient, this);
+            else if (Lead.Value == Leads.Values.SPO2 && _Patient.CardiacRhythm.Pulse_Ventricular)
                 Overwrite (Waveforms.SPO2_Rhythm (_Patient, 1f));
-            else if (Lead.Value == Leads.Values.ABP && _Patient.Cardiac_Rhythm.Pulse_Ventricular)
+            else if (Lead.Value == Leads.Values.ABP && _Patient.CardiacRhythm.Pulse_Ventricular)
                 Overwrite (Waveforms.ABP_Rhythm (_Patient, 1f));
             else if (Lead.Value == Leads.Values.PA)
                 Overwrite (Waveforms.PA_Rhythm (_Patient, 1f));

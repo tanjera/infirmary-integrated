@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace II {
 
-    public class Cardiac_Rhythms {
+    public class CardiacRhythms {
         public Values Value;
-        public Cardiac_Rhythms (Values v) { Value = v; }
-        public Cardiac_Rhythms () { Value = Values.Sinus_Rhythm; }
+        public CardiacRhythms (Values v) { Value = v; }
+        public CardiacRhythms () { Value = Values.Sinus_Rhythm; }
 
         public enum Values {
             Asystole,
@@ -242,14 +242,14 @@ namespace II {
                 case Values.Sinus_Rhythm: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
 
                 case Values.Sinus_Rhythm_with_Bigeminy:
-                    if (p.Cardiac_Rhythm__Flag) {
+                    if (p.CardiacRhythm_Flag) {
                         s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_1 (p, s.Lead));
                     } else
                         s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead));
                     return;
 
                 case Values.Sinus_Rhythm_with_Trigeminy:
-                    if (p.Cardiac_Rhythm__Flag) {
+                    if (p.CardiacRhythm_Flag) {
                         s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_1 (p, s.Lead));
                     } else
                         s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead));
@@ -259,7 +259,7 @@ namespace II {
                 case Values.Sinus_Rhythm_with_PJCs: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
 
                 case Values.Sinus_Rhythm_with_PVCs_Multifocal:
-                    if (p.Cardiac_Rhythm__Flag) {
+                    if (p.CardiacRhythm_Flag) {
                         switch (new Random ().Next (0, 3)) {
                             default:
                             case 0: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_1 (p, s.Lead)); break;
@@ -272,7 +272,7 @@ namespace II {
 
                 case Values.Sinus_Rhythm_with_PVCs_Unifocal:
 
-                    if (p.Cardiac_Rhythm__Flag) {
+                    if (p.CardiacRhythm_Flag) {
                         s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_3 (p, s.Lead));
                     } else
                         s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead));
@@ -290,10 +290,10 @@ namespace II {
     }
 
 
-    public class Respiratory_Rhythms {
+    public class RespiratoryRhythms {
         public Values Value;
-        public Respiratory_Rhythms (Values v) { Value = v; }
-        public Respiratory_Rhythms () { Value = Values.Regular; }
+        public RespiratoryRhythms (Values v) { Value = v; }
+        public RespiratoryRhythms () { Value = Values.Regular; }
 
         public static string LookupString (Values value) {
             return String.Format ("RHYTHM:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString());
@@ -306,10 +306,10 @@ namespace II {
     }
 
 
-    public class Cardiac_Axes {
+    public class CardiacAxes {
         public Values Value;
-        public Cardiac_Axes (Values v) { Value = v; }
-        public Cardiac_Axes () { Value = Values.Normal; }
+        public CardiacAxes (Values v) { Value = v; }
+        public CardiacAxes () { Value = Values.Normal; }
 
         public string Description { get { return Descriptions [(int)Value]; } }
         public static Values Parse_Description (string inc) {
@@ -335,5 +335,23 @@ namespace II {
             "Indeterminate"
         };
 
+    }
+
+
+    public class FetalHeartDecelerations {
+        public List<Values> ValueList;
+        public FetalHeartDecelerations (List<Values> v) { ValueList = v; }
+        public FetalHeartDecelerations () { ValueList = new List<Values>(); }
+
+        public static string LookupString (Values v) {
+            return String.Format ("FETAL_RHYTHMS:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v).ToString ());
+        }
+
+        public enum Values {
+            Acceleration,
+            DecelerationEarly,
+            DecelerationLate,
+            DecelerationVariable
+        }
     }
 }

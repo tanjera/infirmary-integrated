@@ -134,9 +134,6 @@ namespace II_Windows {
             sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", isPaused));
             sWrite.AppendLine (String.Format ("{0}:{1}", "isFullscreen", isFullscreen));
 
-            List<string> numericTypes = new List<string> (),
-                         tracingTypes = new List<string> ();
-
             return sWrite.ToString ();
         }
 

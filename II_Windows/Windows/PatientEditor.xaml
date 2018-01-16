@@ -96,6 +96,7 @@
 
     <DockPanel LastChildFill="True">
 
+
         <!-- Main Menu -->
         <Menu DockPanel.Dock="Top" Width="Auto" Background="White">
             <MenuItem Name="menuFile">
@@ -113,6 +114,7 @@
                 <MenuItem Name="menuAbout" Click="MenuAbout_Click"/>
             </MenuItem>
         </Menu>
+
 
         <!-- Column for Devices (opening Cardiac Monitor, Ventilator, etc. -->
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
@@ -152,10 +154,10 @@
                             <Label Name="lblDeviceIABP" Style="{StaticResource deviceLabel}" />
                         </StackPanel>
                     </Button>
-                    <Button Name="btnDeviceCardiotocograph" Style="{StaticResource deviceButton}" IsEnabled="False">
+                    <Button Name="btnDeviceEFM" Click="ButtonDeviceEFM_Click" Style="{StaticResource deviceButton}">
                         <StackPanel Orientation="Horizontal">
-                            <Image Source="{StaticResource Icon_DeviceCardiotocograph}" Style="{StaticResource deviceImage}" />
-                            <Label Name="lblDeviceCardiotocograph" Style="{StaticResource deviceLabel}" />
+                            <Image Source="{StaticResource Icon_DeviceEFM}" Style="{StaticResource deviceImage}" />
+                            <Label Name="lblDeviceEFM" Style="{StaticResource deviceLabel}" />
                         </StackPanel>
                     </Button>
                     <Button Name="btnDeviceIVPump" Style="{StaticResource deviceButton}" IsEnabled="False">
@@ -174,9 +176,12 @@
             </GroupBox>
         </ScrollViewer>
 
+
         <!-- Column for Patient Editor -->
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <StackPanel Margin="3" Height="Auto">
+
+
                 <!-- Group for Basic Vital Signs -->
                 <Border Margin="5,18,5,5" Style="{StaticResource expBorder}">
                     <Expander Name="expVitalSigns" IsExpanded="True" >
@@ -234,6 +239,7 @@
                     </Expander>
                 </Border>
 
+
                 <!-- Group for Advanced Hemodynamics -->
                 <Border Style="{StaticResource expBorder}">
                     <Expander Name="expHemodynamics" IsExpanded="False" Style="{StaticResource expParameters}">
@@ -277,6 +283,7 @@
                     </Expander>
                 </Border>
 
+
                 <!-- Group for Respiratory Profile -->
                 <Border Style="{StaticResource expBorder}">
                     <Expander Name="expRespiratoryProfile" IsExpanded="False" Style="{StaticResource expParameters}">
@@ -304,6 +311,7 @@
                         </Grid>
                     </Expander>
                 </Border>
+
 
                 <!-- Group for Cardiac Profile -->
                 <Border Style="{StaticResource expBorder}">
@@ -438,6 +446,54 @@
                         </StackPanel>
                     </Expander>
                 </Border>
+
+
+                <!-- Group for Obstetric Profile -->
+                <Border Style="{StaticResource expBorder}">
+                    <Expander Name="expObstetricProfile" IsExpanded="False" Style="{StaticResource expParameters}">
+                        <Expander.Header>
+                            <Label Name="lblGroupObstetricProfile" Style="{StaticResource expHeader}"/>
+                        </Expander.Header>
+                        <Grid Margin="3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Name="lblFHR" Grid.Column="0" Grid.Row="0" />
+                            <xctk:IntegerUpDown Name="numFHR" Increment="5" Minimum="0" Maximum="500"
+                                                Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblFHRRhythms" Grid.Column="0" Grid.Row="1" />
+                            <ListBox Name="listFHRRhythms" SelectionMode="Multiple"
+                                     Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"/>
+                            <Label Name="lblFHRVariability" Grid.Column="0" Grid.Row="3" />
+                            <ComboBox Name="comboFHRVariability"
+                                      Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" />
+
+                            <Label Name="lblUCFrequency" Grid.Column="0" Grid.Row="5" />
+                            <xctk:IntegerUpDown Name="numUCFrequency" Increment="5" Minimum="0" Maximum="3600"
+                                                Grid.Column="1" Grid.Row="5" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblUCDuration" Grid.Column="0" Grid.Row="6" />
+                            <xctk:IntegerUpDown Name="numUCDuration" Increment="5" Minimum="0" Maximum="300"
+                                                Grid.Column="1" Grid.Row="6" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblUCIntensity" Grid.Column="0" Grid.Row="7" />
+                            <ComboBox Name="comboUCIntensity"
+                                      Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="2" />
+                        </Grid>
+                    </Expander>
+                </Border>
+
 
                 <!-- Apply and Reset Buttons -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">

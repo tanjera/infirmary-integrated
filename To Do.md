@@ -2,12 +2,28 @@
 
 
 
-
 * Next steps:
-	- Add splash screen?
+	* EFM
+		- DeviceEFM layout
+		- EFMTracing control
+		- Rhythms (Rhythms.cs)
+			- FHR, UA
+
+		- References
+			- Perinatology EFM: http://perinatology.com/Fetal%20Monitoring/Intrapartum%20Monitoring.htm
+			- 3-Tier FHR Interpretation: https://perinatalweb.org/themes/wapc/assets/docs/three%20tiered,%20three%20category%20fhr%20interpretation%20system%20_july,%202010_.pdf
+
+
+	- Splash screen?
 		- Compiler #if release version only...
+
 	- Strips X axis not time-based, locked to DateTime...
 		- Causes "arrhythmia" on CPU load/window dragging
+	- Localization
+		- Swahili (SWK)
+		- Korean (KOR)
+
+
 
 * To debug:
 
@@ -17,30 +33,18 @@
 
 
 * Versions and features to implement:
-
-	- Purchase icons ...
-
-	- II_OSX (OS X cross-platform port)
-		- Windows
-			- Patient Editor (Patient Parameters)
-			- DeviceMonitor
-			- DialogAbout
-			- DialogLanguage
-		- Controls
-			- MonitorTracing
-			- MonitorNumerics
+	- DeviceCTG
+		- PatientEditor: Maternal & Fetal Parameters
+	- DeviceDefibrillator
+	- DeviceIABP
+	- DeviceVentilator
 
 
 
 * Planned features:
-	- Devices
-		- 12 lead ECG
-		- Defibrillator
-		- IABP
-		- Ventilator
-		- FHM/Toco
-		- Lab Values
-		- IV Pump
+	- Program features
+		- Save/Print screenshot
+
 	- Clinical aspects
 		- Respiratory Rhythms: Kussmaul, Cheyne-Stokes
 			- With vital sign clamping
@@ -50,9 +54,18 @@
 		- Pulsus paradoxus
 		- Thermodilution
 		- PA catheter placement
-	- Program features
-		- Save/Print screenshot
-		- Patient state snapshots
+
+
+
+* Localization Volunteers:
+	- DEU: ??
+    - ESP: ??
+    - FRA: ??
+    - ITA: ??
+	- KOR: Sujung C
+    - PTB: ??
+    - RUS: ??
+	- SWK: Ruth G
 
 
 

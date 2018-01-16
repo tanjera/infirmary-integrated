@@ -401,12 +401,12 @@ namespace II.Rhythm {
 
         static List<Point> ECG_J(Patient p, Leads l, Point _S) { return ECG_J(p, l, 1f, -.1f, _S); }
         static List<Point> ECG_J(Patient p, Leads l, double _L, double _mV, Point _S) {
-            return Line(_L, (_mV * leadCoeff[(int)l.Value, (int)WavePart.J]) + p.ST_Elevation[(int)l.Value], _S);
+            return Line(_L, (_mV * leadCoeff[(int)l.Value, (int)WavePart.J]) + p.STElevation[(int)l.Value], _S);
         }
 
         static List<Point> ECG_T(Patient p, Leads l, Point _S) { return ECG_T(p, l, .16f, .3f, 0f, _S); }
         static List<Point> ECG_T(Patient p, Leads l, double _L, double _mV, double _mV_End, Point _S) {
-            return Peak(_L, (_mV * leadCoeff[(int)l.Value, (int)WavePart.T]) + p.T_Elevation[(int)l.Value], _mV_End, _S);
+            return Peak(_L, (_mV * leadCoeff[(int)l.Value, (int)WavePart.T]) + p.TElevation[(int)l.Value], _mV_End, _S);
         }
 
         static List<Point> ECG_PR(Patient p, Leads l, Point _S) { return ECG_PR(p, l, .08f, 0f, _S); }
@@ -416,7 +416,7 @@ namespace II.Rhythm {
 
         static List<Point> ECG_ST(Patient p, Leads l, Point _S) { return ECG_ST(p, l, .1f, 0f, _S); }
         static List<Point> ECG_ST(Patient p, Leads l, double _L, double _mV, Point _S) {
-            return Line(_L, _mV + leadCoeff[(int)l.Value, (int)WavePart.ST] + p.ST_Elevation[(int)l.Value], _S);
+            return Line(_L, _mV + leadCoeff[(int)l.Value, (int)WavePart.ST] + p.STElevation[(int)l.Value], _S);
         }
 
         static List<Point> ECG_TP(Patient p, Leads l, Point _S) { return ECG_TP(p, l, .48f, .0f, _S); }

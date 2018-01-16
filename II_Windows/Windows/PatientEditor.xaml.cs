@@ -81,7 +81,7 @@ namespace II_Windows {
             lblDeviceDefibrillator.Content = Strings.Lookup (l, "PE:Defibrillator");
             lblDeviceVentilator.Content = Strings.Lookup (l, "PE:Ventilator");
             lblDeviceIABP.Content = Strings.Lookup (l, "PE:IABP");
-            lblDeviceCardiotocograph.Content = Strings.Lookup (l, "PE:Cardiotocograph");
+            lblDeviceEFM.Content = Strings.Lookup (l, "PE:EFM");
             lblDeviceIVPump.Content = Strings.Lookup (l, "PE:IVPump");
             lblDeviceLabResults.Content = Strings.Lookup (l, "PE:LabResults");
 
@@ -108,19 +108,39 @@ namespace II_Windows {
             grpSTSegmentElevation.Header = Strings.Lookup (l, "PE:STSegmentElevation");
             grpTWaveElevation.Header = Strings.Lookup (l, "PE:TWaveElevation");
 
+            lblGroupObstetricProfile.Content = Strings.Lookup (l, "PE:ObstetricProfile");
+            lblFHR.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:FetalHeartRate"));
+            lblFHRRhythms.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:FetalHeartRhythms"));
+            lblFHRVariability.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:FetalHeartVariability"));
+            lblUCFrequency.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:UterineContractionFrequency"));
+            lblUCDuration.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:UterineContractionDuration"));
+            lblUCIntensity.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:UterineContractionIntensity"));
+
             lblParametersApply.Content = Strings.Lookup (l, "BUTTON:ApplyChanges");
             lblParametersReset.Content = Strings.Lookup (l, "BUTTON:ResetParameters");
 
-            List<string> stringsCardiacRhythms = new List<string> (),
-                            stringsRespiratoryRhythms = new List<string> ();
+            List<string>    cardiacRhythms = new List<string> (),
+                            respiratoryRhythms = new List<string> (),
+                            intensityScale = new List<string> (),
+                            fetalHeartRhythms = new List<string> ();
 
-            foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
-                stringsCardiacRhythms.Add (Strings.Lookup (l, Cardiac_Rhythms.LookupString (v)));
-            comboCardiacRhythm.ItemsSource = stringsCardiacRhythms;
+            foreach (CardiacRhythms.Values v in Enum.GetValues (typeof (CardiacRhythms.Values)))
+                cardiacRhythms.Add (Strings.Lookup (l, CardiacRhythms.LookupString (v)));
+            comboCardiacRhythm.ItemsSource = cardiacRhythms;
 
-            foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
-                stringsRespiratoryRhythms.Add (Strings.Lookup (l, Respiratory_Rhythms.LookupString (v)));
-            comboRespiratoryRhythm.ItemsSource = stringsRespiratoryRhythms;
+            foreach (RespiratoryRhythms.Values v in Enum.GetValues (typeof (RespiratoryRhythms.Values)))
+                respiratoryRhythms.Add (Strings.Lookup (l, RespiratoryRhythms.LookupString (v)));
+            comboRespiratoryRhythm.ItemsSource = respiratoryRhythms;
+
+            foreach (Patient.Intensity.Values v in Enum.GetValues (typeof (Patient.Intensity.Values)))
+                intensityScale.Add (Strings.Lookup (l, Patient.Intensity.LookupString (v)));
+            comboFHRVariability.ItemsSource = intensityScale;
+            comboUCIntensity.ItemsSource = intensityScale;
+
+            foreach (FetalHeartDecelerations.Values v in Enum.GetValues (typeof (FetalHeartDecelerations.Values)))
+                fetalHeartRhythms.Add (Strings.Lookup (l, FetalHeartDecelerations.LookupString (v)));
+            listFHRRhythms.ItemsSource = fetalHeartRhythms;
+
         }
 
         private void InitPatient () {
@@ -151,6 +171,15 @@ namespace II_Windows {
             App.Patient.PatientEvent += App.Device_ECG.OnPatientEvent;
         }
 
+        private void InitDeviceEFM () {
+            if (App.Device_EFM == null || !App.Device_EFM.IsLoaded)
+                App.Device_EFM = new DeviceEFM ();
+
+            App.Device_EFM.Activate ();
+            App.Device_EFM.Show ();
+
+            App.Patient.PatientEvent += App.Device_EFM.OnPatientEvent;
+        }
         private void DialogLanguage(bool reloadUI = false) {
             App.Dialog_Language = new DialogLanguage ();
             App.Dialog_Language.Activate ();
@@ -352,10 +381,15 @@ namespace II_Windows {
         private void MenuAbout_Click (object s, RoutedEventArgs e) => DialogAbout ();
         private void ButtonDeviceMonitor_Click (object s, RoutedEventArgs e) => InitDeviceMonitor ();
         private void ButtonDeviceECG_Click (object s, RoutedEventArgs e) => InitDeviceECG ();
+        private void ButtonDeviceEFM_Click (object s, RoutedEventArgs e) => InitDeviceEFM ();
         private void ButtonResetParameters_Click (object s, RoutedEventArgs e) => RequestNewPatient ();
 
         private void ButtonApplyParameters_Click (object sender, RoutedEventArgs e) {
-            App.Patient.UpdateVitals (
+            List<FetalHeartDecelerations.Values> FHRRhythms = new List<FetalHeartDecelerations.Values> ();
+            foreach (object o in listFHRRhythms.SelectedItems)
+                FHRRhythms.Add ((FetalHeartDecelerations.Values)Enum.GetValues (typeof (FetalHeartDecelerations.Values)).GetValue (listFHRRhythms.Items.IndexOf(o)));
+
+            App.Patient.UpdateParameters (
                 (int)numHR.Value,
                 (int)numRR.Value,
                 (int)numSPO2.Value,
@@ -388,11 +422,18 @@ namespace II_Windows {
                 (double)numTWE_V4.Value, (double)numTWE_V5.Value, (double)numTWE_V6.Value
                 },
 
-                (Cardiac_Rhythms.Values)Enum.GetValues(typeof(Cardiac_Rhythms.Values)).GetValue(comboCardiacRhythm.SelectedIndex),
-                (Respiratory_Rhythms.Values)Enum.GetValues (typeof (Respiratory_Rhythms.Values)).GetValue (comboRespiratoryRhythm.SelectedIndex),
+                (CardiacRhythms.Values)Enum.GetValues(typeof(CardiacRhythms.Values)).GetValue(comboCardiacRhythm.SelectedIndex),
+                (RespiratoryRhythms.Values)Enum.GetValues (typeof (RespiratoryRhythms.Values)).GetValue (comboRespiratoryRhythm.SelectedIndex),
 
                 (int)numInspiratoryRatio.Value,
-                (int)numExpiratoryRatio.Value
+                (int)numExpiratoryRatio.Value,
+
+                (int)numFHR.Value,
+                (Patient.Intensity.Values)Enum.GetValues(typeof(Patient.Intensity.Values)).GetValue(comboFHRVariability.SelectedIndex),
+                FHRRhythms,
+                (int)numUCFrequency.Value,
+                (int)numUCDuration.Value,
+                (Patient.Intensity.Values)Enum.GetValues (typeof (Patient.Intensity.Values)).GetValue (comboUCIntensity.SelectedIndex)
             );
         }
 
@@ -412,38 +453,47 @@ namespace II_Windows {
                 numPSP.Value = e.Patient.PSP;
                 numPDP.Value = e.Patient.PDP;
 
-                comboCardiacRhythm.SelectedIndex = (int)e.Patient.Cardiac_Rhythm.Value;
+                comboCardiacRhythm.SelectedIndex = (int)e.Patient.CardiacRhythm.Value;
 
                 comboRespiratoryRhythm.SelectedIndex = (int)e.Patient.Respiratory_Rhythm.Value;
                 numInspiratoryRatio.Value = e.Patient.Respiratory_IERatio_I;
                 numExpiratoryRatio.Value = e.Patient.Respiratory_IERatio_E;
 
+                numSTE_I.Value = (decimal)e.Patient.STElevation [(int)Leads.Values.ECG_I];
+                numSTE_II.Value = (decimal)e.Patient.STElevation [(int)Leads.Values.ECG_II];
+                numSTE_III.Value = (decimal)e.Patient.STElevation [(int)Leads.Values.ECG_III];
+                numSTE_aVR.Value = (decimal)e.Patient.STElevation [(int)Leads.Values.ECG_AVR];
+                numSTE_aVL.Value = (decimal)e.Patient.STElevation [(int)Leads.Values.ECG_AVL];
+                numSTE_aVF.Value = (decimal)e.Patient.STElevation [(int)Leads.Values.ECG_AVF];
+                numSTE_V1.Value = (decimal)e.Patient.STElevation [(int)Leads.Values.ECG_V1];
+                numSTE_V2.Value = (decimal)e.Patient.STElevation [(int)Leads.Values.ECG_V2];
+                numSTE_V3.Value = (decimal)e.Patient.STElevation [(int)Leads.Values.ECG_V3];
+                numSTE_V4.Value = (decimal)e.Patient.STElevation [(int)Leads.Values.ECG_V4];
+                numSTE_V5.Value = (decimal)e.Patient.STElevation [(int)Leads.Values.ECG_V5];
+                numSTE_V6.Value = (decimal)e.Patient.STElevation [(int)Leads.Values.ECG_V6];
 
-                numSTE_I.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_I];
-                numSTE_II.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_II];
-                numSTE_III.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_III];
-                numSTE_aVR.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_AVR];
-                numSTE_aVL.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_AVL];
-                numSTE_aVF.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_AVF];
-                numSTE_V1.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_V1];
-                numSTE_V2.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_V2];
-                numSTE_V3.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_V3];
-                numSTE_V4.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_V4];
-                numSTE_V5.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_V5];
-                numSTE_V6.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_V6];
+                numTWE_I.Value = (decimal)e.Patient.TElevation [(int)Leads.Values.ECG_I];
+                numTWE_II.Value = (decimal)e.Patient.TElevation [(int)Leads.Values.ECG_II];
+                numTWE_III.Value = (decimal)e.Patient.TElevation [(int)Leads.Values.ECG_III];
+                numTWE_aVR.Value = (decimal)e.Patient.TElevation [(int)Leads.Values.ECG_AVR];
+                numTWE_aVL.Value = (decimal)e.Patient.TElevation [(int)Leads.Values.ECG_AVL];
+                numTWE_aVF.Value = (decimal)e.Patient.TElevation [(int)Leads.Values.ECG_AVF];
+                numTWE_V1.Value = (decimal)e.Patient.TElevation [(int)Leads.Values.ECG_V1];
+                numTWE_V2.Value = (decimal)e.Patient.TElevation [(int)Leads.Values.ECG_V2];
+                numTWE_V3.Value = (decimal)e.Patient.TElevation [(int)Leads.Values.ECG_V3];
+                numTWE_V4.Value = (decimal)e.Patient.TElevation [(int)Leads.Values.ECG_V4];
+                numTWE_V5.Value = (decimal)e.Patient.TElevation [(int)Leads.Values.ECG_V5];
+                numTWE_V6.Value = (decimal)e.Patient.TElevation [(int)Leads.Values.ECG_V6];
 
-                numTWE_I.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_I];
-                numTWE_II.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_II];
-                numTWE_III.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_III];
-                numTWE_aVR.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_AVR];
-                numTWE_aVL.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_AVL];
-                numTWE_aVF.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_AVF];
-                numTWE_V1.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V1];
-                numTWE_V2.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V2];
-                numTWE_V3.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V3];
-                numTWE_V4.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V4];
-                numTWE_V5.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V5];
-                numTWE_V6.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V6];
+                numFHR.Value = e.Patient.FHR;
+                numUCFrequency.Value = e.Patient.UCFrequency;
+                numUCDuration.Value = e.Patient.UCDuration;
+                comboFHRVariability.SelectedIndex = (int)e.Patient.FHRVariability.Value;
+                comboUCIntensity.SelectedIndex = (int)e.Patient.UCIntensity.Value;
+
+                listFHRRhythms.SelectedItems.Clear ();
+                foreach (FetalHeartDecelerations.Values fhr_rhythm in e.Patient.FHRDecelerations.ValueList)
+                    listFHRRhythms.SelectedItems.Add(listFHRRhythms.Items.GetItemAt ((int)fhr_rhythm));
             }
         }
 
@@ -451,12 +501,12 @@ namespace II_Windows {
             if ((bool)checkDefaultVitals.IsChecked && App.Patient != null) {
 
                 int si = comboCardiacRhythm.SelectedIndex;
-                Array ev = Enum.GetValues (typeof (Cardiac_Rhythms.Values));
+                Array ev = Enum.GetValues (typeof (CardiacRhythms.Values));
                 if (si < 0 || si > ev.Length - 1)
                     return;
 
-                Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
-                    (Cardiac_Rhythms.Values)ev.GetValue (si));
+                CardiacRhythms.Default_Vitals v = CardiacRhythms.DefaultVitals (
+                    (CardiacRhythms.Values)ev.GetValue (si));
 
                 numHR.Value = (int)Utility.Clamp ((double)numHR.Value, v.HRMin, v.HRMax);
                 numSPO2.Value = (int)Utility.Clamp ((double)numSPO2.Value, v.SPO2Min, v.SPO2Max);

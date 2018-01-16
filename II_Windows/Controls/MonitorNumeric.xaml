@@ -19,7 +19,7 @@
             <Setter Property="Foreground" Value="White" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Margin" Value="0" />
+            <Setter Property="Margin" Value="2" />
         </Style>
     </UserControl.Resources>
 
@@ -40,7 +40,7 @@
 
             <TextBlock Name="lblNumType" Style="{StaticResource stTextblock}"
                        Grid.Row="0" Grid.Column="0"
-                       HorizontalAlignment="Left" />
+                       Margin="5" HorizontalAlignment="Left" />
 
             <Viewbox Name ="vbLine1" Style="{StaticResource stViewbox}"
                      Grid.Row="1" Grid.Column="0" >
