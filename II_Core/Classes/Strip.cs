@@ -145,12 +145,20 @@ namespace II.Rhythm {
         public void Add_Beat__Cardiac_Ventricular (Patient _Patient) {
             if (IsECG ())
                 _Patient.CardiacRhythm.ECG_Ventricular (_Patient, this);
-            else if (Lead.Value == Leads.Values.SPO2 && _Patient.CardiacRhythm.Pulse_Ventricular)
+            else if (Lead.Value == Leads.Values.SPO2 && _Patient.CardiacRhythm.HasPulse_Ventricular)
                 Overwrite (Waveforms.SPO2_Rhythm (_Patient, 1f));
-            else if (Lead.Value == Leads.Values.ABP && _Patient.CardiacRhythm.Pulse_Ventricular)
+            else if (Lead.Value == Leads.Values.ABP && _Patient.CardiacRhythm.HasPulse_Ventricular)
                 Overwrite (Waveforms.ABP_Rhythm (_Patient, 1f));
             else if (Lead.Value == Leads.Values.PA)
                 Overwrite (Waveforms.PA_Rhythm (_Patient, 1f));
+            else if (Lead.Value == Leads.Values.IABP && _Patient.IABPRunning && !_Patient.IABPFilling) {
+                // ECG Trigger: needs ventricular ECG waveform
+                if (_Patient.CardiacRhythm.HasWaveform_Ventricular && _Patient.IABPTrigger.Value == Patient.IABPTriggers.Values.ECG)
+                    Overwrite (Waveforms.IABP_Rhythm (_Patient, 1f));
+                // Pressure Trigger: needs a ventricular pressure impulse
+                else if (_Patient.CardiacRhythm.HasPulse_Ventricular && _Patient.IABPTrigger.Value == Patient.IABPTriggers.Values.Pressure)
+                    Overwrite (Waveforms.IABP_Rhythm (_Patient, 1f));
+            }
         }
 
         public void Add_Beat__Respiratory_Baseline (Patient _Patient) {

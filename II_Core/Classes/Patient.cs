@@ -26,6 +26,13 @@ namespace II {
         public bool Respiratory_Inflated;
         public int Respiratory_IERatio_I, Respiratory_IERatio_E;
 
+        // IABP Settings (stored here for timing and propogation purposes)
+        public int IABPRatio = 1;
+        public double IABPAugmentation = 0.5;
+        public IABPTriggers IABPTrigger = new IABPTriggers ();
+        public IABPModes IABPMode = new IABPModes ();
+        public bool IABPRunning = false, IABPFilling = false;
+
         // Obstetric Profile
         public Intensity UCIntensity = new Intensity(),
                          FHRVariability = new Intensity();
@@ -43,6 +50,30 @@ namespace II {
 
             public static string LookupString (Values v) {
                 return String.Format ("INTENSITY:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v).ToString ());
+            }
+        }
+
+        public class IABPTriggers {
+            public Values Value;
+            public enum Values { ECG, Pressure }
+
+            public IABPTriggers (Values v) { Value = v; }
+            public IABPTriggers () { Value = Values.ECG; }
+
+            public static string LookupString (Values v) {
+                return String.Format ("IABPTRIGGER:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v).ToString ());
+            }
+        }
+
+        public class IABPModes {
+            public Values Value;
+            public enum Values { Auto, SemiAuto, Manual }
+
+            public IABPModes (Values v) { Value = v; }
+            public IABPModes () { Value = Values.Auto; }
+
+            public static string LookupString (Values v) {
+                return String.Format ("IABPMODE:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v).ToString ());
             }
         }
 
@@ -88,6 +119,8 @@ namespace II {
                 Respiratory_Baseline,
                 Respiratory_Inspiration,
                 Respiratory_Expiration,
+                IABP_Inflate,
+                IABP_Deflate,
                 Obstetric_Baseline,
                 Obstetric_ContractionStart,
                 Obstetric_ContractionEnd,
@@ -171,10 +204,19 @@ namespace II {
                             case "Cardiac_Rhythm": CardiacRhythm.Value = (CardiacRhythms.Values) Enum.Parse(typeof(CardiacRhythms.Values), pValue); break;
                             case "Cardiac_Rhythm__Flag": CardiacRhythm_Flag = bool.Parse (pValue); break;
                             case "Cardiac_Axis_Shift": CardiacAxis.Value = (CardiacAxes.Values)Enum.Parse (typeof (CardiacAxes.Values), pValue); break;
+
+                            case "IABPRatio": IABPRatio = int.Parse (pValue); break;
+                            case "IABPAugmentation": IABPAugmentation = double.Parse (pValue); break;
+                            case "IABPTrigger": IABPTrigger.Value = (IABPTriggers.Values)Enum.Parse (typeof (IABPTriggers.Values), pValue); break;
+                            case "IABPMode": IABPMode.Value = (IABPModes.Values)Enum.Parse (typeof (IABPModes.Values), pValue); break;
+                            case "IABPRunning": IABPRunning = bool.Parse (pValue); break;
+                            case "IABPFilling": IABPFilling = bool.Parse (pValue); break;
+
                             case "Respiratory_Rhythm": Respiratory_Rhythm.Value = (RespiratoryRhythms.Values)Enum.Parse (typeof (RespiratoryRhythms.Values), pValue); break;
                             case "Respiratory_Inflated": Respiratory_Inflated = bool.Parse (pValue); break;
                             case "Respiratory_IERatio_I": Respiratory_IERatio_I = int.Parse (pValue); break;
                             case "Respiratory_IERatio_E": Respiratory_IERatio_E = int.Parse (pValue); break;
+
                             case "FHR": FHR = int.Parse (pValue); break;
                             case "FHR_Variability": FHRVariability.Value = (Intensity.Values)Enum.Parse (typeof (Intensity.Values), pValue); break;
                             case "FHR_Rhythms":
@@ -224,6 +266,14 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Rhythm", CardiacRhythm.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Rhythm__Flag", CardiacRhythm_Flag));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Axis_Shift", CardiacAxis.Value));
+
+            sWrite.AppendLine (String.Format ("{0}:{1}", "IABPRatio", IABPRatio));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "IABPAugmentation", IABPAugmentation));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "IABPTrigger", IABPTrigger.Value));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "IABPMode", IABPMode.Value));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "IABPRunning", IABPRunning));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "IABPFilling", IABPFilling));
+
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_Rhythm", Respiratory_Rhythm.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_Inflated", Respiratory_Inflated));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_I", Respiratory_IERatio_I));

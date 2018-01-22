@@ -148,7 +148,7 @@
                             <Label Name="lblDeviceVentilator" Style="{StaticResource deviceLabel}" />
                         </StackPanel>
                     </Button>
-                    <Button Name="btnDeviceIABP" Style="{StaticResource deviceButton}" IsEnabled="False">
+                    <Button Name="btnDeviceIABP" Click="ButtonDeviceIABP_Click"  Style="{StaticResource deviceButton}">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource Icon_DeviceIABP}" Style="{StaticResource deviceImage}" />
                             <Label Name="lblDeviceIABP" Style="{StaticResource deviceLabel}" />

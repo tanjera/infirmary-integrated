@@ -73,6 +73,10 @@ namespace II.Rhythm {
             return thisBeat;
         }
 
+        public static List<Point> IABP_Rhythm (Patient _P, double _Amplitude) {
+            throw new NotImplementedException ();
+        }
+
         public static List<Point> RR_Rhythm (Patient _P, bool _Inspire) {
             /* Respiratory rate/status indicator; on waveform shows as an open arrow
              */

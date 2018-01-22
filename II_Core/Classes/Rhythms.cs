@@ -40,7 +40,7 @@ namespace II {
             return String.Format("RHYTHM:{0}", Enum.GetValues(typeof(Values)).GetValue((int)value).ToString());
         }
 
-        public bool Pulse_Atrial {
+        public bool HasPulse_Atrial {
             get {
                 switch (Value) {
                     case Values.Asystole:
@@ -76,7 +76,7 @@ namespace II {
             }
         }
 
-        public bool Pulse_Ventricular {
+        public bool HasPulse_Ventricular {
             get {
                 switch (Value) {
 
@@ -108,6 +108,42 @@ namespace II {
                     case Values.Sinus_Rhythm_with_PVCs_Unifocal:
                     case Values.Supraventricular_Tachycardia:
                     case Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
+                        return true;
+                }
+            }
+        }
+
+        public bool HasWaveform_Ventricular {
+            get {
+                switch (Value) {
+                    case Values.Asystole:
+                    case Values.Ventricular_Fibrillation_Fine:
+                    case Values.Ventricular_Standstill:
+                        return false;
+
+                    default:
+                    case Values.Atrial_Fibrillation:
+                    case Values.Atrial_Flutter:
+                    case Values.AV_Block__1st_Degree:
+                    case Values.AV_Block__3rd_Degree:
+                    case Values.AV_Block__Mobitz_II:
+                    case Values.AV_Block__Wenckebach:
+                    case Values.Bundle_Branch_Block:
+                    case Values.Idioventricular:
+                    case Values.Junctional:
+                    case Values.Pulseless_Electrical_Activity:
+                    case Values.Sinus_Rhythm:
+                    case Values.Sinus_Rhythm_with_Bigeminy:
+                    case Values.Sinus_Rhythm_with_Trigeminy:
+                    case Values.Sinus_Rhythm_with_PACs:
+                    case Values.Sinus_Rhythm_with_PJCs:
+                    case Values.Sinus_Rhythm_with_PVCs_Multifocal:
+                    case Values.Sinus_Rhythm_with_PVCs_Unifocal:
+                    case Values.Supraventricular_Tachycardia:
+                    case Values.Ventricular_Fibrillation_Coarse:
+                    case Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
+                    case Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
+                    case Values.Ventricular_Tachycardia_Polymorphic:
                         return true;
                 }
             }

@@ -17,6 +17,7 @@ namespace II {
             CVP,
             ABP,
             PA,
+            IABP,
 
             RR,
             ETCO2

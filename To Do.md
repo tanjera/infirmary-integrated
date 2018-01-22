@@ -3,12 +3,19 @@
 
 
 * Next steps:
+	* IABP
+		- DeviceIABP layout
+		- Rhythms (Rhythms.cs)
+			- IABP
+		- References
+			Console: https://image.slidesharecdn.com/chakri-160614085310/95/iabp-13-638.jpg?cb=1466134420
+
+
 	* EFM
 		- DeviceEFM layout
 		- EFMTracing control
 		- Rhythms (Rhythms.cs)
 			- FHR, UA
-
 		- References
 			- Perinatology EFM: http://perinatology.com/Fetal%20Monitoring/Intrapartum%20Monitoring.htm
 			- 3-Tier FHR Interpretation: https://perinatalweb.org/themes/wapc/assets/docs/three%20tiered,%20three%20category%20fhr%20interpretation%20system%20_july,%202010_.pdf
@@ -18,10 +25,7 @@
 		- Compiler #if release version only...
 
 	- Strips X axis not time-based, locked to DateTime...
-		- Causes "arrhythmia" on CPU load/window dragging
-	- Localization
-		- Swahili (SWK)
-		- Korean (KOR)
+		- Causes "arrhythmia" on CPU load/window dragging	
 
 
 

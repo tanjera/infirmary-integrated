@@ -108,7 +108,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\IABPTracing.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\EFMTracing.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\IABPNumeric.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -123,6 +131,10 @@
     <Page Include="Controls\MonitorTracing.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\DeviceIABP.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Windows\DeviceEFM.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -153,8 +165,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Classes\ActionCommand.cs" />
+    <Compile Include="Controls\IABPTracing.xaml.cs">
+      <DependentUpon>IABPTracing.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\EFMTracing.xaml.cs">
       <DependentUpon>EFMTracing.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\IABPNumeric.xaml.cs">
+      <DependentUpon>IABPNumeric.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\MonitorNumeric.xaml.cs">
       <DependentUpon>MonitorNumeric.xaml</DependentUpon>
@@ -164,6 +182,9 @@
     </Compile>
     <Compile Include="Controls\MonitorTracing.xaml.cs">
       <DependentUpon>MonitorTracing.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\DeviceIABP.xaml.cs">
+      <DependentUpon>DeviceIABP.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\DeviceEFM.xaml.cs">
       <DependentUpon>DeviceEFM.xaml</DependentUpon>

@@ -171,6 +171,16 @@ namespace II_Windows {
             App.Patient.PatientEvent += App.Device_ECG.OnPatientEvent;
         }
 
+        private void InitDeviceIABP () {
+            if (App.Device_IABP == null || !App.Device_IABP.IsLoaded)
+                App.Device_IABP = new DeviceIABP ();
+
+            App.Device_IABP.Activate ();
+            App.Device_IABP.Show ();
+
+            App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
+        }
+
         private void InitDeviceEFM () {
             if (App.Device_EFM == null || !App.Device_EFM.IsLoaded)
                 App.Device_EFM = new DeviceEFM ();
@@ -381,6 +391,7 @@ namespace II_Windows {
         private void MenuAbout_Click (object s, RoutedEventArgs e) => DialogAbout ();
         private void ButtonDeviceMonitor_Click (object s, RoutedEventArgs e) => InitDeviceMonitor ();
         private void ButtonDeviceECG_Click (object s, RoutedEventArgs e) => InitDeviceECG ();
+        private void ButtonDeviceIABP_Click (object s, RoutedEventArgs e) => InitDeviceIABP ();
         private void ButtonDeviceEFM_Click (object s, RoutedEventArgs e) => InitDeviceEFM ();
         private void ButtonResetParameters_Click (object s, RoutedEventArgs e) => RequestNewPatient ();
 
