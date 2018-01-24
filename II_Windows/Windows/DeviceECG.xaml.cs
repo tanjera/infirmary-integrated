@@ -162,7 +162,7 @@ namespace II_Windows {
 
             if (!isPaused)
                 foreach (Controls.ECGTracing c in listTracings)
-                    c.wfStrip.Unpause ();
+                    c.Unpause ();
         }
 
         private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
@@ -179,7 +179,7 @@ namespace II_Windows {
                 return;
 
             foreach (Controls.ECGTracing c in listTracings) {
-                c.wfStrip.Scroll ();
+                c.Scroll ();
                 c.Draw ();
             }
         }
@@ -189,24 +189,24 @@ namespace II_Windows {
                 default: break;
                 case Patient.PatientEvent_Args.EventTypes.Vitals_Change:
                     foreach (Controls.ECGTracing c in listTracings) {
-                        c.wfStrip.ClearFuture ();
-                        c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
+                        c.ClearFuture ();
+                        c.Add_Beat__Cardiac_Baseline (App.Patient);
                     }
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
                     foreach (Controls.ECGTracing c in listTracings)
-                        c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
+                        c.Add_Beat__Cardiac_Baseline (App.Patient);
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Atrial:
                     foreach (Controls.ECGTracing c in listTracings)
-                        c.wfStrip.Add_Beat__Cardiac_Atrial (App.Patient);
+                        c.Add_Beat__Cardiac_Atrial (App.Patient);
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Ventricular:
                     foreach (Controls.ECGTracing c in listTracings)
-                        c.wfStrip.Add_Beat__Cardiac_Ventricular (App.Patient);
+                        c.Add_Beat__Cardiac_Ventricular (App.Patient);
                     break;
             }
         }

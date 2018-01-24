@@ -73,8 +73,33 @@ namespace II.Rhythm {
             return thisBeat;
         }
 
-        public static List<Point> IABP_Rhythm (Patient _P, double _Amplitude) {
-            throw new NotImplementedException ();
+        public static List<Point> IABP_Balloon_Rhythm (Patient _P, double _Amplitude) {
+            double _Portion = _P.HR_Seconds / 20;
+
+            List<Point> thisBeat = new List<Point> ();
+            thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion * 4, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion, _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion * 2, _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion * 6, 0.5f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion, -0.3f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion * 2, -0.3f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion * 3, 0f, Last (thisBeat)));
+            return thisBeat;
+        }
+
+        public static List<Point> IABP_ABP_Rhythm (Patient _P, double _Amplitude) {
+            double _Portion = _P.HR_Seconds / 4;
+
+            List<Point> thisBeat = new List<Point> ();
+            if (_P.CardiacRhythm.HasPulse_Ventricular)
+                thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.8f * _Amplitude, 0.6f * _Amplitude, Last (thisBeat)));
+            else
+                thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
+
+            thisBeat = Concatenate (thisBeat, Curve (_Portion * 1.5, 1f * _Amplitude, 0.8f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion * 1.5, 0.1f * _Amplitude, 0f, Last (thisBeat)));
+            return thisBeat;
         }
 
         public static List<Point> RR_Rhythm (Patient _P, bool _Inspire) {

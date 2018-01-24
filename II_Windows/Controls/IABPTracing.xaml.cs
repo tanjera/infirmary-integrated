@@ -17,6 +17,7 @@ namespace II_Windows.Controls {
     public partial class IABPTracing : UserControl {
 
         public Strip wfStrip;
+        public Leads Lead { get { return wfStrip.Lead; } }
 
         // Drawing variables, offsets and multipliers
         Path drawPath;
@@ -32,17 +33,47 @@ namespace II_Windows.Controls {
             DataContext = this;
 
             wfStrip = strip;
+
             UpdateInterface (null, null);
         }
 
         private void UpdateInterface (object sender, SizeChangedEventArgs e) {
-            drawBrush = Brushes.Green;
+            switch (wfStrip.Lead.Value) {
+                default: drawBrush = Brushes.Green; break;
+                case Leads.Values.ABP: drawBrush = Brushes.Red; break;
+                case Leads.Values.IABP: drawBrush = Brushes.SkyBlue; break;
+            }
+
+            borderTracing.BorderBrush = drawBrush;
 
             lblLead.Foreground = drawBrush;
-            lblLead.Content = Strings.Lookup (App.Language.Value, Leads.LookupString (wfStrip.Lead.Value, true));
+            lblLead.Content = Strings.Lookup (App.Language.Value, Leads.LookupString (Lead.Value));
+        }
+
+        public void Scroll () => wfStrip.Scroll ();
+        public void Unpause () => wfStrip.Unpause ();
+        public void ClearFuture () => wfStrip.ClearFuture ();
+        public void Add_Beat__Cardiac_Baseline (Patient P) => wfStrip.Add_Beat__Cardiac_Baseline (P);
+        public void Add_Beat__Cardiac_Atrial (Patient P) {
+            if (Lead.IsTransduced () && !Leads.IsZeroed (Lead.Value, P))
+                return;
+            else
+                wfStrip.Add_Beat__Cardiac_Atrial (P);
+        }
+        public void Add_Beat__Cardiac_Ventricular (Patient P) {
+            if (Lead.IsTransduced () && !Leads.IsZeroed (Lead.Value, P))
+                return;
+            else
+                wfStrip.Add_Beat__Cardiac_Ventricular (P);
         }
 
         public void Draw () {
+            if (Lead.IsTransduced () && !Leads.IsZeroed (Lead.Value, App.Patient)) {
+                wfStrip.Reset ();
+                canvasTracing.Children.Clear ();
+                return;
+            }
+
             drawXOffset = 0;
             drawYOffset = (int)canvasTracing.ActualHeight / 2;
             drawXMultiplier = (int)canvasTracing.ActualWidth / wfStrip.lengthSeconds;

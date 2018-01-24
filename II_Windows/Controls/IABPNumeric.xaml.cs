@@ -86,21 +86,11 @@ namespace II_Windows.Controls {
 
             switch (controlType.Value) {
                 default:
-                case ControlType.Values.NIBP:
                 case ControlType.Values.ABP:
-                case ControlType.Values.PA:
                     break;
 
                 case ControlType.Values.ECG:
-                case ControlType.Values.T:
-                case ControlType.Values.RR:
-                case ControlType.Values.CVP:
                     lblLine2.Visibility = Visibility.Hidden;
-                    lblLine3.Visibility = Visibility.Hidden;
-                    break;
-
-                case ControlType.Values.SPO2:
-                case ControlType.Values.ETCO2:
                     lblLine3.Visibility = Visibility.Hidden;
                     break;
             }
@@ -116,44 +106,16 @@ namespace II_Windows.Controls {
                     lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.HR, 0.02f));
                     break;
 
-                case ControlType.Values.T:
-                    lblLine1.Text = String.Format ("{0:0.0}", App.Patient.T);
-                    break;
-
-                case ControlType.Values.SPO2:
-                    lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.SPO2, 0.01f));
-                    lblLine2.Text = String.Format ("@ {0:0}", Utility.RandomPercentRange (App.Patient.HR, 0.01f));
-                    break;
-
-                case ControlType.Values.RR:
-                    lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.RR, 0.02f));
-                    break;
-
-                case ControlType.Values.ETCO2:
-                    lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.ETCO2, 0.02f));
-                    lblLine2.Text = String.Format ("@ {0:0}", Utility.RandomPercentRange (App.Patient.RR, 0.02f));
-                    break;
-
-                case ControlType.Values.NIBP:
-                    lblLine1.Text = String.Format ("{0:0}", App.Patient.NSBP);
-                    lblLine2.Text = String.Format ("/ {0:0}", App.Patient.NDBP);
-                    lblLine3.Text = String.Format ("({0:0})", App.Patient.NMAP);
-                    break;
-
                 case ControlType.Values.ABP:
-                    lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.ASBP, 0.02f));
-                    lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (App.Patient.ADBP, 0.02f));
-                    lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.AMAP, 0.02f));
-                    break;
-
-                case ControlType.Values.CVP:
-                    lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.CVP, 0.02f));
-                    break;
-
-                case ControlType.Values.PA:
-                    lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.PSP, 0.02f));
-                    lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (App.Patient.PDP, 0.02f));
-                    lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.PMP, 0.02f));
+                    if (App.Patient.TransducerZeroed_ABP) {
+                        lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.ASBP, 0.02f));
+                        lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (App.Patient.ADBP, 0.02f));
+                        lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.AMAP, 0.02f));
+                    } else {
+                        lblLine1.Text = Strings.Lookup (App.Language.Value, "NUMERIC:ZeroTransducer");
+                        lblLine2.Text = "";
+                        lblLine3.Text = "";
+                    }
                     break;
             }
         }

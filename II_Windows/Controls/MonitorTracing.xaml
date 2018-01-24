@@ -7,8 +7,9 @@
              mc:Ignorable="d"
              SizeChanged="UpdateInterface" >
 
-    <Border Name="borderTracing" Margin="5"
-                BorderBrush="Black" BorderThickness="0.5, 0.5, 0, 0.5" CornerRadius="5, 0, 0, 5">
+        <Border Name="borderTracing" Margin="5"
+                BorderBrush="Black" BorderThickness="0.5" CornerRadius="5">
+
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />

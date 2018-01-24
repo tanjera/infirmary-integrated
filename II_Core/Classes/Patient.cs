@@ -26,12 +26,17 @@ namespace II {
         public bool Respiratory_Inflated;
         public int Respiratory_IERatio_I, Respiratory_IERatio_E;
 
+        // General Device Settings
+        public bool TransducerZeroed_ABP = false,
+                    TransducerZeroed_PA = false,
+                    TransducerZeroed_CVP = false;
+
         // IABP Settings (stored here for timing and propogation purposes)
         public int IABPRatio = 1;
         public double IABPAugmentation = 0.5;
         public IABPTriggers IABPTrigger = new IABPTriggers ();
         public IABPModes IABPMode = new IABPModes ();
-        public bool IABPRunning = false, IABPFilling = false;
+        public bool IABPRunning = false, IABPFilling = false, IABPFilled = false;
 
         // Obstetric Profile
         public Intensity UCIntensity = new Intensity(),
@@ -205,12 +210,17 @@ namespace II {
                             case "Cardiac_Rhythm__Flag": CardiacRhythm_Flag = bool.Parse (pValue); break;
                             case "Cardiac_Axis_Shift": CardiacAxis.Value = (CardiacAxes.Values)Enum.Parse (typeof (CardiacAxes.Values), pValue); break;
 
+                            case "TransducerZeroed_ABP": TransducerZeroed_ABP = bool.Parse (pValue); break;
+                            case "TransducerZeroed_CVP": TransducerZeroed_CVP = bool.Parse (pValue); break;
+                            case "TransducerZeroed_PA": TransducerZeroed_PA = bool.Parse (pValue); break;
+
                             case "IABPRatio": IABPRatio = int.Parse (pValue); break;
                             case "IABPAugmentation": IABPAugmentation = double.Parse (pValue); break;
                             case "IABPTrigger": IABPTrigger.Value = (IABPTriggers.Values)Enum.Parse (typeof (IABPTriggers.Values), pValue); break;
                             case "IABPMode": IABPMode.Value = (IABPModes.Values)Enum.Parse (typeof (IABPModes.Values), pValue); break;
                             case "IABPRunning": IABPRunning = bool.Parse (pValue); break;
                             case "IABPFilling": IABPFilling = bool.Parse (pValue); break;
+                            case "IABPFilled": IABPFilled = bool.Parse (pValue); break;
 
                             case "Respiratory_Rhythm": Respiratory_Rhythm.Value = (RespiratoryRhythms.Values)Enum.Parse (typeof (RespiratoryRhythms.Values), pValue); break;
                             case "Respiratory_Inflated": Respiratory_Inflated = bool.Parse (pValue); break;
@@ -267,12 +277,17 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Rhythm__Flag", CardiacRhythm_Flag));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Axis_Shift", CardiacAxis.Value));
 
+            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_ABP", TransducerZeroed_ABP));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_CVP", TransducerZeroed_CVP));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_PA", TransducerZeroed_PA));
+
             sWrite.AppendLine (String.Format ("{0}:{1}", "IABPRatio", IABPRatio));
             sWrite.AppendLine (String.Format ("{0}:{1}", "IABPAugmentation", IABPAugmentation));
             sWrite.AppendLine (String.Format ("{0}:{1}", "IABPTrigger", IABPTrigger.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "IABPMode", IABPMode.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "IABPRunning", IABPRunning));
             sWrite.AppendLine (String.Format ("{0}:{1}", "IABPFilling", IABPFilling));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "IABPFilled", IABPFilled));
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_Rhythm", Respiratory_Rhythm.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_Inflated", Respiratory_Inflated));

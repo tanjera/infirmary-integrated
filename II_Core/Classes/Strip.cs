@@ -147,17 +147,22 @@ namespace II.Rhythm {
                 _Patient.CardiacRhythm.ECG_Ventricular (_Patient, this);
             else if (Lead.Value == Leads.Values.SPO2 && _Patient.CardiacRhythm.HasPulse_Ventricular)
                 Overwrite (Waveforms.SPO2_Rhythm (_Patient, 1f));
-            else if (Lead.Value == Leads.Values.ABP && _Patient.CardiacRhythm.HasPulse_Ventricular)
-                Overwrite (Waveforms.ABP_Rhythm (_Patient, 1f));
-            else if (Lead.Value == Leads.Values.PA)
+            else if (Lead.Value == Leads.Values.ABP) {
+                if (_Patient.IABPRunning && !_Patient.IABPFilling)
+                    Overwrite (Waveforms.IABP_ABP_Rhythm (_Patient, 1f));
+                else if (_Patient.CardiacRhythm.HasPulse_Ventricular)
+                    Overwrite (Waveforms.ABP_Rhythm (_Patient, 1f));
+            } else if (Lead.Value == Leads.Values.PA && _Patient.CardiacRhythm.HasPulse_Ventricular)
                 Overwrite (Waveforms.PA_Rhythm (_Patient, 1f));
-            else if (Lead.Value == Leads.Values.IABP && _Patient.IABPRunning && !_Patient.IABPFilling) {
-                // ECG Trigger: needs ventricular ECG waveform
-                if (_Patient.CardiacRhythm.HasWaveform_Ventricular && _Patient.IABPTrigger.Value == Patient.IABPTriggers.Values.ECG)
-                    Overwrite (Waveforms.IABP_Rhythm (_Patient, 1f));
-                // Pressure Trigger: needs a ventricular pressure impulse
-                else if (_Patient.CardiacRhythm.HasPulse_Ventricular && _Patient.IABPTrigger.Value == Patient.IABPTriggers.Values.Pressure)
-                    Overwrite (Waveforms.IABP_Rhythm (_Patient, 1f));
+
+            if (Lead.Value == Leads.Values.IABP && _Patient.IABPRunning && !_Patient.IABPFilling) {
+                if (_Patient.CardiacRhythm.HasWaveform_Ventricular && _Patient.IABPTrigger.Value == Patient.IABPTriggers.Values.ECG) {
+                    // ECG Trigger works only if ventricular ECG waveform
+                    Overwrite (Waveforms.IABP_Balloon_Rhythm (_Patient, 1f));
+                } else if (_Patient.CardiacRhythm.HasPulse_Ventricular && _Patient.IABPTrigger.Value == Patient.IABPTriggers.Values.Pressure) {
+                    // Pressure Trigger works only if ventricular pressure impulse
+                    Overwrite (Waveforms.IABP_Balloon_Rhythm (_Patient, 1f));
+                }
             }
         }
 

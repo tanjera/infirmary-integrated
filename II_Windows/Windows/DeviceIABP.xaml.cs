@@ -28,8 +28,10 @@ namespace II_Windows {
              isPaused = false;
 
         List<Controls.IABPTracing> listTracings = new List<Controls.IABPTracing> ();
+        List<Controls.IABPNumeric> listNumerics = new List<Controls.IABPNumeric> ();
 
-        Timer timerTracing = new Timer ();
+        Timer timerTracing = new Timer (),
+              timerVitals = new Timer ();
 
         // Define WPF UI commands for binding
         private ICommand icPauseDevice, icCloseDevice, icExitProgram;
@@ -48,6 +50,11 @@ namespace II_Windows {
             App.Timer_Main.Tick += timerTracing.Process;
             timerTracing.Tick += OnTick_Tracing;
             timerTracing.Start ();
+
+            timerVitals.Interval = 5000;
+            App.Timer_Main.Tick += timerVitals.Process;
+            timerVitals.Tick += OnTick_Vitals;
+            timerVitals.Start ();
         }
 
         private void InitInterface () {
@@ -65,6 +72,32 @@ namespace II_Windows {
             menuToggleFullscreen.Header = Strings.Lookup (l, "MENU:MenuToggleFullscreen");
             menuCloseDevice.Header = Strings.Lookup (l, "MENU:MenuCloseDevice");
             menuExitProgram.Header = Strings.Lookup (l, "MENU:MenuExitProgram");
+
+            buttonModeAuto.Text = Strings.Lookup (l, "IABPMODE:Auto");
+            buttonModeSemiAuto.Text = Strings.Lookup (l, "IABPMODE:SemiAuto");
+            buttonModeManual.Text = Strings.Lookup (l, "IABPMODE:Manual");
+            buttonZero.Text = Strings.Lookup (l, "IABPBUTTON:ZeroPressure");
+            buttonStart.Text = Strings.Lookup (l, "IABPBUTTON:Start");
+            buttonPause.Text = Strings.Lookup (l, "IABPBUTTON:Pause");
+
+            // Instantiate and add Tracings to UI
+            listTracings.Add (new Controls.IABPTracing (new Strip (6f, Leads.Values.ECG_II)));
+            listTracings.Add (new Controls.IABPTracing (new Strip (6f, Leads.Values.ABP)));
+            listTracings.Add (new Controls.IABPTracing (new Strip (6f, Leads.Values.IABP)));
+            for (int i = 0; i < listTracings.Count; i++) {
+                listTracings [i].SetValue (Grid.RowProperty, i);
+                listTracings [i].SetValue (Grid.ColumnProperty, 0);
+                displayGrid.Children.Add (listTracings [i]);
+            }
+
+            // Instantiate and add Numerics to UI
+            listNumerics.Add (new Controls.IABPNumeric (Controls.IABPNumeric.ControlType.Values.ECG));
+            listNumerics.Add (new Controls.IABPNumeric (Controls.IABPNumeric.ControlType.Values.ABP));
+            for (int i = 0; i < listNumerics.Count; i++) {
+                listNumerics [i].SetValue (Grid.RowProperty, i);
+                listNumerics [i].SetValue (Grid.ColumnProperty, 1);
+                displayGrid.Children.Add (listNumerics [i]);
+            }
         }
 
         public void Load_Process (string inc) {
@@ -125,7 +158,19 @@ namespace II_Windows {
 
             if (!isPaused)
                 foreach (Controls.IABPTracing c in listTracings)
-                    c.wfStrip.Unpause ();
+                    c.Unpause ();
+        }
+
+        private void ButtonStart_Click (object s, RoutedEventArgs e) {
+            App.Patient.IABPRunning = true;
+        }
+
+        private void ButtonPause_Click (object s, RoutedEventArgs e) {
+            App.Patient.IABPRunning = false;
+        }
+
+        private void ButtonZeroABP_Click (object s, RoutedEventArgs e) {
+            App.Patient.TransducerZeroed_ABP = true;
         }
 
         private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
@@ -142,9 +187,17 @@ namespace II_Windows {
                 return;
 
             foreach (Controls.IABPTracing c in listTracings) {
-                c.wfStrip.Scroll ();
+                c.Scroll ();
                 c.Draw ();
             }
+        }
+
+        private void OnTick_Vitals (object sender, EventArgs e) {
+            if (isPaused)
+                return;
+
+            foreach (Controls.IABPNumeric v in listNumerics)
+                v.UpdateVitals ();
         }
 
         public void OnPatientEvent (object sender, Patient.PatientEvent_Args e) {
@@ -152,24 +205,24 @@ namespace II_Windows {
                 default: break;
                 case Patient.PatientEvent_Args.EventTypes.Vitals_Change:
                     foreach (Controls.IABPTracing c in listTracings) {
-                        c.wfStrip.ClearFuture ();
-                        c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
+                        c.ClearFuture ();
+                        c.Add_Beat__Cardiac_Baseline (App.Patient);
                     }
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
                     foreach (Controls.IABPTracing c in listTracings)
-                        c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
+                        c.Add_Beat__Cardiac_Baseline (App.Patient);
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Atrial:
                     foreach (Controls.IABPTracing c in listTracings)
-                        c.wfStrip.Add_Beat__Cardiac_Atrial (App.Patient);
+                        c.Add_Beat__Cardiac_Atrial (App.Patient);
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Ventricular:
                     foreach (Controls.IABPTracing c in listTracings)
-                        c.wfStrip.Add_Beat__Cardiac_Ventricular (App.Patient);
+                        c.Add_Beat__Cardiac_Ventricular (App.Patient);
                     break;
             }
         }

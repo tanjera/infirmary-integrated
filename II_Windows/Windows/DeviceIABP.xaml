@@ -4,13 +4,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:II_Windows"
+        xmlns:ii="clr-namespace:II_Windows.Controls"
         mc:Ignorable="d"
         Name="wdwDeviceIABP"
         Title="DeviceIABP"
         Icon="{StaticResource Icon_Infirmary}"
         WindowStartupLocation="CenterScreen"
-        Width="1200" Height="800"
-        Background="Black">
+        Width="800" Height="1000" >
 
     <Window.InputBindings>
         <KeyBinding Key="U" Modifiers="Ctrl" Command="{Binding IC_PauseDevice}" />
@@ -18,9 +18,55 @@
         <KeyBinding Key="F4" Modifiers="Alt" Command="{Binding IC_ExitProgram}" />
     </Window.InputBindings>
 
+    <Window.Resources>
+        <Style x:Key="borderControlsTop" TargetType="{x:Type Border}">
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Margin" Value="3" />
+            <Setter Property="Background" Value="CornflowerBlue" />
+        </Style>
+
+        <Style x:Key="borderControlsMiddle" TargetType="{x:Type Border}">
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Margin" Value="3" />
+            <Setter Property="Background" Value="LightSkyBlue" />
+        </Style>
+
+        <Style x:Key="borderControlsBottom" TargetType="{x:Type Border}">
+            <Setter Property="CornerRadius" Value="5" />
+            <Setter Property="Margin" Value="3" />
+            <Setter Property="Background" Value="Gray" />
+        </Style>
+
+        <Style x:Key="buttonRound" TargetType="Button">
+            <Setter Property="Height" Value="Auto" />
+            <Setter Property="Width" Value="Auto" />
+            <Setter Property="MinHeight" Value="60" />
+            <Setter Property="MinWidth" Value="60" />
+            <Setter Property="Margin" Value="15" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="Black" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border CornerRadius="50" Background="{TemplateBinding Background}"
+                                BorderThickness="0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="buttonTextBlock" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="Bold" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="TextAlignment" Value="Center" />
+        </Style>
+    </Window.Resources>
 
     <DockPanel LastChildFill="True">
-
         <!-- Main Menu -->
         <Menu DockPanel.Dock="Top" Width="Auto" Background="White">
             <MenuItem Name="menuDevice">
@@ -32,6 +78,118 @@
                 <MenuItem Name="menuExitProgram" Click="MenuExit_Click" InputGestureText="Alt-F4"/>
             </MenuItem>
         </Menu>
+
+        <Grid Name="mainGrid">
+            <!-- Default layout: Horizontal (like actual IABP's), display on top, control panel on bottom -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+
+            <!-- Display screen for IABP output e.g. waveform tracings, pressures, etc. -->
+            <Grid Name="displayGrid" Background="Black"
+                  Grid.Column="0" Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- Populate tracings and numerics programatically at runtime! -->
+                <!-- IABPTracing of ECG strip top center, IABPNumeric top right -->
+                <!-- IABPTracing of ABP strip middle center, IABPNumeric middle right -->
+                <!-- IABPTracing of IABP Balloon strip bottom center, IABPNumeric bottom right -->
+            </Grid>
+
+            <!-- Control panel for IABP e.g. operation mode, trigger selection, etc. -->
+            <Grid Name="controlsGrid" Background="LightGray"
+                  Grid.Column="0" Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="3 *" />
+                    <RowDefinition Height="3 *" />
+                    <RowDefinition Height="4 *" />
+                </Grid.RowDefinitions>
+
+                <!-- 1st Row: Operation Mode and Zero, Start, Standby -->
+                <Border Name="borderOperationMode" Style="{StaticResource borderControlsTop}"
+                        Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" />
+                <Border Name="borderStartStandBy" Style="{StaticResource borderControlsTop}"
+                        Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="3" />
+
+
+                <Button Style="{StaticResource buttonRound}" Background="PowderBlue"
+                        Grid.Column="0" Grid.Row="0" >
+                    <TextBlock Name="buttonModeAuto" Style="{StaticResource buttonTextBlock}" />
+                </Button>
+
+                <Button Style="{StaticResource buttonRound}" Background="LightGray"
+                        Grid.Column="1" Grid.Row="0" >
+                    <TextBlock Name="buttonModeSemiAuto" Style="{StaticResource buttonTextBlock}" />
+                </Button>
+
+                <Button Style="{StaticResource buttonRound}" Background="LightGray"
+                        Grid.Column="2" Grid.Row="0" >
+                    <TextBlock Name="buttonModeManual" Style="{StaticResource buttonTextBlock}" />
+                </Button>
+
+                <Button Style="{StaticResource buttonRound}" Background="PowderBlue"
+                        Grid.Column="3" Grid.Row="0"
+                        Click="ButtonZeroABP_Click">
+                    <TextBlock Name="buttonZero" Style="{StaticResource buttonTextBlock}" />
+                </Button>
+
+                <Button Style="{StaticResource buttonRound}" Background="LightGreen"
+                        Grid.Column="4" Grid.Row="0"
+                        Click="ButtonStart_Click">
+                    <TextBlock Name="buttonStart" Style="{StaticResource buttonTextBlock}" />
+                </Button>
+
+                <Button Style="{StaticResource buttonRound}" Background="Yellow"
+                        Grid.Column="5" Grid.Row="0"
+                        Click="ButtonPause_Click">
+                    <TextBlock Name="buttonPause" Style="{StaticResource buttonTextBlock}" />
+                </Button>
+
+                <!-- 2nd Row: Trigger Source, Frequency, Augmentation, Inflation/Deflation -->
+                <Border Name="borderTrigger" Style="{StaticResource borderControlsMiddle}"
+                        Grid.Column="0" Grid.Row="1" />
+
+                <Border Name="borderFrequency" Style="{StaticResource borderControlsMiddle}"
+                        Grid.Column="1" Grid.Row="1" />
+
+                <Border Name="borderAugmentation" Style="{StaticResource borderControlsMiddle}"
+                        Grid.Column="2" Grid.Row="1" />
+                <Border Name="borderInflationDeflation" Style="{StaticResource borderControlsMiddle}"
+                        Grid.Column="3" Grid.Row="1" Grid.ColumnSpan="3" />
+
+                <!-- 3rd Row: Options, Alarms, etc -->
+                <Border Name="borderSilenceFill" Style="{StaticResource borderControlsBottom}"
+                        Grid.Column="0" Grid.Row="2" />
+                <Border Name="borderHelp" Style="{StaticResource borderControlsBottom}"
+                        Grid.Column="1" Grid.Row="2" />
+                <Border Name="borderOptions" Style="{StaticResource borderControlsBottom}"
+                        Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3" />
+                <Border Name="borderPausePrint" Style="{StaticResource borderControlsBottom}"
+                        Grid.Column="5" Grid.Row="2" />
+            </Grid>
+        </Grid>
+
+
 
     </DockPanel>
 

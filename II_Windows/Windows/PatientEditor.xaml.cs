@@ -41,8 +41,8 @@ namespace II_Windows {
                 LoadOpen (App.Start_Args [0]);
 
             // For debugging. Automatically open window being worked on, hide patient editor.
-            //InitDeviceECG ();
-            //WindowState = WindowState.Minimized;
+            InitDeviceIABP();
+            WindowState = WindowState.Minimized;
         }
 
         private void InitLanguage () {

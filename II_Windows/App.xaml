@@ -10,7 +10,7 @@
         <!-- Icon for Infirmary Integrated-->
         <BitmapImage x:Key="Icon_Infirmary" UriSource="/Infirmary Integrated;component/Resources/Icon_Infirmary.ico"></BitmapImage>
 
-        <!-- Icons for Patient Editor -->
+        <!-- Icons for PatientEditor -->
         <BitmapImage x:Key="Icon_Check_32" UriSource="/Infirmary Integrated;component/Resources/Icon_Check_32.png"></BitmapImage>
         <BitmapImage x:Key="Icon_Cross_32" UriSource="/Infirmary Integrated;component/Resources/Icon_Cross_32.png"></BitmapImage>
 
@@ -22,6 +22,12 @@
         <BitmapImage x:Key="Icon_DeviceLabResults" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceLabResults_48.png"></BitmapImage>
         <BitmapImage x:Key="Icon_DeviceMonitor" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceMonitor_48.png"></BitmapImage>
         <BitmapImage x:Key="Icon_DeviceVentilator" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceVentilator_48.png"></BitmapImage>
+
+        <!-- Icons for DeviceIABP -->
+        <BitmapImage x:Key="Icon_ArrowUp" UriSource="/Infirmary Integrated;component/Third Party/Icon_ArrowUp_128.png"></BitmapImage>
+        <BitmapImage x:Key="Icon_ArrowDown" UriSource="/Infirmary Integrated;component/Third Party/Icon_ArrowDown_128.png"></BitmapImage>
+        <BitmapImage x:Key="Icon_ArrowLeft" UriSource="/Infirmary Integrated;component/Third Party/Icon_ArrowLeft_128.png"></BitmapImage>
+        <BitmapImage x:Key="Icon_ArrowRight" UriSource="/Infirmary Integrated;component/Third Party/Icon_ArrowRight_128.png"></BitmapImage>
 
     </Application.Resources>
 </Application>

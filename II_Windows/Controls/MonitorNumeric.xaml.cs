@@ -86,20 +86,27 @@ namespace II_Windows.Controls {
             vbLine2.ContextMenu = contextMenu;
             vbLine3.ContextMenu = contextMenu;
 
+            MenuItem menuZeroTransducer = new MenuItem ();
+            menuZeroTransducer.Header = Strings.Lookup (l, "MENU:MenuZeroTransducer");
+            menuZeroTransducer.Click += MenuZeroTransducer_Click;
+            contextMenu.Items.Add (menuZeroTransducer);
+
+            contextMenu.Items.Add (new Separator ());
+
             MenuItem menuAddNumeric = new MenuItem ();
-            menuAddNumeric.Header = Strings.Lookup (l, "CM:MenuAddNumeric");
+            menuAddNumeric.Header = Strings.Lookup (l, "MENU:MenuAddNumeric");
             menuAddNumeric.Click += MenuAddNumeric_Click;
             contextMenu.Items.Add (menuAddNumeric);
 
             MenuItem menuRemoveNumeric = new MenuItem ();
-            menuRemoveNumeric.Header = Strings.Lookup (l, "CM:MenuRemoveNumeric");
+            menuRemoveNumeric.Header = Strings.Lookup (l, "MENU:MenuRemoveNumeric");
             menuRemoveNumeric.Click += MenuRemoveNumeric_Click;
             contextMenu.Items.Add (menuRemoveNumeric);
 
             contextMenu.Items.Add (new Separator ());
 
             MenuItem menuSelectInput = new MenuItem ();
-            menuSelectInput.Header = Strings.Lookup (l, "CM:MenuSelectInputSource");
+            menuSelectInput.Header = Strings.Lookup (l, "MENU:MenuSelectInputSource");
 
             foreach (ControlType.Values v in Enum.GetValues(typeof(ControlType.Values))) {
                 MenuItem mi = new MenuItem ();
@@ -183,20 +190,43 @@ namespace II_Windows.Controls {
                     break;
 
                 case ControlType.Values.ABP:
-                    lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.ASBP, 0.02f));
-                    lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (App.Patient.ADBP, 0.02f));
-                    lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.AMAP, 0.02f));
+                    if (App.Patient.TransducerZeroed_ABP) {
+                        lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.ASBP, 0.02f));
+                        lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (App.Patient.ADBP, 0.02f));
+                        lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.AMAP, 0.02f));
+                    } else {
+                        lblLine1.Text = Strings.Lookup (App.Language.Value, "NUMERIC:ZeroTransducer");
+                        lblLine2.Text = "";
+                        lblLine3.Text = "";
+                    }
                     break;
 
                 case ControlType.Values.CVP:
-                    lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.CVP, 0.02f));
+                    if (App.Patient.TransducerZeroed_CVP)
+                        lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.CVP, 0.02f));
+                    else
+                        lblLine1.Text = Strings.Lookup (App.Language.Value, "NUMERIC:ZeroTransducer");
                     break;
 
                 case ControlType.Values.PA:
-                    lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.PSP, 0.02f));
-                    lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (App.Patient.PDP, 0.02f));
-                    lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.PMP, 0.02f));
+                    if (App.Patient.TransducerZeroed_PA) {
+                        lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.PSP, 0.02f));
+                        lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (App.Patient.PDP, 0.02f));
+                        lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.PMP, 0.02f));
+                    } else {
+                        lblLine1.Text = Strings.Lookup (App.Language.Value, "NUMERIC:ZeroTransducer");
+                        lblLine2.Text = "";
+                        lblLine3.Text = "";
+                    }
                     break;
+            }
+        }
+
+        private void MenuZeroTransducer_Click (object sender, RoutedEventArgs e) {
+            switch (controlType.Value) {
+                case ControlType.Values.ABP: App.Patient.TransducerZeroed_ABP = true; return;
+                case ControlType.Values.CVP: App.Patient.TransducerZeroed_CVP = true; return;
+                case ControlType.Values.PA: App.Patient.TransducerZeroed_PA = true; return;
             }
         }
 

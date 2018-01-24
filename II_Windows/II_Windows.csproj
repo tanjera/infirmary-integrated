@@ -250,7 +250,6 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Resource Include="Third Party\Icon_Device12LeadECG_48.png" />
     <Resource Include="Third Party\Icon_DeviceEFM_48.png" />
@@ -264,6 +263,12 @@
   <ItemGroup>
     <Resource Include="Resources\Icon_Check_32.png" />
     <Resource Include="Resources\Icon_Cross_32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Third Party\Icon_ArrowDown_128.png" />
+    <Resource Include="Third Party\Icon_ArrowLeft_128.png" />
+    <Resource Include="Third Party\Icon_ArrowRight_128.png" />
+    <Resource Include="Third Party\Icon_ArrowUp_128.png" />
   </ItemGroup>
   <Import Project="..\II_Core\II_Core.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

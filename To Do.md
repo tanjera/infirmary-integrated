@@ -2,11 +2,21 @@
 
 
 
+
 * Next steps:
+	* Localization
+		- Convert highlighted terms...
+
 	* IABP
-		- DeviceIABP layout
-		- Rhythms (Rhythms.cs)
-			- IABP
+		- DeviceIABP layout for control panel
+			- Automatic rearranging of layout (horizontal/vertical) depending on window aspect ratio
+		- Device logic
+			- Before starting:
+				1) Arterial line must be zeroed (if pressure trigger)
+				2) Balloon must be filled
+			- When changing modes:
+				1) Put into standby mode
+		- IABPNumeric for IABP readings (augmentation, augmented BP)
 		- References
 			Console: https://image.slidesharecdn.com/chakri-160614085310/95/iabp-13-638.jpg?cb=1466134420
 
@@ -25,22 +35,27 @@
 		- Compiler #if release version only...
 
 	- Strips X axis not time-based, locked to DateTime...
-		- Causes "arrhythmia" on CPU load/window dragging	
+		- Causes "arrhythmia" on CPU load/window dragging
 
 
 
 * To debug:
 
 * Known bugs:
-	- PA catheter populates beats even on pulseless rhythms...
+	- Pulsed rhythms (ABP, IABP_ABP, SPO2, PA) generate waveform too soon to QRS complex
+		- Needs time for electrical capture to translate to mechanical capture...
 
 
 
 * Versions and features to implement:
-	- DeviceCTG
-		- PatientEditor: Maternal & Fetal Parameters
+
+	- Rhythm Strips
+		- Normalize() rhythm strips before drawing (normalize amplitude between -1.0 to 1.0)
+		- PatientEditor: Slider bar with offset needing to be zeroed?
+	- Cardiac Rhythms:
+		- Chest compressions
+
 	- DeviceDefibrillator
-	- DeviceIABP
 	- DeviceVentilator
 
 

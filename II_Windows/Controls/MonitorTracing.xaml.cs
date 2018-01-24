@@ -17,6 +17,7 @@ namespace II_Windows.Controls {
     public partial class MonitorTracing : UserControl {
 
         public Strip wfStrip;
+        public Leads Lead { get { return wfStrip.Lead; } }
 
         // Drawing variables, offsets and multipliers
         Path drawPath;
@@ -31,9 +32,9 @@ namespace II_Windows.Controls {
             InitializeComponent ();
             DataContext = this;
 
-            InitInterface ();
-
             wfStrip = strip;
+
+            InitInterface ();
             UpdateInterface (null, null);
         }
 
@@ -46,13 +47,20 @@ namespace II_Windows.Controls {
             canvasTracing.ContextMenu = contextMenu;
             lblLead.ContextMenu = contextMenu;
 
+            MenuItem menuZeroTransducer = new MenuItem ();
+            menuZeroTransducer.Header = Strings.Lookup (l, "MENU:MenuZeroTransducer");
+            menuZeroTransducer.Click += MenuZeroTransducer_Click;
+            contextMenu.Items.Add (menuZeroTransducer);
+
+            contextMenu.Items.Add (new Separator ());
+
             MenuItem menuAddTracing = new MenuItem ();
-            menuAddTracing.Header = Strings.Lookup (l, "CM:MenuAddTracing");
+            menuAddTracing.Header = Strings.Lookup (l, "MENU:MenuAddTracing");
             menuAddTracing.Click += MenuAddTracing_Click;
             contextMenu.Items.Add (menuAddTracing);
 
             MenuItem menuRemoveTracing = new MenuItem ();
-            menuRemoveTracing.Header = Strings.Lookup (l, "CM:MenuRemoveTracing");
+            menuRemoveTracing.Header = Strings.Lookup (l, "MENU:MenuRemoveTracing");
             menuRemoveTracing.Click += MenuRemoveTracing_Click;
             contextMenu.Items.Add (menuRemoveTracing);
 
@@ -60,11 +68,17 @@ namespace II_Windows.Controls {
 
             MenuItem menuSelectInput = new MenuItem (),
                      menuECGLeads = new MenuItem();
-            menuSelectInput.Header = Strings.Lookup (l, "CM:MenuSelectInputSource");
+            menuSelectInput.Header = Strings.Lookup (l, "MENU:MenuSelectInputSource");
             menuECGLeads.Header = Strings.Lookup (l, "TRACING:ECG");
             menuSelectInput.Items.Add (menuECGLeads);
 
             foreach (Leads.Values v in Enum.GetValues(typeof(Leads.Values))) {
+                // Only include certain leads- e.g. bedside monitors don't interface with IABP or EFM
+                string el = v.ToString ();
+                if (!el.StartsWith ("ECG") && el != "SPO2" && el != "CVP" && el != "ABP"
+                    && el != "PA" && el != "RR" && el != "ETCO2")
+                    continue;
+
                 MenuItem mi = new MenuItem ();
                 mi.Header = Strings.Lookup (l, Leads.LookupString (v));
                 mi.Name = v.ToString ();
@@ -79,11 +93,12 @@ namespace II_Windows.Controls {
         }
 
         private void UpdateInterface (object sender, SizeChangedEventArgs e) {
-            switch (wfStrip.Lead.Value) {
+            switch (Lead.Value) {
                 default: drawBrush = Brushes.Green; break;
                 case Leads.Values.ABP: drawBrush = Brushes.Red; break;
                 case Leads.Values.CVP: drawBrush = Brushes.Blue; break;
                 case Leads.Values.PA: drawBrush = Brushes.Yellow; break;
+                case Leads.Values.IABP: drawBrush = Brushes.SkyBlue; break;
                 case Leads.Values.RR: drawBrush = Brushes.Salmon; break;
                 case Leads.Values.ETCO2: drawBrush = Brushes.Aqua; break;
                 case Leads.Values.SPO2: drawBrush = Brushes.Orange; break;
@@ -92,10 +107,36 @@ namespace II_Windows.Controls {
             borderTracing.BorderBrush = drawBrush;
 
             lblLead.Foreground = drawBrush;
-            lblLead.Content = Strings.Lookup (App.Language.Value, Leads.LookupString (wfStrip.Lead.Value));
+            lblLead.Content = Strings.Lookup (App.Language.Value, Leads.LookupString (Lead.Value));
         }
 
+        public void Scroll () => wfStrip.Scroll ();
+        public void Unpause () => wfStrip.Unpause ();
+        public void ClearFuture () => wfStrip.ClearFuture ();
+        public void Add_Beat__Cardiac_Baseline (Patient P) => wfStrip.Add_Beat__Cardiac_Baseline (P);
+        public void Add_Beat__Cardiac_Atrial (Patient P) {
+            if (Lead.IsTransduced () && !Leads.IsZeroed (Lead.Value, P))
+                return;
+            else
+                wfStrip.Add_Beat__Cardiac_Atrial (P);
+        }
+        public void Add_Beat__Cardiac_Ventricular (Patient P) {
+            if (Lead.IsTransduced () && !Leads.IsZeroed (Lead.Value, P))
+                return;
+            else
+                wfStrip.Add_Beat__Cardiac_Ventricular (P);
+        }
+        public void Add_Beat__Respiratory_Baseline (Patient P) => wfStrip.Add_Beat__Respiratory_Baseline (P);
+        public void Add_Beat__Respiratory_Inspiration (Patient P) => wfStrip.Add_Beat__Respiratory_Inspiration (P);
+        public void Add_Beat__Respiratory_Expiration (Patient P) => wfStrip.Add_Beat__Respiratory_Expiration (P);
+
         public void Draw () {
+            if (Lead.IsTransduced () && !Leads.IsZeroed (Lead.Value, App.Patient)) {
+                wfStrip.Reset ();
+                canvasTracing.Children.Clear ();
+                return;
+            }
+
             drawXOffset = 0;
             drawYOffset = (int)canvasTracing.ActualHeight / 2;
             drawXMultiplier = (int)canvasTracing.ActualWidth / wfStrip.lengthSeconds;
@@ -134,6 +175,14 @@ namespace II_Windows.Controls {
             canvasTracing.Children.Add (drawPath);
         }
 
+        private void MenuZeroTransducer_Click (object sender, RoutedEventArgs e) {
+            switch (Lead.Value) {
+                case Leads.Values.ABP: App.Patient.TransducerZeroed_ABP = true; return;
+                case Leads.Values.CVP: App.Patient.TransducerZeroed_CVP = true; return;
+                case Leads.Values.PA: App.Patient.TransducerZeroed_PA = true; return;
+            }
+        }
+
         private void MenuAddTracing_Click (object sender, RoutedEventArgs e)
             => App.Device_Monitor.AddTracing ();
         private void MenuRemoveTracing_Click (object sender, RoutedEventArgs e)
@@ -146,8 +195,8 @@ namespace II_Windows.Controls {
 
             wfStrip.Lead.Value = selectedValue;
             wfStrip.Reset ();
-            wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
-            wfStrip.Add_Beat__Respiratory_Baseline (App.Patient);
+            Add_Beat__Cardiac_Baseline (App.Patient);
+            Add_Beat__Respiratory_Baseline (App.Patient);
 
             UpdateInterface (null, null);
         }

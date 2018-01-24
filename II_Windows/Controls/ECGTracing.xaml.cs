@@ -17,6 +17,7 @@ namespace II_Windows.Controls {
     public partial class ECGTracing : UserControl {
 
         public Strip wfStrip;
+        public Leads Lead { get { return wfStrip.Lead; } }
 
         // Drawing variables, offsets and multipliers
         Path drawPath;
@@ -32,6 +33,7 @@ namespace II_Windows.Controls {
             DataContext = this;
 
             wfStrip = strip;
+
             UpdateInterface (null, null);
         }
 
@@ -39,8 +41,15 @@ namespace II_Windows.Controls {
             drawBrush = Brushes.Green;
 
             lblLead.Foreground = drawBrush;
-            lblLead.Content = Strings.Lookup (App.Language.Value, Leads.LookupString (wfStrip.Lead.Value, true));
+            lblLead.Content = Strings.Lookup (App.Language.Value, Leads.LookupString (Lead.Value, true));
         }
+
+        public void Scroll () => wfStrip.Scroll ();
+        public void Unpause () => wfStrip.Unpause ();
+        public void ClearFuture () => wfStrip.ClearFuture ();
+        public void Add_Beat__Cardiac_Baseline (Patient P) => wfStrip.Add_Beat__Cardiac_Baseline (P);
+        public void Add_Beat__Cardiac_Atrial (Patient P) => wfStrip.Add_Beat__Cardiac_Atrial (P);
+        public void Add_Beat__Cardiac_Ventricular (Patient P) => wfStrip.Add_Beat__Cardiac_Ventricular (P);
 
         public void Draw () {
             drawXOffset = 0;

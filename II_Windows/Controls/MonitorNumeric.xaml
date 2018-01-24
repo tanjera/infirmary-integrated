@@ -19,12 +19,13 @@
             <Setter Property="Foreground" Value="White" />
             <Setter Property="HorizontalAlignment" Value="Center" />
             <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="Margin" Value="2" />
         </Style>
     </UserControl.Resources>
 
     <Border Name="borderNumeric" Margin="5"
-                BorderBrush="Black" BorderThickness="0, 0.5, 0.5, 0.5" CornerRadius="0, 5, 5, 0">
+                BorderBrush="Black" BorderThickness="0.5" CornerRadius="5">
 
         <Grid Name="layoutGrid" Background="Black">
             <Grid.RowDefinitions>
