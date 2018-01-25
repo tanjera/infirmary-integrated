@@ -148,14 +148,14 @@ namespace II.Rhythm {
             else if (Lead.Value == Leads.Values.SPO2 && _Patient.CardiacRhythm.HasPulse_Ventricular)
                 Overwrite (Waveforms.SPO2_Rhythm (_Patient, 1f));
             else if (Lead.Value == Leads.Values.ABP) {
-                if (_Patient.IABPRunning && !_Patient.IABPFilling)
+                if (_Patient.IABPThisBeat)
                     Overwrite (Waveforms.IABP_ABP_Rhythm (_Patient, 1f));
                 else if (_Patient.CardiacRhythm.HasPulse_Ventricular)
                     Overwrite (Waveforms.ABP_Rhythm (_Patient, 1f));
             } else if (Lead.Value == Leads.Values.PA && _Patient.CardiacRhythm.HasPulse_Ventricular)
                 Overwrite (Waveforms.PA_Rhythm (_Patient, 1f));
 
-            if (Lead.Value == Leads.Values.IABP && _Patient.IABPRunning && !_Patient.IABPFilling) {
+            if (Lead.Value == Leads.Values.IABP && _Patient.IABPThisBeat) {
                 if (_Patient.CardiacRhythm.HasWaveform_Ventricular && _Patient.IABPTrigger.Value == Patient.IABPTriggers.Values.ECG) {
                     // ECG Trigger works only if ventricular ECG waveform
                     Overwrite (Waveforms.IABP_Balloon_Rhythm (_Patient, 1f));

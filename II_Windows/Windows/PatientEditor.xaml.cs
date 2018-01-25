@@ -41,8 +41,8 @@ namespace II_Windows {
                 LoadOpen (App.Start_Args [0]);
 
             // For debugging. Automatically open window being worked on, hide patient editor.
-            InitDeviceIABP();
-            WindowState = WindowState.Minimized;
+            //InitDeviceIABP();
+            //WindowState = WindowState.Minimized;
         }
 
         private void InitLanguage () {
@@ -61,63 +61,61 @@ namespace II_Windows {
             icSaveFile = new ActionCommand (() => SaveFile ());
 
             // Populate UI strings per language selection
-            Languages.Values l = App.Language.Value;
+            wdwPatientEditor.Title = App.Language.Dictionary["PE:WindowTitle"];
+            menuFile.Header = App.Language.Dictionary["PE:MenuFile"];
+            menuLoad.Header = App.Language.Dictionary["PE:MenuLoadSimulation"];
+            menuSave.Header = App.Language.Dictionary["PE:MenuSaveSimulation"];
+            menuExit.Header = App.Language.Dictionary["PE:MenuExitProgram"];
 
-            wdwPatientEditor.Title = Strings.Lookup (l, "PE:WindowTitle");
-            menuFile.Header = Strings.Lookup (l, "PE:MenuFile");
-            menuLoad.Header = Strings.Lookup (l, "PE:MenuLoadSimulation");
-            menuSave.Header = Strings.Lookup (l, "PE:MenuSaveSimulation");
-            menuExit.Header = Strings.Lookup (l, "PE:MenuExitProgram");
+            menuSettings.Header = App.Language.Dictionary["PE:MenuSettings"];
+            menuSetLanguage.Header = App.Language.Dictionary["PE:MenuSetLanguage"];
 
-            menuSettings.Header = Strings.Lookup (l, "PE:MenuSettings");
-            menuSetLanguage.Header = Strings.Lookup (l, "PE:MenuSetLanguage");
+            menuHelp.Header = App.Language.Dictionary["PE:MenuHelp"];
+            menuAbout.Header = App.Language.Dictionary["PE:MenuAboutProgram"];
 
-            menuHelp.Header = Strings.Lookup (l, "PE:MenuHelp");
-            menuAbout.Header = Strings.Lookup (l, "PE:MenuAboutProgram");
+            lblGroupDevices.Content = App.Language.Dictionary["PE:Devices"];
+            lblDeviceMonitor.Content = App.Language.Dictionary["PE:CardiacMonitor"];
+            lblDevice12LeadECG.Content = App.Language.Dictionary["PE:12LeadECG"];
+            lblDeviceDefibrillator.Content = App.Language.Dictionary["PE:Defibrillator"];
+            lblDeviceVentilator.Content = App.Language.Dictionary["PE:Ventilator"];
+            lblDeviceIABP.Content = App.Language.Dictionary["PE:IABP"];
+            lblDeviceEFM.Content = App.Language.Dictionary["PE:EFM"];
+            lblDeviceIVPump.Content = App.Language.Dictionary["PE:IVPump"];
+            lblDeviceLabResults.Content = App.Language.Dictionary["PE:LabResults"];
 
-            lblGroupDevices.Content = Strings.Lookup (l, "PE:Devices");
-            lblDeviceMonitor.Content = Strings.Lookup (l, "PE:CardiacMonitor");
-            lblDevice12LeadECG.Content = Strings.Lookup (l, "PE:12LeadECG");
-            lblDeviceDefibrillator.Content = Strings.Lookup (l, "PE:Defibrillator");
-            lblDeviceVentilator.Content = Strings.Lookup (l, "PE:Ventilator");
-            lblDeviceIABP.Content = Strings.Lookup (l, "PE:IABP");
-            lblDeviceEFM.Content = Strings.Lookup (l, "PE:EFM");
-            lblDeviceIVPump.Content = Strings.Lookup (l, "PE:IVPump");
-            lblDeviceLabResults.Content = Strings.Lookup (l, "PE:LabResults");
+            lblGroupVitalSigns.Content = App.Language.Dictionary["PE:VitalSigns"];
+            lblHR.Content = String.Format ("{0}:", App.Language.Dictionary["PE:HeartRate"]);
+            lblNIBP.Content = String.Format ("{0}:", App.Language.Dictionary["PE:BloodPressure"]);
+            lblRR.Content = String.Format ("{0}:", App.Language.Dictionary["PE:RespiratoryRate"]);
+            lblSPO2.Content = String.Format ("{0}:", App.Language.Dictionary["PE:PulseOximetry"]);
+            lblT.Content = String.Format("{0}:", App.Language.Dictionary["PE:Temperature"]);
+            lblCardiacRhythm.Content = String.Format ("{0}:", App.Language.Dictionary["PE:CardiacRhythm"]);
+            lblRespiratoryRhythm.Content = String.Format ("{0}:", App.Language.Dictionary["PE:RespiratoryRhythm"]);
+            checkDefaultVitals.Content = App.Language.Dictionary["PE:UseDefaultVitalSignRanges"];
 
-            lblGroupVitalSigns.Content = Strings.Lookup (l, "PE:VitalSigns");
-            lblHR.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:HeartRate"));
-            lblNIBP.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:BloodPressure"));
-            lblRR.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:RespiratoryRate"));
-            lblSPO2.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:PulseOximetry"));
-            lblT.Content = String.Format("{0}:", Strings.Lookup (l, "PE:Temperature"));
-            lblCardiacRhythm.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:CardiacRhythm"));
-            lblRespiratoryRhythm.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:RespiratoryRhythm"));
-            checkDefaultVitals.Content = Strings.Lookup (l, "PE:UseDefaultVitalSignRanges");
+            lblGroupHemodynamics.Content = App.Language.Dictionary["PE:AdvancedHemodynamics"];
+            lblETCO2.Content = String.Format ("{0}:", App.Language.Dictionary["PE:EndTidalCO2"]);
+            lblCVP.Content = String.Format ("{0}:", App.Language.Dictionary["PE:CentralVenousPressure"]);
+            lblASBP.Content = String.Format ("{0}:", App.Language.Dictionary["PE:ArterialBloodPressure"]);
+            lblPSP.Content = String.Format ("{0}:", App.Language.Dictionary["PE:PulmonaryArteryPressure"]);
 
-            lblGroupHemodynamics.Content = Strings.Lookup (l, "PE:AdvancedHemodynamics");
-            lblETCO2.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:EndTidalCO2"));
-            lblCVP.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:CentralVenousPressure"));
-            lblASBP.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:ArterialBloodPressure"));
-            lblPSP.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:PulmonaryArteryPressure"));
+            lblGroupRespiratoryProfile.Content = App.Language.Dictionary["PE:RespiratoryProfile"];
+            lblInspiratoryRatio.Content = String.Format ("{0}:", App.Language.Dictionary["PE:InspiratoryExpiratoryRatio"]);
 
-            lblGroupRespiratoryProfile.Content = Strings.Lookup (l, "PE:RespiratoryProfile");
-            lblInspiratoryRatio.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:InspiratoryExpiratoryRatio"));
+            lblGroupCardiacProfile.Content = App.Language.Dictionary["PE:CardiacProfile"];
+            grpSTSegmentElevation.Header = App.Language.Dictionary["PE:STSegmentElevation"];
+            grpTWaveElevation.Header = App.Language.Dictionary["PE:TWaveElevation"];
 
-            lblGroupCardiacProfile.Content = Strings.Lookup (l, "PE:CardiacProfile");
-            grpSTSegmentElevation.Header = Strings.Lookup (l, "PE:STSegmentElevation");
-            grpTWaveElevation.Header = Strings.Lookup (l, "PE:TWaveElevation");
+            lblGroupObstetricProfile.Content = App.Language.Dictionary["PE:ObstetricProfile"];
+            lblFHR.Content = String.Format ("{0}:", App.Language.Dictionary["PE:FetalHeartRate"]);
+            lblFHRRhythms.Content = String.Format ("{0}:", App.Language.Dictionary["PE:FetalHeartRhythms"]);
+            lblFHRVariability.Content = String.Format ("{0}:", App.Language.Dictionary["PE:FetalHeartVariability"]);
+            lblUCFrequency.Content = String.Format ("{0}:", App.Language.Dictionary["PE:UterineContractionFrequency"]);
+            lblUCDuration.Content = String.Format ("{0}:", App.Language.Dictionary["PE:UterineContractionDuration"]);
+            lblUCIntensity.Content = String.Format ("{0}:", App.Language.Dictionary["PE:UterineContractionIntensity"]);
 
-            lblGroupObstetricProfile.Content = Strings.Lookup (l, "PE:ObstetricProfile");
-            lblFHR.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:FetalHeartRate"));
-            lblFHRRhythms.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:FetalHeartRhythms"));
-            lblFHRVariability.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:FetalHeartVariability"));
-            lblUCFrequency.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:UterineContractionFrequency"));
-            lblUCDuration.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:UterineContractionDuration"));
-            lblUCIntensity.Content = String.Format ("{0}:", Strings.Lookup (l, "PE:UterineContractionIntensity"));
-
-            lblParametersApply.Content = Strings.Lookup (l, "BUTTON:ApplyChanges");
-            lblParametersReset.Content = Strings.Lookup (l, "BUTTON:ResetParameters");
+            lblParametersApply.Content = App.Language.Dictionary["BUTTON:ApplyChanges"];
+            lblParametersReset.Content = App.Language.Dictionary["BUTTON:ResetParameters"];
 
             List<string>    cardiacRhythms = new List<string> (),
                             respiratoryRhythms = new List<string> (),
@@ -125,20 +123,20 @@ namespace II_Windows {
                             fetalHeartRhythms = new List<string> ();
 
             foreach (CardiacRhythms.Values v in Enum.GetValues (typeof (CardiacRhythms.Values)))
-                cardiacRhythms.Add (Strings.Lookup (l, CardiacRhythms.LookupString (v)));
+                cardiacRhythms.Add (App.Language.Dictionary[CardiacRhythms.LookupString (v)]);
             comboCardiacRhythm.ItemsSource = cardiacRhythms;
 
             foreach (RespiratoryRhythms.Values v in Enum.GetValues (typeof (RespiratoryRhythms.Values)))
-                respiratoryRhythms.Add (Strings.Lookup (l, RespiratoryRhythms.LookupString (v)));
+                respiratoryRhythms.Add (App.Language.Dictionary[RespiratoryRhythms.LookupString (v)]);
             comboRespiratoryRhythm.ItemsSource = respiratoryRhythms;
 
             foreach (Patient.Intensity.Values v in Enum.GetValues (typeof (Patient.Intensity.Values)))
-                intensityScale.Add (Strings.Lookup (l, Patient.Intensity.LookupString (v)));
+                intensityScale.Add (App.Language.Dictionary[Patient.Intensity.LookupString (v)]);
             comboFHRVariability.ItemsSource = intensityScale;
             comboUCIntensity.ItemsSource = intensityScale;
 
             foreach (FetalHeartDecelerations.Values v in Enum.GetValues (typeof (FetalHeartDecelerations.Values)))
-                fetalHeartRhythms.Add (Strings.Lookup (l, FetalHeartDecelerations.LookupString (v)));
+                fetalHeartRhythms.Add (App.Language.Dictionary[FetalHeartDecelerations.LookupString (v)]);
             listFHRRhythms.ItemsSource = fetalHeartRhythms;
 
         }

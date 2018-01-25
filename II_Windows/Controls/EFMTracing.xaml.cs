@@ -39,7 +39,7 @@ namespace II_Windows.Controls {
             drawBrush = Brushes.Green;
 
             lblLead.Foreground = drawBrush;
-            lblLead.Content = Strings.Lookup (App.Language.Value, Leads.LookupString (wfStrip.Lead.Value, true));
+            lblLead.Content = App.Language.Dictionary[Leads.LookupString (wfStrip.Lead.Value, true)];
         }
 
         public void Draw () {

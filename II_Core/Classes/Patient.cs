@@ -32,11 +32,13 @@ namespace II {
                     TransducerZeroed_CVP = false;
 
         // IABP Settings (stored here for timing and propogation purposes)
-        public int IABPRatio = 1;
-        public double IABPAugmentation = 0.5;
+        public int IABPFrequencyRatio = 1,
+                   IABPIteration_Count = 0;           // Buffer value to determine if current beat triggers IABP
+        public double IABPAugmentationPercent = 0.5;
         public IABPTriggers IABPTrigger = new IABPTriggers ();
         public IABPModes IABPMode = new IABPModes ();
-        public bool IABPRunning = false, IABPFilling = false, IABPFilled = false;
+        public bool IABPRunning = false, IABPPrimed = false,
+                    IABPAugmentationAlarm = true;
 
         // Obstetric Profile
         public Intensity UCIntensity = new Intensity(),
@@ -53,6 +55,7 @@ namespace II {
             public Intensity (Values v) { Value = v; }
             public Intensity () { Value = Values.Absent; }
 
+            public string LookupString () => LookupString (Value);
             public static string LookupString (Values v) {
                 return String.Format ("INTENSITY:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v).ToString ());
             }
@@ -65,6 +68,7 @@ namespace II {
             public IABPTriggers (Values v) { Value = v; }
             public IABPTriggers () { Value = Values.ECG; }
 
+            public string LookupString () => LookupString (Value);
             public static string LookupString (Values v) {
                 return String.Format ("IABPTRIGGER:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v).ToString ());
             }
@@ -77,6 +81,7 @@ namespace II {
             public IABPModes (Values v) { Value = v; }
             public IABPModes () { Value = Values.Auto; }
 
+            public string LookupString () => LookupString (Value);
             public static string LookupString (Values v) {
                 return String.Format ("IABPMODE:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v).ToString ());
             }
@@ -88,6 +93,8 @@ namespace II {
         public double RR_Seconds { get { return 60d / Math.Max (1, RR); } }
         public double RR_Seconds_I { get { return (RR_Seconds / (Respiratory_IERatio_I + Respiratory_IERatio_E)) * Respiratory_IERatio_I; } }
         public double RR_Seconds_E { get { return (RR_Seconds / (Respiratory_IERatio_I + Respiratory_IERatio_E)) * Respiratory_IERatio_E; } }
+
+        public bool IABPThisBeat { get { return IABPRunning && IABPIteration_Count % IABPFrequencyRatio == 0; } }
 
         private Timer   timerCardiac_Baseline = new Timer (),
                         timerCardiac_Atrial = new Timer (),
@@ -214,13 +221,14 @@ namespace II {
                             case "TransducerZeroed_CVP": TransducerZeroed_CVP = bool.Parse (pValue); break;
                             case "TransducerZeroed_PA": TransducerZeroed_PA = bool.Parse (pValue); break;
 
-                            case "IABPRatio": IABPRatio = int.Parse (pValue); break;
-                            case "IABPAugmentation": IABPAugmentation = double.Parse (pValue); break;
+                            case "IABPRatio": IABPFrequencyRatio = int.Parse (pValue); break;
+                            case "IABPAugmentationPercent": IABPAugmentationPercent = double.Parse (pValue); break;
+                            case "IABPAugmentationAlarm": IABPAugmentationAlarm = bool.Parse (pValue); break;
                             case "IABPTrigger": IABPTrigger.Value = (IABPTriggers.Values)Enum.Parse (typeof (IABPTriggers.Values), pValue); break;
                             case "IABPMode": IABPMode.Value = (IABPModes.Values)Enum.Parse (typeof (IABPModes.Values), pValue); break;
                             case "IABPRunning": IABPRunning = bool.Parse (pValue); break;
-                            case "IABPFilling": IABPFilling = bool.Parse (pValue); break;
-                            case "IABPFilled": IABPFilled = bool.Parse (pValue); break;
+                            case "IABPPrimed": IABPPrimed = bool.Parse (pValue); break;
+
 
                             case "Respiratory_Rhythm": Respiratory_Rhythm.Value = (RespiratoryRhythms.Values)Enum.Parse (typeof (RespiratoryRhythms.Values), pValue); break;
                             case "Respiratory_Inflated": Respiratory_Inflated = bool.Parse (pValue); break;
@@ -281,13 +289,13 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_CVP", TransducerZeroed_CVP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_PA", TransducerZeroed_PA));
 
-            sWrite.AppendLine (String.Format ("{0}:{1}", "IABPRatio", IABPRatio));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "IABPAugmentation", IABPAugmentation));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "IABPRatio", IABPFrequencyRatio));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "IABPAugmentationPercent", IABPAugmentationPercent));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "IABPAugmentationAlarm", IABPAugmentationAlarm));
             sWrite.AppendLine (String.Format ("{0}:{1}", "IABPTrigger", IABPTrigger.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "IABPMode", IABPMode.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "IABPRunning", IABPRunning));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "IABPFilling", IABPFilling));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "IABPFilled", IABPFilled));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "IABPPrimed", IABPPrimed));
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_Rhythm", Respiratory_Rhythm.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_Inflated", Respiratory_Inflated));
@@ -570,6 +578,9 @@ namespace II {
 
         private void OnCardiac_Ventricular () {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Ventricular));
+
+            if (IABPRunning)
+                IABPIteration_Count++;
 
             switch (CardiacRhythm.Value) {
                 default:

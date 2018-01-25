@@ -4,23 +4,6 @@
 
 
 * Next steps:
-	* Localization
-		- Convert highlighted terms...
-
-	* IABP
-		- DeviceIABP layout for control panel
-			- Automatic rearranging of layout (horizontal/vertical) depending on window aspect ratio
-		- Device logic
-			- Before starting:
-				1) Arterial line must be zeroed (if pressure trigger)
-				2) Balloon must be filled
-			- When changing modes:
-				1) Put into standby mode
-		- IABPNumeric for IABP readings (augmentation, augmented BP)
-		- References
-			Console: https://image.slidesharecdn.com/chakri-160614085310/95/iabp-13-638.jpg?cb=1466134420
-
-
 	* EFM
 		- DeviceEFM layout
 		- EFMTracing control
@@ -73,18 +56,6 @@
 		- Pulsus paradoxus
 		- Thermodilution
 		- PA catheter placement
-
-
-
-* Localization Volunteers:
-	- DEU: ??
-    - ESP: ??
-    - FRA: ??
-    - ITA: ??
-	- KOR: Sujung C
-    - PTB: ??
-    - RUS: ??
-	- SWK: Ruth G
 
 
 

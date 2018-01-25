@@ -14,39 +14,40 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace StringPairing {
+
+namespace DictionaryBuilder {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class StringPair : Window {
-        public StringPair () {
+    public partial class DictionaryBuild : Window {
+        public DictionaryBuild () {
             InitializeComponent ();
-
-            txtFormat1.Text = "\t\t\tnew Pair(\"{0}\",";
-            txtFormat2.Text = "\"{0}\"),";
         }
 
         private void OnClick_ProcessText (object sender, RoutedEventArgs e) {
             StringReader srI1 = new StringReader (txtInput1.Text);
             StringReader srI2 = new StringReader (txtInput2.Text);
             StringBuilder sbOut = new StringBuilder ();
-            string formI1 = txtFormat1.Text,
-                    formI2 = txtFormat2.Text;
             txtOutput.Clear ();
 
             string eachI1, eachI2;
             while ((eachI1 = srI1.ReadLine ()) != null && (eachI2 = srI2.ReadLine ()) != null) {
-                if ((eachI1 == "" && eachI2 == "")
-                    || eachI1.ToUpper() == "KEY") {
+                if (eachI1 == "" && eachI2 == "") {
                     //sbOut.AppendLine ("");
+                    continue;
+                } else if (eachI1.ToUpper () == "KEY") {
+                    sbOut.AppendLine (String.Format ("\t\tstatic Dictionary<string, string> {0} = new Dictionary<string, string> () {{",
+                        eachI2.ToUpper ().Substring (0, 3)));
                 } else
-                    sbOut.AppendLine (String.Format ("{0,-55}{1}",
-                        String.Format(formI1, eachI1),
-                        String.Format(formI2, eachI2)
-                        ));
+                    sbOut.AppendLine (String.Format ("\t\t\t{{{0,-60} {1}}},",
+                        String.Format("\"{0}\",", eachI1),
+                        String.Format ("\"{0}\"", eachI2)));
             }
 
+            sbOut.AppendLine ("\t\t};\n");
+
             txtOutput.Text = sbOut.ToString ();
+            Clipboard.SetText (txtOutput.Text);
         }
     }
 }

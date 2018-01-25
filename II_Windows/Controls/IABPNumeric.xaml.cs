@@ -29,9 +29,7 @@ namespace II_Windows.Controls {
             public ControlType (Values v) { Value = v; }
 
             public enum Values {
-                ECG, T, RR, ETCO2,
-                SPO2, NIBP, ABP, CVP,
-                PA
+                ECG, ABP
             }
 
             public static string LookupString (Values value) {
@@ -50,14 +48,7 @@ namespace II_Windows.Controls {
 
             public static Brush [] Coloring = new Brush [] {
                 Brushes.Green,
-                Brushes.LightGray,
-                Brushes.Salmon,
-                Brushes.Aqua,
-                Brushes.Orange,
-                Brushes.White,
-                Brushes.Red,
-                Brushes.Blue,
-                Brushes.Yellow
+                Brushes.Red
             };
         }
 
@@ -82,7 +73,7 @@ namespace II_Windows.Controls {
             lblLine2.Visibility = Visibility.Visible;
             lblLine3.Visibility = Visibility.Visible;
 
-            lblNumType.Text = Strings.Lookup(App.Language.Value, ControlType.LookupString(controlType.Value));
+            lblNumType.Text = App.Language.Dictionary[ControlType.LookupString(controlType.Value)];
 
             switch (controlType.Value) {
                 default:
@@ -109,10 +100,12 @@ namespace II_Windows.Controls {
                 case ControlType.Values.ABP:
                     if (App.Patient.TransducerZeroed_ABP) {
                         lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.ASBP, 0.02f));
-                        lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (App.Patient.ADBP, 0.02f));
+                        lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (
+                            (!App.Patient.IABPThisBeat ? App.Patient.ADBP : Utility.Clamp(App.Patient.ADBP - 15, 0, 1000)),
+                            0.02f));
                         lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.AMAP, 0.02f));
                     } else {
-                        lblLine1.Text = Strings.Lookup (App.Language.Value, "NUMERIC:ZeroTransducer");
+                        lblLine1.Text = Utility.WrapString(App.Language.Dictionary["NUMERIC:ZeroTransducer"]);
                         lblLine2.Text = "";
                         lblLine3.Text = "";
                     }

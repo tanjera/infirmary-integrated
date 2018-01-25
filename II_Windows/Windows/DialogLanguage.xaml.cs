@@ -23,11 +23,9 @@ namespace II_Windows {
             InitializeComponent ();
 
             // Populate UI strings per language selection
-            Languages.Values l = App.Language.Value;
-
-            dlgLanguage.Title = Strings.Lookup (l, "LANG:LanguageSelection");
-            lblChooseLanguage.Content = Strings.Lookup (l, "LANG:ChooseLanguage");
-            btnContinue.Content = Strings.Lookup (l, "BUTTON:Continue");
+            dlgLanguage.Title = App.Language.Dictionary["LANG:LanguageSelection"];
+            lblChooseLanguage.Content = App.Language.Dictionary["LANG:ChooseLanguage"];
+            btnContinue.Content = App.Language.Dictionary["BUTTON:Continue"];
 
             cmbLanguages.ItemsSource = Languages.Descriptions;
             cmbLanguages.SelectedIndex = (int)Languages.Values.ENU;

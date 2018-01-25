@@ -57,14 +57,12 @@ namespace II_Windows {
             icExitProgram = new ActionCommand (() => App.Patient_Editor.RequestExit ());
 
             // Populate UI strings per language selection
-            Languages.Values l = App.Language.Value;
-
-            wdwDeviceECG.Title = Strings.Lookup (l, "ECG:WindowTitle");
-            menuDevice.Header = Strings.Lookup (l, "ECG:MenuDeviceOptions");
-            menuPauseDevice.Header = Strings.Lookup (l, "ECG:MenuPauseDevice");
-            menuToggleFullscreen.Header = Strings.Lookup (l, "ECG:MenuToggleFullscreen");
-            menuCloseDevice.Header = Strings.Lookup (l, "ECG:MenuCloseDevice");
-            menuExitProgram.Header = Strings.Lookup (l, "ECG:MenuExitProgram");
+            wdwDeviceECG.Title = App.Language.Dictionary["ECG:WindowTitle"];
+            menuDevice.Header = App.Language.Dictionary["MENU:MenuDeviceOptions"];
+            menuPauseDevice.Header = App.Language.Dictionary["MENU:MenuPauseDevice"];
+            menuToggleFullscreen.Header = App.Language.Dictionary["MENU:MenuToggleFullscreen"];
+            menuCloseDevice.Header = App.Language.Dictionary["MENU:MenuCloseDevice"];
+            menuExitProgram.Header = App.Language.Dictionary["MENU:MenuExitProgram"];
 
             /* 12 Lead ECG Interface layout */
             List<Leads.Values> listLeads = new List<Leads.Values> ();

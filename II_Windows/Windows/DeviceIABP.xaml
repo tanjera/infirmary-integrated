@@ -49,8 +49,8 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border CornerRadius="50" Background="{TemplateBinding Background}"
-                                BorderThickness="0">
+                        <Border CornerRadius="10" Background="{TemplateBinding Background}"
+                                BorderThickness="0" Padding="5">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                     </ControlTemplate>
@@ -64,6 +64,23 @@
             <Setter Property="TextWrapping" Value="Wrap" />
             <Setter Property="TextAlignment" Value="Center" />
         </Style>
+
+        <Style x:Key="numericViewbox" TargetType="{x:Type Viewbox}">
+            <Setter Property="Stretch" Value="Uniform" />
+            <Setter Property="StretchDirection" Value="Both" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+
+        <Style x:Key="numericTextBlock" TargetType="{x:Type TextBlock}">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="Margin" Value="2" />
+        </Style>
+
     </Window.Resources>
 
     <DockPanel LastChildFill="True">
@@ -93,8 +110,9 @@
             <Grid Name="displayGrid" Background="Black"
                   Grid.Column="0" Grid.Row="0">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="1 *" />
+                    <ColumnDefinition Width="4 *" />
+                    <ColumnDefinition Width="1 *" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*" />
@@ -102,10 +120,94 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
+                <!-- IABP Trigger Source, Operation Mode, Current Status, Helium Remaining -->
+                <Border Margin="5" BorderBrush="SkyBlue" BorderThickness="0.5" CornerRadius="5"
+                        Grid.Column="0" Grid.Row="0" Grid.RowSpan="3">
+
+                    <Grid Name="layoutStatusInfo" Background="Black">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1.5 *" />
+                            <RowDefinition Height="1.5 *" />
+                            <RowDefinition Height="1.5 *" />
+                            <RowDefinition Height="1.5 *" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <Viewbox Style="{StaticResource numericViewbox}" Margin="5, 15"
+                                 Grid.Row="0" Grid.Column="0" >
+                            <TextBlock Name="lblTriggerSource" Style="{StaticResource numericTextBlock}"
+                                       FontWeight="Bold" Foreground="White" />
+                        </Viewbox>
+                        <Viewbox Style="{StaticResource numericViewbox}" Margin="5, 15"
+                                 Grid.Row="1" Grid.Column="0" >
+                            <TextBlock Name="lblOperationMode" Style="{StaticResource numericTextBlock}"
+                                       FontWeight="Bold" Foreground="Orange" />
+                        </Viewbox>
+                        <Viewbox Style="{StaticResource numericViewbox}" Margin="5, 15"
+                                 Grid.Row="2" Grid.Column="0" >
+                            <TextBlock Name="lblFrequency" Style="{StaticResource numericTextBlock}"
+                                       FontWeight="Bold" Foreground="Orange" />
+                        </Viewbox>
+                        <Viewbox Style="{StaticResource numericViewbox}" Margin="5, 15"
+                                 Grid.Row="3" Grid.Column="0" >
+                            <TextBlock Name="lblMachineStatus" Style="{StaticResource numericTextBlock}"
+                                       FontWeight="Bold" Foreground="Orange" />
+                        </Viewbox>
+                        <Viewbox Style="{StaticResource numericViewbox}" Margin="5, 10"
+                                 Grid.Row="4" Grid.Column="0" >
+                            <TextBlock Name="lblTubingStatus" Style="{StaticResource numericTextBlock}"
+                                       Foreground="SeaGreen" />
+                        </Viewbox>
+                        <Viewbox Style="{StaticResource numericViewbox}" Margin="5, 10"
+                                 Grid.Row="5" Grid.Column="0" >
+                            <TextBlock Name="lblHeliumTank" Style="{StaticResource numericTextBlock}"
+                                       Foreground="MediumPurple" />
+                        </Viewbox>
+                    </Grid>
+                </Border>
+
+
                 <!-- Populate tracings and numerics programatically at runtime! -->
                 <!-- IABPTracing of ECG strip top center, IABPNumeric top right -->
                 <!-- IABPTracing of ABP strip middle center, IABPNumeric middle right -->
-                <!-- IABPTracing of IABP Balloon strip bottom center, IABPNumeric bottom right -->
+                <!-- IABPTracing of IABP Balloon strip bottom center -->
+
+                <!-- IABP Augmentation Pressure and Augmentation Alarm -->
+                <Border Margin="5" BorderBrush="SkyBlue" BorderThickness="0.5" CornerRadius="5"
+                        Grid.Column="2" Grid.Row="2">
+
+                    <Grid Name="layoutAugmentation" Background="Black">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <Viewbox Style="{StaticResource numericViewbox}"
+                                 Grid.Row="0" Grid.Column="0" >
+                            <TextBlock Name="lblAugmentationLabel" Style="{StaticResource numericTextBlock}"
+                                       FontSize="10" FontWeight="Bold" Foreground="SkyBlue" />
+                        </Viewbox>
+                        <Viewbox Style="{StaticResource numericViewbox}"
+                                 Grid.Row="1" Grid.Column="0" >
+                            <TextBlock Name="lblAugmentationPressure" Style="{StaticResource numericTextBlock}"
+                                       FontSize="30" FontWeight="Bold" Foreground="SkyBlue" />
+                        </Viewbox>
+                        <Viewbox Style="{StaticResource numericViewbox}"
+                                 Grid.Row="2" Grid.Column="0" >
+                            <TextBlock Name="lblAugmentationAlarm" Style="{StaticResource numericTextBlock}"
+                                       FontSize="10" FontWeight="Bold" Foreground="SkyBlue" />
+                        </Viewbox>
+                    </Grid>
+                </Border>
+
             </Grid>
 
             <!-- Control panel for IABP e.g. operation mode, trigger selection, etc. -->
@@ -120,9 +222,9 @@
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="3 *" />
-                    <RowDefinition Height="3 *" />
-                    <RowDefinition Height="4 *" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <!-- 1st Row: Operation Mode and Zero, Start, Standby -->
@@ -133,17 +235,20 @@
 
 
                 <Button Style="{StaticResource buttonRound}" Background="PowderBlue"
-                        Grid.Column="0" Grid.Row="0" >
+                        Grid.Column="0" Grid.Row="0"
+                        Click="ButtonModeAuto_Click">
                     <TextBlock Name="buttonModeAuto" Style="{StaticResource buttonTextBlock}" />
                 </Button>
 
                 <Button Style="{StaticResource buttonRound}" Background="LightGray"
-                        Grid.Column="1" Grid.Row="0" >
+                        Grid.Column="1" Grid.Row="0"
+                        Click="ButtonModeSemiAuto_Click">
                     <TextBlock Name="buttonModeSemiAuto" Style="{StaticResource buttonTextBlock}" />
                 </Button>
 
                 <Button Style="{StaticResource buttonRound}" Background="LightGray"
-                        Grid.Column="2" Grid.Row="0" >
+                        Grid.Column="2" Grid.Row="0"
+                        Click="ButtonModeManual_Click">
                     <TextBlock Name="buttonModeManual" Style="{StaticResource buttonTextBlock}" />
                 </Button>
 
@@ -168,14 +273,37 @@
                 <!-- 2nd Row: Trigger Source, Frequency, Augmentation, Inflation/Deflation -->
                 <Border Name="borderTrigger" Style="{StaticResource borderControlsMiddle}"
                         Grid.Column="0" Grid.Row="1" />
-
                 <Border Name="borderFrequency" Style="{StaticResource borderControlsMiddle}"
                         Grid.Column="1" Grid.Row="1" />
-
                 <Border Name="borderAugmentation" Style="{StaticResource borderControlsMiddle}"
                         Grid.Column="2" Grid.Row="1" />
                 <Border Name="borderInflationDeflation" Style="{StaticResource borderControlsMiddle}"
                         Grid.Column="3" Grid.Row="1" Grid.ColumnSpan="3" />
+
+                <Button Style="{StaticResource buttonRound}" Background="PowderBlue"
+                        Grid.Column="0" Grid.Row="1"
+                        Click="ButtonToggleTrigger_Click">
+                    <TextBlock Name="buttonToggleTrigger" Style="{StaticResource buttonTextBlock}" />
+                </Button>
+
+                <Button Style="{StaticResource buttonRound}" Background="PowderBlue"
+                        Grid.Column="1" Grid.Row="1"
+                        Click="ButtonToggleFrequency_Click">
+                    <TextBlock Name="buttonToggleFrequency" Style="{StaticResource buttonTextBlock}" />
+                </Button>
+
+                <Button Style="{StaticResource buttonRound}" Background="LightGray"
+                        Grid.Column="2" Grid.Row="1"
+                        Content="..." />
+                <Button Style="{StaticResource buttonRound}" Background="LightGray"
+                        Grid.Column="3" Grid.Row="1"
+                        Content="..." />
+                <Button Style="{StaticResource buttonRound}" Background="LightGray"
+                        Grid.Column="4" Grid.Row="1"
+                        Content="..." />
+                <Button Style="{StaticResource buttonRound}" Background="LightGray"
+                        Grid.Column="5" Grid.Row="1"
+                        Content="..." />
 
                 <!-- 3rd Row: Options, Alarms, etc -->
                 <Border Name="borderSilenceFill" Style="{StaticResource borderControlsBottom}"
@@ -186,6 +314,28 @@
                         Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3" />
                 <Border Name="borderPausePrint" Style="{StaticResource borderControlsBottom}"
                         Grid.Column="5" Grid.Row="2" />
+
+                <Button Style="{StaticResource buttonRound}" Background="PowderBlue"
+                        Grid.Column="0" Grid.Row="2"
+                        Click="ButtonPrimeBalloon_Click">
+                    <TextBlock Name="buttonPrimeBalloon" Style="{StaticResource buttonTextBlock}" />
+                </Button>
+
+                <Button Style="{StaticResource buttonRound}" Background="LightGray"
+                        Grid.Column="1" Grid.Row="2"
+                        Content="..." />
+                <Button Style="{StaticResource buttonRound}" Background="LightGray"
+                        Grid.Column="2" Grid.Row="2"
+                        Content="..." />
+                <Button Style="{StaticResource buttonRound}" Background="LightGray"
+                        Grid.Column="3" Grid.Row="2"
+                        Content="..." />
+                <Button Style="{StaticResource buttonRound}" Background="LightGray"
+                        Grid.Column="4" Grid.Row="2"
+                        Content="..." />
+                <Button Style="{StaticResource buttonRound}" Background="LightGray"
+                        Grid.Column="5" Grid.Row="2"
+                        Content="..." />
             </Grid>
         </Grid>
 

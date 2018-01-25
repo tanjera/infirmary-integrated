@@ -7,10 +7,14 @@ namespace II {
 
     public static class Utility {
 
-        public const string Version = "0.9";
+        public const string Version = "0.91";
 
         public static double Time {
             get { return (double)(DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess ().StartTime.ToUniversalTime ()).TotalSeconds; }
+        }
+
+        public static string WrapString (string input) {
+            return input.Replace (" ", Environment.NewLine);
         }
 
         public static double Clamp (double value, double min, double max) {

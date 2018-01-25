@@ -48,19 +48,19 @@ namespace II_Windows.Controls {
             lblLead.ContextMenu = contextMenu;
 
             MenuItem menuZeroTransducer = new MenuItem ();
-            menuZeroTransducer.Header = Strings.Lookup (l, "MENU:MenuZeroTransducer");
+            menuZeroTransducer.Header = App.Language.Dictionary["MENU:MenuZeroTransducer"];
             menuZeroTransducer.Click += MenuZeroTransducer_Click;
             contextMenu.Items.Add (menuZeroTransducer);
 
             contextMenu.Items.Add (new Separator ());
 
             MenuItem menuAddTracing = new MenuItem ();
-            menuAddTracing.Header = Strings.Lookup (l, "MENU:MenuAddTracing");
+            menuAddTracing.Header = App.Language.Dictionary["MENU:MenuAddTracing"];
             menuAddTracing.Click += MenuAddTracing_Click;
             contextMenu.Items.Add (menuAddTracing);
 
             MenuItem menuRemoveTracing = new MenuItem ();
-            menuRemoveTracing.Header = Strings.Lookup (l, "MENU:MenuRemoveTracing");
+            menuRemoveTracing.Header = App.Language.Dictionary["MENU:MenuRemoveTracing"];
             menuRemoveTracing.Click += MenuRemoveTracing_Click;
             contextMenu.Items.Add (menuRemoveTracing);
 
@@ -68,8 +68,8 @@ namespace II_Windows.Controls {
 
             MenuItem menuSelectInput = new MenuItem (),
                      menuECGLeads = new MenuItem();
-            menuSelectInput.Header = Strings.Lookup (l, "MENU:MenuSelectInputSource");
-            menuECGLeads.Header = Strings.Lookup (l, "TRACING:ECG");
+            menuSelectInput.Header = App.Language.Dictionary["MENU:MenuSelectInputSource"];
+            menuECGLeads.Header = App.Language.Dictionary["TRACING:ECG"];
             menuSelectInput.Items.Add (menuECGLeads);
 
             foreach (Leads.Values v in Enum.GetValues(typeof(Leads.Values))) {
@@ -80,7 +80,7 @@ namespace II_Windows.Controls {
                     continue;
 
                 MenuItem mi = new MenuItem ();
-                mi.Header = Strings.Lookup (l, Leads.LookupString (v));
+                mi.Header = App.Language.Dictionary[Leads.LookupString (v)];
                 mi.Name = v.ToString ();
                 mi.Click += MenuSelectInputSource;
                 if (mi.Name.StartsWith ("ECG"))
@@ -107,7 +107,7 @@ namespace II_Windows.Controls {
             borderTracing.BorderBrush = drawBrush;
 
             lblLead.Foreground = drawBrush;
-            lblLead.Content = Strings.Lookup (App.Language.Value, Leads.LookupString (Lead.Value));
+            lblLead.Content = App.Language.Dictionary[Leads.LookupString (Lead.Value)];
         }
 
         public void Scroll () => wfStrip.Scroll ();

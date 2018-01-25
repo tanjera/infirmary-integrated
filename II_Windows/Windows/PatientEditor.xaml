@@ -154,7 +154,7 @@
                             <Label Name="lblDeviceIABP" Style="{StaticResource deviceLabel}" />
                         </StackPanel>
                     </Button>
-                    <Button Name="btnDeviceEFM" Click="ButtonDeviceEFM_Click" Style="{StaticResource deviceButton}">
+                    <Button Name="btnDeviceEFM" Click="ButtonDeviceEFM_Click" Style="{StaticResource deviceButton}" IsEnabled="False">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource Icon_DeviceEFM}" Style="{StaticResource deviceImage}" />
                             <Label Name="lblDeviceEFM" Style="{StaticResource deviceLabel}" />
@@ -449,7 +449,7 @@
 
 
                 <!-- Group for Obstetric Profile -->
-                <Border Style="{StaticResource expBorder}">
+                <Border Style="{StaticResource expBorder}" IsEnabled="False">
                     <Expander Name="expObstetricProfile" IsExpanded="False" Style="{StaticResource expParameters}">
                         <Expander.Header>
                             <Label Name="lblGroupObstetricProfile" Style="{StaticResource expHeader}"/>

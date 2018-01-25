@@ -72,9 +72,6 @@ namespace II_Windows.Controls {
         }
 
         private void InitInterface () {
-            // Populate UI strings per language selection
-            Languages.Values l = App.Language.Value;
-
             // Context Menu (right-click menu!)
             ContextMenu contextMenu = new ContextMenu ();
             layoutGrid.ContextMenu = contextMenu;
@@ -87,30 +84,30 @@ namespace II_Windows.Controls {
             vbLine3.ContextMenu = contextMenu;
 
             MenuItem menuZeroTransducer = new MenuItem ();
-            menuZeroTransducer.Header = Strings.Lookup (l, "MENU:MenuZeroTransducer");
+            menuZeroTransducer.Header = App.Language.Dictionary["MENU:MenuZeroTransducer"];
             menuZeroTransducer.Click += MenuZeroTransducer_Click;
             contextMenu.Items.Add (menuZeroTransducer);
 
             contextMenu.Items.Add (new Separator ());
 
             MenuItem menuAddNumeric = new MenuItem ();
-            menuAddNumeric.Header = Strings.Lookup (l, "MENU:MenuAddNumeric");
+            menuAddNumeric.Header = App.Language.Dictionary["MENU:MenuAddNumeric"];
             menuAddNumeric.Click += MenuAddNumeric_Click;
             contextMenu.Items.Add (menuAddNumeric);
 
             MenuItem menuRemoveNumeric = new MenuItem ();
-            menuRemoveNumeric.Header = Strings.Lookup (l, "MENU:MenuRemoveNumeric");
+            menuRemoveNumeric.Header = App.Language.Dictionary["MENU:MenuRemoveNumeric"];
             menuRemoveNumeric.Click += MenuRemoveNumeric_Click;
             contextMenu.Items.Add (menuRemoveNumeric);
 
             contextMenu.Items.Add (new Separator ());
 
             MenuItem menuSelectInput = new MenuItem ();
-            menuSelectInput.Header = Strings.Lookup (l, "MENU:MenuSelectInputSource");
+            menuSelectInput.Header = App.Language.Dictionary["MENU:MenuSelectInputSource"];
 
             foreach (ControlType.Values v in Enum.GetValues(typeof(ControlType.Values))) {
                 MenuItem mi = new MenuItem ();
-                mi.Header = Strings.Lookup (l, ControlType.LookupString (v));
+                mi.Header = App.Language.Dictionary[ControlType.LookupString (v)];
                 mi.Name = v.ToString ();
                 mi.Click += MenuSelectInputSource;
                 menuSelectInput.Items.Add (mi);
@@ -131,7 +128,7 @@ namespace II_Windows.Controls {
             lblLine2.Visibility = Visibility.Visible;
             lblLine3.Visibility = Visibility.Visible;
 
-            lblNumType.Text = Strings.Lookup(App.Language.Value, ControlType.LookupString(controlType.Value));
+            lblNumType.Text = App.Language.Dictionary [ControlType.LookupString(controlType.Value)];
 
             switch (controlType.Value) {
                 default:
@@ -192,10 +189,12 @@ namespace II_Windows.Controls {
                 case ControlType.Values.ABP:
                     if (App.Patient.TransducerZeroed_ABP) {
                         lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.ASBP, 0.02f));
-                        lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (App.Patient.ADBP, 0.02f));
+                        lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (
+                            (!App.Patient.IABPThisBeat ? App.Patient.ADBP : Utility.Clamp (App.Patient.ADBP - 15, 0, 1000)),
+                            0.02f));
                         lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.AMAP, 0.02f));
                     } else {
-                        lblLine1.Text = Strings.Lookup (App.Language.Value, "NUMERIC:ZeroTransducer");
+                        lblLine1.Text = Utility.WrapString(App.Language.Dictionary["NUMERIC:ZeroTransducer"]);
                         lblLine2.Text = "";
                         lblLine3.Text = "";
                     }
@@ -205,7 +204,7 @@ namespace II_Windows.Controls {
                     if (App.Patient.TransducerZeroed_CVP)
                         lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.CVP, 0.02f));
                     else
-                        lblLine1.Text = Strings.Lookup (App.Language.Value, "NUMERIC:ZeroTransducer");
+                        lblLine1.Text = App.Language.Dictionary["NUMERIC:ZeroTransducer"];
                     break;
 
                 case ControlType.Values.PA:
@@ -214,7 +213,7 @@ namespace II_Windows.Controls {
                         lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (App.Patient.PDP, 0.02f));
                         lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.PMP, 0.02f));
                     } else {
-                        lblLine1.Text = Strings.Lookup (App.Language.Value, "NUMERIC:ZeroTransducer");
+                        lblLine1.Text = App.Language.Dictionary["NUMERIC:ZeroTransducer"];
                         lblLine2.Text = "";
                         lblLine3.Text = "";
                     }

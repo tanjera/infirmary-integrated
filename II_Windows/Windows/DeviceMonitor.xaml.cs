@@ -69,16 +69,14 @@ namespace II_Windows {
             icExitProgram = new ActionCommand (() => App.Patient_Editor.RequestExit ());
 
             // Populate UI strings per language selection
-            Languages.Values l = App.Language.Value;
-
-            wdwDeviceMonitor.Title = Strings.Lookup (l, "CM:WindowTitle");
-            menuDevice.Header = Strings.Lookup (l, "CM:MenuDeviceOptions");
-            menuPauseDevice.Header = Strings.Lookup (l, "CM:MenuPauseDevice");
-            menuAddNumeric.Header = Strings.Lookup (l, "CM:MenuAddNumeric");
-            menuAddTracing.Header = Strings.Lookup (l, "CM:MenuAddTracing");
-            menuToggleFullscreen.Header = Strings.Lookup (l, "CM:MenuToggleFullscreen");
-            menuCloseDevice.Header = Strings.Lookup (l, "CM:MenuCloseDevice");
-            menuExitProgram.Header = Strings.Lookup (l, "CM:MenuExitProgram");
+            wdwDeviceMonitor.Title = App.Language.Dictionary["CM:WindowTitle"];
+            menuDevice.Header = App.Language.Dictionary["MENU:MenuDeviceOptions"];
+            menuPauseDevice.Header = App.Language.Dictionary["MENU:MenuPauseDevice"];
+            menuAddNumeric.Header = App.Language.Dictionary["MENU:MenuAddNumeric"];
+            menuAddTracing.Header = App.Language.Dictionary["MENU:MenuAddTracing"];
+            menuToggleFullscreen.Header = App.Language.Dictionary["MENU:MenuToggleFullscreen"];
+            menuCloseDevice.Header = App.Language.Dictionary["MENU:MenuCloseDevice"];
+            menuExitProgram.Header = App.Language.Dictionary["MENU:MenuExitProgram"];
         }
 
         public void Load_Process (string inc) {

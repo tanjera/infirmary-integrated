@@ -47,7 +47,7 @@ namespace II_Windows.Controls {
             borderTracing.BorderBrush = drawBrush;
 
             lblLead.Foreground = drawBrush;
-            lblLead.Content = Strings.Lookup (App.Language.Value, Leads.LookupString (Lead.Value));
+            lblLead.Content = App.Language.Dictionary[Leads.LookupString (Lead.Value)];
         }
 
         public void Scroll () => wfStrip.Scroll ();

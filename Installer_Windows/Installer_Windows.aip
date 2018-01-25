@@ -9,10 +9,10 @@
     <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
     <ROW Property="ARPPRODUCTICON" Value="Icon_Infirmary.exe" Type="8"/>
     <ROW Property="Manufacturer" Value="Tanjera"/>
-    <ROW Property="ProductCode" Value="1033:{35750583-04C2-4258-9396-4EB47EDDD7B5} " Type="16"/>
+    <ROW Property="ProductCode" Value="1033:{2372823A-A1E4-4CB6-8380-D10EC33FD393} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="Infirmary Integrated"/>
-    <ROW Property="ProductVersion" Value="0.9" Type="32"/>
+    <ROW Property="ProductVersion" Value="0.91" Type="32"/>
     <ROW Property="SecureCustomProperties" Value="OLDPRODUCTS;AI_NEWERPRODUCTFOUND"/>
     <ROW Property="UpgradeCode" Value="{FD24C600-9144-47E8-B052-479D03021BBA}"/>
     <ROW Property="WindowsType9X" MultiBuildValue="DefaultBuild:Windows 9x/ME" ValueLocId="-"/>

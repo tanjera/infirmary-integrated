@@ -64,21 +64,30 @@ namespace II_Windows {
             icExitProgram = new ActionCommand (() => App.Patient_Editor.RequestExit ());
 
             // Populate UI strings per language selection
-            Languages.Values l = App.Language.Value;
+            var Dictionary = App.Language.Dictionary;
+            wdwDeviceIABP.Title = Dictionary["IABP:WindowTitle"];
+            menuDevice.Header = Dictionary["MENU:MenuDeviceOptions"];
+            menuPauseDevice.Header = Dictionary["MENU:MenuPauseDevice"];
+            menuToggleFullscreen.Header = Dictionary["MENU:MenuToggleFullscreen"];
+            menuCloseDevice.Header = Dictionary["MENU:MenuCloseDevice"];
+            menuExitProgram.Header = Dictionary["MENU:MenuExitProgram"];
 
-            wdwDeviceIABP.Title = Strings.Lookup (l, "IABP:WindowTitle");
-            menuDevice.Header = Strings.Lookup (l, "MENU:MenuDeviceOptions");
-            menuPauseDevice.Header = Strings.Lookup (l, "MENU:MenuPauseDevice");
-            menuToggleFullscreen.Header = Strings.Lookup (l, "MENU:MenuToggleFullscreen");
-            menuCloseDevice.Header = Strings.Lookup (l, "MENU:MenuCloseDevice");
-            menuExitProgram.Header = Strings.Lookup (l, "MENU:MenuExitProgram");
+            lblAugmentationLabel.Text = Utility.WrapString(Dictionary["IABP:AugmentationPressure"]);
 
-            buttonModeAuto.Text = Strings.Lookup (l, "IABPMODE:Auto");
-            buttonModeSemiAuto.Text = Strings.Lookup (l, "IABPMODE:SemiAuto");
-            buttonModeManual.Text = Strings.Lookup (l, "IABPMODE:Manual");
-            buttonZero.Text = Strings.Lookup (l, "IABPBUTTON:ZeroPressure");
-            buttonStart.Text = Strings.Lookup (l, "IABPBUTTON:Start");
-            buttonPause.Text = Strings.Lookup (l, "IABPBUTTON:Pause");
+            buttonModeAuto.Text = Dictionary["IABPMODE:Auto"];
+            buttonModeSemiAuto.Text = Dictionary["IABPMODE:SemiAuto"];
+            buttonModeManual.Text = Dictionary["IABPMODE:Manual"];
+            buttonZero.Text = Utility.WrapString(Dictionary["IABPBUTTON:ZeroPressure"]);
+            buttonStart.Text = Dictionary["IABPBUTTON:Start"];
+            buttonPause.Text = Dictionary["IABPBUTTON:Pause"];
+            buttonToggleTrigger.Text = Utility.WrapString(Dictionary ["IABPBUTTON:ToggleTrigger"]);
+            buttonToggleFrequency.Text = Utility.WrapString (Dictionary ["IABPBUTTON:ToggleFrequency"]);
+            buttonPrimeBalloon.Text = Utility.WrapString (Dictionary ["IABPBUTTON:PrimeBalloon"]);
+
+            // Random helium tank remaining amount... it's for show!
+            lblHeliumTank.Text = String.Format ("{0}: {1:0}%",
+                Utility.WrapString (Dictionary ["IABP:HeliumTank"]),
+                Utility.RandomDouble (20, 80));
 
             // Instantiate and add Tracings to UI
             listTracings.Add (new Controls.IABPTracing (new Strip (6f, Leads.Values.ECG_II)));
@@ -86,7 +95,7 @@ namespace II_Windows {
             listTracings.Add (new Controls.IABPTracing (new Strip (6f, Leads.Values.IABP)));
             for (int i = 0; i < listTracings.Count; i++) {
                 listTracings [i].SetValue (Grid.RowProperty, i);
-                listTracings [i].SetValue (Grid.ColumnProperty, 0);
+                listTracings [i].SetValue (Grid.ColumnProperty, 1);
                 displayGrid.Children.Add (listTracings [i]);
             }
 
@@ -95,9 +104,28 @@ namespace II_Windows {
             listNumerics.Add (new Controls.IABPNumeric (Controls.IABPNumeric.ControlType.Values.ABP));
             for (int i = 0; i < listNumerics.Count; i++) {
                 listNumerics [i].SetValue (Grid.RowProperty, i);
-                listNumerics [i].SetValue (Grid.ColumnProperty, 1);
+                listNumerics [i].SetValue (Grid.ColumnProperty, 2);
                 displayGrid.Children.Add (listNumerics [i]);
             }
+        }
+
+        private void UpdateInterface () {
+            var Dictionary = App.Language.Dictionary;
+
+            lblTriggerSource.Text = Dictionary [App.Patient.IABPTrigger.LookupString ()];
+            lblOperationMode.Text = Dictionary [App.Patient.IABPMode.LookupString ()];
+            lblFrequency.Text = String.Format ("1 : {0}", App.Patient.IABPFrequencyRatio);
+            lblMachineStatus.Text = Dictionary [App.Patient.IABPRunning ? "IABP:Running" : "IABP:Paused"];
+            lblTubingStatus.Text = Dictionary [App.Patient.IABPPrimed ? "IABP:Primed" : "IABP:NeedsPriming"];
+
+            lblAugmentationAlarm.Text = Utility.WrapString (String.Format ("{0}: {1}",
+                Dictionary ["IABP:AugmentationAlarm"],
+                Dictionary [App.Patient.IABPAugmentationAlarm ? "BOOLEAN:On" : "BOOLEAN:Off"]));
+
+            lblAugmentationPressure.Text = (!App.Patient.IABPRunning || !App.Patient.TransducerZeroed_ABP
+                ? "0"
+                : String.Format ("{0:0}", Utility.RandomPercentRange (
+                    (App.Patient.ASBP + (App.Patient.ASBP * App.Patient.IABPAugmentationPercent * 0.5)), 0.02f)));
         }
 
         public void Load_Process (string inc) {
@@ -161,17 +189,57 @@ namespace II_Windows {
                     c.Unpause ();
         }
 
-        private void ButtonStart_Click (object s, RoutedEventArgs e) {
+        private void StartDevice () {
+            if (!App.Patient.IABPPrimed)
+                return;
+
+            if (App.Patient.IABPTrigger.Value == Patient.IABPTriggers.Values.Pressure
+                && !App.Patient.TransducerZeroed_ABP)
+                return;
+
             App.Patient.IABPRunning = true;
+            UpdateInterface ();
         }
 
-        private void ButtonPause_Click (object s, RoutedEventArgs e) {
+        private void PauseDevice() {
             App.Patient.IABPRunning = false;
+            UpdateInterface ();
+        }
+
+        private void ToggleTrigger () {
+            Array enumValues = Enum.GetValues (typeof (Patient.IABPTriggers.Values));
+            App.Patient.IABPTrigger.Value = (Patient.IABPTriggers.Values) enumValues.GetValue(((int)App.Patient.IABPTrigger.Value + 1) % enumValues.Length);
+            PauseDevice ();
+        }
+
+        private void ToggleFrequency () {
+            App.Patient.IABPFrequencyRatio = Utility.Clamp((App.Patient.IABPFrequencyRatio + 1) % 4, 1, 3);
+            UpdateInterface ();
+        }
+
+        private void PrimeBalloon () {
+            App.Patient.IABPPrimed = true;
+            UpdateInterface ();
+        }
+
+        private void SetOperationMode(Patient.IABPModes.Values value) {
+            App.Patient.IABPMode.Value = value;
+            PauseDevice ();
         }
 
         private void ButtonZeroABP_Click (object s, RoutedEventArgs e) {
             App.Patient.TransducerZeroed_ABP = true;
+            UpdateInterface ();
         }
+
+        private void ButtonStart_Click (object s, RoutedEventArgs e) => StartDevice ();
+        private void ButtonPause_Click (object s, RoutedEventArgs e) => PauseDevice ();
+        private void ButtonToggleTrigger_Click (object s, RoutedEventArgs e) => ToggleTrigger ();
+        private void ButtonToggleFrequency_Click (object s, RoutedEventArgs e) => ToggleFrequency ();
+        private void ButtonModeAuto_Click (object s, RoutedEventArgs e) => SetOperationMode (Patient.IABPModes.Values.Auto);
+        private void ButtonModeSemiAuto_Click (object s, RoutedEventArgs e) => SetOperationMode (Patient.IABPModes.Values.SemiAuto);
+        private void ButtonModeManual_Click (object s, RoutedEventArgs e) => SetOperationMode (Patient.IABPModes.Values.Manual);
+        private void ButtonPrimeBalloon_Click (object s, RoutedEventArgs e) => PrimeBalloon ();
 
         private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
         private void MenuExit_Click (object s, RoutedEventArgs e) => App.Patient_Editor.RequestExit ();
@@ -195,6 +263,8 @@ namespace II_Windows {
         private void OnTick_Vitals (object sender, EventArgs e) {
             if (isPaused)
                 return;
+
+            UpdateInterface ();
 
             foreach (Controls.IABPNumeric v in listNumerics)
                 v.UpdateVitals ();
