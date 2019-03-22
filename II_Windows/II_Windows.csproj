@@ -59,13 +59,13 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>3239FB4B77EA646541BB01B3CB35EE55A8668441</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>A49EF28EC8118EDE20AB5F37482DA36C4A06593B</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>Temp Signing Key.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Temp Signing SN Key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>Temp Signing SN Key.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -230,7 +230,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="Temp Signing Key.pfx" />
-    <None Include="Temp Signing SN Key.snk" />
+    <None Include="Temp Signing SN Key.pfx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

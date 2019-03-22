@@ -136,6 +136,7 @@
                             <Label Name="lblDevice12LeadECG" Style="{StaticResource deviceLabel}" />
                         </StackPanel>
                     </Button>
+                    <!--
                     <Button Name="btnDeviceDefibrillator" Style="{StaticResource deviceButton}" IsEnabled="False">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource Icon_DeviceDefibrillator}" Style="{StaticResource deviceImage}" />
@@ -148,12 +149,14 @@
                             <Label Name="lblDeviceVentilator" Style="{StaticResource deviceLabel}" />
                         </StackPanel>
                     </Button>
+                    -->
                     <Button Name="btnDeviceIABP" Click="ButtonDeviceIABP_Click"  Style="{StaticResource deviceButton}">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource Icon_DeviceIABP}" Style="{StaticResource deviceImage}" />
                             <Label Name="lblDeviceIABP" Style="{StaticResource deviceLabel}" />
                         </StackPanel>
                     </Button>
+                    <!--
                     <Button Name="btnDeviceEFM" Click="ButtonDeviceEFM_Click" Style="{StaticResource deviceButton}" IsEnabled="False">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource Icon_DeviceEFM}" Style="{StaticResource deviceImage}" />
@@ -172,6 +175,7 @@
                             <Label Name="lblDeviceLabResults" Style="{StaticResource deviceLabel}" />
                         </StackPanel>
                     </Button>
+                    -->
                 </StackPanel>
             </GroupBox>
         </ScrollViewer>

@@ -24,10 +24,7 @@
 
 * To debug:
 
-* Known bugs:
-	- Pulsed rhythms (ABP, IABP_ABP, SPO2, PA) generate waveform too soon to QRS complex
-		- Needs time for electrical capture to translate to mechanical capture...
-
+* Known bugs:	
 
 
 * Versions and features to implement:

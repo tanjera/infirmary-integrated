@@ -33,9 +33,9 @@ namespace II.Rhythm {
             double _Portion = _P.HR_Seconds / 4f;
 
             List<Point> thisBeat = new List<Point>();
-            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.8f * _Amplitude, 0.7f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.6f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Line (_Portion * 2, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.7f * _Amplitude, 0.6f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion * 2, 0.4f * _Amplitude, 0f, Last (thisBeat)));
             return thisBeat;
         }
 
@@ -43,9 +43,10 @@ namespace II.Rhythm {
             double _Portion = _P.HR_Seconds / 4;
 
             List<Point> thisBeat = new List<Point> ();
+            thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.8f * _Amplitude, 0.7f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.6f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Line( _Portion * 2, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.4f * _Amplitude, 0.1f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
             return thisBeat;
         }
 
@@ -53,10 +54,10 @@ namespace II.Rhythm {
             double _Portion = _P.HR_Seconds / 5;
 
             List<Point> thisBeat = new List<Point> ();
-            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.1f * _Amplitude, 0.2f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.5f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.4f * _Amplitude, 0f, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0f, 0.1f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0f, 0.3f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.5f * _Amplitude, 0.3f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.35f * _Amplitude, -0.05f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, -0.1f, -0.05f * _Amplitude, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.2f * _Amplitude, 0f, Last (thisBeat)));
             return thisBeat;
         }
@@ -65,11 +66,13 @@ namespace II.Rhythm {
         public static List<Point> PA_Rhythm (Patient _P, double _Amplitude) {
             /* ABP during normal sinus perfusion is similar to a sine wave leaning right with dicrotic notch
 		     */
-            double _Portion = _P.HR_Seconds / 2;
+            double _Portion = _P.HR_Seconds / 4;
 
             List<Point> thisBeat = new List<Point> ();
-            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.5 * _Amplitude, 0.3f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.15f * _Amplitude, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.6f * _Amplitude, 0.5f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.3f * _Amplitude, 0.15f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.05f * _Amplitude, 0f, Last (thisBeat)));
             return thisBeat;
         }
 
@@ -77,14 +80,13 @@ namespace II.Rhythm {
             double _Portion = _P.HR_Seconds / 20;
 
             List<Point> thisBeat = new List<Point> ();
-            thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Line (_Portion * 4, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion * 8, 0f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Line (_Portion, _Amplitude, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Line (_Portion * 2, _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_Portion * 6, 0.5f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion * 5, 0.5f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Line (_Portion, -0.3f * _Amplitude, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Line (_Portion * 2, -0.3f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Line (_Portion * 3, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
             return thisBeat;
         }
 
@@ -92,13 +94,16 @@ namespace II.Rhythm {
             double _Portion = _P.HR_Seconds / 4;
 
             List<Point> thisBeat = new List<Point> ();
+
+            thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
+
             if (_P.CardiacRhythm.HasPulse_Ventricular)
                 thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.8f * _Amplitude, 0.6f * _Amplitude, Last (thisBeat)));
             else
                 thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
 
-            thisBeat = Concatenate (thisBeat, Curve (_Portion * 1.5, 1f * _Amplitude, 0.8f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_Portion * 1.5, 0.1f * _Amplitude, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 1f * _Amplitude, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, -0.2f * _Amplitude, 0f, Last (thisBeat)));
             return thisBeat;
         }
 
@@ -331,7 +336,7 @@ namespace II.Rhythm {
             return (((1 - _Percent) * (1 - _Percent)) * _Start) + (2 * _Percent * (1 - _Percent) * _Control) + ((_Percent * _Percent) * _End);
         }
 
-        static List<Point> Curve(double _Length, double _mV, double _mV_End, Point _Start) {
+        static List<Point> Curve(double _Length, double _mV_Middle, double _mV_End, Point _Start) {
             if (_Length < 0)
                 return new List<Point> ();
 
@@ -341,12 +346,12 @@ namespace II.Rhythm {
 
             for (i = 1; i * ((2 * Draw_Resolve) / _Length) <= 1; i++) {
                 x = i * ((2 * Draw_Resolve) / _Length);
-                _Out.Add(Bezier(new Point(0, _Start.Y), new Point(_Length / 4, _mV), new Point(_Length / 2, _mV), x));
+                _Out.Add(Bezier(new Point(0, _Start.Y), new Point(_Length / 4, _mV_Middle), new Point(_Length / 2, _mV_Middle), x));
             }
 
             for (i = 1; i * ((2 * Draw_Resolve) / _Length) <= 1; i++) {
                 x = i * ((2 * Draw_Resolve) / _Length);
-                _Out.Add(Bezier(new Point(_Length / 2, _mV), new Point(_Length / 4 * 3, _mV), new Point(_Length, _mV_End), x));
+                _Out.Add(Bezier(new Point(_Length / 2, _mV_Middle), new Point(_Length / 4 * 3, _mV_Middle), new Point(_Length, _mV_End), x));
             }
 
             _Out.Add(new Point(_Length, _mV_End));        // Finish the curve

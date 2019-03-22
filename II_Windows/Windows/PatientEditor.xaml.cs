@@ -76,12 +76,12 @@ namespace II_Windows {
             lblGroupDevices.Content = App.Language.Dictionary["PE:Devices"];
             lblDeviceMonitor.Content = App.Language.Dictionary["PE:CardiacMonitor"];
             lblDevice12LeadECG.Content = App.Language.Dictionary["PE:12LeadECG"];
-            lblDeviceDefibrillator.Content = App.Language.Dictionary["PE:Defibrillator"];
-            lblDeviceVentilator.Content = App.Language.Dictionary["PE:Ventilator"];
+            //lblDeviceDefibrillator.Content = App.Language.Dictionary["PE:Defibrillator"];
+            //lblDeviceVentilator.Content = App.Language.Dictionary["PE:Ventilator"];
             lblDeviceIABP.Content = App.Language.Dictionary["PE:IABP"];
-            lblDeviceEFM.Content = App.Language.Dictionary["PE:EFM"];
-            lblDeviceIVPump.Content = App.Language.Dictionary["PE:IVPump"];
-            lblDeviceLabResults.Content = App.Language.Dictionary["PE:LabResults"];
+            //lblDeviceEFM.Content = App.Language.Dictionary["PE:EFM"];
+            //lblDeviceIVPump.Content = App.Language.Dictionary["PE:IVPump"];
+            //lblDeviceLabResults.Content = App.Language.Dictionary["PE:LabResults"];
 
             lblGroupVitalSigns.Content = App.Language.Dictionary["PE:VitalSigns"];
             lblHR.Content = String.Format ("{0}:", App.Language.Dictionary["PE:HeartRate"]);
