@@ -56,7 +56,7 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>A49EF28EC8118EDE20AB5F37482DA36C4A06593B</ManifestCertificateThumbprint>
@@ -65,7 +65,8 @@
     <ManifestKeyFile>Temp Signing Key.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Temp Signing SN Key.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -120,11 +121,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Controls\DefibNumeric.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\MonitorNumeric.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ECGTracing.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\DefibTracing.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -136,11 +145,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\DeviceEFM.xaml">
+    <Page Include="Windows\DeviceECG.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Windows\DeviceECG.xaml">
+    <Page Include="Windows\DeviceDefib.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -174,11 +183,17 @@
     <Compile Include="Controls\IABPNumeric.xaml.cs">
       <DependentUpon>IABPNumeric.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\DefibNumeric.xaml.cs">
+      <DependentUpon>DefibNumeric.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\MonitorNumeric.xaml.cs">
       <DependentUpon>MonitorNumeric.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ECGTracing.xaml.cs">
       <DependentUpon>ECGTracing.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\DefibTracing.xaml.cs">
+      <DependentUpon>DefibTracing.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\MonitorTracing.xaml.cs">
       <DependentUpon>MonitorTracing.xaml</DependentUpon>
@@ -186,11 +201,11 @@
     <Compile Include="Windows\DeviceIABP.xaml.cs">
       <DependentUpon>DeviceIABP.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\DeviceEFM.xaml.cs">
-      <DependentUpon>DeviceEFM.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Windows\DeviceECG.xaml.cs">
       <DependentUpon>DeviceECG.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\DeviceDefib.xaml.cs">
+      <DependentUpon>DeviceDefib.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\DeviceMonitor.xaml.cs">
       <DependentUpon>DeviceMonitor.xaml</DependentUpon>
@@ -230,7 +245,6 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="Temp Signing Key.pfx" />
-    <None Include="Temp Signing SN Key.pfx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

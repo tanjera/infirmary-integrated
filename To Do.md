@@ -4,6 +4,8 @@
 
 
 * Next steps:
+	* Defibrillator
+		- DeviceDefib layout
 	* EFM
 		- DeviceEFM layout
 		- EFMTracing control

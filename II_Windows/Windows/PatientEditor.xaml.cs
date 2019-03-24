@@ -76,7 +76,7 @@ namespace II_Windows {
             lblGroupDevices.Content = App.Language.Dictionary["PE:Devices"];
             lblDeviceMonitor.Content = App.Language.Dictionary["PE:CardiacMonitor"];
             lblDevice12LeadECG.Content = App.Language.Dictionary["PE:12LeadECG"];
-            //lblDeviceDefibrillator.Content = App.Language.Dictionary["PE:Defibrillator"];
+            lblDeviceDefibrillator.Content = App.Language.Dictionary["PE:Defibrillator"];
             //lblDeviceVentilator.Content = App.Language.Dictionary["PE:Ventilator"];
             lblDeviceIABP.Content = App.Language.Dictionary["PE:IABP"];
             //lblDeviceEFM.Content = App.Language.Dictionary["PE:EFM"];
@@ -169,6 +169,16 @@ namespace II_Windows {
             App.Patient.PatientEvent += App.Device_ECG.OnPatientEvent;
         }
 
+        private void InitDeviceDefib () {
+            if (App.Device_Defib == null || !App.Device_Defib.IsLoaded)
+                App.Device_Defib = new DeviceDefib ();
+
+            App.Device_Defib.Activate ();
+            App.Device_Defib.Show ();
+
+            App.Patient.PatientEvent += App.Device_Defib.OnPatientEvent;
+        }
+
         private void InitDeviceIABP () {
             if (App.Device_IABP == null || !App.Device_IABP.IsLoaded)
                 App.Device_IABP = new DeviceIABP ();
@@ -177,16 +187,6 @@ namespace II_Windows {
             App.Device_IABP.Show ();
 
             App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
-        }
-
-        private void InitDeviceEFM () {
-            if (App.Device_EFM == null || !App.Device_EFM.IsLoaded)
-                App.Device_EFM = new DeviceEFM ();
-
-            App.Device_EFM.Activate ();
-            App.Device_EFM.Show ();
-
-            App.Patient.PatientEvent += App.Device_EFM.OnPatientEvent;
         }
         private void DialogLanguage(bool reloadUI = false) {
             App.Dialog_Language = new DialogLanguage ();
@@ -390,7 +390,7 @@ namespace II_Windows {
         private void ButtonDeviceMonitor_Click (object s, RoutedEventArgs e) => InitDeviceMonitor ();
         private void ButtonDeviceECG_Click (object s, RoutedEventArgs e) => InitDeviceECG ();
         private void ButtonDeviceIABP_Click (object s, RoutedEventArgs e) => InitDeviceIABP ();
-        private void ButtonDeviceEFM_Click (object s, RoutedEventArgs e) => InitDeviceEFM ();
+        private void ButtonDeviceDefib_Click (object s, RoutedEventArgs e) => InitDeviceDefib ();
         private void ButtonResetParameters_Click (object s, RoutedEventArgs e) => RequestNewPatient ();
 
         private void ButtonApplyParameters_Click (object sender, RoutedEventArgs e) {

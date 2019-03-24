@@ -16,8 +16,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II_Windows", "II_Windows\II
 EndProject
 Project("{840C416C-B8F3-42BC-B0DD-F6BB14C9F8CB}") = "Installer_Windows", "Installer_Windows\Installer_Windows.aiproj", "{83F1DE85-A5E9-46C2-A0C0-4B9B8D769049}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II_OSX", "II_OSX\II_OSX.csproj", "{E6CC67AB-480D-4CC0-9FF0-F30E080BFF22}"
-EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		II_Core\II_Core.projitems*{d6a13684-612c-49d6-b8b3-b9720d585a71}*SharedItemsImports = 13
@@ -41,12 +39,6 @@ Global
 		{83F1DE85-A5E9-46C2-A0C0-4B9B8D769049}.DefaultBuild|Any CPU.Build.0 = DefaultBuild
 		{83F1DE85-A5E9-46C2-A0C0-4B9B8D769049}.Release|Any CPU.ActiveCfg = DefaultBuild
 		{83F1DE85-A5E9-46C2-A0C0-4B9B8D769049}.Release|Any CPU.Build.0 = DefaultBuild
-		{E6CC67AB-480D-4CC0-9FF0-F30E080BFF22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E6CC67AB-480D-4CC0-9FF0-F30E080BFF22}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E6CC67AB-480D-4CC0-9FF0-F30E080BFF22}.DefaultBuild|Any CPU.ActiveCfg = Debug|Any CPU
-		{E6CC67AB-480D-4CC0-9FF0-F30E080BFF22}.DefaultBuild|Any CPU.Build.0 = Debug|Any CPU
-		{E6CC67AB-480D-4CC0-9FF0-F30E080BFF22}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E6CC67AB-480D-4CC0-9FF0-F30E080BFF22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

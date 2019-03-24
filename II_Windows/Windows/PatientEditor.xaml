@@ -136,13 +136,13 @@
                             <Label Name="lblDevice12LeadECG" Style="{StaticResource deviceLabel}" />
                         </StackPanel>
                     </Button>
-                    <!--
-                    <Button Name="btnDeviceDefibrillator" Style="{StaticResource deviceButton}" IsEnabled="False">
+                    <Button Name="btnDeviceDefibrillator" Click="ButtonDeviceDefib_Click" Style="{StaticResource deviceButton}">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource Icon_DeviceDefibrillator}" Style="{StaticResource deviceImage}" />
                             <Label Name="lblDeviceDefibrillator" Style="{StaticResource deviceLabel}" />
                         </StackPanel>
                     </Button>
+                    <!--
                     <Button Name="btnDeviceVentilator" Style="{StaticResource deviceButton}" IsEnabled="False">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource Icon_DeviceVentilator}" Style="{StaticResource deviceImage}" />
@@ -157,7 +157,7 @@
                         </StackPanel>
                     </Button>
                     <!--
-                    <Button Name="btnDeviceEFM" Click="ButtonDeviceEFM_Click" Style="{StaticResource deviceButton}" IsEnabled="False">
+                    <Button Name="btnDeviceEFM" Style="{StaticResource deviceButton}" IsEnabled="False">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource Icon_DeviceEFM}" Style="{StaticResource deviceImage}" />
                             <Label Name="lblDeviceEFM" Style="{StaticResource deviceLabel}" />
