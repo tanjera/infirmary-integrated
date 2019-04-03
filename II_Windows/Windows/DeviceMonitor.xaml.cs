@@ -36,7 +36,8 @@ namespace II_Windows {
               timerVitals = new Timer ();
 
         // Define WPF UI commands for binding
-        private ICommand icPauseDevice, icCloseDevice, icExitProgram;
+        private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram;
+        public ICommand IC_ToggleFullscreen { get { return icToggleFullscreen; } }
         public ICommand IC_PauseDevice { get { return icPauseDevice; } }
         public ICommand IC_CloseDevice { get { return icCloseDevice; } }
         public ICommand IC_ExitProgram { get { return icExitProgram; } }
@@ -64,6 +65,7 @@ namespace II_Windows {
 
         private void InitInterface () {
             // Initiate ICommands for KeyBindings
+            icToggleFullscreen = new ActionCommand (() => ToggleFullscreen ());
             icPauseDevice = new ActionCommand (() => TogglePause ());
             icCloseDevice = new ActionCommand (() => this.Close ());
             icExitProgram = new ActionCommand (() => App.Patient_Editor.RequestExit ());
@@ -158,6 +160,11 @@ namespace II_Windows {
                     c.Unpause ();
         }
 
+        public void ToggleFullscreen () {
+            isFullscreen = !isFullscreen;
+            ApplyFullScreen ();
+        }
+
         public void AddTracing () {
             rowsTracings += 1;
             OnLayoutChange ();
@@ -185,11 +192,7 @@ namespace II_Windows {
         private void MenuAddNumeric_Click (object s, RoutedEventArgs e) => AddNumeric ();
         private void MenuAddTracing_Click (object s, RoutedEventArgs e) => AddTracing ();
         private void MenuTogglePause_Click (object s, RoutedEventArgs e) => TogglePause ();
-
-        private void MenuFullscreen_Click (object sender, RoutedEventArgs e) {
-            isFullscreen = !isFullscreen;
-            ApplyFullScreen ();
-        }
+        private void MenuFullscreen_Click (object sender, RoutedEventArgs e) => ToggleFullscreen ();
 
         private void OnTick_Tracing (object sender, EventArgs e) {
             if (isPaused)

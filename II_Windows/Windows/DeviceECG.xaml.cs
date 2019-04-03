@@ -32,7 +32,8 @@ namespace II_Windows {
         Timer timerTracing = new Timer ();
 
         // Define WPF UI commands for binding
-        private ICommand icPauseDevice, icCloseDevice, icExitProgram;
+        private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram;
+        public ICommand IC_ToggleFullscreen { get { return icToggleFullscreen; } }
         public ICommand IC_PauseDevice { get { return icPauseDevice; } }
         public ICommand IC_CloseDevice { get { return icCloseDevice; } }
         public ICommand IC_ExitProgram { get { return icExitProgram; } }
@@ -52,6 +53,7 @@ namespace II_Windows {
 
         private void InitInterface () {
             // Initiate ICommands for KeyBindings
+            icToggleFullscreen = new ActionCommand (() => ToggleFullscreen ());
             icPauseDevice = new ActionCommand (() => TogglePause ());
             icCloseDevice = new ActionCommand (() => this.Close ());
             icExitProgram = new ActionCommand (() => App.Patient_Editor.RequestExit ());
@@ -163,14 +165,15 @@ namespace II_Windows {
                     c.Unpause ();
         }
 
-        private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
-        private void MenuExit_Click (object s, RoutedEventArgs e) => App.Patient_Editor.RequestExit ();
-        private void MenuTogglePause_Click (object s, RoutedEventArgs e) => TogglePause ();
-
-        private void MenuFullscreen_Click (object sender, RoutedEventArgs e) {
+        private void ToggleFullscreen () {
             isFullscreen = !isFullscreen;
             ApplyFullScreen ();
         }
+
+        private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
+        private void MenuExit_Click (object s, RoutedEventArgs e) => App.Patient_Editor.RequestExit ();
+        private void MenuTogglePause_Click (object s, RoutedEventArgs e) => TogglePause ();
+        private void MenuFullscreen_Click (object sender, RoutedEventArgs e) => ToggleFullscreen ();
 
         private void OnTick_Tracing (object sender, EventArgs e) {
             if (isPaused)

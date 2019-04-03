@@ -76,7 +76,7 @@ namespace II {
 
         public class IABPModes {
             public Values Value;
-            public enum Values { Auto, SemiAuto, Manual }
+            public enum Values { Auto, SemiAuto }
 
             public IABPModes (Values v) { Value = v; }
             public IABPModes () { Value = Values.Auto; }

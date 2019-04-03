@@ -24,6 +24,16 @@ namespace II_Windows {
     /// </summary>
     public partial class DeviceIABP : Window {
 
+        public enum IABPSettings {
+            None,
+            Trigger,
+            Frequency,
+            AugmentationPressure,
+            AugmentationAlarm
+        }
+
+        public IABPSettings SelectedSetting = IABPSettings.None;
+
         bool isFullscreen = false,
              isPaused = false;
 
@@ -34,7 +44,8 @@ namespace II_Windows {
               timerVitals = new Timer ();
 
         // Define WPF UI commands for binding
-        private ICommand icPauseDevice, icCloseDevice, icExitProgram;
+        private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram;
+        public ICommand IC_ToggleFullscreen { get { return icToggleFullscreen; } }
         public ICommand IC_PauseDevice { get { return icPauseDevice; } }
         public ICommand IC_CloseDevice { get { return icCloseDevice; } }
         public ICommand IC_ExitProgram { get { return icExitProgram; } }
@@ -59,6 +70,7 @@ namespace II_Windows {
 
         private void InitInterface () {
             // Initiate ICommands for KeyBindings
+            icToggleFullscreen = new ActionCommand (() => ToggleFullscreen ());
             icPauseDevice = new ActionCommand (() => TogglePause ());
             icCloseDevice = new ActionCommand (() => this.Close ());
             icExitProgram = new ActionCommand (() => App.Patient_Editor.RequestExit ());
@@ -76,13 +88,16 @@ namespace II_Windows {
 
             buttonModeAuto.Text = Dictionary["IABPMODE:Auto"];
             buttonModeSemiAuto.Text = Dictionary["IABPMODE:SemiAuto"];
-            buttonModeManual.Text = Dictionary["IABPMODE:Manual"];
             buttonZero.Text = Utility.WrapString(Dictionary["IABPBUTTON:ZeroPressure"]);
             buttonStart.Text = Dictionary["IABPBUTTON:Start"];
             buttonPause.Text = Dictionary["IABPBUTTON:Pause"];
-            buttonToggleTrigger.Text = Utility.WrapString(Dictionary ["IABPBUTTON:ToggleTrigger"]);
-            buttonToggleFrequency.Text = Utility.WrapString (Dictionary ["IABPBUTTON:ToggleFrequency"]);
+            btntxtTrigger.Text = Utility.WrapString(Dictionary ["IABPBUTTON:Trigger"]);
+            btntxtFrequency.Text = Utility.WrapString (Dictionary ["IABPBUTTON:Frequency"]);
             buttonPrimeBalloon.Text = Utility.WrapString (Dictionary ["IABPBUTTON:PrimeBalloon"]);
+            btntxtAugmentationPressure.Text = Utility.WrapString (Dictionary ["IABP:AugmentationPressure"]);
+            btntxtAugmentationAlarm.Text = Utility.WrapString (Dictionary ["IABP:AugmentationAlarm"]);
+            btntxtIncrease.Text = Utility.WrapString (Dictionary ["IABPBUTTON:Increase"]);
+            btntxtDecrease.Text = Utility.WrapString (Dictionary ["IABPBUTTON:Decrease"]);
 
             // Random helium tank remaining amount... it's for show!
             lblHeliumTank.Text = String.Format ("{0}: {1:0}%",
@@ -116,7 +131,7 @@ namespace II_Windows {
             lblOperationMode.Text = Dictionary [App.Patient.IABPMode.LookupString ()];
             lblFrequency.Text = String.Format ("1 : {0}", App.Patient.IABPFrequencyRatio);
             lblMachineStatus.Text = Dictionary [App.Patient.IABPRunning ? "IABP:Running" : "IABP:Paused"];
-            lblTubingStatus.Text = Dictionary [App.Patient.IABPPrimed ? "IABP:Primed" : "IABP:NeedsPriming"];
+            lblTubingStatus.Text = Dictionary [App.Patient.IABPPrimed ? "IABP:Primed" : "IABP:NotPrimed"];
 
             lblAugmentationAlarm.Text = Utility.WrapString (String.Format ("{0}: {1}",
                 Dictionary ["IABP:AugmentationAlarm"],
@@ -189,9 +204,13 @@ namespace II_Windows {
                     c.Unpause ();
         }
 
+        private void ToggleFullscreen () {
+            isFullscreen = !isFullscreen;
+            ApplyFullScreen ();
+        }
+
         private void StartDevice () {
-            if (!App.Patient.IABPPrimed)
-                return;
+            PrimeBalloon ();
 
             if (App.Patient.IABPTrigger.Value == Patient.IABPTriggers.Values.Pressure
                 && !App.Patient.TransducerZeroed_ABP)
@@ -206,17 +225,6 @@ namespace II_Windows {
             UpdateInterface ();
         }
 
-        private void ToggleTrigger () {
-            Array enumValues = Enum.GetValues (typeof (Patient.IABPTriggers.Values));
-            App.Patient.IABPTrigger.Value = (Patient.IABPTriggers.Values) enumValues.GetValue(((int)App.Patient.IABPTrigger.Value + 1) % enumValues.Length);
-            PauseDevice ();
-        }
-
-        private void ToggleFrequency () {
-            App.Patient.IABPFrequencyRatio = Utility.Clamp((App.Patient.IABPFrequencyRatio + 1) % 4, 1, 3);
-            UpdateInterface ();
-        }
-
         private void PrimeBalloon () {
             App.Patient.IABPPrimed = true;
             UpdateInterface ();
@@ -227,28 +235,87 @@ namespace II_Windows {
             PauseDevice ();
         }
 
+        private void SelectSetting (IABPSettings s) {
+            buttonTrigger.Background = System.Windows.Media.Brushes.PowderBlue;
+            buttonFrequency.Background = System.Windows.Media.Brushes.PowderBlue;
+            buttonAugmentationPressure.Background = System.Windows.Media.Brushes.LightSkyBlue;
+            buttonAugmentationAlarm.Background = System.Windows.Media.Brushes.LightSkyBlue;
+
+            if (SelectedSetting == s)
+                SelectedSetting = IABPSettings.None;
+            else
+                SelectedSetting = s;
+
+            switch (SelectedSetting) {
+                default: return;
+                case IABPSettings.Trigger:
+                    buttonTrigger.Background = System.Windows.Media.Brushes.Yellow;
+                    return;
+                case IABPSettings.Frequency:
+                    buttonFrequency.Background = System.Windows.Media.Brushes.Yellow;
+                    return;
+                case IABPSettings.AugmentationPressure:
+                    buttonAugmentationPressure.Background = System.Windows.Media.Brushes.Yellow;
+                    return;
+                case IABPSettings.AugmentationAlarm:
+                    buttonAugmentationAlarm.Background = System.Windows.Media.Brushes.Yellow;
+                    return;
+            }
+        }
+
         private void ButtonZeroABP_Click (object s, RoutedEventArgs e) {
             App.Patient.TransducerZeroed_ABP = true;
             UpdateInterface ();
         }
 
+        private void ButtonIncrease_Click (object s, RoutedEventArgs e) {
+            switch (SelectedSetting) {
+                default: return;
+                case IABPSettings.Frequency:
+                    App.Patient.IABPFrequencyRatio = Utility.Clamp (App.Patient.IABPFrequencyRatio + 1, 1, 3);
+                    break;
+
+                case IABPSettings.Trigger:
+                    Array enumValues = Enum.GetValues (typeof (Patient.IABPTriggers.Values));
+                    App.Patient.IABPTrigger.Value = (Patient.IABPTriggers.Values)enumValues.GetValue (Utility.Clamp((int)App.Patient.IABPTrigger.Value + 1, 0, enumValues.Length - 1));
+                    PauseDevice ();
+                    break;
+            }
+
+            UpdateInterface ();
+        }
+
+        private void ButtonDecrease_Click (object s, RoutedEventArgs e) {
+            switch (SelectedSetting) {
+                default: return;
+                case IABPSettings.Frequency:
+                    App.Patient.IABPFrequencyRatio = Utility.Clamp (App.Patient.IABPFrequencyRatio - 1, 1, 3);
+                    break;
+
+                case IABPSettings.Trigger:
+                    Array enumValues = Enum.GetValues (typeof (Patient.IABPTriggers.Values));
+                    App.Patient.IABPTrigger.Value = (Patient.IABPTriggers.Values)enumValues.GetValue (Utility.Clamp((int)App.Patient.IABPTrigger.Value - 1, 0, enumValues.Length - 1));
+                    PauseDevice ();
+                    break;
+            }
+
+            UpdateInterface ();
+        }
+
         private void ButtonStart_Click (object s, RoutedEventArgs e) => StartDevice ();
         private void ButtonPause_Click (object s, RoutedEventArgs e) => PauseDevice ();
-        private void ButtonToggleTrigger_Click (object s, RoutedEventArgs e) => ToggleTrigger ();
-        private void ButtonToggleFrequency_Click (object s, RoutedEventArgs e) => ToggleFrequency ();
+        private void ButtonTrigger_Click (object s, RoutedEventArgs e) => SelectSetting (IABPSettings.Trigger);
+        private void ButtonFrequency_Click (object s, RoutedEventArgs e) => SelectSetting (IABPSettings.Frequency);
+        private void ButtonAugmentationPressure_Click (object s, RoutedEventArgs e) => SelectSetting (IABPSettings.AugmentationPressure);
+        private void ButtonAugmentationAlarm_Click (object s, RoutedEventArgs e) => SelectSetting (IABPSettings.AugmentationAlarm);
         private void ButtonModeAuto_Click (object s, RoutedEventArgs e) => SetOperationMode (Patient.IABPModes.Values.Auto);
         private void ButtonModeSemiAuto_Click (object s, RoutedEventArgs e) => SetOperationMode (Patient.IABPModes.Values.SemiAuto);
-        private void ButtonModeManual_Click (object s, RoutedEventArgs e) => SetOperationMode (Patient.IABPModes.Values.Manual);
         private void ButtonPrimeBalloon_Click (object s, RoutedEventArgs e) => PrimeBalloon ();
 
         private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
         private void MenuExit_Click (object s, RoutedEventArgs e) => App.Patient_Editor.RequestExit ();
         private void MenuTogglePause_Click (object s, RoutedEventArgs e) => TogglePause ();
-
-        private void MenuFullscreen_Click (object sender, RoutedEventArgs e) {
-            isFullscreen = !isFullscreen;
-            ApplyFullScreen ();
-        }
+        private void MenuFullscreen_Click (object sender, RoutedEventArgs e) => ToggleFullscreen ();
 
         private void OnTick_Tracing (object sender, EventArgs e) {
             if (isPaused)

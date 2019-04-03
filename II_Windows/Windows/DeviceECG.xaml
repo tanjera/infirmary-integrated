@@ -13,6 +13,7 @@
         Background="Black">
 
     <Window.InputBindings>
+        <KeyBinding Key="F" Modifiers="Ctrl" Command="{Binding IC_ToggleFullscreen}" />
         <KeyBinding Key="U" Modifiers="Ctrl" Command="{Binding IC_PauseDevice}" />
         <KeyBinding Key="F4" Modifiers="Ctrl" Command="{Binding IC_CloseDevice}" />
         <KeyBinding Key="F4" Modifiers="Alt" Command="{Binding IC_ExitProgram}" />
@@ -26,7 +27,7 @@
             <MenuItem Name="menuDevice">
                 <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" InputGestureText="Ctrl+U"/>
                 <Separator />
-                <MenuItem Name="menuToggleFullscreen" Click="MenuFullscreen_Click" />
+                <MenuItem Name="menuToggleFullscreen" Click="MenuFullscreen_Click" InputGestureText="Ctrl+F" />
                 <Separator />
                 <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGestureText="Ctrl-F4"/>
                 <MenuItem Name="menuExitProgram" Click="MenuExit_Click" InputGestureText="Alt-F4"/>

@@ -13,28 +13,16 @@
         Width="800" Height="1000" >
 
     <Window.InputBindings>
+        <KeyBinding Key="F" Modifiers="Ctrl" Command="{Binding IC_ToggleFullscreen}" />
         <KeyBinding Key="U" Modifiers="Ctrl" Command="{Binding IC_PauseDevice}" />
         <KeyBinding Key="F4" Modifiers="Ctrl" Command="{Binding IC_CloseDevice}" />
         <KeyBinding Key="F4" Modifiers="Alt" Command="{Binding IC_ExitProgram}" />
     </Window.InputBindings>
 
     <Window.Resources>
-        <Style x:Key="borderControlsTop" TargetType="{x:Type Border}">
+        <Style x:Key="borderControls" TargetType="{x:Type Border}">
             <Setter Property="CornerRadius" Value="5" />
             <Setter Property="Margin" Value="3" />
-            <Setter Property="Background" Value="CornflowerBlue" />
-        </Style>
-
-        <Style x:Key="borderControlsMiddle" TargetType="{x:Type Border}">
-            <Setter Property="CornerRadius" Value="5" />
-            <Setter Property="Margin" Value="3" />
-            <Setter Property="Background" Value="LightSkyBlue" />
-        </Style>
-
-        <Style x:Key="borderControlsBottom" TargetType="{x:Type Border}">
-            <Setter Property="CornerRadius" Value="5" />
-            <Setter Property="Margin" Value="3" />
-            <Setter Property="Background" Value="Gray" />
         </Style>
 
         <Style x:Key="buttonRound" TargetType="Button">
@@ -89,10 +77,10 @@
             <MenuItem Name="menuDevice">
                 <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" InputGestureText="Ctrl+U"/>
                 <Separator />
-                <MenuItem Name="menuToggleFullscreen" Click="MenuFullscreen_Click" />
+                <MenuItem Name="menuToggleFullscreen" Click="MenuFullscreen_Click" InputGestureText="Ctrl+F" />
                 <Separator />
-                <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGestureText="Ctrl-F4"/>
-                <MenuItem Name="menuExitProgram" Click="MenuExit_Click" InputGestureText="Alt-F4"/>
+                <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGestureText="Ctrl+F4"/>
+                <MenuItem Name="menuExitProgram" Click="MenuExit_Click" InputGestureText="Alt+F4"/>
             </MenuItem>
         </Menu>
 
@@ -102,8 +90,8 @@
                 <ColumnDefinition />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition />
-                <RowDefinition />
+                <RowDefinition Height="6 *" />
+                <RowDefinition Height="4 *" />
             </Grid.RowDefinitions>
 
             <!-- Display screen for IABP output e.g. waveform tracings, pressures, etc. -->
@@ -227,14 +215,13 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <!-- 1st Row: Operation Mode and Zero, Start, Standby -->
-                <Border Name="borderOperationMode" Style="{StaticResource borderControlsTop}"
-                        Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" />
-                <Border Name="borderStartStandBy" Style="{StaticResource borderControlsTop}"
-                        Grid.Column="3" Grid.Row="0" Grid.ColumnSpan="3" />
+                <!-- 1st Row: Operation Mode, Start, Standby -->
+                <Border Name="borderOperationMode" Style="{StaticResource borderControls}" Background="CornflowerBlue"
+                        Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" />
+                <Border Name="borderStartStandBy" Style="{StaticResource borderControls}" Background="CornflowerBlue"
+                        Grid.Column="4" Grid.Row="0" Grid.ColumnSpan="2" />
 
-
-                <Button Style="{StaticResource buttonRound}" Background="PowderBlue"
+                <Button Style="{StaticResource buttonRound}" Background="LightGreen"
                         Grid.Column="0" Grid.Row="0"
                         Click="ButtonModeAuto_Click">
                     <TextBlock Name="buttonModeAuto" Style="{StaticResource buttonTextBlock}" />
@@ -244,18 +231,6 @@
                         Grid.Column="1" Grid.Row="0"
                         Click="ButtonModeSemiAuto_Click">
                     <TextBlock Name="buttonModeSemiAuto" Style="{StaticResource buttonTextBlock}" />
-                </Button>
-
-                <Button Style="{StaticResource buttonRound}" Background="LightGray"
-                        Grid.Column="2" Grid.Row="0"
-                        Click="ButtonModeManual_Click">
-                    <TextBlock Name="buttonModeManual" Style="{StaticResource buttonTextBlock}" />
-                </Button>
-
-                <Button Style="{StaticResource buttonRound}" Background="PowderBlue"
-                        Grid.Column="3" Grid.Row="0"
-                        Click="ButtonZeroABP_Click">
-                    <TextBlock Name="buttonZero" Style="{StaticResource buttonTextBlock}" />
                 </Button>
 
                 <Button Style="{StaticResource buttonRound}" Background="LightGreen"
@@ -270,50 +245,43 @@
                     <TextBlock Name="buttonPause" Style="{StaticResource buttonTextBlock}" />
                 </Button>
 
-                <!-- 2nd Row: Trigger Source, Frequency, Augmentation, Inflation/Deflation -->
-                <Border Name="borderTrigger" Style="{StaticResource borderControlsMiddle}"
-                        Grid.Column="0" Grid.Row="1" />
-                <Border Name="borderFrequency" Style="{StaticResource borderControlsMiddle}"
-                        Grid.Column="1" Grid.Row="1" />
-                <Border Name="borderAugmentation" Style="{StaticResource borderControlsMiddle}"
-                        Grid.Column="2" Grid.Row="1" />
-                <Border Name="borderInflationDeflation" Style="{StaticResource borderControlsMiddle}"
-                        Grid.Column="3" Grid.Row="1" Grid.ColumnSpan="3" />
+                <!-- 2nd Row -->
+                <Border Name="borderTrigger" Style="{StaticResource borderControls}" Background="LightSkyBlue"
+                        Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" />
+                <Border Name="borderAugmentation" Style="{StaticResource borderControls}" Background="Gray"
+                        Grid.Column="4" Grid.Row="1" Grid.RowSpan="2" />
+                <Border Name="borderIncreaseDecrease" Style="{StaticResource borderControls}" Background="LightSkyBlue"
+                        Grid.Column="5" Grid.Row="1" Grid.RowSpan="2" />
 
                 <Button Style="{StaticResource buttonRound}" Background="PowderBlue"
                         Grid.Column="0" Grid.Row="1"
-                        Click="ButtonToggleTrigger_Click">
-                    <TextBlock Name="buttonToggleTrigger" Style="{StaticResource buttonTextBlock}" />
+                        Name="buttonTrigger" Click="ButtonTrigger_Click">
+                    <TextBlock Name="btntxtTrigger" Style="{StaticResource buttonTextBlock}" />
                 </Button>
 
                 <Button Style="{StaticResource buttonRound}" Background="PowderBlue"
                         Grid.Column="1" Grid.Row="1"
-                        Click="ButtonToggleFrequency_Click">
-                    <TextBlock Name="buttonToggleFrequency" Style="{StaticResource buttonTextBlock}" />
+                        Name="buttonFrequency" Click="ButtonFrequency_Click">
+                    <TextBlock Name="btntxtFrequency" Style="{StaticResource buttonTextBlock}" />
                 </Button>
 
-                <Button Style="{StaticResource buttonRound}" Background="LightGray"
-                        Grid.Column="2" Grid.Row="1"
-                        Content="..." />
-                <Button Style="{StaticResource buttonRound}" Background="LightGray"
-                        Grid.Column="3" Grid.Row="1"
-                        Content="..." />
-                <Button Style="{StaticResource buttonRound}" Background="LightGray"
+                <Button Style="{StaticResource buttonRound}" Background="LightSkyBlue"
                         Grid.Column="4" Grid.Row="1"
-                        Content="..." />
-                <Button Style="{StaticResource buttonRound}" Background="LightGray"
-                        Grid.Column="5" Grid.Row="1"
-                        Content="..." />
+                        Name="buttonAugmentationPressure" Click="ButtonAugmentationPressure_Click">
+                    <TextBlock Name="btntxtAugmentationPressure" Style="{StaticResource buttonTextBlock}" />
+                </Button>
 
-                <!-- 3rd Row: Options, Alarms, etc -->
-                <Border Name="borderSilenceFill" Style="{StaticResource borderControlsBottom}"
+                <Button Style="{StaticResource buttonRound}" Background="LightSkyBlue"
+                        Grid.Column="5" Grid.Row="1"
+                        Name="buttonIncrease" Click="ButtonIncrease_Click">
+                    <TextBlock Name="btntxtIncrease" Style="{StaticResource buttonTextBlock}" />
+                </Button>
+
+                <!-- 3rd Row -->
+                <Border Name="borderSilenceFill" Style="{StaticResource borderControls}" Background="Gray"
                         Grid.Column="0" Grid.Row="2" />
-                <Border Name="borderHelp" Style="{StaticResource borderControlsBottom}"
+                <Border Name="borderHelp" Style="{StaticResource borderControls}" Background="Gray"
                         Grid.Column="1" Grid.Row="2" />
-                <Border Name="borderOptions" Style="{StaticResource borderControlsBottom}"
-                        Grid.Column="2" Grid.Row="2" Grid.ColumnSpan="3" />
-                <Border Name="borderPausePrint" Style="{StaticResource borderControlsBottom}"
-                        Grid.Column="5" Grid.Row="2" />
 
                 <Button Style="{StaticResource buttonRound}" Background="PowderBlue"
                         Grid.Column="0" Grid.Row="2"
@@ -321,21 +289,24 @@
                     <TextBlock Name="buttonPrimeBalloon" Style="{StaticResource buttonTextBlock}" />
                 </Button>
 
-                <Button Style="{StaticResource buttonRound}" Background="LightGray"
+                <Button Style="{StaticResource buttonRound}" Background="PowderBlue"
                         Grid.Column="1" Grid.Row="2"
-                        Content="..." />
-                <Button Style="{StaticResource buttonRound}" Background="LightGray"
-                        Grid.Column="2" Grid.Row="2"
-                        Content="..." />
-                <Button Style="{StaticResource buttonRound}" Background="LightGray"
-                        Grid.Column="3" Grid.Row="2"
-                        Content="..." />
-                <Button Style="{StaticResource buttonRound}" Background="LightGray"
+                        Click="ButtonZeroABP_Click">
+                    <TextBlock Name="buttonZero" Style="{StaticResource buttonTextBlock}" />
+                </Button>
+
+                <Button Style="{StaticResource buttonRound}" Background="LightSkyBlue"
                         Grid.Column="4" Grid.Row="2"
-                        Content="..." />
-                <Button Style="{StaticResource buttonRound}" Background="LightGray"
+                        Name="buttonAugmentationAlarm" Click="ButtonAugmentationAlarm_Click">
+                    <TextBlock Name="btntxtAugmentationAlarm" Style="{StaticResource buttonTextBlock}" />
+                </Button>
+
+                <Button Style="{StaticResource buttonRound}" Background="LightSkyBlue"
                         Grid.Column="5" Grid.Row="2"
-                        Content="..." />
+                        Name="buttonDecrease" Click="ButtonDecrease_Click">
+                    <TextBlock Name="btntxtDecrease" Style="{StaticResource buttonTextBlock}" />
+                </Button>
+
             </Grid>
         </Grid>
 

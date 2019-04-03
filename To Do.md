@@ -1,11 +1,17 @@
 ﻿* Commit message:
-
-
+		
 
 
 * Next steps:
+	* IABP
+		- Factoring augmentaiton % into systolic augmentation
+		- Show augmentation as percentage (10% - 100%)
+		- Implement augmentation alarm (red text if below alarm limit?)
+		
+
 	* Defibrillator
 		- DeviceDefib layout
+	
 	* EFM
 		- DeviceEFM layout
 		- EFMTracing control
