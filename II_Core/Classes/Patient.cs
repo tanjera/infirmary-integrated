@@ -10,9 +10,10 @@ namespace II {
         /* Parameters for patient simulation, e.g. vital signs */
         // Vital Signs
         public int  HR, RR, ETCO2, SPO2, CVP,
-                    NSBP, NDBP, NMAP,
-                    ASBP, ADBP, AMAP,
-                    PSP, PDP, PMP;
+                    NSBP, NDBP, NMAP,               // Non-invasive blood pressures
+                    ASBP, ADBP, AMAP,               // Arterial line blood pressures
+                    PSP, PDP, PMP,                  // Pulmonary artery pressures
+                    IABP_AP, IABP_DBP, IABP_MAP;    // Intra-aortic balloon pump blood pressures
         public double T;
 
         // Cardiac Profile
@@ -33,12 +34,12 @@ namespace II {
 
         // IABP Settings (stored here for timing and propogation purposes)
         public int IABPFrequencyRatio = 1,
-                   IABPIteration_Count = 0;           // Buffer value to determine if current beat triggers IABP
-        public double IABPAugmentationPercent = 0.5;
+                   IABPIteration_Count = 0,           // Buffer value to determine if current beat triggers IABP
+                   IABPAugmentationAlarm = 100,       // Expressed as mmHg
+                   IABPAugmentation = 100;            // Expressed as % (e.g. 10%, 100%)
         public IABPTriggers IABPTrigger = new IABPTriggers ();
         public IABPModes IABPMode = new IABPModes ();
-        public bool IABPRunning = false, IABPPrimed = false,
-                    IABPAugmentationAlarm = true;
+        public bool IABPRunning = false, IABPPrimed = false;
 
         // Obstetric Profile
         public Intensity UCIntensity = new Intensity(),
@@ -222,8 +223,8 @@ namespace II {
                             case "TransducerZeroed_PA": TransducerZeroed_PA = bool.Parse (pValue); break;
 
                             case "IABPRatio": IABPFrequencyRatio = int.Parse (pValue); break;
-                            case "IABPAugmentationPercent": IABPAugmentationPercent = double.Parse (pValue); break;
-                            case "IABPAugmentationAlarm": IABPAugmentationAlarm = bool.Parse (pValue); break;
+                            case "IABPAugmentationPercent": IABPAugmentation = int.Parse (pValue); break;
+                            case "IABPAugmentationAlarm": IABPAugmentationAlarm = int.Parse (pValue); break;
                             case "IABPTrigger": IABPTrigger.Value = (IABPTriggers.Values)Enum.Parse (typeof (IABPTriggers.Values), pValue); break;
                             case "IABPMode": IABPMode.Value = (IABPModes.Values)Enum.Parse (typeof (IABPModes.Values), pValue); break;
                             case "IABPRunning": IABPRunning = bool.Parse (pValue); break;
@@ -290,7 +291,7 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_PA", TransducerZeroed_PA));
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "IABPRatio", IABPFrequencyRatio));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "IABPAugmentationPercent", IABPAugmentationPercent));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "IABPAugmentation", IABPAugmentation));
             sWrite.AppendLine (String.Format ("{0}:{1}", "IABPAugmentationAlarm", IABPAugmentationAlarm));
             sWrite.AppendLine (String.Format ("{0}:{1}", "IABPTrigger", IABPTrigger.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "IABPMode", IABPMode.Value));

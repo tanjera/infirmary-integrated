@@ -134,13 +134,10 @@ namespace II_Windows {
             lblTubingStatus.Text = Dictionary [App.Patient.IABPPrimed ? "IABP:Primed" : "IABP:NotPrimed"];
 
             lblAugmentationAlarm.Text = Utility.WrapString (String.Format ("{0}: {1}",
-                Dictionary ["IABP:AugmentationAlarm"],
-                Dictionary [App.Patient.IABPAugmentationAlarm ? "BOOLEAN:On" : "BOOLEAN:Off"]));
+                Dictionary ["IABP:AugmentationAlarm"], App.Patient.IABPAugmentationAlarm));
 
             lblAugmentationPressure.Text = (!App.Patient.IABPRunning || !App.Patient.TransducerZeroed_ABP
-                ? "0"
-                : String.Format ("{0:0}", Utility.RandomPercentRange (
-                    (App.Patient.ASBP + (App.Patient.ASBP * App.Patient.IABPAugmentationPercent * 0.5)), 0.02f)));
+                ? "" : String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.IABP_AP, 0.02f)));
         }
 
         public void Load_Process (string inc) {
@@ -211,11 +208,6 @@ namespace II_Windows {
 
         private void StartDevice () {
             PrimeBalloon ();
-
-            if (App.Patient.IABPTrigger.Value == Patient.IABPTriggers.Values.Pressure
-                && !App.Patient.TransducerZeroed_ABP)
-                return;
-
             App.Patient.IABPRunning = true;
             UpdateInterface ();
         }
@@ -280,6 +272,14 @@ namespace II_Windows {
                     App.Patient.IABPTrigger.Value = (Patient.IABPTriggers.Values)enumValues.GetValue (Utility.Clamp((int)App.Patient.IABPTrigger.Value + 1, 0, enumValues.Length - 1));
                     PauseDevice ();
                     break;
+
+                case IABPSettings.AugmentationPressure:
+                    App.Patient.IABPAugmentation = Utility.Clamp (App.Patient.IABPAugmentation + 10, 0, 100);
+                    break;
+
+                case IABPSettings.AugmentationAlarm:
+                    App.Patient.IABPAugmentationAlarm = Utility.Clamp (App.Patient.IABPAugmentationAlarm + 5, 0, 300);
+                    break;
             }
 
             UpdateInterface ();
@@ -296,6 +296,14 @@ namespace II_Windows {
                     Array enumValues = Enum.GetValues (typeof (Patient.IABPTriggers.Values));
                     App.Patient.IABPTrigger.Value = (Patient.IABPTriggers.Values)enumValues.GetValue (Utility.Clamp((int)App.Patient.IABPTrigger.Value - 1, 0, enumValues.Length - 1));
                     PauseDevice ();
+                    break;
+
+                case IABPSettings.AugmentationPressure:
+                    App.Patient.IABPAugmentation = Utility.Clamp (App.Patient.IABPAugmentation - 10, 0, 100);
+                    break;
+
+                case IABPSettings.AugmentationAlarm:
+                    App.Patient.IABPAugmentationAlarm = Utility.Clamp (App.Patient.IABPAugmentationAlarm - 5, 0, 300);
                     break;
             }
 
@@ -330,6 +338,17 @@ namespace II_Windows {
         private void OnTick_Vitals (object sender, EventArgs e) {
             if (isPaused)
                 return;
+
+            // Re-calculate IABP-specific vital signs (augmentation pressure and augmentation-assisted MAP)
+            if (App.Patient.IABPRunning) {
+                App.Patient.IABP_DBP = Utility.Clamp (App.Patient.ADBP - 7, 0, 1000);
+                App.Patient.IABP_AP = (int)(App.Patient.ASBP + (App.Patient.ASBP * 0.3f * (App.Patient.IABPAugmentation * 0.01f)));
+                App.Patient.IABP_MAP = App.Patient.IABP_DBP + ((App.Patient.IABP_AP - App.Patient.IABP_DBP) / 2);
+            } else {    // Use arterial line pressures if the balloon isn't actively pumping
+                App.Patient.IABP_DBP = App.Patient.ADBP;
+                App.Patient.IABP_AP = 0;
+                App.Patient.IABP_MAP = App.Patient.AMAP;
+            }
 
             UpdateInterface ();
 

@@ -1,12 +1,11 @@
 ﻿* Commit message:
-		
+
 
 
 * Next steps:
 	* IABP
-		- Factoring augmentaiton % into systolic augmentation
-		- Show augmentation as percentage (10% - 100%)
-		- Implement augmentation alarm (red text if below alarm limit?)
+		** Show augmentation as percentage (10% - 100%)
+		* Implement augmentation alarm (red text if below alarm limit?)
 		
 
 	* Defibrillator
@@ -21,6 +20,11 @@
 			- Perinatology EFM: http://perinatology.com/Fetal%20Monitoring/Intrapartum%20Monitoring.htm
 			- 3-Tier FHR Interpretation: https://perinatalweb.org/themes/wapc/assets/docs/three%20tiered,%20three%20category%20fhr%20interpretation%20system%20_july,%202010_.pdf
 
+
+* Long-term to-do:
+
+	- DeviceIABP
+		- Add timer for delays (e.g. priming balloon takes 10 seconds)
 
 	- Splash screen?
 		- Compiler #if release version only...

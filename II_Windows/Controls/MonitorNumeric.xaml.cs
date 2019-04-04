@@ -190,8 +190,7 @@ namespace II_Windows.Controls {
                     if (App.Patient.TransducerZeroed_ABP) {
                         lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.ASBP, 0.02f));
                         lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (
-                            (!App.Patient.IABPThisBeat ? App.Patient.ADBP : Utility.Clamp (App.Patient.ADBP - 15, 0, 1000)),
-                            0.02f));
+                            (App.Patient.IABPRunning ? App.Patient.ADBP : App.Patient.IABP_DBP), 0.02f));
                         lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.AMAP, 0.02f));
                     } else {
                         lblLine1.Text = Utility.WrapString(App.Language.Dictionary["NUMERIC:ZeroTransducer"]);

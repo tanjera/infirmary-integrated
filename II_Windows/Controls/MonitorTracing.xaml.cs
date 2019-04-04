@@ -114,29 +114,13 @@ namespace II_Windows.Controls {
         public void Unpause () => wfStrip.Unpause ();
         public void ClearFuture () => wfStrip.ClearFuture ();
         public void Add_Beat__Cardiac_Baseline (Patient P) => wfStrip.Add_Beat__Cardiac_Baseline (P);
-        public void Add_Beat__Cardiac_Atrial (Patient P) {
-            if (Lead.IsTransduced () && !Leads.IsZeroed (Lead.Value, P))
-                return;
-            else
-                wfStrip.Add_Beat__Cardiac_Atrial (P);
-        }
-        public void Add_Beat__Cardiac_Ventricular (Patient P) {
-            if (Lead.IsTransduced () && !Leads.IsZeroed (Lead.Value, P))
-                return;
-            else
-                wfStrip.Add_Beat__Cardiac_Ventricular (P);
-        }
+        public void Add_Beat__Cardiac_Atrial (Patient P) => wfStrip.Add_Beat__Cardiac_Atrial (P);
+        public void Add_Beat__Cardiac_Ventricular (Patient P) => wfStrip.Add_Beat__Cardiac_Ventricular (P);
         public void Add_Beat__Respiratory_Baseline (Patient P) => wfStrip.Add_Beat__Respiratory_Baseline (P);
         public void Add_Beat__Respiratory_Inspiration (Patient P) => wfStrip.Add_Beat__Respiratory_Inspiration (P);
         public void Add_Beat__Respiratory_Expiration (Patient P) => wfStrip.Add_Beat__Respiratory_Expiration (P);
 
         public void Draw () {
-            if (Lead.IsTransduced () && !Leads.IsZeroed (Lead.Value, App.Patient)) {
-                wfStrip.Reset ();
-                canvasTracing.Children.Clear ();
-                return;
-            }
-
             drawXOffset = 0;
             drawYOffset = (int)canvasTracing.ActualHeight / 2;
             drawXMultiplier = (int)canvasTracing.ActualWidth / wfStrip.lengthSeconds;
