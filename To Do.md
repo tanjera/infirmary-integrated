@@ -2,15 +2,12 @@
 
 
 
+
 * Next steps:
-	* IABP
-		** Show augmentation as percentage (10% - 100%)
-		* Implement augmentation alarm (red text if below alarm limit?)
-		
 
 	* Defibrillator
 		- DeviceDefib layout
-	
+
 	* EFM
 		- DeviceEFM layout
 		- EFMTracing control
@@ -36,7 +33,7 @@
 
 * To debug:
 
-* Known bugs:	
+* Known bugs:
 
 
 * Versions and features to implement:

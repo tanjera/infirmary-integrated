@@ -328,9 +328,12 @@ namespace II.Localization {
             {"CM:WindowTitle",                                            "Infirmary Integrated: Cardiac Monitor"},
             {"ECG:WindowTitle",                                           "Infirmary Integrated: Electrocardiogram"},
             {"IABP:WindowTitle",                                          "Infirmary Integrated: Intra-aortic Balloon Pump"},
+            {"IABP:Augmentation",                                         "Augmentation"},
             {"IABP:AugmentationAlarm",                                    "Augmentation Alarm"},
             {"IABP:AugmentationPressure",                                 "Augmentation Pressure"},
-            {"IABP:HeliumTank",                                           "Helium Tank"},
+            {"IABP:Alarm",                                                "Alarm"},
+            {"IABP:Pressure",                                             "Pressure"},
+            {"IABP:Helium",                                               "Helium"},
             {"IABP:Paused",                                               "Paused"},
             {"IABP:Running",                                              "Running"},
             {"IABP:Primed",                                               "Primed"},
@@ -371,6 +374,7 @@ namespace II.Localization {
             {"NUMERIC:ABP",                                               "Arterial Blood Pressure"},
             {"NUMERIC:CVP",                                               "Central Venous Pressure"},
             {"NUMERIC:PA",                                                "Pulmonary Artery Pressure"},
+            {"NUMERIC:IABP_AP",                                           "Augmentation Pressure"},
             {"NUMERIC:ZeroTransducer",                                    "Zero Transducer"},
             {"TRACING:ECG",                                               "Electrocardiograph"},
             {"LEAD:SPO2",                                                 "Pulse Oximetry"},
@@ -414,7 +418,6 @@ namespace II.Localization {
             {"LANG:LanguageSelection",                                    "Language Selection"},
             {"LANG:ChooseLanguage",                                       "Please choose your language:"},
         };
-
 
         static Dictionary<string, string> ESP = new Dictionary<string, string> () {
             {"BUTTON:Continue",                                           "Continuar"},

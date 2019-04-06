@@ -29,7 +29,7 @@ namespace II_Windows.Controls {
             public ControlType (Values v) { Value = v; }
 
             public enum Values {
-                ECG, ABP
+                ECG, ABP, IABP_AP
             }
 
             public static string LookupString (Values value) {
@@ -48,7 +48,8 @@ namespace II_Windows.Controls {
 
             public static Brush [] Coloring = new Brush [] {
                 Brushes.Green,
-                Brushes.Red
+                Brushes.Red,
+                Brushes.SkyBlue
             };
         }
 
@@ -78,6 +79,7 @@ namespace II_Windows.Controls {
             switch (controlType.Value) {
                 default:
                 case ControlType.Values.ABP:
+                case ControlType.Values.IABP_AP:
                     break;
 
                 case ControlType.Values.ECG:
@@ -109,6 +111,19 @@ namespace II_Windows.Controls {
                         lblLine2.Text = "";
                         lblLine3.Text = "";
                     }
+                    break;
+
+                case ControlType.Values.IABP_AP:
+                    // Flash augmentation pressure reading if below alarm limit
+                    lblLine1.Foreground = App.Patient.IABP_AP < App.Patient.IABPAugmentationAlarm
+                        ? (lblLine1.Foreground == Brushes.Red ? Brushes.SkyBlue : Brushes.Red)
+                        : Brushes.SkyBlue;
+
+                    lblLine1.Text = App.Patient.IABPRunning ? String.Format ("{0:0}", App.Patient.IABP_AP) : "";
+
+                    lblLine2.Text = String.Format ("{0:0}%", App.Patient.IABPAugmentation);
+                    lblLine3.Text = String.Format ("{0}: {1:0}", App.Language.Dictionary ["IABP:Alarm"],
+                        App.Patient.IABPAugmentationAlarm);
                     break;
             }
         }

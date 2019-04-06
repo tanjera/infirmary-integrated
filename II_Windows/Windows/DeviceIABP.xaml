@@ -128,32 +128,32 @@
                         <Viewbox Style="{StaticResource numericViewbox}" Margin="5, 15"
                                  Grid.Row="0" Grid.Column="0" >
                             <TextBlock Name="lblTriggerSource" Style="{StaticResource numericTextBlock}"
-                                       FontWeight="Bold" Foreground="White" />
+                                       FontSize="35" FontWeight="Bold" Foreground="White" />
                         </Viewbox>
                         <Viewbox Style="{StaticResource numericViewbox}" Margin="5, 15"
                                  Grid.Row="1" Grid.Column="0" >
                             <TextBlock Name="lblOperationMode" Style="{StaticResource numericTextBlock}"
-                                       FontWeight="Bold" Foreground="Orange" />
+                                       FontSize="35" FontWeight="Bold" Foreground="Aqua" />
                         </Viewbox>
                         <Viewbox Style="{StaticResource numericViewbox}" Margin="5, 15"
                                  Grid.Row="2" Grid.Column="0" >
                             <TextBlock Name="lblFrequency" Style="{StaticResource numericTextBlock}"
-                                       FontWeight="Bold" Foreground="Orange" />
+                                       FontSize="35" FontWeight="Bold" Foreground="Aqua" />
                         </Viewbox>
                         <Viewbox Style="{StaticResource numericViewbox}" Margin="5, 15"
                                  Grid.Row="3" Grid.Column="0" >
                             <TextBlock Name="lblMachineStatus" Style="{StaticResource numericTextBlock}"
-                                       FontWeight="Bold" Foreground="Orange" />
+                                       FontSize="25" FontWeight="Bold" Foreground="Aqua" />
                         </Viewbox>
                         <Viewbox Style="{StaticResource numericViewbox}" Margin="5, 10"
                                  Grid.Row="4" Grid.Column="0" >
                             <TextBlock Name="lblTubingStatus" Style="{StaticResource numericTextBlock}"
-                                       Foreground="SeaGreen" />
+                                       FontSize="25" Foreground="SeaGreen" />
                         </Viewbox>
                         <Viewbox Style="{StaticResource numericViewbox}" Margin="5, 10"
                                  Grid.Row="5" Grid.Column="0" >
-                            <TextBlock Name="lblHeliumTank" Style="{StaticResource numericTextBlock}"
-                                       Foreground="MediumPurple" />
+                            <TextBlock Name="lblHelium" Style="{StaticResource numericTextBlock}"
+                                       FontSize="25" Foreground="MediumPurple" />
                         </Viewbox>
                     </Grid>
                 </Border>
@@ -163,39 +163,6 @@
                 <!-- IABPTracing of ECG strip top center, IABPNumeric top right -->
                 <!-- IABPTracing of ABP strip middle center, IABPNumeric middle right -->
                 <!-- IABPTracing of IABP Balloon strip bottom center -->
-
-                <!-- IABP Augmentation Pressure and Augmentation Alarm -->
-                <Border Margin="5" BorderBrush="SkyBlue" BorderThickness="0.5" CornerRadius="5"
-                        Grid.Column="2" Grid.Row="2">
-
-                    <Grid Name="layoutAugmentation" Background="Black">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition />
-                        </Grid.ColumnDefinitions>
-
-                        <Viewbox Style="{StaticResource numericViewbox}"
-                                 Grid.Row="0" Grid.Column="0" >
-                            <TextBlock Name="lblAugmentationLabel" Style="{StaticResource numericTextBlock}"
-                                       FontSize="10" FontWeight="Bold" Foreground="SkyBlue" />
-                        </Viewbox>
-                        <Viewbox Style="{StaticResource numericViewbox}"
-                                 Grid.Row="1" Grid.Column="0" >
-                            <TextBlock Name="lblAugmentationPressure" Style="{StaticResource numericTextBlock}"
-                                       FontSize="30" FontWeight="Bold" Foreground="SkyBlue" />
-                        </Viewbox>
-                        <Viewbox Style="{StaticResource numericViewbox}"
-                                 Grid.Row="2" Grid.Column="0" >
-                            <TextBlock Name="lblAugmentationAlarm" Style="{StaticResource numericTextBlock}"
-                                       FontSize="10" FontWeight="Bold" Foreground="SkyBlue" />
-                        </Viewbox>
-                    </Grid>
-                </Border>
-
             </Grid>
 
             <!-- Control panel for IABP e.g. operation mode, trigger selection, etc. -->

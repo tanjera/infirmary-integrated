@@ -84,8 +84,6 @@ namespace II_Windows {
             menuCloseDevice.Header = Dictionary["MENU:MenuCloseDevice"];
             menuExitProgram.Header = Dictionary["MENU:MenuExitProgram"];
 
-            lblAugmentationLabel.Text = Utility.WrapString(Dictionary["IABP:AugmentationPressure"]);
-
             buttonModeAuto.Text = Dictionary["IABPMODE:Auto"];
             buttonModeSemiAuto.Text = Dictionary["IABPMODE:SemiAuto"];
             buttonZero.Text = Utility.WrapString(Dictionary["IABPBUTTON:ZeroPressure"]);
@@ -100,8 +98,8 @@ namespace II_Windows {
             btntxtDecrease.Text = Utility.WrapString (Dictionary ["IABPBUTTON:Decrease"]);
 
             // Random helium tank remaining amount... it's for show!
-            lblHeliumTank.Text = String.Format ("{0}: {1:0}%",
-                Utility.WrapString (Dictionary ["IABP:HeliumTank"]),
+            lblHelium.Text = String.Format ("{0}: {1:0}%",
+                Utility.WrapString (Dictionary ["IABP:Helium"]),
                 Utility.RandomDouble (20, 80));
 
             // Instantiate and add Tracings to UI
@@ -117,6 +115,7 @@ namespace II_Windows {
             // Instantiate and add Numerics to UI
             listNumerics.Add (new Controls.IABPNumeric (Controls.IABPNumeric.ControlType.Values.ECG));
             listNumerics.Add (new Controls.IABPNumeric (Controls.IABPNumeric.ControlType.Values.ABP));
+            listNumerics.Add (new Controls.IABPNumeric (Controls.IABPNumeric.ControlType.Values.IABP_AP));
             for (int i = 0; i < listNumerics.Count; i++) {
                 listNumerics [i].SetValue (Grid.RowProperty, i);
                 listNumerics [i].SetValue (Grid.ColumnProperty, 2);
@@ -132,12 +131,6 @@ namespace II_Windows {
             lblFrequency.Text = String.Format ("1 : {0}", App.Patient.IABPFrequencyRatio);
             lblMachineStatus.Text = Dictionary [App.Patient.IABPRunning ? "IABP:Running" : "IABP:Paused"];
             lblTubingStatus.Text = Dictionary [App.Patient.IABPPrimed ? "IABP:Primed" : "IABP:NotPrimed"];
-
-            lblAugmentationAlarm.Text = Utility.WrapString (String.Format ("{0}: {1}",
-                Dictionary ["IABP:AugmentationAlarm"], App.Patient.IABPAugmentationAlarm));
-
-            lblAugmentationPressure.Text = (!App.Patient.IABPRunning || !App.Patient.TransducerZeroed_ABP
-                ? "" : String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.IABP_AP, 0.02f)));
         }
 
         public void Load_Process (string inc) {
@@ -265,24 +258,25 @@ namespace II_Windows {
                 default: return;
                 case IABPSettings.Frequency:
                     App.Patient.IABPFrequencyRatio = Utility.Clamp (App.Patient.IABPFrequencyRatio + 1, 1, 3);
-                    break;
+                    return;
 
                 case IABPSettings.Trigger:
                     Array enumValues = Enum.GetValues (typeof (Patient.IABPTriggers.Values));
                     App.Patient.IABPTrigger.Value = (Patient.IABPTriggers.Values)enumValues.GetValue (Utility.Clamp((int)App.Patient.IABPTrigger.Value + 1, 0, enumValues.Length - 1));
                     PauseDevice ();
-                    break;
+                    UpdateInterface ();
+                    return;
 
                 case IABPSettings.AugmentationPressure:
                     App.Patient.IABPAugmentation = Utility.Clamp (App.Patient.IABPAugmentation + 10, 0, 100);
-                    break;
+                    listNumerics.Find (o => o.controlType.Value == Controls.IABPNumeric.ControlType.Values.IABP_AP).UpdateVitals ();
+                    return;
 
                 case IABPSettings.AugmentationAlarm:
                     App.Patient.IABPAugmentationAlarm = Utility.Clamp (App.Patient.IABPAugmentationAlarm + 5, 0, 300);
-                    break;
+                    listNumerics.Find (o => o.controlType.Value == Controls.IABPNumeric.ControlType.Values.IABP_AP).UpdateVitals ();
+                    return;
             }
-
-            UpdateInterface ();
         }
 
         private void ButtonDecrease_Click (object s, RoutedEventArgs e) {
@@ -290,24 +284,26 @@ namespace II_Windows {
                 default: return;
                 case IABPSettings.Frequency:
                     App.Patient.IABPFrequencyRatio = Utility.Clamp (App.Patient.IABPFrequencyRatio - 1, 1, 3);
-                    break;
+                    UpdateInterface ();
+                    return;
 
                 case IABPSettings.Trigger:
                     Array enumValues = Enum.GetValues (typeof (Patient.IABPTriggers.Values));
                     App.Patient.IABPTrigger.Value = (Patient.IABPTriggers.Values)enumValues.GetValue (Utility.Clamp((int)App.Patient.IABPTrigger.Value - 1, 0, enumValues.Length - 1));
                     PauseDevice ();
-                    break;
+                    UpdateInterface ();
+                    return;
 
                 case IABPSettings.AugmentationPressure:
                     App.Patient.IABPAugmentation = Utility.Clamp (App.Patient.IABPAugmentation - 10, 0, 100);
-                    break;
+                    listNumerics.Find (o => o.controlType.Value == Controls.IABPNumeric.ControlType.Values.IABP_AP).UpdateVitals ();
+                    return;
 
                 case IABPSettings.AugmentationAlarm:
                     App.Patient.IABPAugmentationAlarm = Utility.Clamp (App.Patient.IABPAugmentationAlarm - 5, 0, 300);
-                    break;
+                    listNumerics.Find (o => o.controlType.Value == Controls.IABPNumeric.ControlType.Values.IABP_AP).UpdateVitals ();
+                    return;
             }
-
-            UpdateInterface ();
         }
 
         private void ButtonStart_Click (object s, RoutedEventArgs e) => StartDevice ();
