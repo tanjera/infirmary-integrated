@@ -243,7 +243,7 @@ namespace II.Localization {
             {"LANG:ChooseLanguage",                                       "Bitte wähle deine Sprache:"},
         };
 
-        static Dictionary<string, string> ENU = new Dictionary<string, string> () {
+        static Dictionary<string, string> ENU = new Dictionary<string, string>() {
             {"BUTTON:Continue",                                           "Continue"},
             {"BUTTON:ApplyChanges",                                       "Apply Changes"},
             {"BUTTON:ResetParameters",                                    "Reset Parameters"},
@@ -328,6 +328,29 @@ namespace II.Localization {
             {"CM:WindowTitle",                                            "Infirmary Integrated: Cardiac Monitor"},
             {"ECG:WindowTitle",                                           "Infirmary Integrated: Electrocardiogram"},
             {"IABP:WindowTitle",                                          "Infirmary Integrated: Intra-aortic Balloon Pump"},
+            {"DEFIB:WindowTitle",                                         "Infirmary Integrated: Defibrillator"},
+            {"DEFIB:On",                                                  "On"},
+            {"DEFIB:Increase",                                            "+"},
+            {"DEFIB:Decrease",                                            "-"},
+            {"DEFIB:EnergyAmount",                                        "Energy Amount"},
+            {"DEFIB:Charge",                                              "Charge"},
+            {"DEFIB:Shock",                                               "Shock"},
+            {"DEFIB:AutomaticMode",                                       "AED Mode"},
+            {"DEFIB:Analyze",                                             "Analyze"},
+            {"DEFIB:Sync",                                                "Sync"},
+            {"DEFIB:Pacer",                                               "Pacer"},
+            {"DEFIB:Rate",                                                "Rate"},
+            {"DEFIB:Pause",                                               "Pause"},
+            {"DEFIB:Defibrillation",                                      "Defibrillation"},
+            {"DEFIB:Synchronized",                                        "Synchronized"},
+            {"DEFIB:Pacing",                                              "Pacing"},
+            {"DEFIB:Joules",                                              "J"},
+            {"DEFIB:Milliamps",                                           "mA"},
+            {"DEFIB:StandClear",                                          "Stand Clear"},
+            {"DEFIB:Analyzing",                                           "Analyzing"},
+            {"DEFIB:ShockAdvised",                                        "Shock Advised"},
+            {"DEFIB:NoShockAdvised",                                      "No Shock Advised"},
+            {"DEFIB:ContinueCPR",                                         "Continue CPR"},
             {"IABP:Augmentation",                                         "Augmentation"},
             {"IABP:AugmentationAlarm",                                    "Augmentation Alarm"},
             {"IABP:AugmentationPressure",                                 "Augmentation Pressure"},
@@ -375,6 +398,7 @@ namespace II.Localization {
             {"NUMERIC:CVP",                                               "Central Venous Pressure"},
             {"NUMERIC:PA",                                                "Pulmonary Artery Pressure"},
             {"NUMERIC:IABP_AP",                                           "Augmentation Pressure"},
+            {"NUMERIC:DEFIB",                                             "Defibrillator Settings"},
             {"NUMERIC:ZeroTransducer",                                    "Zero Transducer"},
             {"TRACING:ECG",                                               "Electrocardiograph"},
             {"LEAD:SPO2",                                                 "Pulse Oximetry"},
@@ -418,6 +442,7 @@ namespace II.Localization {
             {"LANG:LanguageSelection",                                    "Language Selection"},
             {"LANG:ChooseLanguage",                                       "Please choose your language:"},
         };
+
 
         static Dictionary<string, string> ESP = new Dictionary<string, string> () {
             {"BUTTON:Continue",                                           "Continuar"},

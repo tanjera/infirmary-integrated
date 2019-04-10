@@ -24,7 +24,7 @@ namespace II_Windows {
     /// </summary>
     public partial class DeviceIABP : Window {
 
-        public enum IABPSettings {
+        public enum Settings {
             None,
             Trigger,
             Frequency,
@@ -32,7 +32,49 @@ namespace II_Windows {
             AugmentationAlarm
         }
 
-        public IABPSettings SelectedSetting = IABPSettings.None;
+#pragma warning disable CS0108 // Member hides inherited member; missing new keyword
+        public class Triggers
+#pragma warning restore CS0108 // Member hides inherited member; missing new keyword
+        {
+            public Values Value;
+            public enum Values { ECG, Pressure }
+
+            public Triggers(Values v) { Value = v; }
+            public Triggers() { Value = Values.ECG; }
+
+            public string LookupString() => LookupString(Value);
+            public static string LookupString(Values v)
+            {
+                return String.Format("IABPTRIGGER:{0}", Enum.GetValues(typeof(Values)).GetValue((int)v).ToString());
+            }
+        }
+
+        public class Modes
+        {
+            public Values Value;
+            public enum Values { Auto, SemiAuto }
+
+            public Modes(Values v) { Value = v; }
+            public Modes() { Value = Values.Auto; }
+
+            public string LookupString() => LookupString(Value);
+            public static string LookupString(Values v)
+            {
+                return String.Format("IABPMODE:{0}", Enum.GetValues(typeof(Values)).GetValue((int)v).ToString());
+            }
+        }
+
+        // Device settings
+        public int Frequency = 1,
+                   Frequency_Iter = 0,              // Buffer value to determine if current beat triggers IABP
+                   Augmentation = 100,              // Expressed as % (e.g. 10%, 100%)
+                   AugmentationAlarm = 100;         // Expressed as mmHg
+
+        public Triggers Trigger = new Triggers();
+        public Modes Mode = new Modes();
+        public bool Running = false, Primed = false;
+
+        public Settings SelectedSetting = Settings.None;
 
         bool isFullscreen = false,
              isPaused = false;
@@ -126,11 +168,11 @@ namespace II_Windows {
         private void UpdateInterface () {
             var Dictionary = App.Language.Dictionary;
 
-            lblTriggerSource.Text = Dictionary [App.Patient.IABPTrigger.LookupString ()];
-            lblOperationMode.Text = Dictionary [App.Patient.IABPMode.LookupString ()];
-            lblFrequency.Text = String.Format ("1 : {0}", App.Patient.IABPFrequencyRatio);
-            lblMachineStatus.Text = Dictionary [App.Patient.IABPRunning ? "IABP:Running" : "IABP:Paused"];
-            lblTubingStatus.Text = Dictionary [App.Patient.IABPPrimed ? "IABP:Primed" : "IABP:NotPrimed"];
+            lblTriggerSource.Text = Dictionary [Trigger.LookupString ()];
+            lblOperationMode.Text = Dictionary [Mode.LookupString ()];
+            lblFrequency.Text = String.Format ("1 : {0}", Frequency);
+            lblMachineStatus.Text = Dictionary [Running ? "IABP:Running" : "IABP:Paused"];
+            lblTubingStatus.Text = Dictionary [Primed ? "IABP:Primed" : "IABP:NotPrimed"];
         }
 
         public void Load_Process (string inc) {
@@ -146,6 +188,14 @@ namespace II_Windows {
                             default: break;
                             case "isPaused": isPaused = bool.Parse (pValue); break;
                             case "isFullscreen": isFullscreen = bool.Parse (pValue); break;
+
+                            case "Frequency": Frequency = int.Parse(pValue); break;
+                            case "Augmentation": Augmentation = int.Parse(pValue); break;
+                            case "AugmentationAlarm": AugmentationAlarm = int.Parse(pValue); break;
+                            case "Trigger": Trigger.Value = (Triggers.Values)Enum.Parse(typeof(Triggers.Values), pValue); break;
+                            case "Mode": Mode.Value = (Modes.Values)Enum.Parse(typeof(Modes.Values), pValue); break;
+                            case "Running": Running = bool.Parse(pValue); break;
+                            case "Primed": Primed = bool.Parse(pValue); break;
                         }
                     }
                 }
@@ -162,6 +212,14 @@ namespace II_Windows {
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", isPaused));
             sWrite.AppendLine (String.Format ("{0}:{1}", "isFullscreen", isFullscreen));
+
+            sWrite.AppendLine(String.Format("{0}:{1}", "Frequency", Frequency));
+            sWrite.AppendLine(String.Format("{0}:{1}", "Augmentation", Augmentation));
+            sWrite.AppendLine(String.Format("{0}:{1}", "AugmentationAlarm", AugmentationAlarm));
+            sWrite.AppendLine(String.Format("{0}:{1}", "Trigger", Trigger.Value));
+            sWrite.AppendLine(String.Format("{0}:{1}", "Mode", Mode.Value));
+            sWrite.AppendLine(String.Format("{0}:{1}", "Running", Running));
+            sWrite.AppendLine(String.Format("{0}:{1}", "Primed", Primed));
 
             return sWrite.ToString ();
         }
@@ -201,48 +259,48 @@ namespace II_Windows {
 
         private void StartDevice () {
             PrimeBalloon ();
-            App.Patient.IABPRunning = true;
+            Running = true;
             UpdateInterface ();
         }
 
         private void PauseDevice() {
-            App.Patient.IABPRunning = false;
+            Running = false;
             UpdateInterface ();
         }
 
         private void PrimeBalloon () {
-            App.Patient.IABPPrimed = true;
+            Primed = true;
             UpdateInterface ();
         }
 
-        private void SetOperationMode(Patient.IABPModes.Values value) {
-            App.Patient.IABPMode.Value = value;
+        private void SetOperationMode(Modes.Values value) {
+            Mode.Value = value;
             PauseDevice ();
         }
 
-        private void SelectSetting (IABPSettings s) {
+        private void SelectSetting (Settings s) {
             buttonTrigger.Background = System.Windows.Media.Brushes.PowderBlue;
             buttonFrequency.Background = System.Windows.Media.Brushes.PowderBlue;
             buttonAugmentationPressure.Background = System.Windows.Media.Brushes.LightSkyBlue;
             buttonAugmentationAlarm.Background = System.Windows.Media.Brushes.LightSkyBlue;
 
             if (SelectedSetting == s)
-                SelectedSetting = IABPSettings.None;
+                SelectedSetting = Settings.None;
             else
                 SelectedSetting = s;
 
             switch (SelectedSetting) {
                 default: return;
-                case IABPSettings.Trigger:
+                case Settings.Trigger:
                     buttonTrigger.Background = System.Windows.Media.Brushes.Yellow;
                     return;
-                case IABPSettings.Frequency:
+                case Settings.Frequency:
                     buttonFrequency.Background = System.Windows.Media.Brushes.Yellow;
                     return;
-                case IABPSettings.AugmentationPressure:
+                case Settings.AugmentationPressure:
                     buttonAugmentationPressure.Background = System.Windows.Media.Brushes.Yellow;
                     return;
-                case IABPSettings.AugmentationAlarm:
+                case Settings.AugmentationAlarm:
                     buttonAugmentationAlarm.Background = System.Windows.Media.Brushes.Yellow;
                     return;
             }
@@ -256,24 +314,24 @@ namespace II_Windows {
         private void ButtonIncrease_Click (object s, RoutedEventArgs e) {
             switch (SelectedSetting) {
                 default: return;
-                case IABPSettings.Frequency:
-                    App.Patient.IABPFrequencyRatio = Utility.Clamp (App.Patient.IABPFrequencyRatio + 1, 1, 3);
+                case Settings.Frequency:
+                    Frequency = Utility.Clamp (Frequency + 1, 1, 3);
                     return;
 
-                case IABPSettings.Trigger:
-                    Array enumValues = Enum.GetValues (typeof (Patient.IABPTriggers.Values));
-                    App.Patient.IABPTrigger.Value = (Patient.IABPTriggers.Values)enumValues.GetValue (Utility.Clamp((int)App.Patient.IABPTrigger.Value + 1, 0, enumValues.Length - 1));
+                case Settings.Trigger:
+                    Array enumValues = Enum.GetValues (typeof (Triggers.Values));
+                    Trigger.Value = (Triggers.Values)enumValues.GetValue (Utility.Clamp((int)Trigger.Value + 1, 0, enumValues.Length - 1));
                     PauseDevice ();
                     UpdateInterface ();
                     return;
 
-                case IABPSettings.AugmentationPressure:
-                    App.Patient.IABPAugmentation = Utility.Clamp (App.Patient.IABPAugmentation + 10, 0, 100);
+                case Settings.AugmentationPressure:
+                    Augmentation = Utility.Clamp (Augmentation + 10, 0, 100);
                     listNumerics.Find (o => o.controlType.Value == Controls.IABPNumeric.ControlType.Values.IABP_AP).UpdateVitals ();
                     return;
 
-                case IABPSettings.AugmentationAlarm:
-                    App.Patient.IABPAugmentationAlarm = Utility.Clamp (App.Patient.IABPAugmentationAlarm + 5, 0, 300);
+                case Settings.AugmentationAlarm:
+                    AugmentationAlarm = Utility.Clamp (AugmentationAlarm + 5, 0, 300);
                     listNumerics.Find (o => o.controlType.Value == Controls.IABPNumeric.ControlType.Values.IABP_AP).UpdateVitals ();
                     return;
             }
@@ -282,25 +340,25 @@ namespace II_Windows {
         private void ButtonDecrease_Click (object s, RoutedEventArgs e) {
             switch (SelectedSetting) {
                 default: return;
-                case IABPSettings.Frequency:
-                    App.Patient.IABPFrequencyRatio = Utility.Clamp (App.Patient.IABPFrequencyRatio - 1, 1, 3);
+                case Settings.Frequency:
+                    Frequency = Utility.Clamp (Frequency - 1, 1, 3);
                     UpdateInterface ();
                     return;
 
-                case IABPSettings.Trigger:
-                    Array enumValues = Enum.GetValues (typeof (Patient.IABPTriggers.Values));
-                    App.Patient.IABPTrigger.Value = (Patient.IABPTriggers.Values)enumValues.GetValue (Utility.Clamp((int)App.Patient.IABPTrigger.Value - 1, 0, enumValues.Length - 1));
+                case Settings.Trigger:
+                    Array enumValues = Enum.GetValues (typeof (Triggers.Values));
+                    Trigger.Value = (Triggers.Values)enumValues.GetValue (Utility.Clamp((int)Trigger.Value - 1, 0, enumValues.Length - 1));
                     PauseDevice ();
                     UpdateInterface ();
                     return;
 
-                case IABPSettings.AugmentationPressure:
-                    App.Patient.IABPAugmentation = Utility.Clamp (App.Patient.IABPAugmentation - 10, 0, 100);
+                case Settings.AugmentationPressure:
+                    Augmentation = Utility.Clamp (Augmentation - 10, 0, 100);
                     listNumerics.Find (o => o.controlType.Value == Controls.IABPNumeric.ControlType.Values.IABP_AP).UpdateVitals ();
                     return;
 
-                case IABPSettings.AugmentationAlarm:
-                    App.Patient.IABPAugmentationAlarm = Utility.Clamp (App.Patient.IABPAugmentationAlarm - 5, 0, 300);
+                case Settings.AugmentationAlarm:
+                    AugmentationAlarm = Utility.Clamp (AugmentationAlarm - 5, 0, 300);
                     listNumerics.Find (o => o.controlType.Value == Controls.IABPNumeric.ControlType.Values.IABP_AP).UpdateVitals ();
                     return;
             }
@@ -308,12 +366,12 @@ namespace II_Windows {
 
         private void ButtonStart_Click (object s, RoutedEventArgs e) => StartDevice ();
         private void ButtonPause_Click (object s, RoutedEventArgs e) => PauseDevice ();
-        private void ButtonTrigger_Click (object s, RoutedEventArgs e) => SelectSetting (IABPSettings.Trigger);
-        private void ButtonFrequency_Click (object s, RoutedEventArgs e) => SelectSetting (IABPSettings.Frequency);
-        private void ButtonAugmentationPressure_Click (object s, RoutedEventArgs e) => SelectSetting (IABPSettings.AugmentationPressure);
-        private void ButtonAugmentationAlarm_Click (object s, RoutedEventArgs e) => SelectSetting (IABPSettings.AugmentationAlarm);
-        private void ButtonModeAuto_Click (object s, RoutedEventArgs e) => SetOperationMode (Patient.IABPModes.Values.Auto);
-        private void ButtonModeSemiAuto_Click (object s, RoutedEventArgs e) => SetOperationMode (Patient.IABPModes.Values.SemiAuto);
+        private void ButtonTrigger_Click (object s, RoutedEventArgs e) => SelectSetting (Settings.Trigger);
+        private void ButtonFrequency_Click (object s, RoutedEventArgs e) => SelectSetting (Settings.Frequency);
+        private void ButtonAugmentationPressure_Click (object s, RoutedEventArgs e) => SelectSetting (Settings.AugmentationPressure);
+        private void ButtonAugmentationAlarm_Click (object s, RoutedEventArgs e) => SelectSetting (Settings.AugmentationAlarm);
+        private void ButtonModeAuto_Click (object s, RoutedEventArgs e) => SetOperationMode (Modes.Values.Auto);
+        private void ButtonModeSemiAuto_Click (object s, RoutedEventArgs e) => SetOperationMode (Modes.Values.SemiAuto);
         private void ButtonPrimeBalloon_Click (object s, RoutedEventArgs e) => PrimeBalloon ();
 
         private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
@@ -336,9 +394,9 @@ namespace II_Windows {
                 return;
 
             // Re-calculate IABP-specific vital signs (augmentation pressure and augmentation-assisted MAP)
-            if (App.Patient.IABPRunning) {
+            if (Running) {
                 App.Patient.IABP_DBP = Utility.Clamp (App.Patient.ADBP - 7, 0, 1000);
-                App.Patient.IABP_AP = (int)(App.Patient.ASBP + (App.Patient.ASBP * 0.3f * (App.Patient.IABPAugmentation * 0.01f)));
+                App.Patient.IABP_AP = (int)(App.Patient.ASBP + (App.Patient.ASBP * 0.3f * (Augmentation * 0.01f)));
                 App.Patient.IABP_MAP = App.Patient.IABP_DBP + ((App.Patient.IABP_AP - App.Patient.IABP_DBP) / 2);
             } else {    // Use arterial line pressures if the balloon isn't actively pumping
                 App.Patient.IABP_DBP = App.Patient.ADBP;
@@ -363,6 +421,11 @@ namespace II_Windows {
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
+                    App.Patient.IABP_Active = Running && (Frequency_Iter % Frequency == 0)
+                        && ((Trigger.Value == Triggers.Values.ECG && App.Patient.CardiacRhythm.HasWaveform_Ventricular)
+                        || (Trigger.Value == Triggers.Values.Pressure && App.Patient.CardiacRhythm.HasPulse_Ventricular));
+                    App.Patient.IABP_Trigger = Trigger.Value.ToString();
+
                     foreach (Controls.IABPTracing c in listTracings)
                         c.Add_Beat__Cardiac_Baseline (App.Patient);
                     break;
@@ -373,6 +436,9 @@ namespace II_Windows {
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Ventricular:
+                    if (Running)
+                        Frequency_Iter++;
+
                     foreach (Controls.IABPTracing c in listTracings)
                         c.Add_Beat__Cardiac_Ventricular (App.Patient);
                     break;

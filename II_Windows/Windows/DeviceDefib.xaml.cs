@@ -24,8 +24,22 @@ namespace II_Windows {
     /// </summary>
     public partial class DeviceDefib : Window {
 
-        int rowsTracings = 2,
-            rowsNumerics = 3;
+        public enum Modes {
+            DEFIB,
+            SYNC,
+            PACER
+        };
+
+        // Device settings
+        public Modes Mode = Modes.DEFIB;
+        public bool Charged = false;
+
+        public int Energy = 200,
+                    PacerEnergy = 0,
+                    PacerRate = 80;
+
+        int rowsTracings = 1,
+            colsNumerics = 4;
         bool isFullscreen = false,
              isPaused = false;
 
@@ -36,7 +50,8 @@ namespace II_Windows {
               timerVitals = new Timer ();
 
         // Define WPF UI commands for binding
-        private ICommand icPauseDevice, icCloseDevice, icExitProgram;
+        private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram;
+        public ICommand IC_ToggleFullscreen { get { return icToggleFullscreen; } }
         public ICommand IC_PauseDevice { get { return icPauseDevice; } }
         public ICommand IC_CloseDevice { get { return icCloseDevice; } }
         public ICommand IC_ExitProgram { get { return icExitProgram; } }
@@ -64,12 +79,13 @@ namespace II_Windows {
 
         private void InitInterface () {
             // Initiate ICommands for KeyBindings
+            icToggleFullscreen = new ActionCommand(() => ToggleFullscreen());
             icPauseDevice = new ActionCommand (() => TogglePause ());
             icCloseDevice = new ActionCommand (() => this.Close ());
             icExitProgram = new ActionCommand (() => App.Patient_Editor.RequestExit ());
 
             // Populate UI strings per language selection
-            wdwDeviceDefib.Title = App.Language.Dictionary["CM:WindowTitle"];
+            wdwDeviceDefib.Title = App.Language.Dictionary["DEFIB:WindowTitle"];
             menuDevice.Header = App.Language.Dictionary["MENU:MenuDeviceOptions"];
             menuPauseDevice.Header = App.Language.Dictionary["MENU:MenuPauseDevice"];
             menuAddNumeric.Header = App.Language.Dictionary["MENU:MenuAddNumeric"];
@@ -77,6 +93,24 @@ namespace II_Windows {
             menuToggleFullscreen.Header = App.Language.Dictionary["MENU:MenuToggleFullscreen"];
             menuCloseDevice.Header = App.Language.Dictionary["MENU:MenuCloseDevice"];
             menuExitProgram.Header = App.Language.Dictionary["MENU:MenuExitProgram"];
+
+            btntxtOn.Text = App.Language.Dictionary["DEFIB:On"];
+            txtEnergyAmount.Text = App.Language.Dictionary["DEFIB:EnergyAmount"];
+            btntxtEnergyDecrease.Text = App.Language.Dictionary["DEFIB:Decrease"];
+            btntxtEnergyIncrease.Text = App.Language.Dictionary["DEFIB:Increase"];
+            btntxtCharge.Text = App.Language.Dictionary["DEFIB:Charge"];
+            btntxtShock.Text = App.Language.Dictionary["DEFIB:Shock"];
+            btntxtAnalyze.Text = App.Language.Dictionary["DEFIB:Analyze"];
+            btntxtSync.Text = App.Language.Dictionary["DEFIB:Sync"];
+
+            btntxtPacer.Text = App.Language.Dictionary["DEFIB:Pacer"];
+            txtPaceRate.Text = App.Language.Dictionary["DEFIB:Rate"];
+            btntxtPaceRateDecrease.Text = App.Language.Dictionary["DEFIB:Decrease"];
+            btntxtPaceRateIncrease.Text = App.Language.Dictionary["DEFIB:Increase"];
+            txtPaceEnergy.Text = App.Language.Dictionary["DEFIB:EnergyAmount"];
+            btntxtPaceEnergyDecrease.Text = App.Language.Dictionary["DEFIB:Decrease"];
+            btntxtPaceEnergyIncrease.Text = App.Language.Dictionary["DEFIB:Increase"];
+            btntxtPacePause.Text = App.Language.Dictionary["DEFIB:Pause"];
         }
 
         public void Load_Process (string inc) {
@@ -93,7 +127,7 @@ namespace II_Windows {
                         switch (pName) {
                             default: break;
                             case "rowsTracings": rowsTracings = int.Parse (pValue); break;
-                            case "rowsNumerics": rowsNumerics = int.Parse (pValue); break;
+                            case "colsNumerics": colsNumerics = int.Parse (pValue); break;
                             case "isPaused": isPaused = bool.Parse (pValue); break;
                             case "isFullscreen": isFullscreen = bool.Parse (pValue); break;
                             case "numericTypes": numericTypes.AddRange (pValue.Split (',')); break;
@@ -115,7 +149,7 @@ namespace II_Windows {
             StringBuilder sWrite = new StringBuilder ();
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "rowsTracings", rowsTracings));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "rowsNumerics", rowsNumerics));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "colsNumerics", colsNumerics));
             sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", isPaused));
             sWrite.AppendLine (String.Format ("{0}:{1}", "isFullscreen", isFullscreen));
 
@@ -158,6 +192,12 @@ namespace II_Windows {
                     c.Unpause ();
         }
 
+        private void ToggleFullscreen()
+        {
+            isFullscreen = !isFullscreen;
+            ApplyFullScreen();
+        }
+
         public void AddTracing () {
             rowsTracings += 1;
             OnLayoutChange ();
@@ -170,15 +210,59 @@ namespace II_Windows {
         }
 
         public void AddNumeric () {
-            rowsNumerics += 1;
+            colsNumerics += 1;
             OnLayoutChange ();
         }
 
         public void RemoveNumeric (Controls.DefibNumeric requestSender) {
-            rowsNumerics-= 1;
+            colsNumerics-= 1;
             listNumerics.Remove (requestSender);
             OnLayoutChange ();
         }
+
+        private void UpdateInterface () {
+            listNumerics.Find(o => o.controlType.Value == Controls.DefibNumeric.ControlType.Values.DEFIB).UpdateVitals(this);
+        }
+
+
+        private void ButtonEnergyDecrease_Click(object s, RoutedEventArgs e) {
+            Energy = Utility.Clamp(Energy - 20, 0, 200);
+            UpdateInterface();
+        }
+        private void ButtonEnergyIncrease_Click(object s, RoutedEventArgs e) {
+            Energy = Utility.Clamp(Energy + 20, 0, 200);
+            UpdateInterface();
+        }
+        private void ButtonCharge_Click(object s, RoutedEventArgs e) { throw new NotImplementedException(); }
+        private void ButtonShock_Click(object s, RoutedEventArgs e) { throw new NotImplementedException(); }
+        private void ButtonAnalyze_Click(object s, RoutedEventArgs e) { throw new NotImplementedException(); }
+        private void ButtonSync_Click(object s, RoutedEventArgs e) {
+            Mode = Modes.SYNC;
+            UpdateInterface();
+        }
+
+        private void ButtonPacer_Click(object s, RoutedEventArgs e) {
+            Mode = Modes.PACER;
+            UpdateInterface();
+        }
+        private void ButtonPaceRateDecrease_Click(object s, RoutedEventArgs e) {
+            PacerRate = Utility.Clamp(PacerRate - 5, 0, 200);
+            UpdateInterface();
+        }
+        private void ButtonPaceRateIncrease_Click(object s, RoutedEventArgs e) {
+            PacerRate = Utility.Clamp(PacerRate + 5, 0, 200);
+            UpdateInterface();
+        }
+        private void ButtonPaceEnergyDecrease_Click(object s, RoutedEventArgs e) {
+            PacerEnergy = Utility.Clamp(PacerEnergy - 5, 0, 200);
+            UpdateInterface();
+        }
+        private void ButtonPaceEnergyIncrease_Click(object s, RoutedEventArgs e) {
+            PacerEnergy = Utility.Clamp(PacerEnergy + 5, 0, 200);
+            UpdateInterface();
+        }
+        private void ButtonPacePause_Click(object s, RoutedEventArgs e) { throw new NotImplementedException(); }
+
 
         private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
         private void MenuExit_Click (object s, RoutedEventArgs e) => App.Patient_Editor.RequestExit ();
@@ -206,7 +290,7 @@ namespace II_Windows {
                 return;
 
             foreach (Controls.DefibNumeric v in listNumerics)
-                v.UpdateVitals ();
+                v.UpdateVitals (this);
         }
 
         private void OnLayoutChange (List<string> numericTypes = null, List<string> tracingTypes = null) {
@@ -218,14 +302,14 @@ namespace II_Windows {
 
             // Set default numeric types to populate
             if (numericTypes == null || numericTypes.Count == 0)
-                numericTypes = new List<string> (new string [] { "ECG", "NIBP", "SPO2", "ETCO2", "ABP" });
-            else if (numericTypes.Count < rowsNumerics) {
-                List<string> buffer = new List<string> (new string [] { "ECG", "NIBP", "SPO2", "ETCO2", "ABP" });
+                numericTypes = new List<string> (new string [] { "DEFIB", "ECG", "NIBP", "SPO2", "ETCO2", "ABP" });
+            else if (numericTypes.Count < colsNumerics) {
+                List<string> buffer = new List<string> (new string [] { "DEFIB", "ECG", "NIBP", "SPO2", "ETCO2", "ABP" });
                 buffer.RemoveRange (0, numericTypes.Count);
                 numericTypes.AddRange (buffer);
             }
 
-            for (int i = listNumerics.Count; i < rowsNumerics && i < numericTypes.Count; i++) {
+            for (int i = listNumerics.Count; i < colsNumerics && i < numericTypes.Count; i++) {
                 Controls.DefibNumeric newNum;
                 newNum = new Controls.DefibNumeric ((Controls.DefibNumeric.ControlType.Values)Enum.Parse (typeof (Controls.DefibNumeric.ControlType.Values), numericTypes [i]));
                 listNumerics.Add (newNum);
@@ -248,10 +332,10 @@ namespace II_Windows {
 
             // Reset the UI container and repopulate with the UI elements
             gridNumerics.Children.Clear ();
-            gridNumerics.RowDefinitions.Clear ();
-            for (int i = 0; i < rowsNumerics && i < listNumerics.Count; i++) {
-                gridNumerics.RowDefinitions.Add(new RowDefinition ());
-                listNumerics [i].SetValue (Grid.RowProperty, i);
+            gridNumerics.ColumnDefinitions.Clear ();
+            for (int i = 0; i < colsNumerics && i < listNumerics.Count; i++) {
+                gridNumerics.ColumnDefinitions.Add(new ColumnDefinition());
+                listNumerics [i].SetValue (Grid.ColumnProperty, i);
                 gridNumerics.Children.Add (listNumerics [i]);
             }
 
@@ -273,7 +357,7 @@ namespace II_Windows {
                         c.Add_Beat__Cardiac_Baseline (App.Patient);
                     }
                     foreach (Controls.DefibNumeric n in listNumerics)
-                        n.UpdateVitals ();
+                        n.UpdateVitals (this);
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
@@ -309,6 +393,5 @@ namespace II_Windows {
         }
 
         private void OnFormResize (object sender, RoutedEventArgs e) => OnLayoutChange ();
-
     }
 }

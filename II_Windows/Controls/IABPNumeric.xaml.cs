@@ -103,7 +103,7 @@ namespace II_Windows.Controls {
                     if (App.Patient.TransducerZeroed_ABP) {
                         lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.ASBP, 0.02f));
                         lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (
-                            (!App.Patient.IABPRunning ? App.Patient.ADBP : App.Patient.IABP_DBP), 0.02f));
+                            (!App.Device_IABP.Running ? App.Patient.ADBP : App.Patient.IABP_DBP), 0.02f));
                         // IABP shows MAP calculated by IABP!! Different from how monitors calculate MAP...
                         lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.IABP_MAP, 0.02f));
                     } else {
@@ -115,15 +115,15 @@ namespace II_Windows.Controls {
 
                 case ControlType.Values.IABP_AP:
                     // Flash augmentation pressure reading if below alarm limit
-                    lblLine1.Foreground = App.Patient.IABP_AP < App.Patient.IABPAugmentationAlarm
+                    lblLine1.Foreground = App.Patient.IABP_AP < App.Device_IABP.AugmentationAlarm
                         ? (lblLine1.Foreground == Brushes.Red ? Brushes.SkyBlue : Brushes.Red)
                         : Brushes.SkyBlue;
 
-                    lblLine1.Text = App.Patient.IABPRunning ? String.Format ("{0:0}", App.Patient.IABP_AP) : "";
+                    lblLine1.Text = App.Device_IABP.Running ? String.Format ("{0:0}", App.Patient.IABP_AP) : "";
 
-                    lblLine2.Text = String.Format ("{0:0}%", App.Patient.IABPAugmentation);
+                    lblLine2.Text = String.Format ("{0:0}%", App.Device_IABP.Augmentation);
                     lblLine3.Text = String.Format ("{0}: {1:0}", App.Language.Dictionary ["IABP:Alarm"],
-                        App.Patient.IABPAugmentationAlarm);
+                        App.Device_IABP.AugmentationAlarm);
                     break;
             }
         }

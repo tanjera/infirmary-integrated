@@ -31,7 +31,7 @@ namespace II_Windows.Controls {
             public enum Values {
                 ECG, T, RR, ETCO2,
                 SPO2, NIBP, ABP, CVP,
-                PA
+                PA, DEFIB
             }
 
             public static string LookupString (Values value) {
@@ -57,7 +57,8 @@ namespace II_Windows.Controls {
                 Brushes.White,
                 Brushes.Red,
                 Brushes.Blue,
-                Brushes.Yellow
+                Brushes.Yellow,
+                Brushes.Turquoise
             };
         }
 
@@ -135,6 +136,7 @@ namespace II_Windows.Controls {
                 case ControlType.Values.NIBP:
                 case ControlType.Values.ABP:
                 case ControlType.Values.PA:
+                case ControlType.Values.DEFIB:
                     break;
 
                 case ControlType.Values.ECG:
@@ -152,7 +154,7 @@ namespace II_Windows.Controls {
             }
         }
 
-        public void UpdateVitals () {
+        public void UpdateVitals (DeviceDefib device) {
             if (App.Patient == null)
                 return;
 
@@ -189,9 +191,8 @@ namespace II_Windows.Controls {
                 case ControlType.Values.ABP:
                     if (App.Patient.TransducerZeroed_ABP) {
                         lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.ASBP, 0.02f));
-                        lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (
-                            (!App.Patient.IABPThisBeat ? App.Patient.ADBP : Utility.Clamp (App.Patient.ADBP - 15, 0, 1000)),
-                            0.02f));
+                        lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange(
+                            (App.Patient.IABP_Active ? App.Patient.ADBP : App.Patient.IABP_DBP), 0.02f));
                         lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.AMAP, 0.02f));
                     } else {
                         lblLine1.Text = Utility.WrapString(App.Language.Dictionary["NUMERIC:ZeroTransducer"]);
@@ -218,6 +219,42 @@ namespace II_Windows.Controls {
                         lblLine3.Text = "";
                     }
                     break;
+
+                case ControlType.Values.DEFIB:
+
+                    switch (device.Mode)
+                    {
+                        default:
+                        case DeviceDefib.Modes.DEFIB:
+                            lblLine1.Visibility = Visibility.Visible;
+                            lblLine2.Visibility = Visibility.Visible;
+                            lblLine3.Visibility = Visibility.Hidden;
+
+                            lblLine1.Text = App.Language.Dictionary["DEFIB:Defibrillation"];
+                            lblLine2.Text = String.Format("{0:0} {1}", device.Energy, App.Language.Dictionary["DEFIB:Joules"]);
+                            break;
+
+                        case DeviceDefib.Modes.SYNC:
+                            lblLine1.Visibility = Visibility.Visible;
+                            lblLine2.Visibility = Visibility.Visible;
+                            lblLine3.Visibility = Visibility.Hidden;
+
+                            lblLine1.Text = App.Language.Dictionary["DEFIB:Synchronized"];
+                            lblLine2.Text = String.Format("{0:0} {1}", device.Energy, App.Language.Dictionary["DEFIB:Joules"]);
+                            lblLine3.Visibility = Visibility.Hidden;
+                            break;
+
+                        case DeviceDefib.Modes.PACER:
+                            lblLine1.Visibility = Visibility.Visible;
+                            lblLine2.Visibility = Visibility.Visible;
+                            lblLine3.Visibility = Visibility.Visible;
+
+                            lblLine1.Text = App.Language.Dictionary["DEFIB:Pacing"];
+                            lblLine2.Text = String.Format("{0:0} {1}", device.PacerEnergy, App.Language.Dictionary["DEFIB:Milliamps"]);
+                            lblLine3.Text = String.Format("{0}: {1:0}", App.Language.Dictionary["DEFIB:Rate"], device.PacerRate);
+                            break;
+                    }
+                    break;
             }
         }
 
@@ -242,7 +279,7 @@ namespace II_Windows.Controls {
             controlType.Value = selectedValue;
 
             UpdateInterface ();
-            UpdateVitals ();
+            UpdateVitals (new DeviceDefib());
         }
     }
 }
