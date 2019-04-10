@@ -132,10 +132,10 @@
 
                 <!-- Manual defibrillation controls -->
 
-                <Button Style="{StaticResource buttonRound}" Background="Green"
+                <Button Style="{StaticResource buttonRound}" Background="LightGreen"
                         Grid.Column="0" Grid.Row="0"
-                        Name="buttonOn">
-                <TextBlock Name="btntxtOn" Style="{StaticResource buttonTextBlock}" />
+                        Name="buttonDefib" Click="ButtonDefib_Click">
+                <TextBlock Name="btntxtDefib" Style="{StaticResource buttonTextBlock}" />
                 </Button>
 
                 <Grid Grid.Column="0" Grid.Row="1">

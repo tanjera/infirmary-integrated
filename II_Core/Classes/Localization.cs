@@ -329,7 +329,7 @@ namespace II.Localization {
             {"ECG:WindowTitle",                                           "Infirmary Integrated: Electrocardiogram"},
             {"IABP:WindowTitle",                                          "Infirmary Integrated: Intra-aortic Balloon Pump"},
             {"DEFIB:WindowTitle",                                         "Infirmary Integrated: Defibrillator"},
-            {"DEFIB:On",                                                  "On"},
+            {"DEFIB:Defibrillator",                                       "Defibrillator"},
             {"DEFIB:Increase",                                            "+"},
             {"DEFIB:Decrease",                                            "-"},
             {"DEFIB:EnergyAmount",                                        "Energy Amount"},

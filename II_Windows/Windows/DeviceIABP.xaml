@@ -232,13 +232,13 @@
                     <TextBlock Name="btntxtFrequency" Style="{StaticResource buttonTextBlock}" />
                 </Button>
 
-                <Button Style="{StaticResource buttonRound}" Background="LightSkyBlue"
+                <Button Style="{StaticResource buttonRound}" Background="PowderBlue"
                         Grid.Column="4" Grid.Row="1"
                         Name="buttonAugmentationPressure" Click="ButtonAugmentationPressure_Click">
                     <TextBlock Name="btntxtAugmentationPressure" Style="{StaticResource buttonTextBlock}" />
                 </Button>
 
-                <Button Style="{StaticResource buttonRound}" Background="LightSkyBlue"
+                <Button Style="{StaticResource buttonRound}" Background="AntiqueWhite"
                         Grid.Column="5" Grid.Row="1"
                         Name="buttonIncrease" Click="ButtonIncrease_Click">
                     <TextBlock Name="btntxtIncrease" Style="{StaticResource buttonTextBlock}" />
@@ -262,13 +262,13 @@
                     <TextBlock Name="buttonZero" Style="{StaticResource buttonTextBlock}" />
                 </Button>
 
-                <Button Style="{StaticResource buttonRound}" Background="LightSkyBlue"
+                <Button Style="{StaticResource buttonRound}" Background="PowderBlue"
                         Grid.Column="4" Grid.Row="2"
                         Name="buttonAugmentationAlarm" Click="ButtonAugmentationAlarm_Click">
                     <TextBlock Name="btntxtAugmentationAlarm" Style="{StaticResource buttonTextBlock}" />
                 </Button>
 
-                <Button Style="{StaticResource buttonRound}" Background="LightSkyBlue"
+                <Button Style="{StaticResource buttonRound}" Background="AntiqueWhite"
                         Grid.Column="5" Grid.Row="2"
                         Name="buttonDecrease" Click="ButtonDecrease_Click">
                     <TextBlock Name="btntxtDecrease" Style="{StaticResource buttonTextBlock}" />

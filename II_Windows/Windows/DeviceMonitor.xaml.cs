@@ -221,13 +221,15 @@ namespace II_Windows {
 
             // Set default numeric types to populate
             if (numericTypes == null || numericTypes.Count == 0)
-                numericTypes = new List<string> (new string [] { "ECG", "NIBP", "SPO2", "CVP", "ABP" });
+                numericTypes = new List<string> (new string [] { "ECG", "NIBP", "SPO2", "CVP", "ABP", "RR", "ETCO2", "T", "PA" });
             else if (numericTypes.Count < rowsNumerics) {
-                List<string> buffer = new List<string> (new string [] { "ECG", "NIBP", "SPO2", "CVP", "ABP" });
+                List<string> buffer = new List<string> (new string [] { "ECG", "NIBP", "SPO2", "CVP", "ABP", "RR", "ETCO2", "T", "PA" });
                 buffer.RemoveRange (0, numericTypes.Count);
                 numericTypes.AddRange (buffer);
             }
 
+            // Cap available amount of numerics
+            rowsNumerics = Utility.Clamp(rowsNumerics, 1, numericTypes.Count);
             for (int i = listNumerics.Count; i < rowsNumerics && i < numericTypes.Count; i++) {
                 Controls.MonitorNumeric newNum;
                 newNum = new Controls.MonitorNumeric ((Controls.MonitorNumeric.ControlType.Values)Enum.Parse (typeof (Controls.MonitorNumeric.ControlType.Values), numericTypes [i]));
@@ -236,13 +238,15 @@ namespace II_Windows {
 
             // Set default tracing types to populate
             if (tracingTypes == null || tracingTypes.Count == 0)
-                tracingTypes = new List<string> (new string [] { "ECG_II", "ECG_III", "SPO2", "CVP", "ABP" });
+                tracingTypes = new List<string> (new string [] { "ECG_II", "ECG_III", "SPO2", "CVP", "ABP", "RR", "ETCO2", "PA" });
             else if (tracingTypes.Count < rowsTracings) {
-                List<string> buffer = new List<string> (new string [] { "ECG_II", "ECG_III", "SPO2", "CVP", "ABP" });
+                List<string> buffer = new List<string> (new string [] { "ECG_II", "ECG_III", "SPO2", "CVP", "ABP", "RR", "ETCO2", "PA" });
                 buffer.RemoveRange (0, tracingTypes.Count);
                 tracingTypes.AddRange (buffer);
             }
 
+            // Cap available amount of tracings
+            rowsTracings = Utility.Clamp(rowsTracings, 1, tracingTypes.Count);
             for (int i = listTracings.Count; i < rowsTracings && i < tracingTypes.Count; i++) {
                 Strip newStrip = new Strip (6f, (Leads.Values)Enum.Parse (typeof (Leads.Values), tracingTypes [i]));
                 Controls.MonitorTracing newTracing = new Controls.MonitorTracing (newStrip);

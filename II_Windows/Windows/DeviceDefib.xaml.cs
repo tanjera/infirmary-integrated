@@ -94,7 +94,7 @@ namespace II_Windows {
             menuCloseDevice.Header = App.Language.Dictionary["MENU:MenuCloseDevice"];
             menuExitProgram.Header = App.Language.Dictionary["MENU:MenuExitProgram"];
 
-            btntxtOn.Text = App.Language.Dictionary["DEFIB:On"];
+            btntxtDefib.Text = App.Language.Dictionary["DEFIB:Defibrillator"];
             txtEnergyAmount.Text = App.Language.Dictionary["DEFIB:EnergyAmount"];
             btntxtEnergyDecrease.Text = App.Language.Dictionary["DEFIB:Decrease"];
             btntxtEnergyIncrease.Text = App.Language.Dictionary["DEFIB:Increase"];
@@ -225,6 +225,11 @@ namespace II_Windows {
         }
 
 
+        private void ButtonDefib_Click(object s, RoutedEventArgs e)
+        {
+            Mode = Modes.DEFIB;
+            UpdateInterface();
+        }
         private void ButtonEnergyDecrease_Click(object s, RoutedEventArgs e) {
             Energy = Utility.Clamp(Energy - 20, 0, 200);
             UpdateInterface();
@@ -237,12 +242,12 @@ namespace II_Windows {
         private void ButtonShock_Click(object s, RoutedEventArgs e) { throw new NotImplementedException(); }
         private void ButtonAnalyze_Click(object s, RoutedEventArgs e) { throw new NotImplementedException(); }
         private void ButtonSync_Click(object s, RoutedEventArgs e) {
-            Mode = Modes.SYNC;
+            Mode = (Mode != Modes.SYNC ? Modes.SYNC : Modes.DEFIB);
             UpdateInterface();
         }
 
         private void ButtonPacer_Click(object s, RoutedEventArgs e) {
-            Mode = Modes.PACER;
+            Mode = (Mode != Modes.PACER ? Modes.PACER : Modes.DEFIB);
             UpdateInterface();
         }
         private void ButtonPaceRateDecrease_Click(object s, RoutedEventArgs e) {
