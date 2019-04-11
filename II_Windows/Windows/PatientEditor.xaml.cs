@@ -138,7 +138,6 @@ namespace II_Windows {
             foreach (FetalHeartDecelerations.Values v in Enum.GetValues (typeof (FetalHeartDecelerations.Values)))
                 fetalHeartRhythms.Add (App.Language.Dictionary[FetalHeartDecelerations.LookupString (v)]);
             listFHRRhythms.ItemsSource = fetalHeartRhythms;
-
         }
 
         private void InitPatient () {

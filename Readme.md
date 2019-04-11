@@ -49,10 +49,14 @@ Also, Infirmary Integrated simulates the following cardiac rhythms with waveform
 
 Infirmary Integrated also supports localization for multiple languages including:
 
+- አማርኛ (Amharic)
+- عربى (Arabic)
 - Deutsche (German)
 - English
 - Español (Spanish)
+- فارسی (Farsi)
 - Français (French)
+- עברית (Hebrew)
 - Italiano (Italian)
 - Korean (한국어)
 - Português (Portuguese)

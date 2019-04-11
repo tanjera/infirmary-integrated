@@ -13,8 +13,6 @@
 				- Will need capture threshold on Patient Editor
 				- Pause button
 
-	* Localization updates!!!
-
 	* EFM
 		- DeviceEFM layout
 		- EFMTracing control
@@ -29,7 +27,7 @@
 
 * Long-term to-do:
 
-	- DeviceIABP		
+	- DeviceIABP
 		- Add timer for delays (e.g. priming balloon takes 10 seconds)
 
 	- Splash screen?
