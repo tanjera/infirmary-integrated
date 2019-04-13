@@ -136,17 +136,16 @@
                             <Label Name="lblDevice12LeadECG" Style="{StaticResource deviceLabel}" />
                         </StackPanel>
                     </Button>
+                    <Button Name="btnDeviceDefibrillator" Click="ButtonDeviceDefib_Click" Style="{StaticResource deviceButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource Icon_DeviceDefibrillator}" Style="{StaticResource deviceImage}" />
+                            <Label Name="lblDeviceDefibrillator" Style="{StaticResource deviceLabel}" />
+                        </StackPanel>
+                    </Button>
                     <Button Name="btnDeviceIABP" Click="ButtonDeviceIABP_Click"  Style="{StaticResource deviceButton}">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource Icon_DeviceIABP}" Style="{StaticResource deviceImage}" />
                             <Label Name="lblDeviceIABP" Style="{StaticResource deviceLabel}" />
-                        </StackPanel>
-                    </Button>
-                    <Button Name="btnDeviceDefibrillator" Click="ButtonDeviceDefib_Click" Style="{StaticResource deviceButton}"
-                            Visibility="Hidden">
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="{StaticResource Icon_DeviceDefibrillator}" Style="{StaticResource deviceImage}" />
-                            <Label Name="lblDeviceDefibrillator" Style="{StaticResource deviceLabel}" />
                         </StackPanel>
                     </Button>
                     <!--

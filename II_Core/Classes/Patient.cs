@@ -24,7 +24,6 @@ namespace II {
         public double[] STElevation, TElevation;
         public CardiacRhythms CardiacRhythm = new CardiacRhythms();
         public CardiacAxes CardiacAxis = new CardiacAxes ();
-        public bool CardiacRhythm_Flag;               // Used for signaling aberrant beats as needed
 
         // Respiratory Profile
         public RespiratoryRhythms Respiratory_Rhythm = new RespiratoryRhythms();
@@ -182,7 +181,6 @@ namespace II {
                                     TElevation [i] = double.Parse (e_t [i]);
                                 break;
                             case "Cardiac_Rhythm": CardiacRhythm.Value = (CardiacRhythms.Values) Enum.Parse(typeof(CardiacRhythms.Values), pValue); break;
-                            case "Cardiac_Rhythm__Flag": CardiacRhythm_Flag = bool.Parse (pValue); break;
                             case "Cardiac_Axis_Shift": CardiacAxis.Value = (CardiacAxes.Values)Enum.Parse (typeof (CardiacAxes.Values), pValue); break;
 
                             case "TransducerZeroed_ABP": TransducerZeroed_ABP = bool.Parse (pValue); break;
@@ -241,7 +239,6 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "ST_Elevation", string.Join(",", STElevation)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "T_Elevation", string.Join(",", TElevation)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Rhythm", CardiacRhythm.Value));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Rhythm__Flag", CardiacRhythm_Flag));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Axis_Shift", CardiacAxis.Value));
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_ABP", TransducerZeroed_ABP));
@@ -441,32 +438,33 @@ namespace II {
                             counterCardiac = 1;
                         else if (CardiacRhythm.Value == CardiacRhythms.Values.Sinus_Rhythm_with_Trigeminy)
                             counterCardiac = 2;
-                        CardiacRhythm_Flag = true;
+                        CardiacRhythm.AberrantBeat = true;
                         timerCardiac_Ventricular.Reset (1);
                         break;
                     }
                     timerCardiac_Atrial.Reset (1);
+                    CardiacRhythm.AberrantBeat = false;
                     break;
 
                 case CardiacRhythms.Values.Sinus_Rhythm_with_PVCs_Unifocal:
                 case CardiacRhythms.Values.Sinus_Rhythm_with_PVCs_Multifocal:
                     counterCardiac -= 1;
-                    if (counterCardiac == 0 || CardiacRhythm_Flag) {  // Shorten the beat preceding the PVC, making it premature
+                    if (counterCardiac == 0 || CardiacRhythm.AberrantBeat) {  // Shorten the beat preceding the PVC, making it premature
                         timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval * 0.8));
                     }
-                    if (counterCardiac < 0 || CardiacRhythm_Flag) {   // Then throw the PVC and reset the counters
+                    if (counterCardiac < 0 || CardiacRhythm.AberrantBeat) {   // Then throw the PVC and reset the counters
                         counterCardiac = new Random().Next(4, 9);
-                        CardiacRhythm_Flag = true;
+                        CardiacRhythm.AberrantBeat = true;
                         timerCardiac_Ventricular.Reset (1);
                         break;
                     }
+                    CardiacRhythm.AberrantBeat = false;
                     timerCardiac_Atrial.Reset (1);
                     break;
             }
         }
 
         private void OnCardiac_Atrial () {
-
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Atrial));
 
             switch (CardiacRhythm.Value) {
@@ -505,8 +503,10 @@ namespace II {
                     counterCardiac += 1;
                     if (counterCardiac > 2) {
                         counterCardiac = 0;
+                        CardiacRhythm.AberrantBeat = true;
                     } else {
                         timerCardiac_Ventricular.Reset (160);
+                        CardiacRhythm.AberrantBeat = false;
                     }
                     break;
 
@@ -515,9 +515,11 @@ namespace II {
                     counterCardiac += 1;
                     if (counterCardiac >= 4) {
                         counterCardiac = 0;
+                        CardiacRhythm.AberrantBeat = true;
                     } else {
                         timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval + (160 * counterCardiac)));
                         timerCardiac_Ventricular.Reset ((int)(160 * counterCardiac));
+                        CardiacRhythm.AberrantBeat = false;
                     }
                     break;
 
@@ -532,11 +534,10 @@ namespace II {
 
             switch (CardiacRhythm.Value) {
                 default:
-                    CardiacRhythm_Flag = false;
                     break;
 
                 case CardiacRhythms.Values.Sinus_Rhythm_with_PVCs_Unifocal:
-                    CardiacRhythm_Flag = new Random ().Next (0, 7) == 0;       // 1/7 chance to potentiate runs of PVCs
+                    CardiacRhythm.AberrantBeat = new Random ().Next (0, 7) == 0;       // 1/7 chance to potentiate runs of PVCs
                     break;
             }
 

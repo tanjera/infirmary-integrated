@@ -7,6 +7,7 @@ namespace II {
         public Values Value;
         public CardiacRhythms (Values v) { Value = v; }
         public CardiacRhythms () { Value = Values.Sinus_Rhythm; }
+        public bool AberrantBeat = false;           // Signals for aberrancy in rhythm generation
 
         public enum Values {
             Asystole,
@@ -278,14 +279,14 @@ namespace II {
                 case Values.Sinus_Rhythm: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
 
                 case Values.Sinus_Rhythm_with_Bigeminy:
-                    if (p.CardiacRhythm_Flag) {
+                    if (p.CardiacRhythm.AberrantBeat) {
                         s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_1 (p, s.Lead));
                     } else
                         s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead));
                     return;
 
                 case Values.Sinus_Rhythm_with_Trigeminy:
-                    if (p.CardiacRhythm_Flag) {
+                    if (p.CardiacRhythm.AberrantBeat) {
                         s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_1 (p, s.Lead));
                     } else
                         s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead));
@@ -295,7 +296,7 @@ namespace II {
                 case Values.Sinus_Rhythm_with_PJCs: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
 
                 case Values.Sinus_Rhythm_with_PVCs_Multifocal:
-                    if (p.CardiacRhythm_Flag) {
+                    if (p.CardiacRhythm.AberrantBeat) {
                         switch (new Random ().Next (0, 3)) {
                             default:
                             case 0: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_1 (p, s.Lead)); break;
@@ -308,7 +309,7 @@ namespace II {
 
                 case Values.Sinus_Rhythm_with_PVCs_Unifocal:
 
-                    if (p.CardiacRhythm_Flag) {
+                    if (p.CardiacRhythm.AberrantBeat) {
                         s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_3 (p, s.Lead));
                     } else
                         s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead));

@@ -4,6 +4,8 @@
 
 * Next steps:
 
+	* Migrate Patient.CardiacRhythm_AberrantBeat to CardiacRhythm.AberrantBeat
+
 	* Defibrillator
 		- Functionality for:
 			- Shock
