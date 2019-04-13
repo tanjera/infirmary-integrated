@@ -51,14 +51,16 @@ Infirmary Integrated also supports localization for multiple languages including
 
 - አማርኛ (Amharic)
 - عربى (Arabic)
+- 中文 (Chinese)
 - Deutsche (German)
 - English
 - Español (Spanish)
 - فارسی (Farsi)
 - Français (French)
 - עברית (Hebrew)
+- हिंदी (Hindi)
 - Italiano (Italian)
-- Korean (한국어)
+- 한국어 (Korean)
 - Português (Portuguese)
 - русский (Russian)
 - Swahili (Kiswahili)
