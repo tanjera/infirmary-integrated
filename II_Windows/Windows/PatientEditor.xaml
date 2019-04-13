@@ -10,7 +10,7 @@
         Title="PatientEditor"
         Icon="{StaticResource Icon_Infirmary}"
         WindowStartupLocation="CenterScreen"
-        Height="650" Width="700" SizeToContent="Width"
+        Height="530" Width="700" SizeToContent="Width"
         Closed="OnClosed">
 
     <Window.InputBindings>
@@ -136,7 +136,14 @@
                             <Label Name="lblDevice12LeadECG" Style="{StaticResource deviceLabel}" />
                         </StackPanel>
                     </Button>
-                    <Button Name="btnDeviceDefibrillator" Click="ButtonDeviceDefib_Click" Style="{StaticResource deviceButton}">
+                    <Button Name="btnDeviceIABP" Click="ButtonDeviceIABP_Click"  Style="{StaticResource deviceButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource Icon_DeviceIABP}" Style="{StaticResource deviceImage}" />
+                            <Label Name="lblDeviceIABP" Style="{StaticResource deviceLabel}" />
+                        </StackPanel>
+                    </Button>
+                    <Button Name="btnDeviceDefibrillator" Click="ButtonDeviceDefib_Click" Style="{StaticResource deviceButton}"
+                            Visibility="Hidden">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource Icon_DeviceDefibrillator}" Style="{StaticResource deviceImage}" />
                             <Label Name="lblDeviceDefibrillator" Style="{StaticResource deviceLabel}" />
@@ -150,12 +157,6 @@
                         </StackPanel>
                     </Button>
                     -->
-                    <Button Name="btnDeviceIABP" Click="ButtonDeviceIABP_Click"  Style="{StaticResource deviceButton}">
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="{StaticResource Icon_DeviceIABP}" Style="{StaticResource deviceImage}" />
-                            <Label Name="lblDeviceIABP" Style="{StaticResource deviceLabel}" />
-                        </StackPanel>
-                    </Button>
                     <!--
                     <Button Name="btnDeviceEFM" Style="{StaticResource deviceButton}" IsEnabled="False">
                         <StackPanel Orientation="Horizontal">
@@ -286,36 +287,6 @@
                         </Grid>
                     </Expander>
                 </Border>
-
-
-                <!-- Group for Respiratory Profile -->
-                <Border Style="{StaticResource expBorder}">
-                    <Expander Name="expRespiratoryProfile" IsExpanded="False" Style="{StaticResource expParameters}">
-                        <Expander.Header>
-                            <Label Name="lblGroupRespiratoryProfile" Style="{StaticResource expHeader}"/>
-                        </Expander.Header>
-
-                        <Grid Margin="3">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
-
-                            <Label Name="lblInspiratoryRatio" Grid.Column="0" Grid.Row="0" />
-                            <xctk:IntegerUpDown Name="numInspiratoryRatio" Increment="1" Minimum="0" Maximum="50"
-                                                Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
-                            <Label Name="lblExpiratoryRatio" Grid.Column="2" Grid.Row="0" Content=":" />
-                            <xctk:IntegerUpDown Name="numExpiratoryRatio" Increment="1" Minimum="0" Maximum="50"
-                                                Grid.Column="3" Grid.Row="0" Style="{StaticResource intUpDown}" />
-                        </Grid>
-                    </Expander>
-                </Border>
-
 
                 <!-- Group for Cardiac Profile -->
                 <Border Style="{StaticResource expBorder}">
@@ -451,9 +422,41 @@
                     </Expander>
                 </Border>
 
+                <!-- Group for Respiratory Profile -->
+                <!-- <Border Style="{StaticResource expBorder}"> -->
+                    <Expander Name="expRespiratoryProfile" IsExpanded="False"
+                              Visibility="Hidden" Height="0"
+                              Style="{StaticResource expParameters}">
+                        <Expander.Header>
+                            <Label Name="lblGroupRespiratoryProfile" Style="{StaticResource expHeader}"/>
+                        </Expander.Header>
+
+                        <Grid Margin="3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Name="lblInspiratoryRatio" Grid.Column="0" Grid.Row="0" />
+                            <xctk:IntegerUpDown Name="numInspiratoryRatio" Increment="1" Minimum="0" Maximum="50"
+                                                Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblExpiratoryRatio" Grid.Column="2" Grid.Row="0" Content=":" />
+                            <xctk:IntegerUpDown Name="numExpiratoryRatio" Increment="1" Minimum="0" Maximum="50"
+                                                Grid.Column="3" Grid.Row="0" Style="{StaticResource intUpDown}" />
+                        </Grid>
+                    </Expander>
+                <!-- </Border> -->
+
                 <!-- Group for Obstetric Profile -->
                 <!-- <Border Style="{StaticResource expBorder}" IsEnabled="False"> -->
-                    <Expander Name="expObstetricProfile" IsExpanded="False" Visibility="Hidden" Style="{StaticResource expParameters}">
+                    <Expander Name="expObstetricProfile" IsExpanded="False"
+                              Visibility="Hidden" Height="0"
+                              Style="{StaticResource expParameters}">
                         <Expander.Header>
                             <Label Name="lblGroupObstetricProfile" Style="{StaticResource expHeader}"/>
                         </Expander.Header>
