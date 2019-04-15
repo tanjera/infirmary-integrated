@@ -403,7 +403,8 @@ namespace II {
 
                 /* Special Cases */
                 case CardiacRhythms.Values.AV_Block__3rd_Degree:
-                    timerCardiac_Atrial.Reset ((int)(timerCardiac_Baseline.Interval * 0.6));
+                    if (!timerCardiac_Atrial.IsRunning)
+                        timerCardiac_Atrial.Reset ((int)(timerCardiac_Baseline.Interval * 0.6));
                     timerCardiac_Ventricular.Reset (160);
                     break;
 
@@ -449,10 +450,9 @@ namespace II {
                 case CardiacRhythms.Values.Sinus_Rhythm_with_PVCs_Unifocal:
                 case CardiacRhythms.Values.Sinus_Rhythm_with_PVCs_Multifocal:
                     counterCardiac -= 1;
-                    if (counterCardiac == 0 || CardiacRhythm.AberrantBeat) {  // Shorten the beat preceding the PVC, making it premature
+                    if (counterCardiac == 0) {  // Shorten the beat preceding the PVC, making it premature
                         timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval * 0.8));
-                    }
-                    if (counterCardiac < 0 || CardiacRhythm.AberrantBeat) {   // Then throw the PVC and reset the counters
+                    } else  if (counterCardiac < 0) {   // Then throw the PVC and reset the counters
                         counterCardiac = new Random().Next(4, 9);
                         CardiacRhythm.AberrantBeat = true;
                         timerCardiac_Ventricular.Reset (1);
@@ -500,9 +500,9 @@ namespace II {
 
                 case CardiacRhythms.Values.AV_Block__Mobitz_II:
                     timerCardiac_Atrial.Stop ();
-                    counterCardiac += 1;
-                    if (counterCardiac > 2) {
-                        counterCardiac = 0;
+                    counterCardiac -= 1;
+                    if (counterCardiac < 0) {
+                        counterCardiac = 2;
                         CardiacRhythm.AberrantBeat = true;
                     } else {
                         timerCardiac_Ventricular.Reset (160);
@@ -512,13 +512,13 @@ namespace II {
 
                 case CardiacRhythms.Values.AV_Block__Wenckebach:
                     timerCardiac_Atrial.Stop ();
-                    counterCardiac += 1;
-                    if (counterCardiac >= 4) {
-                        counterCardiac = 0;
+                    counterCardiac -= 1;
+                    if (counterCardiac < 0) {
+                        counterCardiac = 3;
                         CardiacRhythm.AberrantBeat = true;
                     } else {
-                        timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval + (160 * counterCardiac)));
-                        timerCardiac_Ventricular.Reset ((int)(160 * counterCardiac));
+                        timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval + (160 * (3 - counterCardiac))));
+                        timerCardiac_Ventricular.Reset ((int)(160 * (3 - counterCardiac)));
                         CardiacRhythm.AberrantBeat = false;
                     }
                     break;
@@ -533,12 +533,7 @@ namespace II {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Ventricular));
 
             switch (CardiacRhythm.Value) {
-                default:
-                    break;
-
-                case CardiacRhythms.Values.Sinus_Rhythm_with_PVCs_Unifocal:
-                    CardiacRhythm.AberrantBeat = new Random ().Next (0, 7) == 0;       // 1/7 chance to potentiate runs of PVCs
-                    break;
+                default: break;
             }
 
             timerCardiac_Ventricular.Stop ();

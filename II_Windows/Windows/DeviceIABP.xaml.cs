@@ -316,6 +316,7 @@ namespace II_Windows {
                 default: return;
                 case Settings.Frequency:
                     Frequency = Utility.Clamp (Frequency + 1, 1, 3);
+                    UpdateInterface();
                     return;
 
                 case Settings.Trigger:

@@ -4,7 +4,6 @@
 
 * Next steps:
 
-	* Migrate Patient.CardiacRhythm_AberrantBeat to CardiacRhythm.AberrantBeat
 
 	* Defibrillator
 		- Functionality for:
@@ -42,7 +41,6 @@
 
 * To debug:
 
-* Known bugs:
 
 
 * Versions and features to implement:

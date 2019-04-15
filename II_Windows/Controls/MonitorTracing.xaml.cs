@@ -18,6 +18,7 @@ namespace II_Windows.Controls {
 
         public Strip wfStrip;
         public Leads Lead { get { return wfStrip.Lead; } }
+        public double Amplitude = 1.0;
 
         // Drawing variables, offsets and multipliers
         Path drawPath;
@@ -65,6 +66,18 @@ namespace II_Windows.Controls {
             contextMenu.Items.Add (menuRemoveTracing);
 
             contextMenu.Items.Add (new Separator());
+
+            MenuItem menuIncreaseAmplitude = new MenuItem();
+            menuIncreaseAmplitude.Header = App.Language.Dictionary["MENU:IncreaseAmplitude"];
+            menuIncreaseAmplitude.Click += MenuIncreaseAmplitude_Click;
+            contextMenu.Items.Add(menuIncreaseAmplitude);
+
+            MenuItem menuDecreaseAmplitude = new MenuItem();
+            menuDecreaseAmplitude.Header = App.Language.Dictionary["MENU:DecreaseAmplitude"];
+            menuDecreaseAmplitude.Click += MenuDecreaseAmplitude_Click;
+            contextMenu.Items.Add(menuDecreaseAmplitude);
+
+            contextMenu.Items.Add(new Separator());
 
             MenuItem menuSelectInput = new MenuItem (),
                      menuECGLeads = new MenuItem();
@@ -124,7 +137,7 @@ namespace II_Windows.Controls {
             drawXOffset = 0;
             drawYOffset = (int)canvasTracing.ActualHeight / 2;
             drawXMultiplier = (int)canvasTracing.ActualWidth / wfStrip.lengthSeconds;
-            drawYMultiplier = -(int)canvasTracing.ActualHeight / 2;
+            drawYMultiplier = (-(int)canvasTracing.ActualHeight / 2) * Amplitude;
 
             if (wfStrip.Points.Count < 2)
                 return;
@@ -171,6 +184,10 @@ namespace II_Windows.Controls {
             => App.Device_Monitor.AddTracing ();
         private void MenuRemoveTracing_Click (object sender, RoutedEventArgs e)
             => App.Device_Monitor.RemoveTracing (this);
+        private void MenuIncreaseAmplitude_Click (object sender, RoutedEventArgs e)
+            => Amplitude = Utility.Clamp(Amplitude + 0.2, 0.2, 2.0);
+        private void MenuDecreaseAmplitude_Click(object sender, RoutedEventArgs e)
+            => Amplitude = Utility.Clamp(Amplitude - 0.2, 0.2, 2.0);
 
         private void MenuSelectInputSource (object sender, RoutedEventArgs e) {
             Leads.Values selectedValue;

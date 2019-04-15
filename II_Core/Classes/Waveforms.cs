@@ -80,13 +80,13 @@ namespace II.Rhythm {
             double _Portion = _P.HR_Seconds / 20;
 
             List<Point> thisBeat = new List<Point> ();
-            thisBeat = Concatenate (thisBeat, Line (_Portion * 8, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion * 3, 0f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Line (_Portion, _Amplitude, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Line (_Portion * 2, _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_Portion * 5, 0.5f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion * 10, 0.5f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Line (_Portion, -0.3f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Line (_Portion * 2, -0.3f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion, -0.3f * _Amplitude, Last(thisBeat)));
+            thisBeat = Concatenate(thisBeat, Line(_Portion * 2, 0f, Last(thisBeat)));
             return thisBeat;
         }
 
@@ -97,12 +97,22 @@ namespace II.Rhythm {
 
             thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
 
-            if (_P.CardiacRhythm.HasPulse_Ventricular)
-                thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.8f * _Amplitude, 0.6f * _Amplitude, Last (thisBeat)));
-            else
-                thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
+            // Native systolic function inflection; decreased if aberrant/ectopic, flat if pulseless rhythm
+            if (_P.CardiacRhythm.HasPulse_Ventricular) {
+                if (_P.CardiacRhythm.AberrantBeat)
+                    thisBeat = Concatenate(thisBeat, Curve(_Portion, 0.4f * _Amplitude, 0.3f * _Amplitude, Last(thisBeat)));
+                else
+                    thisBeat = Concatenate(thisBeat, Curve(_Portion, 0.8f * _Amplitude, 0.6f * _Amplitude, Last(thisBeat)));
+            } else
+                thisBeat = Concatenate(thisBeat, Line(_Portion, 0f, Last(thisBeat)));
 
-            thisBeat = Concatenate (thisBeat, Curve (_Portion, 1f * _Amplitude, 0f, Last (thisBeat)));
+            // Augmentation inflection; slightly dampened in ectopic/aberrant beats
+            if (_P.CardiacRhythm.AberrantBeat)
+                thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.8f * _Amplitude, 0f, Last (thisBeat)));
+            else
+                thisBeat = Concatenate(thisBeat, Curve(_Portion, 1f * _Amplitude, 0f, Last(thisBeat)));
+
+            // Assisted systole (negative pressures in end-diastole)
             thisBeat = Concatenate (thisBeat, Curve (_Portion, -0.2f * _Amplitude, 0f, Last (thisBeat)));
             return thisBeat;
         }
