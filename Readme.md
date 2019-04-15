@@ -15,8 +15,10 @@ And Infirmary Integrated can simulate hemodynamic and other readings including:
 - Blood pressure (NIBP non-invasive and invasive ABP via arterial line)
 - Pulse oximetry (SpO2, pulse oximeter plethysmograph)
 - End-tidal capnography (ETCO2)
-- Central venous pressures (CVP)
+- Central venous pressure (CVP)
 - Pulmonary artery pressures (Swan-Ganz catheter pressures)
+- Intracranial pressure (ICP) factoring compliance in the waveform
+- Intra-abdominal pressure (IAP, bladder pressure)
 - Intra-aortic balloon pump augmentation pressures
 - ST-segment elevation/depression and T-wave elevation/depression on all 12 ECG leads
 

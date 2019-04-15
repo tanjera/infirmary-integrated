@@ -84,6 +84,10 @@ namespace II {
             return dbp + ((sbp - dbp) / 3);
         }
 
+        public static int CalculateCPP(int icp, int map) {
+            return map - icp;
+        }
+
         public event EventHandler<PatientEvent_Args> PatientEvent;
         public class PatientEvent_Args : EventArgs {
             public Patient Patient;

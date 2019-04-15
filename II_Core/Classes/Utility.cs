@@ -7,7 +7,7 @@ namespace II {
 
     public static class Utility {
 
-        public const string Version = "0.92";
+        public const string Version = "0.93";
 
         public static double Time {
             get { return (double)(DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess ().StartTime.ToUniversalTime ()).TotalSeconds; }

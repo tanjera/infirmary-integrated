@@ -143,7 +143,6 @@ namespace II_Windows.Controls {
                 case ControlType.Values.T:
                 case ControlType.Values.RR:
                 case ControlType.Values.CVP:
-                case ControlType.Values.ICP:
                 case ControlType.Values.IAP:
                     lblLine2.Visibility = Visibility.Hidden;
                     lblLine3.Visibility = Visibility.Hidden;
@@ -151,6 +150,7 @@ namespace II_Windows.Controls {
 
                 case ControlType.Values.SPO2:
                 case ControlType.Values.ETCO2:
+                case ControlType.Values.ICP:
                     lblLine3.Visibility = Visibility.Hidden;
                     break;
             }
@@ -223,10 +223,13 @@ namespace II_Windows.Controls {
                     break;
 
                 case ControlType.Values.ICP:
-                    if (App.Patient.TransducerZeroed_ICP)
+                    if (App.Patient.TransducerZeroed_ICP) {
                         lblLine1.Text = String.Format("{0:0}", Utility.RandomPercentRange(App.Patient.ICP, 0.02f));
-                    else
+                        lblLine2.Text = String.Format("({0:0})", Patient.CalculateCPP(App.Patient.ICP, App.Patient.AMAP));
+                    } else {
                         lblLine1.Text = App.Language.Dictionary["NUMERIC:ZeroTransducer"];
+                        lblLine2.Text = "";
+                    }
                     break;
 
                 case ControlType.Values.IAP:
