@@ -52,6 +52,7 @@ namespace II.Rhythm {
 
         public static List<Point> CVP_Rhythm (Patient _P, double _Amplitude) {
             double _Portion = _P.HR_Seconds / 5;
+            _Amplitude *= _P.Respiratory_Inflated ? 1f : 0.8f;      // Adjust for intrathoracic pressure
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Curve (_Portion, 0f, 0.3f * _Amplitude, Last (thisBeat)));
@@ -62,6 +63,29 @@ namespace II.Rhythm {
             return thisBeat;
         }
 
+        public static List<Point> ICP_Rhythm(Patient _P, double _Amplitude) {
+            double _Portion = _P.HR_Seconds / 3;
+
+            double icpCompliance = Utility.Clamp(Utility.InverseLerp(15, 25, _P.ICP), 0, 1);
+            List<Point> thisBeat = new List<Point>();
+            thisBeat = Concatenate(thisBeat, Curve(_Portion, 0.7f * _Amplitude, 0.5f * _Amplitude, Last(thisBeat)));
+            thisBeat = Concatenate(thisBeat, Curve(_Portion,
+                Utility.Lerp(0.55, 0.8, icpCompliance) * _Amplitude,
+                Utility.Lerp(0.4, 0.7, icpCompliance) * _Amplitude,
+                Last(thisBeat)));
+            thisBeat = Concatenate(thisBeat, Curve(_Portion,
+                Utility.Lerp(0.2, 0.6, icpCompliance) * _Amplitude,
+                0f, Last(thisBeat)));
+            return thisBeat;
+        }
+
+        public static List<Point> IAP_Rhythm(Patient _P, double _Amplitude){
+            _Amplitude *= _P.Respiratory_Inflated ? 1f : 0.5f;      // Adjust for intrathoracic pressure
+
+            List<Point> thisBeat = new List<Point>();
+            thisBeat = Concatenate(thisBeat, Curve(_P.HR_Seconds, 0.2f * _Amplitude, 0f, Last(thisBeat)));
+            return thisBeat;
+        }
 
         public static List<Point> PA_Rhythm (Patient _P, double _Amplitude) {
             /* ABP during normal sinus perfusion is similar to a sine wave leaning right with dicrotic notch

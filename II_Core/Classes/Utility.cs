@@ -30,7 +30,7 @@ namespace II {
         }
 
         public static double Lerp (double min, double max, double t) {
-            return min * t + max * (1 - t);
+            return min * (1 - t) + max * t;
         }
 
         public static double InverseLerp (double min, double max, double current) {

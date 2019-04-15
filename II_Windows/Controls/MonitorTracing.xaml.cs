@@ -88,8 +88,9 @@ namespace II_Windows.Controls {
             foreach (Leads.Values v in Enum.GetValues(typeof(Leads.Values))) {
                 // Only include certain leads- e.g. bedside monitors don't interface with IABP or EFM
                 string el = v.ToString ();
-                if (!el.StartsWith ("ECG") && el != "SPO2" && el != "CVP" && el != "ABP"
-                    && el != "PA" && el != "RR" && el != "ETCO2")
+                if (!el.StartsWith ("ECG") && el != "SPO2" && el != "RR" && el != "ETCO2"
+                    && el != "CVP" && el != "ABP" && el != "PA"
+                    && el != "ICP" && el != "IAP")
                     continue;
 
                 MenuItem mi = new MenuItem ();
@@ -108,13 +109,15 @@ namespace II_Windows.Controls {
         private void UpdateInterface (object sender, SizeChangedEventArgs e) {
             switch (Lead.Value) {
                 default: drawBrush = Brushes.Green; break;
+                case Leads.Values.SPO2: drawBrush = Brushes.Orange; break;
+                case Leads.Values.RR: drawBrush = Brushes.Salmon; break;
+                case Leads.Values.ETCO2: drawBrush = Brushes.Aqua; break;
                 case Leads.Values.ABP: drawBrush = Brushes.Red; break;
                 case Leads.Values.CVP: drawBrush = Brushes.Blue; break;
                 case Leads.Values.PA: drawBrush = Brushes.Yellow; break;
+                case Leads.Values.ICP: drawBrush = Brushes.Khaki; break;
+                case Leads.Values.IAP: drawBrush = Brushes.Aquamarine; break;
                 case Leads.Values.IABP: drawBrush = Brushes.SkyBlue; break;
-                case Leads.Values.RR: drawBrush = Brushes.Salmon; break;
-                case Leads.Values.ETCO2: drawBrush = Brushes.Aqua; break;
-                case Leads.Values.SPO2: drawBrush = Brushes.Orange; break;
             }
 
             borderTracing.BorderBrush = drawBrush;
@@ -177,6 +180,8 @@ namespace II_Windows.Controls {
                 case Leads.Values.ABP: App.Patient.TransducerZeroed_ABP = true; return;
                 case Leads.Values.CVP: App.Patient.TransducerZeroed_CVP = true; return;
                 case Leads.Values.PA: App.Patient.TransducerZeroed_PA = true; return;
+                case Leads.Values.ICP: App.Patient.TransducerZeroed_ICP = true; return;
+                case Leads.Values.IAP: App.Patient.TransducerZeroed_IAP = true; return;
             }
         }
 

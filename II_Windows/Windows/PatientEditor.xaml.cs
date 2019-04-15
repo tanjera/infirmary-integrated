@@ -98,6 +98,8 @@ namespace II_Windows {
             lblCVP.Content = String.Format ("{0}:", App.Language.Dictionary["PE:CentralVenousPressure"]);
             lblASBP.Content = String.Format ("{0}:", App.Language.Dictionary["PE:ArterialBloodPressure"]);
             lblPSP.Content = String.Format ("{0}:", App.Language.Dictionary["PE:PulmonaryArteryPressure"]);
+            lblICP.Content = String.Format("{0}:", App.Language.Dictionary["PE:IntracranialPressure"]);
+            lblIAP.Content = String.Format("{0}:", App.Language.Dictionary["PE:IntraabdominalPressure"]);
 
             lblGroupRespiratoryProfile.Content = App.Language.Dictionary["PE:RespiratoryProfile"];
             lblInspiratoryRatio.Content = String.Format ("{0}:", App.Language.Dictionary["PE:InspiratoryExpiratoryRatio"]);
@@ -399,11 +401,12 @@ namespace II_Windows {
 
             App.Patient.UpdateParameters (
                 (int)numHR.Value,
-                (int)numRR.Value,
                 (int)numSPO2.Value,
-                (int)numT.Value,
-                (int)numCVP.Value,
+                (int)numRR.Value,
                 (int)numETCO2.Value,
+
+                (double)numT.Value,
+                (int)numCVP.Value,
 
                 (int)numNSBP.Value,
                 (int)numNDBP.Value,
@@ -416,6 +419,9 @@ namespace II_Windows {
                 (int)numPSP.Value,
                 (int)numPDP.Value,
                 Patient.CalculateMAP ((int)numPSP.Value, (int)numPDP.Value),
+
+                (int)numICP.Value,
+                (int)numIAP.Value,
 
                 new double [] {
                 (double)numSTE_I.Value, (double)numSTE_II.Value, (double)numSTE_III.Value,
@@ -448,11 +454,11 @@ namespace II_Windows {
         private void FormUpdateFields (object sender, Patient.PatientEvent_Args e) {
             if (e.EventType == Patient.PatientEvent_Args.EventTypes.Vitals_Change) {
                 numHR.Value = e.Patient.HR;
-                numRR.Value = e.Patient.RR;
                 numSPO2.Value = e.Patient.SPO2;
+                numRR.Value = e.Patient.RR;
+                numETCO2.Value = e.Patient.ETCO2;
                 numT.Value = (decimal)e.Patient.T;
                 numCVP.Value = e.Patient.CVP;
-                numETCO2.Value = e.Patient.ETCO2;
 
                 numNSBP.Value = e.Patient.NSBP;
                 numNDBP.Value = e.Patient.NDBP;
@@ -460,6 +466,9 @@ namespace II_Windows {
                 numADBP.Value = e.Patient.ADBP;
                 numPSP.Value = e.Patient.PSP;
                 numPDP.Value = e.Patient.PDP;
+
+                numICP.Value = e.Patient.ICP;
+                numIAP.Value = e.Patient.IAP;
 
                 comboCardiacRhythm.SelectedIndex = (int)e.Patient.CardiacRhythm.Value;
 

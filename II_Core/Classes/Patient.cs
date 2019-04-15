@@ -10,10 +10,12 @@ namespace II {
 
         /* Parameters for patient simulation, e.g. vital signs */
         // Vital Signs
-        public int  HR, RR, ETCO2, SPO2, CVP,
+        public int  HR, RR, ETCO2, SPO2,            // Heart rate, respiratory rate, end-tidal capnography, pulse oximetry
+                    CVP,                            // Central venous pressure,
                     NSBP, NDBP, NMAP,               // Non-invasive blood pressures
                     ASBP, ADBP, AMAP,               // Arterial line blood pressures
                     PSP, PDP, PMP,                  // Pulmonary artery pressures
+                    ICP, IAP,                       // Intracranial pressure, intra-abdominal pressure
                     IABP_AP, IABP_DBP, IABP_MAP;    // Intra-aortic balloon pump blood pressures
         public double T;                            // Temperature
 
@@ -31,9 +33,11 @@ namespace II {
         public int Respiratory_IERatio_I, Respiratory_IERatio_E;
 
         // General Device Settings
-        public bool TransducerZeroed_ABP = false,
+        public bool TransducerZeroed_CVP = false,
+                    TransducerZeroed_ABP = false,
                     TransducerZeroed_PA = false,
-                    TransducerZeroed_CVP = false;
+                    TransducerZeroed_ICP = false,
+                    TransducerZeroed_IAP = false;
 
         // Obstetric Profile
         public Intensity UCIntensity = new Intensity(),
@@ -109,11 +113,12 @@ namespace II {
 
 
         public Patient () {
-            UpdateParameters (80, 18, 98,
-                            38.0f, 6, 40,
+            UpdateParameters (80, 98, 18, 40,
+                            38.0f, 6,
                             120, 80, 95,
                             120, 80, 95,
                             22, 12, 16,
+                            8, 1,
                             new double[] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
                             new double[] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
                             CardiacRhythms.Values.Sinus_Rhythm,
@@ -156,9 +161,9 @@ namespace II {
                         switch (pName) {
                             default: break;
                             case "HR": HR = int.Parse (pValue); break;
+                            case "SPO2": SPO2 = int.Parse(pValue); break;
                             case "RR": RR = int.Parse (pValue); break;
                             case "ETCO2": ETCO2 = int.Parse (pValue); break;
-                            case "SPO2": SPO2 = int.Parse (pValue); break;
                             case "CVP": CVP = int.Parse (pValue); break;
                             case "NSBP": NSBP = int.Parse (pValue); break;
                             case "NDBP": NDBP = int.Parse (pValue); break;
@@ -169,6 +174,8 @@ namespace II {
                             case "PSP": PSP = int.Parse (pValue); break;
                             case "PDP": PDP = int.Parse (pValue); break;
                             case "PMP": PMP = int.Parse (pValue); break;
+                            case "ICP": ICP = int.Parse(pValue); break;
+                            case "IAP": IAP = int.Parse(pValue); break;
                             case "T": T = int.Parse (pValue); break;
                             case "ST_Elevation":
                                 string[] e_st = pValue.Split (',');
@@ -225,6 +232,7 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "RR", RR));
             sWrite.AppendLine (String.Format ("{0}:{1}", "ETCO2", ETCO2));
             sWrite.AppendLine (String.Format ("{0}:{1}", "SPO2", SPO2));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "T", T));
             sWrite.AppendLine (String.Format ("{0}:{1}", "CVP", CVP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "NSBP", NSBP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "NDBP", NDBP));
@@ -235,7 +243,8 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "PSP", PSP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "PDP", PDP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "PMP", PMP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "T", T));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "ICP", ICP));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "IAP", IAP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "ST_Elevation", string.Join(",", STElevation)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "T_Elevation", string.Join(",", TElevation)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Rhythm", CardiacRhythm.Value));
@@ -261,12 +270,13 @@ namespace II {
         }
 
         public void UpdateParameters(
-                    int hr,     int rr,     int spo2,
+                    int hr,     int spo2,   int rr,     int etco2,
                     double t,
-                    int cvp,    int etco2,
+                    int cvp,
                     int nsbp,   int ndbp,   int nmap,
                     int asbp,   int adbp,   int amap,
                     int psp,    int pdp,    int pmp,
+                    int icp, int iap,
                     double[] st_elev,        double[] t_elev,
                     CardiacRhythms.Values      card_rhythm,
                     RespiratoryRhythms.Values  resp_rhythm,
@@ -274,9 +284,9 @@ namespace II {
                     int fhr, Intensity.Values fhr_var, List<FetalHeartDecelerations.Values> fhr_rhythms,
                     int uc_freq, int uc_duration, Intensity.Values uc_intensity ) {
 
-            HR = hr;    RR = rr;    SPO2 = spo2;
+            HR = hr;    RR = rr;    SPO2 = spo2;    ETCO2 = etco2;
             T = t;
-            CVP = cvp;  ETCO2 = etco2;
+            CVP = cvp;  ICP = icp;  IAP = iap;
 
             NSBP = nsbp;    NDBP = ndbp;    NMAP = nmap;
             ASBP = asbp;    ADBP = adbp;    AMAP = amap;

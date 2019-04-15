@@ -221,9 +221,9 @@ namespace II_Windows {
 
             // Set default numeric types to populate
             if (numericTypes == null || numericTypes.Count == 0)
-                numericTypes = new List<string> (new string [] { "ECG", "NIBP", "SPO2", "CVP", "ABP", "RR", "ETCO2", "T", "PA" });
+                numericTypes = new List<string> (new string [] { "ECG", "NIBP", "SPO2", "RR", "ETCO2", "ABP", "CVP", "T", "PA", "ICP", "IAP" });
             else if (numericTypes.Count < rowsNumerics) {
-                List<string> buffer = new List<string> (new string [] { "ECG", "NIBP", "SPO2", "CVP", "ABP", "RR", "ETCO2", "T", "PA" });
+                List<string> buffer = new List<string> (new string [] { "ECG", "NIBP", "SPO2", "RR", "ETCO2", "ABP", "CVP", "T", "PA", "ICP", "IAP" });
                 buffer.RemoveRange (0, numericTypes.Count);
                 numericTypes.AddRange (buffer);
             }
@@ -238,9 +238,9 @@ namespace II_Windows {
 
             // Set default tracing types to populate
             if (tracingTypes == null || tracingTypes.Count == 0)
-                tracingTypes = new List<string> (new string [] { "ECG_II", "ECG_III", "SPO2", "CVP", "ABP", "RR", "ETCO2", "PA" });
+                tracingTypes = new List<string> (new string [] { "ECG_II", "ECG_III", "SPO2", "RR", "ETCO2", "ABP", "CVP", "PA", "ICP" });
             else if (tracingTypes.Count < rowsTracings) {
-                List<string> buffer = new List<string> (new string [] { "ECG_II", "ECG_III", "SPO2", "CVP", "ABP", "RR", "ETCO2", "PA" });
+                List<string> buffer = new List<string> (new string [] { "ECG_II", "ECG_III", "SPO2", "RR", "ETCO2", "ABP", "CVP", "PA", "ICP" });
                 buffer.RemoveRange (0, tracingTypes.Count);
                 tracingTypes.AddRange (buffer);
             }

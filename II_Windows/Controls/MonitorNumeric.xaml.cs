@@ -31,7 +31,7 @@ namespace II_Windows.Controls {
             public enum Values {
                 ECG, T, RR, ETCO2,
                 SPO2, NIBP, ABP, CVP,
-                PA
+                PA, ICP, IAP
             }
 
             public static string LookupString (Values value) {
@@ -57,7 +57,9 @@ namespace II_Windows.Controls {
                 Brushes.White,
                 Brushes.Red,
                 Brushes.Blue,
-                Brushes.Yellow
+                Brushes.Yellow,
+                Brushes.Khaki,
+                Brushes.Aquamarine
             };
         }
 
@@ -141,6 +143,8 @@ namespace II_Windows.Controls {
                 case ControlType.Values.T:
                 case ControlType.Values.RR:
                 case ControlType.Values.CVP:
+                case ControlType.Values.ICP:
+                case ControlType.Values.IAP:
                     lblLine2.Visibility = Visibility.Hidden;
                     lblLine3.Visibility = Visibility.Hidden;
                     break;
@@ -217,6 +221,20 @@ namespace II_Windows.Controls {
                         lblLine3.Text = "";
                     }
                     break;
+
+                case ControlType.Values.ICP:
+                    if (App.Patient.TransducerZeroed_ICP)
+                        lblLine1.Text = String.Format("{0:0}", Utility.RandomPercentRange(App.Patient.ICP, 0.02f));
+                    else
+                        lblLine1.Text = App.Language.Dictionary["NUMERIC:ZeroTransducer"];
+                    break;
+
+                case ControlType.Values.IAP:
+                    if (App.Patient.TransducerZeroed_IAP)
+                        lblLine1.Text = String.Format("{0:0}", Utility.RandomPercentRange(App.Patient.IAP, 0.02f));
+                    else
+                        lblLine1.Text = App.Language.Dictionary["NUMERIC:ZeroTransducer"];
+                    break;
             }
         }
 
@@ -225,6 +243,8 @@ namespace II_Windows.Controls {
                 case ControlType.Values.ABP: App.Patient.TransducerZeroed_ABP = true; return;
                 case ControlType.Values.CVP: App.Patient.TransducerZeroed_CVP = true; return;
                 case ControlType.Values.PA: App.Patient.TransducerZeroed_PA = true; return;
+                case ControlType.Values.ICP: App.Patient.TransducerZeroed_ICP = true; return;
+                case ControlType.Values.IAP: App.Patient.TransducerZeroed_IAP = true; return;
             }
         }
 

@@ -14,13 +14,16 @@ namespace II {
             ECG_V4, ECG_V5, ECG_V6,
 
             SPO2,
+            RR,
+            ETCO2,
+
             CVP,
             ABP,
             PA,
-            IABP,
+            ICP,
+            IAP,
 
-            RR,
-            ETCO2
+            IABP
         }
 
         public static string LookupString (Values value, bool shortName = false) {
@@ -37,6 +40,8 @@ namespace II {
                 case Values.ABP:
                 case Values.CVP:
                 case Values.PA:
+                case Values.ICP:
+                case Values.IAP:
                     return true;
             }
         }
@@ -47,6 +52,8 @@ namespace II {
                 case Values.ABP: return patient.TransducerZeroed_ABP;
                 case Values.CVP: return patient.TransducerZeroed_CVP;
                 case Values.PA: return patient.TransducerZeroed_PA;
+                case Values.ICP: return patient.TransducerZeroed_ICP;
+                case Values.IAP: return patient.TransducerZeroed_IAP;
             }
         }
     }
