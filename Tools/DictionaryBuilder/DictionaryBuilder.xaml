@@ -5,32 +5,23 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DictionaryBuilder"
         mc:Ignorable="d"
-        Title="II Development Tools: DictionaryBuilder (For Localization)" Height="600" Width="800">
+        Title="II Development Tools: DictionaryBuilder (For Localization)"
+        WindowStartupLocation="CenterScreen"
+        Width="640" Height="480">
 
     <DockPanel LastChildFill="True">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="50" />
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-
-            <TextBox Name="txtFilepath" TextWrapping="Wrap"
-                Grid.Column="0" Grid.Row="0"
-                FontFamily="Courier New" />
-
-            <Button Name="btnProcessText" Height="40"
-                Grid.Column="0" Grid.Row="1"
-                Content="Process Spreadsheet and Copy to Clipboard" Click="OnClick_ProcessSpreadsheet"/>
-
             <TextBox Name="txtOutput" TextWrapping="NoWrap"
-                Grid.Column="0" Grid.Row="2"
-                HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible"
-                FontFamily="Courier New" />
+                     Grid.Column="0" Grid.Row="0"
+                     HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible"
+                     FontFamily="Courier New" TextChanged="txtOutput_TextChanged"/>
         </Grid>
     </DockPanel>
 
