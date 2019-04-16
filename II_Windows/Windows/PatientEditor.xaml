@@ -142,8 +142,7 @@
                             <Label Name="lblDeviceIABP" Style="{StaticResource deviceLabel}" />
                         </StackPanel>
                     </Button>
-                    <Button Name="btnDeviceDefibrillator" Click="ButtonDeviceDefib_Click" Style="{StaticResource deviceButton}"
-                            Visibility="Hidden">
+                    <Button Name="btnDeviceDefibrillator" Click="ButtonDeviceDefib_Click" Style="{StaticResource deviceButton}">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource Icon_DeviceDefibrillator}" Style="{StaticResource deviceImage}" />
                             <Label Name="lblDeviceDefibrillator" Style="{StaticResource deviceLabel}" />

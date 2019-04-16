@@ -154,7 +154,7 @@ namespace II_Windows.Controls {
             }
         }
 
-        public void UpdateVitals (DeviceDefib device) {
+        public void UpdateVitals (DeviceDefib Device) {
             if (App.Patient == null)
                 return;
 
@@ -222,26 +222,44 @@ namespace II_Windows.Controls {
 
                 case ControlType.Values.DEFIB:
 
-                    switch (device.Mode)
+                    switch (Device.Mode)
                     {
                         default:
                         case DeviceDefib.Modes.DEFIB:
                             lblLine1.Visibility = Visibility.Visible;
                             lblLine2.Visibility = Visibility.Visible;
-                            lblLine3.Visibility = Visibility.Hidden;
+                            lblLine3.Visibility = Visibility.Visible;
 
                             lblLine1.Text = App.Language.Dictionary["DEFIB:Defibrillation"];
-                            lblLine2.Text = String.Format("{0:0} {1}", device.Energy, App.Language.Dictionary["DEFIB:Joules"]);
+                            lblLine2.Text = String.Format("{0:0} {1}", Device.Energy, App.Language.Dictionary["DEFIB:Joules"]);
+                            if (Device.Charged)
+                                lblLine3.Text = App.Language.Dictionary ["DEFIB:Charged"];
+                            else if (Device.Analyzed) {
+                                switch (App.Patient.CardiacRhythm.Value) {
+                                    default:
+                                        lblLine3.Text = App.Language.Dictionary ["DEFIB:NoShockAdvised"];
+                                        break;
+
+                                    case CardiacRhythms.Values.Ventricular_Fibrillation_Coarse:
+                                    case CardiacRhythms.Values.Ventricular_Fibrillation_Fine:
+                                    case CardiacRhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
+                                    case CardiacRhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
+                                    case CardiacRhythms.Values.Ventricular_Tachycardia_Polymorphic:
+                                        lblLine3.Text = App.Language.Dictionary ["DEFIB:ShockAdvised"];
+                                        break;
+                                }
+                            } else
+                                lblLine3.Text = "";
                             break;
 
                         case DeviceDefib.Modes.SYNC:
                             lblLine1.Visibility = Visibility.Visible;
                             lblLine2.Visibility = Visibility.Visible;
-                            lblLine3.Visibility = Visibility.Hidden;
+                            lblLine3.Visibility = Visibility.Visible;
 
                             lblLine1.Text = App.Language.Dictionary["DEFIB:Synchronized"];
-                            lblLine2.Text = String.Format("{0:0} {1}", device.Energy, App.Language.Dictionary["DEFIB:Joules"]);
-                            lblLine3.Visibility = Visibility.Hidden;
+                            lblLine2.Text = String.Format("{0:0} {1}", Device.Energy, App.Language.Dictionary["DEFIB:Joules"]);
+                            lblLine3.Text = Device.Charged ? App.Language.Dictionary ["DEFIB:Charged"] : "";
                             break;
 
                         case DeviceDefib.Modes.PACER:
@@ -250,8 +268,8 @@ namespace II_Windows.Controls {
                             lblLine3.Visibility = Visibility.Visible;
 
                             lblLine1.Text = App.Language.Dictionary["DEFIB:Pacing"];
-                            lblLine2.Text = String.Format("{0:0} {1}", device.PacerEnergy, App.Language.Dictionary["DEFIB:Milliamps"]);
-                            lblLine3.Text = String.Format("{0}: {1:0}", App.Language.Dictionary["DEFIB:Rate"], device.PacerRate);
+                            lblLine2.Text = String.Format("{0:0} {1}", Device.PacerEnergy, App.Language.Dictionary["DEFIB:Milliamps"]);
+                            lblLine3.Text = String.Format("{0}: {1:0}", App.Language.Dictionary["DEFIB:Rate"], Device.PacerRate);
                             break;
                     }
                     break;

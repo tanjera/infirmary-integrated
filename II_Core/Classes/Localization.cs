@@ -91,7 +91,7 @@ namespace II.Localization {
         }
 
 
-        static Dictionary<string, string> ENU = new Dictionary<string, string>() {
+        static Dictionary<string, string> ENU = new Dictionary<string, string> () {
             {"BUTTON:Continue",                                           "Continue"},
             {"BUTTON:ApplyChanges",                                       "Apply Changes"},
             {"BUTTON:ResetParameters",                                    "Reset Parameters"},
@@ -185,7 +185,7 @@ namespace II.Localization {
             {"DEFIB:EnergyAmount",                                        "Energy Amount"},
             {"DEFIB:Charge",                                              "Charge"},
             {"DEFIB:Shock",                                               "Shock"},
-            {"DEFIB:AutomaticMode",                                       "AED Mode"},
+            {"DEFIB:AutomaticMode",                                       "Automatic Mode"},
             {"DEFIB:Analyze",                                             "Analyze"},
             {"DEFIB:Sync",                                                "Sync"},
             {"DEFIB:Pacer",                                               "Pacer"},
@@ -193,6 +193,7 @@ namespace II.Localization {
             {"DEFIB:Pause",                                               "Pause"},
             {"DEFIB:Defibrillation",                                      "Defibrillation"},
             {"DEFIB:Synchronized",                                        "Synchronized"},
+            {"DEFIB:Charged",                                             "Charged"},
             {"DEFIB:Pacing",                                              "Pacing"},
             {"DEFIB:Joules",                                              "J"},
             {"DEFIB:Milliamps",                                           "mA"},
@@ -299,7 +300,7 @@ namespace II.Localization {
             {"LANG:ChooseLanguage",                                       "Please choose your language:"},
         };
 
-        static Dictionary<string, string> AMH = new Dictionary<string, string>() {
+        static Dictionary<string, string> AMH = new Dictionary<string, string> () {
             {"BUTTON:Continue",                                           "ቀጥል"},
             {"BUTTON:ApplyChanges",                                       "ለውጦች ተግብር"},
             {"BUTTON:ResetParameters",                                    "ዳግም አስጀምር መለኪያዎች"},
@@ -401,6 +402,7 @@ namespace II.Localization {
             {"DEFIB:Pause",                                               "ለጥቂት ጊዜ አረፈ"},
             {"DEFIB:Defibrillation",                                      "ከነርሶች"},
             {"DEFIB:Synchronized",                                        "የተመሳሰለ"},
+            {"DEFIB:Charged",                                             "ኃይል"},
             {"DEFIB:Pacing",                                              "ርቀት"},
             {"DEFIB:Joules",                                              "አሃዶች"},
             {"DEFIB:Milliamps",                                           "አሃዶች"},
@@ -507,7 +509,7 @@ namespace II.Localization {
             {"LANG:ChooseLanguage",                                       "የእርስዎን ቋንቋ ይምረጡ:"},
         };
 
-        static Dictionary<string, string> ARA = new Dictionary<string, string>() {
+        static Dictionary<string, string> ARA = new Dictionary<string, string> () {
             {"BUTTON:Continue",                                           "استمر"},
             {"BUTTON:ApplyChanges",                                       "تطبيق التغييرات"},
             {"BUTTON:ResetParameters",                                    "معلمات إعادة تعيين"},
@@ -609,6 +611,7 @@ namespace II.Localization {
             {"DEFIB:Pause",                                               "وقفة"},
             {"DEFIB:Defibrillation",                                      "صدمات الكهربائية"},
             {"DEFIB:Synchronized",                                        "تزامن"},
+            {"DEFIB:Charged",                                             "تنشيط"},
             {"DEFIB:Pacing",                                              "جهاز تنظيم ضربات القلب"},
             {"DEFIB:Joules",                                              "جول وحدة طاقة"},
             {"DEFIB:Milliamps",                                           "ميلي أمبير"},
@@ -715,7 +718,7 @@ namespace II.Localization {
             {"LANG:ChooseLanguage",                                       "الرجاء اختيار لغتك"},
         };
 
-        static Dictionary<string, string> CHS = new Dictionary<string, string>() {
+        static Dictionary<string, string> CHS = new Dictionary<string, string> () {
             {"BUTTON:Continue",                                           "继续"},
             {"BUTTON:ApplyChanges",                                       "应用更改"},
             {"BUTTON:ResetParameters",                                    "重新设置参数"},
@@ -817,6 +820,7 @@ namespace II.Localization {
             {"DEFIB:Pause",                                               "暂停"},
             {"DEFIB:Defibrillation",                                      "除颤"},
             {"DEFIB:Synchronized",                                        "同步"},
+            {"DEFIB:Charged",                                             "通电"},
             {"DEFIB:Pacing",                                              "起搏器"},
             {"DEFIB:Joules",                                              "焦耳"},
             {"DEFIB:Milliamps",                                           "单位"},
@@ -923,7 +927,7 @@ namespace II.Localization {
             {"LANG:ChooseLanguage",                                       "请选择您的语言"},
         };
 
-        static Dictionary<string, string> DEU = new Dictionary<string, string>() {
+        static Dictionary<string, string> DEU = new Dictionary<string, string> () {
             {"BUTTON:Continue",                                           "Fortsetzen"},
             {"BUTTON:ApplyChanges",                                       "Änderungen übernehmen"},
             {"BUTTON:ResetParameters",                                    "Parameter zurücksetzen"},
@@ -1025,6 +1029,7 @@ namespace II.Localization {
             {"DEFIB:Pause",                                               "Pausieren"},
             {"DEFIB:Defibrillation",                                      "Defibrillation"},
             {"DEFIB:Synchronized",                                        "Synchronisiert"},
+            {"DEFIB:Charged",                                             "Energetisiert"},
             {"DEFIB:Pacing",                                              "Schrittmacher"},
             {"DEFIB:Joules",                                              "Joule"},
             {"DEFIB:Milliamps",                                           ""},
@@ -1131,7 +1136,7 @@ namespace II.Localization {
             {"LANG:ChooseLanguage",                                       "Bitte wähle deine Sprache:"},
         };
 
-        static Dictionary<string, string> FAR = new Dictionary<string, string>() {
+        static Dictionary<string, string> FAR = new Dictionary<string, string> () {
             {"BUTTON:Continue",                                           "ادامه هید"},
             {"BUTTON:ApplyChanges",                                       "تغغیرات را اعمال کن"},
             {"BUTTON:ResetParameters",                                    "پارامترهای تنظیم مجدد"},
@@ -1233,6 +1238,7 @@ namespace II.Localization {
             {"DEFIB:Pause",                                               "توقف"},
             {"DEFIB:Defibrillation",                                      "دفیبریلاتور"},
             {"DEFIB:Synchronized",                                        "همگام شده"},
+            {"DEFIB:Charged",                                             "انرژی"},
             {"DEFIB:Pacing",                                              "راهنما"},
             {"DEFIB:Joules",                                              "ژول"},
             {"DEFIB:Milliamps",                                           "میلیآمپر"},
@@ -1339,7 +1345,7 @@ namespace II.Localization {
             {"LANG:ChooseLanguage",                                       "لطفا زبان خود را انتخاب کنید"},
         };
 
-        static Dictionary<string, string> ESP = new Dictionary<string, string>() {
+        static Dictionary<string, string> ESP = new Dictionary<string, string> () {
             {"BUTTON:Continue",                                           "Continuar"},
             {"BUTTON:ApplyChanges",                                       "Aplicar cambios"},
             {"BUTTON:ResetParameters",                                    "Restablecer parámetros"},
@@ -1441,6 +1447,7 @@ namespace II.Localization {
             {"DEFIB:Pause",                                               "Pausa"},
             {"DEFIB:Defibrillation",                                      "Desfibrilación"},
             {"DEFIB:Synchronized",                                        "Sincronizado"},
+            {"DEFIB:Charged",                                             "Energizada"},
             {"DEFIB:Pacing",                                              "Marcapasos"},
             {"DEFIB:Joules",                                              "Joule"},
             {"DEFIB:Milliamps",                                           ""},
@@ -1547,7 +1554,7 @@ namespace II.Localization {
             {"LANG:ChooseLanguage",                                       "Por favor elija su idioma:"},
         };
 
-        static Dictionary<string, string> FRA = new Dictionary<string, string>() {
+        static Dictionary<string, string> FRA = new Dictionary<string, string> () {
             {"BUTTON:Continue",                                           "Continuer"},
             {"BUTTON:ApplyChanges",                                       "Appliquer les modifications"},
             {"BUTTON:ResetParameters",                                    "Réinitialiser les paramètres"},
@@ -1649,6 +1656,7 @@ namespace II.Localization {
             {"DEFIB:Pause",                                               "Pauser"},
             {"DEFIB:Defibrillation",                                      "Défibrillation"},
             {"DEFIB:Synchronized",                                        "Synchronisé"},
+            {"DEFIB:Charged",                                             "Energie prête"},
             {"DEFIB:Pacing",                                              "Stimulateur cardiaque"},
             {"DEFIB:Joules",                                              "Joule"},
             {"DEFIB:Milliamps",                                           ""},
@@ -1755,7 +1763,7 @@ namespace II.Localization {
             {"LANG:ChooseLanguage",                                       "S'il vous plaît Choisissez votre langue:"},
         };
 
-        static Dictionary<string, string> HEB = new Dictionary<string, string>() {
+        static Dictionary<string, string> HEB = new Dictionary<string, string> () {
             {"BUTTON:Continue",                                           "המשך"},
             {"BUTTON:ApplyChanges",                                       "החל שינויים"},
             {"BUTTON:ResetParameters",                                    "פרמטרי איפוס"},
@@ -1857,6 +1865,7 @@ namespace II.Localization {
             {"DEFIB:Pause",                                               "השהה"},
             {"DEFIB:Defibrillation",                                      "דפיברילציה"},
             {"DEFIB:Synchronized",                                        "מסונכרן"},
+            {"DEFIB:Charged",                                             "אנרגטית"},
             {"DEFIB:Pacing",                                              "קוצב לב"},
             {"DEFIB:Joules",                                              "ג'אוּל"},
             {"DEFIB:Milliamps",                                           "מיליאמפרה"},
@@ -1963,7 +1972,7 @@ namespace II.Localization {
             {"LANG:ChooseLanguage",                                       "בחר את השפה שלך"},
         };
 
-        static Dictionary<string, string> HIN = new Dictionary<string, string>() {
+        static Dictionary<string, string> HIN = new Dictionary<string, string> () {
             {"BUTTON:Continue",                                           "जारी रहना"},
             {"BUTTON:ApplyChanges",                                       "परिवर्तन लागू करें"},
             {"BUTTON:ResetParameters",                                    "रीसेट पैरामीटर"},
@@ -2065,6 +2074,7 @@ namespace II.Localization {
             {"DEFIB:Pause",                                               "ठहराव"},
             {"DEFIB:Defibrillation",                                      "तंतुविकंपहरण"},
             {"DEFIB:Synchronized",                                        "सिंक्रनाइज़"},
+            {"DEFIB:Charged",                                             "सक्रिय"},
             {"DEFIB:Pacing",                                              "पेसमेकर"},
             {"DEFIB:Joules",                                              "जौल"},
             {"DEFIB:Milliamps",                                           "इकाइयों"},
@@ -2171,7 +2181,7 @@ namespace II.Localization {
             {"LANG:ChooseLanguage",                                       "कृपया अपनी भाषा चुनें"},
         };
 
-        static Dictionary<string, string> ITA = new Dictionary<string, string>() {
+        static Dictionary<string, string> ITA = new Dictionary<string, string> () {
             {"BUTTON:Continue",                                           "Continua"},
             {"BUTTON:ApplyChanges",                                       "Applica i cambiamenti"},
             {"BUTTON:ResetParameters",                                    "Ripristina i parametri"},
@@ -2273,6 +2283,7 @@ namespace II.Localization {
             {"DEFIB:Pause",                                               "Pausa"},
             {"DEFIB:Defibrillation",                                      "Defibrillazione"},
             {"DEFIB:Synchronized",                                        "Sincronizzato"},
+            {"DEFIB:Charged",                                             "Energia pronta"},
             {"DEFIB:Pacing",                                              "Stimolatore cardiaco"},
             {"DEFIB:Joules",                                              "Joule"},
             {"DEFIB:Milliamps",                                           "Milliampere"},
@@ -2379,7 +2390,7 @@ namespace II.Localization {
             {"LANG:ChooseLanguage",                                       "Per favore scegli la tua lingua:"},
         };
 
-        static Dictionary<string, string> KOR = new Dictionary<string, string>() {
+        static Dictionary<string, string> KOR = new Dictionary<string, string> () {
             {"BUTTON:Continue",                                           "잇다"},
             {"BUTTON:ApplyChanges",                                       "변경 승인"},
             {"BUTTON:ResetParameters",                                    "매개 변수 재설정"},
@@ -2481,6 +2492,7 @@ namespace II.Localization {
             {"DEFIB:Pause",                                               "중지"},
             {"DEFIB:Defibrillation",                                      "세동 제거기"},
             {"DEFIB:Synchronized",                                        "동기화"},
+            {"DEFIB:Charged",                                             "에너지 준비"},
             {"DEFIB:Pacing",                                              "페이싱"},
             {"DEFIB:Joules",                                              "줄"},
             {"DEFIB:Milliamps",                                           "밀리 암페어"},
@@ -2587,7 +2599,7 @@ namespace II.Localization {
             {"LANG:ChooseLanguage",                                       "귀하의 언어를 선택하십시오."},
         };
 
-        static Dictionary<string, string> PTB = new Dictionary<string, string>() {
+        static Dictionary<string, string> PTB = new Dictionary<string, string> () {
             {"BUTTON:Continue",                                           "Continuar"},
             {"BUTTON:ApplyChanges",                                       "Aplicar mudanças"},
             {"BUTTON:ResetParameters",                                    "Parâmetros de redefinição"},
@@ -2689,6 +2701,7 @@ namespace II.Localization {
             {"DEFIB:Pause",                                               "Pausa"},
             {"DEFIB:Defibrillation",                                      "Desfibrilação"},
             {"DEFIB:Synchronized",                                        "Sincronizada"},
+            {"DEFIB:Charged",                                             "Energia pronta"},
             {"DEFIB:Pacing",                                              "Marca-passo"},
             {"DEFIB:Joules",                                              "Joules"},
             {"DEFIB:Milliamps",                                           "Miliamperes"},
@@ -2795,7 +2808,7 @@ namespace II.Localization {
             {"LANG:ChooseLanguage",                                       "Escolha o seu idioma:"},
         };
 
-        static Dictionary<string, string> RUS = new Dictionary<string, string>() {
+        static Dictionary<string, string> RUS = new Dictionary<string, string> () {
             {"BUTTON:Continue",                                           "Продолжать"},
             {"BUTTON:ApplyChanges",                                       "Применить изменения"},
             {"BUTTON:ResetParameters",                                    "Сбросить параметры"},
@@ -2897,6 +2910,7 @@ namespace II.Localization {
             {"DEFIB:Pause",                                               "Пауза"},
             {"DEFIB:Defibrillation",                                      "дефибриллятор"},
             {"DEFIB:Synchronized",                                        "синхронизированный"},
+            {"DEFIB:Charged",                                             "энергия готова"},
             {"DEFIB:Pacing",                                              "электрокардиостимулятор"},
             {"DEFIB:Joules",                                              "джоулей"},
             {"DEFIB:Milliamps",                                           "миллиампер"},
@@ -3003,7 +3017,7 @@ namespace II.Localization {
             {"LANG:ChooseLanguage",                                       "Выберите язык:"},
         };
 
-        static Dictionary<string, string> SWK = new Dictionary<string, string>() {
+        static Dictionary<string, string> SWK = new Dictionary<string, string> () {
             {"BUTTON:Continue",                                           "Endelea"},
             {"BUTTON:ApplyChanges",                                       "Tumia Mabadiliko"},
             {"BUTTON:ResetParameters",                                    "Weka upya Vipengele"},
@@ -3105,6 +3119,7 @@ namespace II.Localization {
             {"DEFIB:Pause",                                               "Pumzika"},
             {"DEFIB:Defibrillation",                                      "Defibrillator"},
             {"DEFIB:Synchronized",                                        "Inalinganishwa"},
+            {"DEFIB:Charged",                                             "Nishati tayari"},
             {"DEFIB:Pacing",                                              "Pacemaker"},
             {"DEFIB:Joules",                                              "Joule"},
             {"DEFIB:Milliamps",                                           "Milliampere"},

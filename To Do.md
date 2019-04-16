@@ -2,17 +2,14 @@
 
 
 
+
 * Next steps:
-
-
 	* Defibrillator
 		- Functionality for:
-			- Shock
-			- Analyze
-			- Defibrillation/Cardioversion waveforms!!
 			- Pacing functionality
 				- Will need capture threshold on Patient Editor
 				- Pause button
+			- Biphasic vs monophasic options?
 
 	* EFM
 		- DeviceEFM layout
@@ -28,8 +25,8 @@
 
 * Long-term to-do:
 
-	- DeviceIABP
-		- Add timer for delays (e.g. priming balloon takes 10 seconds)
+	- DeviceIABP & DeviceDefib
+		- Add timer for delays (e.g. priming balloon takes 10 seconds; charging defibrillator takes 5 seconds)
 
 	- Splash screen?
 		- Compiler #if release version only...

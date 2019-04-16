@@ -70,6 +70,8 @@ namespace II {
         private Timer   timerCardiac_Baseline = new Timer (),
                         timerCardiac_Atrial = new Timer (),
                         timerCardiac_Ventricular = new Timer (),
+                        timerDefibrillation = new Timer (),
+                        timerPacemaker = new Timer (),
                         timerRespiratory_Baseline = new Timer (),
                         timerRespiratory_Inspiration = new Timer(),
                         timerRespiratory_Expiration = new Timer(),
@@ -103,6 +105,8 @@ namespace II {
                 Cardiac_Baseline,
                 Cardiac_Atrial,
                 Cardiac_Ventricular,
+                Cardiac_Defibrillation,
+                Cardiac_Pacer,
                 Respiratory_Baseline,
                 Respiratory_Inspiration,
                 Respiratory_Expiration,
@@ -144,6 +148,8 @@ namespace II {
             timerCardiac_Baseline.Process ();
             timerCardiac_Atrial.Process ();
             timerCardiac_Ventricular.Process ();
+            timerDefibrillation.Process ();
+            timerPacemaker.Process ();
             timerRespiratory_Baseline.Process ();
             timerRespiratory_Inspiration.Process ();
             timerRespiratory_Expiration.Process ();
@@ -346,10 +352,17 @@ namespace II {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Vitals_Change));
         }
 
+        public void Defibrillate () => InitDefibrillation (false);
+        public void Cardiovert () => InitDefibrillation (true);
+        public void Pacemaker () => InitPacemaker ();
+        public bool IsDefibrillating { get { return timerDefibrillation.IsRunning; } }
+
         private void InitTimers() {
             timerCardiac_Baseline.Tick += delegate { OnCardiac_Baseline (); };
             timerCardiac_Atrial.Tick += delegate { OnCardiac_Atrial (); };
             timerCardiac_Ventricular.Tick += delegate { OnCardiac_Ventricular (); };
+            timerDefibrillation.Tick += delegate { OnDefibrillation_End (); };
+            timerPacemaker.Tick += delegate { OnPacemaker_End (); };
 
             timerRespiratory_Baseline.Tick += delegate { OnRespiratory_Baseline (); };
             timerRespiratory_Inspiration.Tick += delegate { OnRespiratory_Inspiration (); };
@@ -365,6 +378,8 @@ namespace II {
             timerCardiac_Baseline.Reset((int) (HR_Seconds * 1000f));
             timerCardiac_Atrial.Stop ();
             timerCardiac_Ventricular.Stop ();
+            timerDefibrillation.Stop ();
+            timerPacemaker.Stop ();
 
             timerRespiratory_Baseline.Reset ((int)(RR_Seconds * 1000f));
             timerRespiratory_Inspiration.Stop ();
@@ -478,6 +493,40 @@ namespace II {
             }
         }
 
+        private void InitDefibrillation (bool toSynchronize) {
+            if (toSynchronize)
+                timerCardiac_Ventricular.Tick += OnCardioversion;
+            else
+                OnDefibrillation ();
+        }
+
+        private void InitPacemaker () {
+            PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Pacer));
+        }
+
+        private void OnDefibrillation () {
+            timerCardiac_Baseline.Stop ();
+            timerCardiac_Atrial.Stop ();
+            timerCardiac_Ventricular.Stop ();
+            timerDefibrillation.Reset (1000);
+            // Invoke the defibrillation event *after* starting the timer- IsDefibrillating() checks the timer!
+            PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Defibrillation));
+        }
+
+        private void OnDefibrillation_End () {
+            timerDefibrillation.Stop ();
+            timerCardiac_Baseline.Reset (timerCardiac_Baseline.Interval);
+        }
+
+        private void OnCardioversion (object sender, EventArgs e) {
+            timerCardiac_Ventricular.Tick -= OnCardioversion;
+            OnDefibrillation ();
+        }
+
+        private void OnPacemaker_End () {
+            throw new NotImplementedException ();
+        }
+
         private void OnCardiac_Atrial () {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Atrial));
 
@@ -552,6 +601,7 @@ namespace II {
 
             timerCardiac_Ventricular.Stop ();
         }
+
 
         private void OnRespiratory_Baseline() {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Respiratory_Baseline));

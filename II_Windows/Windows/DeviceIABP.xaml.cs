@@ -421,6 +421,7 @@ namespace II_Windows {
                     }
                     break;
 
+                case Patient.PatientEvent_Args.EventTypes.Cardiac_Defibrillation:
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
                     App.Patient.IABP_Active = Running && (Frequency_Iter % Frequency == 0)
                         && ((Trigger.Value == Triggers.Values.ECG && App.Patient.CardiacRhythm.HasWaveform_Ventricular)

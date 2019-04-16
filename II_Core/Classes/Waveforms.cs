@@ -56,8 +56,12 @@ namespace II.Rhythm {
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Curve (_Portion, 0f, 0.3f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.5f * _Amplitude, 0.3f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.35f * _Amplitude, -0.05f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion,
+                (_P.CardiacRhythm.HasPulse_Atrial && !_P.CardiacRhythm.AberrantBeat ? 0.5 : 0.3) * _Amplitude,
+                0.3 * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion,
+                (_P.CardiacRhythm.HasPulse_Atrial && !_P.CardiacRhythm.AberrantBeat ? 0.35 : .15) * _Amplitude,
+                -0.05f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (_Portion, -0.1f, -0.05f * _Amplitude, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.2f * _Amplitude, 0f, Last (thisBeat)));
             return thisBeat;
@@ -330,6 +334,17 @@ namespace II.Rhythm {
             return thisBeat;
         }
 
+        public static List<Point> ECG_Defibrillation (Patient _P, Leads _L) {
+            List<Point> thisBeat = new List<Point> ();
+            thisBeat = Concatenate (thisBeat, Line (.01d,
+                1.0f * leadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (.3d,
+                0.5f * leadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (.01d,
+                -0.5f * leadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (.68d, 0f, Last (thisBeat)));
+            return thisBeat;
+        }
 
         /*
 	     * Shaping and point plotting functions

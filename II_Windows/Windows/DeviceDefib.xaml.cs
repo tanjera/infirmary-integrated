@@ -32,7 +32,8 @@ namespace II_Windows {
 
         // Device settings
         public Modes Mode = Modes.DEFIB;
-        public bool Charged = false;
+        public bool Charged = false,
+                    Analyzed = false;
 
         public int Energy = 200,
                     PacerEnergy = 0,
@@ -225,8 +226,7 @@ namespace II_Windows {
         }
 
 
-        private void ButtonDefib_Click(object s, RoutedEventArgs e)
-        {
+        private void ButtonDefib_Click(object s, RoutedEventArgs e) {
             Mode = Modes.DEFIB;
             UpdateInterface();
         }
@@ -238,15 +238,38 @@ namespace II_Windows {
             Energy = Utility.Clamp(Energy + 20, 0, 200);
             UpdateInterface();
         }
-        private void ButtonCharge_Click(object s, RoutedEventArgs e) { throw new NotImplementedException(); }
-        private void ButtonShock_Click(object s, RoutedEventArgs e) { throw new NotImplementedException(); }
-        private void ButtonAnalyze_Click(object s, RoutedEventArgs e) { throw new NotImplementedException(); }
+        private void ButtonCharge_Click (object s, RoutedEventArgs e) {
+            Analyzed = false;
+            Charged = true;
+            UpdateInterface ();
+        }
+        private void ButtonShock_Click(object s, RoutedEventArgs e) {
+            if (!Charged)
+                return;
+
+            Charged = false;
+
+            switch (Mode) {
+                default: break;
+                case Modes.DEFIB: App.Patient.Defibrillate (); break;
+                case Modes.SYNC: App.Patient.Cardiovert (); break;
+            }
+
+            UpdateInterface ();
+        }
+        private void ButtonAnalyze_Click(object s, RoutedEventArgs e) {
+            Analyzed = true;
+            Mode = Modes.DEFIB;
+            UpdateInterface ();
+        }
         private void ButtonSync_Click(object s, RoutedEventArgs e) {
+            Analyzed = false;
             Mode = (Mode != Modes.SYNC ? Modes.SYNC : Modes.DEFIB);
             UpdateInterface();
         }
 
         private void ButtonPacer_Click(object s, RoutedEventArgs e) {
+            Analyzed = false;
             Mode = (Mode != Modes.PACER ? Modes.PACER : Modes.DEFIB);
             UpdateInterface();
         }
@@ -365,6 +388,7 @@ namespace II_Windows {
                         n.UpdateVitals (this);
                     break;
 
+                case Patient.PatientEvent_Args.EventTypes.Cardiac_Defibrillation:
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
                     foreach (Controls.DefibTracing c in listTracings)
                         c.Add_Beat__Cardiac_Baseline (App.Patient);

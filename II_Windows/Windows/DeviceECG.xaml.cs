@@ -195,6 +195,7 @@ namespace II_Windows {
                     }
                     break;
 
+                case Patient.PatientEvent_Args.EventTypes.Cardiac_Defibrillation:
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
                     foreach (Controls.ECGTracing c in listTracings)
                         c.Add_Beat__Cardiac_Baseline (App.Patient);

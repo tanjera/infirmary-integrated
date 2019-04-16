@@ -126,9 +126,12 @@ namespace II.Rhythm {
         }
 
         public void Add_Beat__Cardiac_Baseline (Patient _Patient) {
-            if (IsECG ())
-                _Patient.CardiacRhythm.ECG_Isoelectric (_Patient, this);
-            else if (Lead.Value != Leads.Values.RR && Lead.Value != Leads.Values.ETCO2) {
+            if (IsECG ()) {
+                if (_Patient.IsDefibrillating)      // Process defibrillation here...
+                    Overwrite (Waveforms.ECG_Defibrillation (_Patient, Lead));
+                else
+                    _Patient.CardiacRhythm.ECG_Isoelectric (_Patient, this);
+            } else if (Lead.Value != Leads.Values.RR && Lead.Value != Leads.Values.ETCO2) {
                 // Fill waveform through to future buffer with flatline
                 double fill = (lengthSeconds * forwardEdgeBuffer) - Last (Points).X;
                 Concatenate (Waveforms.Waveform_Flatline (fill > _Patient.HR_Seconds ? fill : _Patient.HR_Seconds, 0f));

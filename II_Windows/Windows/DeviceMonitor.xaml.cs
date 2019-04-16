@@ -283,6 +283,7 @@ namespace II_Windows {
                         n.UpdateVitals ();
                     break;
 
+                case Patient.PatientEvent_Args.EventTypes.Cardiac_Defibrillation:
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
                     foreach (Controls.MonitorTracing c in listTracings)
                         c.Add_Beat__Cardiac_Baseline (App.Patient);
