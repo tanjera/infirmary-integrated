@@ -5,34 +5,31 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DictionaryBuilder"
         mc:Ignorable="d"
-        Title="II Development Tools: DictionaryBuilder (For Localization)" Height="350" Width="525">
+        Title="II Development Tools: DictionaryBuilder (For Localization)" Height="600" Width="800">
 
     <DockPanel LastChildFill="True">
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="50" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <TextBox Name="txtInput1" TextWrapping="Wrap" AcceptsReturn="True"
+
+            <TextBox Name="txtFilepath" TextWrapping="Wrap"
                 Grid.Column="0" Grid.Row="0"
-                FontFamily="Courier New" />
-            <TextBox Name="txtInput2" TextWrapping="Wrap" AcceptsReturn="True"
-                Grid.Column="1" Grid.Row="0"
                 FontFamily="Courier New" />
 
             <Button Name="btnProcessText" Height="40"
-                Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
-                Content="Process Text and Copy to Clipboard" Click="OnClick_ProcessText"/>
+                Grid.Column="0" Grid.Row="1"
+                Content="Process Spreadsheet and Copy to Clipboard" Click="OnClick_ProcessSpreadsheet"/>
 
-            <TextBox Name="txtOutput"
-                Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2"
+            <TextBox Name="txtOutput" TextWrapping="NoWrap"
+                Grid.Column="0" Grid.Row="2"
+                HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible"
                 FontFamily="Courier New" />
         </Grid>
     </DockPanel>
