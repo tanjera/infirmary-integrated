@@ -98,8 +98,8 @@ namespace II_Windows {
                             case "rowsNumerics": rowsNumerics = int.Parse (pValue); break;
                             case "isPaused": isPaused = bool.Parse (pValue); break;
                             case "isFullscreen": isFullscreen = bool.Parse (pValue); break;
-                            case "numericTypes": numericTypes.AddRange (pValue.Split (',')); break;
-                            case "tracingTypes": tracingTypes.AddRange (pValue.Split (',')); break;
+                            case "numericTypes": numericTypes.AddRange (pValue.Split (',').Where((o) => o != "")); break;
+                            case "tracingTypes": tracingTypes.AddRange (pValue.Split (',').Where((o) => o != "")); break;
                         }
                     }
                 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -188,13 +189,13 @@ namespace II {
                             case "IAP": IAP = int.Parse(pValue); break;
                             case "T": T = double.Parse (pValue); break;
                             case "ST_Elevation":
-                                string[] e_st = pValue.Split (',');
-                                for (int i = 0; i < e_st.Length; i++)
+                                string[] e_st = pValue.Split (',').Where((o) => o != "").ToArray();
+                                for (int i = 0; i < e_st.Length && i < STElevation.Length; i++)
                                     STElevation [i] = double.Parse (e_st [i]);
                                 break;
                             case "T_Elevation":
-                                string [] e_t = pValue.Split (',');
-                                for (int i = 0; i < e_t.Length; i++)
+                                string [] e_t = pValue.Split (',').Where((o) => o != "").ToArray();
+                                for (int i = 0; i < e_t.Length && i < TElevation.Length; i++)
                                     TElevation [i] = double.Parse (e_t [i]);
                                 break;
                             case "Cardiac_Rhythm": CardiacRhythm.Value = (CardiacRhythms.Values) Enum.Parse(typeof(CardiacRhythms.Values), pValue); break;
@@ -212,9 +213,8 @@ namespace II {
                             case "FHR": FHR = int.Parse (pValue); break;
                             case "FHR_Variability": FHRVariability.Value = (Intensity.Values)Enum.Parse (typeof (Intensity.Values), pValue); break;
                             case "FHR_Rhythms":
-                                foreach (string fhr_rhythm in pValue.Split (','))
-                                    if (fhr_rhythm != "")
-                                        FHRDecelerations.ValueList.Add ((FetalHeartDecelerations.Values)Enum.Parse (typeof (FetalHeartDecelerations.Values), fhr_rhythm));
+                                foreach (string fhr_rhythm in pValue.Split (',').Where((o) => o != ""))
+                                    FHRDecelerations.ValueList.Add ((FetalHeartDecelerations.Values)Enum.Parse (typeof (FetalHeartDecelerations.Values), fhr_rhythm));
                                 break;
                             case "UterineContraction_Frequency": UCFrequency = int.Parse (pValue); break;
                             case "UterineContraction_Duration": UCDuration = int.Parse (pValue); break;
