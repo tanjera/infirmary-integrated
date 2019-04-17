@@ -33,7 +33,7 @@ namespace II_Windows {
             DataContext = this;
             App.Patient_Editor = this;
 
-            InitLanguage ();
+            InitInitialRun ();
             InitInterface ();
             InitPatient ();
 
@@ -45,13 +45,12 @@ namespace II_Windows {
             //WindowState = WindowState.Minimized;
         }
 
-        private void InitLanguage () {
+        private void InitInitialRun () {
             string setLang = Properties.Settings.Default.Language;
-
             if (setLang == null || setLang == ""
                 || !Enum.TryParse<Languages.Values>(setLang, out App.Language.Value)) {
                 App.Language = new Languages ();
-                DialogLanguage ();
+                DialogInitial ();
             }
         }
 
@@ -189,8 +188,8 @@ namespace II_Windows {
 
             App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
         }
-        private void DialogLanguage(bool reloadUI = false) {
-            App.Dialog_Language = new DialogLanguage ();
+        private void DialogInitial(bool reloadUI = false) {
+            App.Dialog_Language = new DialogInitial ();
             App.Dialog_Language.Activate ();
             App.Dialog_Language.ShowDialog ();
 
@@ -422,7 +421,7 @@ namespace II_Windows {
         private void MenuLoadFile_Click (object s, RoutedEventArgs e) => LoadFile ();
         private void MenuSaveFile_Click (object s, RoutedEventArgs e) => SaveFile ();
         private void MenuExit_Click (object s, RoutedEventArgs e) => RequestExit ();
-        private void MenuSetLanguage_Click (object s, RoutedEventArgs e) => DialogLanguage (true);
+        private void MenuSetLanguage_Click (object s, RoutedEventArgs e) => DialogInitial (true);
         private void MenuAbout_Click (object s, RoutedEventArgs e) => DialogAbout ();
         private void ButtonDeviceMonitor_Click (object s, RoutedEventArgs e) => InitDeviceMonitor ();
         private void ButtonDeviceECG_Click (object s, RoutedEventArgs e) => InitDeviceECG ();

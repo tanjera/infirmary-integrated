@@ -7,6 +7,9 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+# Access codes/passwords
+[Ss]erver_Access.cs
+
 # Third party or paid content (against TOS/EULA to include on Github!!)
 [Tt]hird Party/
 

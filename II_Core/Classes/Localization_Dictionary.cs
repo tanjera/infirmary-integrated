@@ -212,8 +212,9 @@ namespace II.Localization {
 			{"ABOUT:AboutProgram",                                        "About Infirmary Integrated"},
 			{"ABOUT:Version",                                             "Version {0}"},
 			{"ABOUT:Description",                                         "Infirmary Integrated is free and open-source software developed to advance healthcare education for medical and nursing professionals and students. Developed as in-depth, accurate, and accessible educational tools, Infirmary Integrated can meet the needs of clinical simulators in emergency, critical care, and many other medical and nursing specialties."},
-			{"LANG:LanguageSelection",                                    "Language Selection"},
-			{"LANG:ChooseLanguage",                                       "Please choose your language:"},
+			{"INITIAL:LanguageAndTerms",                                  "Language Selection and Terms of Use"},
+			{"INITIAL:ChooseLanguage",                                    "Please choose your language:"},
+			{"INITIAL:AgreeToTerms",                                      "By choosing to continue, you accept to the terms of use at located at"},
 		};
 
 		static Dictionary<string, string> AMH = new Dictionary<string, string> () {
@@ -421,8 +422,9 @@ namespace II.Localization {
 			{"ABOUT:AboutProgram",                                        "ክሊኒክ የተቀናጀ ስለ"},
 			{"ABOUT:Version",                                             "ስሪት {0}"},
 			{"ABOUT:Description",                                         "ክሊኒክ ውስጥ የተቀናጀ ለህክምና እና ለነርሲ ባለሙያዎች እና ተማሪዎችን የጤና አገልግሎት ትምህርት ለማሻሻል የተዘጋጁ ነጻ እና ክፍት ምንጭ ሶፍትዌር ነው. እንደ ጥልቀት, ትክክለኛ እና ተደራሽ የሆነ የመሳሪያ መሳሪያዎች ተብለው የተገነቡ, የተጠናከረ የእግር ኳስ ክሊኒክ በአስቸኳይ ጊዜ, ወሳኝ እንክብካቤ እና ሌሎች በርካታ የሕክምና እና የነርሶች ልዩ ልዩ ክሊኒካዊ ማስመሰያዎች ፍላጎቶችን ሊያሟላ ይችላል."},
-			{"LANG:LanguageSelection",                                    "የቋንቋ ምርጫ"},
-			{"LANG:ChooseLanguage",                                       "የእርስዎን ቋንቋ ይምረጡ:"},
+			{"INITIAL:LanguageAndTerms",                                  "የቋንቋ ምርጫ እና የአጠቃቀም ውሎች"},
+			{"INITIAL:ChooseLanguage",                                    "የእርስዎን ቋንቋ ይምረጡ:"},
+			{"INITIAL:AgreeToTerms",                                      "ከቀጠሉ በአጠቃቀም ውል ተስማምተዋል"},
 		};
 
 		static Dictionary<string, string> ARA = new Dictionary<string, string> () {
@@ -630,8 +632,9 @@ namespace II.Localization {
 			{"ABOUT:AboutProgram",                                        "معلومات عن المستوصف المتكاملة"},
 			{"ABOUT:Version",                                             "صفحة {0}"},
 			{"ABOUT:Description",                                         "عيادة المتكاملة هي برمجيات مجانية ومفتوحة المصدر تم تطويرها لتعزيز تعليم الرعاية الصحية للمهنيين والطلاب في مجال التمريض والتمريض. من خلال تطويرها كأدوات تعليمية متعمقة ودقيقة ويمكن الوصول إليها ، تستطيع عيادة المتكاملة تلبية احتياجات أجهزة المحاكاة السريرية في حالات الطوارئ والرعاية الحرجة والعديد من التخصصات الطبية والتمريضية الأخرى."},
-			{"LANG:LanguageSelection",                                    "اختيار اللغة"},
-			{"LANG:ChooseLanguage",                                       "الرجاء اختيار لغتك"},
+			{"INITIAL:LanguageAndTerms",                                  "اختيار اللغة وشروط الاستخدام"},
+			{"INITIAL:ChooseLanguage",                                    "الرجاء اختيار لغتك"},
+			{"INITIAL:AgreeToTerms",                                      "إذا تابعت ، فأنت توافق على شروط الاستخدام"},
 		};
 
 		static Dictionary<string, string> CHS = new Dictionary<string, string> () {
@@ -839,8 +842,9 @@ namespace II.Localization {
 			{"ABOUT:AboutProgram",                                        "关于医院模拟器"},
 			{"ABOUT:Version",                                             "版本{0}"},
 			{"ABOUT:Description",                                         "医院模拟器是免费的开源软件，旨在促进医疗和护理专业人员和学生的医疗保健教育。医院模拟器是作为深入，准确和可访问的教育工具开发的，可满足临床模拟器在急诊，重症监护和许多其他医疗和护理专业中的需求。"},
-			{"LANG:LanguageSelection",                                    "语言选择"},
-			{"LANG:ChooseLanguage",                                       "请选择您的语言"},
+			{"INITIAL:LanguageAndTerms",                                  "语言选择和使用条款"},
+			{"INITIAL:ChooseLanguage",                                    "请选择您的语言"},
+			{"INITIAL:AgreeToTerms",                                      "如果继续，即表示您同意使用条款"},
 		};
 
 		static Dictionary<string, string> DEU = new Dictionary<string, string> () {
@@ -1048,8 +1052,9 @@ namespace II.Localization {
 			{"ABOUT:AboutProgram",                                        "Über Krankenstation integriert"},
 			{"ABOUT:Version",                                             "Version {0}"},
 			{"ABOUT:Description",                                         "Infirmary Integrated ist eine kostenlose und Open-Source-Software, die entwickelt wurde, um die medizinische Ausbildung von Medizinern, Pflegekräften und Studenten zu fördern. Infirmary Integrated wurde als umfassendes, genaues und zugängliches pädagogisches Werkzeug entwickelt und kann die Anforderungen von klinischen Simulatoren in Notfall-, Intensivpflege- und vielen anderen medizinischen und pflegerischen Bereichen erfüllen."},
-			{"LANG:LanguageSelection",                                    "Sprachauswahl"},
-			{"LANG:ChooseLanguage",                                       "Bitte wähle deine Sprache:"},
+			{"INITIAL:LanguageAndTerms",                                  "Sprachauswahl und Nutzungsbedingungen"},
+			{"INITIAL:ChooseLanguage",                                    "Bitte wähle deine Sprache:"},
+			{"INITIAL:AgreeToTerms",                                      "Wenn Sie fortfahren, stimmen Sie den Nutzungsbedingungen zu"},
 		};
 
 		static Dictionary<string, string> FAR = new Dictionary<string, string> () {
@@ -1257,8 +1262,9 @@ namespace II.Localization {
 			{"ABOUT:AboutProgram",                                        "درباره درمانگاه مجتمع"},
 			{"ABOUT:Version",                                             "نسخه {0}"},
 			{"ABOUT:Description",                                         "درمانگاه مجتمع رایگان و نرم افزار منبع باز است که برای پیشبرد آموزش و پرورش مراقبت های بهداشتی برای متخصصین و دانشجویان پزشکی و پرستاری طراحی شده است. درمانگاه مجتمع که به عنوان ابزار آموزشی عمیق، دقیق و قابل دسترس در دسترس است، می تواند نیازهای شبیه ساز بالینی در اورژانس، مراقبت های ویژه و بسیاری دیگر از تخصص های پزشکی و پرستاری را برآورده کند."},
-			{"LANG:LanguageSelection",                                    "انتخاب زبان"},
-			{"LANG:ChooseLanguage",                                       "لطفا زبان خود را انتخاب کنید"},
+			{"INITIAL:LanguageAndTerms",                                  "انتخاب زبان و شرایط استفاده"},
+			{"INITIAL:ChooseLanguage",                                    "لطفا زبان خود را انتخاب کنید"},
+			{"INITIAL:AgreeToTerms",                                      "اگر ادامه دهید، با شرایط استفاده موافقت میکنید"},
 		};
 
 		static Dictionary<string, string> ESP = new Dictionary<string, string> () {
@@ -1466,8 +1472,9 @@ namespace II.Localization {
 			{"ABOUT:AboutProgram",                                        "Acerca de Infirmary Integrated"},
 			{"ABOUT:Version",                                             "Versión {0}"},
 			{"ABOUT:Description",                                         "Infirmary Integrated es un software gratuito y de código abierto desarrollado para promover la educación sanitaria para profesionales y estudiantes de medicina y enfermería. Desarrollado como herramientas educativas profundas, precisas y accesibles, Infirmary Integrated puede satisfacer las necesidades de los simuladores clínicos en emergencias, cuidados intensivos y muchas otras especialidades médicas y de enfermería."},
-			{"LANG:LanguageSelection",                                    "Selección de idioma"},
-			{"LANG:ChooseLanguage",                                       "Por favor elija su idioma:"},
+			{"INITIAL:LanguageAndTerms",                                  "Seleccione idioma y términos de uso"},
+			{"INITIAL:ChooseLanguage",                                    "Por favor elija su idioma:"},
+			{"INITIAL:AgreeToTerms",                                      "Si continúas, aceptas los términos de uso."},
 		};
 
 		static Dictionary<string, string> FRA = new Dictionary<string, string> () {
@@ -1675,8 +1682,9 @@ namespace II.Localization {
 			{"ABOUT:AboutProgram",                                        "À propos d'Infirmary Integrated"},
 			{"ABOUT:Version",                                             "Version {0}"},
 			{"ABOUT:Description",                                         "Infirmary Integrated est un logiciel gratuit et open-source développé pour faire progresser l'éducation sanitaire pour les professionnels médicaux et infirmiers et les étudiants. Développé comme des outils éducatifs approfondis, précis et accessibles, Infirmary Integrated peut répondre aux besoins des simulateurs cliniques en urgence, en soins intensifs et dans de nombreuses autres spécialités médicales et infirmières."},
-			{"LANG:LanguageSelection",                                    "Sélection de la langue"},
-			{"LANG:ChooseLanguage",                                       "S'il vous plaît Choisissez votre langue:"},
+			{"INITIAL:LanguageAndTerms",                                  "Sélectionnez la langue et les conditions d'utilisation"},
+			{"INITIAL:ChooseLanguage",                                    "S'il vous plaît Choisissez votre langue:"},
+			{"INITIAL:AgreeToTerms",                                      "Si vous continuez, vous acceptez les conditions d'utilisation"},
 		};
 
 		static Dictionary<string, string> HEB = new Dictionary<string, string> () {
@@ -1884,8 +1892,9 @@ namespace II.Localization {
 			{"ABOUT:AboutProgram",                                        "אודות המרפאה המשולבת"},
 			{"ABOUT:Version",                                             "גרסת {0}"},
 			{"ABOUT:Description",                                         "המרפאה משולבת היא תוכנה חופשית וקוד פתוח שפותחה כדי לקדם את החינוך לבריאות עבור אנשי מקצוע רפואיים וסיעוד וסטודנטים. פותח ככלי חינוכי מעמיק, מדויק ונגיש, המרפאה משולבת יכול לענות על הצרכים של סימולטורים קליניים חירום, טיפול קריטי, ועוד רבים אחרים התמחויות רפואיות וסיעוד."},
-			{"LANG:LanguageSelection",                                    "בחירת שפה"},
-			{"LANG:ChooseLanguage",                                       "בחר את השפה שלך"},
+			{"INITIAL:LanguageAndTerms",                                  "בחירת שפה ותנאי שימוש"},
+			{"INITIAL:ChooseLanguage",                                    "בחר את השפה שלך"},
+			{"INITIAL:AgreeToTerms",                                      "אם תמשיך, אתה מסכים לתנאי השימוש"},
 		};
 
 		static Dictionary<string, string> HIN = new Dictionary<string, string> () {
@@ -2093,8 +2102,9 @@ namespace II.Localization {
 			{"ABOUT:AboutProgram",                                        "के बारे में अस्पताल सिम्युलेटर"},
 			{"ABOUT:Version",                                             "संस्करण {0}"},
 			{"ABOUT:Description",                                         "अस्पताल सिम्युलेटर चिकित्सा और नर्सिंग पेशेवरों और छात्रों के लिए स्वास्थ्य देखभाल शिक्षा को आगे बढ़ाने के लिए विकसित मुफ्त और ओपन-सोर्स सॉफ़्टवेयर है। इन-डेप्थ, सटीक और सुलभ शैक्षिक उपकरणों के रूप में विकसित, अस्पताल सिम्युलेटर आपातकालीन, महत्वपूर्ण देखभाल और कई अन्य चिकित्सा और नर्सिंग विशिष्टताओं में नैदानिक ​​सिमुलेटर की जरूरतों को पूरा कर सकता है।"},
-			{"LANG:LanguageSelection",                                    "भाषा चयन"},
-			{"LANG:ChooseLanguage",                                       "कृपया अपनी भाषा चुनें"},
+			{"INITIAL:LanguageAndTerms",                                  "भाषा चयन और उपयोग की स्थिति"},
+			{"INITIAL:ChooseLanguage",                                    "कृपया अपनी भाषा चुनें"},
+			{"INITIAL:AgreeToTerms",                                      "यदि आप जारी रखते हैं, तो आप उपयोग की शर्तों से सहमत हैं"},
 		};
 
 		static Dictionary<string, string> ITA = new Dictionary<string, string> () {
@@ -2302,8 +2312,9 @@ namespace II.Localization {
 			{"ABOUT:AboutProgram",                                        "Informazioni sull'infermeria integrata"},
 			{"ABOUT:Version",                                             "Versione {0}"},
 			{"ABOUT:Description",                                         "Infermary Integrated è un software gratuito e open source sviluppato per promuovere la formazione sanitaria per medici e infermieri e studenti. Sviluppato come strumenti educativi approfonditi, accurati e accessibili, l'infermeria integrata è in grado di soddisfare le esigenze dei simulatori clinici in emergenza, terapia intensiva e molte altre specialità mediche e infermieristiche."},
-			{"LANG:LanguageSelection",                                    "Selezione della lingua"},
-			{"LANG:ChooseLanguage",                                       "Per favore scegli la tua lingua:"},
+			{"INITIAL:LanguageAndTerms",                                  "Selezione della lingua e condizioni d'uso"},
+			{"INITIAL:ChooseLanguage",                                    "Per favore scegli la tua lingua:"},
+			{"INITIAL:AgreeToTerms",                                      "Se continui, accetti i Termini d'uso"},
 		};
 
 		static Dictionary<string, string> KOR = new Dictionary<string, string> () {
@@ -2511,8 +2522,9 @@ namespace II.Localization {
 			{"ABOUT:AboutProgram",                                        "의무실 통합에 관하여"},
 			{"ABOUT:Version",                                             "버전 {0}"},
 			{"ABOUT:Description",                                         "의무실 통합은 의료 및 간호 전문가 및 학생을위한 의료 교육을 발전시키기 위해 개발 된 무료 및 오픈 소스 소프트웨어입니다. 심층적이고 정확하며 접근 가능한 교육 도구로 개발 된 Infirmary Integrated는 응급, 중환자 치료 및 기타 여러 의학 및 간호 전문 분야에서 임상 시뮬레이터의 요구를 충족시킬 수 있습니다."},
-			{"LANG:LanguageSelection",                                    "언어 선택"},
-			{"LANG:ChooseLanguage",                                       "귀하의 언어를 선택하십시오."},
+			{"INITIAL:LanguageAndTerms",                                  "언어 선택 및 사용 조건"},
+			{"INITIAL:ChooseLanguage",                                    "귀하의 언어를 선택하십시오."},
+			{"INITIAL:AgreeToTerms",                                      "계속하면 사용 약관에 동의하게됩니다"},
 		};
 
 		static Dictionary<string, string> PTB = new Dictionary<string, string> () {
@@ -2720,8 +2732,9 @@ namespace II.Localization {
 			{"ABOUT:AboutProgram",                                        "Sobre Infirmary Integrated"},
 			{"ABOUT:Version",                                             "Versão {0}"},
 			{"ABOUT:Description",                                         "Infirmary Integrated é um software livre e de código aberto desenvolvido para promover a educação em saúde para profissionais e estudantes de medicina e enfermagem. Desenvolvido como ferramentas educacionais detalhadas, precisas e acessíveis, a Infirmary Integrated pode atender às necessidades de simuladores clínicos em atendimento urgente, crítico e muitas outras especialidades médicas e de enfermagem."},
-			{"LANG:LanguageSelection",                                    "Seleção de idioma"},
-			{"LANG:ChooseLanguage",                                       "Escolha o seu idioma:"},
+			{"INITIAL:LanguageAndTerms",                                  "Seleção de idioma e termos de uso"},
+			{"INITIAL:ChooseLanguage",                                    "Escolha o seu idioma:"},
+			{"INITIAL:AgreeToTerms",                                      "Se você continuar, então você concorda com os Termos de Uso"},
 		};
 
 		static Dictionary<string, string> RUS = new Dictionary<string, string> () {
@@ -2929,8 +2942,9 @@ namespace II.Localization {
 			{"ABOUT:AboutProgram",                                        "О комплексе"},
 			{"ABOUT:Version",                                             "Версия {0}"},
 			{"ABOUT:Description",                                         "Infirmary Integrated - бесплатное программное обеспечение с открытым исходным кодом, разработанное для продвижения медицинского образования для медицинских и сестринских специалистов и студентов. Разработанный как углубленный, точный и доступный образовательный инструмент, Infirmary Integrated может удовлетворить потребности клинических тренажеров в неотложной, критической медицинской помощи и многих других медицинских и сестринских специальностях."},
-			{"LANG:LanguageSelection",                                    "Выбор языка"},
-			{"LANG:ChooseLanguage",                                       "Выберите язык:"},
+			{"INITIAL:LanguageAndTerms",                                  "Выбор языка и условия использования"},
+			{"INITIAL:ChooseLanguage",                                    "Выберите язык:"},
+			{"INITIAL:AgreeToTerms",                                      "Если вы продолжите, вы соглашаетесь с Условиями использования"},
 		};
 
 		static Dictionary<string, string> SWK = new Dictionary<string, string> () {
@@ -3138,8 +3152,9 @@ namespace II.Localization {
 			{"ABOUT:AboutProgram",                                        "Kuhusu Uwezeshaji Uliounganishwa"},
 			{"ABOUT:Version",                                             "Toleo {0}"},
 			{"ABOUT:Description",                                         "Infirmary Integrated ni programu ya bure na ya chanzo kilichopangwa ili kuendeleza elimu ya afya kwa wataalamu wa matibabu na uuguzi na wanafunzi. Iliyoundwa kama zana za kina, sahihi, na zinazoweza kupatikana, elimu ya kuambukizwa inaweza kuzuia mahitaji ya simulators za kliniki kwa dharura, huduma muhimu, na vitu vingine vya matibabu na uuguzi."},
-			{"LANG:LanguageSelection",                                    "Uchaguzi wa lugha"},
-			{"LANG:ChooseLanguage",                                       "Tafadhali chagua lugha yako"},
+			{"INITIAL:LanguageAndTerms",                                  "Uchaguzi wa lugha na Masharti ya Matumizi"},
+			{"INITIAL:ChooseLanguage",                                    "Tafadhali chagua lugha yako"},
+			{"INITIAL:AgreeToTerms",                                      "Ikiwa utaendelea, basi unakubali Sheria na Matumizi"},
 		};
 
 	}

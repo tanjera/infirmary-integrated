@@ -3,7 +3,7 @@
 
 
 * Next steps:
-	* Defibrillator		
+	* Defibrillator
 		- Pacing functionality
 			- Will need capture threshold on Patient Editor
 			- Pause button

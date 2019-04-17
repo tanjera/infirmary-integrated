@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace II_Windows {
 
         public static string [] Start_Args;
 
+        public static II.Server.Connection Server_Connection = new II.Server.Connection ();
         public static II.Localization.Languages Language = new II.Localization.Languages();
 
         public static Patient Patient;
@@ -29,7 +31,7 @@ namespace II_Windows {
         public static DeviceIABP Device_IABP;
 
         public static DialogAbout Dialog_About;
-        public static DialogLanguage Dialog_Language;
+        public static DialogInitial Dialog_Language;
 
         public static DispatcherTimer Timer_Main = new DispatcherTimer();
 
@@ -38,6 +40,11 @@ namespace II_Windows {
 
             Timer_Main.Interval = new TimeSpan (100000); // q 10 milliseconds
             Timer_Main.Start ();
+
+            // Send usage statistics to server in background
+            BackgroundWorker bgw = new BackgroundWorker ();
+            bgw.DoWork += delegate { Server_Connection.UsageStatistics_Send (); };
+            bgw.RunWorkerAsync ();
         }
     }
 }
