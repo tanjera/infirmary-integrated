@@ -133,17 +133,21 @@ namespace II_Windows {
                             case "isFullscreen": isFullscreen = bool.Parse (pValue); break;
                             case "numericTypes": numericTypes.AddRange (pValue.Split (',')); break;
                             case "tracingTypes": tracingTypes.AddRange (pValue.Split (',')); break;
+                            case "Mode": Mode = (Modes)Enum.Parse (typeof(Modes), pValue); break;
+                            case "Charged": Charged = bool.Parse(pValue); break;
+                            case "Analyzed": Analyzed = bool.Parse(pValue); break;
+                            case "Energy": Energy = int.Parse(pValue); break;
+                            case "PacerEnergy": PacerEnergy = int.Parse(pValue); break;
+                            case "PacerRate": PacerRate = int.Parse(pValue); break;
                         }
                     }
                 }
-            } catch {
-                sRead.Close ();
-                return;
+            } catch (Exception e) {
+                throw e;
+            } finally {
+                sRead.Close();
+                OnLayoutChange(numericTypes, tracingTypes);
             }
-
-            sRead.Close ();
-
-            OnLayoutChange (numericTypes, tracingTypes);
         }
 
         public string Save () {
@@ -161,6 +165,13 @@ namespace II_Windows {
             listTracings.ForEach (o => { tracingTypes.Add (o.wfStrip.Lead.Value.ToString ()); });
             sWrite.AppendLine (String.Format ("{0}:{1}", "numericTypes", string.Join (",", numericTypes)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "tracingTypes", string.Join (",", tracingTypes)));
+
+            sWrite.AppendLine(String.Format("{0}:{1}", "Mode", Mode));
+            sWrite.AppendLine(String.Format("{0}:{1}", "Charged", Charged));
+            sWrite.AppendLine(String.Format("{0}:{1}", "Analyzed", Analyzed));
+            sWrite.AppendLine(String.Format("{0}:{1}", "Energy", Energy));
+            sWrite.AppendLine(String.Format("{0}:{1}", "PacerEnergy", PacerEnergy));
+            sWrite.AppendLine(String.Format("{0}:{1}", "PacerRate", PacerRate));
 
             return sWrite.ToString ();
         }

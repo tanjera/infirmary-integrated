@@ -186,7 +186,7 @@ namespace II {
                             case "PMP": PMP = int.Parse (pValue); break;
                             case "ICP": ICP = int.Parse(pValue); break;
                             case "IAP": IAP = int.Parse(pValue); break;
-                            case "T": T = int.Parse (pValue); break;
+                            case "T": T = double.Parse (pValue); break;
                             case "ST_Elevation":
                                 string[] e_st = pValue.Split (',');
                                 for (int i = 0; i < e_st.Length; i++)
@@ -213,7 +213,8 @@ namespace II {
                             case "FHR_Variability": FHRVariability.Value = (Intensity.Values)Enum.Parse (typeof (Intensity.Values), pValue); break;
                             case "FHR_Rhythms":
                                 foreach (string fhr_rhythm in pValue.Split (','))
-                                    FHRDecelerations.ValueList.Add ((FetalHeartDecelerations.Values)Enum.Parse (typeof (FetalHeartDecelerations.Values), fhr_rhythm));
+                                    if (fhr_rhythm != "")
+                                        FHRDecelerations.ValueList.Add ((FetalHeartDecelerations.Values)Enum.Parse (typeof (FetalHeartDecelerations.Values), fhr_rhythm));
                                 break;
                             case "UterineContraction_Frequency": UCFrequency = int.Parse (pValue); break;
                             case "UterineContraction_Duration": UCDuration = int.Parse (pValue); break;
@@ -222,8 +223,7 @@ namespace II {
                     }
                 }
             } catch {
-                sRead.Close ();
-                return;
+                // If the load fails... just bail on the actual value parsing and continue the load process
             }
 
             sRead.Close ();

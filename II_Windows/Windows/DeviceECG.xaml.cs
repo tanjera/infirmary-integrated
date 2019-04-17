@@ -120,12 +120,11 @@ namespace II_Windows {
                         }
                     }
                 }
-            } catch {
-                sRead.Close ();
-                return;
+            } catch (Exception e) {
+                throw e;
+            } finally {
+                sRead.Close();
             }
-
-            sRead.Close ();
         }
 
         public string Save () {

@@ -180,14 +180,14 @@ namespace II_Windows {
 
             try {
                 string line;
-                while ((line = sRead.ReadLine ()) != null) {
-                    if (line.Contains (":")) {
-                        string pName = line.Substring (0, line.IndexOf (':')),
-                                pValue = line.Substring (line.IndexOf (':') + 1);
+                while ((line = sRead.ReadLine()) != null) {
+                    if (line.Contains(":")) {
+                        string pName = line.Substring(0, line.IndexOf(':')),
+                                pValue = line.Substring(line.IndexOf(':') + 1);
                         switch (pName) {
                             default: break;
-                            case "isPaused": isPaused = bool.Parse (pValue); break;
-                            case "isFullscreen": isFullscreen = bool.Parse (pValue); break;
+                            case "isPaused": isPaused = bool.Parse(pValue); break;
+                            case "isFullscreen": isFullscreen = bool.Parse(pValue); break;
 
                             case "Frequency": Frequency = int.Parse(pValue); break;
                             case "Augmentation": Augmentation = int.Parse(pValue); break;
@@ -199,12 +199,11 @@ namespace II_Windows {
                         }
                     }
                 }
-            } catch {
-                sRead.Close ();
-                return;
+            } catch (Exception e) {
+                throw e;
+            } finally {
+                sRead.Close();
             }
-
-            sRead.Close ();
         }
 
         public string Save () {

@@ -211,6 +211,8 @@ namespace II_Windows {
             } else {
                 LoadFail ();
             }
+
+            FormUpdateFields(this, new Patient.PatientEvent_Args(App.Patient, Patient.PatientEvent_Args.EventTypes.Vitals_Change));
         }
 
         private void LoadInit (Stream incFile) {
@@ -249,38 +251,60 @@ namespace II_Windows {
             StringBuilder pbuffer;
 
             try {
-                while ((line = sRead.ReadLine ()) != null) {
+                while ((line = sRead.ReadLine()) != null) {
                     if (line == "> Begin: Patient") {
-                        pbuffer = new StringBuilder ();
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
-                            pbuffer.AppendLine (pline);
-                        App.Patient.Load_Process (pbuffer.ToString ());
+                        pbuffer = new StringBuilder();
+                        while ((pline = sRead.ReadLine()) != null && pline != "> End: Patient")
+                            pbuffer.AppendLine(pline);
+                        App.Patient.Load_Process(pbuffer.ToString());
 
                     } else if (line == "> Begin: Editor") {
-                        pbuffer = new StringBuilder ();
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Editor")
-                            pbuffer.AppendLine (pline);
-                        this.LoadOptions (pbuffer.ToString ());
+                        pbuffer = new StringBuilder();
+                        while ((pline = sRead.ReadLine()) != null && pline != "> End: Editor")
+                            pbuffer.AppendLine(pline);
+                        this.LoadOptions(pbuffer.ToString());
 
                     } else if (line == "> Begin: Cardiac Monitor") {
-                        pbuffer = new StringBuilder ();
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Cardiac Monitor")
-                            pbuffer.AppendLine (pline);
+                        pbuffer = new StringBuilder();
+                        while ((pline = sRead.ReadLine()) != null && pline != "> End: Cardiac Monitor")
+                            pbuffer.AppendLine(pline);
 
-                        InitDeviceMonitor ();
-                        App.Device_Monitor.Load_Process (pbuffer.ToString ());
+                        InitDeviceMonitor();
+                        App.Device_Monitor.Load_Process(pbuffer.ToString());
+                    } else if (line == "> Begin: 12 Lead ECG") {
+                        pbuffer = new StringBuilder();
+                        while ((pline = sRead.ReadLine()) != null && pline != "> End: 12 Lead ECG")
+                            pbuffer.AppendLine(pline);
+
+                        InitDeviceECG();
+                        App.Device_ECG.Load_Process(pbuffer.ToString());
+                    } else if (line == "> Begin: Defibrillator") {
+                        pbuffer = new StringBuilder();
+                        while ((pline = sRead.ReadLine()) != null && pline != "> End: Defibrillator")
+                            pbuffer.AppendLine(pline);
+
+                        InitDeviceDefib();
+                        App.Device_Defib.Load_Process(pbuffer.ToString());
+                    } else if (line == "> Begin: Intra-aortic Balloon Pump") {
+                        pbuffer = new StringBuilder();
+                        while ((pline = sRead.ReadLine()) != null && pline != "> End: Intra-aortic Balloon Pump")
+                            pbuffer.AppendLine(pline);
+
+                        InitDeviceIABP();
+                        App.Device_IABP.Load_Process(pbuffer.ToString());
                     }
                 }
             } catch {
-                LoadFail ();
+                LoadFail();
+            } finally {
+                sRead.Close();
             }
-            sRead.Close ();
         }
 
         private void LoadFail () {
-            MessageBox.Show (
-                "The selected file was unable to be loaded. Perhaps the file was damaged or edited outside of Infirmary Integrated.",
-                "Unable to Load File", MessageBoxButton.OK, MessageBoxImage.Error);
+            MessageBox.Show(
+                    "The selected file was unable to be loaded. Perhaps the file was damaged or edited outside of Infirmary Integrated.",
+                    "Unable to Load File", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void SaveT1 (Stream s) {
@@ -294,17 +318,29 @@ namespace II_Windows {
             sb.Append (this.SaveOptions ());
             sb.AppendLine ("> End: Editor");
 
-            // Imp: Reference cardiac monitor for save data
-
             if (App.Device_Monitor != null && App.Device_Monitor.IsLoaded) {
                 sb.AppendLine ("> Begin: Cardiac Monitor");
                 sb.Append (App.Device_Monitor.Save ());
                 sb.AppendLine ("> End: Cardiac Monitor");
             }
-
+            if (App.Device_ECG != null && App.Device_ECG.IsLoaded) {
+                sb.AppendLine("> Begin: 12 Lead ECG");
+                sb.Append(App.Device_ECG.Save());
+                sb.AppendLine("> End: 12 Lead ECG");
+            }
+            if (App.Device_Defib != null && App.Device_Defib.IsLoaded) {
+                sb.AppendLine("> Begin: Defibrillator");
+                sb.Append(App.Device_Defib.Save());
+                sb.AppendLine("> End: Defibrillator");
+            }
+            if (App.Device_IABP!= null && App.Device_IABP.IsLoaded) {
+                sb.AppendLine("> Begin: Intra-aortic Balloon Pump");
+                sb.Append(App.Device_IABP.Save());
+                sb.AppendLine("> End: Intra-aortic Balloon Pump");
+            }
 
             StreamWriter sw = new StreamWriter (s);
-            sw.WriteLine (".ii:t1");                                // Metadata (type 1 savefile)
+            sw.WriteLine (".ii:t1");                                      // Metadata (type 1 savefile)
             sw.WriteLine (Utility.HashMD5 (sb.ToString ().Trim ()));      // Hash for validation
             sw.Write (Utility.ObfuscateB64 (sb.ToString ().Trim ()));     // Savefile data obfuscated with Base64
             sw.Close ();

@@ -2,14 +2,12 @@
 
 
 
-
 * Next steps:
-	* Defibrillator
-		- Functionality for:
-			- Pacing functionality
-				- Will need capture threshold on Patient Editor
-				- Pause button
-			- Biphasic vs monophasic options?
+	* Defibrillator		
+		- Pacing functionality
+			- Will need capture threshold on Patient Editor
+			- Pause button
+		- Biphasic vs monophasic options?
 
 	* EFM
 		- DeviceEFM layout
@@ -41,14 +39,6 @@
 
 
 * Versions and features to implement:
-
-	- Rhythm Strips
-		- Normalize() rhythm strips before drawing (normalize amplitude between -1.0 to 1.0)
-		- PatientEditor: Slider bar with offset needing to be zeroed?
-	- Cardiac Rhythms:
-		- Chest compressions
-
-	- DeviceDefibrillator
 	- DeviceVentilator
 
 
