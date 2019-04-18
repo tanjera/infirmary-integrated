@@ -43,7 +43,7 @@ namespace II_Windows {
 
             // Send usage statistics to server in background
             BackgroundWorker bgw = new BackgroundWorker ();
-            bgw.DoWork += delegate { Server_Connection.UsageStatistics_Send (); };
+            bgw.DoWork += delegate { Server_Connection.Send_UsageStatistics (); };
             bgw.RunWorkerAsync ();
         }
     }

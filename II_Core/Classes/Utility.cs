@@ -9,6 +9,16 @@ namespace II {
 
         public const string Version = "0.93";
 
+        public static bool VersioningNewer(string current, string comparison) {
+            string[] curSplit = current.Split('.'),
+                    compSplit = comparison.Split('.');
+
+            for (int i = 0; i < curSplit.Length && i < compSplit.Length; i++)
+                if (int.Parse(curSplit[i]) < int.Parse(compSplit[i]))
+                    return true;
+            return false;
+        }
+
         public static double Time {
             get { return (double)(DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess ().StartTime.ToUniversalTime ()).TotalSeconds; }
         }

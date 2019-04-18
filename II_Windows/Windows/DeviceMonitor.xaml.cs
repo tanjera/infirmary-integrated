@@ -104,6 +104,7 @@ namespace II_Windows {
                     }
                 }
             } catch (Exception e) {
+                App.Server_Connection.Send_Exception(e);
                 throw e;
             } finally {
                 sRead.Close();

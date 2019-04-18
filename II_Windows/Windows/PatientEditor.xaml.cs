@@ -293,7 +293,8 @@ namespace II_Windows {
                         App.Device_IABP.Load_Process(pbuffer.ToString());
                     }
                 }
-            } catch {
+            } catch (Exception e) {
+                App.Server_Connection.Send_Exception(e);
                 LoadFail();
             } finally {
                 sRead.Close();
@@ -361,7 +362,8 @@ namespace II_Windows {
                         }
                     }
                 }
-            } catch {
+            } catch (Exception e) {
+                App.Server_Connection.Send_Exception(e);
                 sRead.Close ();
                 return;
             }
