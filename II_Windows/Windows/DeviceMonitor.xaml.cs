@@ -155,8 +155,7 @@ namespace II_Windows {
             menuPauseDevice.IsChecked = isPaused;
 
             if (!isPaused)
-                foreach (Controls.MonitorTracing c in listTracings)
-                    c.Unpause ();
+                listTracings.ForEach(c => c.wfStrip.Unpause ());
         }
 
         public void ToggleFullscreen () {
@@ -197,18 +196,17 @@ namespace II_Windows {
             if (isPaused)
                 return;
 
-            foreach (Controls.MonitorTracing c in listTracings) {
-                c.Scroll ();
+            listTracings.ForEach (c => {
+                c.wfStrip.Scroll ();
                 c.Draw ();
-            }
+            });
         }
 
         private void OnTick_Vitals (object sender, EventArgs e) {
             if (isPaused)
                 return;
 
-            foreach (Controls.MonitorNumeric v in listNumerics)
-                v.UpdateVitals ();
+            listNumerics.ForEach(n => n.UpdateVitals ());
         }
 
         private void OnLayoutChange (List<string> numericTypes = null, List<string> tracingTypes = null) {
@@ -274,43 +272,44 @@ namespace II_Windows {
             switch (e.EventType) {
                 default: break;
                 case Patient.PatientEvent_Args.EventTypes.Vitals_Change:
-                    foreach (Controls.MonitorTracing c in listTracings) {
-                        c.ClearFuture ();
-                        c.Add_Beat__Cardiac_Baseline (App.Patient);
-                    }
-                    foreach (Controls.MonitorNumeric n in listNumerics)
-                        n.UpdateVitals ();
+                    listTracings.ForEach (c => {
+                        c.wfStrip.ClearFuture ();
+                        c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
+                    });
+
+                    listNumerics.ForEach(n => n.UpdateVitals ());
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Defibrillation:
+                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Defibrillation (App.Patient));
+                    break;
+
+                case Patient.PatientEvent_Args.EventTypes.Cardiac_PacerSpike:
+                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Pacemaker (App.Patient));
+                    break;
+
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
-                    foreach (Controls.MonitorTracing c in listTracings)
-                        c.Add_Beat__Cardiac_Baseline (App.Patient);
+                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Atrial:
-                    foreach (Controls.MonitorTracing c in listTracings)
-                        c.Add_Beat__Cardiac_Atrial (App.Patient);
+                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Atrial (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Ventricular:
-                    foreach (Controls.MonitorTracing c in listTracings)
-                        c.Add_Beat__Cardiac_Ventricular (App.Patient);
+                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Ventricular (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Respiratory_Baseline:
-                    foreach (Controls.MonitorTracing c in listTracings)
-                        c.Add_Beat__Respiratory_Baseline (App.Patient);
+                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Respiratory_Baseline (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Respiratory_Inspiration:
-                    foreach (Controls.MonitorTracing c in listTracings)
-                        c.Add_Beat__Respiratory_Inspiration (App.Patient);
+                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Respiratory_Inspiration (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Respiratory_Expiration:
-                    foreach (Controls.MonitorTracing c in listTracings)
-                        c.Add_Beat__Respiratory_Expiration (App.Patient);
+                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Respiratory_Expiration (App.Patient));
                     break;
             }
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.IO;
 using System.Text;
@@ -41,7 +42,9 @@ namespace II_Windows {
                 LoadOpen (App.Start_Args [0]);
 
             // For debugging. Automatically open window being worked on, hide patient editor.
-            //InitDeviceIABP();
+            //InitDeviceDefib();
+            //App.Patient.HR = 30;
+            //App.Patient.Pacemaker_Threshold = 30;
             //WindowState = WindowState.Minimized;
         }
 
@@ -139,6 +142,18 @@ namespace II_Windows {
             foreach (FetalHeartDecelerations.Values v in Enum.GetValues (typeof (FetalHeartDecelerations.Values)))
                 fetalHeartRhythms.Add (App.Language.Dictionary[FetalHeartDecelerations.LookupString (v)]);
             listFHRRhythms.ItemsSource = fetalHeartRhythms;
+
+            // Populate status bar with updated version information and make visible
+            BackgroundWorker bgw = new BackgroundWorker ();
+            string latestVersion = "";
+            bgw.DoWork += delegate { latestVersion = App.Server_Connection.Get_LatestVersion (); };
+            bgw.RunWorkerCompleted += delegate {
+                if (Utility.IsNewerVersion (Utility.Version, latestVersion)) {
+                    statusBar.Visibility = Visibility.Visible;
+                    txtUpdateAvailable.Text = String.Format(App.Language.Dictionary ["STATUS:UpdateAvailable"], latestVersion);
+                }
+            };
+            bgw.RunWorkerAsync ();
         }
 
         private void InitPatient () {
@@ -576,5 +591,7 @@ namespace II_Windows {
 
         private void OnClosed (object sender, EventArgs e) => RequestExit ();
 
+        private void Hyperlink_RequestNavigate (object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+            => System.Diagnostics.Process.Start (e.Uri.ToString ());
     }
 }

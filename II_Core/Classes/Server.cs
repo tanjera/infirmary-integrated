@@ -115,7 +115,7 @@ namespace II.Server {
             }
         }
 
-        public string Get_Versioning() {
+        public string Get_LatestVersion() {
             MySqlConnection conn = Open();
             MySqlCommand comm = conn.CreateCommand();
             string version = "0.0";

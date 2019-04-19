@@ -10,7 +10,7 @@
         Title="PatientEditor"
         Icon="{StaticResource Icon_Infirmary}"
         WindowStartupLocation="CenterScreen"
-        Height="530" Width="700" SizeToContent="Width"
+        MinHeight="560" MinWidth="700" SizeToContent="Width"
         Closed="OnClosed">
 
     <Window.InputBindings>
@@ -96,7 +96,6 @@
 
     <DockPanel LastChildFill="True">
 
-
         <!-- Main Menu -->
         <Menu DockPanel.Dock="Top" Width="Auto" Background="White">
             <MenuItem Name="menuFile">
@@ -115,6 +114,16 @@
             </MenuItem>
         </Menu>
 
+        <StatusBar DockPanel.Dock="Bottom" Name="statusBar" Visibility="Collapsed"
+                   BorderBrush="Black" BorderThickness="0,1,0,0">
+            <StatusBarItem HorizontalAlignment="Right">
+                <Hyperlink Name="hlUpdateAvailable"
+                    NavigateUri="http://www.infirmary-integrated.com/download/"
+                    RequestNavigate="Hyperlink_RequestNavigate" FontWeight="Bold">
+                    <TextBlock Name="txtUpdateAvailable" Padding="10,0,10,2"/>
+                </Hyperlink>
+            </StatusBarItem>
+        </StatusBar>
 
         <!-- Column for Devices (opening Cardiac Monitor, Ventilator, etc. -->
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">

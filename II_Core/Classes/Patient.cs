@@ -23,6 +23,10 @@ namespace II {
         public bool IABP_Active = false;            // Is the Device_IABP currently augmenting?
         public string IABP_Trigger;                 // Device_IABP's trigger; data backflow for strip processing
 
+        public int Pacemaker_Rate,                  // DeviceDefib's transcutaneous pacemaker rate
+                    Pacemaker_Energy,               // DeviceDefib's pacemaker energy delivery amount
+                    Pacemaker_Threshold;            // Patient's threshold for electrical capture to pacemaker spike
+
         // Cardiac Profile
         public double[] STElevation, TElevation;
         public CardiacRhythms CardiacRhythm = new CardiacRhythms();
@@ -107,7 +111,7 @@ namespace II {
                 Cardiac_Atrial,
                 Cardiac_Ventricular,
                 Cardiac_Defibrillation,
-                Cardiac_Pacer,
+                Cardiac_PacerSpike,
                 Respiratory_Baseline,
                 Respiratory_Inspiration,
                 Respiratory_Expiration,
@@ -201,9 +205,15 @@ namespace II {
                             case "Cardiac_Rhythm": CardiacRhythm.Value = (CardiacRhythms.Values) Enum.Parse(typeof(CardiacRhythms.Values), pValue); break;
                             case "Cardiac_Axis_Shift": CardiacAxis.Value = (CardiacAxes.Values)Enum.Parse (typeof (CardiacAxes.Values), pValue); break;
 
+                            case "Pacemaker_Rate": Pacemaker_Rate = int.Parse (pValue); break;
+                            case "Pacemaker_Energy": Pacemaker_Energy = int.Parse (pValue); break;
+                            case "Pacemaker_Threshold": Pacemaker_Threshold = int.Parse (pValue); break;
+
                             case "TransducerZeroed_ABP": TransducerZeroed_ABP = bool.Parse (pValue); break;
                             case "TransducerZeroed_CVP": TransducerZeroed_CVP = bool.Parse (pValue); break;
                             case "TransducerZeroed_PA": TransducerZeroed_PA = bool.Parse (pValue); break;
+                            case "TransducerZeroed_ICP": TransducerZeroed_ICP = bool.Parse (pValue); break;
+                            case "TransducerZeroed_IAP": TransducerZeroed_IAP = bool.Parse (pValue); break;
 
                             case "Respiratory_Rhythm": Respiratory_Rhythm.Value = (RespiratoryRhythms.Values)Enum.Parse (typeof (RespiratoryRhythms.Values), pValue); break;
                             case "Respiratory_Inflated": Respiratory_Inflated = bool.Parse (pValue); break;
@@ -261,9 +271,15 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Rhythm", CardiacRhythm.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Axis_Shift", CardiacAxis.Value));
 
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Pacemaker_Rate", Pacemaker_Rate));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Pacemaker_Energy", Pacemaker_Energy));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Pacemaker_Threshold", Pacemaker_Threshold));
+
             sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_ABP", TransducerZeroed_ABP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_CVP", TransducerZeroed_CVP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_PA", TransducerZeroed_PA));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_ICP", TransducerZeroed_ICP));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_IAP", TransducerZeroed_IAP));
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_Rhythm", Respiratory_Rhythm.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_Inflated", Respiratory_Inflated));
@@ -355,15 +371,75 @@ namespace II {
 
         public void Defibrillate () => InitDefibrillation (false);
         public void Cardiovert () => InitDefibrillation (true);
-        public void Pacemaker () => InitPacemaker ();
-        public bool IsDefibrillating { get { return timerDefibrillation.IsRunning; } }
+
+        public void Pacemaker (bool active, int rate = 0, int energy = 0) {
+            if (active && !timerPacemaker.IsRunning)
+                InitPacemaker (rate, energy);
+            else if (!active && timerPacemaker.IsRunning)
+                StopPacemaker ();
+            else if (active && timerPacemaker.IsRunning)
+                UpdatePacemaker (rate, energy);
+        }
+        public void PacemakerPause () => timerPacemaker.Interval = 5000;
+
+        private void InitDefibrillation (bool toSynchronize) {
+            if (toSynchronize)
+                timerCardiac_Ventricular.Tick += OnCardioversion;
+            else
+                OnDefibrillation ();
+        }
+
+        private void InitPacemaker (int rate, int energy) {
+            Pacemaker_Rate = rate;
+            Pacemaker_Energy = energy;
+            timerPacemaker.Reset ((int)((60d / rate) * 1000));
+        }
+
+        private void UpdatePacemaker (int rate, int energy) {
+            Pacemaker_Rate = rate;
+            Pacemaker_Energy = energy;
+            timerPacemaker.Interval = (int)((60d / rate) * 1000);
+        }
+
+        private void StopPacemaker () => timerPacemaker.Stop ();
+
+        private void OnDefibrillation () {
+            timerCardiac_Baseline.Stop ();
+            timerCardiac_Atrial.Stop ();
+            timerCardiac_Ventricular.Stop ();
+            timerDefibrillation.Reset (20);
+            // Invoke the defibrillation event *after* starting the timer- IsDefibrillating() checks the timer!
+            PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Defibrillation));
+        }
+
+        private void OnDefibrillation_End () {
+            timerDefibrillation.Stop ();
+            timerCardiac_Baseline.Reset (timerCardiac_Baseline.Interval);
+        }
+
+        private void OnCardioversion (object sender, EventArgs e) {
+            timerCardiac_Ventricular.Tick -= OnCardioversion;
+            OnDefibrillation ();
+        }
+
+        private void OnPacemaker_Spike () {
+            if (Pacemaker_Energy > 0)
+                PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_PacerSpike));
+
+            if (Pacemaker_Energy > Pacemaker_Threshold) {
+                CardiacRhythm.AberrantBeat = true;
+                PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Ventricular));
+                CardiacRhythm.AberrantBeat = false;
+                timerCardiac_Baseline.Reset ();
+            }
+        }
 
         private void InitTimers() {
             timerCardiac_Baseline.Tick += delegate { OnCardiac_Baseline (); };
             timerCardiac_Atrial.Tick += delegate { OnCardiac_Atrial (); };
             timerCardiac_Ventricular.Tick += delegate { OnCardiac_Ventricular (); };
             timerDefibrillation.Tick += delegate { OnDefibrillation_End (); };
-            timerPacemaker.Tick += delegate { OnPacemaker_End (); };
+            timerPacemaker.Tick += delegate { OnPacemaker_Spike (); };
 
             timerRespiratory_Baseline.Tick += delegate { OnRespiratory_Baseline (); };
             timerRespiratory_Inspiration.Tick += delegate { OnRespiratory_Inspiration (); };
@@ -492,40 +568,6 @@ namespace II {
                     timerCardiac_Atrial.Reset (1);
                     break;
             }
-        }
-
-        private void InitDefibrillation (bool toSynchronize) {
-            if (toSynchronize)
-                timerCardiac_Ventricular.Tick += OnCardioversion;
-            else
-                OnDefibrillation ();
-        }
-
-        private void InitPacemaker () {
-            PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Pacer));
-        }
-
-        private void OnDefibrillation () {
-            timerCardiac_Baseline.Stop ();
-            timerCardiac_Atrial.Stop ();
-            timerCardiac_Ventricular.Stop ();
-            timerDefibrillation.Reset (1000);
-            // Invoke the defibrillation event *after* starting the timer- IsDefibrillating() checks the timer!
-            PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Defibrillation));
-        }
-
-        private void OnDefibrillation_End () {
-            timerDefibrillation.Stop ();
-            timerCardiac_Baseline.Reset (timerCardiac_Baseline.Interval);
-        }
-
-        private void OnCardioversion (object sender, EventArgs e) {
-            timerCardiac_Ventricular.Tick -= OnCardioversion;
-            OnDefibrillation ();
-        }
-
-        private void OnPacemaker_End () {
-            throw new NotImplementedException ();
         }
 
         private void OnCardiac_Atrial () {

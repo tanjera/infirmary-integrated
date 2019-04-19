@@ -264,7 +264,47 @@ namespace II {
         }
 
         public void ECG_Ventricular (Patient p, Rhythm.Strip s) {
+            // Handle aberrant beats (may be triggered by pacemaker...)
+            if (p.CardiacRhythm.AberrantBeat)
+                switch (Value) {
+                    default: return;
+                    case Values.Asystole:
+                    case Values.Atrial_Flutter:
+                    case Values.Atrial_Fibrillation:
+                    case Values.AV_Block__1st_Degree:
+                    case Values.AV_Block__Wenckebach:
+                    case Values.AV_Block__Mobitz_II:
+                    case Values.AV_Block__3rd_Degree:
+                    case Values.Bundle_Branch_Block:
+                    case Values.Idioventricular:
+                    case Values.Junctional:
+                    case Values.Pulseless_Electrical_Activity:
+                    case Values.Sinus_Rhythm:
+                    case Values.Sinus_Rhythm_with_Bigeminy:
+                    case Values.Sinus_Rhythm_with_Trigeminy:
+                    case Values.Sinus_Rhythm_with_PACs:
+                    case Values.Sinus_Rhythm_with_PJCs:
+                    case Values.Sinus_Rhythm_with_PVCs_Unifocal:
+                    case Values.Supraventricular_Tachycardia:
+                    case Values.Ventricular_Standstill:
+                    case Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
+                    case Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
+                        s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_3 (p, s.Lead));
+                            return;
+
+                case Values.Sinus_Rhythm_with_PVCs_Multifocal:
+                    switch (new Random ().Next (0, 3)) {
+                        default:
+                        case 0: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_1 (p, s.Lead)); break;
+                        case 1: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_2 (p, s.Lead)); break;
+                        case 2: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_3 (p, s.Lead)); break;
+                    }
+                    return;
+            }
+
+            // Handle non-aberrant beats
             switch (Value) {
+                default: return;
                 case Values.Asystole: return;
                 case Values.Atrial_Flutter: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
                 case Values.Atrial_Fibrillation: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
@@ -277,44 +317,12 @@ namespace II {
                 case Values.Junctional: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
                 case Values.Pulseless_Electrical_Activity:
                 case Values.Sinus_Rhythm: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-
-                case Values.Sinus_Rhythm_with_Bigeminy:
-                    if (p.CardiacRhythm.AberrantBeat) {
-                        s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_1 (p, s.Lead));
-                    } else
-                        s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead));
-                    return;
-
-                case Values.Sinus_Rhythm_with_Trigeminy:
-                    if (p.CardiacRhythm.AberrantBeat) {
-                        s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_1 (p, s.Lead));
-                    } else
-                        s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead));
-                    return;
-
+                case Values.Sinus_Rhythm_with_Bigeminy: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm_with_Trigeminy: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
                 case Values.Sinus_Rhythm_with_PACs: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
                 case Values.Sinus_Rhythm_with_PJCs: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-
-                case Values.Sinus_Rhythm_with_PVCs_Multifocal:
-                    if (p.CardiacRhythm.AberrantBeat) {
-                        switch (new Random ().Next (0, 3)) {
-                            default:
-                            case 0: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_1 (p, s.Lead)); break;
-                            case 1: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_2 (p, s.Lead)); break;
-                            case 2: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_3 (p, s.Lead)); break;
-                        }
-                    } else
-                        s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead));
-                    return;
-
-                case Values.Sinus_Rhythm_with_PVCs_Unifocal:
-
-                    if (p.CardiacRhythm.AberrantBeat) {
-                        s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_3 (p, s.Lead));
-                    } else
-                        s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead));
-                    return;
-
+                case Values.Sinus_Rhythm_with_PVCs_Multifocal: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm_with_PVCs_Unifocal: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
                 case Values.Supraventricular_Tachycardia: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_SVT (p, s.Lead)); return;
                 case Values.Ventricular_Fibrillation_Coarse: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_VF (p, s.Lead, 0.7f)); return;
                 case Values.Ventricular_Fibrillation_Fine: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_VF (p, s.Lead, 0.1f)); return;

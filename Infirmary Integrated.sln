@@ -6,8 +6,8 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A98AA70B-3743-474D-9DBE-FA2FC55344C8}"
 	ProjectSection(SolutionItems) = preProject
 		License.rtf = License.rtf
+		Notes.md = Notes.md
 		Readme.md = Readme.md
-		To Do.md = To Do.md
 	EndProjectSection
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "II_Core", "II_Core\II_Core.shproj", "{D6A13684-612C-49D6-B8B3-B9720D585A71}"

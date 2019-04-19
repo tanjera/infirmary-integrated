@@ -338,11 +338,20 @@ namespace II.Rhythm {
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Line (.01d,
                 1.0f * leadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Line (.3d,
+            thisBeat = Concatenate (thisBeat, Line (.1d,
                 0.5f * leadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Line (.01d,
                 -0.5f * leadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Line (.68d, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (.08d, 0f, Last (thisBeat)));
+            return thisBeat;
+        }
+
+        public static List<Point> ECG_Pacemaker (Patient _P, Leads _L) {
+            List<Point> thisBeat = new List<Point> ();
+            thisBeat = Concatenate (thisBeat, Line (.01d,
+                0.2f * leadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (.01d,
+                0f * leadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
             return thisBeat;
         }
 

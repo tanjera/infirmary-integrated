@@ -44,7 +44,7 @@
 
             <Label Padding="5,0,5,2" Margin="5,0"
                    HorizontalAlignment="Left"
-                   Content="Ibi Keller, 2017"/>
+                   Content="Ibi Keller, (c) 2017"/>
 
             <TextBlock Name="tblDescription"
                    Padding="5,2" Margin="5"
@@ -55,7 +55,7 @@
                    HorizontalAlignment="Left" >
                 <Hyperlink NavigateUri="http://www.tanjera.com/"
                            RequestNavigate="Hyperlink_RequestNavigate">
-                    http://www.tanjera.com/
+                    http://www.infirmary-integrated.com/
                 </Hyperlink>
             </Label>
 

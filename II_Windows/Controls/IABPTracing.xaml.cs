@@ -50,13 +50,6 @@ namespace II_Windows.Controls {
             lblLead.Content = App.Language.Dictionary[Leads.LookupString (Lead.Value)];
         }
 
-        public void Scroll () => wfStrip.Scroll ();
-        public void Unpause () => wfStrip.Unpause ();
-        public void ClearFuture () => wfStrip.ClearFuture ();
-        public void Add_Beat__Cardiac_Baseline (Patient P) => wfStrip.Add_Beat__Cardiac_Baseline (P);
-        public void Add_Beat__Cardiac_Atrial (Patient P) => wfStrip.Add_Beat__Cardiac_Atrial (P);
-        public void Add_Beat__Cardiac_Ventricular (Patient P) => wfStrip.Add_Beat__Cardiac_Ventricular (P);
-
         public void Draw () {
             drawXOffset = 0;
             drawYOffset = (int)canvasTracing.ActualHeight / 2;

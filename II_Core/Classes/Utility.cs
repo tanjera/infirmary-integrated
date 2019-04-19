@@ -9,12 +9,12 @@ namespace II {
 
         public const string Version = "0.93";
 
-        public static bool VersioningNewer(string current, string comparison) {
+        public static bool IsNewerVersion(string current, string comparison) {
             string[] curSplit = current.Split('.'),
                     compSplit = comparison.Split('.');
 
-            for (int i = 0; i < curSplit.Length && i < compSplit.Length; i++)
-                if (int.Parse(curSplit[i]) < int.Parse(compSplit[i]))
+            for (int i = 0; i < compSplit.Length; i++)
+                if ((i < curSplit.Length ? int.Parse(curSplit[i]) : 0) < int.Parse(compSplit[i]))
                     return true;
             return false;
         }

@@ -201,8 +201,7 @@ namespace II_Windows {
             menuPauseDevice.IsChecked = isPaused;
 
             if (!isPaused)
-                foreach (Controls.DefibTracing c in listTracings)
-                    c.Unpause ();
+                listTracings.ForEach(c => c.wfStrip.Unpause ());
         }
 
         private void ToggleFullscreen()
@@ -272,36 +271,43 @@ namespace II_Windows {
         private void ButtonAnalyze_Click(object s, RoutedEventArgs e) {
             Analyzed = true;
             Mode = Modes.DEFIB;
+            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
             UpdateInterface ();
         }
         private void ButtonSync_Click(object s, RoutedEventArgs e) {
             Analyzed = false;
             Mode = (Mode != Modes.SYNC ? Modes.SYNC : Modes.DEFIB);
-            UpdateInterface();
+            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            UpdateInterface ();
         }
 
         private void ButtonPacer_Click(object s, RoutedEventArgs e) {
             Analyzed = false;
             Mode = (Mode != Modes.PACER ? Modes.PACER : Modes.DEFIB);
-            UpdateInterface();
+            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            UpdateInterface ();
         }
         private void ButtonPaceRateDecrease_Click(object s, RoutedEventArgs e) {
             PacerRate = Utility.Clamp(PacerRate - 5, 0, 200);
-            UpdateInterface();
+            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            UpdateInterface ();
         }
         private void ButtonPaceRateIncrease_Click(object s, RoutedEventArgs e) {
             PacerRate = Utility.Clamp(PacerRate + 5, 0, 200);
-            UpdateInterface();
+            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            UpdateInterface ();
         }
         private void ButtonPaceEnergyDecrease_Click(object s, RoutedEventArgs e) {
             PacerEnergy = Utility.Clamp(PacerEnergy - 5, 0, 200);
-            UpdateInterface();
+            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            UpdateInterface ();
         }
         private void ButtonPaceEnergyIncrease_Click(object s, RoutedEventArgs e) {
             PacerEnergy = Utility.Clamp(PacerEnergy + 5, 0, 200);
-            UpdateInterface();
+            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            UpdateInterface ();
         }
-        private void ButtonPacePause_Click(object s, RoutedEventArgs e) { throw new NotImplementedException(); }
+        private void ButtonPacePause_Click(object s, RoutedEventArgs e) => App.Patient.PacemakerPause ();
 
 
         private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
@@ -319,18 +325,17 @@ namespace II_Windows {
             if (isPaused)
                 return;
 
-            foreach (Controls.DefibTracing c in listTracings) {
-                c.Scroll ();
+            listTracings.ForEach (c => {
+                c.wfStrip.Scroll ();
                 c.Draw ();
-            }
+            });
         }
 
         private void OnTick_Vitals (object sender, EventArgs e) {
             if (isPaused)
                 return;
 
-            foreach (Controls.DefibNumeric v in listNumerics)
-                v.UpdateVitals (this);
+            listNumerics.ForEach(n => n.UpdateVitals (this));
         }
 
         private void OnLayoutChange (List<string> numericTypes = null, List<string> tracingTypes = null) {
@@ -391,44 +396,45 @@ namespace II_Windows {
         public void OnPatientEvent (object sender, Patient.PatientEvent_Args e) {
             switch (e.EventType) {
                 default: break;
+
                 case Patient.PatientEvent_Args.EventTypes.Vitals_Change:
-                    foreach (Controls.DefibTracing c in listTracings) {
-                        c.ClearFuture ();
-                        c.Add_Beat__Cardiac_Baseline (App.Patient);
-                    }
-                    foreach (Controls.DefibNumeric n in listNumerics)
-                        n.UpdateVitals (this);
+                    listTracings.ForEach (c => {
+                        c.wfStrip.ClearFuture();
+                        c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
+                    });
+                    listNumerics.ForEach((n) => n.UpdateVitals (this));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Defibrillation:
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Defibrillation (App.Patient));
+                    break;
+
+                case Patient.PatientEvent_Args.EventTypes.Cardiac_PacerSpike:
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Pacemaker (App.Patient));
+                    break;
+
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
-                    foreach (Controls.DefibTracing c in listTracings)
-                        c.Add_Beat__Cardiac_Baseline (App.Patient);
+                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Atrial:
-                    foreach (Controls.DefibTracing c in listTracings)
-                        c.Add_Beat__Cardiac_Atrial (App.Patient);
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Atrial (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Ventricular:
-                    foreach (Controls.DefibTracing c in listTracings)
-                        c.Add_Beat__Cardiac_Ventricular (App.Patient);
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Ventricular (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Respiratory_Baseline:
-                    foreach (Controls.DefibTracing c in listTracings)
-                        c.Add_Beat__Respiratory_Baseline (App.Patient);
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Respiratory_Baseline (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Respiratory_Inspiration:
-                    foreach (Controls.DefibTracing c in listTracings)
-                        c.Add_Beat__Respiratory_Inspiration (App.Patient);
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Respiratory_Inspiration (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Respiratory_Expiration:
-                    foreach (Controls.DefibTracing c in listTracings)
-                        c.Add_Beat__Respiratory_Expiration (App.Patient);
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Respiratory_Expiration (App.Patient));
                     break;
             }
         }

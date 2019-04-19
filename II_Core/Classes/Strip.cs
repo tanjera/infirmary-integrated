@@ -125,12 +125,19 @@ namespace II.Rhythm {
             scrollingUnpausing = true;
         }
 
+        public void Add_Beat__Cardiac_Defibrillation (Patient _Patient) {
+            if (IsECG ())
+                Overwrite (Waveforms.ECG_Defibrillation (_Patient, Lead));
+        }
+
+        public void Add_Beat__Cardiac_Pacemaker (Patient _Patient) {
+            if (IsECG ())
+                Overwrite (Waveforms.ECG_Pacemaker (_Patient, Lead));
+        }
+
         public void Add_Beat__Cardiac_Baseline (Patient _Patient) {
             if (IsECG ()) {
-                if (_Patient.IsDefibrillating)      // Process defibrillation here...
-                    Overwrite (Waveforms.ECG_Defibrillation (_Patient, Lead));
-                else
-                    _Patient.CardiacRhythm.ECG_Isoelectric (_Patient, this);
+                _Patient.CardiacRhythm.ECG_Isoelectric (_Patient, this);
             } else if (Lead.Value != Leads.Values.RR && Lead.Value != Leads.Values.ETCO2) {
                 // Fill waveform through to future buffer with flatline
                 double fill = (lengthSeconds * forwardEdgeBuffer) - Last (Points).X;

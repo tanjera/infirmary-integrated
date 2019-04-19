@@ -248,8 +248,7 @@ namespace II_Windows {
             menuPauseDevice.IsChecked = isPaused;
 
             if (!isPaused)
-                foreach (Controls.IABPTracing c in listTracings)
-                    c.Unpause ();
+                listTracings.ForEach (c => c.wfStrip.Unpause ()); ;
         }
 
         private void ToggleFullscreen () {
@@ -384,10 +383,10 @@ namespace II_Windows {
             if (isPaused)
                 return;
 
-            foreach (Controls.IABPTracing c in listTracings) {
-                c.Scroll ();
+            listTracings.ForEach (c => {
+                c.wfStrip.Scroll ();
                 c.Draw ();
-            }
+            });
         }
 
         private void OnTick_Vitals (object sender, EventArgs e) {
@@ -407,42 +406,45 @@ namespace II_Windows {
 
             UpdateInterface ();
 
-            foreach (Controls.IABPNumeric v in listNumerics)
-                v.UpdateVitals ();
+            listNumerics.ForEach(n => n.UpdateVitals ());
         }
 
         public void OnPatientEvent (object sender, Patient.PatientEvent_Args e) {
             switch (e.EventType) {
                 default: break;
                 case Patient.PatientEvent_Args.EventTypes.Vitals_Change:
-                    foreach (Controls.IABPTracing c in listTracings) {
-                        c.ClearFuture ();
-                        c.Add_Beat__Cardiac_Baseline (App.Patient);
-                    }
+                    listTracings.ForEach (c => {
+                        c.wfStrip.ClearFuture ();
+                        c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
+                    });
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Defibrillation:
+                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Defibrillation (App.Patient));
+                    break;
+
+                case Patient.PatientEvent_Args.EventTypes.Cardiac_PacerSpike:
+                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Pacemaker (App.Patient));
+                    break;
+
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
                     App.Patient.IABP_Active = Running && (Frequency_Iter % Frequency == 0)
                         && ((Trigger.Value == Triggers.Values.ECG && App.Patient.CardiacRhythm.HasWaveform_Ventricular)
                         || (Trigger.Value == Triggers.Values.Pressure && App.Patient.CardiacRhythm.HasPulse_Ventricular));
                     App.Patient.IABP_Trigger = Trigger.Value.ToString();
 
-                    foreach (Controls.IABPTracing c in listTracings)
-                        c.Add_Beat__Cardiac_Baseline (App.Patient);
+                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Atrial:
-                    foreach (Controls.IABPTracing c in listTracings)
-                        c.Add_Beat__Cardiac_Atrial (App.Patient);
+                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Atrial (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Ventricular:
                     if (Running)
                         Frequency_Iter++;
 
-                    foreach (Controls.IABPTracing c in listTracings)
-                        c.Add_Beat__Cardiac_Ventricular (App.Patient);
+                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Ventricular (App.Patient));
                     break;
             }
         }
