@@ -79,8 +79,8 @@ namespace II_Windows {
             lblDeviceMonitor.Content = App.Language.Dictionary["PE:CardiacMonitor"];
             lblDevice12LeadECG.Content = App.Language.Dictionary["PE:12LeadECG"];
             lblDeviceDefibrillator.Content = App.Language.Dictionary["PE:Defibrillator"];
+            lblDeviceIABP.Content = App.Language.Dictionary ["PE:IABP"];
             //lblDeviceVentilator.Content = App.Language.Dictionary["PE:Ventilator"];
-            lblDeviceIABP.Content = App.Language.Dictionary["PE:IABP"];
             //lblDeviceEFM.Content = App.Language.Dictionary["PE:EFM"];
             //lblDeviceIVPump.Content = App.Language.Dictionary["PE:IVPump"];
             //lblDeviceLabResults.Content = App.Language.Dictionary["PE:LabResults"];
@@ -95,6 +95,9 @@ namespace II_Windows {
             lblRespiratoryRhythm.Content = String.Format ("{0}:", App.Language.Dictionary["PE:RespiratoryRhythm"]);
             checkDefaultVitals.Content = App.Language.Dictionary["PE:UseDefaultVitalSignRanges"];
 
+            lblGroupRespiratoryProfile.Content = App.Language.Dictionary ["PE:RespiratoryProfile"];
+            lblInspiratoryRatio.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:InspiratoryExpiratoryRatio"]);
+
             lblGroupHemodynamics.Content = App.Language.Dictionary["PE:AdvancedHemodynamics"];
             lblETCO2.Content = String.Format ("{0}:", App.Language.Dictionary["PE:EndTidalCO2"]);
             lblCVP.Content = String.Format ("{0}:", App.Language.Dictionary["PE:CentralVenousPressure"]);
@@ -103,10 +106,8 @@ namespace II_Windows {
             lblICP.Content = String.Format("{0}:", App.Language.Dictionary["PE:IntracranialPressure"]);
             lblIAP.Content = String.Format("{0}:", App.Language.Dictionary["PE:IntraabdominalPressure"]);
 
-            lblGroupRespiratoryProfile.Content = App.Language.Dictionary["PE:RespiratoryProfile"];
-            lblInspiratoryRatio.Content = String.Format ("{0}:", App.Language.Dictionary["PE:InspiratoryExpiratoryRatio"]);
-
             lblGroupCardiacProfile.Content = App.Language.Dictionary["PE:CardiacProfile"];
+            lblPacemakerCaptureThreshold.Content = App.Language.Dictionary ["PE:PacemakerCaptureThreshold"];
             grpSTSegmentElevation.Header = App.Language.Dictionary["PE:STSegmentElevation"];
             grpTWaveElevation.Header = App.Language.Dictionary["PE:TWaveElevation"];
 
@@ -475,6 +476,8 @@ namespace II_Windows {
                 (int)numICP.Value,
                 (int)numIAP.Value,
 
+                (int)numPacemakerCaptureThreshold.Value,
+
                 new double [] {
                 (double)numSTE_I.Value, (double)numSTE_II.Value, (double)numSTE_III.Value,
                 (double)numSTE_aVR.Value, (double)numSTE_aVL.Value, (double)numSTE_aVF.Value,
@@ -527,6 +530,8 @@ namespace II_Windows {
                 comboRespiratoryRhythm.SelectedIndex = (int)e.Patient.Respiratory_Rhythm.Value;
                 numInspiratoryRatio.Value = e.Patient.Respiratory_IERatio_I;
                 numExpiratoryRatio.Value = e.Patient.Respiratory_IERatio_E;
+
+                numPacemakerCaptureThreshold.Value = e.Patient.Pacemaker_Threshold;
 
                 numSTE_I.Value = (decimal)e.Patient.STElevation [(int)Leads.Values.ECG_I];
                 numSTE_II.Value = (decimal)e.Patient.STElevation [(int)Leads.Values.ECG_II];

@@ -7,7 +7,7 @@ namespace II {
 
     public static class Utility {
 
-        public const string Version = "0.93";
+        public const string Version = "0.95";
 
         public static bool IsNewerVersion(string current, string comparison) {
             string[] curSplit = current.Split('.'),

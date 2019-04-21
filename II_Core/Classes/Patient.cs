@@ -131,7 +131,7 @@ namespace II {
                             120, 80, 95,
                             120, 80, 95,
                             22, 12, 16,
-                            8, 1,
+                            8, 1, 50,
                             new double[] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
                             new double[] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
                             CardiacRhythms.Values.Sinus_Rhythm,
@@ -304,6 +304,7 @@ namespace II {
                     int asbp,   int adbp,   int amap,
                     int psp,    int pdp,    int pmp,
                     int icp, int iap,
+                    int pacerthreshold,
                     double[] st_elev,        double[] t_elev,
                     CardiacRhythms.Values      card_rhythm,
                     RespiratoryRhythms.Values  resp_rhythm,
@@ -320,6 +321,7 @@ namespace II {
             PSP = psp;      PDP = pdp;      PMP = pmp;
 
             CardiacRhythm.Value = card_rhythm;
+            Pacemaker_Threshold = pacerthreshold;
             STElevation = st_elev;
             TElevation = t_elev;
 
@@ -380,7 +382,7 @@ namespace II {
             else if (active && timerPacemaker.IsRunning)
                 UpdatePacemaker (rate, energy);
         }
-        public void PacemakerPause () => timerPacemaker.Interval = 5000;
+        public void PacemakerPause () => timerPacemaker.Interval = 4000;
 
         private void InitDefibrillation (bool toSynchronize) {
             if (toSynchronize)
@@ -394,6 +396,8 @@ namespace II {
             Pacemaker_Energy = energy;
             timerPacemaker.Reset ((int)((60d / rate) * 1000));
         }
+
+        private void UpdatePacemaker () => UpdatePacemaker (Pacemaker_Rate, Pacemaker_Energy);
 
         private void UpdatePacemaker (int rate, int energy) {
             Pacemaker_Rate = rate;
@@ -426,12 +430,14 @@ namespace II {
             if (Pacemaker_Energy > 0)
                 PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_PacerSpike));
 
-            if (Pacemaker_Energy > Pacemaker_Threshold) {
+            if (Pacemaker_Energy >= Pacemaker_Threshold) {
                 CardiacRhythm.AberrantBeat = true;
                 PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Ventricular));
                 CardiacRhythm.AberrantBeat = false;
                 timerCardiac_Baseline.Reset ();
             }
+
+            UpdatePacemaker ();         // In case pacemaker was paused... updates .Interval
         }
 
         private void InitTimers() {

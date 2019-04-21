@@ -311,10 +311,24 @@
                             <Label Name="lblGroupCardiacProfile" Style="{StaticResource expHeader}"/>
                         </Expander.Header>
 
-                        <StackPanel Orientation="Vertical">
+                        <Grid Margin="3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <Label Name="lblPacemakerCaptureThreshold" Grid.Column="0" Grid.Row="0"/>
+                            <xctk:IntegerUpDown Name="numPacemakerCaptureThreshold" Increment="5" Minimum="0" Maximum="200"
+                                                Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
 
                             <!-- ST Segment Elevation -->
-                            <GroupBox Name="grpSTSegmentElevation" Style="{StaticResource grpParameters}">
+                            <GroupBox Name="grpSTSegmentElevation" Style="{StaticResource grpParameters}"
+                                      Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
                                 <Grid Margin="3">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -375,7 +389,8 @@
                             </GroupBox>
 
                             <!-- T Wave Elevation -->
-                            <GroupBox Name="grpTWaveElevation" Style="{StaticResource grpParameters}">
+                            <GroupBox Name="grpTWaveElevation" Style="{StaticResource grpParameters}"
+                                      Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
                                 <Grid Margin="3">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -434,7 +449,7 @@
                                                         Grid.Column="7" Grid.Row="2" Style="{StaticResource decUpDown}" />
                                 </Grid>
                             </GroupBox>
-                        </StackPanel>
+                        </Grid>
                     </Expander>
                 </Border>
 

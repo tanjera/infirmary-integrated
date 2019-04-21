@@ -30,7 +30,7 @@ namespace II.Server {
                 c.Open();
                 return c;
             }
-            catch (MySqlException e) {
+            catch (Exception e) {
                 // When handling errors, you can your application's response based on the error number.
                 // The two most common error numbers when connecting are as follows:
                 // 0: Cannot connect to server.
@@ -43,15 +43,18 @@ namespace II.Server {
             try {
                 c.Close ();
                 listConnections.Remove(c);
+                c.Dispose ();
                 return true;
-            } catch (MySqlException e) {
+            } catch (Exception e) {
                 return false;
             }
         }
 
         public void Send_UsageStatistics () {
-            MySqlConnection conn = Open();
-            MySqlCommand comm = conn.CreateCommand();
+            MySqlConnection conn;
+            if ((conn = Open ()) == null)
+                return;
+            MySqlCommand comm = conn?.CreateCommand();
 
             try {
                 string macAddress = "",
@@ -81,14 +84,16 @@ namespace II.Server {
 
                 comm.ExecuteNonQuery ();
                 Close (conn);
-            } catch (MySqlException e) {
+            } catch (Exception e) {
                 Close (conn);
             }
         }
 
         public void Send_Exception(Exception exception) {
-            MySqlConnection conn = Open();
-            MySqlCommand comm = conn.CreateCommand();
+            MySqlConnection conn;
+            if ((conn = Open ()) == null)
+                return;
+            MySqlCommand comm = conn?.CreateCommand();
 
             try {
                 StringBuilder excData = new StringBuilder();
@@ -110,15 +115,17 @@ namespace II.Server {
 
                 comm.ExecuteNonQuery();
                 Close (conn);
-            } catch (MySqlException e) {
+            } catch (Exception e) {
                 Close (conn);
             }
         }
 
         public string Get_LatestVersion() {
-            MySqlConnection conn = Open();
-            MySqlCommand comm = conn.CreateCommand();
             string version = "0.0";
+            MySqlConnection conn;
+            if ((conn = Open()) == null)
+                return version;
+            MySqlCommand comm = conn?.CreateCommand();
 
             try {
                 comm.CommandText = "SELECT version FROM versioning ORDER BY accession DESC LIMIT 1";
@@ -129,7 +136,7 @@ namespace II.Server {
 
                 Close(conn);
                 return version;
-            } catch (MySqlException e) {
+            } catch (Exception e) {
                 Close(conn);
                 return version;
             }

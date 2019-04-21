@@ -7,8 +7,10 @@
 	- Update version # in:
 		- II_Core.Utility.Version
 		- II_Windows properties
+		- II_Windows.App assembly information
 		- Installer_Windows properties
 
+	- Comment any testing/debugging shortcuts
 	- Clean and compile solution and installer
 	- Move .msi to Releases
 	- Create .zip of .exe folder in Releases
