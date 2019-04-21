@@ -6,9 +6,9 @@ Infirmary Integrated is free and open-source software developed to advance healt
 
 Infirmary Integrated currently functions as a simulator for the following healthcare devices:
 - Cardiac monitor
+- Defibrillator
 - 12-lead electocardiograph (ECG)
 - Intra-aortic balloon pump (IABP)
-- Defibrillator (in development)
 
 And Infirmary Integrated can simulate hemodynamic and other readings including:
 - Heart rate (HR)

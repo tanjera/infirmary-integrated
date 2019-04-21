@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II_Windows", "II_Windows\II
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer_Windows", "Installer_Windows\Installer_Windows.vdproj", "{B113B2F2-FA17-4A02-9E07-945035DDE0D3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II_Linux", "II_Linux\II_Linux.csproj", "{BB73AEDA-9360-4512-BE9A-5141EDC8BA10}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		II_Core\II_Core.projitems*{d6a13684-612c-49d6-b8b3-b9720d585a71}*SharedItemsImports = 13
@@ -34,13 +36,25 @@ Global
 		{F66C5A84-D2A2-48FD-9E4A-984AEB4730AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F66C5A84-D2A2-48FD-9E4A-984AEB4730AF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B113B2F2-FA17-4A02-9E07-945035DDE0D3}.Debug|Any CPU.ActiveCfg = Debug
+		{B113B2F2-FA17-4A02-9E07-945035DDE0D3}.Debug|Any CPU.Build.0 = Debug
 		{B113B2F2-FA17-4A02-9E07-945035DDE0D3}.DefaultBuild|Any CPU.ActiveCfg = Debug
+		{B113B2F2-FA17-4A02-9E07-945035DDE0D3}.DefaultBuild|Any CPU.Build.0 = Debug
 		{B113B2F2-FA17-4A02-9E07-945035DDE0D3}.Release|Any CPU.ActiveCfg = Release
+		{B113B2F2-FA17-4A02-9E07-945035DDE0D3}.Release|Any CPU.Build.0 = Release
+		{BB73AEDA-9360-4512-BE9A-5141EDC8BA10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB73AEDA-9360-4512-BE9A-5141EDC8BA10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB73AEDA-9360-4512-BE9A-5141EDC8BA10}.DefaultBuild|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB73AEDA-9360-4512-BE9A-5141EDC8BA10}.DefaultBuild|Any CPU.Build.0 = Debug|Any CPU
+		{BB73AEDA-9360-4512-BE9A-5141EDC8BA10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB73AEDA-9360-4512-BE9A-5141EDC8BA10}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6EBF9B7F-4E01-41BD-8BF0-E88F361A3FA9}
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		version = 0.95
 	EndGlobalSection
 EndGlobal
