@@ -1,10 +1,64 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <stetic-interface>
-  <widget class="Gtk.Window" id="MainWindow" design-size="400 300">
+  <configuration>
+    <images-root-path>..</images-root-path>
+    <target-gtk-version>3.0</target-gtk-version>
+  </configuration>
+  <import>
+    <widget-library name="../bin/Debug/Infirmary Integrated.exe" internal="true" />
+  </import>
+  <widget class="Gtk.Window" id="II_Linux.UI.PatientEditor" design-size="400 300">
     <property name="MemberName" />
-    <property name="Title" translatable="yes">MainWindow</property>
+    <property name="Title" translatable="yes">PatientEditor</property>
     <property name="WindowPosition">CenterOnParent</property>
-    <signal name="DeleteEvent" handler="OnDeleteEvent" />
+    <child>
+      <placeholder />
+    </child>
+  </widget>
+  <widget class="Gtk.Window" id="II_Linux.UI.DeviceMonitor" design-size="400 300">
+    <property name="MemberName" />
+    <property name="Title" translatable="yes">DeviceMonitor</property>
+    <property name="WindowPosition">CenterOnParent</property>
+    <child>
+      <placeholder />
+    </child>
+  </widget>
+  <widget class="Gtk.Window" id="II_Linux.UI.DeviceDefib" design-size="400 300">
+    <property name="MemberName" />
+    <property name="Title" translatable="yes">DeviceDefib</property>
+    <property name="WindowPosition">CenterOnParent</property>
+    <child>
+      <placeholder />
+    </child>
+  </widget>
+  <widget class="Gtk.Window" id="II_Linux.UI.DeviceIABP" design-size="400 300">
+    <property name="MemberName" />
+    <property name="Title" translatable="yes">DeviceIABP</property>
+    <property name="WindowPosition">CenterOnParent</property>
+    <child>
+      <placeholder />
+    </child>
+  </widget>
+  <widget class="Gtk.Window" id="II_Linux.UI.DeviceECG" design-size="400 300">
+    <property name="MemberName" />
+    <property name="Title" translatable="yes">DeviceECG</property>
+    <property name="WindowPosition">CenterOnParent</property>
+    <child>
+      <placeholder />
+    </child>
+  </widget>
+  <widget class="Gtk.Window" id="II_Linux.UI.DialogAbout" design-size="400 300">
+    <property name="MemberName" />
+    <property name="Title" translatable="yes">DialogAbout</property>
+    <property name="WindowPosition">CenterOnParent</property>
+    <child>
+      <placeholder />
+    </child>
+  </widget>
+  <widget class="Gtk.Window" id="II_Linux.UI.DialogInitial" design-size="400 300">
+    <property name="MemberName" />
+    <property name="Title" translatable="yes">DialogInitial</property>
+    <property name="WindowPosition">CenterOnParent</property>
     <child>
       <placeholder />
     </child>
