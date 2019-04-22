@@ -9,6 +9,7 @@ using System.Text;
 
 using MySql.Data.MySqlClient;
 
+
 namespace II.Server {
 
     public partial class Connection {
@@ -20,7 +21,10 @@ namespace II.Server {
             listConnections = new List<MySqlConnection>();
 
             connectionString = String.Format ("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};",
-                accessServer, accessDatabase, accessUid, accessPassword);
+                Access.Server.Host,
+                Access.Server.Database,
+                Access.Server.Uid,
+                Access.Server.Password);
         }
 
         private MySqlConnection Open () {
@@ -30,6 +34,7 @@ namespace II.Server {
                 c.Open();
                 return c;
             }
+#pragma warning disable CS0168
             catch (Exception e) {
                 // When handling errors, you can your application's response based on the error number.
                 // The two most common error numbers when connecting are as follows:
@@ -37,6 +42,7 @@ namespace II.Server {
                 // 1045: Invalid user name and/or password.
                 return null;
             }
+#pragma warning restore CS0168
         }
 
         private bool Close (MySqlConnection c) {
@@ -45,9 +51,11 @@ namespace II.Server {
                 listConnections.Remove(c);
                 c.Dispose ();
                 return true;
+#pragma warning disable CS0168
             } catch (Exception e) {
                 return false;
             }
+#pragma warning restore CS0168
         }
 
         public void Send_UsageStatistics () {
@@ -84,9 +92,11 @@ namespace II.Server {
 
                 comm.ExecuteNonQuery ();
                 Close (conn);
+#pragma warning disable CS0168
             } catch (Exception e) {
                 Close (conn);
             }
+#pragma warning restore CS0168
         }
 
         public void Send_Exception(Exception exception) {
@@ -115,9 +125,11 @@ namespace II.Server {
 
                 comm.ExecuteNonQuery();
                 Close (conn);
+#pragma warning disable CS0168
             } catch (Exception e) {
                 Close (conn);
             }
+#pragma warning restore CS0168
         }
 
         public string Get_LatestVersion() {
@@ -136,10 +148,12 @@ namespace II.Server {
 
                 Close(conn);
                 return version;
+#pragma warning disable CS0168
             } catch (Exception e) {
                 Close(conn);
                 return version;
             }
+#pragma warning restore CS0168
         }
     }
 }

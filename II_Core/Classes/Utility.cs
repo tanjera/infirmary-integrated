@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -7,7 +8,7 @@ namespace II {
 
     public static class Utility {
 
-        public const string Version = "0.95";
+        public const string Version = "0.96";
 
         public static bool IsNewerVersion(string current, string comparison) {
             string[] curSplit = current.Split('.'),
@@ -82,6 +83,39 @@ namespace II {
 
         public static string UnobfuscateB64 (string str) {
             return Encoding.UTF8.GetString (Convert.FromBase64String (str));
+        }
+
+        public static string EncryptAES (string str) {
+            byte [] output;
+            using (AesManaged aes = new AesManaged ()) {
+                aes.Key = Access.Encryption.Key;
+                aes.IV = Access.Encryption.IV;
+                ICryptoTransform encryptor = aes.CreateEncryptor (aes.Key, aes.IV);
+                using (MemoryStream ms = new MemoryStream ()) {
+                    using (CryptoStream cs = new CryptoStream (ms, encryptor, CryptoStreamMode.Write)) {
+                        using (StreamWriter sw = new StreamWriter (cs))
+                            sw.Write (str);
+                        output = ms.ToArray ();
+                    }
+                }
+            }
+            return Convert.ToBase64String(output);
+        }
+
+        public static string DecryptAES (string str) {
+            string output;
+            using (AesManaged aes = new AesManaged ()) {
+                aes.Key = Access.Encryption.Key;
+                aes.IV = Access.Encryption.IV;
+                ICryptoTransform decryptor = aes.CreateDecryptor (aes.Key, aes.IV);
+                using (MemoryStream ms = new MemoryStream (Convert.FromBase64String(str))) {
+                    using (CryptoStream cs = new CryptoStream (ms, decryptor, CryptoStreamMode.Read)) {
+                        using (StreamReader reader = new StreamReader (cs))
+                            output = reader.ReadToEnd ();
+                    }
+                }
+            }
+            return output;
         }
     }
 }

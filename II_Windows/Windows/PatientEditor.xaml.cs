@@ -51,7 +51,7 @@ namespace II_Windows {
         private void InitInitialRun () {
             string setLang = Properties.Settings.Default.Language;
             if (setLang == null || setLang == ""
-                || !Enum.TryParse<Languages.Values>(setLang, out App.Language.Value)) {
+                || !Enum.TryParse<Languages.Values> (setLang, out App.Language.Value)) {
                 App.Language = new Languages ();
                 DialogInitial ();
             }
@@ -63,85 +63,85 @@ namespace II_Windows {
             icSaveFile = new ActionCommand (() => SaveFile ());
 
             // Populate UI strings per language selection
-            wdwPatientEditor.Title = App.Language.Dictionary["PE:WindowTitle"];
-            menuFile.Header = App.Language.Dictionary["PE:MenuFile"];
-            menuLoad.Header = App.Language.Dictionary["PE:MenuLoadSimulation"];
-            menuSave.Header = App.Language.Dictionary["PE:MenuSaveSimulation"];
-            menuExit.Header = App.Language.Dictionary["PE:MenuExitProgram"];
+            wdwPatientEditor.Title = App.Language.Dictionary ["PE:WindowTitle"];
+            menuFile.Header = App.Language.Dictionary ["PE:MenuFile"];
+            menuLoad.Header = App.Language.Dictionary ["PE:MenuLoadSimulation"];
+            menuSave.Header = App.Language.Dictionary ["PE:MenuSaveSimulation"];
+            menuExit.Header = App.Language.Dictionary ["PE:MenuExitProgram"];
 
-            menuSettings.Header = App.Language.Dictionary["PE:MenuSettings"];
-            menuSetLanguage.Header = App.Language.Dictionary["PE:MenuSetLanguage"];
+            menuSettings.Header = App.Language.Dictionary ["PE:MenuSettings"];
+            menuSetLanguage.Header = App.Language.Dictionary ["PE:MenuSetLanguage"];
 
-            menuHelp.Header = App.Language.Dictionary["PE:MenuHelp"];
-            menuAbout.Header = App.Language.Dictionary["PE:MenuAboutProgram"];
+            menuHelp.Header = App.Language.Dictionary ["PE:MenuHelp"];
+            menuAbout.Header = App.Language.Dictionary ["PE:MenuAboutProgram"];
 
-            lblGroupDevices.Content = App.Language.Dictionary["PE:Devices"];
-            lblDeviceMonitor.Content = App.Language.Dictionary["PE:CardiacMonitor"];
-            lblDevice12LeadECG.Content = App.Language.Dictionary["PE:12LeadECG"];
-            lblDeviceDefibrillator.Content = App.Language.Dictionary["PE:Defibrillator"];
+            lblGroupDevices.Content = App.Language.Dictionary ["PE:Devices"];
+            lblDeviceMonitor.Content = App.Language.Dictionary ["PE:CardiacMonitor"];
+            lblDevice12LeadECG.Content = App.Language.Dictionary ["PE:12LeadECG"];
+            lblDeviceDefibrillator.Content = App.Language.Dictionary ["PE:Defibrillator"];
             lblDeviceIABP.Content = App.Language.Dictionary ["PE:IABP"];
             //lblDeviceVentilator.Content = App.Language.Dictionary["PE:Ventilator"];
             //lblDeviceEFM.Content = App.Language.Dictionary["PE:EFM"];
             //lblDeviceIVPump.Content = App.Language.Dictionary["PE:IVPump"];
             //lblDeviceLabResults.Content = App.Language.Dictionary["PE:LabResults"];
 
-            lblGroupVitalSigns.Content = App.Language.Dictionary["PE:VitalSigns"];
-            lblHR.Content = String.Format ("{0}:", App.Language.Dictionary["PE:HeartRate"]);
-            lblNIBP.Content = String.Format ("{0}:", App.Language.Dictionary["PE:BloodPressure"]);
-            lblRR.Content = String.Format ("{0}:", App.Language.Dictionary["PE:RespiratoryRate"]);
-            lblSPO2.Content = String.Format ("{0}:", App.Language.Dictionary["PE:PulseOximetry"]);
-            lblT.Content = String.Format("{0}:", App.Language.Dictionary["PE:Temperature"]);
-            lblCardiacRhythm.Content = String.Format ("{0}:", App.Language.Dictionary["PE:CardiacRhythm"]);
-            lblRespiratoryRhythm.Content = String.Format ("{0}:", App.Language.Dictionary["PE:RespiratoryRhythm"]);
-            checkDefaultVitals.Content = App.Language.Dictionary["PE:UseDefaultVitalSignRanges"];
+            lblGroupVitalSigns.Content = App.Language.Dictionary ["PE:VitalSigns"];
+            lblHR.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:HeartRate"]);
+            lblNIBP.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:BloodPressure"]);
+            lblRR.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:RespiratoryRate"]);
+            lblSPO2.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:PulseOximetry"]);
+            lblT.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:Temperature"]);
+            lblCardiacRhythm.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:CardiacRhythm"]);
+            lblRespiratoryRhythm.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:RespiratoryRhythm"]);
+            checkDefaultVitals.Content = App.Language.Dictionary ["PE:UseDefaultVitalSignRanges"];
 
             lblGroupRespiratoryProfile.Content = App.Language.Dictionary ["PE:RespiratoryProfile"];
             lblInspiratoryRatio.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:InspiratoryExpiratoryRatio"]);
 
-            lblGroupHemodynamics.Content = App.Language.Dictionary["PE:AdvancedHemodynamics"];
-            lblETCO2.Content = String.Format ("{0}:", App.Language.Dictionary["PE:EndTidalCO2"]);
-            lblCVP.Content = String.Format ("{0}:", App.Language.Dictionary["PE:CentralVenousPressure"]);
-            lblASBP.Content = String.Format ("{0}:", App.Language.Dictionary["PE:ArterialBloodPressure"]);
-            lblPSP.Content = String.Format ("{0}:", App.Language.Dictionary["PE:PulmonaryArteryPressure"]);
-            lblICP.Content = String.Format("{0}:", App.Language.Dictionary["PE:IntracranialPressure"]);
-            lblIAP.Content = String.Format("{0}:", App.Language.Dictionary["PE:IntraabdominalPressure"]);
+            lblGroupHemodynamics.Content = App.Language.Dictionary ["PE:AdvancedHemodynamics"];
+            lblETCO2.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:EndTidalCO2"]);
+            lblCVP.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:CentralVenousPressure"]);
+            lblASBP.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:ArterialBloodPressure"]);
+            lblPSP.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:PulmonaryArteryPressure"]);
+            lblICP.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:IntracranialPressure"]);
+            lblIAP.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:IntraabdominalPressure"]);
 
-            lblGroupCardiacProfile.Content = App.Language.Dictionary["PE:CardiacProfile"];
+            lblGroupCardiacProfile.Content = App.Language.Dictionary ["PE:CardiacProfile"];
             lblPacemakerCaptureThreshold.Content = App.Language.Dictionary ["PE:PacemakerCaptureThreshold"];
-            grpSTSegmentElevation.Header = App.Language.Dictionary["PE:STSegmentElevation"];
-            grpTWaveElevation.Header = App.Language.Dictionary["PE:TWaveElevation"];
+            grpSTSegmentElevation.Header = App.Language.Dictionary ["PE:STSegmentElevation"];
+            grpTWaveElevation.Header = App.Language.Dictionary ["PE:TWaveElevation"];
 
-            lblGroupObstetricProfile.Content = App.Language.Dictionary["PE:ObstetricProfile"];
-            lblFHR.Content = String.Format ("{0}:", App.Language.Dictionary["PE:FetalHeartRate"]);
-            lblFHRRhythms.Content = String.Format ("{0}:", App.Language.Dictionary["PE:FetalHeartRhythms"]);
-            lblFHRVariability.Content = String.Format ("{0}:", App.Language.Dictionary["PE:FetalHeartVariability"]);
-            lblUCFrequency.Content = String.Format ("{0}:", App.Language.Dictionary["PE:UterineContractionFrequency"]);
-            lblUCDuration.Content = String.Format ("{0}:", App.Language.Dictionary["PE:UterineContractionDuration"]);
-            lblUCIntensity.Content = String.Format ("{0}:", App.Language.Dictionary["PE:UterineContractionIntensity"]);
+            lblGroupObstetricProfile.Content = App.Language.Dictionary ["PE:ObstetricProfile"];
+            lblFHR.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:FetalHeartRate"]);
+            lblFHRRhythms.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:FetalHeartRhythms"]);
+            lblFHRVariability.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:FetalHeartVariability"]);
+            lblUCFrequency.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:UterineContractionFrequency"]);
+            lblUCDuration.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:UterineContractionDuration"]);
+            lblUCIntensity.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:UterineContractionIntensity"]);
 
-            lblParametersApply.Content = App.Language.Dictionary["BUTTON:ApplyChanges"];
-            lblParametersReset.Content = App.Language.Dictionary["BUTTON:ResetParameters"];
+            lblParametersApply.Content = App.Language.Dictionary ["BUTTON:ApplyChanges"];
+            lblParametersReset.Content = App.Language.Dictionary ["BUTTON:ResetParameters"];
 
-            List<string>    cardiacRhythms = new List<string> (),
+            List<string> cardiacRhythms = new List<string> (),
                             respiratoryRhythms = new List<string> (),
                             intensityScale = new List<string> (),
                             fetalHeartRhythms = new List<string> ();
 
             foreach (CardiacRhythms.Values v in Enum.GetValues (typeof (CardiacRhythms.Values)))
-                cardiacRhythms.Add (App.Language.Dictionary[CardiacRhythms.LookupString (v)]);
+                cardiacRhythms.Add (App.Language.Dictionary [CardiacRhythms.LookupString (v)]);
             comboCardiacRhythm.ItemsSource = cardiacRhythms;
 
             foreach (RespiratoryRhythms.Values v in Enum.GetValues (typeof (RespiratoryRhythms.Values)))
-                respiratoryRhythms.Add (App.Language.Dictionary[RespiratoryRhythms.LookupString (v)]);
+                respiratoryRhythms.Add (App.Language.Dictionary [RespiratoryRhythms.LookupString (v)]);
             comboRespiratoryRhythm.ItemsSource = respiratoryRhythms;
 
             foreach (Patient.Intensity.Values v in Enum.GetValues (typeof (Patient.Intensity.Values)))
-                intensityScale.Add (App.Language.Dictionary[Patient.Intensity.LookupString (v)]);
+                intensityScale.Add (App.Language.Dictionary [Patient.Intensity.LookupString (v)]);
             comboFHRVariability.ItemsSource = intensityScale;
             comboUCIntensity.ItemsSource = intensityScale;
 
             foreach (FetalHeartDecelerations.Values v in Enum.GetValues (typeof (FetalHeartDecelerations.Values)))
-                fetalHeartRhythms.Add (App.Language.Dictionary[FetalHeartDecelerations.LookupString (v)]);
+                fetalHeartRhythms.Add (App.Language.Dictionary [FetalHeartDecelerations.LookupString (v)]);
             listFHRRhythms.ItemsSource = fetalHeartRhythms;
 
             // Populate status bar with updated version information and make visible
@@ -151,7 +151,7 @@ namespace II_Windows {
             bgw.RunWorkerCompleted += delegate {
                 if (Utility.IsNewerVersion (Utility.Version, latestVersion)) {
                     statusBar.Visibility = Visibility.Visible;
-                    txtUpdateAvailable.Text = String.Format(App.Language.Dictionary ["STATUS:UpdateAvailable"], latestVersion);
+                    txtUpdateAvailable.Text = String.Format (App.Language.Dictionary ["STATUS:UpdateAvailable"], latestVersion);
                 }
             };
             bgw.RunWorkerAsync ();
@@ -204,7 +204,7 @@ namespace II_Windows {
 
             App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
         }
-        private void DialogInitial(bool reloadUI = false) {
+        private void DialogInitial (bool reloadUI = false) {
             App.Dialog_Language = new DialogInitial ();
             App.Dialog_Language.Activate ();
             App.Dialog_Language.ShowDialog ();
@@ -214,7 +214,7 @@ namespace II_Windows {
         }
 
         private void DialogAbout (bool reloadUI = false) {
-            App.Dialog_About = new DialogAbout();
+            App.Dialog_About = new DialogAbout ();
             App.Dialog_About.Activate ();
             App.Dialog_About.ShowDialog ();
         }
@@ -227,7 +227,7 @@ namespace II_Windows {
                 LoadFail ();
             }
 
-            FormUpdateFields(this, new Patient.PatientEvent_Args(App.Patient, Patient.PatientEvent_Args.EventTypes.Vitals_Change));
+            FormUpdateFields (this, new Patient.PatientEvent_Args (App.Patient, Patient.PatientEvent_Args.EventTypes.Vitals_Change));
         }
 
         private void LoadInit (Stream incFile) {
@@ -247,11 +247,11 @@ namespace II_Windows {
             /* Savefile type 1: validated and obfuscated, not encrypted or data protected
                 * Line 1 is metadata (.ii:t1)
                 * Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
-                * Line 3 is savefile data obfuscated by Base64 encoding
+                * Line 3 is savefile data encrypted by AES encoding
                 */
 
             string hash = sr.ReadLine ().Trim ();
-            string file = Utility.UnobfuscateB64 (sr.ReadToEnd ().Trim ());
+            string file = Utility.DecryptAES (sr.ReadToEnd ().Trim ());
             sr.Close ();
 
             if (hash == Utility.HashMD5 (file))
@@ -266,59 +266,59 @@ namespace II_Windows {
             StringBuilder pbuffer;
 
             try {
-                while ((line = sRead.ReadLine()) != null) {
+                while ((line = sRead.ReadLine ()) != null) {
                     if (line == "> Begin: Patient") {
-                        pbuffer = new StringBuilder();
-                        while ((pline = sRead.ReadLine()) != null && pline != "> End: Patient")
-                            pbuffer.AppendLine(pline);
-                        App.Patient.Load_Process(pbuffer.ToString());
+                        pbuffer = new StringBuilder ();
+                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
+                            pbuffer.AppendLine (pline);
+                        App.Patient.Load_Process (pbuffer.ToString ());
 
                     } else if (line == "> Begin: Editor") {
-                        pbuffer = new StringBuilder();
-                        while ((pline = sRead.ReadLine()) != null && pline != "> End: Editor")
-                            pbuffer.AppendLine(pline);
-                        this.LoadOptions(pbuffer.ToString());
+                        pbuffer = new StringBuilder ();
+                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Editor")
+                            pbuffer.AppendLine (pline);
+                        this.LoadOptions (pbuffer.ToString ());
 
                     } else if (line == "> Begin: Cardiac Monitor") {
-                        pbuffer = new StringBuilder();
-                        while ((pline = sRead.ReadLine()) != null && pline != "> End: Cardiac Monitor")
-                            pbuffer.AppendLine(pline);
+                        pbuffer = new StringBuilder ();
+                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Cardiac Monitor")
+                            pbuffer.AppendLine (pline);
 
-                        InitDeviceMonitor();
-                        App.Device_Monitor.Load_Process(pbuffer.ToString());
+                        InitDeviceMonitor ();
+                        App.Device_Monitor.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: 12 Lead ECG") {
-                        pbuffer = new StringBuilder();
-                        while ((pline = sRead.ReadLine()) != null && pline != "> End: 12 Lead ECG")
-                            pbuffer.AppendLine(pline);
+                        pbuffer = new StringBuilder ();
+                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: 12 Lead ECG")
+                            pbuffer.AppendLine (pline);
 
-                        InitDeviceECG();
-                        App.Device_ECG.Load_Process(pbuffer.ToString());
+                        InitDeviceECG ();
+                        App.Device_ECG.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Defibrillator") {
-                        pbuffer = new StringBuilder();
-                        while ((pline = sRead.ReadLine()) != null && pline != "> End: Defibrillator")
-                            pbuffer.AppendLine(pline);
+                        pbuffer = new StringBuilder ();
+                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Defibrillator")
+                            pbuffer.AppendLine (pline);
 
-                        InitDeviceDefib();
-                        App.Device_Defib.Load_Process(pbuffer.ToString());
+                        InitDeviceDefib ();
+                        App.Device_Defib.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Intra-aortic Balloon Pump") {
-                        pbuffer = new StringBuilder();
-                        while ((pline = sRead.ReadLine()) != null && pline != "> End: Intra-aortic Balloon Pump")
-                            pbuffer.AppendLine(pline);
+                        pbuffer = new StringBuilder ();
+                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Intra-aortic Balloon Pump")
+                            pbuffer.AppendLine (pline);
 
-                        InitDeviceIABP();
-                        App.Device_IABP.Load_Process(pbuffer.ToString());
+                        InitDeviceIABP ();
+                        App.Device_IABP.Load_Process (pbuffer.ToString ());
                     }
                 }
             } catch (Exception e) {
-                App.Server_Connection.Send_Exception(e);
-                LoadFail();
+                App.Server_Connection.Send_Exception (e);
+                LoadFail ();
             } finally {
-                sRead.Close();
+                sRead.Close ();
             }
         }
 
         private void LoadFail () {
-            MessageBox.Show(
+            MessageBox.Show (
                     "The selected file was unable to be loaded. Perhaps the file was damaged or edited outside of Infirmary Integrated.",
                     "Unable to Load File", MessageBoxButton.OK, MessageBoxImage.Error);
         }
@@ -340,25 +340,25 @@ namespace II_Windows {
                 sb.AppendLine ("> End: Cardiac Monitor");
             }
             if (App.Device_ECG != null && App.Device_ECG.IsLoaded) {
-                sb.AppendLine("> Begin: 12 Lead ECG");
-                sb.Append(App.Device_ECG.Save());
-                sb.AppendLine("> End: 12 Lead ECG");
+                sb.AppendLine ("> Begin: 12 Lead ECG");
+                sb.Append (App.Device_ECG.Save ());
+                sb.AppendLine ("> End: 12 Lead ECG");
             }
             if (App.Device_Defib != null && App.Device_Defib.IsLoaded) {
-                sb.AppendLine("> Begin: Defibrillator");
-                sb.Append(App.Device_Defib.Save());
-                sb.AppendLine("> End: Defibrillator");
+                sb.AppendLine ("> Begin: Defibrillator");
+                sb.Append (App.Device_Defib.Save ());
+                sb.AppendLine ("> End: Defibrillator");
             }
-            if (App.Device_IABP!= null && App.Device_IABP.IsLoaded) {
-                sb.AppendLine("> Begin: Intra-aortic Balloon Pump");
-                sb.Append(App.Device_IABP.Save());
-                sb.AppendLine("> End: Intra-aortic Balloon Pump");
+            if (App.Device_IABP != null && App.Device_IABP.IsLoaded) {
+                sb.AppendLine ("> Begin: Intra-aortic Balloon Pump");
+                sb.Append (App.Device_IABP.Save ());
+                sb.AppendLine ("> End: Intra-aortic Balloon Pump");
             }
 
             StreamWriter sw = new StreamWriter (s);
             sw.WriteLine (".ii:t1");                                      // Metadata (type 1 savefile)
             sw.WriteLine (Utility.HashMD5 (sb.ToString ().Trim ()));      // Hash for validation
-            sw.Write (Utility.ObfuscateB64 (sb.ToString ().Trim ()));     // Savefile data obfuscated with Base64
+            sw.Write (Utility.EncryptAES (sb.ToString ().Trim ()));       // Savefile data encrypted with AES
             sw.Close ();
             s.Close ();
         }
@@ -379,7 +379,7 @@ namespace II_Windows {
                     }
                 }
             } catch (Exception e) {
-                App.Server_Connection.Send_Exception(e);
+                App.Server_Connection.Send_Exception (e);
                 sRead.Close ();
                 return;
             }
@@ -450,7 +450,7 @@ namespace II_Windows {
         private void ButtonApplyParameters_Click (object sender, RoutedEventArgs e) {
             List<FetalHeartDecelerations.Values> FHRRhythms = new List<FetalHeartDecelerations.Values> ();
             foreach (object o in listFHRRhythms.SelectedItems)
-                FHRRhythms.Add ((FetalHeartDecelerations.Values)Enum.GetValues (typeof (FetalHeartDecelerations.Values)).GetValue (listFHRRhythms.Items.IndexOf(o)));
+                FHRRhythms.Add ((FetalHeartDecelerations.Values)Enum.GetValues (typeof (FetalHeartDecelerations.Values)).GetValue (listFHRRhythms.Items.IndexOf (o)));
 
             App.Patient.UpdateParameters (
                 (int)numHR.Value,
@@ -491,14 +491,14 @@ namespace II_Windows {
                 (double)numTWE_V4.Value, (double)numTWE_V5.Value, (double)numTWE_V6.Value
                 },
 
-                (CardiacRhythms.Values)Enum.GetValues(typeof(CardiacRhythms.Values)).GetValue(comboCardiacRhythm.SelectedIndex),
+                (CardiacRhythms.Values)Enum.GetValues (typeof (CardiacRhythms.Values)).GetValue (comboCardiacRhythm.SelectedIndex),
                 (RespiratoryRhythms.Values)Enum.GetValues (typeof (RespiratoryRhythms.Values)).GetValue (comboRespiratoryRhythm.SelectedIndex),
 
                 (int)numInspiratoryRatio.Value,
                 (int)numExpiratoryRatio.Value,
 
                 (int)numFHR.Value,
-                (Patient.Intensity.Values)Enum.GetValues(typeof(Patient.Intensity.Values)).GetValue(comboFHRVariability.SelectedIndex),
+                (Patient.Intensity.Values)Enum.GetValues (typeof (Patient.Intensity.Values)).GetValue (comboFHRVariability.SelectedIndex),
                 FHRRhythms,
                 (int)numUCFrequency.Value,
                 (int)numUCDuration.Value,
@@ -567,7 +567,7 @@ namespace II_Windows {
 
                 listFHRRhythms.SelectedItems.Clear ();
                 foreach (FetalHeartDecelerations.Values fhr_rhythm in e.Patient.FHRDecelerations.ValueList)
-                    listFHRRhythms.SelectedItems.Add(listFHRRhythms.Items.GetItemAt ((int)fhr_rhythm));
+                    listFHRRhythms.SelectedItems.Add (listFHRRhythms.Items.GetItemAt ((int)fhr_rhythm));
             }
         }
 
