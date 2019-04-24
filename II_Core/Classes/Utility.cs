@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
@@ -22,6 +23,25 @@ namespace II {
 
         public static double Time {
             get { return (double)(DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess ().StartTime.ToUniversalTime ()).TotalSeconds; }
+        }
+
+        public static string DateTime_ToString (DateTime dt)
+            => dt.ToString ("yyyy/MM/dd HH:mm:ss");
+        public static DateTime DateTime_FromString (string str) {
+            return new DateTime (
+                int.Parse(str.Substring(0, 4)),
+                int.Parse (str.Substring(5, 2)),
+                int.Parse (str.Substring(8, 2)),
+                int.Parse (str.Substring (11, 2)),
+                int.Parse (str.Substring (14, 2)),
+                int.Parse (str.Substring (17, 2)));
+        }
+
+        public static string RandomString (int length) {
+            Random r = new Random ();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string (Enumerable.Repeat (chars, length)
+              .Select (s => s [r.Next (s.Length)]).ToArray ());
         }
 
         public static string WrapString (string input) {

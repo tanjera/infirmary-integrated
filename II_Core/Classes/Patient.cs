@@ -9,6 +9,10 @@ using System.Text;
 namespace II {
     public class Patient {
 
+        // DateTime the vital signs were last updated
+        public DateTime Updated;
+        public bool ThreadLock = false;
+
         /* Parameters for patient simulation, e.g. vital signs */
         // Vital Signs
         public int  HR, RR, ETCO2, SPO2,            // Heart rate, respiratory rate, end-tidal capnography, pulse oximetry
@@ -175,6 +179,7 @@ namespace II {
                                 pValue = line.Substring (line.IndexOf (':') + 1);
                         switch (pName) {
                             default: break;
+                            case "Updated": Updated = Utility.DateTime_FromString (pValue); break;
                             case "HR": HR = int.Parse (pValue); break;
                             case "SPO2": SPO2 = int.Parse(pValue); break;
                             case "RR": RR = int.Parse (pValue); break;
@@ -243,12 +248,14 @@ namespace II {
             OnCardiac_Baseline ();
             OnRespiratory_Baseline ();
 
-            PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Vitals_Change));
+            if (!ThreadLock)
+                PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Vitals_Change));
         }
 
         public string Save () {
             StringBuilder sWrite = new StringBuilder ();
 
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Updated", Utility.DateTime_ToString(Updated)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "HR", HR));
             sWrite.AppendLine (String.Format ("{0}:{1}", "RR", RR));
             sWrite.AppendLine (String.Format ("{0}:{1}", "ETCO2", ETCO2));
@@ -312,6 +319,8 @@ namespace II {
                     int fhr, Intensity.Values fhr_var, List<FetalHeartDecelerations.Values> fhr_rhythms,
                     int uc_freq, int uc_duration, Intensity.Values uc_intensity ) {
 
+            Updated = DateTime.UtcNow;
+
             HR = hr;    RR = rr;    SPO2 = spo2;    ETCO2 = etco2;
             T = t;
             CVP = cvp;  ICP = icp;  IAP = iap;
@@ -339,7 +348,14 @@ namespace II {
             SetTimers ();
             OnCardiac_Baseline ();
             OnRespiratory_Baseline ();
+
+            if (!ThreadLock)
+                PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Vitals_Change));
+        }
+
+        public void UnlockThread () {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Vitals_Change));
+            ThreadLock = false;
         }
 
         public void ClampVitals (

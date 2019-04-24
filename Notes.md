@@ -2,6 +2,12 @@
 
 
 
+- Next Steps:
+  - Clean up Mirror.cs & Server.cs (function names, conventions)
+  - Implement UI! for mirror host and client
+
+
+
 * Steps for Version Publishing:
 	- Update version # in:
 		- II_Core.Utility.Version

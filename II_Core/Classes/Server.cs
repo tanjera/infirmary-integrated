@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Net.NetworkInformation;
 using System.Text;
+using System.Threading;
 
 using MySql.Data.MySqlClient;
 
@@ -73,17 +75,15 @@ namespace II.Server {
                         && o.OperationalStatus == OperationalStatus.Up)
                     .First ();
                 if (nInterface != null) {
-                    macAddress = nInterface.GetPhysicalAddress ().ToString ();
-                    ipAddress = nInterface.GetIPProperties ().UnicastAddresses.Where (
-                        (a) => a.Address.AddressFamily == AddressFamily.InterNetwork)
-                        .Select (a => a.Address.ToString ()).First ();
+                    macAddress = nInterface.GetPhysicalAddress ().ToString ();                    
+                    ipAddress = new WebClient ().DownloadString ("http://icanhazip.com").Trim();
                 }
 
                 comm.CommandText = "INSERT INTO usage_statistics" +
                     "(timestamp, ii_version, client_os, client_ip, client_mac, client_user) " +
                     "VALUES" +
                     "(?timestamp, ?ii_version, ?client_os, ?client_ip, ?client_mac, ?client_user)";
-                comm.Parameters.Add ("?timestamp", MySqlDbType.VarChar).Value = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+                comm.Parameters.Add ("?timestamp", MySqlDbType.VarChar).Value = Utility.DateTime_ToString(DateTime.UtcNow);
                 comm.Parameters.Add ("?ii_version", MySqlDbType.VarChar).Value = Utility.Version;
                 comm.Parameters.Add ("?client_os", MySqlDbType.VarChar).Value = Environment.OSVersion.VersionString;
                 comm.Parameters.Add ("?client_ip", MySqlDbType.VarChar).Value = ipAddress;
@@ -114,7 +114,7 @@ namespace II.Server {
                     "(timestamp, ii_version, client_os, exception_message, exception_method, exception_stacktrace, exception_hresult, exception_data) " +
                     "VALUES" +
                     "(?timestamp, ?ii_version, ?client_os, ?exception_message, ?exception_method, ?exception_stacktrace, ?exception_hresult, ?exception_data)";
-                comm.Parameters.Add("?timestamp", MySqlDbType.VarChar).Value = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+                comm.Parameters.Add("?timestamp", MySqlDbType.VarChar).Value = Utility.DateTime_ToString(DateTime.UtcNow);
                 comm.Parameters.Add("?ii_version", MySqlDbType.VarChar).Value = Utility.Version;
                 comm.Parameters.Add("?client_os", MySqlDbType.VarChar).Value = Environment.OSVersion.VersionString;
                 comm.Parameters.Add("?exception_message", MySqlDbType.VarChar).Value = exception.Message ?? "null";
@@ -152,6 +152,101 @@ namespace II.Server {
             } catch (Exception e) {
                 Close(conn);
                 return version;
+            }
+#pragma warning restore CS0168
+        }
+
+        public void Mirror_GetPatient (Mirroring mirror, Patient patient) {
+            MySqlConnection conn;
+            if ((conn = Open ()) == null)
+                return;
+            MySqlCommand comm = conn?.CreateCommand ();
+
+            try {
+                comm.CommandText = String.Format("SELECT updated FROM mirrors WHERE accession = '{0}' AND key_access = '{1}'",
+                    mirror.Accession, mirror.PasswordAccess);
+                MySqlDataReader dr = comm.ExecuteReader ();
+
+                if (!dr.Read ())
+                    return;
+
+                DateTime serverUpdated = Utility.DateTime_FromString (dr.GetValue (0).ToString ());
+                if (DateTime.Compare (serverUpdated, mirror.PatientUpdated) <= 0)
+                    return;
+                dr.Close ();
+
+                comm = conn?.CreateCommand ();
+                comm.CommandText = String.Format ("SELECT patient FROM mirrors WHERE accession = '{0}' AND key_access = '{1}'",
+                    mirror.Accession, Utility.HashMD5(mirror.PasswordAccess));
+                dr = comm.ExecuteReader ();
+
+                if (!dr.Read ())
+                    return;
+
+                mirror.ServerQueried = DateTime.UtcNow;
+                mirror.PatientUpdated = serverUpdated;
+                patient.Load_Process (Utility.DecryptAES(dr.GetValue (0).ToString ()));
+
+                Close (conn);
+                return;
+#pragma warning disable CS0168
+            } catch (Exception e) {
+                Close (conn);
+                return;
+            }
+#pragma warning restore CS0168
+        }
+
+        public void Mirror_PostPatient (Mirroring mirror, Patient patient) {
+            MySqlConnection conn;
+            if ((conn = Open ()) == null)
+                return;
+            MySqlCommand comm = conn?.CreateCommand ();
+
+            try {
+                bool rowExists = false;
+
+                if (mirror.Accession == "")
+                    mirror.Accession = Utility.RandomString (8);
+
+                comm.CommandText = String.Format ("SELECT key_edit FROM mirrors WHERE accession = '{0}'",
+                    mirror.Accession);
+                MySqlDataReader dr = comm.ExecuteReader ();
+                rowExists = dr.Read ();
+                if (rowExists && dr.GetValue(0).ToString() != Utility.HashMD5(mirror.PasswordEdit)) {
+                    Close (conn);
+                    return;
+                }
+                dr.Close ();
+
+                comm = conn?.CreateCommand ();
+                if (rowExists)
+                    comm.CommandText =
+                        "UPDATE mirrors SET " +
+                        "accession = ?accession, key_access = ?key_access, key_edit = ?key_edit, " +
+                        "patient = ?patient, updated = ?updated " +
+                        String.Format("WHERE accession = '{0}'", mirror.Accession);
+                else
+                    comm.CommandText =
+                        "INSERT INTO mirrors " +
+                        "(accession, key_access, key_edit, patient, updated) " +
+                        "VALUES " +
+                        "(?accession, ?key_access, ?key_edit, ?patient, ?updated)";
+
+                comm.Parameters.Add ("?accession", MySqlDbType.VarChar).Value = mirror.Accession;
+                comm.Parameters.Add ("?key_access", MySqlDbType.VarChar).Value = Utility.HashMD5(mirror.PasswordAccess);
+                comm.Parameters.Add ("?key_edit", MySqlDbType.VarChar).Value = Utility.HashMD5(mirror.PasswordEdit);
+                comm.Parameters.Add ("?patient", MySqlDbType.LongText).Value = Utility.EncryptAES(patient.Save());
+                comm.Parameters.Add ("?updated", MySqlDbType.VarChar).Value = Utility.DateTime_ToString(patient.Updated);
+
+                comm.ExecuteNonQuery ();
+
+                Close (conn);
+                return;
+#pragma warning disable CS0168
+            } catch (Exception e) {
+                Close (conn);
+                return;
             }
 #pragma warning restore CS0168
         }

@@ -9,6 +9,9 @@ using System.Windows;
 using System.Windows.Threading;
 
 using II;
+using II.Localization;
+using II.Server;
+
 
 namespace II_Windows {
     /// <summary>
@@ -18,8 +21,9 @@ namespace II_Windows {
 
         public static string [] Start_Args;
 
-        public static II.Server.Connection Server_Connection = new II.Server.Connection ();
-        public static II.Localization.Languages Language = new II.Localization.Languages();
+        public static Connection Server_Connection = new Connection ();
+        public static Mirroring Mirror = new Mirroring ();
+        public static Languages Language = new Languages();
 
         public static Patient Patient;
 

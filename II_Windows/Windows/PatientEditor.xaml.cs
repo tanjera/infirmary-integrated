@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,6 +18,7 @@ using System.Windows.Shapes;
 
 using II;
 using II.Localization;
+using II.Server;
 
 namespace II_Windows {
     /// <summary>
@@ -41,11 +43,13 @@ namespace II_Windows {
             if (App.Start_Args.Length > 0)
                 LoadOpen (App.Start_Args [0]);
 
-            // For debugging. Automatically open window being worked on, hide patient editor.
-            //InitDeviceDefib();
-            //App.Patient.HR = 30;
-            //App.Patient.Pacemaker_Threshold = 30;
-            //WindowState = WindowState.Minimized;
+            App.Mirror.timerUpdate.Tick += delegate { App.Mirror.Timer_GetPatient (App.Patient, App.Server_Connection); };
+            App.Mirror.timerUpdate.Reset (5000);
+
+
+            /* Debugging and testing code below */
+            //App.Mirror.Status = Mirroring.Statuses.CLIENT;
+            //App.Mirror.Accession = "GV9DKLUG";
         }
 
         private void InitInitialRun () {
@@ -161,6 +165,7 @@ namespace II_Windows {
             App.Patient = new Patient ();
 
             App.Timer_Main.Tick += App.Patient.Timers_Process;
+            App.Timer_Main.Tick += App.Mirror.Timers_Process;
             App.Patient.PatientEvent += FormUpdateFields;
             FormUpdateFields (this, new Patient.PatientEvent_Args (App.Patient, Patient.PatientEvent_Args.EventTypes.Vitals_Change));
         }
@@ -504,6 +509,8 @@ namespace II_Windows {
                 (int)numUCDuration.Value,
                 (Patient.Intensity.Values)Enum.GetValues (typeof (Patient.Intensity.Values)).GetValue (comboUCIntensity.SelectedIndex)
             );
+
+            App.Mirror.PostPatient (App.Patient, App.Server_Connection);
         }
 
         private void FormUpdateFields (object sender, Patient.PatientEvent_Args e) {

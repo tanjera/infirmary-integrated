@@ -15,6 +15,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Leads.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Localization_Dictionary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Mirror.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Patient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Rhythms.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Server.cs" />
