@@ -32,15 +32,13 @@ namespace II_Windows {
             AugmentationAlarm
         }
 
-#pragma warning disable CS0108 // Member hides inherited member; missing new keyword
-        public class Triggers
-#pragma warning restore CS0108 // Member hides inherited member; missing new keyword
+        public class Triggering
         {
             public Values Value;
             public enum Values { ECG, Pressure }
 
-            public Triggers(Values v) { Value = v; }
-            public Triggers() { Value = Values.ECG; }
+            public Triggering(Values v) { Value = v; }
+            public Triggering() { Value = Values.ECG; }
 
             public string LookupString() => LookupString(Value);
             public static string LookupString(Values v)
@@ -70,7 +68,7 @@ namespace II_Windows {
                    Augmentation = 100,              // Expressed as % (e.g. 10%, 100%)
                    AugmentationAlarm = 100;         // Expressed as mmHg
 
-        public Triggers Trigger = new Triggers();
+        public Triggering Trigger = new Triggering();
         public Modes Mode = new Modes();
         public bool Running = false, Primed = false;
 
@@ -192,7 +190,7 @@ namespace II_Windows {
                             case "Frequency": Frequency = int.Parse(pValue); break;
                             case "Augmentation": Augmentation = int.Parse(pValue); break;
                             case "AugmentationAlarm": AugmentationAlarm = int.Parse(pValue); break;
-                            case "Trigger": Trigger.Value = (Triggers.Values)Enum.Parse(typeof(Triggers.Values), pValue); break;
+                            case "Trigger": Trigger.Value = (Triggering.Values)Enum.Parse(typeof(Triggering.Values), pValue); break;
                             case "Mode": Mode.Value = (Modes.Values)Enum.Parse(typeof(Modes.Values), pValue); break;
                             case "Running": Running = bool.Parse(pValue); break;
                             case "Primed": Primed = bool.Parse(pValue); break;
@@ -200,7 +198,7 @@ namespace II_Windows {
                     }
                 }
             } catch (Exception e) {
-                App.Server_Connection.Send_Exception(e);
+                App.Server.Post_Exception(e);
                 throw e;
             } finally {
                 sRead.Close();
@@ -319,8 +317,8 @@ namespace II_Windows {
                     return;
 
                 case Settings.Trigger:
-                    Array enumValues = Enum.GetValues (typeof (Triggers.Values));
-                    Trigger.Value = (Triggers.Values)enumValues.GetValue (Utility.Clamp((int)Trigger.Value + 1, 0, enumValues.Length - 1));
+                    Array enumValues = Enum.GetValues (typeof (Triggering.Values));
+                    Trigger.Value = (Triggering.Values)enumValues.GetValue (Utility.Clamp((int)Trigger.Value + 1, 0, enumValues.Length - 1));
                     PauseDevice ();
                     UpdateInterface ();
                     return;
@@ -346,8 +344,8 @@ namespace II_Windows {
                     return;
 
                 case Settings.Trigger:
-                    Array enumValues = Enum.GetValues (typeof (Triggers.Values));
-                    Trigger.Value = (Triggers.Values)enumValues.GetValue (Utility.Clamp((int)Trigger.Value - 1, 0, enumValues.Length - 1));
+                    Array enumValues = Enum.GetValues (typeof (Triggering.Values));
+                    Trigger.Value = (Triggering.Values)enumValues.GetValue (Utility.Clamp((int)Trigger.Value - 1, 0, enumValues.Length - 1));
                     PauseDevice ();
                     UpdateInterface ();
                     return;
@@ -429,8 +427,8 @@ namespace II_Windows {
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
                     App.Patient.IABP_Active = Running && (Frequency_Iter % Frequency == 0)
-                        && ((Trigger.Value == Triggers.Values.ECG && App.Patient.CardiacRhythm.HasWaveform_Ventricular)
-                        || (Trigger.Value == Triggers.Values.Pressure && App.Patient.CardiacRhythm.HasPulse_Ventricular));
+                        && ((Trigger.Value == Triggering.Values.ECG && App.Patient.CardiacRhythm.HasWaveform_Ventricular)
+                        || (Trigger.Value == Triggering.Values.Pressure && App.Patient.CardiacRhythm.HasPulse_Ventricular));
                     App.Patient.IABP_Trigger = Trigger.Value.ToString();
 
                     listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient));

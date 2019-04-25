@@ -21,8 +21,8 @@ namespace II_Windows {
 
         public static string [] Start_Args;
 
-        public static Connection Server_Connection = new Connection ();
-        public static Mirroring Mirror = new Mirroring ();
+        public static Servers Server = new Servers ();
+        public static Mirrors Mirror = new Mirrors ();
         public static Languages Language = new Languages();
 
         public static Patient Patient;
@@ -37,6 +37,7 @@ namespace II_Windows {
         public static DialogAbout Dialog_About;
         public static DialogInitial Dialog_Language;
 
+        // Windows' thread-safe timer; if ported, will need OS equivalent
         public static DispatcherTimer Timer_Main = new DispatcherTimer();
 
         private void App_Startup (object sender, StartupEventArgs e) {
@@ -47,7 +48,7 @@ namespace II_Windows {
 
             // Send usage statistics to server in background
             BackgroundWorker bgw = new BackgroundWorker ();
-            bgw.DoWork += delegate { Server_Connection.Send_UsageStatistics (); };
+            bgw.DoWork += delegate { Server.Post_UsageStatistics (); };
             bgw.RunWorkerAsync ();
         }
     }

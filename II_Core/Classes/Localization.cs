@@ -46,7 +46,7 @@ namespace II.Localization {
                 else
                     return Values.ENU;
             } catch (Exception e) {
-                new Server.Connection().Send_Exception(e);
+                new Server.Servers().Post_Exception(e);
                 return Values.ENU;
             }
         }

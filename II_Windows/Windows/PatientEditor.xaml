@@ -114,8 +114,13 @@
             </MenuItem>
         </Menu>
 
-        <StatusBar DockPanel.Dock="Bottom" Name="statusBar" Visibility="Collapsed"
+        <StatusBar DockPanel.Dock="Bottom" Name="statusBar" Visibility="Visible"
                    BorderBrush="Black" BorderThickness="0,1,0,0">
+
+            <StatusBarItem HorizontalAlignment="Left">
+                <Label Name="lblStatusText" Padding="10,0,10,2"/>
+            </StatusBarItem>
+
             <StatusBarItem HorizontalAlignment="Right">
                 <Hyperlink Name="hlUpdateAvailable"
                     NavigateUri="http://www.infirmary-integrated.com/download/"
@@ -194,9 +199,66 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <StackPanel Margin="3" Height="Auto">
 
+                <!-- Group for Patient Mirroring -->
+                <Border Margin="5,18,5,5" Style="{StaticResource expBorder}">
+                    <Expander Name="expMirroring" IsExpanded="False" >
+                        <Expander.Header>
+                            <Label Name="lblGroupMirroring" Style="{StaticResource expHeader}"/>
+                        </Expander.Header>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+                            <GroupBox Margin="3"
+                                      Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+                                <GroupBox.Header>
+                                    <Label Name="lblMirrorStatus" />
+                                </GroupBox.Header>
+
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <RadioButton Name="radioInactive" Margin="5,3" IsChecked="True" Checked="RadioMirrorSelected_Click"
+                                                 GroupName="mirrorStatus" Grid.Column="0" />
+                                    <RadioButton Name="radioClient" Margin="5,3" Checked="RadioMirrorSelected_Click"
+                                                 GroupName="mirrorStatus" Grid.Column="1" />
+                                    <RadioButton Name="radioServer" Margin="5,3" Checked="RadioMirrorSelected_Click"
+                                                 GroupName="mirrorStatus" Grid.Column="2" />
+                                </Grid>
+                            </GroupBox>
+
+                            <Label Name="lblAccessionKey" Grid.Column="0" Grid.Row="1"/>
+                            <Label Name="lblAccessPassword" Grid.Column="0" Grid.Row="2"/>
+                            <Label Name="lblAdminPassword" Grid.Column="0" Grid.Row="3"/>
+                            <TextBox Name="txtAccessionKey" IsEnabled="False" VerticalContentAlignment="Center"
+                                     Grid.Column="1" Grid.Row="1"/>
+                            <TextBox Name="txtAccessPassword" IsEnabled="False" VerticalContentAlignment="Center"
+                                     Grid.Column="1" Grid.Row="2"/>
+                            <TextBox Name="txtAdminPassword" IsEnabled="False" VerticalContentAlignment="Center"
+                                     Grid.Column="1" Grid.Row="3"/>
+                            <Button Name="btnApplyMirroring" Margin="5" Click="ButtonApplyMirroring_Click"
+                                    Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" />
+
+                        </Grid>
+                    </Expander>
+                </Border>
+
 
                 <!-- Group for Basic Vital Signs -->
-                <Border Margin="5,18,5,5" Style="{StaticResource expBorder}">
+                <Border Style="{StaticResource expBorder}">
                     <Expander Name="expVitalSigns" IsExpanded="True" >
                         <Expander.Header>
                             <Label Name="lblGroupVitalSigns" Style="{StaticResource expHeader}"/>

@@ -32,7 +32,8 @@ namespace II_Windows {
             return true;
         }
 
+#pragma warning disable CS0067
         public event EventHandler CanExecuteChanged;
-
+#pragma warning restore CS0067
     }
 }

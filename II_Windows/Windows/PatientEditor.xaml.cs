@@ -43,13 +43,11 @@ namespace II_Windows {
             if (App.Start_Args.Length > 0)
                 LoadOpen (App.Start_Args [0]);
 
-            App.Mirror.timerUpdate.Tick += delegate { App.Mirror.Timer_GetPatient (App.Patient, App.Server_Connection); };
+            App.Mirror.timerUpdate.Tick += delegate { App.Mirror.TimerTick (App.Patient, App.Server); };
             App.Mirror.timerUpdate.Reset (5000);
 
 
             /* Debugging and testing code below */
-            //App.Mirror.Status = Mirroring.Statuses.CLIENT;
-            //App.Mirror.Accession = "GV9DKLUG";
         }
 
         private void InitInitialRun () {
@@ -88,6 +86,16 @@ namespace II_Windows {
             //lblDeviceEFM.Content = App.Language.Dictionary["PE:EFM"];
             //lblDeviceIVPump.Content = App.Language.Dictionary["PE:IVPump"];
             //lblDeviceLabResults.Content = App.Language.Dictionary["PE:LabResults"];
+
+            lblGroupMirroring.Content = App.Language.Dictionary ["PE:MirrorPatientData"];
+            lblMirrorStatus.Content = App.Language.Dictionary ["PE:Status"];
+            radioInactive.Content = App.Language.Dictionary ["PE:Inactive"];
+            radioServer.Content = App.Language.Dictionary ["PE:Server"];
+            radioClient.Content = App.Language.Dictionary ["PE:Client"];
+            lblAccessionKey.Content = App.Language.Dictionary ["PE:AccessionKey"];
+            lblAccessPassword.Content = App.Language.Dictionary ["PE:AccessPassword"];
+            lblAdminPassword.Content = App.Language.Dictionary ["PE:AdminPassword"];
+            btnApplyMirroring.Content = App.Language.Dictionary ["BUTTON:ApplyChanges"];
 
             lblGroupVitalSigns.Content = App.Language.Dictionary ["PE:VitalSigns"];
             lblHR.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:HeartRate"]);
@@ -151,7 +159,7 @@ namespace II_Windows {
             // Populate status bar with updated version information and make visible
             BackgroundWorker bgw = new BackgroundWorker ();
             string latestVersion = "";
-            bgw.DoWork += delegate { latestVersion = App.Server_Connection.Get_LatestVersion (); };
+            bgw.DoWork += delegate { latestVersion = App.Server.Get_LatestVersion (); };
             bgw.RunWorkerCompleted += delegate {
                 if (Utility.IsNewerVersion (Utility.Version, latestVersion)) {
                     statusBar.Visibility = Visibility.Visible;
@@ -165,7 +173,7 @@ namespace II_Windows {
             App.Patient = new Patient ();
 
             App.Timer_Main.Tick += App.Patient.Timers_Process;
-            App.Timer_Main.Tick += App.Mirror.Timers_Process;
+            App.Timer_Main.Tick += App.Mirror.TimerProcess;
             App.Patient.PatientEvent += FormUpdateFields;
             FormUpdateFields (this, new Patient.PatientEvent_Args (App.Patient, Patient.PatientEvent_Args.EventTypes.Vitals_Change));
         }
@@ -315,7 +323,7 @@ namespace II_Windows {
                     }
                 }
             } catch (Exception e) {
-                App.Server_Connection.Send_Exception (e);
+                App.Server.Post_Exception (e);
                 LoadFail ();
             } finally {
                 sRead.Close ();
@@ -384,7 +392,7 @@ namespace II_Windows {
                     }
                 }
             } catch (Exception e) {
-                App.Server_Connection.Send_Exception (e);
+                App.Server.Post_Exception (e);
                 sRead.Close ();
                 return;
             }
@@ -450,9 +458,14 @@ namespace II_Windows {
         private void ButtonDeviceECG_Click (object s, RoutedEventArgs e) => InitDeviceECG ();
         private void ButtonDeviceIABP_Click (object s, RoutedEventArgs e) => InitDeviceIABP ();
         private void ButtonDeviceDefib_Click (object s, RoutedEventArgs e) => InitDeviceDefib ();
-        private void ButtonResetParameters_Click (object s, RoutedEventArgs e) => RequestNewPatient ();
+        private void ButtonResetParameters_Click (object s, RoutedEventArgs e) {
+            RequestNewPatient ();
+            lblStatusText.Content = App.Language.Dictionary ["PE:StatusPatientReset"];
+        }
 
         private void ButtonApplyParameters_Click (object sender, RoutedEventArgs e) {
+            ButtonApplyMirroring_Click (sender, e);
+
             List<FetalHeartDecelerations.Values> FHRRhythms = new List<FetalHeartDecelerations.Values> ();
             foreach (object o in listFHRRhythms.SelectedItems)
                 FHRRhythms.Add ((FetalHeartDecelerations.Values)Enum.GetValues (typeof (FetalHeartDecelerations.Values)).GetValue (listFHRRhythms.Items.IndexOf (o)));
@@ -510,7 +523,13 @@ namespace II_Windows {
                 (Patient.Intensity.Values)Enum.GetValues (typeof (Patient.Intensity.Values)).GetValue (comboUCIntensity.SelectedIndex)
             );
 
-            App.Mirror.PostPatient (App.Patient, App.Server_Connection);
+            App.Mirror.PostPatient (App.Patient, App.Server);
+            txtAccessionKey.Text = App.Mirror.Accession;
+
+            if (App.Mirror.Status == Mirrors.Statuses.INACTIVE)
+                lblStatusText.Content = App.Language.Dictionary ["PE:StatusPatientUpdated"];
+            else if (App.Mirror.Status == Mirrors.Statuses.HOST)
+                lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroredPatientUpdated"];
         }
 
         private void FormUpdateFields (object sender, Patient.PatientEvent_Args e) {
@@ -575,6 +594,49 @@ namespace II_Windows {
                 listFHRRhythms.SelectedItems.Clear ();
                 foreach (FetalHeartDecelerations.Values fhr_rhythm in e.Patient.FHRDecelerations.ValueList)
                     listFHRRhythms.SelectedItems.Add (listFHRRhythms.Items.GetItemAt ((int)fhr_rhythm));
+            }
+        }
+
+        private void RadioMirrorSelected_Click (object sender, RoutedEventArgs e) {
+            if (txtAccessionKey == null || txtAccessPassword == null || txtAdminPassword == null)
+                return;
+
+            if ((sender as RadioButton).Name == "radioInactive") {
+                txtAccessionKey.IsEnabled = false;
+                txtAccessPassword.IsEnabled = false;
+                txtAdminPassword.IsEnabled = false;
+            } else if ((sender as RadioButton).Name == "radioClient") {
+                txtAccessionKey.IsEnabled = true;
+                txtAccessPassword.IsEnabled = true;
+                txtAdminPassword.IsEnabled = false;
+            } else if ((sender as RadioButton).Name == "radioServer") {
+                txtAccessionKey.IsEnabled = true;
+                txtAccessPassword.IsEnabled = true;
+                txtAdminPassword.IsEnabled = true;
+            }
+        }
+
+        private void ButtonApplyMirroring_Click (object s, RoutedEventArgs e) {
+            App.Mirror.PatientUpdated = new DateTime ();
+            App.Mirror.ServerQueried = new DateTime ();
+
+            if (radioInactive.IsChecked ?? true) {
+                App.Mirror.Status = Mirrors.Statuses.INACTIVE;
+                lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringDisabled"];
+            } else if (radioClient.IsChecked ?? true) {
+                App.Mirror.Status = Mirrors.Statuses.CLIENT;
+                App.Mirror.Accession = txtAccessionKey.Text;
+                App.Mirror.PasswordAccess = txtAccessPassword.Text;
+                lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringActivated"];
+            } else if (radioServer.IsChecked ?? true) {
+                if (txtAccessionKey.Text == "")
+                    txtAccessionKey.Text = Utility.RandomString (8);
+
+                App.Mirror.Status = Mirrors.Statuses.HOST;
+                App.Mirror.Accession = txtAccessionKey.Text;
+                App.Mirror.PasswordAccess = txtAccessPassword.Text;
+                App.Mirror.PasswordEdit = txtAdminPassword.Text;
+                lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringActivated"];
             }
         }
 

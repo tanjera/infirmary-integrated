@@ -9,9 +9,8 @@ using System.Text;
 namespace II {
     public class Patient {
 
-        // DateTime the vital signs were last updated
-        public DateTime Updated;
-        public bool ThreadLock = false;
+        // Mirroring variables
+        public DateTime Updated;                    // DateTime this Patient was last updated
 
         /* Parameters for patient simulation, e.g. vital signs */
         // Vital Signs
@@ -238,7 +237,7 @@ namespace II {
                     }
                 }
             } catch (Exception e) {
-                new Server.Connection().Send_Exception(e);
+                new Server.Servers().Post_Exception(e);
                 // If the load fails... just bail on the actual value parsing and continue the load process
             }
 
@@ -248,8 +247,7 @@ namespace II {
             OnCardiac_Baseline ();
             OnRespiratory_Baseline ();
 
-            if (!ThreadLock)
-                PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Vitals_Change));
+            PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Vitals_Change));
         }
 
         public string Save () {
@@ -349,13 +347,7 @@ namespace II {
             OnCardiac_Baseline ();
             OnRespiratory_Baseline ();
 
-            if (!ThreadLock)
-                PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Vitals_Change));
-        }
-
-        public void UnlockThread () {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Vitals_Change));
-            ThreadLock = false;
         }
 
         public void ClampVitals (
