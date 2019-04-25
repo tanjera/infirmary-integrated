@@ -5,8 +5,8 @@
 * Steps for Version Publishing:
 	- Update version # in:
 		- II_Core.Utility.Version
-		- II_Windows properties
-		- II_Windows.App assembly information
+		- II_Windows properties (publish tab)
+		- II_Windows.App assembly information (application tab, assembly information)
 		- Installer_Windows properties
 
 	- Comment any testing/debugging shortcuts

@@ -233,9 +233,9 @@ namespace II.Server {
                 com.Parameters.Add("?key_edit", MySqlDbType.VarChar).Value = Utility.HashMD5(m.PasswordEdit);
                 com.Parameters.Add("?patient", MySqlDbType.LongText).Value = Utility.EncryptAES(pStr);
                 com.Parameters.Add("?updated", MySqlDbType.VarChar).Value = Utility.DateTime_ToString(pUp);
-                com.Parameters.Add ("?client_ip", MySqlDbType.VarChar).Value =
-                    new WebClient ().DownloadString ("http://icanhazip.com").Trim ();
-                com.Parameters.Add ("?client_user", MySqlDbType.VarChar).Value = Environment.UserName;
+                com.Parameters.Add("?client_ip", MySqlDbType.VarChar).Value =
+                    new WebClient().DownloadString("http://icanhazip.com").Trim();
+                com.Parameters.Add("?client_user", MySqlDbType.VarChar).Value = Environment.UserName;
 
                 com.ExecuteNonQuery();
 

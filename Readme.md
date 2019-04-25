@@ -22,6 +22,7 @@ And Infirmary Integrated can simulate hemodynamic and other readings including:
 - Intra-abdominal pressure (IAP, bladder pressure)
 - Intra-aortic balloon pump augmentation pressures
 - ST-segment elevation/depression and T-wave elevation/depression on all 12 ECG leads
+- Defibrillation, cardioversion, and transcutaneous pacing
 
 Also, Infirmary Integrated simulates the following cardiac rhythms with waveforms and corresponding vital signs for scenario management:
 - Asystole
@@ -50,8 +51,14 @@ Also, Infirmary Integrated simulates the following cardiac rhythms with waveform
 - Ventricular Tachycardia Monomorphic Pulseless
 - Ventricular Tachycardia Polymorphic
 
-Infirmary Integrated also supports localization for multiple languages including:
+Other main features included in Infirmary Integrated include:
+- Able to pause devices to better analyze waveforms or create screenshots
+- Able to mirror patient data across multiple computers
+  - A teacher can host a simulation via the internet, students can access the patient simulation remotely
+- Able to save simulations to files (.ii extension) that can distributed or saved
+  - Device information (e.g. cardiac monitor waveforms) are also saved in simulation files
 
+Infirmary Integrated also supports full localization (translation) for the following languages:
 - አማርኛ (Amharic)
 - عربى (Arabic)
 - 中文 (Chinese)

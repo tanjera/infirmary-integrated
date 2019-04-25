@@ -10,7 +10,7 @@
         Title="PatientEditor"
         Icon="{StaticResource Icon_Infirmary}"
         WindowStartupLocation="CenterScreen"
-        MinHeight="560" MinWidth="700" SizeToContent="Width"
+        MinHeight="560" MinWidth="700" Height="600" SizeToContent="Width"
         Closed="OnClosed">
 
     <Window.InputBindings>
@@ -114,18 +114,18 @@
             </MenuItem>
         </Menu>
 
-        <StatusBar DockPanel.Dock="Bottom" Name="statusBar" Visibility="Visible"
+        <StatusBar DockPanel.Dock="Bottom" Name="statusBar" Height="24" Visibility="Visible"
                    BorderBrush="Black" BorderThickness="0,1,0,0">
 
             <StatusBarItem HorizontalAlignment="Left">
                 <Label Name="lblStatusText" Padding="10,0,10,2"/>
             </StatusBarItem>
 
-            <StatusBarItem HorizontalAlignment="Right">
+            <StatusBarItem Name="statusUpdateAvailable" HorizontalAlignment="Right">
                 <Hyperlink Name="hlUpdateAvailable"
                     NavigateUri="http://www.infirmary-integrated.com/download/"
                     RequestNavigate="Hyperlink_RequestNavigate" FontWeight="Bold">
-                    <TextBlock Name="txtUpdateAvailable" Padding="10,0,10,2"/>
+                    <TextBlock Name="txtUpdateAvailable" Padding="10,0,10,2" />
                 </Hyperlink>
             </StatusBarItem>
         </StatusBar>
@@ -249,7 +249,7 @@
                                      Grid.Column="1" Grid.Row="2"/>
                             <TextBox Name="txtAdminPassword" IsEnabled="False" VerticalContentAlignment="Center"
                                      Grid.Column="1" Grid.Row="3"/>
-                            <Button Name="btnApplyMirroring" Margin="5" Click="ButtonApplyMirroring_Click"
+                            <Button Name="btnApplyMirroring" Margin="5" Click="ButtonApplyMirroring_Click" Height="22"
                                     Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" />
 
                         </Grid>

@@ -161,9 +161,10 @@ namespace II_Windows {
             string latestVersion = "";
             bgw.DoWork += delegate { latestVersion = App.Server.Get_LatestVersion (); };
             bgw.RunWorkerCompleted += delegate {
-                if (Utility.IsNewerVersion (Utility.Version, latestVersion)) {
-                    statusBar.Visibility = Visibility.Visible;
-                    txtUpdateAvailable.Text = String.Format (App.Language.Dictionary ["STATUS:UpdateAvailable"], latestVersion);
+                if (Utility.IsNewerVersion(Utility.Version, latestVersion)) {
+                    txtUpdateAvailable.Text = String.Format(App.Language.Dictionary["STATUS:UpdateAvailable"], latestVersion).Trim();
+                } else {
+                    statusUpdateAvailable.Visibility = Visibility.Collapsed;                    
                 }
             };
             bgw.RunWorkerAsync ();
