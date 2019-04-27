@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -164,7 +165,7 @@ namespace II_Windows {
                 if (Utility.IsNewerVersion(Utility.Version, latestVersion)) {
                     txtUpdateAvailable.Text = String.Format(App.Language.Dictionary["STATUS:UpdateAvailable"], latestVersion).Trim();
                 } else {
-                    statusUpdateAvailable.Visibility = Visibility.Collapsed;                    
+                    statusUpdateAvailable.Visibility = Visibility.Collapsed;
                 }
             };
             bgw.RunWorkerAsync ();
@@ -598,20 +599,31 @@ namespace II_Windows {
             }
         }
 
+        private void TxtAccessionKey_PreviewTextInput (object sender, TextCompositionEventArgs e) {
+            Regex regex = new Regex ("^[a-zA-Z0-9]*$");
+            e.Handled = !regex.IsMatch (e.Text);
+        }
+
+        private void BtnGenerateAccessionKey_Click (object sender, RoutedEventArgs e)
+            => txtAccessionKey.Text = Utility.RandomString (8);
+
         private void RadioMirrorSelected_Click (object sender, RoutedEventArgs e) {
             if (txtAccessionKey == null || txtAccessPassword == null || txtAdminPassword == null)
                 return;
 
             if ((sender as RadioButton).Name == "radioInactive") {
                 txtAccessionKey.IsEnabled = false;
+                btnGenerateAccessionKey.IsEnabled = false;
                 txtAccessPassword.IsEnabled = false;
                 txtAdminPassword.IsEnabled = false;
             } else if ((sender as RadioButton).Name == "radioClient") {
                 txtAccessionKey.IsEnabled = true;
+                btnGenerateAccessionKey.IsEnabled = false;
                 txtAccessPassword.IsEnabled = true;
                 txtAdminPassword.IsEnabled = false;
             } else if ((sender as RadioButton).Name == "radioServer") {
                 txtAccessionKey.IsEnabled = true;
+                btnGenerateAccessionKey.IsEnabled = true;
                 txtAccessPassword.IsEnabled = true;
                 txtAdminPassword.IsEnabled = true;
             }
@@ -627,7 +639,7 @@ namespace II_Windows {
             } else if (radioClient.IsChecked ?? true) {
                 App.Mirror.Status = Mirrors.Statuses.CLIENT;
                 App.Mirror.Accession = txtAccessionKey.Text;
-                App.Mirror.PasswordAccess = txtAccessPassword.Text;
+                App.Mirror.PasswordAccess = txtAccessPassword.Password;
                 lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringActivated"];
             } else if (radioServer.IsChecked ?? true) {
                 if (txtAccessionKey.Text == "")
@@ -635,8 +647,8 @@ namespace II_Windows {
 
                 App.Mirror.Status = Mirrors.Statuses.HOST;
                 App.Mirror.Accession = txtAccessionKey.Text;
-                App.Mirror.PasswordAccess = txtAccessPassword.Text;
-                App.Mirror.PasswordEdit = txtAdminPassword.Text;
+                App.Mirror.PasswordAccess = txtAccessPassword.Password;
+                App.Mirror.PasswordEdit = txtAdminPassword.Password;
                 lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringActivated"];
             }
         }

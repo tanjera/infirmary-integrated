@@ -240,14 +240,27 @@
                                 </Grid>
                             </GroupBox>
 
+
                             <Label Name="lblAccessionKey" Grid.Column="0" Grid.Row="1"/>
                             <Label Name="lblAccessPassword" Grid.Column="0" Grid.Row="2"/>
                             <Label Name="lblAdminPassword" Grid.Column="0" Grid.Row="3"/>
-                            <TextBox Name="txtAccessionKey" IsEnabled="False" VerticalContentAlignment="Center"
-                                     Grid.Column="1" Grid.Row="1"/>
-                            <TextBox Name="txtAccessPassword" IsEnabled="False" VerticalContentAlignment="Center"
+                            <Grid Grid.Column="1" Grid.Row="1">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBox Name="txtAccessionKey" IsEnabled="False" Grid.Column="0"
+                                         VerticalContentAlignment="Center" MaxLines="1" MaxLength="8" CharacterCasing="Upper"
+                                         PreviewTextInput="TxtAccessionKey_PreviewTextInput"/>
+                                <Button Name="btnGenerateAccessionKey" IsEnabled="False" Grid.Column="1" Width="25"
+                                        Content="+" Click="BtnGenerateAccessionKey_Click"/>
+                            </Grid>
+                            <PasswordBox Name="txtAccessPassword" IsEnabled="False" VerticalContentAlignment="Center"
                                      Grid.Column="1" Grid.Row="2"/>
-                            <TextBox Name="txtAdminPassword" IsEnabled="False" VerticalContentAlignment="Center"
+                            <PasswordBox Name="txtAdminPassword" IsEnabled="False" VerticalContentAlignment="Center"
                                      Grid.Column="1" Grid.Row="3"/>
                             <Button Name="btnApplyMirroring" Margin="5" Click="ButtonApplyMirroring_Click" Height="22"
                                     Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" />
