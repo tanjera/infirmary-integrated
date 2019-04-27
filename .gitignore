@@ -55,6 +55,9 @@ project.fragment.lock.json
 artifacts/
 **/Properties/launchSettings.json
 
+# MacOS Finder Files
+.DS_Store
+
 *_i.c
 *_p.c
 *_i.h
