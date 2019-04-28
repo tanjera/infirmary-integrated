@@ -1,32 +1,24 @@
-﻿using System;
+﻿using II;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using II;
-using II.Localization;
 
 namespace II_Windows.Controls {
+
     /// <summary>
     /// Interaction logic for Numeric.xaml
     /// </summary>
     public partial class MonitorNumeric : UserControl {
-
         public ControlType controlType;
 
         public class ControlType {
             public Values Value;
-            public ControlType (Values v) { Value = v; }
+
+            public ControlType (Values v) {
+                Value = v;
+            }
 
             public enum Values {
                 ECG, T, RR, ETCO2,
@@ -37,13 +29,14 @@ namespace II_Windows.Controls {
             public static string LookupString (Values value) {
                 return String.Format ("NUMERIC:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
             }
+
             public Brush Color { get { return Coloring [(int)Value]; } }
 
             public static List<string> MenuItem_Formats {
                 get {
                     List<string> o = new List<string> ();
                     foreach (Values v in Enum.GetValues (typeof (Values)))
-                        o.Add (String.Format ("{0}: {1}", v.ToString (), LookupString(v)));
+                        o.Add (String.Format ("{0}: {1}", v.ToString (), LookupString (v)));
                     return o;
                 }
             }
@@ -62,7 +55,6 @@ namespace II_Windows.Controls {
                 Brushes.Aquamarine
             };
         }
-
 
         public MonitorNumeric (ControlType.Values v) {
             InitializeComponent ();
@@ -86,30 +78,30 @@ namespace II_Windows.Controls {
             vbLine3.ContextMenu = contextMenu;
 
             MenuItem menuZeroTransducer = new MenuItem ();
-            menuZeroTransducer.Header = App.Language.Dictionary["MENU:MenuZeroTransducer"];
+            menuZeroTransducer.Header = App.Language.Dictionary ["MENU:MenuZeroTransducer"];
             menuZeroTransducer.Click += MenuZeroTransducer_Click;
             contextMenu.Items.Add (menuZeroTransducer);
 
             contextMenu.Items.Add (new Separator ());
 
             MenuItem menuAddNumeric = new MenuItem ();
-            menuAddNumeric.Header = App.Language.Dictionary["MENU:MenuAddNumeric"];
+            menuAddNumeric.Header = App.Language.Dictionary ["MENU:MenuAddNumeric"];
             menuAddNumeric.Click += MenuAddNumeric_Click;
             contextMenu.Items.Add (menuAddNumeric);
 
             MenuItem menuRemoveNumeric = new MenuItem ();
-            menuRemoveNumeric.Header = App.Language.Dictionary["MENU:MenuRemoveNumeric"];
+            menuRemoveNumeric.Header = App.Language.Dictionary ["MENU:MenuRemoveNumeric"];
             menuRemoveNumeric.Click += MenuRemoveNumeric_Click;
             contextMenu.Items.Add (menuRemoveNumeric);
 
             contextMenu.Items.Add (new Separator ());
 
             MenuItem menuSelectInput = new MenuItem ();
-            menuSelectInput.Header = App.Language.Dictionary["MENU:MenuSelectInputSource"];
+            menuSelectInput.Header = App.Language.Dictionary ["MENU:MenuSelectInputSource"];
 
-            foreach (ControlType.Values v in Enum.GetValues(typeof(ControlType.Values))) {
+            foreach (ControlType.Values v in Enum.GetValues (typeof (ControlType.Values))) {
                 MenuItem mi = new MenuItem ();
-                mi.Header = App.Language.Dictionary[ControlType.LookupString (v)];
+                mi.Header = App.Language.Dictionary [ControlType.LookupString (v)];
                 mi.Name = v.ToString ();
                 mi.Click += MenuSelectInputSource;
                 menuSelectInput.Items.Add (mi);
@@ -130,7 +122,7 @@ namespace II_Windows.Controls {
             lblLine2.Visibility = Visibility.Visible;
             lblLine3.Visibility = Visibility.Visible;
 
-            lblNumType.Text = App.Language.Dictionary [ControlType.LookupString(controlType.Value)];
+            lblNumType.Text = App.Language.Dictionary [ControlType.LookupString (controlType.Value)];
 
             switch (controlType.Value) {
                 default:
@@ -197,7 +189,7 @@ namespace II_Windows.Controls {
                             (App.Patient.IABP_Active ? App.Patient.IABP_DBP : App.Patient.ADBP), 0.02f));
                         lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.AMAP, 0.02f));
                     } else {
-                        lblLine1.Text = Utility.WrapString(App.Language.Dictionary["NUMERIC:ZeroTransducer"]);
+                        lblLine1.Text = Utility.WrapString (App.Language.Dictionary ["NUMERIC:ZeroTransducer"]);
                         lblLine2.Text = "";
                         lblLine3.Text = "";
                     }
@@ -207,7 +199,7 @@ namespace II_Windows.Controls {
                     if (App.Patient.TransducerZeroed_CVP)
                         lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.CVP, 0.02f));
                     else
-                        lblLine1.Text = App.Language.Dictionary["NUMERIC:ZeroTransducer"];
+                        lblLine1.Text = App.Language.Dictionary ["NUMERIC:ZeroTransducer"];
                     break;
 
                 case ControlType.Values.PA:
@@ -216,7 +208,7 @@ namespace II_Windows.Controls {
                         lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (App.Patient.PDP, 0.02f));
                         lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.PMP, 0.02f));
                     } else {
-                        lblLine1.Text = App.Language.Dictionary["NUMERIC:ZeroTransducer"];
+                        lblLine1.Text = App.Language.Dictionary ["NUMERIC:ZeroTransducer"];
                         lblLine2.Text = "";
                         lblLine3.Text = "";
                     }
@@ -224,19 +216,19 @@ namespace II_Windows.Controls {
 
                 case ControlType.Values.ICP:
                     if (App.Patient.TransducerZeroed_ICP) {
-                        lblLine1.Text = String.Format("{0:0}", Utility.RandomPercentRange(App.Patient.ICP, 0.02f));
-                        lblLine2.Text = String.Format("({0:0})", Patient.CalculateCPP(App.Patient.ICP, App.Patient.AMAP));
+                        lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.ICP, 0.02f));
+                        lblLine2.Text = String.Format ("({0:0})", Patient.CalculateCPP (App.Patient.ICP, App.Patient.AMAP));
                     } else {
-                        lblLine1.Text = App.Language.Dictionary["NUMERIC:ZeroTransducer"];
+                        lblLine1.Text = App.Language.Dictionary ["NUMERIC:ZeroTransducer"];
                         lblLine2.Text = "";
                     }
                     break;
 
                 case ControlType.Values.IAP:
                     if (App.Patient.TransducerZeroed_IAP)
-                        lblLine1.Text = String.Format("{0:0}", Utility.RandomPercentRange(App.Patient.IAP, 0.02f));
+                        lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.IAP, 0.02f));
                     else
-                        lblLine1.Text = App.Language.Dictionary["NUMERIC:ZeroTransducer"];
+                        lblLine1.Text = App.Language.Dictionary ["NUMERIC:ZeroTransducer"];
                     break;
             }
         }
@@ -253,6 +245,7 @@ namespace II_Windows.Controls {
 
         private void MenuAddNumeric_Click (object sender, RoutedEventArgs e)
             => App.Device_Monitor.AddNumeric ();
+
         private void MenuRemoveNumeric_Click (object sender, RoutedEventArgs e)
             => App.Device_Monitor.RemoveNumeric (this);
 

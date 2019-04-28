@@ -10,7 +10,7 @@
         Title="DeviceIABP"
         Icon="{StaticResource Icon_Infirmary}"
         WindowStartupLocation="CenterScreen"
-        Width="800" Height="1000" >
+        Width="800" Height="1000">
 
     <Window.InputBindings>
         <KeyBinding Key="F" Modifiers="Ctrl" Command="{Binding IC_ToggleFullscreen}" />
@@ -68,19 +68,18 @@
             <Setter Property="TextAlignment" Value="Center" />
             <Setter Property="Margin" Value="2" />
         </Style>
-
     </Window.Resources>
 
     <DockPanel LastChildFill="True">
         <!-- Main Menu -->
         <Menu DockPanel.Dock="Top" Width="Auto" Background="White">
             <MenuItem Name="menuDevice">
-                <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" InputGestureText="Ctrl+U"/>
+                <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" InputGestureText="Ctrl+U" />
                 <Separator />
                 <MenuItem Name="menuToggleFullscreen" Click="MenuFullscreen_Click" InputGestureText="Ctrl+F" />
                 <Separator />
-                <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGestureText="Ctrl+F4"/>
-                <MenuItem Name="menuExitProgram" Click="MenuExit_Click" InputGestureText="Alt+F4"/>
+                <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGestureText="Ctrl+F4" />
+                <MenuItem Name="menuExitProgram" Click="MenuExit_Click" InputGestureText="Alt+F4" />
             </MenuItem>
         </Menu>
 
@@ -126,38 +125,37 @@
                         </Grid.ColumnDefinitions>
 
                         <Viewbox Style="{StaticResource numericViewbox}" Margin="5, 15"
-                                 Grid.Row="0" Grid.Column="0" >
+                                 Grid.Row="0" Grid.Column="0">
                             <TextBlock Name="lblTriggerSource" Style="{StaticResource numericTextBlock}"
                                        FontSize="35" FontWeight="Bold" Foreground="White" />
                         </Viewbox>
                         <Viewbox Style="{StaticResource numericViewbox}" Margin="5, 15"
-                                 Grid.Row="1" Grid.Column="0" >
+                                 Grid.Row="1" Grid.Column="0">
                             <TextBlock Name="lblOperationMode" Style="{StaticResource numericTextBlock}"
                                        FontSize="35" FontWeight="Bold" Foreground="Aqua" />
                         </Viewbox>
                         <Viewbox Style="{StaticResource numericViewbox}" Margin="5, 15"
-                                 Grid.Row="2" Grid.Column="0" >
+                                 Grid.Row="2" Grid.Column="0">
                             <TextBlock Name="lblFrequency" Style="{StaticResource numericTextBlock}"
                                        FontSize="35" FontWeight="Bold" Foreground="Aqua" />
                         </Viewbox>
                         <Viewbox Style="{StaticResource numericViewbox}" Margin="5, 15"
-                                 Grid.Row="3" Grid.Column="0" >
+                                 Grid.Row="3" Grid.Column="0">
                             <TextBlock Name="lblMachineStatus" Style="{StaticResource numericTextBlock}"
                                        FontSize="25" FontWeight="Bold" Foreground="Aqua" />
                         </Viewbox>
                         <Viewbox Style="{StaticResource numericViewbox}" Margin="5, 10"
-                                 Grid.Row="4" Grid.Column="0" >
+                                 Grid.Row="4" Grid.Column="0">
                             <TextBlock Name="lblTubingStatus" Style="{StaticResource numericTextBlock}"
                                        FontSize="25" Foreground="SeaGreen" />
                         </Viewbox>
                         <Viewbox Style="{StaticResource numericViewbox}" Margin="5, 10"
-                                 Grid.Row="5" Grid.Column="0" >
+                                 Grid.Row="5" Grid.Column="0">
                             <TextBlock Name="lblHelium" Style="{StaticResource numericTextBlock}"
                                        FontSize="25" Foreground="MediumPurple" />
                         </Viewbox>
                     </Grid>
                 </Border>
-
 
                 <!-- Populate tracings and numerics programatically at runtime! -->
                 <!-- IABPTracing of ECG strip top center, IABPNumeric top right -->
@@ -273,12 +271,7 @@
                         Name="buttonDecrease" Click="ButtonDecrease_Click">
                     <TextBlock Name="btntxtDecrease" Style="{StaticResource buttonTextBlock}" />
                 </Button>
-
             </Grid>
         </Grid>
-
-
-
     </DockPanel>
-
 </Window>

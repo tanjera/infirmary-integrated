@@ -1,24 +1,15 @@
-﻿using System;
+﻿using II;
+using II.Rhythm;
+using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-
-using II;
-using II.Rhythm;
-using II.Localization;
 
 namespace II_Windows {
+
     /// <summary>
     /// Interaction logic for DeviceIABP.xaml
     /// </summary>
@@ -32,33 +23,43 @@ namespace II_Windows {
             AugmentationAlarm
         }
 
-        public class Triggering
-        {
+        public class Triggering {
             public Values Value;
+
             public enum Values { ECG, Pressure }
 
-            public Triggering(Values v) { Value = v; }
-            public Triggering() { Value = Values.ECG; }
+            public Triggering (Values v) {
+                Value = v;
+            }
 
-            public string LookupString() => LookupString(Value);
-            public static string LookupString(Values v)
-            {
-                return String.Format("IABPTRIGGER:{0}", Enum.GetValues(typeof(Values)).GetValue((int)v).ToString());
+            public Triggering () {
+                Value = Values.ECG;
+            }
+
+            public string LookupString () => LookupString (Value);
+
+            public static string LookupString (Values v) {
+                return String.Format ("IABPTRIGGER:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v).ToString ());
             }
         }
 
-        public class Modes
-        {
+        public class Modes {
             public Values Value;
+
             public enum Values { Auto, SemiAuto }
 
-            public Modes(Values v) { Value = v; }
-            public Modes() { Value = Values.Auto; }
+            public Modes (Values v) {
+                Value = v;
+            }
 
-            public string LookupString() => LookupString(Value);
-            public static string LookupString(Values v)
-            {
-                return String.Format("IABPMODE:{0}", Enum.GetValues(typeof(Values)).GetValue((int)v).ToString());
+            public Modes () {
+                Value = Values.Auto;
+            }
+
+            public string LookupString () => LookupString (Value);
+
+            public static string LookupString (Values v) {
+                return String.Format ("IABPMODE:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v).ToString ());
             }
         }
 
@@ -68,28 +69,28 @@ namespace II_Windows {
                    Augmentation = 100,              // Expressed as % (e.g. 10%, 100%)
                    AugmentationAlarm = 100;         // Expressed as mmHg
 
-        public Triggering Trigger = new Triggering();
-        public Modes Mode = new Modes();
+        public Triggering Trigger = new Triggering ();
+        public Modes Mode = new Modes ();
         public bool Running = false, Primed = false;
 
         public Settings SelectedSetting = Settings.None;
 
-        bool isFullscreen = false,
+        private bool isFullscreen = false,
              isPaused = false;
 
-        List<Controls.IABPTracing> listTracings = new List<Controls.IABPTracing> ();
-        List<Controls.IABPNumeric> listNumerics = new List<Controls.IABPNumeric> ();
+        private List<Controls.IABPTracing> listTracings = new List<Controls.IABPTracing> ();
+        private List<Controls.IABPNumeric> listNumerics = new List<Controls.IABPNumeric> ();
 
-        Timer timerTracing = new Timer (),
+        private Timer timerTracing = new Timer (),
               timerVitals = new Timer ();
 
         // Define WPF UI commands for binding
         private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram;
+
         public ICommand IC_ToggleFullscreen { get { return icToggleFullscreen; } }
         public ICommand IC_PauseDevice { get { return icPauseDevice; } }
         public ICommand IC_CloseDevice { get { return icCloseDevice; } }
         public ICommand IC_ExitProgram { get { return icExitProgram; } }
-
 
         public DeviceIABP () {
             InitializeComponent ();
@@ -117,19 +118,19 @@ namespace II_Windows {
 
             // Populate UI strings per language selection
             var Dictionary = App.Language.Dictionary;
-            wdwDeviceIABP.Title = Dictionary["IABP:WindowTitle"];
-            menuDevice.Header = Dictionary["MENU:MenuDeviceOptions"];
-            menuPauseDevice.Header = Dictionary["MENU:MenuPauseDevice"];
-            menuToggleFullscreen.Header = Dictionary["MENU:MenuToggleFullscreen"];
-            menuCloseDevice.Header = Dictionary["MENU:MenuCloseDevice"];
-            menuExitProgram.Header = Dictionary["MENU:MenuExitProgram"];
+            wdwDeviceIABP.Title = Dictionary ["IABP:WindowTitle"];
+            menuDevice.Header = Dictionary ["MENU:MenuDeviceOptions"];
+            menuPauseDevice.Header = Dictionary ["MENU:MenuPauseDevice"];
+            menuToggleFullscreen.Header = Dictionary ["MENU:MenuToggleFullscreen"];
+            menuCloseDevice.Header = Dictionary ["MENU:MenuCloseDevice"];
+            menuExitProgram.Header = Dictionary ["MENU:MenuExitProgram"];
 
-            buttonModeAuto.Text = Dictionary["IABPMODE:Auto"];
-            buttonModeSemiAuto.Text = Dictionary["IABPMODE:SemiAuto"];
-            buttonZero.Text = Utility.WrapString(Dictionary["IABPBUTTON:ZeroPressure"]);
-            buttonStart.Text = Dictionary["IABPBUTTON:Start"];
-            buttonPause.Text = Dictionary["IABPBUTTON:Pause"];
-            btntxtTrigger.Text = Utility.WrapString(Dictionary ["IABPBUTTON:Trigger"]);
+            buttonModeAuto.Text = Dictionary ["IABPMODE:Auto"];
+            buttonModeSemiAuto.Text = Dictionary ["IABPMODE:SemiAuto"];
+            buttonZero.Text = Utility.WrapString (Dictionary ["IABPBUTTON:ZeroPressure"]);
+            buttonStart.Text = Dictionary ["IABPBUTTON:Start"];
+            buttonPause.Text = Dictionary ["IABPBUTTON:Pause"];
+            btntxtTrigger.Text = Utility.WrapString (Dictionary ["IABPBUTTON:Trigger"]);
             btntxtFrequency.Text = Utility.WrapString (Dictionary ["IABPBUTTON:Frequency"]);
             buttonPrimeBalloon.Text = Utility.WrapString (Dictionary ["IABPBUTTON:PrimeBalloon"]);
             btntxtAugmentationPressure.Text = Utility.WrapString (Dictionary ["IABP:AugmentationPressure"]);
@@ -178,30 +179,30 @@ namespace II_Windows {
 
             try {
                 string line;
-                while ((line = sRead.ReadLine()) != null) {
-                    if (line.Contains(":")) {
-                        string pName = line.Substring(0, line.IndexOf(':')),
-                                pValue = line.Substring(line.IndexOf(':') + 1);
+                while ((line = sRead.ReadLine ()) != null) {
+                    if (line.Contains (":")) {
+                        string pName = line.Substring (0, line.IndexOf (':')),
+                                pValue = line.Substring (line.IndexOf (':') + 1);
                         switch (pName) {
                             default: break;
-                            case "isPaused": isPaused = bool.Parse(pValue); break;
-                            case "isFullscreen": isFullscreen = bool.Parse(pValue); break;
+                            case "isPaused": isPaused = bool.Parse (pValue); break;
+                            case "isFullscreen": isFullscreen = bool.Parse (pValue); break;
 
-                            case "Frequency": Frequency = int.Parse(pValue); break;
-                            case "Augmentation": Augmentation = int.Parse(pValue); break;
-                            case "AugmentationAlarm": AugmentationAlarm = int.Parse(pValue); break;
-                            case "Trigger": Trigger.Value = (Triggering.Values)Enum.Parse(typeof(Triggering.Values), pValue); break;
-                            case "Mode": Mode.Value = (Modes.Values)Enum.Parse(typeof(Modes.Values), pValue); break;
-                            case "Running": Running = bool.Parse(pValue); break;
-                            case "Primed": Primed = bool.Parse(pValue); break;
+                            case "Frequency": Frequency = int.Parse (pValue); break;
+                            case "Augmentation": Augmentation = int.Parse (pValue); break;
+                            case "AugmentationAlarm": AugmentationAlarm = int.Parse (pValue); break;
+                            case "Trigger": Trigger.Value = (Triggering.Values)Enum.Parse (typeof (Triggering.Values), pValue); break;
+                            case "Mode": Mode.Value = (Modes.Values)Enum.Parse (typeof (Modes.Values), pValue); break;
+                            case "Running": Running = bool.Parse (pValue); break;
+                            case "Primed": Primed = bool.Parse (pValue); break;
                         }
                     }
                 }
             } catch (Exception e) {
-                App.Server.Post_Exception(e);
+                App.Server.Post_Exception (e);
                 throw e;
             } finally {
-                sRead.Close();
+                sRead.Close ();
             }
         }
 
@@ -211,13 +212,13 @@ namespace II_Windows {
             sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", isPaused));
             sWrite.AppendLine (String.Format ("{0}:{1}", "isFullscreen", isFullscreen));
 
-            sWrite.AppendLine(String.Format("{0}:{1}", "Frequency", Frequency));
-            sWrite.AppendLine(String.Format("{0}:{1}", "Augmentation", Augmentation));
-            sWrite.AppendLine(String.Format("{0}:{1}", "AugmentationAlarm", AugmentationAlarm));
-            sWrite.AppendLine(String.Format("{0}:{1}", "Trigger", Trigger.Value));
-            sWrite.AppendLine(String.Format("{0}:{1}", "Mode", Mode.Value));
-            sWrite.AppendLine(String.Format("{0}:{1}", "Running", Running));
-            sWrite.AppendLine(String.Format("{0}:{1}", "Primed", Primed));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Frequency", Frequency));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Augmentation", Augmentation));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "AugmentationAlarm", AugmentationAlarm));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Trigger", Trigger.Value));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Mode", Mode.Value));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Running", Running));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Primed", Primed));
 
             return sWrite.ToString ();
         }
@@ -260,7 +261,7 @@ namespace II_Windows {
             UpdateInterface ();
         }
 
-        private void PauseDevice() {
+        private void PauseDevice () {
             Running = false;
             UpdateInterface ();
         }
@@ -270,7 +271,7 @@ namespace II_Windows {
             UpdateInterface ();
         }
 
-        private void SetOperationMode(Modes.Values value) {
+        private void SetOperationMode (Modes.Values value) {
             Mode.Value = value;
             PauseDevice ();
         }
@@ -291,12 +292,15 @@ namespace II_Windows {
                 case Settings.Trigger:
                     buttonTrigger.Background = System.Windows.Media.Brushes.Yellow;
                     return;
+
                 case Settings.Frequency:
                     buttonFrequency.Background = System.Windows.Media.Brushes.Yellow;
                     return;
+
                 case Settings.AugmentationPressure:
                     buttonAugmentationPressure.Background = System.Windows.Media.Brushes.Yellow;
                     return;
+
                 case Settings.AugmentationAlarm:
                     buttonAugmentationAlarm.Background = System.Windows.Media.Brushes.Yellow;
                     return;
@@ -313,12 +317,12 @@ namespace II_Windows {
                 default: return;
                 case Settings.Frequency:
                     Frequency = Utility.Clamp (Frequency + 1, 1, 3);
-                    UpdateInterface();
+                    UpdateInterface ();
                     return;
 
                 case Settings.Trigger:
                     Array enumValues = Enum.GetValues (typeof (Triggering.Values));
-                    Trigger.Value = (Triggering.Values)enumValues.GetValue (Utility.Clamp((int)Trigger.Value + 1, 0, enumValues.Length - 1));
+                    Trigger.Value = (Triggering.Values)enumValues.GetValue (Utility.Clamp ((int)Trigger.Value + 1, 0, enumValues.Length - 1));
                     PauseDevice ();
                     UpdateInterface ();
                     return;
@@ -345,7 +349,7 @@ namespace II_Windows {
 
                 case Settings.Trigger:
                     Array enumValues = Enum.GetValues (typeof (Triggering.Values));
-                    Trigger.Value = (Triggering.Values)enumValues.GetValue (Utility.Clamp((int)Trigger.Value - 1, 0, enumValues.Length - 1));
+                    Trigger.Value = (Triggering.Values)enumValues.GetValue (Utility.Clamp ((int)Trigger.Value - 1, 0, enumValues.Length - 1));
                     PauseDevice ();
                     UpdateInterface ();
                     return;
@@ -363,18 +367,29 @@ namespace II_Windows {
         }
 
         private void ButtonStart_Click (object s, RoutedEventArgs e) => StartDevice ();
+
         private void ButtonPause_Click (object s, RoutedEventArgs e) => PauseDevice ();
+
         private void ButtonTrigger_Click (object s, RoutedEventArgs e) => SelectSetting (Settings.Trigger);
+
         private void ButtonFrequency_Click (object s, RoutedEventArgs e) => SelectSetting (Settings.Frequency);
+
         private void ButtonAugmentationPressure_Click (object s, RoutedEventArgs e) => SelectSetting (Settings.AugmentationPressure);
+
         private void ButtonAugmentationAlarm_Click (object s, RoutedEventArgs e) => SelectSetting (Settings.AugmentationAlarm);
+
         private void ButtonModeAuto_Click (object s, RoutedEventArgs e) => SetOperationMode (Modes.Values.Auto);
+
         private void ButtonModeSemiAuto_Click (object s, RoutedEventArgs e) => SetOperationMode (Modes.Values.SemiAuto);
+
         private void ButtonPrimeBalloon_Click (object s, RoutedEventArgs e) => PrimeBalloon ();
 
         private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
+
         private void MenuExit_Click (object s, RoutedEventArgs e) => App.Patient_Editor.RequestExit ();
+
         private void MenuTogglePause_Click (object s, RoutedEventArgs e) => TogglePause ();
+
         private void MenuFullscreen_Click (object sender, RoutedEventArgs e) => ToggleFullscreen ();
 
         private void OnTick_Tracing (object sender, EventArgs e) {
@@ -404,7 +419,7 @@ namespace II_Windows {
 
             UpdateInterface ();
 
-            listNumerics.ForEach(n => n.UpdateVitals ());
+            listNumerics.ForEach (n => n.UpdateVitals ());
         }
 
         public void OnPatientEvent (object sender, Patient.PatientEvent_Args e) {
@@ -418,31 +433,31 @@ namespace II_Windows {
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Defibrillation:
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Defibrillation (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Defibrillation (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_PacerSpike:
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Pacemaker (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Pacemaker (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
                     App.Patient.IABP_Active = Running && (Frequency_Iter % Frequency == 0)
                         && ((Trigger.Value == Triggering.Values.ECG && App.Patient.CardiacRhythm.HasWaveform_Ventricular)
                         || (Trigger.Value == Triggering.Values.Pressure && App.Patient.CardiacRhythm.HasPulse_Ventricular));
-                    App.Patient.IABP_Trigger = Trigger.Value.ToString();
+                    App.Patient.IABP_Trigger = Trigger.Value.ToString ();
 
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Atrial:
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Atrial (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Atrial (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Ventricular:
                     if (Running)
                         Frequency_Iter++;
 
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Ventricular (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Ventricular (App.Patient));
                     break;
             }
         }

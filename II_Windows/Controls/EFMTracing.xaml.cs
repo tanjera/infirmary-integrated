@@ -1,31 +1,26 @@
-﻿using System;
+﻿using II;
+using II.Rhythm;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-
-using II;
-using II.Rhythm;
-using II.Localization;
-
 namespace II_Windows.Controls {
+
     /// <summary>
     /// Interaction logic for Tracing.xaml
     /// </summary>
     public partial class EFMTracing : UserControl {
-
         public Strip wfStrip;
 
         // Drawing variables, offsets and multipliers
-        Path drawPath;
-        Brush drawBrush;
-        StreamGeometry drawGeometry;
-        StreamGeometryContext drawContext;
-        int drawXOffset, drawYOffset;
-        double drawXMultiplier, drawYMultiplier;
+        private Path drawPath;
 
+        private Brush drawBrush;
+        private StreamGeometry drawGeometry;
+        private StreamGeometryContext drawContext;
+        private int drawXOffset, drawYOffset;
+        private double drawXMultiplier, drawYMultiplier;
 
         public EFMTracing (Strip strip) {
             InitializeComponent ();
@@ -39,7 +34,7 @@ namespace II_Windows.Controls {
             drawBrush = Brushes.Green;
 
             lblLead.Foreground = drawBrush;
-            lblLead.Content = App.Language.Dictionary[Leads.LookupString (wfStrip.Lead.Value, true)];
+            lblLead.Content = App.Language.Dictionary [Leads.LookupString (wfStrip.Lead.Value, true)];
         }
 
         public void Draw () {

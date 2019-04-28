@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 
 namespace II {
-
     public class CardiacRhythms {
         public Values Value;
         public CardiacRhythms (Values v) { Value = v; }
@@ -38,7 +37,7 @@ namespace II {
         }
 
         public static string LookupString (Values value) {
-            return String.Format("RHYTHM:{0}", Enum.GetValues(typeof(Values)).GetValue((int)value).ToString());
+            return String.Format ("RHYTHM:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
         }
 
         public bool HasPulse_Atrial {
@@ -80,7 +79,6 @@ namespace II {
         public bool HasPulse_Ventricular {
             get {
                 switch (Value) {
-
                     case Values.Asystole:
                     case Values.Pulseless_Electrical_Activity:
                     case Values.Ventricular_Fibrillation_Coarse:
@@ -151,7 +149,7 @@ namespace II {
         }
 
         public class Default_Vitals {
-            public int  HRMin, HRMax,
+            public int HRMin, HRMax,
                         SPO2Min, SPO2Max,
                         ETCO2Min, ETCO2Max,
                         SBPMin, SBPMax, DBPMin, DBPMax,
@@ -163,7 +161,6 @@ namespace II {
                     int etco2Min, int etco2Max,
                     int sbpMin, int sbpMax, int dbpMin, int dbpMax,
                     int pspMin, int pspMax, int pdpMin, int pdpMax) {
-
                 HRMin = hrMin; HRMax = hrMax;
                 SPO2Min = spo2Min; SPO2Max = spo2Max;
                 ETCO2Min = etco2Min; ETCO2Max = etco2Max;
@@ -290,17 +287,17 @@ namespace II {
                     case Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
                     case Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
                         s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_3 (p, s.Lead));
-                            return;
+                        return;
 
-                case Values.Sinus_Rhythm_with_PVCs_Multifocal:
-                    switch (new Random ().Next (0, 3)) {
-                        default:
-                        case 0: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_1 (p, s.Lead)); break;
-                        case 1: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_2 (p, s.Lead)); break;
-                        case 2: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_3 (p, s.Lead)); break;
-                    }
-                    return;
-            }
+                    case Values.Sinus_Rhythm_with_PVCs_Multifocal:
+                        switch (new Random ().Next (0, 3)) {
+                            default:
+                            case 0: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_1 (p, s.Lead)); break;
+                            case 1: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_2 (p, s.Lead)); break;
+                            case 2: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Aberrant_3 (p, s.Lead)); break;
+                        }
+                        return;
+                }
 
             // Handle non-aberrant beats
             switch (Value) {
@@ -334,14 +331,13 @@ namespace II {
         }
     }
 
-
     public class RespiratoryRhythms {
         public Values Value;
         public RespiratoryRhythms (Values v) { Value = v; }
         public RespiratoryRhythms () { Value = Values.Regular; }
 
         public static string LookupString (Values value) {
-            return String.Format ("RHYTHM:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString());
+            return String.Format ("RHYTHM:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
         }
 
         public enum Values {
@@ -349,7 +345,6 @@ namespace II {
             Regular
         }
     }
-
 
     public class CardiacAxes {
         public Values Value;
@@ -379,14 +374,12 @@ namespace II {
             "Extreme",
             "Indeterminate"
         };
-
     }
-
 
     public class FetalHeartDecelerations {
         public List<Values> ValueList;
         public FetalHeartDecelerations (List<Values> v) { ValueList = v; }
-        public FetalHeartDecelerations () { ValueList = new List<Values>(); }
+        public FetalHeartDecelerations () { ValueList = new List<Values> (); }
 
         public static string LookupString (Values v) {
             return String.Format ("FETAL_RHYTHMS:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v).ToString ());

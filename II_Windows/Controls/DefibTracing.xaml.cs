@@ -1,33 +1,30 @@
-﻿using System;
+﻿using II;
+using II.Localization;
+using II.Rhythm;
+using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
-
-using II;
-using II.Rhythm;
-using II.Localization;
-
 namespace II_Windows.Controls {
+
     /// <summary>
     /// Interaction logic for Tracing.xaml
     /// </summary>
     public partial class DefibTracing : UserControl {
-
         public Strip wfStrip;
         public Leads Lead { get { return wfStrip.Lead; } }
         public double Amplitude = 1.0;
 
         // Drawing variables, offsets and multipliers
-        Path drawPath;
-        Brush drawBrush;
-        StreamGeometry drawGeometry;
-        StreamGeometryContext drawContext;
-        int drawXOffset, drawYOffset;
-        double drawXMultiplier, drawYMultiplier;
+        private Path drawPath;
 
+        private Brush drawBrush;
+        private StreamGeometry drawGeometry;
+        private StreamGeometryContext drawContext;
+        private int drawXOffset, drawYOffset;
+        private double drawXMultiplier, drawYMultiplier;
 
         public DefibTracing (Strip strip) {
             InitializeComponent ();
@@ -49,43 +46,43 @@ namespace II_Windows.Controls {
             lblLead.ContextMenu = contextMenu;
 
             MenuItem menuZeroTransducer = new MenuItem ();
-            menuZeroTransducer.Header = App.Language.Dictionary["MENU:MenuZeroTransducer"];
+            menuZeroTransducer.Header = App.Language.Dictionary ["MENU:MenuZeroTransducer"];
             menuZeroTransducer.Click += MenuZeroTransducer_Click;
             contextMenu.Items.Add (menuZeroTransducer);
 
             contextMenu.Items.Add (new Separator ());
 
             MenuItem menuAddTracing = new MenuItem ();
-            menuAddTracing.Header = App.Language.Dictionary["MENU:MenuAddTracing"];
+            menuAddTracing.Header = App.Language.Dictionary ["MENU:MenuAddTracing"];
             menuAddTracing.Click += MenuAddTracing_Click;
             contextMenu.Items.Add (menuAddTracing);
 
             MenuItem menuRemoveTracing = new MenuItem ();
-            menuRemoveTracing.Header = App.Language.Dictionary["MENU:MenuRemoveTracing"];
+            menuRemoveTracing.Header = App.Language.Dictionary ["MENU:MenuRemoveTracing"];
             menuRemoveTracing.Click += MenuRemoveTracing_Click;
             contextMenu.Items.Add (menuRemoveTracing);
 
-            contextMenu.Items.Add (new Separator());
+            contextMenu.Items.Add (new Separator ());
 
-            MenuItem menuIncreaseAmplitude = new MenuItem();
-            menuIncreaseAmplitude.Header = App.Language.Dictionary["MENU:IncreaseAmplitude"];
+            MenuItem menuIncreaseAmplitude = new MenuItem ();
+            menuIncreaseAmplitude.Header = App.Language.Dictionary ["MENU:IncreaseAmplitude"];
             menuIncreaseAmplitude.Click += MenuIncreaseAmplitude_Click;
-            contextMenu.Items.Add(menuIncreaseAmplitude);
+            contextMenu.Items.Add (menuIncreaseAmplitude);
 
-            MenuItem menuDecreaseAmplitude = new MenuItem();
-            menuDecreaseAmplitude.Header = App.Language.Dictionary["MENU:DecreaseAmplitude"];
+            MenuItem menuDecreaseAmplitude = new MenuItem ();
+            menuDecreaseAmplitude.Header = App.Language.Dictionary ["MENU:DecreaseAmplitude"];
             menuDecreaseAmplitude.Click += MenuDecreaseAmplitude_Click;
-            contextMenu.Items.Add(menuDecreaseAmplitude);
+            contextMenu.Items.Add (menuDecreaseAmplitude);
 
-            contextMenu.Items.Add(new Separator());
+            contextMenu.Items.Add (new Separator ());
 
             MenuItem menuSelectInput = new MenuItem (),
-                     menuECGLeads = new MenuItem();
-            menuSelectInput.Header = App.Language.Dictionary["MENU:MenuSelectInputSource"];
-            menuECGLeads.Header = App.Language.Dictionary["TRACING:ECG"];
+                     menuECGLeads = new MenuItem ();
+            menuSelectInput.Header = App.Language.Dictionary ["MENU:MenuSelectInputSource"];
+            menuECGLeads.Header = App.Language.Dictionary ["TRACING:ECG"];
             menuSelectInput.Items.Add (menuECGLeads);
 
-            foreach (Leads.Values v in Enum.GetValues(typeof(Leads.Values))) {
+            foreach (Leads.Values v in Enum.GetValues (typeof (Leads.Values))) {
                 // Only include certain leads- e.g. bedside monitors don't interface with IABP or EFM
                 string el = v.ToString ();
                 if (!el.StartsWith ("ECG") && el != "SPO2" && el != "CVP" && el != "ABP"
@@ -93,7 +90,7 @@ namespace II_Windows.Controls {
                     continue;
 
                 MenuItem mi = new MenuItem ();
-                mi.Header = App.Language.Dictionary[Leads.LookupString (v)];
+                mi.Header = App.Language.Dictionary [Leads.LookupString (v)];
                 mi.Name = v.ToString ();
                 mi.Click += MenuSelectInputSource;
                 if (mi.Name.StartsWith ("ECG"))
@@ -120,7 +117,7 @@ namespace II_Windows.Controls {
             borderTracing.BorderBrush = drawBrush;
 
             lblLead.Foreground = drawBrush;
-            lblLead.Content = App.Language.Dictionary[Leads.LookupString (Lead.Value)];
+            lblLead.Content = App.Language.Dictionary [Leads.LookupString (Lead.Value)];
         }
 
         public void Draw () {
@@ -172,12 +169,15 @@ namespace II_Windows.Controls {
 
         private void MenuAddTracing_Click (object sender, RoutedEventArgs e)
             => App.Device_Defib.AddTracing ();
+
         private void MenuRemoveTracing_Click (object sender, RoutedEventArgs e)
             => App.Device_Defib.RemoveTracing (this);
-        private void MenuIncreaseAmplitude_Click(object sender, RoutedEventArgs e)
-            => Amplitude = Utility.Clamp(Amplitude + 0.2, 0.2, 2.0);
-        private void MenuDecreaseAmplitude_Click(object sender, RoutedEventArgs e)
-            => Amplitude = Utility.Clamp(Amplitude - 0.2, 0.2, 2.0);
+
+        private void MenuIncreaseAmplitude_Click (object sender, RoutedEventArgs e)
+            => Amplitude = Utility.Clamp (Amplitude + 0.2, 0.2, 2.0);
+
+        private void MenuDecreaseAmplitude_Click (object sender, RoutedEventArgs e)
+            => Amplitude = Utility.Clamp (Amplitude - 0.2, 0.2, 2.0);
 
         private void MenuSelectInputSource (object sender, RoutedEventArgs e) {
             Leads.Values selectedValue;

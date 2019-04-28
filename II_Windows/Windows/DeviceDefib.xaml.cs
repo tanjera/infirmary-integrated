@@ -1,24 +1,16 @@
-﻿using System;
+﻿using II;
+using II.Rhythm;
+using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-
-using II;
-using II.Rhythm;
-using II.Localization;
 
 namespace II_Windows {
+
     /// <summary>
     /// Interaction logic for DeviceDefib.xaml
     /// </summary>
@@ -32,6 +24,7 @@ namespace II_Windows {
 
         // Device settings
         public Modes Mode = Modes.DEFIB;
+
         public bool Charged = false,
                     Analyzed = false;
 
@@ -39,24 +32,25 @@ namespace II_Windows {
                     PacerEnergy = 0,
                     PacerRate = 80;
 
-        int rowsTracings = 1,
+        private int rowsTracings = 1,
             colsNumerics = 4;
-        bool isFullscreen = false,
+
+        private bool isFullscreen = false,
              isPaused = false;
 
-        List<Controls.DefibTracing> listTracings = new List<Controls.DefibTracing> ();
-        List<Controls.DefibNumeric> listNumerics = new List<Controls.DefibNumeric> ();
+        private List<Controls.DefibTracing> listTracings = new List<Controls.DefibTracing> ();
+        private List<Controls.DefibNumeric> listNumerics = new List<Controls.DefibNumeric> ();
 
-        Timer timerTracing = new Timer (),
+        private Timer timerTracing = new Timer (),
               timerVitals = new Timer ();
 
         // Define WPF UI commands for binding
         private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram;
+
         public ICommand IC_ToggleFullscreen { get { return icToggleFullscreen; } }
         public ICommand IC_PauseDevice { get { return icPauseDevice; } }
         public ICommand IC_CloseDevice { get { return icCloseDevice; } }
         public ICommand IC_ExitProgram { get { return icExitProgram; } }
-
 
         public DeviceDefib () {
             InitializeComponent ();
@@ -80,38 +74,38 @@ namespace II_Windows {
 
         private void InitInterface () {
             // Initiate ICommands for KeyBindings
-            icToggleFullscreen = new ActionCommand(() => ToggleFullscreen());
+            icToggleFullscreen = new ActionCommand (() => ToggleFullscreen ());
             icPauseDevice = new ActionCommand (() => TogglePause ());
             icCloseDevice = new ActionCommand (() => this.Close ());
             icExitProgram = new ActionCommand (() => App.Patient_Editor.RequestExit ());
 
             // Populate UI strings per language selection
-            wdwDeviceDefib.Title = App.Language.Dictionary["DEFIB:WindowTitle"];
-            menuDevice.Header = App.Language.Dictionary["MENU:MenuDeviceOptions"];
-            menuPauseDevice.Header = App.Language.Dictionary["MENU:MenuPauseDevice"];
-            menuAddNumeric.Header = App.Language.Dictionary["MENU:MenuAddNumeric"];
-            menuAddTracing.Header = App.Language.Dictionary["MENU:MenuAddTracing"];
-            menuToggleFullscreen.Header = App.Language.Dictionary["MENU:MenuToggleFullscreen"];
-            menuCloseDevice.Header = App.Language.Dictionary["MENU:MenuCloseDevice"];
-            menuExitProgram.Header = App.Language.Dictionary["MENU:MenuExitProgram"];
+            wdwDeviceDefib.Title = App.Language.Dictionary ["DEFIB:WindowTitle"];
+            menuDevice.Header = App.Language.Dictionary ["MENU:MenuDeviceOptions"];
+            menuPauseDevice.Header = App.Language.Dictionary ["MENU:MenuPauseDevice"];
+            menuAddNumeric.Header = App.Language.Dictionary ["MENU:MenuAddNumeric"];
+            menuAddTracing.Header = App.Language.Dictionary ["MENU:MenuAddTracing"];
+            menuToggleFullscreen.Header = App.Language.Dictionary ["MENU:MenuToggleFullscreen"];
+            menuCloseDevice.Header = App.Language.Dictionary ["MENU:MenuCloseDevice"];
+            menuExitProgram.Header = App.Language.Dictionary ["MENU:MenuExitProgram"];
 
-            btntxtDefib.Text = App.Language.Dictionary["DEFIB:Defibrillator"];
-            txtEnergyAmount.Text = App.Language.Dictionary["DEFIB:EnergyAmount"];
-            btntxtEnergyDecrease.Text = App.Language.Dictionary["DEFIB:Decrease"];
-            btntxtEnergyIncrease.Text = App.Language.Dictionary["DEFIB:Increase"];
-            btntxtCharge.Text = App.Language.Dictionary["DEFIB:Charge"];
-            btntxtShock.Text = App.Language.Dictionary["DEFIB:Shock"];
-            btntxtAnalyze.Text = App.Language.Dictionary["DEFIB:Analyze"];
-            btntxtSync.Text = App.Language.Dictionary["DEFIB:Sync"];
+            btntxtDefib.Text = App.Language.Dictionary ["DEFIB:Defibrillator"];
+            txtEnergyAmount.Text = App.Language.Dictionary ["DEFIB:EnergyAmount"];
+            btntxtEnergyDecrease.Text = App.Language.Dictionary ["DEFIB:Decrease"];
+            btntxtEnergyIncrease.Text = App.Language.Dictionary ["DEFIB:Increase"];
+            btntxtCharge.Text = App.Language.Dictionary ["DEFIB:Charge"];
+            btntxtShock.Text = App.Language.Dictionary ["DEFIB:Shock"];
+            btntxtAnalyze.Text = App.Language.Dictionary ["DEFIB:Analyze"];
+            btntxtSync.Text = App.Language.Dictionary ["DEFIB:Sync"];
 
-            btntxtPacer.Text = App.Language.Dictionary["DEFIB:Pacer"];
-            txtPaceRate.Text = App.Language.Dictionary["DEFIB:Rate"];
-            btntxtPaceRateDecrease.Text = App.Language.Dictionary["DEFIB:Decrease"];
-            btntxtPaceRateIncrease.Text = App.Language.Dictionary["DEFIB:Increase"];
-            txtPaceEnergy.Text = App.Language.Dictionary["DEFIB:EnergyAmount"];
-            btntxtPaceEnergyDecrease.Text = App.Language.Dictionary["DEFIB:Decrease"];
-            btntxtPaceEnergyIncrease.Text = App.Language.Dictionary["DEFIB:Increase"];
-            btntxtPacePause.Text = App.Language.Dictionary["DEFIB:Pause"];
+            btntxtPacer.Text = App.Language.Dictionary ["DEFIB:Pacer"];
+            txtPaceRate.Text = App.Language.Dictionary ["DEFIB:Rate"];
+            btntxtPaceRateDecrease.Text = App.Language.Dictionary ["DEFIB:Decrease"];
+            btntxtPaceRateIncrease.Text = App.Language.Dictionary ["DEFIB:Increase"];
+            txtPaceEnergy.Text = App.Language.Dictionary ["DEFIB:EnergyAmount"];
+            btntxtPaceEnergyDecrease.Text = App.Language.Dictionary ["DEFIB:Decrease"];
+            btntxtPaceEnergyIncrease.Text = App.Language.Dictionary ["DEFIB:Increase"];
+            btntxtPacePause.Text = App.Language.Dictionary ["DEFIB:Pause"];
         }
 
         public void Load_Process (string inc) {
@@ -131,23 +125,23 @@ namespace II_Windows {
                             case "colsNumerics": colsNumerics = int.Parse (pValue); break;
                             case "isPaused": isPaused = bool.Parse (pValue); break;
                             case "isFullscreen": isFullscreen = bool.Parse (pValue); break;
-                            case "numericTypes": numericTypes.AddRange (pValue.Split (',').Where((o) => o != "")); break;
-                            case "tracingTypes": tracingTypes.AddRange (pValue.Split (',').Where((o) => o != "")); break;
-                            case "Mode": Mode = (Modes)Enum.Parse (typeof(Modes), pValue); break;
-                            case "Charged": Charged = bool.Parse(pValue); break;
-                            case "Analyzed": Analyzed = bool.Parse(pValue); break;
-                            case "Energy": Energy = int.Parse(pValue); break;
-                            case "PacerEnergy": PacerEnergy = int.Parse(pValue); break;
-                            case "PacerRate": PacerRate = int.Parse(pValue); break;
+                            case "numericTypes": numericTypes.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
+                            case "tracingTypes": tracingTypes.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
+                            case "Mode": Mode = (Modes)Enum.Parse (typeof (Modes), pValue); break;
+                            case "Charged": Charged = bool.Parse (pValue); break;
+                            case "Analyzed": Analyzed = bool.Parse (pValue); break;
+                            case "Energy": Energy = int.Parse (pValue); break;
+                            case "PacerEnergy": PacerEnergy = int.Parse (pValue); break;
+                            case "PacerRate": PacerRate = int.Parse (pValue); break;
                         }
                     }
                 }
             } catch (Exception e) {
-                App.Server.Post_Exception(e);
+                App.Server.Post_Exception (e);
                 throw e;
             } finally {
-                sRead.Close();
-                OnLayoutChange(numericTypes, tracingTypes);
+                sRead.Close ();
+                OnLayoutChange (numericTypes, tracingTypes);
             }
         }
 
@@ -167,12 +161,12 @@ namespace II_Windows {
             sWrite.AppendLine (String.Format ("{0}:{1}", "numericTypes", string.Join (",", numericTypes)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "tracingTypes", string.Join (",", tracingTypes)));
 
-            sWrite.AppendLine(String.Format("{0}:{1}", "Mode", Mode));
-            sWrite.AppendLine(String.Format("{0}:{1}", "Charged", Charged));
-            sWrite.AppendLine(String.Format("{0}:{1}", "Analyzed", Analyzed));
-            sWrite.AppendLine(String.Format("{0}:{1}", "Energy", Energy));
-            sWrite.AppendLine(String.Format("{0}:{1}", "PacerEnergy", PacerEnergy));
-            sWrite.AppendLine(String.Format("{0}:{1}", "PacerRate", PacerRate));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Mode", Mode));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Charged", Charged));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Analyzed", Analyzed));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Energy", Energy));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "PacerEnergy", PacerEnergy));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "PacerRate", PacerRate));
 
             return sWrite.ToString ();
         }
@@ -201,13 +195,12 @@ namespace II_Windows {
             menuPauseDevice.IsChecked = isPaused;
 
             if (!isPaused)
-                listTracings.ForEach(c => c.wfStrip.Unpause ());
+                listTracings.ForEach (c => c.wfStrip.Unpause ());
         }
 
-        private void ToggleFullscreen()
-        {
+        private void ToggleFullscreen () {
             isFullscreen = !isFullscreen;
-            ApplyFullScreen();
+            ApplyFullScreen ();
         }
 
         public void AddTracing () {
@@ -227,34 +220,37 @@ namespace II_Windows {
         }
 
         public void RemoveNumeric (Controls.DefibNumeric requestSender) {
-            colsNumerics-= 1;
+            colsNumerics -= 1;
             listNumerics.Remove (requestSender);
             OnLayoutChange ();
         }
 
         private void UpdateInterface () {
-            listNumerics.Find(o => o.controlType.Value == Controls.DefibNumeric.ControlType.Values.DEFIB).UpdateVitals(this);
+            listNumerics.Find (o => o.controlType.Value == Controls.DefibNumeric.ControlType.Values.DEFIB).UpdateVitals (this);
         }
 
-
-        private void ButtonDefib_Click(object s, RoutedEventArgs e) {
+        private void ButtonDefib_Click (object s, RoutedEventArgs e) {
             Mode = Modes.DEFIB;
-            UpdateInterface();
+            UpdateInterface ();
         }
-        private void ButtonEnergyDecrease_Click(object s, RoutedEventArgs e) {
-            Energy = Utility.Clamp(Energy - 20, 0, 200);
-            UpdateInterface();
+
+        private void ButtonEnergyDecrease_Click (object s, RoutedEventArgs e) {
+            Energy = Utility.Clamp (Energy - 20, 0, 200);
+            UpdateInterface ();
         }
-        private void ButtonEnergyIncrease_Click(object s, RoutedEventArgs e) {
-            Energy = Utility.Clamp(Energy + 20, 0, 200);
-            UpdateInterface();
+
+        private void ButtonEnergyIncrease_Click (object s, RoutedEventArgs e) {
+            Energy = Utility.Clamp (Energy + 20, 0, 200);
+            UpdateInterface ();
         }
+
         private void ButtonCharge_Click (object s, RoutedEventArgs e) {
             Analyzed = false;
             Charged = true;
             UpdateInterface ();
         }
-        private void ButtonShock_Click(object s, RoutedEventArgs e) {
+
+        private void ButtonShock_Click (object s, RoutedEventArgs e) {
             if (!Charged)
                 return;
 
@@ -268,52 +264,62 @@ namespace II_Windows {
 
             UpdateInterface ();
         }
-        private void ButtonAnalyze_Click(object s, RoutedEventArgs e) {
+
+        private void ButtonAnalyze_Click (object s, RoutedEventArgs e) {
             Analyzed = true;
             Mode = Modes.DEFIB;
             App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
             UpdateInterface ();
         }
-        private void ButtonSync_Click(object s, RoutedEventArgs e) {
+
+        private void ButtonSync_Click (object s, RoutedEventArgs e) {
             Analyzed = false;
             Mode = (Mode != Modes.SYNC ? Modes.SYNC : Modes.DEFIB);
             App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
             UpdateInterface ();
         }
 
-        private void ButtonPacer_Click(object s, RoutedEventArgs e) {
+        private void ButtonPacer_Click (object s, RoutedEventArgs e) {
             Analyzed = false;
             Mode = (Mode != Modes.PACER ? Modes.PACER : Modes.DEFIB);
             App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
             UpdateInterface ();
         }
-        private void ButtonPaceRateDecrease_Click(object s, RoutedEventArgs e) {
-            PacerRate = Utility.Clamp(PacerRate - 5, 0, 200);
-            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
-            UpdateInterface ();
-        }
-        private void ButtonPaceRateIncrease_Click(object s, RoutedEventArgs e) {
-            PacerRate = Utility.Clamp(PacerRate + 5, 0, 200);
-            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
-            UpdateInterface ();
-        }
-        private void ButtonPaceEnergyDecrease_Click(object s, RoutedEventArgs e) {
-            PacerEnergy = Utility.Clamp(PacerEnergy - 5, 0, 200);
-            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
-            UpdateInterface ();
-        }
-        private void ButtonPaceEnergyIncrease_Click(object s, RoutedEventArgs e) {
-            PacerEnergy = Utility.Clamp(PacerEnergy + 5, 0, 200);
-            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
-            UpdateInterface ();
-        }
-        private void ButtonPacePause_Click(object s, RoutedEventArgs e) => App.Patient.PacemakerPause ();
 
+        private void ButtonPaceRateDecrease_Click (object s, RoutedEventArgs e) {
+            PacerRate = Utility.Clamp (PacerRate - 5, 0, 200);
+            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            UpdateInterface ();
+        }
+
+        private void ButtonPaceRateIncrease_Click (object s, RoutedEventArgs e) {
+            PacerRate = Utility.Clamp (PacerRate + 5, 0, 200);
+            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            UpdateInterface ();
+        }
+
+        private void ButtonPaceEnergyDecrease_Click (object s, RoutedEventArgs e) {
+            PacerEnergy = Utility.Clamp (PacerEnergy - 5, 0, 200);
+            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            UpdateInterface ();
+        }
+
+        private void ButtonPaceEnergyIncrease_Click (object s, RoutedEventArgs e) {
+            PacerEnergy = Utility.Clamp (PacerEnergy + 5, 0, 200);
+            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            UpdateInterface ();
+        }
+
+        private void ButtonPacePause_Click (object s, RoutedEventArgs e) => App.Patient.PacemakerPause ();
 
         private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
+
         private void MenuExit_Click (object s, RoutedEventArgs e) => App.Patient_Editor.RequestExit ();
+
         private void MenuAddNumeric_Click (object s, RoutedEventArgs e) => AddNumeric ();
+
         private void MenuAddTracing_Click (object s, RoutedEventArgs e) => AddTracing ();
+
         private void MenuTogglePause_Click (object s, RoutedEventArgs e) => TogglePause ();
 
         private void MenuFullscreen_Click (object sender, RoutedEventArgs e) {
@@ -335,7 +341,7 @@ namespace II_Windows {
             if (isPaused)
                 return;
 
-            listNumerics.ForEach(n => n.UpdateVitals (this));
+            listNumerics.ForEach (n => n.UpdateVitals (this));
         }
 
         private void OnLayoutChange (List<string> numericTypes = null, List<string> tracingTypes = null) {
@@ -379,7 +385,7 @@ namespace II_Windows {
             gridNumerics.Children.Clear ();
             gridNumerics.ColumnDefinitions.Clear ();
             for (int i = 0; i < colsNumerics && i < listNumerics.Count; i++) {
-                gridNumerics.ColumnDefinitions.Add(new ColumnDefinition());
+                gridNumerics.ColumnDefinitions.Add (new ColumnDefinition ());
                 listNumerics [i].SetValue (Grid.ColumnProperty, i);
                 gridNumerics.Children.Add (listNumerics [i]);
             }
@@ -399,10 +405,10 @@ namespace II_Windows {
 
                 case Patient.PatientEvent_Args.EventTypes.Vitals_Change:
                     listTracings.ForEach (c => {
-                        c.wfStrip.ClearFuture();
+                        c.wfStrip.ClearFuture ();
                         c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
                     });
-                    listNumerics.ForEach((n) => n.UpdateVitals (this));
+                    listNumerics.ForEach ((n) => n.UpdateVitals (this));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Defibrillation:
@@ -414,7 +420,7 @@ namespace II_Windows {
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Atrial:

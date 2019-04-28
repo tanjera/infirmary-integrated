@@ -1,43 +1,34 @@
-﻿using System;
+﻿using II;
+using II.Rhythm;
+using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-
-using II;
-using II.Rhythm;
-using II.Localization;
 
 namespace II_Windows {
+
     /// <summary>
     /// Interaction logic for DeviceECG.xaml
     /// </summary>
     public partial class DeviceECG : Window {
 
-        bool isFullscreen = false,
+        private bool isFullscreen = false,
              isPaused = false;
 
-        List<Controls.ECGTracing> listTracings = new List<Controls.ECGTracing> ();
+        private List<Controls.ECGTracing> listTracings = new List<Controls.ECGTracing> ();
 
-        Timer timerTracing = new Timer ();
+        private Timer timerTracing = new Timer ();
 
         // Define WPF UI commands for binding
         private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram;
+
         public ICommand IC_ToggleFullscreen { get { return icToggleFullscreen; } }
         public ICommand IC_PauseDevice { get { return icPauseDevice; } }
         public ICommand IC_CloseDevice { get { return icCloseDevice; } }
         public ICommand IC_ExitProgram { get { return icExitProgram; } }
-
 
         public DeviceECG () {
             InitializeComponent ();
@@ -59,12 +50,12 @@ namespace II_Windows {
             icExitProgram = new ActionCommand (() => App.Patient_Editor.RequestExit ());
 
             // Populate UI strings per language selection
-            wdwDeviceECG.Title = App.Language.Dictionary["ECG:WindowTitle"];
-            menuDevice.Header = App.Language.Dictionary["MENU:MenuDeviceOptions"];
-            menuPauseDevice.Header = App.Language.Dictionary["MENU:MenuPauseDevice"];
-            menuToggleFullscreen.Header = App.Language.Dictionary["MENU:MenuToggleFullscreen"];
-            menuCloseDevice.Header = App.Language.Dictionary["MENU:MenuCloseDevice"];
-            menuExitProgram.Header = App.Language.Dictionary["MENU:MenuExitProgram"];
+            wdwDeviceECG.Title = App.Language.Dictionary ["ECG:WindowTitle"];
+            menuDevice.Header = App.Language.Dictionary ["MENU:MenuDeviceOptions"];
+            menuPauseDevice.Header = App.Language.Dictionary ["MENU:MenuPauseDevice"];
+            menuToggleFullscreen.Header = App.Language.Dictionary ["MENU:MenuToggleFullscreen"];
+            menuCloseDevice.Header = App.Language.Dictionary ["MENU:MenuCloseDevice"];
+            menuExitProgram.Header = App.Language.Dictionary ["MENU:MenuExitProgram"];
 
             /* 12 Lead ECG Interface layout */
             List<Leads.Values> listLeads = new List<Leads.Values> ();
@@ -121,10 +112,10 @@ namespace II_Windows {
                     }
                 }
             } catch (Exception e) {
-                App.Server.Post_Exception(e);
+                App.Server.Post_Exception (e);
                 throw e;
             } finally {
-                sRead.Close();
+                sRead.Close ();
             }
         }
 
@@ -161,7 +152,7 @@ namespace II_Windows {
             menuPauseDevice.IsChecked = isPaused;
 
             if (!isPaused)
-                listTracings.ForEach(c => c.wfStrip.Unpause ());
+                listTracings.ForEach (c => c.wfStrip.Unpause ());
         }
 
         private void ToggleFullscreen () {
@@ -170,8 +161,11 @@ namespace II_Windows {
         }
 
         private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
+
         private void MenuExit_Click (object s, RoutedEventArgs e) => App.Patient_Editor.RequestExit ();
+
         private void MenuTogglePause_Click (object s, RoutedEventArgs e) => TogglePause ();
+
         private void MenuFullscreen_Click (object sender, RoutedEventArgs e) => ToggleFullscreen ();
 
         private void OnTick_Tracing (object sender, EventArgs e) {
@@ -195,23 +189,23 @@ namespace II_Windows {
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Defibrillation:
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Defibrillation (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Defibrillation (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_PacerSpike:
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Pacemaker (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Pacemaker (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Atrial:
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Atrial (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Atrial (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Ventricular:
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Ventricular (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Ventricular (App.Patient));
                     break;
             }
         }

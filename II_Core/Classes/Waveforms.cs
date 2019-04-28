@@ -2,13 +2,12 @@ using System;
 using System.Collections.Generic;
 
 namespace II.Rhythm {
-
     public class Point {
         public double X, Y;
         public Point (double x, double y) { X = x; Y = y; }
 
         public static Point Lerp (Point a, Point b, double t) {
-            return new Point (Utility.Lerp(a.X, b.X, t), Utility.Lerp(a.Y, b.Y, t));
+            return new Point (Utility.Lerp (a.X, b.X, t), Utility.Lerp (a.Y, b.Y, t));
         }
 
         public static Point operator * (double f, Point p) {
@@ -21,18 +20,17 @@ namespace II.Rhythm {
     }
 
     public static class Waveforms {
-
         public const double Draw_Resolve = 0.01f;        // Tracing resolution (seconds per drawing point) in seconds
         public const int Draw_Refresh = 17;              // Tracing draw refresh time in milliseconds (60 fps = ~17ms)
 
-        public static List<Point> Waveform_Flatline(double _Length, double _Isoelectric) {
+        public static List<Point> Waveform_Flatline (double _Length, double _Isoelectric) {
             return Line_Long (_Length, _Isoelectric, new Point (0, _Isoelectric));
         }
 
-        public static List<Point> SPO2_Rhythm(Patient _P, double _Amplitude) {
+        public static List<Point> SPO2_Rhythm (Patient _P, double _Amplitude) {
             double _Portion = _P.HR_Seconds / 4f;
 
-            List<Point> thisBeat = new List<Point>();
+            List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.7f * _Amplitude, 0.6f * _Amplitude, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (_Portion * 2, 0.4f * _Amplitude, 0f, Last (thisBeat)));
@@ -67,27 +65,27 @@ namespace II.Rhythm {
             return thisBeat;
         }
 
-        public static List<Point> ICP_Rhythm(Patient _P, double _Amplitude) {
+        public static List<Point> ICP_Rhythm (Patient _P, double _Amplitude) {
             double _Portion = _P.HR_Seconds / 3;
 
-            double icpCompliance = Utility.Clamp(Utility.InverseLerp(15, 25, _P.ICP), 0, 1);
-            List<Point> thisBeat = new List<Point>();
-            thisBeat = Concatenate(thisBeat, Curve(_Portion, 0.7f * _Amplitude, 0.5f * _Amplitude, Last(thisBeat)));
-            thisBeat = Concatenate(thisBeat, Curve(_Portion,
-                Utility.Lerp(0.55, 0.8, icpCompliance) * _Amplitude,
-                Utility.Lerp(0.4, 0.7, icpCompliance) * _Amplitude,
-                Last(thisBeat)));
-            thisBeat = Concatenate(thisBeat, Curve(_Portion,
-                Utility.Lerp(0.2, 0.6, icpCompliance) * _Amplitude,
-                0f, Last(thisBeat)));
+            double icpCompliance = Utility.Clamp (Utility.InverseLerp (15, 25, _P.ICP), 0, 1);
+            List<Point> thisBeat = new List<Point> ();
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.7f * _Amplitude, 0.5f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion,
+                Utility.Lerp (0.55, 0.8, icpCompliance) * _Amplitude,
+                Utility.Lerp (0.4, 0.7, icpCompliance) * _Amplitude,
+                Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion,
+                Utility.Lerp (0.2, 0.6, icpCompliance) * _Amplitude,
+                0f, Last (thisBeat)));
             return thisBeat;
         }
 
-        public static List<Point> IAP_Rhythm(Patient _P, double _Amplitude){
+        public static List<Point> IAP_Rhythm (Patient _P, double _Amplitude) {
             _Amplitude *= _P.Respiratory_Inflated ? 1f : 0.5f;      // Adjust for intrathoracic pressure
 
-            List<Point> thisBeat = new List<Point>();
-            thisBeat = Concatenate(thisBeat, Curve(_P.HR_Seconds, 0.2f * _Amplitude, 0f, Last(thisBeat)));
+            List<Point> thisBeat = new List<Point> ();
+            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds, 0.2f * _Amplitude, 0f, Last (thisBeat)));
             return thisBeat;
         }
 
@@ -113,8 +111,8 @@ namespace II.Rhythm {
             thisBeat = Concatenate (thisBeat, Line (_Portion * 2, _Amplitude, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (_Portion * 10, 0.5f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Line (_Portion, -0.3f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Line (_Portion, -0.3f * _Amplitude, Last(thisBeat)));
-            thisBeat = Concatenate(thisBeat, Line(_Portion * 2, 0f, Last(thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion, -0.3f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion * 2, 0f, Last (thisBeat)));
             return thisBeat;
         }
 
@@ -128,17 +126,17 @@ namespace II.Rhythm {
             // Native systolic function inflection; decreased if aberrant/ectopic, flat if pulseless rhythm
             if (_P.CardiacRhythm.HasPulse_Ventricular) {
                 if (_P.CardiacRhythm.AberrantBeat)
-                    thisBeat = Concatenate(thisBeat, Curve(_Portion, 0.4f * _Amplitude, 0.3f * _Amplitude, Last(thisBeat)));
+                    thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.4f * _Amplitude, 0.3f * _Amplitude, Last (thisBeat)));
                 else
-                    thisBeat = Concatenate(thisBeat, Curve(_Portion, 0.8f * _Amplitude, 0.6f * _Amplitude, Last(thisBeat)));
+                    thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.8f * _Amplitude, 0.6f * _Amplitude, Last (thisBeat)));
             } else
-                thisBeat = Concatenate(thisBeat, Line(_Portion, 0f, Last(thisBeat)));
+                thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
 
             // Augmentation inflection; slightly dampened in ectopic/aberrant beats
             if (_P.CardiacRhythm.AberrantBeat)
                 thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.8f * _Amplitude, 0f, Last (thisBeat)));
             else
-                thisBeat = Concatenate(thisBeat, Curve(_Portion, 1f * _Amplitude, 0f, Last(thisBeat)));
+                thisBeat = Concatenate (thisBeat, Curve (_Portion, 1f * _Amplitude, 0f, Last (thisBeat)));
 
             // Assisted systole (negative pressures in end-diastole)
             thisBeat = Concatenate (thisBeat, Curve (_Portion, -0.2f * _Amplitude, 0f, Last (thisBeat)));
@@ -177,7 +175,7 @@ namespace II.Rhythm {
         }
 
         public static List<Point> ECG_Isoelectric__Atrial_Flutter (Patient _P, Leads _L) {
-            int Flutters = (int)Math.Ceiling(_P.HR_Seconds / 0.16f);
+            int Flutters = (int)Math.Ceiling (_P.HR_Seconds / 0.16f);
 
             List<Point> thisBeat = new List<Point> ();
             for (int i = 1; i < Flutters; i++)
@@ -288,14 +286,14 @@ namespace II.Rhythm {
             List<Point> thisBeat = new List<Point> ();
 
             thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 4,
-                -0.1f * leadCoeff[(int)_L.Value, (int)WavePart.Q],
-                -0.2f * leadCoeff[(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
+                -0.1f * leadCoeff [(int)_L.Value, (int)WavePart.Q],
+                -0.2f * leadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 4,
-                -1f * leadCoeff[(int)_L.Value, (int)WavePart.R],
-                -0.3f * leadCoeff[(int)_L.Value, (int)WavePart.R], Last (thisBeat)));
+                -1f * leadCoeff [(int)_L.Value, (int)WavePart.R],
+                -0.3f * leadCoeff [(int)_L.Value, (int)WavePart.R], Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 2,
-                0.4f * leadCoeff[(int)_L.Value, (int)WavePart.T],
-                0.1f * leadCoeff[(int)_L.Value, (int)WavePart.T],
+                0.4f * leadCoeff [(int)_L.Value, (int)WavePart.T],
+                0.1f * leadCoeff [(int)_L.Value, (int)WavePart.T],
                 Last (thisBeat)));
 
             return thisBeat;
@@ -324,13 +322,13 @@ namespace II.Rhythm {
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Curve (QRS / 2,
-                1.0f * leadCoeff[(int)_L.Value, (int)WavePart.Q],
-                -0.3f * leadCoeff[(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
+                1.0f * leadCoeff [(int)_L.Value, (int)WavePart.Q],
+                -0.3f * leadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (QRS / 2,
-                -0.3f * leadCoeff[(int)_L.Value, (int)WavePart.R],
-                -0.4f * leadCoeff[(int)_L.Value, (int)WavePart.R], Last (thisBeat)));
+                -0.3f * leadCoeff [(int)_L.Value, (int)WavePart.R],
+                -0.4f * leadCoeff [(int)_L.Value, (int)WavePart.R], Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (SQ / 3,
-                0.1f * leadCoeff[(int)_L.Value, (int)WavePart.T], 0, Last (thisBeat)));
+                0.1f * leadCoeff [(int)_L.Value, (int)WavePart.T], 0, Last (thisBeat)));
             return thisBeat;
         }
 
@@ -361,17 +359,17 @@ namespace II.Rhythm {
 
         static Point Last (List<Point> _Original) {
             if (_Original.Count < 1)
-                return new Point(0, 0);
+                return new Point (0, 0);
             else
-                return _Original[_Original.Count - 1];
+                return _Original [_Original.Count - 1];
         }
-        static List<Point> Concatenate(List<Point> _Original, List<Point> _Addition) {
+        static List<Point> Concatenate (List<Point> _Original, List<Point> _Addition) {
             // Offsets the X value of a Point[] so that it can be placed at the end
             // of an existing Point[] and continue from that point on.
 
             // Nothing to add? Return something.
             if (_Original.Count == 0 && _Addition.Count == 0)
-                return new List<Point>();
+                return new List<Point> ();
             else if (_Addition.Count == 0)
                 return _Original;
 
@@ -379,10 +377,10 @@ namespace II.Rhythm {
             if (_Original.Count == 0)
                 _Offset = 0;
             else if (_Original.Count > 0)
-                _Offset = _Original[_Original.Count - 1].X;
+                _Offset = _Original [_Original.Count - 1].X;
 
             foreach (Point eachVector in _Addition)
-                _Original.Add(new Point(eachVector.X + _Offset, eachVector.Y));
+                _Original.Add (new Point (eachVector.X + _Offset, eachVector.Y));
 
             return _Original;
         }
@@ -394,58 +392,58 @@ namespace II.Rhythm {
             return (((1 - _Percent) * (1 - _Percent)) * _Start) + (2 * _Percent * (1 - _Percent) * _Control) + ((_Percent * _Percent) * _End);
         }
 
-        static List<Point> Curve(double _Length, double _mV_Middle, double _mV_End, Point _Start) {
+        static List<Point> Curve (double _Length, double _mV_Middle, double _mV_End, Point _Start) {
             if (_Length < 0)
                 return new List<Point> ();
 
             int i;
             double x;
-            List<Point> _Out = new List<Point>();
+            List<Point> _Out = new List<Point> ();
 
             for (i = 1; i * ((2 * Draw_Resolve) / _Length) <= 1; i++) {
                 x = i * ((2 * Draw_Resolve) / _Length);
-                _Out.Add(Bezier(new Point(0, _Start.Y), new Point(_Length / 4, _mV_Middle), new Point(_Length / 2, _mV_Middle), x));
+                _Out.Add (Bezier (new Point (0, _Start.Y), new Point (_Length / 4, _mV_Middle), new Point (_Length / 2, _mV_Middle), x));
             }
 
             for (i = 1; i * ((2 * Draw_Resolve) / _Length) <= 1; i++) {
                 x = i * ((2 * Draw_Resolve) / _Length);
-                _Out.Add(Bezier(new Point(_Length / 2, _mV_Middle), new Point(_Length / 4 * 3, _mV_Middle), new Point(_Length, _mV_End), x));
+                _Out.Add (Bezier (new Point (_Length / 2, _mV_Middle), new Point (_Length / 4 * 3, _mV_Middle), new Point (_Length, _mV_End), x));
             }
 
-            _Out.Add(new Point(_Length, _mV_End));        // Finish the curve
+            _Out.Add (new Point (_Length, _mV_End));        // Finish the curve
 
             return _Out;
         }
 
-        static List<Point> Peak(double _Length, double _mV, double _mV_End, Point _Start) {
+        static List<Point> Peak (double _Length, double _mV, double _mV_End, Point _Start) {
             if (_Length < 0)
                 return new List<Point> ();
 
             int i;
             double x;
-            List<Point> _Out = new List<Point>();
+            List<Point> _Out = new List<Point> ();
 
             for (i = 1; i * ((2 * Draw_Resolve) / _Length) <= 1; i++) {
                 x = i * ((2 * Draw_Resolve) / _Length);
-                _Out.Add(Bezier(new Point(0, _Start.Y), new Point(_Length / 3, _mV / 1), new Point(_Length / 2, _mV), x));
+                _Out.Add (Bezier (new Point (0, _Start.Y), new Point (_Length / 3, _mV / 1), new Point (_Length / 2, _mV), x));
             }
 
             for (i = 1; i * ((2 * Draw_Resolve) / _Length) <= 1; i++) {
                 x = i * ((2 * Draw_Resolve) / _Length);
-                _Out.Add(Bezier(new Point(_Length / 2, _mV), new Point(_Length / 5 * 3, _mV / 1), new Point(_Length, _mV_End), x));
+                _Out.Add (Bezier (new Point (_Length / 2, _mV), new Point (_Length / 5 * 3, _mV / 1), new Point (_Length, _mV_End), x));
             }
 
-            _Out.Add(new Point(_Length, _mV_End));        // Finish the curve
+            _Out.Add (new Point (_Length, _mV_End));        // Finish the curve
 
             return _Out;
         }
 
-        static List<Point> Line(double _Length, double _mV, Point _Start) {
+        static List<Point> Line (double _Length, double _mV, Point _Start) {
             if (_Length < 0)
                 return new List<Point> ();
 
-            List<Point> _Out = new List<Point>();
-            _Out.Add(new Point(_Length, _mV));
+            List<Point> _Out = new List<Point> ();
+            _Out.Add (new Point (_Length, _mV));
             return _Out;
         }
 
@@ -459,7 +457,6 @@ namespace II.Rhythm {
             return _Out;
         }
 
-
         /*
 	     * Individual waveform functions for generating portions of an individual waveform- to be
          * concatenated into a single beat. Default ECG waveform is based on Lead 2 inflections/deflections;
@@ -471,51 +468,50 @@ namespace II.Rhythm {
          * _mV_End == end deflection height
 	     */
 
-        static List<Point> ECG_P(Patient p, Leads l, Point _S) { return ECG_P(p, l, .08f, .15f, 0f, _S); }
-        static List<Point> ECG_P(Patient p, Leads l, double _L, double _mV, double _mV_End, Point _S) {
-            return Peak(_L, _mV * leadCoeff[(int)l.Value, (int)WavePart.P], _mV_End, _S);
+        static List<Point> ECG_P (Patient p, Leads l, Point _S) { return ECG_P (p, l, .08f, .15f, 0f, _S); }
+        static List<Point> ECG_P (Patient p, Leads l, double _L, double _mV, double _mV_End, Point _S) {
+            return Peak (_L, _mV * leadCoeff [(int)l.Value, (int)WavePart.P], _mV_End, _S);
         }
 
-        static List<Point> ECG_Q(Patient p, Leads l, Point _S) { return ECG_Q(p, l, 1f, -.1f, _S); }
-        static List<Point> ECG_Q(Patient p, Leads l, double _L, double _mV, Point _S) {
-            return Line(_L, _mV * leadCoeff[(int)l.Value, (int)WavePart.Q], _S);
+        static List<Point> ECG_Q (Patient p, Leads l, Point _S) { return ECG_Q (p, l, 1f, -.1f, _S); }
+        static List<Point> ECG_Q (Patient p, Leads l, double _L, double _mV, Point _S) {
+            return Line (_L, _mV * leadCoeff [(int)l.Value, (int)WavePart.Q], _S);
         }
 
-        static List<Point> ECG_R(Patient p, Leads l, Point _S) { return ECG_R(p, l, 1f, .9f, _S); }
-        static List<Point> ECG_R(Patient p, Leads l, double _L, double _mV, Point _S) {
-            return Line(_L, _mV * leadCoeff[(int)l.Value, (int)WavePart.R], _S);
+        static List<Point> ECG_R (Patient p, Leads l, Point _S) { return ECG_R (p, l, 1f, .9f, _S); }
+        static List<Point> ECG_R (Patient p, Leads l, double _L, double _mV, Point _S) {
+            return Line (_L, _mV * leadCoeff [(int)l.Value, (int)WavePart.R], _S);
         }
 
-        static List<Point> ECG_S(Patient p, Leads l, Point _S) { return ECG_S(p, l, 1f, -.3f, _S); }
-        static List<Point> ECG_S(Patient p, Leads l, double _L, double _mV, Point _S) {
-            return Line(_L, _mV * leadCoeff[(int)l.Value, (int)WavePart.S], _S);
+        static List<Point> ECG_S (Patient p, Leads l, Point _S) { return ECG_S (p, l, 1f, -.3f, _S); }
+        static List<Point> ECG_S (Patient p, Leads l, double _L, double _mV, Point _S) {
+            return Line (_L, _mV * leadCoeff [(int)l.Value, (int)WavePart.S], _S);
         }
 
-        static List<Point> ECG_J(Patient p, Leads l, Point _S) { return ECG_J(p, l, 1f, -.1f, _S); }
-        static List<Point> ECG_J(Patient p, Leads l, double _L, double _mV, Point _S) {
-            return Line(_L, (_mV * leadCoeff[(int)l.Value, (int)WavePart.J]) + p.STElevation[(int)l.Value], _S);
+        static List<Point> ECG_J (Patient p, Leads l, Point _S) { return ECG_J (p, l, 1f, -.1f, _S); }
+        static List<Point> ECG_J (Patient p, Leads l, double _L, double _mV, Point _S) {
+            return Line (_L, (_mV * leadCoeff [(int)l.Value, (int)WavePart.J]) + p.STElevation [(int)l.Value], _S);
         }
 
-        static List<Point> ECG_T(Patient p, Leads l, Point _S) { return ECG_T(p, l, .16f, .3f, 0f, _S); }
-        static List<Point> ECG_T(Patient p, Leads l, double _L, double _mV, double _mV_End, Point _S) {
-            return Peak(_L, (_mV * leadCoeff[(int)l.Value, (int)WavePart.T]) + p.TElevation[(int)l.Value], _mV_End, _S);
+        static List<Point> ECG_T (Patient p, Leads l, Point _S) { return ECG_T (p, l, .16f, .3f, 0f, _S); }
+        static List<Point> ECG_T (Patient p, Leads l, double _L, double _mV, double _mV_End, Point _S) {
+            return Peak (_L, (_mV * leadCoeff [(int)l.Value, (int)WavePart.T]) + p.TElevation [(int)l.Value], _mV_End, _S);
         }
 
-        static List<Point> ECG_PR(Patient p, Leads l, Point _S) { return ECG_PR(p, l, .08f, 0f, _S); }
-        static List<Point> ECG_PR(Patient p, Leads l, double _L, double _mV, Point _S) {
-            return Line(_L, _mV + leadCoeff[(int)l.Value, (int)WavePart.PR], _S);
+        static List<Point> ECG_PR (Patient p, Leads l, Point _S) { return ECG_PR (p, l, .08f, 0f, _S); }
+        static List<Point> ECG_PR (Patient p, Leads l, double _L, double _mV, Point _S) {
+            return Line (_L, _mV + leadCoeff [(int)l.Value, (int)WavePart.PR], _S);
         }
 
-        static List<Point> ECG_ST(Patient p, Leads l, Point _S) { return ECG_ST(p, l, .1f, 0f, _S); }
-        static List<Point> ECG_ST(Patient p, Leads l, double _L, double _mV, Point _S) {
-            return Line(_L, _mV + leadCoeff[(int)l.Value, (int)WavePart.ST] + p.STElevation[(int)l.Value], _S);
+        static List<Point> ECG_ST (Patient p, Leads l, Point _S) { return ECG_ST (p, l, .1f, 0f, _S); }
+        static List<Point> ECG_ST (Patient p, Leads l, double _L, double _mV, Point _S) {
+            return Line (_L, _mV + leadCoeff [(int)l.Value, (int)WavePart.ST] + p.STElevation [(int)l.Value], _S);
         }
 
-        static List<Point> ECG_TP(Patient p, Leads l, Point _S) { return ECG_TP(p, l, .48f, .0f, _S); }
-        static List<Point> ECG_TP(Patient p, Leads l, double _L, double _mV, Point _S) {
-            return Line(_L, _mV + leadCoeff[(int)l.Value, (int)WavePart.TP], _S);
+        static List<Point> ECG_TP (Patient p, Leads l, Point _S) { return ECG_TP (p, l, .48f, .0f, _S); }
+        static List<Point> ECG_TP (Patient p, Leads l, double _L, double _mV, Point _S) {
+            return Line (_L, _mV + leadCoeff [(int)l.Value, (int)WavePart.TP], _S);
         }
-
 
         /*
          * Coefficients for waveform portions for each lead
@@ -525,7 +521,7 @@ namespace II.Rhythm {
             P, Q, R, S, J, T, PR, ST, TP
         }
 
-        static double[,] leadCoeff = new double[,] {
+        static double [,] leadCoeff = new double [,] {
             // P through T are multipliers; segments are additions
             { 0.7f,     0.7f,   0.7f,   0.7f,   0.7f,   0.8f,       0f,     0f,     0f },     // L1
             { 1f,       1f,     1f,     1f,     1f,     1f,         0f,     0f,     0f },     // L2

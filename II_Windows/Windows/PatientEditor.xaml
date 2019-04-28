@@ -90,27 +90,25 @@
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="FontSize" Value="16" />
         </Style>
-
     </Window.Resources>
-
 
     <DockPanel LastChildFill="True">
 
         <!-- Main Menu -->
         <Menu DockPanel.Dock="Top" Width="Auto" Background="White">
             <MenuItem Name="menuFile">
-                <MenuItem Name="menuLoad" Click="MenuLoadFile_Click" InputGestureText="Ctrl+L"/>
-                <MenuItem Name="menuSave" Click="MenuSaveFile_Click" InputGestureText="Ctrl+S"/>
+                <MenuItem Name="menuLoad" Click="MenuLoadFile_Click" InputGestureText="Ctrl+L" />
+                <MenuItem Name="menuSave" Click="MenuSaveFile_Click" InputGestureText="Ctrl+S" />
                 <Separator />
-                <MenuItem Name="menuExit" Click="MenuExit_Click" InputGestureText="Alt-F4"/>
+                <MenuItem Name="menuExit" Click="MenuExit_Click" InputGestureText="Alt-F4" />
             </MenuItem>
 
             <MenuItem Name="menuSettings">
-                <MenuItem Name="menuSetLanguage" Click="MenuSetLanguage_Click"/>
+                <MenuItem Name="menuSetLanguage" Click="MenuSetLanguage_Click" />
             </MenuItem>
 
             <MenuItem Name="menuHelp">
-                <MenuItem Name="menuAbout" Click="MenuAbout_Click"/>
+                <MenuItem Name="menuAbout" Click="MenuAbout_Click" />
             </MenuItem>
         </Menu>
 
@@ -118,7 +116,7 @@
                    BorderBrush="Black" BorderThickness="0,1,0,0">
 
             <StatusBarItem HorizontalAlignment="Left">
-                <Label Name="lblStatusText" Padding="10,0,10,2"/>
+                <Label Name="lblStatusText" Padding="10,0,10,2" />
             </StatusBarItem>
 
             <StatusBarItem Name="statusUpdateAvailable" HorizontalAlignment="Right">
@@ -134,7 +132,7 @@
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <GroupBox Name="grpDeviceButtons" DockPanel.Dock="Left" Style="{StaticResource grpParameters}">
                 <GroupBox.Header>
-                    <Label Name="lblGroupDevices" Style="{StaticResource expHeader}"/>
+                    <Label Name="lblGroupDevices" Style="{StaticResource expHeader}" />
                 </GroupBox.Header>
 
                 <StackPanel Margin="3" Height="Auto">
@@ -194,16 +192,15 @@
             </GroupBox>
         </ScrollViewer>
 
-
         <!-- Column for Patient Editor -->
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <StackPanel Margin="3" Height="Auto">
 
                 <!-- Group for Patient Mirroring -->
                 <Border Margin="5,18,5,5" Style="{StaticResource expBorder}">
-                    <Expander Name="expMirroring" IsExpanded="False" >
+                    <Expander Name="expMirroring" IsExpanded="False">
                         <Expander.Header>
-                            <Label Name="lblGroupMirroring" Style="{StaticResource expHeader}"/>
+                            <Label Name="lblGroupMirroring" Style="{StaticResource expHeader}" />
                         </Expander.Header>
 
                         <Grid>
@@ -240,41 +237,38 @@
                                 </Grid>
                             </GroupBox>
 
-
-                            <Label Name="lblAccessionKey" Grid.Column="0" Grid.Row="1"/>
-                            <Label Name="lblAccessPassword" Grid.Column="0" Grid.Row="2"/>
-                            <Label Name="lblAdminPassword" Grid.Column="0" Grid.Row="3"/>
+                            <Label Name="lblAccessionKey" Grid.Column="0" Grid.Row="1" />
+                            <Label Name="lblAccessPassword" Grid.Column="0" Grid.Row="2" />
+                            <Label Name="lblAdminPassword" Grid.Column="0" Grid.Row="3" />
                             <Grid Grid.Column="1" Grid.Row="1">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition/>
+                                    <RowDefinition />
                                 </Grid.RowDefinitions>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <TextBox Name="txtAccessionKey" IsEnabled="False" Grid.Column="0"
                                          VerticalContentAlignment="Center" MaxLines="1" MaxLength="8" CharacterCasing="Upper"
-                                         PreviewTextInput="TxtAccessionKey_PreviewTextInput"/>
+                                         PreviewTextInput="TxtAccessionKey_PreviewTextInput" />
                                 <Button Name="btnGenerateAccessionKey" IsEnabled="False" Grid.Column="1" Width="25"
-                                        Content="+" Click="BtnGenerateAccessionKey_Click"/>
+                                        Content="+" Click="BtnGenerateAccessionKey_Click" />
                             </Grid>
                             <PasswordBox Name="txtAccessPassword" IsEnabled="False" VerticalContentAlignment="Center"
-                                     Grid.Column="1" Grid.Row="2"/>
+                                     Grid.Column="1" Grid.Row="2" />
                             <PasswordBox Name="txtAdminPassword" IsEnabled="False" VerticalContentAlignment="Center"
-                                     Grid.Column="1" Grid.Row="3"/>
+                                     Grid.Column="1" Grid.Row="3" />
                             <Button Name="btnApplyMirroring" Margin="5" Click="ButtonApplyMirroring_Click" Height="22"
                                     Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" />
-
                         </Grid>
                     </Expander>
                 </Border>
 
-
                 <!-- Group for Basic Vital Signs -->
                 <Border Style="{StaticResource expBorder}">
-                    <Expander Name="expVitalSigns" IsExpanded="True" >
+                    <Expander Name="expVitalSigns" IsExpanded="True">
                         <Expander.Header>
-                            <Label Name="lblGroupVitalSigns" Style="{StaticResource expHeader}"/>
+                            <Label Name="lblGroupVitalSigns" Style="{StaticResource expHeader}" />
                         </Expander.Header>
 
                         <Grid Margin="3">
@@ -320,19 +314,18 @@
                             <ComboBox Name="comboCardiacRhythm" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="4" SelectionChanged="OnRhythmSelected" />
 
                             <Label Name="lblRespiratoryRhythm" Grid.Column="0" Grid.Row="7" />
-                            <ComboBox Name="comboRespiratoryRhythm" Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="4" SelectionChanged="OnRhythmSelected"/>
+                            <ComboBox Name="comboRespiratoryRhythm" Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="4" SelectionChanged="OnRhythmSelected" />
 
                             <CheckBox Name="checkDefaultVitals" Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="4" Margin="0, 5, 0, 0" IsChecked="True" />
                         </Grid>
                     </Expander>
                 </Border>
 
-
                 <!-- Group for Advanced Hemodynamics -->
                 <Border Style="{StaticResource expBorder}">
                     <Expander Name="expHemodynamics" IsExpanded="False" Style="{StaticResource expParameters}">
                         <Expander.Header>
-                            <Label Name="lblGroupHemodynamics" Style="{StaticResource expHeader}"/>
+                            <Label Name="lblGroupHemodynamics" Style="{StaticResource expHeader}" />
                         </Expander.Header>
 
                         <Grid Margin="3">
@@ -383,7 +376,7 @@
                 <Border Style="{StaticResource expBorder}">
                     <Expander Name="expCardiacProfile" IsExpanded="False" Style="{StaticResource expParameters}">
                         <Expander.Header>
-                            <Label Name="lblGroupCardiacProfile" Style="{StaticResource expHeader}"/>
+                            <Label Name="lblGroupCardiacProfile" Style="{StaticResource expHeader}" />
                         </Expander.Header>
 
                         <Grid Margin="3">
@@ -397,7 +390,7 @@
                                 <ColumnDefinition />
                             </Grid.ColumnDefinitions>
 
-                            <Label Name="lblPacemakerCaptureThreshold" Grid.Column="0" Grid.Row="0"/>
+                            <Label Name="lblPacemakerCaptureThreshold" Grid.Column="0" Grid.Row="0" />
                             <xctk:IntegerUpDown Name="numPacemakerCaptureThreshold" Increment="5" Minimum="0" Maximum="200"
                                                 Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
 
@@ -421,43 +414,43 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
-                                    <Label Grid.Column="0" Grid.Row="0" Content="I"/>
+                                    <Label Grid.Column="0" Grid.Row="0" Content="I" />
                                     <xctk:DecimalUpDown Name="numSTE_I" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="1" Grid.Row="0" Style="{StaticResource decUpDown}" />
-                                    <Label Grid.Column="0" Grid.Row="1" Content="II"/>
+                                    <Label Grid.Column="0" Grid.Row="1" Content="II" />
                                     <xctk:DecimalUpDown Name="numSTE_II" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="1" Grid.Row="1" Style="{StaticResource decUpDown}" />
-                                    <Label Grid.Column="0" Grid.Row="2" Content="III"/>
+                                    <Label Grid.Column="0" Grid.Row="2" Content="III" />
                                     <xctk:DecimalUpDown Name="numSTE_III" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="1" Grid.Row="2" Style="{StaticResource decUpDown}" />
 
-                                    <Label Grid.Column="2" Grid.Row="0" Content="aVR"/>
+                                    <Label Grid.Column="2" Grid.Row="0" Content="aVR" />
                                     <xctk:DecimalUpDown Name="numSTE_aVR" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="3" Grid.Row="0" Style="{StaticResource decUpDown}" />
-                                    <Label Grid.Column="2" Grid.Row="1" Content="aVL"/>
+                                    <Label Grid.Column="2" Grid.Row="1" Content="aVL" />
                                     <xctk:DecimalUpDown Name="numSTE_aVL" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="3" Grid.Row="1" Style="{StaticResource decUpDown}" />
-                                    <Label Grid.Column="2" Grid.Row="2" Content="aVF"/>
+                                    <Label Grid.Column="2" Grid.Row="2" Content="aVF" />
                                     <xctk:DecimalUpDown Name="numSTE_aVF" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="3" Grid.Row="2" Style="{StaticResource decUpDown}" />
 
-                                    <Label Grid.Column="4" Grid.Row="0" Content="V1"/>
+                                    <Label Grid.Column="4" Grid.Row="0" Content="V1" />
                                     <xctk:DecimalUpDown Name="numSTE_V1" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="5" Grid.Row="0" Style="{StaticResource decUpDown}" />
-                                    <Label Grid.Column="4" Grid.Row="1" Content="V2"/>
+                                    <Label Grid.Column="4" Grid.Row="1" Content="V2" />
                                     <xctk:DecimalUpDown Name="numSTE_V2" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="5" Grid.Row="1" Style="{StaticResource decUpDown}" />
-                                    <Label Grid.Column="4" Grid.Row="2" Content="V3"/>
+                                    <Label Grid.Column="4" Grid.Row="2" Content="V3" />
                                     <xctk:DecimalUpDown Name="numSTE_V3" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="5" Grid.Row="2" Style="{StaticResource decUpDown}" />
 
-                                    <Label Grid.Column="6" Grid.Row="0" Content="V4"/>
+                                    <Label Grid.Column="6" Grid.Row="0" Content="V4" />
                                     <xctk:DecimalUpDown Name="numSTE_V4" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="7" Grid.Row="0" Style="{StaticResource decUpDown}" />
-                                    <Label Grid.Column="6" Grid.Row="1" Content="V5"/>
+                                    <Label Grid.Column="6" Grid.Row="1" Content="V5" />
                                     <xctk:DecimalUpDown Name="numSTE_V5" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="7" Grid.Row="1" Style="{StaticResource decUpDown}" />
-                                    <Label Grid.Column="6" Grid.Row="2" Content="V6"/>
+                                    <Label Grid.Column="6" Grid.Row="2" Content="V6" />
                                     <xctk:DecimalUpDown Name="numSTE_V6" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="7" Grid.Row="2" Style="{StaticResource decUpDown}" />
                                 </Grid>
@@ -483,43 +476,43 @@
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
 
-                                    <Label Grid.Column="0" Grid.Row="0" Content="I"/>
+                                    <Label Grid.Column="0" Grid.Row="0" Content="I" />
                                     <xctk:DecimalUpDown Name="numTWE_I" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="1" Grid.Row="0" Style="{StaticResource decUpDown}" />
-                                    <Label Grid.Column="0" Grid.Row="1" Content="II"/>
+                                    <Label Grid.Column="0" Grid.Row="1" Content="II" />
                                     <xctk:DecimalUpDown Name="numTWE_II" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="1" Grid.Row="1" Style="{StaticResource decUpDown}" />
-                                    <Label Grid.Column="0" Grid.Row="2" Content="III"/>
+                                    <Label Grid.Column="0" Grid.Row="2" Content="III" />
                                     <xctk:DecimalUpDown Name="numTWE_III" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="1" Grid.Row="2" Style="{StaticResource decUpDown}" />
 
-                                    <Label Grid.Column="2" Grid.Row="0" Content="aVR"/>
+                                    <Label Grid.Column="2" Grid.Row="0" Content="aVR" />
                                     <xctk:DecimalUpDown Name="numTWE_aVR" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="3" Grid.Row="0" Style="{StaticResource decUpDown}" />
-                                    <Label Grid.Column="2" Grid.Row="1" Content="aVL"/>
+                                    <Label Grid.Column="2" Grid.Row="1" Content="aVL" />
                                     <xctk:DecimalUpDown Name="numTWE_aVL" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="3" Grid.Row="1" Style="{StaticResource decUpDown}" />
-                                    <Label Grid.Column="2" Grid.Row="2" Content="aVF"/>
+                                    <Label Grid.Column="2" Grid.Row="2" Content="aVF" />
                                     <xctk:DecimalUpDown Name="numTWE_aVF" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="3" Grid.Row="2" Style="{StaticResource decUpDown}" />
 
-                                    <Label Grid.Column="4" Grid.Row="0" Content="V1"/>
+                                    <Label Grid.Column="4" Grid.Row="0" Content="V1" />
                                     <xctk:DecimalUpDown Name="numTWE_V1" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="5" Grid.Row="0" Style="{StaticResource decUpDown}" />
-                                    <Label Grid.Column="4" Grid.Row="1" Content="V2"/>
+                                    <Label Grid.Column="4" Grid.Row="1" Content="V2" />
                                     <xctk:DecimalUpDown Name="numTWE_V2" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="5" Grid.Row="1" Style="{StaticResource decUpDown}" />
-                                    <Label Grid.Column="4" Grid.Row="2" Content="V3"/>
+                                    <Label Grid.Column="4" Grid.Row="2" Content="V3" />
                                     <xctk:DecimalUpDown Name="numTWE_V3" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="5" Grid.Row="2" Style="{StaticResource decUpDown}" />
 
-                                    <Label Grid.Column="6" Grid.Row="0" Content="V4"/>
+                                    <Label Grid.Column="6" Grid.Row="0" Content="V4" />
                                     <xctk:DecimalUpDown Name="numTWE_V4" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="7" Grid.Row="0" Style="{StaticResource decUpDown}" />
-                                    <Label Grid.Column="6" Grid.Row="1" Content="V5"/>
+                                    <Label Grid.Column="6" Grid.Row="1" Content="V5" />
                                     <xctk:DecimalUpDown Name="numTWE_V5" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="7" Grid.Row="1" Style="{StaticResource decUpDown}" />
-                                    <Label Grid.Column="6" Grid.Row="2" Content="V6"/>
+                                    <Label Grid.Column="6" Grid.Row="2" Content="V6" />
                                     <xctk:DecimalUpDown Name="numTWE_V6" Increment="0.1" Minimum="-1.0" Maximum="1.0"
                                                         Grid.Column="7" Grid.Row="2" Style="{StaticResource decUpDown}" />
                                 </Grid>
@@ -534,7 +527,7 @@
                               Visibility="Hidden" Height="0"
                               Style="{StaticResource expParameters}">
                         <Expander.Header>
-                            <Label Name="lblGroupRespiratoryProfile" Style="{StaticResource expHeader}"/>
+                            <Label Name="lblGroupRespiratoryProfile" Style="{StaticResource expHeader}" />
                         </Expander.Header>
 
                         <Grid Margin="3">
@@ -564,7 +557,7 @@
                               Visibility="Hidden" Height="0"
                               Style="{StaticResource expParameters}">
                         <Expander.Header>
-                            <Label Name="lblGroupObstetricProfile" Style="{StaticResource expHeader}"/>
+                            <Label Name="lblGroupObstetricProfile" Style="{StaticResource expHeader}" />
                         </Expander.Header>
                         <Grid Margin="3">
                             <Grid.RowDefinitions>
@@ -588,7 +581,7 @@
                                                 Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
                             <Label Name="lblFHRRhythms" Grid.Column="0" Grid.Row="1" />
                             <ListBox Name="listFHRRhythms" SelectionMode="Multiple"
-                                     Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"/>
+                                     Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" />
                             <Label Name="lblFHRVariability" Grid.Column="0" Grid.Row="3" />
                             <ComboBox Name="comboFHRVariability"
                                       Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" />
@@ -621,9 +614,7 @@
                         </StackPanel>
                     </Button>
                 </StackPanel>
-
             </StackPanel>
         </ScrollViewer>
-
     </DockPanel>
 </Window>

@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Text;
 
 namespace II.Localization {
-
     public partial class Languages {
         public Values Value;
         public Languages (Values v) { Value = v; }
@@ -46,7 +44,7 @@ namespace II.Localization {
                 else
                     return Values.ENU;
             } catch (Exception e) {
-                new Server.Servers().Post_Exception(e);
+                new Server.Servers ().Post_Exception (e);
                 return Values.ENU;
             }
         }
@@ -69,7 +67,8 @@ namespace II.Localization {
             "Swahili (Kiswahili)"
         };
 
-        public Dictionary<string, string> Dictionary { get {
+        public Dictionary<string, string> Dictionary {
+            get {
                 switch (Value) {
                     default: return new Dictionary<string, string> ();
                     case Values.AMH: return AMH;

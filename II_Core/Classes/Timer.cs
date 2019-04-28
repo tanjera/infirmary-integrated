@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace II
-{
-    public class Timer
-    {
+namespace II {
+    public class Timer {
         public int Interval = 0;
 
         DateTime Last;
@@ -49,11 +45,10 @@ namespace II
 
             if ((DateTime.Now - Last).TotalSeconds * 1000 > Interval) {
                 Last = DateTime.Now;
-                Tick?.Invoke (this, new EventArgs());
+                Tick?.Invoke (this, new EventArgs ());
             }
         }
 
-        public void Process (object sender, EventArgs e) => Process();
-
+        public void Process (object sender, EventArgs e) => Process ();
     }
 }

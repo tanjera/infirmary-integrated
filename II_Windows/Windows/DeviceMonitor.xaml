@@ -19,20 +19,19 @@
         <KeyBinding Key="F4" Modifiers="Alt" Command="{Binding IC_ExitProgram}" />
     </Window.InputBindings>
 
-
     <DockPanel LastChildFill="True">
 
         <!-- Main Menu -->
         <Menu DockPanel.Dock="Top" Width="Auto" Background="White">
             <MenuItem Name="menuDevice">
-                <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" InputGestureText="Ctrl+U"/>
+                <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" InputGestureText="Ctrl+U" />
                 <Separator />
-                <MenuItem Name="menuAddNumeric" Click="MenuAddNumeric_Click"/>
+                <MenuItem Name="menuAddNumeric" Click="MenuAddNumeric_Click" />
                 <MenuItem Name="menuAddTracing" Click="MenuAddTracing_Click" />
                 <MenuItem Name="menuToggleFullscreen" Click="MenuFullscreen_Click" InputGestureText="Ctrl+F" />
                 <Separator />
-                <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGestureText="Ctrl-F4"/>
-                <MenuItem Name="menuExitProgram" Click="MenuExit_Click" InputGestureText="Alt-F4"/>
+                <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGestureText="Ctrl-F4" />
+                <MenuItem Name="menuExitProgram" Click="MenuExit_Click" InputGestureText="Alt-F4" />
             </MenuItem>
         </Menu>
 
@@ -51,7 +50,5 @@
             <Grid Name="gridTracings"
                         Grid.Column="1" />
         </Grid>
-
     </DockPanel>
-
 </Window>

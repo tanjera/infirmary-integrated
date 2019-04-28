@@ -11,7 +11,6 @@
         WindowStartupLocation="CenterScreen"
         Height="200" Width="550" SizeToContent="Height">
 
-
     <Grid HorizontalAlignment="Center" Margin="10, 5, 50, 10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -26,9 +25,7 @@
                Grid.Column="0" Grid.Row="0"
                VerticalAlignment="Center" HorizontalAlignment="Center"
                Margin="10"
-               Height="100" Width="100"/>
-
-
+               Height="100" Width="100" />
 
         <StackPanel
             Grid.Column="1" Grid.Row="0">
@@ -44,7 +41,7 @@
 
             <Label Padding="5,0,5,2" Margin="5,0"
                    HorizontalAlignment="Left"
-                   Content="Ibi Keller, (c) 2017"/>
+                   Content="Ibi Keller, (c) 2017" />
 
             <TextBlock Name="tblDescription"
                    Padding="5,2" Margin="5"
@@ -52,7 +49,7 @@
                    TextWrapping="Wrap" />
 
             <Label Padding="5,2,5,0" Margin="5,5,5,0"
-                   HorizontalAlignment="Left" >
+                   HorizontalAlignment="Left">
                 <Hyperlink NavigateUri="http://www.tanjera.com/"
                            RequestNavigate="Hyperlink_RequestNavigate">
                     http://www.infirmary-integrated.com/
@@ -60,20 +57,12 @@
             </Label>
 
             <Label Padding="5,0,5,2" Margin="5,0,5,5"
-                   HorizontalAlignment="Left" >
+                   HorizontalAlignment="Left">
                 <Hyperlink NavigateUri="https://github.com/tanjera/infirmary-integrated"
                            RequestNavigate="Hyperlink_RequestNavigate">
                     https://github.com/tanjera/infirmary-integrated
                 </Hyperlink>
             </Label>
-
         </StackPanel>
-
-
-
-
-
     </Grid>
-
-
 </Window>

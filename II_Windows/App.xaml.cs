@@ -1,29 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using II;
+using II.Localization;
+using II.Server;
+using System;
 using System.ComponentModel;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 
-using II;
-using II.Localization;
-using II.Server;
-
-
 namespace II_Windows {
+
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application {
-
         public static string [] Start_Args;
 
         public static Servers Server = new Servers ();
         public static Mirrors Mirror = new Mirrors ();
-        public static Languages Language = new Languages();
+        public static Languages Language = new Languages ();
 
         public static Patient Patient;
 
@@ -38,7 +31,7 @@ namespace II_Windows {
         public static DialogInitial Dialog_Language;
 
         // Windows' thread-safe timer; if ported, will need OS equivalent
-        public static DispatcherTimer Timer_Main = new DispatcherTimer();
+        public static DispatcherTimer Timer_Main = new DispatcherTimer ();
 
         private void App_Startup (object sender, StartupEventArgs e) {
             Start_Args = e.Args;

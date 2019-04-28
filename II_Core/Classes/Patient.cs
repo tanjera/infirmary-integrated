@@ -2,19 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
-
 
 namespace II {
     public class Patient {
-
         // Mirroring variables
         public DateTime Updated;                    // DateTime this Patient was last updated
 
         /* Parameters for patient simulation, e.g. vital signs */
         // Vital Signs
-        public int  HR, RR, ETCO2, SPO2,            // Heart rate, respiratory rate, end-tidal capnography, pulse oximetry
+        public int HR, RR, ETCO2, SPO2,            // Heart rate, respiratory rate, end-tidal capnography, pulse oximetry
                     CVP,                            // Central venous pressure,
                     NSBP, NDBP, NMAP,               // Non-invasive blood pressures
                     ASBP, ADBP, AMAP,               // Arterial line blood pressures
@@ -31,12 +28,12 @@ namespace II {
                     Pacemaker_Threshold;            // Patient's threshold for electrical capture to pacemaker spike
 
         // Cardiac Profile
-        public double[] STElevation, TElevation;
-        public CardiacRhythms CardiacRhythm = new CardiacRhythms();
+        public double [] STElevation, TElevation;
+        public CardiacRhythms CardiacRhythm = new CardiacRhythms ();
         public CardiacAxes CardiacAxis = new CardiacAxes ();
 
         // Respiratory Profile
-        public RespiratoryRhythms Respiratory_Rhythm = new RespiratoryRhythms();
+        public RespiratoryRhythms Respiratory_Rhythm = new RespiratoryRhythms ();
         public bool Respiratory_Inflated;
         public int Respiratory_IERatio_I, Respiratory_IERatio_E;
 
@@ -48,11 +45,10 @@ namespace II {
                     TransducerZeroed_IAP = false;
 
         // Obstetric Profile
-        public Intensity UCIntensity = new Intensity(),
-                         FHRVariability = new Intensity();
+        public Intensity UCIntensity = new Intensity (),
+                         FHRVariability = new Intensity ();
         public int UCFrequency, UCDuration, FHR;
         public FetalHeartDecelerations FHRDecelerations = new FetalHeartDecelerations ();
-
 
         /* Scales, ratings, etc. for patient parameters */
         public class Intensity {
@@ -68,25 +64,24 @@ namespace II {
             }
         }
 
-
         /* Properties, Counters, Handlers, Timers, etc ... Programmatic Stuff */
         public double HR_Seconds { get { return 60d / Math.Max (1, HR); } }
         public double RR_Seconds { get { return 60d / Math.Max (1, RR); } }
         public double RR_Seconds_I { get { return (RR_Seconds / (Respiratory_IERatio_I + Respiratory_IERatio_E)) * Respiratory_IERatio_I; } }
         public double RR_Seconds_E { get { return (RR_Seconds / (Respiratory_IERatio_I + Respiratory_IERatio_E)) * Respiratory_IERatio_E; } }
 
-        private Timer   timerCardiac_Baseline = new Timer (),
+        private Timer timerCardiac_Baseline = new Timer (),
                         timerCardiac_Atrial = new Timer (),
                         timerCardiac_Ventricular = new Timer (),
                         timerDefibrillation = new Timer (),
                         timerPacemaker = new Timer (),
                         timerRespiratory_Baseline = new Timer (),
-                        timerRespiratory_Inspiration = new Timer(),
-                        timerRespiratory_Expiration = new Timer(),
-                        timerObstetric_Baseline = new Timer(),
-                        timerObstetric_ContractionFrequency = new Timer(),
-                        timerObstetric_ContractionDuration = new Timer(),
-                        timerObstetric_FHRVariationFrequency = new Timer();
+                        timerRespiratory_Inspiration = new Timer (),
+                        timerRespiratory_Expiration = new Timer (),
+                        timerObstetric_Baseline = new Timer (),
+                        timerObstetric_ContractionFrequency = new Timer (),
+                        timerObstetric_ContractionDuration = new Timer (),
+                        timerObstetric_FHRVariationFrequency = new Timer ();
 
         private int counterCardiac;
 
@@ -94,7 +89,7 @@ namespace II {
             return dbp + ((sbp - dbp) / 3);
         }
 
-        public static int CalculateCPP(int icp, int map) {
+        public static int CalculateCPP (int icp, int map) {
             return map - icp;
         }
 
@@ -127,7 +122,6 @@ namespace II {
             }
         }
 
-
         public Patient () {
             UpdateParameters (80, 98, 18, 40,
                             38.0f, 6,
@@ -135,12 +129,12 @@ namespace II {
                             120, 80, 95,
                             22, 12, 16,
                             8, 1, 50,
-                            new double[] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
-                            new double[] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
+                            new double [] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
+                            new double [] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
                             CardiacRhythms.Values.Sinus_Rhythm,
                             RespiratoryRhythms.Values.Regular,
                             1, 1,
-                            150, Intensity.Values.Absent, new List<FetalHeartDecelerations.Values>(),
+                            150, Intensity.Values.Absent, new List<FetalHeartDecelerations.Values> (),
                             60, 30, Intensity.Values.Moderate);
 
             InitTimers ();
@@ -172,15 +166,15 @@ namespace II {
 
             try {
                 string line;
-                while ((line = sRead.ReadLine()) != null) {
-                    if (line.Contains(":")) {
+                while ((line = sRead.ReadLine ()) != null) {
+                    if (line.Contains (":")) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1);
                         switch (pName) {
                             default: break;
                             case "Updated": Updated = Utility.DateTime_FromString (pValue); break;
                             case "HR": HR = int.Parse (pValue); break;
-                            case "SPO2": SPO2 = int.Parse(pValue); break;
+                            case "SPO2": SPO2 = int.Parse (pValue); break;
                             case "RR": RR = int.Parse (pValue); break;
                             case "ETCO2": ETCO2 = int.Parse (pValue); break;
                             case "CVP": CVP = int.Parse (pValue); break;
@@ -193,20 +187,22 @@ namespace II {
                             case "PSP": PSP = int.Parse (pValue); break;
                             case "PDP": PDP = int.Parse (pValue); break;
                             case "PMP": PMP = int.Parse (pValue); break;
-                            case "ICP": ICP = int.Parse(pValue); break;
-                            case "IAP": IAP = int.Parse(pValue); break;
+                            case "ICP": ICP = int.Parse (pValue); break;
+                            case "IAP": IAP = int.Parse (pValue); break;
                             case "T": T = double.Parse (pValue); break;
                             case "ST_Elevation":
-                                string[] e_st = pValue.Split (',').Where((o) => o != "").ToArray();
+                                string [] e_st = pValue.Split (',').Where ((o) => o != "").ToArray ();
                                 for (int i = 0; i < e_st.Length && i < STElevation.Length; i++)
                                     STElevation [i] = double.Parse (e_st [i]);
                                 break;
+
                             case "T_Elevation":
-                                string [] e_t = pValue.Split (',').Where((o) => o != "").ToArray();
+                                string [] e_t = pValue.Split (',').Where ((o) => o != "").ToArray ();
                                 for (int i = 0; i < e_t.Length && i < TElevation.Length; i++)
                                     TElevation [i] = double.Parse (e_t [i]);
                                 break;
-                            case "Cardiac_Rhythm": CardiacRhythm.Value = (CardiacRhythms.Values) Enum.Parse(typeof(CardiacRhythms.Values), pValue); break;
+
+                            case "Cardiac_Rhythm": CardiacRhythm.Value = (CardiacRhythms.Values)Enum.Parse (typeof (CardiacRhythms.Values), pValue); break;
                             case "Cardiac_Axis_Shift": CardiacAxis.Value = (CardiacAxes.Values)Enum.Parse (typeof (CardiacAxes.Values), pValue); break;
 
                             case "Pacemaker_Rate": Pacemaker_Rate = int.Parse (pValue); break;
@@ -227,9 +223,10 @@ namespace II {
                             case "FHR": FHR = int.Parse (pValue); break;
                             case "FHR_Variability": FHRVariability.Value = (Intensity.Values)Enum.Parse (typeof (Intensity.Values), pValue); break;
                             case "FHR_Rhythms":
-                                foreach (string fhr_rhythm in pValue.Split (',').Where((o) => o != ""))
+                                foreach (string fhr_rhythm in pValue.Split (',').Where ((o) => o != ""))
                                     FHRDecelerations.ValueList.Add ((FetalHeartDecelerations.Values)Enum.Parse (typeof (FetalHeartDecelerations.Values), fhr_rhythm));
                                 break;
+
                             case "UterineContraction_Frequency": UCFrequency = int.Parse (pValue); break;
                             case "UterineContraction_Duration": UCDuration = int.Parse (pValue); break;
                             case "UterineContraction_Intensity": UCIntensity.Value = (Intensity.Values)Enum.Parse (typeof (Intensity.Values), pValue); break;
@@ -237,7 +234,7 @@ namespace II {
                     }
                 }
             } catch (Exception e) {
-                new Server.Servers().Post_Exception(e);
+                new Server.Servers ().Post_Exception (e);
                 // If the load fails... just bail on the actual value parsing and continue the load process
             }
 
@@ -253,7 +250,7 @@ namespace II {
         public string Save () {
             StringBuilder sWrite = new StringBuilder ();
 
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Updated", Utility.DateTime_ToString(Updated)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Updated", Utility.DateTime_ToString (Updated)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "HR", HR));
             sWrite.AppendLine (String.Format ("{0}:{1}", "RR", RR));
             sWrite.AppendLine (String.Format ("{0}:{1}", "ETCO2", ETCO2));
@@ -271,8 +268,8 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "PMP", PMP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "ICP", ICP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "IAP", IAP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "ST_Elevation", string.Join(",", STElevation)));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "T_Elevation", string.Join(",", TElevation)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "ST_Elevation", string.Join (",", STElevation)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "T_Elevation", string.Join (",", TElevation)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Rhythm", CardiacRhythm.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Axis_Shift", CardiacAxis.Value));
 
@@ -301,31 +298,30 @@ namespace II {
             return sWrite.ToString ();
         }
 
-        public void UpdateParameters(
-                    int hr,     int spo2,   int rr,     int etco2,
+        public void UpdateParameters (
+                    int hr, int spo2, int rr, int etco2,
                     double t,
                     int cvp,
-                    int nsbp,   int ndbp,   int nmap,
-                    int asbp,   int adbp,   int amap,
-                    int psp,    int pdp,    int pmp,
+                    int nsbp, int ndbp, int nmap,
+                    int asbp, int adbp, int amap,
+                    int psp, int pdp, int pmp,
                     int icp, int iap,
                     int pacerthreshold,
-                    double[] st_elev,        double[] t_elev,
-                    CardiacRhythms.Values      card_rhythm,
-                    RespiratoryRhythms.Values  resp_rhythm,
+                    double [] st_elev, double [] t_elev,
+                    CardiacRhythms.Values card_rhythm,
+                    RespiratoryRhythms.Values resp_rhythm,
                     int resp_ier_i, int resp_ier_e,
                     int fhr, Intensity.Values fhr_var, List<FetalHeartDecelerations.Values> fhr_rhythms,
-                    int uc_freq, int uc_duration, Intensity.Values uc_intensity ) {
-
+                    int uc_freq, int uc_duration, Intensity.Values uc_intensity) {
             Updated = DateTime.UtcNow;
 
-            HR = hr;    RR = rr;    SPO2 = spo2;    ETCO2 = etco2;
+            HR = hr; RR = rr; SPO2 = spo2; ETCO2 = etco2;
             T = t;
-            CVP = cvp;  ICP = icp;  IAP = iap;
+            CVP = cvp; ICP = icp; IAP = iap;
 
-            NSBP = nsbp;    NDBP = ndbp;    NMAP = nmap;
-            ASBP = asbp;    ADBP = adbp;    AMAP = amap;
-            PSP = psp;      PDP = pdp;      PMP = pmp;
+            NSBP = nsbp; NDBP = ndbp; NMAP = nmap;
+            ASBP = asbp; ADBP = adbp; AMAP = amap;
+            PSP = psp; PDP = pdp; PMP = pmp;
 
             CardiacRhythm.Value = card_rhythm;
             Pacemaker_Threshold = pacerthreshold;
@@ -356,7 +352,6 @@ namespace II {
                     int etco2Min, int etco2Max,
                     int sbpMin, int sbpMax, int dbpMin, int dbpMax,
                     int pspMin, int pspMax, int pdpMin, int pdpMax) {
-
             HR = Utility.Clamp (HR, hrMin, hrMax);
             SPO2 = Utility.Clamp (SPO2, spo2Min, spo2Max);
             ETCO2 = Utility.Clamp (ETCO2, etco2Min, etco2Max);
@@ -448,7 +443,7 @@ namespace II {
             UpdatePacemaker ();         // In case pacemaker was paused... updates .Interval
         }
 
-        private void InitTimers() {
+        private void InitTimers () {
             timerCardiac_Baseline.Tick += delegate { OnCardiac_Baseline (); };
             timerCardiac_Atrial.Tick += delegate { OnCardiac_Atrial (); };
             timerCardiac_Ventricular.Tick += delegate { OnCardiac_Ventricular (); };
@@ -465,8 +460,8 @@ namespace II {
             timerObstetric_FHRVariationFrequency.Tick += delegate { OnObstetric_FetalHeartVariationStart (); };
         }
 
-        private void SetTimers() {
-            timerCardiac_Baseline.Reset((int) (HR_Seconds * 1000f));
+        private void SetTimers () {
+            timerCardiac_Baseline.Reset ((int)(HR_Seconds * 1000f));
             timerCardiac_Atrial.Stop ();
             timerCardiac_Ventricular.Stop ();
             timerDefibrillation.Stop ();
@@ -476,13 +471,13 @@ namespace II {
             timerRespiratory_Inspiration.Stop ();
             timerRespiratory_Expiration.Stop ();
 
-            timerObstetric_Baseline.Reset(1000);
+            timerObstetric_Baseline.Reset (1000);
             timerObstetric_ContractionDuration.Stop ();
             timerObstetric_ContractionFrequency.Stop ();
             timerObstetric_FHRVariationFrequency.Stop ();
         }
 
-        private void OnCardiac_Baseline() {
+        private void OnCardiac_Baseline () {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Baseline));
             timerCardiac_Baseline.Set ((int)(HR_Seconds * 1000f));
 
@@ -572,8 +567,8 @@ namespace II {
                     counterCardiac -= 1;
                     if (counterCardiac == 0) {  // Shorten the beat preceding the PVC, making it premature
                         timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval * 0.8));
-                    } else  if (counterCardiac < 0) {   // Then throw the PVC and reset the counters
-                        counterCardiac = new Random().Next(4, 9);
+                    } else if (counterCardiac < 0) {   // Then throw the PVC and reset the counters
+                        counterCardiac = new Random ().Next (4, 9);
                         CardiacRhythm.AberrantBeat = true;
                         timerCardiac_Ventricular.Reset (1);
                         break;
@@ -659,8 +654,7 @@ namespace II {
             timerCardiac_Ventricular.Stop ();
         }
 
-
-        private void OnRespiratory_Baseline() {
+        private void OnRespiratory_Baseline () {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Respiratory_Baseline));
             timerRespiratory_Baseline.Set ((int)(RR_Seconds * 1000f));
 
@@ -675,7 +669,7 @@ namespace II {
             }
         }
 
-        private void OnRespiratory_Inspiration() {
+        private void OnRespiratory_Inspiration () {
             Respiratory_Inflated = true;
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Respiratory_Inspiration));
             timerRespiratory_Inspiration.Stop ();
@@ -691,7 +685,7 @@ namespace II {
             }
         }
 
-        private void OnRespiratory_Expiration() {
+        private void OnRespiratory_Expiration () {
             Respiratory_Inflated = false;
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Respiratory_Expiration));
             timerRespiratory_Expiration.Stop ();
@@ -701,7 +695,7 @@ namespace II {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Obstetric_Baseline));
 
             if (UCFrequency > 0 && !timerObstetric_ContractionDuration.IsRunning) {
-                timerObstetric_ContractionFrequency.Continue(UCFrequency * 1000);
+                timerObstetric_ContractionFrequency.Continue (UCFrequency * 1000);
             } else if (UCFrequency <= 0) {
                 timerObstetric_ContractionDuration.Stop ();
                 timerObstetric_ContractionFrequency.Stop ();
@@ -710,12 +704,12 @@ namespace II {
             if (FHRVariability.Value == Intensity.Values.Absent)
                 timerObstetric_FHRVariationFrequency.Stop ();
             else
-                timerObstetric_FHRVariationFrequency.Continue(20000);
+                timerObstetric_FHRVariationFrequency.Continue (20000);
         }
 
         private void OnObstetric_ContractionStart () {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Obstetric_ContractionStart));
-            timerObstetric_ContractionDuration.Reset(UCDuration * 1000);
+            timerObstetric_ContractionDuration.Reset (UCDuration * 1000);
         }
 
         private void OnObstetric_ContractionEnd () {

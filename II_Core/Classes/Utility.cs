@@ -1,22 +1,19 @@
 ﻿using System;
-using System.Linq;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-
 namespace II {
-
     public static class Utility {
-
         public const string Version = "0.97";
 
-        public static bool IsNewerVersion(string current, string comparison) {
-            string[] curSplit = current.Split('.'),
-                    compSplit = comparison.Split('.');
+        public static bool IsNewerVersion (string current, string comparison) {
+            string [] curSplit = current.Split ('.'),
+                    compSplit = comparison.Split ('.');
 
             for (int i = 0; i < compSplit.Length; i++)
-                if ((i < curSplit.Length ? int.Parse(curSplit[i]) : 0) < int.Parse(compSplit[i]))
+                if ((i < curSplit.Length ? int.Parse (curSplit [i]) : 0) < int.Parse (compSplit [i]))
                     return true;
             return false;
         }
@@ -29,9 +26,9 @@ namespace II {
             => dt.ToString ("yyyy/MM/dd HH:mm:ss");
         public static DateTime DateTime_FromString (string str) {
             return new DateTime (
-                int.Parse(str.Substring(0, 4)),
-                int.Parse (str.Substring(5, 2)),
-                int.Parse (str.Substring(8, 2)),
+                int.Parse (str.Substring (0, 4)),
+                int.Parse (str.Substring (5, 2)),
+                int.Parse (str.Substring (8, 2)),
                 int.Parse (str.Substring (11, 2)),
                 int.Parse (str.Substring (14, 2)),
                 int.Parse (str.Substring (17, 2)));
@@ -74,15 +71,15 @@ namespace II {
         }
 
         public static double RandomPercentRange (double value, double percent) {
-            return RandomDouble((value - (value * percent)), (value + (value * percent)));
+            return RandomDouble ((value - (value * percent)), (value + (value * percent)));
         }
 
         public static string UnderscoreToSpace (string str) {
-            return str.Replace('_', ' ');
+            return str.Replace ('_', ' ');
         }
 
-        public static string SpaceToUnderscore(string str) {
-            return str.Replace(' ', '_');
+        public static string SpaceToUnderscore (string str) {
+            return str.Replace (' ', '_');
         }
 
         public static string HashMD5 (string str) {
@@ -119,7 +116,7 @@ namespace II {
                     }
                 }
             }
-            return Convert.ToBase64String(output);
+            return Convert.ToBase64String (output);
         }
 
         public static string DecryptAES (string str) {
@@ -128,7 +125,7 @@ namespace II {
                 aes.Key = Access.Encryption.Key;
                 aes.IV = Access.Encryption.IV;
                 ICryptoTransform decryptor = aes.CreateDecryptor (aes.Key, aes.IV);
-                using (MemoryStream ms = new MemoryStream (Convert.FromBase64String(str))) {
+                using (MemoryStream ms = new MemoryStream (Convert.FromBase64String (str))) {
                     using (CryptoStream cs = new CryptoStream (ms, decryptor, CryptoStreamMode.Read)) {
                         using (StreamReader reader = new StreamReader (cs))
                             output = reader.ReadToEnd ();

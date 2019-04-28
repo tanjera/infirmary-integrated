@@ -1,47 +1,40 @@
-﻿using System;
+﻿using II;
+using II.Rhythm;
+using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-
-using II;
-using II.Rhythm;
-using II.Localization;
 
 namespace II_Windows {
+
     /// <summary>
     /// Interaction logic for DeviceMonitor.xaml
     /// </summary>
     public partial class DeviceMonitor : Window {
 
-        int rowsTracings = 3,
+        private int rowsTracings = 3,
             rowsNumerics = 3;
-        bool isFullscreen = false,
+
+        private bool isFullscreen = false,
              isPaused = false;
 
-        List<Controls.MonitorTracing> listTracings = new List<Controls.MonitorTracing> ();
-        List<Controls.MonitorNumeric> listNumerics = new List<Controls.MonitorNumeric> ();
+        private List<Controls.MonitorTracing> listTracings = new List<Controls.MonitorTracing> ();
+        private List<Controls.MonitorNumeric> listNumerics = new List<Controls.MonitorNumeric> ();
 
-        Timer timerTracing = new Timer (),
+        private Timer timerTracing = new Timer (),
               timerVitals = new Timer ();
 
         // Define WPF UI commands for binding
         private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram;
+
         public ICommand IC_ToggleFullscreen { get { return icToggleFullscreen; } }
         public ICommand IC_PauseDevice { get { return icPauseDevice; } }
         public ICommand IC_CloseDevice { get { return icCloseDevice; } }
         public ICommand IC_ExitProgram { get { return icExitProgram; } }
-
 
         public DeviceMonitor () {
             InitializeComponent ();
@@ -71,14 +64,14 @@ namespace II_Windows {
             icExitProgram = new ActionCommand (() => App.Patient_Editor.RequestExit ());
 
             // Populate UI strings per language selection
-            wdwDeviceMonitor.Title = App.Language.Dictionary["CM:WindowTitle"];
-            menuDevice.Header = App.Language.Dictionary["MENU:MenuDeviceOptions"];
-            menuPauseDevice.Header = App.Language.Dictionary["MENU:MenuPauseDevice"];
-            menuAddNumeric.Header = App.Language.Dictionary["MENU:MenuAddNumeric"];
-            menuAddTracing.Header = App.Language.Dictionary["MENU:MenuAddTracing"];
-            menuToggleFullscreen.Header = App.Language.Dictionary["MENU:MenuToggleFullscreen"];
-            menuCloseDevice.Header = App.Language.Dictionary["MENU:MenuCloseDevice"];
-            menuExitProgram.Header = App.Language.Dictionary["MENU:MenuExitProgram"];
+            wdwDeviceMonitor.Title = App.Language.Dictionary ["CM:WindowTitle"];
+            menuDevice.Header = App.Language.Dictionary ["MENU:MenuDeviceOptions"];
+            menuPauseDevice.Header = App.Language.Dictionary ["MENU:MenuPauseDevice"];
+            menuAddNumeric.Header = App.Language.Dictionary ["MENU:MenuAddNumeric"];
+            menuAddTracing.Header = App.Language.Dictionary ["MENU:MenuAddTracing"];
+            menuToggleFullscreen.Header = App.Language.Dictionary ["MENU:MenuToggleFullscreen"];
+            menuCloseDevice.Header = App.Language.Dictionary ["MENU:MenuCloseDevice"];
+            menuExitProgram.Header = App.Language.Dictionary ["MENU:MenuExitProgram"];
         }
 
         public void Load_Process (string inc) {
@@ -98,17 +91,17 @@ namespace II_Windows {
                             case "rowsNumerics": rowsNumerics = int.Parse (pValue); break;
                             case "isPaused": isPaused = bool.Parse (pValue); break;
                             case "isFullscreen": isFullscreen = bool.Parse (pValue); break;
-                            case "numericTypes": numericTypes.AddRange (pValue.Split (',').Where((o) => o != "")); break;
-                            case "tracingTypes": tracingTypes.AddRange (pValue.Split (',').Where((o) => o != "")); break;
+                            case "numericTypes": numericTypes.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
+                            case "tracingTypes": tracingTypes.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
                         }
                     }
                 }
             } catch (Exception e) {
-                App.Server.Post_Exception(e);
+                App.Server.Post_Exception (e);
                 throw e;
             } finally {
-                sRead.Close();
-                OnLayoutChange(numericTypes, tracingTypes);
+                sRead.Close ();
+                OnLayoutChange (numericTypes, tracingTypes);
             }
         }
 
@@ -155,7 +148,7 @@ namespace II_Windows {
             menuPauseDevice.IsChecked = isPaused;
 
             if (!isPaused)
-                listTracings.ForEach(c => c.wfStrip.Unpause ());
+                listTracings.ForEach (c => c.wfStrip.Unpause ());
         }
 
         public void ToggleFullscreen () {
@@ -180,16 +173,21 @@ namespace II_Windows {
         }
 
         public void RemoveNumeric (Controls.MonitorNumeric requestSender) {
-            rowsNumerics-= 1;
+            rowsNumerics -= 1;
             listNumerics.Remove (requestSender);
             OnLayoutChange ();
         }
 
         private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
+
         private void MenuExit_Click (object s, RoutedEventArgs e) => App.Patient_Editor.RequestExit ();
+
         private void MenuAddNumeric_Click (object s, RoutedEventArgs e) => AddNumeric ();
+
         private void MenuAddTracing_Click (object s, RoutedEventArgs e) => AddTracing ();
+
         private void MenuTogglePause_Click (object s, RoutedEventArgs e) => TogglePause ();
+
         private void MenuFullscreen_Click (object sender, RoutedEventArgs e) => ToggleFullscreen ();
 
         private void OnTick_Tracing (object sender, EventArgs e) {
@@ -206,7 +204,7 @@ namespace II_Windows {
             if (isPaused)
                 return;
 
-            listNumerics.ForEach(n => n.UpdateVitals ());
+            listNumerics.ForEach (n => n.UpdateVitals ());
         }
 
         private void OnLayoutChange (List<string> numericTypes = null, List<string> tracingTypes = null) {
@@ -226,7 +224,7 @@ namespace II_Windows {
             }
 
             // Cap available amount of numerics
-            rowsNumerics = Utility.Clamp(rowsNumerics, 1, numericTypes.Count);
+            rowsNumerics = Utility.Clamp (rowsNumerics, 1, numericTypes.Count);
             for (int i = listNumerics.Count; i < rowsNumerics && i < numericTypes.Count; i++) {
                 Controls.MonitorNumeric newNum;
                 newNum = new Controls.MonitorNumeric ((Controls.MonitorNumeric.ControlType.Values)Enum.Parse (typeof (Controls.MonitorNumeric.ControlType.Values), numericTypes [i]));
@@ -243,7 +241,7 @@ namespace II_Windows {
             }
 
             // Cap available amount of tracings
-            rowsTracings = Utility.Clamp(rowsTracings, 1, tracingTypes.Count);
+            rowsTracings = Utility.Clamp (rowsTracings, 1, tracingTypes.Count);
             for (int i = listTracings.Count; i < rowsTracings && i < tracingTypes.Count; i++) {
                 Strip newStrip = new Strip (6f, (Leads.Values)Enum.Parse (typeof (Leads.Values), tracingTypes [i]));
                 Controls.MonitorTracing newTracing = new Controls.MonitorTracing (newStrip);
@@ -254,7 +252,7 @@ namespace II_Windows {
             gridNumerics.Children.Clear ();
             gridNumerics.RowDefinitions.Clear ();
             for (int i = 0; i < rowsNumerics && i < listNumerics.Count; i++) {
-                gridNumerics.RowDefinitions.Add(new RowDefinition ());
+                gridNumerics.RowDefinitions.Add (new RowDefinition ());
                 listNumerics [i].SetValue (Grid.RowProperty, i);
                 gridNumerics.Children.Add (listNumerics [i]);
             }
@@ -277,44 +275,43 @@ namespace II_Windows {
                         c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
                     });
 
-                    listNumerics.ForEach(n => n.UpdateVitals ());
+                    listNumerics.ForEach (n => n.UpdateVitals ());
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Defibrillation:
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Defibrillation (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Defibrillation (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_PacerSpike:
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Pacemaker (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Pacemaker (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Atrial:
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Atrial (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Atrial (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Ventricular:
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Cardiac_Ventricular (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Ventricular (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Respiratory_Baseline:
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Respiratory_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Respiratory_Baseline (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Respiratory_Inspiration:
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Respiratory_Inspiration (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Respiratory_Inspiration (App.Patient));
                     break;
 
                 case Patient.PatientEvent_Args.EventTypes.Respiratory_Expiration:
-                    listTracings.ForEach(c => c.wfStrip.Add_Beat__Respiratory_Expiration (App.Patient));
+                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Respiratory_Expiration (App.Patient));
                     break;
             }
         }
 
         private void OnFormResize (object sender, RoutedEventArgs e) => OnLayoutChange ();
-
     }
 }

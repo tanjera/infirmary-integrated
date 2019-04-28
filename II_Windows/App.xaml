@@ -28,6 +28,5 @@
         <BitmapImage x:Key="Icon_ArrowDown" UriSource="/Infirmary Integrated;component/Third Party/Icon_ArrowDown_128.png"></BitmapImage>
         <BitmapImage x:Key="Icon_ArrowLeft" UriSource="/Infirmary Integrated;component/Third Party/Icon_ArrowLeft_128.png"></BitmapImage>
         <BitmapImage x:Key="Icon_ArrowRight" UriSource="/Infirmary Integrated;component/Third Party/Icon_ArrowRight_128.png"></BitmapImage>
-
     </Application.Resources>
 </Application>

@@ -1,32 +1,24 @@
-﻿using System;
+﻿using II;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using II;
-using II.Localization;
 
 namespace II_Windows.Controls {
+
     /// <summary>
     /// Interaction logic for Numeric.xaml
     /// </summary>
     public partial class IABPNumeric : UserControl {
-
         public ControlType controlType;
 
         public class ControlType {
             public Values Value;
-            public ControlType (Values v) { Value = v; }
+
+            public ControlType (Values v) {
+                Value = v;
+            }
 
             public enum Values {
                 ECG, ABP, IABP_AP
@@ -35,13 +27,14 @@ namespace II_Windows.Controls {
             public static string LookupString (Values value) {
                 return String.Format ("NUMERIC:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
             }
+
             public Brush Color { get { return Coloring [(int)Value]; } }
 
             public static List<string> MenuItem_Formats {
                 get {
                     List<string> o = new List<string> ();
                     foreach (Values v in Enum.GetValues (typeof (Values)))
-                        o.Add (String.Format ("{0}: {1}", v.ToString (), LookupString(v)));
+                        o.Add (String.Format ("{0}: {1}", v.ToString (), LookupString (v)));
                     return o;
                 }
             }
@@ -53,14 +46,12 @@ namespace II_Windows.Controls {
             };
         }
 
-
         public IABPNumeric (ControlType.Values v) {
             InitializeComponent ();
 
             controlType = new ControlType (v);
             UpdateInterface ();
         }
-
 
         private void UpdateInterface () {
             borderNumeric.BorderBrush = controlType.Color;
@@ -74,7 +65,7 @@ namespace II_Windows.Controls {
             lblLine2.Visibility = Visibility.Visible;
             lblLine3.Visibility = Visibility.Visible;
 
-            lblNumType.Text = App.Language.Dictionary[ControlType.LookupString(controlType.Value)];
+            lblNumType.Text = App.Language.Dictionary [ControlType.LookupString (controlType.Value)];
 
             switch (controlType.Value) {
                 default:
@@ -107,7 +98,7 @@ namespace II_Windows.Controls {
                         // IABP shows MAP calculated by IABP!! Different from how monitors calculate MAP...
                         lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.IABP_MAP, 0.02f));
                     } else {
-                        lblLine1.Text = Utility.WrapString(App.Language.Dictionary["NUMERIC:ZeroTransducer"]);
+                        lblLine1.Text = Utility.WrapString (App.Language.Dictionary ["NUMERIC:ZeroTransducer"]);
                         lblLine2.Text = "";
                         lblLine3.Text = "";
                     }

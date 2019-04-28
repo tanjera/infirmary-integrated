@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:II_Windows.Controls"
              mc:Ignorable="d"
-             SizeChanged="UpdateInterface" >
+             SizeChanged="UpdateInterface">
 
         <Grid>
             <Grid.RowDefinitions>
@@ -16,7 +16,6 @@
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
 
-
         <Canvas Name="canvasTracing" Panel.ZIndex="1" ClipToBounds="True"
                 Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
                 VerticalAlignment="Stretch" MinHeight="150"
@@ -26,7 +25,5 @@
                 Margin="0" Padding="2"
                 Grid.Column="0" Grid.Row="0"
                 HorizontalAlignment="Right" />
-
         </Grid>
-
 </UserControl>

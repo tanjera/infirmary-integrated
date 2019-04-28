@@ -1,27 +1,18 @@
-﻿using System;
+﻿using II;
+using II.Localization;
+using II.Server;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-
-using II;
-using II.Localization;
-using II.Server;
 
 namespace II_Windows {
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -29,6 +20,7 @@ namespace II_Windows {
 
         // Define WPF UI commands for binding
         private ICommand icLoadFile, icSaveFile;
+
         public ICommand IC_LoadFile { get { return icLoadFile; } }
         public ICommand IC_SaveFile { get { return icSaveFile; } }
 
@@ -46,7 +38,6 @@ namespace II_Windows {
 
             App.Mirror.timerUpdate.Tick += delegate { App.Mirror.TimerTick (App.Patient, App.Server); };
             App.Mirror.timerUpdate.Reset (5000);
-
 
             /* Debugging and testing code below */
         }
@@ -162,8 +153,8 @@ namespace II_Windows {
             string latestVersion = "";
             bgw.DoWork += delegate { latestVersion = App.Server.Get_LatestVersion (); };
             bgw.RunWorkerCompleted += delegate {
-                if (Utility.IsNewerVersion(Utility.Version, latestVersion)) {
-                    txtUpdateAvailable.Text = String.Format(App.Language.Dictionary["STATUS:UpdateAvailable"], latestVersion).Trim();
+                if (Utility.IsNewerVersion (Utility.Version, latestVersion)) {
+                    txtUpdateAvailable.Text = String.Format (App.Language.Dictionary ["STATUS:UpdateAvailable"], latestVersion).Trim ();
                 } else {
                     statusUpdateAvailable.Visibility = Visibility.Collapsed;
                 }
@@ -219,6 +210,7 @@ namespace II_Windows {
 
             App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
         }
+
         private void DialogInitial (bool reloadUI = false) {
             App.Dialog_Language = new DialogInitial ();
             App.Dialog_Language.Activate ();
@@ -287,13 +279,11 @@ namespace II_Windows {
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
                             pbuffer.AppendLine (pline);
                         App.Patient.Load_Process (pbuffer.ToString ());
-
                     } else if (line == "> Begin: Editor") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Editor")
                             pbuffer.AppendLine (pline);
                         this.LoadOptions (pbuffer.ToString ());
-
                     } else if (line == "> Begin: Cardiac Monitor") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Cardiac Monitor")
@@ -452,14 +442,23 @@ namespace II_Windows {
         }
 
         private void MenuLoadFile_Click (object s, RoutedEventArgs e) => LoadFile ();
+
         private void MenuSaveFile_Click (object s, RoutedEventArgs e) => SaveFile ();
+
         private void MenuExit_Click (object s, RoutedEventArgs e) => RequestExit ();
+
         private void MenuSetLanguage_Click (object s, RoutedEventArgs e) => DialogInitial (true);
+
         private void MenuAbout_Click (object s, RoutedEventArgs e) => DialogAbout ();
+
         private void ButtonDeviceMonitor_Click (object s, RoutedEventArgs e) => InitDeviceMonitor ();
+
         private void ButtonDeviceECG_Click (object s, RoutedEventArgs e) => InitDeviceECG ();
+
         private void ButtonDeviceIABP_Click (object s, RoutedEventArgs e) => InitDeviceIABP ();
+
         private void ButtonDeviceDefib_Click (object s, RoutedEventArgs e) => InitDeviceDefib ();
+
         private void ButtonResetParameters_Click (object s, RoutedEventArgs e) {
             RequestNewPatient ();
             lblStatusText.Content = App.Language.Dictionary ["PE:StatusPatientReset"];
@@ -655,7 +654,6 @@ namespace II_Windows {
 
         private void OnRhythmSelected (object sender, SelectionChangedEventArgs e) {
             if ((bool)checkDefaultVitals.IsChecked && App.Patient != null) {
-
                 int si = comboCardiacRhythm.SelectedIndex;
                 Array ev = Enum.GetValues (typeof (CardiacRhythms.Values));
                 if (si < 0 || si > ev.Length - 1)
