@@ -6,8 +6,6 @@
 	<string>Infirmary Integrated</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.Tanjera.Infirmary-Integrated</string>
-	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSMinimumSystemVersion</key>
@@ -36,9 +34,9 @@
 				<string>ii</string>
 			</array>
 			<key>CFBundleTypeIconFile</key>
-			<string></string>
+			<string>Infirmary_Integrated</string>
 			<key>CFBundleTypeName</key>
-			<string>DocumentType</string>
+			<string>Infirmary Integrated Simulation</string>
 			<key>CFBundleTypeOSTypes</key>
 			<array>
 				<string>????</string>
@@ -51,5 +49,7 @@
 	</array>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.medical</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.9</string>
 </dict>
 </plist>
