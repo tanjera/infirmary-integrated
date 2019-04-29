@@ -5,22 +5,18 @@ using Foundation;
 using AppKit;
 
 namespace II_MacOS.UI {
-	public partial class DialogInitial : AppKit.NSWindow {
+	public partial class DeviceMonitor : AppKit.NSWindow {
 		#region Constructors
 
-		public DialogInitial () : base() {
-			Initialize ();
-		}
-
 		// Called when created from unmanaged code
-		public DialogInitial (IntPtr handle) : base (handle)
+		public DeviceMonitor (IntPtr handle) : base (handle)
 		{
 			Initialize ();
 		}
 
 		// Called when created directly from a XIB file
 		[Export ("initWithCoder:")]
-		public DialogInitial (NSCoder coder) : base (coder)
+		public DeviceMonitor (NSCoder coder) : base (coder)
 		{
 			Initialize ();
 		}

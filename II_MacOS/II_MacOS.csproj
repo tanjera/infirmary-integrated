@@ -102,22 +102,42 @@
     <None Include="Infirmary_Integrated.icns" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Main.cs" />
+    <Compile Include="App.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="Windows_cs\DialogAbout.cs" />
     <Compile Include="Windows_cs\DialogAbout.designer.cs">
       <DependentUpon>DialogAbout.cs</DependentUpon>
     </Compile>
     <Compile Include="Windows_cs\PatientEditor.cs" />
+    <Compile Include="Windows_cs\DeviceMonitor.cs" />
+    <Compile Include="Windows_cs\DeviceMonitor.designer.cs">
+      <DependentUpon>DeviceMonitor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows_cs\DeviceECG.cs" />
+    <Compile Include="Windows_cs\DeviceECG.designer.cs">
+      <DependentUpon>DeviceECG.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows_cs\DeviceIABP.cs" />
+    <Compile Include="Windows_cs\DeviceIABP.designer.cs">
+      <DependentUpon>DeviceIABP.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows_cs\DeviceDefib.cs" />
+    <Compile Include="Windows_cs\DeviceDefib.designer.cs">
+      <DependentUpon>DeviceDefib.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows_cs\DialogInitial.cs" />
   </ItemGroup>
   <ItemGroup>
     <InterfaceDefinition Include="Windows_xib\PatientEditor.xib" />
     <InterfaceDefinition Include="Windows_xib\DialogAbout.xib" />
     <InterfaceDefinition Include="Windows_xib\DialogInitial.xib" />
     <InterfaceDefinition Include="Windows_xib\MainMenu.xib" />
+    <InterfaceDefinition Include="Windows_xib\DeviceMonitor.xib" />
+    <InterfaceDefinition Include="Windows_xib\DeviceECG.xib" />
+    <InterfaceDefinition Include="Windows_xib\DeviceIABP.xib" />
+    <InterfaceDefinition Include="Windows_xib\DeviceDefib.xib" />
   </ItemGroup>
   <ItemGroup>
-    <BundleResource Include="Windows_cs\DialogInitial.cs" />
     <BundleResource Include="Windows_cs\DialogInitial.designer.cs">
       <DependentUpon>DialogInitial.cs</DependentUpon>
     </BundleResource>
@@ -131,7 +151,7 @@
     <MonoDevelop>
       <Properties>
         <Policies>
-          <TextStylePolicy TabsToSpaces="False" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="80" TabWidth="8" IndentWidth="8" scope="text/x-csharp" />
+          <TextStylePolicy TabWidth="4" TabsToSpaces="False" IndentWidth="4" RemoveTrailingWhitespace="True" NoTabsAfterNonTabs="False" EolMarker="Native" FileWidth="80" scope="text/x-csharp" />
           <CSharpFormattingPolicy IndentBlock="True" IndentBraces="False" IndentSwitchCaseSection="True" LabelPositioning="OneLess" NewLinesForBracesInMethods="True" SpaceWithinMethodDeclarationParenthesis="False" SpaceBetweenEmptyMethodDeclarationParentheses="False" SpaceWithinMethodCallParentheses="False" SpaceBetweenEmptyMethodCallParentheses="False" SpaceAfterControlFlowStatementKeyword="True" SpaceWithinExpressionParentheses="False" SpaceWithinCastParentheses="False" SpaceWithinOtherParentheses="False" SpaceAfterCast="False" SpacesIgnoreAroundVariableDeclaration="False" SpaceBetweenEmptySquareBrackets="False" SpaceWithinSquareBrackets="False" SpaceAfterColonInBaseTypeDeclaration="True" SpaceAfterComma="True" SpaceAfterDot="False" SpaceAfterSemicolonsInForStatement="True" SpaceBeforeColonInBaseTypeDeclaration="True" SpaceBeforeComma="False" SpaceBeforeDot="False" SpaceBeforeSemicolonsInForStatement="False" SpacingAroundBinaryOperator="Single" WrappingPreserveSingleLine="True" WrappingKeepStatementsOnSingleLine="True" IndentSwitchSection="False" NewLinesForBracesInTypes="False" NewLinesForBracesInProperties="False" NewLinesForBracesInAccessors="False" NewLinesForBracesInAnonymousMethods="False" NewLinesForBracesInControlBlocks="False" NewLinesForBracesInAnonymousTypes="False" NewLinesForBracesInObjectCollectionArrayInitializers="False" NewLinesForBracesInLambdaExpressionBody="False" NewLineForElse="False" NewLineForCatch="False" NewLineForFinally="False" NewLineForMembersInObjectInit="False" NewLineForMembersInAnonymousTypes="False" NewLineForClausesInQuery="False" SpacingAfterMethodDeclarationName="True" SpaceAfterMethodCallName="True" SpaceBeforeOpenSquareBracket="True" scope="text/x-csharp" />
         </Policies>
       </Properties>

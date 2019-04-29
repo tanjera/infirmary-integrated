@@ -4,7 +4,7 @@ using System.Linq;
 using Foundation;
 using AppKit;
 
-namespace II_MacOS {
+namespace II_MacOS.UI {
 	public partial class DialogAbout : AppKit.NSWindow {
 		#region Constructors
 

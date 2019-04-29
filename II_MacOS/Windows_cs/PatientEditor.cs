@@ -3,20 +3,18 @@
 using AppKit;
 using Foundation;
 
-namespace II_MacOS
+namespace II_MacOS.UI
 {
     [Register("PatientEditor")]
     public class PatientEditor : NSDocument
     {
-        public PatientEditor(IntPtr handle) : base(handle)
+		public PatientEditor (IntPtr handle) : base(handle)
         {
-            // Add your subclass-specific initialization here.
-        }
+		}
 
         public override void WindowControllerDidLoadNib(NSWindowController windowController)
         {
             base.WindowControllerDidLoadNib(windowController);
-            // Add any code here that needs to be executed once the windowController has loaded the document's window.
         }
 
         [Export("autosavesInPlace")]
