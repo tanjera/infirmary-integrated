@@ -74,7 +74,8 @@ namespace II {
                         timerCardiac_Atrial = new Timer (),
                         timerCardiac_Ventricular = new Timer (),
                         timerDefibrillation = new Timer (),
-                        timerPacemaker = new Timer (),
+                        timerPacemaker_Baseline = new Timer (),
+                        timerPacemaker_Spike = new Timer (),
                         timerRespiratory_Baseline = new Timer (),
                         timerRespiratory_Inspiration = new Timer (),
                         timerRespiratory_Expiration = new Timer (),
@@ -151,7 +152,8 @@ namespace II {
             timerCardiac_Atrial.Process ();
             timerCardiac_Ventricular.Process ();
             timerDefibrillation.Process ();
-            timerPacemaker.Process ();
+            timerPacemaker_Baseline.Process ();
+            timerPacemaker_Spike.Process ();
             timerRespiratory_Baseline.Process ();
             timerRespiratory_Inspiration.Process ();
             timerRespiratory_Expiration.Process ();
@@ -378,14 +380,14 @@ namespace II {
         public void Cardiovert () => InitDefibrillation (true);
 
         public void Pacemaker (bool active, int rate = 0, int energy = 0) {
-            if (active && !timerPacemaker.IsRunning)
+            if (active && !timerPacemaker_Baseline.IsRunning)
                 InitPacemaker (rate, energy);
-            else if (!active && timerPacemaker.IsRunning)
+            else if (!active && timerPacemaker_Baseline.IsRunning)
                 StopPacemaker ();
-            else if (active && timerPacemaker.IsRunning)
+            else if (active && timerPacemaker_Baseline.IsRunning)
                 UpdatePacemaker (rate, energy);
         }
-        public void PacemakerPause () => timerPacemaker.Interval = 4000;
+        public void PacemakerPause () => timerPacemaker_Baseline.Interval = 4000;
 
         private void InitDefibrillation (bool toSynchronize) {
             if (toSynchronize)
@@ -397,7 +399,7 @@ namespace II {
         private void InitPacemaker (int rate, int energy) {
             Pacemaker_Rate = rate;
             Pacemaker_Energy = energy;
-            timerPacemaker.Reset ((int)((60d / rate) * 1000));
+            timerPacemaker_Baseline.Reset ((int)((60d / rate) * 1000));
         }
 
         private void UpdatePacemaker () => UpdatePacemaker (Pacemaker_Rate, Pacemaker_Energy);
@@ -405,10 +407,13 @@ namespace II {
         private void UpdatePacemaker (int rate, int energy) {
             Pacemaker_Rate = rate;
             Pacemaker_Energy = energy;
-            timerPacemaker.Interval = (int)((60d / rate) * 1000);
+            timerPacemaker_Baseline.Interval = (int)((60d / rate) * 1000);
         }
 
-        private void StopPacemaker () => timerPacemaker.Stop ();
+        private void StopPacemaker () {
+            timerPacemaker_Baseline.Stop ();
+            timerPacemaker_Spike.Stop ();
+        }
 
         private void OnDefibrillation () {
             timerCardiac_Baseline.Stop ();
@@ -429,18 +434,23 @@ namespace II {
             OnDefibrillation ();
         }
 
-        private void OnPacemaker_Spike () {
+        private void OnPacemaker_Baseline () {
             if (Pacemaker_Energy > 0)
                 PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_PacerSpike));
 
-            if (Pacemaker_Energy >= Pacemaker_Threshold) {
-                CardiacRhythm.AberrantBeat = true;
-                PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Ventricular));
-                CardiacRhythm.AberrantBeat = false;
-                timerCardiac_Baseline.Reset ();
-            }
+            if (Pacemaker_Energy >= Pacemaker_Threshold)
+                timerPacemaker_Spike.Reset (40);        // Adds an interval between the spike and the QRS complex
 
             UpdatePacemaker ();         // In case pacemaker was paused... updates .Interval
+        }
+
+        private void OnPacemaker_Spike () {
+            timerPacemaker_Spike.Stop ();
+            // Trigger the QRS complex, then reset the heart's intrinsic timers
+            CardiacRhythm.AberrantBeat = true;
+            PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Ventricular));
+            CardiacRhythm.AberrantBeat = false;
+            timerCardiac_Baseline.Reset ();
         }
 
         private void InitTimers () {
@@ -448,7 +458,8 @@ namespace II {
             timerCardiac_Atrial.Tick += delegate { OnCardiac_Atrial (); };
             timerCardiac_Ventricular.Tick += delegate { OnCardiac_Ventricular (); };
             timerDefibrillation.Tick += delegate { OnDefibrillation_End (); };
-            timerPacemaker.Tick += delegate { OnPacemaker_Spike (); };
+            timerPacemaker_Baseline.Tick += delegate { OnPacemaker_Baseline (); };
+            timerPacemaker_Spike.Tick += delegate { OnPacemaker_Spike (); };
 
             timerRespiratory_Baseline.Tick += delegate { OnRespiratory_Baseline (); };
             timerRespiratory_Inspiration.Tick += delegate { OnRespiratory_Inspiration (); };
@@ -464,8 +475,10 @@ namespace II {
             timerCardiac_Baseline.Reset ((int)(HR_Seconds * 1000f));
             timerCardiac_Atrial.Stop ();
             timerCardiac_Ventricular.Stop ();
-            timerDefibrillation.Stop ();
-            timerPacemaker.Stop ();
+
+            timerDefibrillation.Reset ();
+            timerPacemaker_Baseline.Reset ();
+            timerPacemaker_Spike.Stop ();
 
             timerRespiratory_Baseline.Reset ((int)(RR_Seconds * 1000f));
             timerRespiratory_Inspiration.Stop ();

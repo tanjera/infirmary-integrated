@@ -287,24 +287,36 @@ namespace II_Windows {
         }
 
         private void ButtonPaceRateDecrease_Click (object s, RoutedEventArgs e) {
+            if (Mode != Modes.PACER)
+                return;
+
             PacerRate = Utility.Clamp (PacerRate - 5, 0, 200);
             App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
             UpdateInterface ();
         }
 
         private void ButtonPaceRateIncrease_Click (object s, RoutedEventArgs e) {
+            if (Mode != Modes.PACER)
+                return;
+
             PacerRate = Utility.Clamp (PacerRate + 5, 0, 200);
             App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
             UpdateInterface ();
         }
 
         private void ButtonPaceEnergyDecrease_Click (object s, RoutedEventArgs e) {
+            if (Mode != Modes.PACER)
+                return;
+
             PacerEnergy = Utility.Clamp (PacerEnergy - 5, 0, 200);
             App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
             UpdateInterface ();
         }
 
         private void ButtonPaceEnergyIncrease_Click (object s, RoutedEventArgs e) {
+            if (Mode != Modes.PACER)
+                return;
+
             PacerEnergy = Utility.Clamp (PacerEnergy + 5, 0, 200);
             App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
             UpdateInterface ();
