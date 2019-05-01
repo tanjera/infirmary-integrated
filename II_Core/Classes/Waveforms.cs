@@ -286,14 +286,14 @@ namespace II.Rhythm {
             List<Point> thisBeat = new List<Point> ();
 
             thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 4,
-                -0.1f * leadCoeff [(int)_L.Value, (int)WavePart.Q],
-                -0.2f * leadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
+                -0.1f * baseLeadCoeff [(int)_L.Value, (int)WavePart.Q],
+                -0.2f * baseLeadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 4,
-                -1f * leadCoeff [(int)_L.Value, (int)WavePart.R],
-                -0.3f * leadCoeff [(int)_L.Value, (int)WavePart.R], Last (thisBeat)));
+                -1f * baseLeadCoeff [(int)_L.Value, (int)WavePart.R],
+                -0.3f * baseLeadCoeff [(int)_L.Value, (int)WavePart.R], Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 2,
-                0.4f * leadCoeff [(int)_L.Value, (int)WavePart.T],
-                0.1f * leadCoeff [(int)_L.Value, (int)WavePart.T],
+                0.4f * baseLeadCoeff [(int)_L.Value, (int)WavePart.T],
+                0.1f * baseLeadCoeff [(int)_L.Value, (int)WavePart.T],
                 Last (thisBeat)));
 
             return thisBeat;
@@ -322,24 +322,24 @@ namespace II.Rhythm {
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Curve (QRS / 2,
-                1.0f * leadCoeff [(int)_L.Value, (int)WavePart.Q],
-                -0.3f * leadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
+                1.0f * baseLeadCoeff [(int)_L.Value, (int)WavePart.Q],
+                -0.3f * baseLeadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (QRS / 2,
-                -0.3f * leadCoeff [(int)_L.Value, (int)WavePart.R],
-                -0.4f * leadCoeff [(int)_L.Value, (int)WavePart.R], Last (thisBeat)));
+                -0.3f * baseLeadCoeff [(int)_L.Value, (int)WavePart.R],
+                -0.4f * baseLeadCoeff [(int)_L.Value, (int)WavePart.R], Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (SQ / 3,
-                0.1f * leadCoeff [(int)_L.Value, (int)WavePart.T], 0, Last (thisBeat)));
+                0.1f * baseLeadCoeff [(int)_L.Value, (int)WavePart.T], 0, Last (thisBeat)));
             return thisBeat;
         }
 
         public static List<Point> ECG_Defibrillation (Patient _P, Leads _L) {
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Line (.01d,
-                1.0f * leadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
+                1.0f * baseLeadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Line (.1d,
-                0.5f * leadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
+                0.5f * baseLeadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Line (.01d,
-                -0.5f * leadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
+                -0.5f * baseLeadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Line (.08d, 0f, Last (thisBeat)));
             return thisBeat;
         }
@@ -348,9 +348,9 @@ namespace II.Rhythm {
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Line (.02d, 0, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Line (.02d,
-                0.2f * leadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
+                0.2f * baseLeadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Line (.02d,
-                0f * leadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
+                0f * baseLeadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Line (.02d, 0, Last (thisBeat)));
             return thisBeat;
         }
@@ -472,47 +472,50 @@ namespace II.Rhythm {
 
         static List<Point> ECG_P (Patient p, Leads l, Point _S) { return ECG_P (p, l, .08f, .15f, 0f, _S); }
         static List<Point> ECG_P (Patient p, Leads l, double _L, double _mV, double _mV_End, Point _S) {
-            return Peak (_L, _mV * leadCoeff [(int)l.Value, (int)WavePart.P], _mV_End, _S);
+            return Peak (_L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.P], _mV_End, _S);
         }
 
         static List<Point> ECG_Q (Patient p, Leads l, Point _S) { return ECG_Q (p, l, 1f, -.1f, _S); }
         static List<Point> ECG_Q (Patient p, Leads l, double _L, double _mV, Point _S) {
-            return Line (_L, _mV * leadCoeff [(int)l.Value, (int)WavePart.Q], _S);
+            return Line (_L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.Q]
+                * axisLeadCoeff [(int)p.CardiacAxis.Value, (int)l.Value, (int)AxisPart.Q], _S);
         }
 
         static List<Point> ECG_R (Patient p, Leads l, Point _S) { return ECG_R (p, l, 1f, .9f, _S); }
         static List<Point> ECG_R (Patient p, Leads l, double _L, double _mV, Point _S) {
-            return Line (_L, _mV * leadCoeff [(int)l.Value, (int)WavePart.R], _S);
+            return Line (_L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.R]
+                * axisLeadCoeff [(int)p.CardiacAxis.Value, (int)l.Value, (int)AxisPart.R], _S);
         }
 
         static List<Point> ECG_S (Patient p, Leads l, Point _S) { return ECG_S (p, l, 1f, -.3f, _S); }
         static List<Point> ECG_S (Patient p, Leads l, double _L, double _mV, Point _S) {
-            return Line (_L, _mV * leadCoeff [(int)l.Value, (int)WavePart.S], _S);
+            return Line (_L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.S]
+                * axisLeadCoeff [(int)p.CardiacAxis.Value, (int)l.Value, (int)AxisPart.S], _S);
         }
 
         static List<Point> ECG_J (Patient p, Leads l, Point _S) { return ECG_J (p, l, 1f, -.1f, _S); }
         static List<Point> ECG_J (Patient p, Leads l, double _L, double _mV, Point _S) {
-            return Line (_L, (_mV * leadCoeff [(int)l.Value, (int)WavePart.J]) + p.STElevation [(int)l.Value], _S);
+            return Line (_L, (_mV * baseLeadCoeff [(int)l.Value, (int)WavePart.J]) + p.STElevation [(int)l.Value], _S);
         }
 
         static List<Point> ECG_T (Patient p, Leads l, Point _S) { return ECG_T (p, l, .16f, .3f, 0f, _S); }
         static List<Point> ECG_T (Patient p, Leads l, double _L, double _mV, double _mV_End, Point _S) {
-            return Peak (_L, (_mV * leadCoeff [(int)l.Value, (int)WavePart.T]) + p.TElevation [(int)l.Value], _mV_End, _S);
+            return Peak (_L, (_mV * baseLeadCoeff [(int)l.Value, (int)WavePart.T]) + p.TElevation [(int)l.Value], _mV_End, _S);
         }
 
         static List<Point> ECG_PR (Patient p, Leads l, Point _S) { return ECG_PR (p, l, .08f, 0f, _S); }
         static List<Point> ECG_PR (Patient p, Leads l, double _L, double _mV, Point _S) {
-            return Line (_L, _mV + leadCoeff [(int)l.Value, (int)WavePart.PR], _S);
+            return Line (_L, _mV + baseLeadCoeff [(int)l.Value, (int)WavePart.PR], _S);
         }
 
         static List<Point> ECG_ST (Patient p, Leads l, Point _S) { return ECG_ST (p, l, .1f, 0f, _S); }
         static List<Point> ECG_ST (Patient p, Leads l, double _L, double _mV, Point _S) {
-            return Line (_L, _mV + leadCoeff [(int)l.Value, (int)WavePart.ST] + p.STElevation [(int)l.Value], _S);
+            return Line (_L, _mV + baseLeadCoeff [(int)l.Value, (int)WavePart.ST] + p.STElevation [(int)l.Value], _S);
         }
 
         static List<Point> ECG_TP (Patient p, Leads l, Point _S) { return ECG_TP (p, l, .48f, .0f, _S); }
         static List<Point> ECG_TP (Patient p, Leads l, double _L, double _mV, Point _S) {
-            return Line (_L, _mV + leadCoeff [(int)l.Value, (int)WavePart.TP], _S);
+            return Line (_L, _mV + baseLeadCoeff [(int)l.Value, (int)WavePart.TP], _S);
         }
 
         /*
@@ -523,7 +526,8 @@ namespace II.Rhythm {
             P, Q, R, S, J, T, PR, ST, TP
         }
 
-        static double [,] leadCoeff = new double [,] {
+        // Coefficients to transform base lead (Lead 2) into 12 lead ECG
+        static double [,] baseLeadCoeff = new double [,] {
             // P through T are multipliers; segments are additions
             { 0.7f,     0.7f,   0.7f,   0.7f,   0.7f,   0.8f,       0f,     0f,     0f },     // L1
             { 1f,       1f,     1f,     1f,     1f,     1f,         0f,     0f,     0f },     // L2
@@ -537,6 +541,99 @@ namespace II.Rhythm {
             { 0.7f,     -9.0f,  -0.8f,  0f,     0f,     1.4f,       0f,     0.1f,   0f },     // V4
             { 0.7f,     -10.0f, -0.2f,  0f,     0f,     1.0f,       0f,     0.1f,   0f },     // V5
             { 1f,       -9.0f,  -0.1f,  0f,     0f,     0.8f,       0f,     0f,     0f }      // V6
+        };
+
+        enum AxisPart {
+            Q, R, S
+        }
+
+        // Coefficients to modify 12 lead ECG per cardiac axis deviation
+        static double [,,] axisLeadCoeff = new double [,,] {
+            // P through T are multipliers; segments are additions
+            {   // Normal axis
+                {   1f,     1f,     1f  },              // L1
+                {   1f,     1f,     1f  },              // L2
+                {   1f,     1f,     1f  },              // L3
+                {   1f,     1f,     1f  },              // AVR
+                {   1f,     1f,     1f  },              // AVL
+                {   1f,     1f,     1f  },              // AVF
+                {   1f,     1f,     1f  },              // V1
+                {   1f,     1f,     1f  },              // V2
+                {   1f,     1f,     1f  },              // V3
+                {   1f,     1f,     1f  },              // V4
+                {   1f,     1f,     1f  },              // V5
+                {   1f,     1f,     1f  },              // V6
+            },
+            {   // Left physiologic (minor) axis
+                {   1f,     1f,     1f  },              // L1
+                {   1f,     0.5f,   2f  },              // L2
+                {  -1f,    -1f,    -1f  },              // L3
+                {   1f,     1f,     1f  },              // AVR
+                {   1f,     1f,     1f  },              // AVL
+                {  -1f,    -1f,    -1f  },              // AVF
+                {   1f,     1f,     1f  },              // V1
+                {   1f,     1f,     1f  },              // V2
+                {   1f,     1f,     1f  },              // V3
+                {   1f,     1f,     1f  },              // V4
+                {   1f,     1f,     1f  },              // V5
+                {   1f,     1f,     1f  },              // V6
+            },
+            {   // Left pathologic (major) axis
+                {   1f,     1f,     1f  },              // L1
+                {  -1f,    -1f,    -1f  },              // L2
+                {  -1f,    -1f,    -1f  },              // L3
+                {   1f,     1f,     1f  },              // AVR
+                {   1f,     1f,     1f  },              // AVL
+                {  -1f,    -1f,    -1f  },              // AVF
+                {   1f,     1f,     1f  },              // V1
+                {   1f,     1f,     1f  },              // V2
+                {   1f,     1f,     1f  },              // V3
+                {   1f,     1f,     1f  },              // V4
+                {   1f,     1f,     1f  },              // V5
+                {   1f,     1f,     1f  },              // V6
+            },
+            {   // Right axis
+                {  -1f,    -1f,    -1f  },              // L1
+                {   1f,     1f,     1f  },              // L2
+                {   1f,     1f,     1f  },              // L3
+                {   1f,     1f,     1f  },              // AVR
+                {   1f,     1f,     1f  },              // AVL
+                {   1f,     1f,     1f  },              // AVF
+                {   1f,     1f,     1f  },              // V1
+                {   1f,     1f,     1f  },              // V2
+                {   1f,     1f,     1f  },              // V3
+                {   1f,     1f,     1f  },              // V4
+                {   1f,     1f,     1f  },              // V5
+                {   1f,     1f,     1f  },              // V6
+            },
+            {   // Extreme axis
+                {  -1f,    -1f,    -1f  },              // L1
+                {  -1f,    -1f,    -1f  },              // L2
+                {  -1f,    -1f,    -1f  },              // L3
+                {   1f,     1f,     1f  },              // AVR
+                {   1f,     1f,     1f  },              // AVL
+                {  -1f,    -1f,    -1f  },              // AVF
+                {   1f,     1f,     1f  },              // V1
+                {   1f,     1f,     1f  },              // V2
+                {   1f,     1f,     1f  },              // V3
+                {   1f,     1f,     1f  },              // V4
+                {   1f,     1f,     1f  },              // V5
+                {   1f,     1f,     1f  },              // V6
+            },
+            {   // Indeterminate axis
+                {   1f,     0.5f,   2f  },              // L1
+                {   1f,     0.5f,   2f  },              // L2
+                {   1f,     0.5f,   2f  },              // L3
+                {   1f,     1f,     1f  },              // AVR
+                {   1f,     1f,     1f  },              // AVL
+                {   1f,     0.5f,   2f  },              // AVF
+                {   1f,     1f,     1f  },              // V1
+                {   1f,     1f,     1f  },              // V2
+                {   1f,     1f,     1f  },              // V3
+                {   1f,     1f,     1f  },              // V4
+                {   1f,     1f,     1f  },              // V5
+                {   1f,     1f,     1f  },              // V6
+            },
         };
     }
 }

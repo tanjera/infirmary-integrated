@@ -133,6 +133,7 @@ namespace II {
                             new double [] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
                             new double [] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
                             CardiacRhythms.Values.Sinus_Rhythm,
+                            CardiacAxes.Values.Normal,
                             RespiratoryRhythms.Values.Regular,
                             1, 1,
                             150, Intensity.Values.Absent, new List<FetalHeartDecelerations.Values> (),
@@ -205,7 +206,7 @@ namespace II {
                                 break;
 
                             case "Cardiac_Rhythm": CardiacRhythm.Value = (CardiacRhythms.Values)Enum.Parse (typeof (CardiacRhythms.Values), pValue); break;
-                            case "Cardiac_Axis_Shift": CardiacAxis.Value = (CardiacAxes.Values)Enum.Parse (typeof (CardiacAxes.Values), pValue); break;
+                            case "Cardiac_Axis": CardiacAxis.Value = (CardiacAxes.Values)Enum.Parse (typeof (CardiacAxes.Values), pValue); break;
 
                             case "Pacemaker_Rate": Pacemaker_Rate = int.Parse (pValue); break;
                             case "Pacemaker_Energy": Pacemaker_Energy = int.Parse (pValue); break;
@@ -273,7 +274,7 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "ST_Elevation", string.Join (",", STElevation)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "T_Elevation", string.Join (",", TElevation)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Rhythm", CardiacRhythm.Value));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Axis_Shift", CardiacAxis.Value));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Axis", CardiacAxis.Value));
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "Pacemaker_Rate", Pacemaker_Rate));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Pacemaker_Energy", Pacemaker_Energy));
@@ -311,6 +312,7 @@ namespace II {
                     int pacerthreshold,
                     double [] st_elev, double [] t_elev,
                     CardiacRhythms.Values card_rhythm,
+                    CardiacAxes.Values card_axis,
                     RespiratoryRhythms.Values resp_rhythm,
                     int resp_ier_i, int resp_ier_e,
                     int fhr, Intensity.Values fhr_var, List<FetalHeartDecelerations.Values> fhr_rhythms,
@@ -326,6 +328,7 @@ namespace II {
             PSP = psp; PDP = pdp; PMP = pmp;
 
             CardiacRhythm.Value = card_rhythm;
+            CardiacAxis.Value = card_axis;
             Pacemaker_Threshold = pacerthreshold;
             STElevation = st_elev;
             TElevation = t_elev;

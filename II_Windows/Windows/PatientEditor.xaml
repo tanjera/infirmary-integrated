@@ -314,7 +314,7 @@
                             <ComboBox Name="comboCardiacRhythm" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="4" SelectionChanged="OnRhythmSelected" />
 
                             <Label Name="lblRespiratoryRhythm" Grid.Column="0" Grid.Row="7" />
-                            <ComboBox Name="comboRespiratoryRhythm" Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="4" SelectionChanged="OnRhythmSelected" />
+                            <ComboBox Name="comboRespiratoryRhythm" Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="4" />
 
                             <CheckBox Name="checkDefaultVitals" Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="4" Margin="0, 5, 0, 0" IsChecked="True" />
                         </Grid>
@@ -384,6 +384,8 @@
                                 <RowDefinition />
                                 <RowDefinition />
                                 <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
@@ -394,9 +396,13 @@
                             <xctk:IntegerUpDown Name="numPacemakerCaptureThreshold" Increment="5" Minimum="0" Maximum="200"
                                                 Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
 
+                            <!-- Cardiac Axis Deviation -->
+                            <Label Name="lblCardiacAxis" Grid.Column="0" Grid.Row="1" />
+                            <ComboBox Name="comboCardiacAxis" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" />
+
                             <!-- ST Segment Elevation -->
                             <GroupBox Name="grpSTSegmentElevation" Style="{StaticResource grpParameters}"
-                                      Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2">
+                                      Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="2">
                                 <Grid Margin="3">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -458,7 +464,7 @@
 
                             <!-- T Wave Elevation -->
                             <GroupBox Name="grpTWaveElevation" Style="{StaticResource grpParameters}"
-                                      Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2">
+                                      Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2">
                                 <Grid Margin="3">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -523,80 +529,80 @@
 
                 <!-- Group for Respiratory Profile -->
                 <!-- <Border Style="{StaticResource expBorder}"> -->
-                    <Expander Name="expRespiratoryProfile" IsExpanded="False"
+                <Expander Name="expRespiratoryProfile" IsExpanded="False"
                               Visibility="Hidden" Height="0"
                               Style="{StaticResource expParameters}">
-                        <Expander.Header>
-                            <Label Name="lblGroupRespiratoryProfile" Style="{StaticResource expHeader}" />
-                        </Expander.Header>
+                    <Expander.Header>
+                        <Label Name="lblGroupRespiratoryProfile" Style="{StaticResource expHeader}" />
+                    </Expander.Header>
 
-                        <Grid Margin="3">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                    <Grid Margin="3">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-                            <Label Name="lblInspiratoryRatio" Grid.Column="0" Grid.Row="0" />
-                            <xctk:IntegerUpDown Name="numInspiratoryRatio" Increment="1" Minimum="0" Maximum="50"
+                        <Label Name="lblInspiratoryRatio" Grid.Column="0" Grid.Row="0" />
+                        <xctk:IntegerUpDown Name="numInspiratoryRatio" Increment="1" Minimum="0" Maximum="50"
                                                 Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
-                            <Label Name="lblExpiratoryRatio" Grid.Column="2" Grid.Row="0" Content=":" />
-                            <xctk:IntegerUpDown Name="numExpiratoryRatio" Increment="1" Minimum="0" Maximum="50"
+                        <Label Name="lblExpiratoryRatio" Grid.Column="2" Grid.Row="0" Content=":" />
+                        <xctk:IntegerUpDown Name="numExpiratoryRatio" Increment="1" Minimum="0" Maximum="50"
                                                 Grid.Column="3" Grid.Row="0" Style="{StaticResource intUpDown}" />
-                        </Grid>
-                    </Expander>
+                    </Grid>
+                </Expander>
                 <!-- </Border> -->
 
                 <!-- Group for Obstetric Profile -->
                 <!-- <Border Style="{StaticResource expBorder}" IsEnabled="False"> -->
-                    <Expander Name="expObstetricProfile" IsExpanded="False"
+                <Expander Name="expObstetricProfile" IsExpanded="False"
                               Visibility="Hidden" Height="0"
                               Style="{StaticResource expParameters}">
-                        <Expander.Header>
-                            <Label Name="lblGroupObstetricProfile" Style="{StaticResource expHeader}" />
-                        </Expander.Header>
-                        <Grid Margin="3">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                            </Grid.ColumnDefinitions>
+                    <Expander.Header>
+                        <Label Name="lblGroupObstetricProfile" Style="{StaticResource expHeader}" />
+                    </Expander.Header>
+                    <Grid Margin="3">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
 
-                            <Label Name="lblFHR" Grid.Column="0" Grid.Row="0" />
-                            <xctk:IntegerUpDown Name="numFHR" Increment="5" Minimum="0" Maximum="500"
+                        <Label Name="lblFHR" Grid.Column="0" Grid.Row="0" />
+                        <xctk:IntegerUpDown Name="numFHR" Increment="5" Minimum="0" Maximum="500"
                                                 Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
-                            <Label Name="lblFHRRhythms" Grid.Column="0" Grid.Row="1" />
-                            <ListBox Name="listFHRRhythms" SelectionMode="Multiple"
+                        <Label Name="lblFHRRhythms" Grid.Column="0" Grid.Row="1" />
+                        <ListBox Name="listFHRRhythms" SelectionMode="Multiple"
                                      Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" />
-                            <Label Name="lblFHRVariability" Grid.Column="0" Grid.Row="3" />
-                            <ComboBox Name="comboFHRVariability"
+                        <Label Name="lblFHRVariability" Grid.Column="0" Grid.Row="3" />
+                        <ComboBox Name="comboFHRVariability"
                                       Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="2" />
 
-                            <Label Name="lblUCFrequency" Grid.Column="0" Grid.Row="5" />
-                            <xctk:IntegerUpDown Name="numUCFrequency" Increment="5" Minimum="0" Maximum="3600"
+                        <Label Name="lblUCFrequency" Grid.Column="0" Grid.Row="5" />
+                        <xctk:IntegerUpDown Name="numUCFrequency" Increment="5" Minimum="0" Maximum="3600"
                                                 Grid.Column="1" Grid.Row="5" Style="{StaticResource intUpDown}" />
-                            <Label Name="lblUCDuration" Grid.Column="0" Grid.Row="6" />
-                            <xctk:IntegerUpDown Name="numUCDuration" Increment="5" Minimum="0" Maximum="300"
+                        <Label Name="lblUCDuration" Grid.Column="0" Grid.Row="6" />
+                        <xctk:IntegerUpDown Name="numUCDuration" Increment="5" Minimum="0" Maximum="300"
                                                 Grid.Column="1" Grid.Row="6" Style="{StaticResource intUpDown}" />
-                            <Label Name="lblUCIntensity" Grid.Column="0" Grid.Row="7" />
-                            <ComboBox Name="comboUCIntensity"
+                        <Label Name="lblUCIntensity" Grid.Column="0" Grid.Row="7" />
+                        <ComboBox Name="comboUCIntensity"
                                       Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="2" />
-                        </Grid>
-                    </Expander>
+                    </Grid>
+                </Expander>
                 <!-- </Border> -->
 
                 <!-- Apply and Reset Buttons -->

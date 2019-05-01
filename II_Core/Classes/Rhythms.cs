@@ -351,10 +351,8 @@ namespace II {
         public CardiacAxes (Values v) { Value = v; }
         public CardiacAxes () { Value = Values.Normal; }
 
-        public string Description { get { return Descriptions [(int)Value]; } }
-        public static Values Parse_Description (string inc) {
-            int i = Array.IndexOf<string> (Descriptions, inc);
-            return i >= 0 ? (Values)Enum.GetValues (typeof (Values)).GetValue (i) : Values.Normal;
+        public static string LookupString (Values value) {
+            return String.Format ("CARDIAC_AXIS:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
         }
 
         public enum Values {
@@ -365,15 +363,6 @@ namespace II {
             Extreme,
             Indeterminate
         }
-
-        public static string [] Descriptions = new string [] {
-            "Normal",
-            "Left (Physiologic)",
-            "Left (Pathologic)",
-            "Right",
-            "Extreme",
-            "Indeterminate"
-        };
     }
 
     public class FetalHeartDecelerations {

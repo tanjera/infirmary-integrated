@@ -112,6 +112,7 @@ namespace II_Windows {
 
             lblGroupCardiacProfile.Content = App.Language.Dictionary ["PE:CardiacProfile"];
             lblPacemakerCaptureThreshold.Content = App.Language.Dictionary ["PE:PacemakerCaptureThreshold"];
+            lblCardiacAxis.Content = App.Language.Dictionary ["PE:CardiacAxis"];
             grpSTSegmentElevation.Header = App.Language.Dictionary ["PE:STSegmentElevation"];
             grpTWaveElevation.Header = App.Language.Dictionary ["PE:TWaveElevation"];
 
@@ -127,13 +128,18 @@ namespace II_Windows {
             lblParametersReset.Content = App.Language.Dictionary ["BUTTON:ResetParameters"];
 
             List<string> cardiacRhythms = new List<string> (),
-                            respiratoryRhythms = new List<string> (),
-                            intensityScale = new List<string> (),
-                            fetalHeartRhythms = new List<string> ();
+                cardiacAxes = new List<string> (),
+                respiratoryRhythms = new List<string> (),
+                intensityScale = new List<string> (),
+                fetalHeartRhythms = new List<string> ();
 
             foreach (CardiacRhythms.Values v in Enum.GetValues (typeof (CardiacRhythms.Values)))
                 cardiacRhythms.Add (App.Language.Dictionary [CardiacRhythms.LookupString (v)]);
             comboCardiacRhythm.ItemsSource = cardiacRhythms;
+
+            foreach (CardiacAxes.Values v in Enum.GetValues (typeof (CardiacAxes.Values)))
+                cardiacAxes.Add (App.Language.Dictionary [CardiacAxes.LookupString (v)]);
+            comboCardiacAxis.ItemsSource = cardiacAxes;
 
             foreach (RespiratoryRhythms.Values v in Enum.GetValues (typeof (RespiratoryRhythms.Values)))
                 respiratoryRhythms.Add (App.Language.Dictionary [RespiratoryRhythms.LookupString (v)]);
@@ -510,18 +516,24 @@ namespace II_Windows {
                 (double)numTWE_V4.Value, (double)numTWE_V5.Value, (double)numTWE_V6.Value
                 },
 
-                (CardiacRhythms.Values)Enum.GetValues (typeof (CardiacRhythms.Values)).GetValue (comboCardiacRhythm.SelectedIndex),
-                (RespiratoryRhythms.Values)Enum.GetValues (typeof (RespiratoryRhythms.Values)).GetValue (comboRespiratoryRhythm.SelectedIndex),
+                (CardiacRhythms.Values)Enum.GetValues (typeof (CardiacRhythms.Values)).GetValue (
+                    comboCardiacRhythm.SelectedIndex < 0 ? 0 : comboCardiacRhythm.SelectedIndex),
+                (CardiacAxes.Values)Enum.GetValues (typeof (CardiacAxes.Values)).GetValue (
+                    comboCardiacAxis.SelectedIndex < 0 ? 0 : comboCardiacAxis.SelectedIndex),
+                (RespiratoryRhythms.Values)Enum.GetValues (typeof (RespiratoryRhythms.Values)).GetValue (
+                    comboRespiratoryRhythm.SelectedIndex < 0 ? 0 : comboRespiratoryRhythm.SelectedIndex),
 
                 (int)numInspiratoryRatio.Value,
                 (int)numExpiratoryRatio.Value,
 
                 (int)numFHR.Value,
-                (Patient.Intensity.Values)Enum.GetValues (typeof (Patient.Intensity.Values)).GetValue (comboFHRVariability.SelectedIndex),
+                (Patient.Intensity.Values)Enum.GetValues (typeof (Patient.Intensity.Values)).GetValue (
+                    comboFHRVariability.SelectedIndex < 0 ? 0 : comboFHRVariability.SelectedIndex),
                 FHRRhythms,
                 (int)numUCFrequency.Value,
                 (int)numUCDuration.Value,
-                (Patient.Intensity.Values)Enum.GetValues (typeof (Patient.Intensity.Values)).GetValue (comboUCIntensity.SelectedIndex)
+                (Patient.Intensity.Values)Enum.GetValues (typeof (Patient.Intensity.Values)).GetValue (
+                    comboUCIntensity.SelectedIndex < 0 ? 0 : comboUCIntensity.SelectedIndex)
             );
 
             App.Mirror.PostPatient (App.Patient, App.Server);
@@ -553,6 +565,7 @@ namespace II_Windows {
                 numIAP.Value = e.Patient.IAP;
 
                 comboCardiacRhythm.SelectedIndex = (int)e.Patient.CardiacRhythm.Value;
+                comboCardiacAxis.SelectedIndex = (int)e.Patient.CardiacAxis.Value;
 
                 comboRespiratoryRhythm.SelectedIndex = (int)e.Patient.Respiratory_Rhythm.Value;
                 numInspiratoryRatio.Value = e.Patient.Respiratory_IERatio_I;
