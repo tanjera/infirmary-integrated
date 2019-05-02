@@ -23,6 +23,7 @@ And Infirmary Integrated can simulate hemodynamic and other readings including:
 - Intracranial pressure (ICP) factoring compliance in the waveform
 - Intra-abdominal pressure (IAP, bladder pressure)
 - Intra-aortic balloon pump augmentation pressures
+- Cardiac axis deviation, pulsus paradoxus, and pulsus alternans on waveforms
 - ST-segment elevation/depression and T-wave elevation/depression on all 12 ECG leads
 - Defibrillation, cardioversion, and transcutaneous pacing
 
@@ -54,6 +55,10 @@ Also, Infirmary Integrated simulates the following cardiac rhythms with waveform
 - Ventricular Tachycardia Polymorphic
 
 Other main features included in Infirmary Integrated include:
+- Realistic waveforms draw according to multiple factors, accounting for:
+  - Atrial and/or ventricular contractions
+  - Aberrant/ectopic beats and resulting decreased pulsatility
+  - Intrathoracic pressure, depending on mechanical or spontaneous ventilation
 - Able to pause devices to better analyze waveforms or create screenshots
 - Able to mirror patient data across multiple computers
   - A teacher can host a simulation via the internet, students can access the patient simulation remotely

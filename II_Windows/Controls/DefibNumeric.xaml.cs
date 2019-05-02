@@ -226,16 +226,16 @@ namespace II_Windows.Controls {
                             if (Device.Charged)
                                 lblLine3.Text = App.Language.Dictionary ["DEFIB:Charged"];
                             else if (Device.Analyzed) {
-                                switch (App.Patient.CardiacRhythm.Value) {
+                                switch (App.Patient.Cardiac_Rhythm.Value) {
                                     default:
                                         lblLine3.Text = App.Language.Dictionary ["DEFIB:NoShockAdvised"];
                                         break;
 
-                                    case CardiacRhythms.Values.Ventricular_Fibrillation_Coarse:
-                                    case CardiacRhythms.Values.Ventricular_Fibrillation_Fine:
-                                    case CardiacRhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
-                                    case CardiacRhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
-                                    case CardiacRhythms.Values.Ventricular_Tachycardia_Polymorphic:
+                                    case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Coarse:
+                                    case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Fine:
+                                    case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
+                                    case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
+                                    case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Polymorphic:
                                         lblLine3.Text = App.Language.Dictionary ["DEFIB:ShockAdvised"];
                                         break;
                                 }

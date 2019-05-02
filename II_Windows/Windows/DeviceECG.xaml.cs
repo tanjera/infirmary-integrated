@@ -34,8 +34,11 @@ namespace II_Windows {
             InitializeComponent ();
             DataContext = this;
 
+            InitTimers ();
             InitInterface ();
+        }
 
+        private void InitTimers () {
             timerTracing.Interval = Waveforms.Draw_Refresh;
             App.Timer_Main.Tick += timerTracing.Process;
             timerTracing.Tick += OnTick_Tracing;

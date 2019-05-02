@@ -28,14 +28,18 @@ namespace II {
                     Pacemaker_Threshold;            // Patient's threshold for electrical capture to pacemaker spike
 
         // Cardiac Profile
-        public double [] STElevation, TElevation;
-        public CardiacRhythms CardiacRhythm = new CardiacRhythms ();
-        public CardiacAxes CardiacAxis = new CardiacAxes ();
+        public double [] ST_Elevation, T_Elevation;
+        public Cardiac_Rhythms Cardiac_Rhythm = new Cardiac_Rhythms ();
+        public CardiacAxes Cardiac_Axis = new CardiacAxes ();
+        public bool Pulsus_Paradoxus = false,
+                    Pulsus_Alternans = false;
 
         // Respiratory Profile
-        public RespiratoryRhythms Respiratory_Rhythm = new RespiratoryRhythms ();
-        public bool Respiratory_Inflated;
-        public int Respiratory_IERatio_I, Respiratory_IERatio_E;
+        public Respiratory_Rhythms Respiratory_Rhythm = new Respiratory_Rhythms ();
+        public bool Respiration_Inflated = false,
+                    Mechanically_Ventilated = false;
+        public float Respiratory_IERatio_I = 1f,
+                    Respiratory_IERatio_E = 2f;
 
         // General Device Settings
         public bool TransducerZeroed_CVP = false,
@@ -45,10 +49,10 @@ namespace II {
                     TransducerZeroed_IAP = false;
 
         // Obstetric Profile
-        public Intensity UCIntensity = new Intensity (),
-                         FHRVariability = new Intensity ();
-        public int UCFrequency, UCDuration, FHR;
-        public FetalHeartDecelerations FHRDecelerations = new FetalHeartDecelerations ();
+        public Intensity UC_Intensity = new Intensity (),
+                         FHR_Variability = new Intensity ();
+        public int UC_Frequency, UC_Duration, FHR;
+        public FetalHeartDecelerations FHR_Decelerations = new FetalHeartDecelerations ();
 
         /* Scales, ratings, etc. for patient parameters */
         public class Intensity {
@@ -84,7 +88,10 @@ namespace II {
                         timerObstetric_ContractionDuration = new Timer (),
                         timerObstetric_FHRVariationFrequency = new Timer ();
 
-        private int counterCardiac;
+        /* Internal counters and buffers for propogating aberrancies */
+        private int counterCardiac_Aberrancy = 0;
+        private int bufferParadoxus_BaseASBP = 0;
+        private bool switchParadoxus = false;
 
         public static int CalculateMAP (int sbp, int dbp) {
             return dbp + ((sbp - dbp) / 3);
@@ -130,12 +137,13 @@ namespace II {
                             120, 80, 95,
                             22, 12, 16,
                             8, 1, 50,
+                            false, false,
                             new double [] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
                             new double [] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
-                            CardiacRhythms.Values.Sinus_Rhythm,
+                            Cardiac_Rhythms.Values.Sinus_Rhythm,
                             CardiacAxes.Values.Normal,
-                            RespiratoryRhythms.Values.Regular,
-                            1, 1,
+                            Respiratory_Rhythms.Values.Regular,
+                            1f, 1f, false,
                             150, Intensity.Values.Absent, new List<FetalHeartDecelerations.Values> (),
                             60, 30, Intensity.Values.Moderate);
 
@@ -195,18 +203,20 @@ namespace II {
                             case "T": T = double.Parse (pValue); break;
                             case "ST_Elevation":
                                 string [] e_st = pValue.Split (',').Where ((o) => o != "").ToArray ();
-                                for (int i = 0; i < e_st.Length && i < STElevation.Length; i++)
-                                    STElevation [i] = double.Parse (e_st [i]);
+                                for (int i = 0; i < e_st.Length && i < ST_Elevation.Length; i++)
+                                    ST_Elevation [i] = double.Parse (e_st [i]);
                                 break;
 
                             case "T_Elevation":
                                 string [] e_t = pValue.Split (',').Where ((o) => o != "").ToArray ();
-                                for (int i = 0; i < e_t.Length && i < TElevation.Length; i++)
-                                    TElevation [i] = double.Parse (e_t [i]);
+                                for (int i = 0; i < e_t.Length && i < T_Elevation.Length; i++)
+                                    T_Elevation [i] = double.Parse (e_t [i]);
                                 break;
 
-                            case "Cardiac_Rhythm": CardiacRhythm.Value = (CardiacRhythms.Values)Enum.Parse (typeof (CardiacRhythms.Values), pValue); break;
-                            case "Cardiac_Axis": CardiacAxis.Value = (CardiacAxes.Values)Enum.Parse (typeof (CardiacAxes.Values), pValue); break;
+                            case "Cardiac_Rhythm": Cardiac_Rhythm.Value = (Cardiac_Rhythms.Values)Enum.Parse (typeof (Cardiac_Rhythms.Values), pValue); break;
+                            case "Cardiac_Axis": Cardiac_Axis.Value = (CardiacAxes.Values)Enum.Parse (typeof (CardiacAxes.Values), pValue); break;
+                            case "PulsusParadoxus": Pulsus_Paradoxus = bool.Parse (pValue); break;
+                            case "PulsusAlternans": Pulsus_Alternans = bool.Parse (pValue); break;
 
                             case "Pacemaker_Rate": Pacemaker_Rate = int.Parse (pValue); break;
                             case "Pacemaker_Energy": Pacemaker_Energy = int.Parse (pValue); break;
@@ -218,21 +228,22 @@ namespace II {
                             case "TransducerZeroed_ICP": TransducerZeroed_ICP = bool.Parse (pValue); break;
                             case "TransducerZeroed_IAP": TransducerZeroed_IAP = bool.Parse (pValue); break;
 
-                            case "Respiratory_Rhythm": Respiratory_Rhythm.Value = (RespiratoryRhythms.Values)Enum.Parse (typeof (RespiratoryRhythms.Values), pValue); break;
-                            case "Respiratory_Inflated": Respiratory_Inflated = bool.Parse (pValue); break;
+                            case "Respiratory_Rhythm": Respiratory_Rhythm.Value = (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), pValue); break;
+                            case "Respiration_Inflated": Respiration_Inflated = bool.Parse (pValue); break;
                             case "Respiratory_IERatio_I": Respiratory_IERatio_I = int.Parse (pValue); break;
                             case "Respiratory_IERatio_E": Respiratory_IERatio_E = int.Parse (pValue); break;
+                            case "Mechanically_Ventilated": Mechanically_Ventilated = bool.Parse (pValue); break;
 
                             case "FHR": FHR = int.Parse (pValue); break;
-                            case "FHR_Variability": FHRVariability.Value = (Intensity.Values)Enum.Parse (typeof (Intensity.Values), pValue); break;
+                            case "FHR_Variability": FHR_Variability.Value = (Intensity.Values)Enum.Parse (typeof (Intensity.Values), pValue); break;
                             case "FHR_Rhythms":
                                 foreach (string fhr_rhythm in pValue.Split (',').Where ((o) => o != ""))
-                                    FHRDecelerations.ValueList.Add ((FetalHeartDecelerations.Values)Enum.Parse (typeof (FetalHeartDecelerations.Values), fhr_rhythm));
+                                    FHR_Decelerations.ValueList.Add ((FetalHeartDecelerations.Values)Enum.Parse (typeof (FetalHeartDecelerations.Values), fhr_rhythm));
                                 break;
 
-                            case "UterineContraction_Frequency": UCFrequency = int.Parse (pValue); break;
-                            case "UterineContraction_Duration": UCDuration = int.Parse (pValue); break;
-                            case "UterineContraction_Intensity": UCIntensity.Value = (Intensity.Values)Enum.Parse (typeof (Intensity.Values), pValue); break;
+                            case "UterineContraction_Frequency": UC_Frequency = int.Parse (pValue); break;
+                            case "UterineContraction_Duration": UC_Duration = int.Parse (pValue); break;
+                            case "UterineContraction_Intensity": UC_Intensity.Value = (Intensity.Values)Enum.Parse (typeof (Intensity.Values), pValue); break;
                         }
                     }
                 }
@@ -271,10 +282,12 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "PMP", PMP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "ICP", ICP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "IAP", IAP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "ST_Elevation", string.Join (",", STElevation)));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "T_Elevation", string.Join (",", TElevation)));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Rhythm", CardiacRhythm.Value));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Axis", CardiacAxis.Value));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "ST_Elevation", string.Join (",", ST_Elevation)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "T_Elevation", string.Join (",", T_Elevation)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Rhythm", Cardiac_Rhythm.Value));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Axis", Cardiac_Axis.Value));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "PulsusParadoxus", Pulsus_Paradoxus));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "PulsusAlternans", Pulsus_Alternans));
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "Pacemaker_Rate", Pacemaker_Rate));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Pacemaker_Energy", Pacemaker_Energy));
@@ -287,16 +300,17 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_IAP", TransducerZeroed_IAP));
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_Rhythm", Respiratory_Rhythm.Value));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_Inflated", Respiratory_Inflated));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiration_Inflated", Respiration_Inflated));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_I", Respiratory_IERatio_I));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_E", Respiratory_IERatio_E));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Mechanically_Ventilated", Mechanically_Ventilated));
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "FHR", FHR));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "FHR_Variability", FHRVariability.Value));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "UterineContraction_Frequency", UCFrequency));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "UterineContraction_Duration", UCDuration));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "UterineContraction_Intensity", UCIntensity.Value));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "FHR_Rhythms", string.Join (",", FHRDecelerations.ValueList)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "FHR_Variability", FHR_Variability.Value));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "UterineContraction_Frequency", UC_Frequency));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "UterineContraction_Duration", UC_Duration));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "UterineContraction_Intensity", UC_Intensity.Value));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "FHR_Rhythms", string.Join (",", FHR_Decelerations.ValueList)));
 
             return sWrite.ToString ();
         }
@@ -309,12 +323,14 @@ namespace II {
                     int asbp, int adbp, int amap,
                     int psp, int pdp, int pmp,
                     int icp, int iap,
-                    int pacerthreshold,
+                    int pacer_threshold,
+                    bool puls_paradoxus, bool puls_alternans,
                     double [] st_elev, double [] t_elev,
-                    CardiacRhythms.Values card_rhythm,
+                    Cardiac_Rhythms.Values card_rhythm,
                     CardiacAxes.Values card_axis,
-                    RespiratoryRhythms.Values resp_rhythm,
-                    int resp_ier_i, int resp_ier_e,
+                    Respiratory_Rhythms.Values resp_rhythm,
+                    float resp_ier_i, float resp_ier_e,
+                    bool mech_vent,
                     int fhr, Intensity.Values fhr_var, List<FetalHeartDecelerations.Values> fhr_rhythms,
                     int uc_freq, int uc_duration, Intensity.Values uc_intensity) {
             Updated = DateTime.UtcNow;
@@ -327,22 +343,28 @@ namespace II {
             ASBP = asbp; ADBP = adbp; AMAP = amap;
             PSP = psp; PDP = pdp; PMP = pmp;
 
-            CardiacRhythm.Value = card_rhythm;
-            CardiacAxis.Value = card_axis;
-            Pacemaker_Threshold = pacerthreshold;
-            STElevation = st_elev;
-            TElevation = t_elev;
+            Cardiac_Rhythm.Value = card_rhythm;
+            Cardiac_Axis.Value = card_axis;
+            Pacemaker_Threshold = pacer_threshold;
+            Pulsus_Paradoxus = puls_paradoxus;
+            Pulsus_Alternans = puls_alternans;
+            ST_Elevation = st_elev;
+            T_Elevation = t_elev;
 
             Respiratory_Rhythm.Value = resp_rhythm;
             Respiratory_IERatio_I = resp_ier_i;
             Respiratory_IERatio_E = resp_ier_e;
+            Mechanically_Ventilated = mech_vent;
 
             FHR = fhr;
-            FHRVariability.Value = fhr_var;
-            FHRDecelerations.ValueList = fhr_rhythms;
-            UCFrequency = uc_freq;
-            UCDuration = uc_duration;
-            UCIntensity.Value = uc_intensity;
+            FHR_Variability.Value = fhr_var;
+            FHR_Decelerations.ValueList = fhr_rhythms;
+            UC_Frequency = uc_freq;
+            UC_Duration = uc_duration;
+            UC_Intensity.Value = uc_intensity;
+
+            bufferParadoxus_BaseASBP = ASBP;
+            switchParadoxus = false;
 
             SetTimers ();
             OnCardiac_Baseline ();
@@ -372,6 +394,9 @@ namespace II {
             PSP = Utility.Clamp (PSP, pspMin, pspMax);
             PDP = Utility.Clamp (PDP, pdpMin, pdpMax);
             PMP = Patient.CalculateMAP (PSP, PDP);
+
+            bufferParadoxus_BaseASBP = ASBP;
+            switchParadoxus = false;
 
             SetTimers ();
             OnCardiac_Baseline ();
@@ -450,9 +475,9 @@ namespace II {
         private void OnPacemaker_Spike () {
             timerPacemaker_Spike.Stop ();
             // Trigger the QRS complex, then reset the heart's intrinsic timers
-            CardiacRhythm.AberrantBeat = true;
+            Cardiac_Rhythm.AberrantBeat = true;
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Ventricular));
-            CardiacRhythm.AberrantBeat = false;
+            Cardiac_Rhythm.AberrantBeat = false;
             timerCardiac_Baseline.Reset ();
         }
 
@@ -497,99 +522,99 @@ namespace II {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Baseline));
             timerCardiac_Baseline.Set ((int)(HR_Seconds * 1000f));
 
-            switch (CardiacRhythm.Value) {
+            switch (Cardiac_Rhythm.Value) {
                 default:
-                case CardiacRhythms.Values.Asystole:
+                case Cardiac_Rhythms.Values.Asystole:
                     break;
 
                 // Traced as "regular V" Rhythms
-                case CardiacRhythms.Values.Atrial_Flutter:
-                case CardiacRhythms.Values.Junctional:
-                case CardiacRhythms.Values.Idioventricular:
-                case CardiacRhythms.Values.Supraventricular_Tachycardia:
-                case CardiacRhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
-                case CardiacRhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
-                case CardiacRhythms.Values.Ventricular_Tachycardia_Polymorphic:
-                case CardiacRhythms.Values.Ventricular_Fibrillation_Coarse:
-                case CardiacRhythms.Values.Ventricular_Fibrillation_Fine:
+                case Cardiac_Rhythms.Values.Atrial_Flutter:
+                case Cardiac_Rhythms.Values.Junctional:
+                case Cardiac_Rhythms.Values.Idioventricular:
+                case Cardiac_Rhythms.Values.Supraventricular_Tachycardia:
+                case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
+                case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
+                case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Polymorphic:
+                case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Coarse:
+                case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Fine:
                     timerCardiac_Ventricular.Reset (1);
                     break;
 
                 // Traced as "regular A" or "regular A -> V" Rhythms
-                case CardiacRhythms.Values.AV_Block__1st_Degree:
-                case CardiacRhythms.Values.AV_Block__Mobitz_II:
-                case CardiacRhythms.Values.AV_Block__Wenckebach:
-                case CardiacRhythms.Values.Bundle_Branch_Block:
-                case CardiacRhythms.Values.Sinus_Rhythm:
-                case CardiacRhythms.Values.Pulseless_Electrical_Activity:
-                case CardiacRhythms.Values.Ventricular_Standstill:
+                case Cardiac_Rhythms.Values.AV_Block__1st_Degree:
+                case Cardiac_Rhythms.Values.AV_Block__Mobitz_II:
+                case Cardiac_Rhythms.Values.AV_Block__Wenckebach:
+                case Cardiac_Rhythms.Values.Bundle_Branch_Block:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm:
+                case Cardiac_Rhythms.Values.Pulseless_Electrical_Activity:
+                case Cardiac_Rhythms.Values.Ventricular_Standstill:
                     timerCardiac_Atrial.Reset (1);
                     break;
 
                 // Traced as "irregular V" rhythms
-                case CardiacRhythms.Values.Atrial_Fibrillation:
+                case Cardiac_Rhythms.Values.Atrial_Fibrillation:
                     timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval * Utility.RandomDouble (0.6, 1.4)));
                     timerCardiac_Ventricular.Reset (1);
                     break;
 
                 /* Special Cases */
-                case CardiacRhythms.Values.AV_Block__3rd_Degree:
+                case Cardiac_Rhythms.Values.AV_Block__3rd_Degree:
                     if (!timerCardiac_Atrial.IsRunning)
                         timerCardiac_Atrial.Reset ((int)(timerCardiac_Baseline.Interval * 0.6));
                     timerCardiac_Ventricular.Reset (160);
                     break;
 
-                case CardiacRhythms.Values.Sinus_Rhythm_with_PACs:
-                    counterCardiac -= 1;
-                    if (counterCardiac <= 0) {
-                        counterCardiac = new Random ().Next (4, 8);
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PACs:
+                    counterCardiac_Aberrancy -= 1;
+                    if (counterCardiac_Aberrancy <= 0) {
+                        counterCardiac_Aberrancy = new Random ().Next (4, 8);
                         timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval * Utility.RandomDouble (0.6, 0.8)));
                     }
                     timerCardiac_Atrial.Reset (1);
                     break;
 
-                case CardiacRhythms.Values.Sinus_Rhythm_with_PJCs:
-                    counterCardiac -= 1;
-                    if (counterCardiac <= 0) {
-                        counterCardiac = new Random ().Next (4, 8);
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PJCs:
+                    counterCardiac_Aberrancy -= 1;
+                    if (counterCardiac_Aberrancy <= 0) {
+                        counterCardiac_Aberrancy = new Random ().Next (4, 8);
                         timerCardiac_Ventricular.Reset (1);
                     } else {
-                        if (counterCardiac == 1)
+                        if (counterCardiac_Aberrancy == 1)
                             timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval * Utility.RandomDouble (0.7, 0.9)));
                         timerCardiac_Atrial.Reset (1);
                     }
                     break;
 
-                case CardiacRhythms.Values.Sinus_Rhythm_with_Bigeminy:
-                case CardiacRhythms.Values.Sinus_Rhythm_with_Trigeminy:
-                    counterCardiac -= 1;
-                    if (counterCardiac == 0) {
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_Bigeminy:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_Trigeminy:
+                    counterCardiac_Aberrancy -= 1;
+                    if (counterCardiac_Aberrancy == 0) {
                         timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval * 0.8));
-                    } else if (counterCardiac < 0) {   // Then throw the PVC and reset the counters
-                        if (CardiacRhythm.Value == CardiacRhythms.Values.Sinus_Rhythm_with_Bigeminy)
-                            counterCardiac = 1;
-                        else if (CardiacRhythm.Value == CardiacRhythms.Values.Sinus_Rhythm_with_Trigeminy)
-                            counterCardiac = 2;
-                        CardiacRhythm.AberrantBeat = true;
+                    } else if (counterCardiac_Aberrancy < 0) {   // Then throw the PVC and reset the counters
+                        if (Cardiac_Rhythm.Value == Cardiac_Rhythms.Values.Sinus_Rhythm_with_Bigeminy)
+                            counterCardiac_Aberrancy = 1;
+                        else if (Cardiac_Rhythm.Value == Cardiac_Rhythms.Values.Sinus_Rhythm_with_Trigeminy)
+                            counterCardiac_Aberrancy = 2;
+                        Cardiac_Rhythm.AberrantBeat = true;
                         timerCardiac_Ventricular.Reset (1);
                         break;
                     }
                     timerCardiac_Atrial.Reset (1);
-                    CardiacRhythm.AberrantBeat = false;
+                    Cardiac_Rhythm.AberrantBeat = false;
                     break;
 
-                case CardiacRhythms.Values.Sinus_Rhythm_with_PVCs_Unifocal:
-                case CardiacRhythms.Values.Sinus_Rhythm_with_PVCs_Multifocal:
-                    counterCardiac -= 1;
-                    if (counterCardiac == 0) {  // Shorten the beat preceding the PVC, making it premature
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PVCs_Unifocal:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PVCs_Multifocal:
+                    counterCardiac_Aberrancy -= 1;
+                    if (counterCardiac_Aberrancy == 0) {  // Shorten the beat preceding the PVC, making it premature
                         timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval * 0.8));
-                    } else if (counterCardiac < 0) {   // Then throw the PVC and reset the counters
-                        counterCardiac = new Random ().Next (4, 9);
-                        CardiacRhythm.AberrantBeat = true;
+                    } else if (counterCardiac_Aberrancy < 0) {   // Then throw the PVC and reset the counters
+                        counterCardiac_Aberrancy = new Random ().Next (4, 9);
+                        Cardiac_Rhythm.AberrantBeat = true;
                         timerCardiac_Ventricular.Reset (1);
                         break;
                     }
-                    CardiacRhythm.AberrantBeat = false;
+                    Cardiac_Rhythm.AberrantBeat = false;
                     timerCardiac_Atrial.Reset (1);
                     break;
             }
@@ -598,63 +623,63 @@ namespace II {
         private void OnCardiac_Atrial () {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Atrial));
 
-            switch (CardiacRhythm.Value) {
+            switch (Cardiac_Rhythm.Value) {
                 default:
-                case CardiacRhythms.Values.Asystole:
+                case Cardiac_Rhythms.Values.Asystole:
                     break;
 
                 // Regular A Rhythms
-                case CardiacRhythms.Values.Ventricular_Standstill:
+                case Cardiac_Rhythms.Values.Ventricular_Standstill:
                     timerCardiac_Atrial.Stop ();
                     break;
 
                 // Regular A -> V rhythms
-                case CardiacRhythms.Values.Bundle_Branch_Block:
-                case CardiacRhythms.Values.Sinus_Rhythm:
-                case CardiacRhythms.Values.Sinus_Rhythm_with_PACs:
-                case CardiacRhythms.Values.Sinus_Rhythm_with_PJCs:
-                case CardiacRhythms.Values.Sinus_Rhythm_with_Bigeminy:
-                case CardiacRhythms.Values.Sinus_Rhythm_with_Trigeminy:
-                case CardiacRhythms.Values.Sinus_Rhythm_with_PVCs_Unifocal:
-                case CardiacRhythms.Values.Sinus_Rhythm_with_PVCs_Multifocal:
-                case CardiacRhythms.Values.Pulseless_Electrical_Activity:
+                case Cardiac_Rhythms.Values.Bundle_Branch_Block:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PACs:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PJCs:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_Bigeminy:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_Trigeminy:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PVCs_Unifocal:
+                case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PVCs_Multifocal:
+                case Cardiac_Rhythms.Values.Pulseless_Electrical_Activity:
                     timerCardiac_Atrial.Stop ();
                     timerCardiac_Ventricular.Reset (160);
                     break;
 
                 /* Special cases */
 
-                case CardiacRhythms.Values.AV_Block__1st_Degree:
+                case Cardiac_Rhythms.Values.AV_Block__1st_Degree:
                     timerCardiac_Atrial.Stop ();
                     timerCardiac_Ventricular.Reset (240);
                     break;
 
-                case CardiacRhythms.Values.AV_Block__Mobitz_II:
+                case Cardiac_Rhythms.Values.AV_Block__Mobitz_II:
                     timerCardiac_Atrial.Stop ();
-                    counterCardiac -= 1;
-                    if (counterCardiac < 0) {
-                        counterCardiac = 2;
-                        CardiacRhythm.AberrantBeat = true;
+                    counterCardiac_Aberrancy -= 1;
+                    if (counterCardiac_Aberrancy < 0) {
+                        counterCardiac_Aberrancy = 2;
+                        Cardiac_Rhythm.AberrantBeat = true;
                     } else {
                         timerCardiac_Ventricular.Reset (160);
-                        CardiacRhythm.AberrantBeat = false;
+                        Cardiac_Rhythm.AberrantBeat = false;
                     }
                     break;
 
-                case CardiacRhythms.Values.AV_Block__Wenckebach:
+                case Cardiac_Rhythms.Values.AV_Block__Wenckebach:
                     timerCardiac_Atrial.Stop ();
-                    counterCardiac -= 1;
-                    if (counterCardiac < 0) {
-                        counterCardiac = 3;
-                        CardiacRhythm.AberrantBeat = true;
+                    counterCardiac_Aberrancy -= 1;
+                    if (counterCardiac_Aberrancy < 0) {
+                        counterCardiac_Aberrancy = 3;
+                        Cardiac_Rhythm.AberrantBeat = true;
                     } else {
-                        timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval + (160 * (3 - counterCardiac))));
-                        timerCardiac_Ventricular.Reset ((int)(160 * (3 - counterCardiac)));
-                        CardiacRhythm.AberrantBeat = false;
+                        timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval + (160 * (3 - counterCardiac_Aberrancy))));
+                        timerCardiac_Ventricular.Reset ((int)(160 * (3 - counterCardiac_Aberrancy)));
+                        Cardiac_Rhythm.AberrantBeat = false;
                     }
                     break;
 
-                case CardiacRhythms.Values.AV_Block__3rd_Degree:
+                case Cardiac_Rhythms.Values.AV_Block__3rd_Degree:
                     // Specifically let atrial timer continue to run and propogate P-waves!
                     break;
             }
@@ -663,7 +688,10 @@ namespace II {
         private void OnCardiac_Ventricular () {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Ventricular));
 
-            switch (CardiacRhythm.Value) {
+            // Flip the switch on pulsus alternans
+            Cardiac_Rhythm.AlternansBeat = Pulsus_Alternans ? !Cardiac_Rhythm.AlternansBeat : false;
+
+            switch (Cardiac_Rhythm.Value) {
                 default: break;
             }
 
@@ -676,48 +704,74 @@ namespace II {
 
             switch (Respiratory_Rhythm.Value) {
                 default:
-                case RespiratoryRhythms.Values.Apnea:
+                case Respiratory_Rhythms.Values.Apnea:
                     break;
 
-                case RespiratoryRhythms.Values.Regular:
+                case Respiratory_Rhythms.Values.Regular:
                     timerRespiratory_Inspiration.Reset (1);
                     break;
             }
         }
 
         private void OnRespiratory_Inspiration () {
-            Respiratory_Inflated = true;
+            Respiration_Inflated = true;
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Respiratory_Inspiration));
             timerRespiratory_Inspiration.Stop ();
 
+            // Process pulsus paradoxus (numerical values) for inspiration here
+            // Flip counterCardiac_Paradoxus when flipping SBP portion
+            if (Pulsus_Paradoxus && Respiratory_Rhythm.Value != Respiratory_Rhythms.Values.Apnea
+                && (Mechanically_Ventilated || switchParadoxus)) {
+                switchParadoxus = true;
+                ASBP += Mechanically_Ventilated
+                    ? -(int)(bufferParadoxus_BaseASBP * 0.15)
+                    : (int)(bufferParadoxus_BaseASBP * 0.15);
+                IABP_AP += Mechanically_Ventilated
+                    ? -(int)(bufferParadoxus_BaseASBP * 0.05)
+                    : (int)(bufferParadoxus_BaseASBP * 0.05);
+            }
+
             switch (Respiratory_Rhythm.Value) {
                 default:
-                case RespiratoryRhythms.Values.Apnea:
+                case Respiratory_Rhythms.Values.Apnea:
                     break;
 
-                case RespiratoryRhythms.Values.Regular:
+                case Respiratory_Rhythms.Values.Regular:
                     timerRespiratory_Expiration.Reset ((int)(RR_Seconds_I * 1000f));     // Expiration.Interval marks end inspiration
                     break;
             }
         }
 
         private void OnRespiratory_Expiration () {
-            Respiratory_Inflated = false;
+            Respiration_Inflated = false;
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Respiratory_Expiration));
             timerRespiratory_Expiration.Stop ();
+
+            // Process pulsus paradoxus (numerical values) for expiration here
+            // Flip counterCardiac_Paradoxus when flipping SBP portion
+            if (Pulsus_Paradoxus && Respiratory_Rhythm.Value != Respiratory_Rhythms.Values.Apnea
+                && (!Mechanically_Ventilated || switchParadoxus)) {
+                switchParadoxus = true;
+                ASBP += Mechanically_Ventilated
+                    ? (int)(bufferParadoxus_BaseASBP * 0.15)
+                    : -(int)(bufferParadoxus_BaseASBP * 0.15);
+                IABP_AP += Mechanically_Ventilated
+                    ? (int)(bufferParadoxus_BaseASBP * 0.05)
+                    : -(int)(bufferParadoxus_BaseASBP * 0.05);
+            }
         }
 
         private void OnObstetric_Baseline () {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Obstetric_Baseline));
 
-            if (UCFrequency > 0 && !timerObstetric_ContractionDuration.IsRunning) {
-                timerObstetric_ContractionFrequency.Continue (UCFrequency * 1000);
-            } else if (UCFrequency <= 0) {
+            if (UC_Frequency > 0 && !timerObstetric_ContractionDuration.IsRunning) {
+                timerObstetric_ContractionFrequency.Continue (UC_Frequency * 1000);
+            } else if (UC_Frequency <= 0) {
                 timerObstetric_ContractionDuration.Stop ();
                 timerObstetric_ContractionFrequency.Stop ();
             }
 
-            if (FHRVariability.Value == Intensity.Values.Absent)
+            if (FHR_Variability.Value == Intensity.Values.Absent)
                 timerObstetric_FHRVariationFrequency.Stop ();
             else
                 timerObstetric_FHRVariationFrequency.Continue (20000);
@@ -725,7 +779,7 @@ namespace II {
 
         private void OnObstetric_ContractionStart () {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Obstetric_ContractionStart));
-            timerObstetric_ContractionDuration.Reset (UCDuration * 1000);
+            timerObstetric_ContractionDuration.Reset (UC_Duration * 1000);
         }
 
         private void OnObstetric_ContractionEnd () {

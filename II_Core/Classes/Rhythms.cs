@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 
 namespace II {
-    public class CardiacRhythms {
+    public class Cardiac_Rhythms {
         public Values Value;
-        public CardiacRhythms (Values v) { Value = v; }
-        public CardiacRhythms () { Value = Values.Sinus_Rhythm; }
+        public Cardiac_Rhythms (Values v) { Value = v; }
+        public Cardiac_Rhythms () { Value = Values.Sinus_Rhythm; }
         public bool AberrantBeat = false;           // Signals for aberrancy in rhythm generation
+        public bool AlternansBeat = false;          // Signals for switching in pulsus alternans
 
         public enum Values {
             Asystole,
@@ -262,7 +263,7 @@ namespace II {
 
         public void ECG_Ventricular (Patient p, Rhythm.Strip s) {
             // Handle aberrant beats (may be triggered by pacemaker...)
-            if (p.CardiacRhythm.AberrantBeat)
+            if (p.Cardiac_Rhythm.AberrantBeat)
                 switch (Value) {
                     default: return;
                     case Values.Asystole:
@@ -331,10 +332,10 @@ namespace II {
         }
     }
 
-    public class RespiratoryRhythms {
+    public class Respiratory_Rhythms {
         public Values Value;
-        public RespiratoryRhythms (Values v) { Value = v; }
-        public RespiratoryRhythms () { Value = Values.Regular; }
+        public Respiratory_Rhythms (Values v) { Value = v; }
+        public Respiratory_Rhythms () { Value = Values.Regular; }
 
         public static string LookupString (Values value) {
             return String.Format ("RHYTHM:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());

@@ -26,7 +26,8 @@ namespace II_Windows {
         private List<Controls.MonitorNumeric> listNumerics = new List<Controls.MonitorNumeric> ();
 
         private Timer timerTracing = new Timer (),
-              timerVitals = new Timer ();
+            timerVitals_Cardiac = new Timer (),
+            timerVitals_Respiratory = new Timer ();
 
         // Define WPF UI commands for binding
         private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram;
@@ -40,20 +41,29 @@ namespace II_Windows {
             InitializeComponent ();
             DataContext = this;
 
+            InitTimers ();
             InitInterface ();
 
+            OnLayoutChange ();
+        }
+
+        private void InitTimers () {
             timerTracing.Interval = Waveforms.Draw_Refresh;
             App.Timer_Main.Tick += timerTracing.Process;
             timerTracing.Tick += OnTick_Tracing;
             timerTracing.Start ();
 
-            timerVitals.Interval = 5000;
-            App.Timer_Main.Tick += timerVitals.Process;
-            timerVitals.Tick += OnTick_Vitals;
-            timerVitals.Start ();
+            timerVitals_Cardiac.Interval = Utility.Clamp ((int)(App.Patient.HR_Seconds * 1000 / 2), 2000, 6000);
+            timerVitals_Respiratory.Interval = Utility.Clamp ((int)(App.Patient.RR_Seconds * 1000 / 2), 2000, 8000);
 
-            OnLayoutChange ();
-            OnTick_Vitals (null, new EventArgs ());
+            App.Timer_Main.Tick += timerVitals_Cardiac.Process;
+            App.Timer_Main.Tick += timerVitals_Respiratory.Process;
+
+            timerVitals_Cardiac.Tick += OnTick_Vitals_Cardiac;
+            timerVitals_Respiratory.Tick += OnTick_Vitals_Respiratory;
+
+            timerVitals_Cardiac.Start ();
+            timerVitals_Respiratory.Start ();
         }
 
         private void InitInterface () {
@@ -200,11 +210,28 @@ namespace II_Windows {
             });
         }
 
-        private void OnTick_Vitals (object sender, EventArgs e) {
+        private void OnTick_Vitals_Cardiac (object sender, EventArgs e) {
             if (isPaused)
                 return;
 
-            listNumerics.ForEach (n => n.UpdateVitals ());
+            listNumerics
+                .Where (n
+                    => n.controlType.Value != Controls.MonitorNumeric.ControlType.Values.ETCO2
+                    && n.controlType.Value != Controls.MonitorNumeric.ControlType.Values.RR)
+                .ToList ()
+                .ForEach (n => n.UpdateVitals ());
+        }
+
+        private void OnTick_Vitals_Respiratory (object sender, EventArgs e) {
+            if (isPaused)
+                return;
+
+            listNumerics
+                .Where (n
+                    => n.controlType.Value == Controls.MonitorNumeric.ControlType.Values.ETCO2
+                    || n.controlType.Value == Controls.MonitorNumeric.ControlType.Values.RR)
+                .ToList ()
+                .ForEach (n => n.UpdateVitals ());
         }
 
         private void OnLayoutChange (List<string> numericTypes = null, List<string> tracingTypes = null) {

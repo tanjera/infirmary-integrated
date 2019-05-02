@@ -96,14 +96,17 @@ namespace II_Windows {
             InitializeComponent ();
             DataContext = this;
 
+            InitTimers ();
             InitInterface ();
+        }
 
+        private void InitTimers () {
             timerTracing.Interval = Waveforms.Draw_Refresh;
             App.Timer_Main.Tick += timerTracing.Process;
             timerTracing.Tick += OnTick_Tracing;
             timerTracing.Start ();
 
-            timerVitals.Interval = 5000;
+            timerVitals.Interval = (int)(App.Patient.HR_Seconds * 1000);
             App.Timer_Main.Tick += timerVitals.Process;
             timerVitals.Tick += OnTick_Vitals;
             timerVitals.Start ();
@@ -442,8 +445,8 @@ namespace II_Windows {
 
                 case Patient.PatientEvent_Args.EventTypes.Cardiac_Baseline:
                     App.Patient.IABP_Active = Running && (Frequency_Iter % Frequency == 0)
-                        && ((Trigger.Value == Triggering.Values.ECG && App.Patient.CardiacRhythm.HasWaveform_Ventricular)
-                        || (Trigger.Value == Triggering.Values.Pressure && App.Patient.CardiacRhythm.HasPulse_Ventricular));
+                        && ((Trigger.Value == Triggering.Values.ECG && App.Patient.Cardiac_Rhythm.HasWaveform_Ventricular)
+                        || (Trigger.Value == Triggering.Values.Pressure && App.Patient.Cardiac_Rhythm.HasPulse_Ventricular));
                     App.Patient.IABP_Trigger = Trigger.Value.ToString ();
 
                     listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient));

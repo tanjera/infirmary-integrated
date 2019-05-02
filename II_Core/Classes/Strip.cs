@@ -136,7 +136,7 @@ namespace II.Rhythm {
 
         public void Add_Beat__Cardiac_Baseline (Patient _Patient) {
             if (IsECG ()) {
-                _Patient.CardiacRhythm.ECG_Isoelectric (_Patient, this);
+                _Patient.Cardiac_Rhythm.ECG_Isoelectric (_Patient, this);
             } else if (Lead.Value != Leads.Values.RR && Lead.Value != Leads.Values.ETCO2) {
                 // Fill waveform through to future buffer with flatline
                 double fill = (lengthSeconds * forwardEdgeBuffer) - Last (Points).X;
@@ -144,48 +144,42 @@ namespace II.Rhythm {
             }
 
             if (Lead.Value == Leads.Values.CVP) {
-                if (_Patient.CardiacRhythm.HasPulse_Atrial && !_Patient.CardiacRhythm.HasPulse_Ventricular)
+                if (_Patient.Cardiac_Rhythm.HasPulse_Atrial && !_Patient.Cardiac_Rhythm.HasPulse_Ventricular)
                     Overwrite (Waveforms.CVP_Rhythm (_Patient, 0.25f));
-                else if (!_Patient.CardiacRhythm.HasPulse_Atrial && _Patient.CardiacRhythm.HasPulse_Ventricular)
+                else if (!_Patient.Cardiac_Rhythm.HasPulse_Atrial && _Patient.Cardiac_Rhythm.HasPulse_Ventricular)
                     Overwrite (Waveforms.CVP_Rhythm (_Patient, 0.5f));
-                else if (_Patient.CardiacRhythm.HasPulse_Atrial && _Patient.CardiacRhythm.HasPulse_Ventricular)
-                    Overwrite (Waveforms.CVP_Rhythm (_Patient,
-                        _Patient.CardiacRhythm.AberrantBeat ? 0.5f : 1f));
+                else if (_Patient.Cardiac_Rhythm.HasPulse_Atrial && _Patient.Cardiac_Rhythm.HasPulse_Ventricular)
+                    Overwrite (Waveforms.CVP_Rhythm (_Patient, 1f));
             }
         }
 
         public void Add_Beat__Cardiac_Atrial (Patient _Patient) {
             if (IsECG ())
-                _Patient.CardiacRhythm.ECG_Atrial (_Patient, this);
+                _Patient.Cardiac_Rhythm.ECG_Atrial (_Patient, this);
         }
 
         public void Add_Beat__Cardiac_Ventricular (Patient _Patient) {
             if (IsECG ())
-                _Patient.CardiacRhythm.ECG_Ventricular (_Patient, this);
-            else if (Lead.Value == Leads.Values.SPO2 && _Patient.CardiacRhythm.HasPulse_Ventricular)
-                Overwrite (Waveforms.SPO2_Rhythm (_Patient,
-                    _Patient.CardiacRhythm.AberrantBeat ? 0.5f : 1f));
+                _Patient.Cardiac_Rhythm.ECG_Ventricular (_Patient, this);
+            else if (Lead.Value == Leads.Values.SPO2 && _Patient.Cardiac_Rhythm.HasPulse_Ventricular)
+                Overwrite (Waveforms.SPO2_Rhythm (_Patient, 1f));
             else if (Lead.Value == Leads.Values.ABP) {
                 if (_Patient.IABP_Active)
                     Overwrite (Waveforms.IABP_ABP_Rhythm (_Patient, 1f));
-                else if (_Patient.CardiacRhythm.HasPulse_Ventricular)
-                    Overwrite (Waveforms.ABP_Rhythm (_Patient,
-                        _Patient.CardiacRhythm.AberrantBeat ? 0.5f : 1f));
-            } else if (Lead.Value == Leads.Values.PA && _Patient.CardiacRhythm.HasPulse_Ventricular)
-                Overwrite (Waveforms.PA_Rhythm (_Patient,
-                    _Patient.CardiacRhythm.AberrantBeat ? 0.5f : 1f));
-            else if (Lead.Value == Leads.Values.ICP && _Patient.CardiacRhythm.HasPulse_Ventricular)
-                Overwrite (Waveforms.ICP_Rhythm (_Patient,
-                    _Patient.CardiacRhythm.AberrantBeat ? 0.5f : 1f));
-            else if (Lead.Value == Leads.Values.IAP && _Patient.CardiacRhythm.HasPulse_Ventricular)
-                Overwrite (Waveforms.IAP_Rhythm (_Patient,
-                    _Patient.CardiacRhythm.AberrantBeat ? 0.5f : 1f));
+                else if (_Patient.Cardiac_Rhythm.HasPulse_Ventricular)
+                    Overwrite (Waveforms.ABP_Rhythm (_Patient, 1f));
+            } else if (Lead.Value == Leads.Values.PA && _Patient.Cardiac_Rhythm.HasPulse_Ventricular)
+                Overwrite (Waveforms.PA_Rhythm (_Patient, 1f));
+            else if (Lead.Value == Leads.Values.ICP && _Patient.Cardiac_Rhythm.HasPulse_Ventricular)
+                Overwrite (Waveforms.ICP_Rhythm (_Patient, 1f));
+            else if (Lead.Value == Leads.Values.IAP && _Patient.Cardiac_Rhythm.HasPulse_Ventricular)
+                Overwrite (Waveforms.IAP_Rhythm (_Patient, 1f));
 
             if (Lead.Value == Leads.Values.IABP && _Patient.IABP_Active) {
-                if (_Patient.CardiacRhythm.HasWaveform_Ventricular && _Patient.IABP_Trigger == "ECG") {
+                if (_Patient.Cardiac_Rhythm.HasWaveform_Ventricular && _Patient.IABP_Trigger == "ECG") {
                     // ECG Trigger works only if ventricular ECG waveform
                     Overwrite (Waveforms.IABP_Balloon_Rhythm (_Patient, 1f));
-                } else if (_Patient.CardiacRhythm.HasPulse_Ventricular && _Patient.IABP_Trigger == "Pressure") {
+                } else if (_Patient.Cardiac_Rhythm.HasPulse_Ventricular && _Patient.IABP_Trigger == "Pressure") {
                     // Pressure Trigger works only if ventricular pressure impulse
                     Overwrite (Waveforms.IABP_Balloon_Rhythm (_Patient, 1f));
                 }

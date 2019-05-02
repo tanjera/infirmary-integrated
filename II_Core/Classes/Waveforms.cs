@@ -30,6 +30,20 @@ namespace II.Rhythm {
         public static List<Point> SPO2_Rhythm (Patient _P, double _Amplitude) {
             double _Portion = _P.HR_Seconds / 4f;
 
+            _Amplitude *= ((new Random ().NextDouble () * 0.1) + 0.9);          // Add 10% waveform amplitude variance
+
+            if (_P.Cardiac_Rhythm.AberrantBeat)                                 // Aberrant beat effect on waveform (50%)
+                _Amplitude *= 0.5f;
+
+            if (_P.Pulsus_Alternans && _P.Cardiac_Rhythm.AlternansBeat)         // Pulsus alternans effect on waveform (50%)
+                _Amplitude *= 0.5f;
+
+            if (_P.Pulsus_Paradoxus)                                            // Pulsus paradoxus effect on waveform (65%)
+                _Amplitude *=
+                    ((!_P.Mechanically_Ventilated && !_P.Respiration_Inflated)
+                    || (_P.Mechanically_Ventilated && _P.Respiration_Inflated))
+                        ? 0.65 : 1.0;
+
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.7f * _Amplitude, 0.6f * _Amplitude, Last (thisBeat)));
@@ -39,6 +53,20 @@ namespace II.Rhythm {
 
         public static List<Point> ABP_Rhythm (Patient _P, double _Amplitude) {
             double _Portion = _P.HR_Seconds / 4;
+
+            _Amplitude *= ((new Random ().NextDouble () * 0.1) + 0.9);          // Add 10% waveform amplitude variance
+
+            if (_P.Cardiac_Rhythm.AberrantBeat)                                 // Aberrant beat effect on waveform (50%)
+                _Amplitude *= 0.5f;
+
+            if (_P.Pulsus_Alternans && _P.Cardiac_Rhythm.AlternansBeat)         // Pulsus alternans effect on waveform (50%)
+                _Amplitude *= 0.5f;
+
+            if (_P.Pulsus_Paradoxus)                                            // Pulsus paradoxus effect on waveform (65%)
+                _Amplitude *=
+                    ((!_P.Mechanically_Ventilated && !_P.Respiration_Inflated)
+                    || (_P.Mechanically_Ventilated && _P.Respiration_Inflated))
+                        ? 0.65 : 1.0;
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
@@ -50,15 +78,25 @@ namespace II.Rhythm {
 
         public static List<Point> CVP_Rhythm (Patient _P, double _Amplitude) {
             double _Portion = _P.HR_Seconds / 5;
-            _Amplitude *= _P.Respiratory_Inflated ? 1f : 0.8f;      // Adjust for intrathoracic pressure
+
+            // Adjust for intrathoracic pressure
+            if (_P.Mechanically_Ventilated)
+                _Amplitude *= _P.Respiration_Inflated ? 0.7f : 1f;
+            else
+                _Amplitude *= !_P.Respiration_Inflated ? 0.85f : 1f;
+
+            _Amplitude *= ((new Random ().NextDouble () * 0.1) + 0.9);      // Add 10% waveform amplitude variance
+
+            if (_P.Cardiac_Rhythm.AberrantBeat)                                 // Aberrant beat effect on waveform (50%)
+                _Amplitude *= 0.5f;
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Curve (_Portion, 0f, 0.3f * _Amplitude, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (_Portion,
-                (_P.CardiacRhythm.HasPulse_Atrial && !_P.CardiacRhythm.AberrantBeat ? 0.5 : 0.3) * _Amplitude,
+                (_P.Cardiac_Rhythm.HasPulse_Atrial && !_P.Cardiac_Rhythm.AberrantBeat ? 0.5 : 0.3) * _Amplitude,
                 0.3 * _Amplitude, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (_Portion,
-                (_P.CardiacRhythm.HasPulse_Atrial && !_P.CardiacRhythm.AberrantBeat ? 0.35 : .15) * _Amplitude,
+                (_P.Cardiac_Rhythm.HasPulse_Atrial && !_P.Cardiac_Rhythm.AberrantBeat ? 0.35 : .15) * _Amplitude,
                 -0.05f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (_Portion, -0.1f, -0.05f * _Amplitude, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.2f * _Amplitude, 0f, Last (thisBeat)));
@@ -68,6 +106,10 @@ namespace II.Rhythm {
         public static List<Point> ICP_Rhythm (Patient _P, double _Amplitude) {
             double _Portion = _P.HR_Seconds / 3;
 
+            if (_P.Cardiac_Rhythm.AberrantBeat)                                 // Aberrant beat effect on waveform (50%)
+                _Amplitude *= 0.5f;
+
+            _Amplitude *= ((new Random ().NextDouble () * 0.1) + 0.9);      // Add 10% waveform amplitude variance
             double icpCompliance = Utility.Clamp (Utility.InverseLerp (15, 25, _P.ICP), 0, 1);
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.7f * _Amplitude, 0.5f * _Amplitude, Last (thisBeat)));
@@ -82,7 +124,16 @@ namespace II.Rhythm {
         }
 
         public static List<Point> IAP_Rhythm (Patient _P, double _Amplitude) {
-            _Amplitude *= _P.Respiratory_Inflated ? 1f : 0.5f;      // Adjust for intrathoracic pressure
+            // Adjust for intrathoracic pressure
+            if (_P.Mechanically_Ventilated)
+                _Amplitude *= _P.Respiration_Inflated ? 1f : 0.7f;
+            else
+                _Amplitude *= !_P.Respiration_Inflated ? 1f : 0.85f;
+
+            _Amplitude *= ((new Random ().NextDouble () * 0.1) + 0.9);      // Add 10% waveform amplitude variance
+
+            if (_P.Cardiac_Rhythm.AberrantBeat)                                 // Aberrant beat effect on waveform (50%)
+                _Amplitude *= 0.5f;
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds, 0.2f * _Amplitude, 0f, Last (thisBeat)));
@@ -93,6 +144,15 @@ namespace II.Rhythm {
             /* ABP during normal sinus perfusion is similar to a sine wave leaning right with dicrotic notch
 		     */
             double _Portion = _P.HR_Seconds / 4;
+
+            // Adjust for intrathoracic pressure
+            if (_P.Mechanically_Ventilated)
+                _Amplitude *= _P.Respiration_Inflated ? 0.7f : 1f;
+            else
+                _Amplitude *= !_P.Respiration_Inflated ? 0.85f : 1f;
+
+            if (_P.Cardiac_Rhythm.AberrantBeat)                                 // Aberrant beat effect on waveform (50%)
+                _Amplitude *= 0.5f;
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
@@ -124,8 +184,8 @@ namespace II.Rhythm {
             thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
 
             // Native systolic function inflection; decreased if aberrant/ectopic, flat if pulseless rhythm
-            if (_P.CardiacRhythm.HasPulse_Ventricular) {
-                if (_P.CardiacRhythm.AberrantBeat)
+            if (_P.Cardiac_Rhythm.HasPulse_Ventricular) {
+                if (_P.Cardiac_Rhythm.AberrantBeat)
                     thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.4f * _Amplitude, 0.3f * _Amplitude, Last (thisBeat)));
                 else
                     thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.8f * _Amplitude, 0.6f * _Amplitude, Last (thisBeat)));
@@ -133,7 +193,7 @@ namespace II.Rhythm {
                 thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
 
             // Augmentation inflection; slightly dampened in ectopic/aberrant beats
-            if (_P.CardiacRhythm.AberrantBeat)
+            if (_P.Cardiac_Rhythm.AberrantBeat)
                 thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.8f * _Amplitude, 0f, Last (thisBeat)));
             else
                 thisBeat = Concatenate (thisBeat, Curve (_Portion, 1f * _Amplitude, 0f, Last (thisBeat)));
@@ -194,7 +254,7 @@ namespace II.Rhythm {
                 QT = Utility.Lerp (0.235f, 0.4f, 1 - lerpCoeff);
 
             List<Point> thisBeat = new List<Point> ();
-            thisBeat = Concatenate (thisBeat, ECG_Q (_P, _L, QRS / 4, -0.1f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, ECG_Q (_P, _L, QRS / 4, -0.05f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, ECG_R (_P, _L, QRS / 4, 0.9f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, ECG_S (_P, _L, QRS / 4, -0.3f, Last (thisBeat)));
             thisBeat = Concatenate (thisBeat, ECG_J (_P, _L, QRS / 4, -0.1f, Last (thisBeat)));
@@ -478,29 +538,29 @@ namespace II.Rhythm {
         static List<Point> ECG_Q (Patient p, Leads l, Point _S) { return ECG_Q (p, l, 1f, -.1f, _S); }
         static List<Point> ECG_Q (Patient p, Leads l, double _L, double _mV, Point _S) {
             return Line (_L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.Q]
-                * axisLeadCoeff [(int)p.CardiacAxis.Value, (int)l.Value, (int)AxisPart.Q], _S);
+                * axisLeadCoeff [(int)p.Cardiac_Axis.Value, (int)l.Value, (int)AxisPart.Q], _S);
         }
 
         static List<Point> ECG_R (Patient p, Leads l, Point _S) { return ECG_R (p, l, 1f, .9f, _S); }
         static List<Point> ECG_R (Patient p, Leads l, double _L, double _mV, Point _S) {
             return Line (_L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.R]
-                * axisLeadCoeff [(int)p.CardiacAxis.Value, (int)l.Value, (int)AxisPart.R], _S);
+                * axisLeadCoeff [(int)p.Cardiac_Axis.Value, (int)l.Value, (int)AxisPart.R], _S);
         }
 
         static List<Point> ECG_S (Patient p, Leads l, Point _S) { return ECG_S (p, l, 1f, -.3f, _S); }
         static List<Point> ECG_S (Patient p, Leads l, double _L, double _mV, Point _S) {
             return Line (_L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.S]
-                * axisLeadCoeff [(int)p.CardiacAxis.Value, (int)l.Value, (int)AxisPart.S], _S);
+                * axisLeadCoeff [(int)p.Cardiac_Axis.Value, (int)l.Value, (int)AxisPart.S], _S);
         }
 
         static List<Point> ECG_J (Patient p, Leads l, Point _S) { return ECG_J (p, l, 1f, -.1f, _S); }
         static List<Point> ECG_J (Patient p, Leads l, double _L, double _mV, Point _S) {
-            return Line (_L, (_mV * baseLeadCoeff [(int)l.Value, (int)WavePart.J]) + p.STElevation [(int)l.Value], _S);
+            return Line (_L, (_mV * baseLeadCoeff [(int)l.Value, (int)WavePart.J]) + p.ST_Elevation [(int)l.Value], _S);
         }
 
         static List<Point> ECG_T (Patient p, Leads l, Point _S) { return ECG_T (p, l, .16f, .3f, 0f, _S); }
         static List<Point> ECG_T (Patient p, Leads l, double _L, double _mV, double _mV_End, Point _S) {
-            return Peak (_L, (_mV * baseLeadCoeff [(int)l.Value, (int)WavePart.T]) + p.TElevation [(int)l.Value], _mV_End, _S);
+            return Peak (_L, (_mV * baseLeadCoeff [(int)l.Value, (int)WavePart.T]) + p.T_Elevation [(int)l.Value], _mV_End, _S);
         }
 
         static List<Point> ECG_PR (Patient p, Leads l, Point _S) { return ECG_PR (p, l, .08f, 0f, _S); }
@@ -510,7 +570,7 @@ namespace II.Rhythm {
 
         static List<Point> ECG_ST (Patient p, Leads l, Point _S) { return ECG_ST (p, l, .1f, 0f, _S); }
         static List<Point> ECG_ST (Patient p, Leads l, double _L, double _mV, Point _S) {
-            return Line (_L, _mV + baseLeadCoeff [(int)l.Value, (int)WavePart.ST] + p.STElevation [(int)l.Value], _S);
+            return Line (_L, _mV + baseLeadCoeff [(int)l.Value, (int)WavePart.ST] + p.ST_Elevation [(int)l.Value], _S);
         }
 
         static List<Point> ECG_TP (Patient p, Leads l, Point _S) { return ECG_TP (p, l, .48f, .0f, _S); }
