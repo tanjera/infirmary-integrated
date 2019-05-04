@@ -343,13 +343,27 @@ namespace II {
             ASBP = asbp; ADBP = adbp; AMAP = amap;
             PSP = psp; PDP = pdp; PMP = pmp;
 
+            // Change in cardiac or respiratory rhythm? Reset all buffer counters and switches
+            if (Cardiac_Rhythm.Value != card_rhythm) {
+                counterCardiac_Aberrancy = 0;
+                Cardiac_Rhythm.AberrantBeat = false;
+                Cardiac_Rhythm.AlternansBeat = false;
+            }
+            if (Respiratory_Rhythm.Value != resp_rhythm) {
+                Respiration_Inflated = false;
+            }
+
             Cardiac_Rhythm.Value = card_rhythm;
             Cardiac_Axis.Value = card_axis;
             Pacemaker_Threshold = pacer_threshold;
-            Pulsus_Paradoxus = puls_paradoxus;
-            Pulsus_Alternans = puls_alternans;
             ST_Elevation = st_elev;
             T_Elevation = t_elev;
+
+            // Reset buffers and switches for pulsus paradoxus (must be below ASBP!)
+            bufferParadoxus_BaseASBP = ASBP;
+            switchParadoxus = false;
+            Pulsus_Paradoxus = puls_paradoxus;
+            Pulsus_Alternans = puls_alternans;
 
             Respiratory_Rhythm.Value = resp_rhythm;
             Respiratory_IERatio_I = resp_ier_i;
@@ -362,9 +376,6 @@ namespace II {
             UC_Frequency = uc_freq;
             UC_Duration = uc_duration;
             UC_Intensity.Value = uc_intensity;
-
-            bufferParadoxus_BaseASBP = ASBP;
-            switchParadoxus = false;
 
             SetTimers ();
             OnCardiac_Baseline ();
@@ -404,8 +415,48 @@ namespace II {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Vitals_Change));
         }
 
-        public void Defibrillate () => InitDefibrillation (false);
-        public void Cardiovert () => InitDefibrillation (true);
+        private void InitTimers () {
+            timerCardiac_Baseline.Tick += delegate { OnCardiac_Baseline (); };
+            timerCardiac_Atrial.Tick += delegate { OnCardiac_Atrial (); };
+            timerCardiac_Ventricular.Tick += delegate { OnCardiac_Ventricular (); };
+            timerDefibrillation.Tick += delegate { OnDefibrillation_End (); };
+            timerPacemaker_Baseline.Tick += delegate { OnPacemaker_Baseline (); };
+            timerPacemaker_Spike.Tick += delegate { OnPacemaker_Spike (); };
+
+            timerRespiratory_Baseline.Tick += delegate { OnRespiratory_Baseline (); };
+            timerRespiratory_Inspiration.Tick += delegate { OnRespiratory_Inspiration (); };
+            timerRespiratory_Expiration.Tick += delegate { OnRespiratory_Expiration (); };
+
+            timerObstetric_Baseline.Tick += delegate { OnObstetric_Baseline (); };
+            timerObstetric_ContractionFrequency.Tick += delegate { OnObstetric_ContractionStart (); };
+            timerObstetric_ContractionDuration.Tick += delegate { OnObstetric_ContractionEnd (); };
+            timerObstetric_FHRVariationFrequency.Tick += delegate { OnObstetric_FetalHeartVariationStart (); };
+        }
+
+        private void SetTimers () {
+            timerCardiac_Baseline.Reset ((int)(HR_Seconds * 1000f));
+            timerCardiac_Atrial.Stop ();
+            timerCardiac_Ventricular.Stop ();
+
+            timerDefibrillation.Reset ();
+            timerPacemaker_Baseline.Reset ();
+            timerPacemaker_Spike.Stop ();
+
+            timerRespiratory_Baseline.Reset ((int)(RR_Seconds * 1000f));
+            timerRespiratory_Inspiration.Stop ();
+            timerRespiratory_Expiration.Stop ();
+
+            timerObstetric_Baseline.Reset (1000);
+            timerObstetric_ContractionDuration.Stop ();
+            timerObstetric_ContractionFrequency.Stop ();
+            timerObstetric_FHRVariationFrequency.Stop ();
+        }
+
+        public void Defibrillate ()
+            => InitDefibrillation (false);
+
+        public void Cardiovert ()
+            => InitDefibrillation (true);
 
         public void Pacemaker (bool active, int rate = 0, int energy = 0) {
             if (active && !timerPacemaker_Baseline.IsRunning)
@@ -415,6 +466,7 @@ namespace II {
             else if (active && timerPacemaker_Baseline.IsRunning)
                 UpdatePacemaker (rate, energy);
         }
+
         public void PacemakerPause () => timerPacemaker_Baseline.Interval = 4000;
 
         private void InitDefibrillation (bool toSynchronize) {
@@ -479,43 +531,6 @@ namespace II {
             PatientEvent?.Invoke (this, new PatientEvent_Args (this, PatientEvent_Args.EventTypes.Cardiac_Ventricular));
             Cardiac_Rhythm.AberrantBeat = false;
             timerCardiac_Baseline.Reset ();
-        }
-
-        private void InitTimers () {
-            timerCardiac_Baseline.Tick += delegate { OnCardiac_Baseline (); };
-            timerCardiac_Atrial.Tick += delegate { OnCardiac_Atrial (); };
-            timerCardiac_Ventricular.Tick += delegate { OnCardiac_Ventricular (); };
-            timerDefibrillation.Tick += delegate { OnDefibrillation_End (); };
-            timerPacemaker_Baseline.Tick += delegate { OnPacemaker_Baseline (); };
-            timerPacemaker_Spike.Tick += delegate { OnPacemaker_Spike (); };
-
-            timerRespiratory_Baseline.Tick += delegate { OnRespiratory_Baseline (); };
-            timerRespiratory_Inspiration.Tick += delegate { OnRespiratory_Inspiration (); };
-            timerRespiratory_Expiration.Tick += delegate { OnRespiratory_Expiration (); };
-
-            timerObstetric_Baseline.Tick += delegate { OnObstetric_Baseline (); };
-            timerObstetric_ContractionFrequency.Tick += delegate { OnObstetric_ContractionStart (); };
-            timerObstetric_ContractionDuration.Tick += delegate { OnObstetric_ContractionEnd (); };
-            timerObstetric_FHRVariationFrequency.Tick += delegate { OnObstetric_FetalHeartVariationStart (); };
-        }
-
-        private void SetTimers () {
-            timerCardiac_Baseline.Reset ((int)(HR_Seconds * 1000f));
-            timerCardiac_Atrial.Stop ();
-            timerCardiac_Ventricular.Stop ();
-
-            timerDefibrillation.Reset ();
-            timerPacemaker_Baseline.Reset ();
-            timerPacemaker_Spike.Stop ();
-
-            timerRespiratory_Baseline.Reset ((int)(RR_Seconds * 1000f));
-            timerRespiratory_Inspiration.Stop ();
-            timerRespiratory_Expiration.Stop ();
-
-            timerObstetric_Baseline.Reset (1000);
-            timerObstetric_ContractionDuration.Stop ();
-            timerObstetric_ContractionFrequency.Stop ();
-            timerObstetric_FHRVariationFrequency.Stop ();
         }
 
         private void OnCardiac_Baseline () {

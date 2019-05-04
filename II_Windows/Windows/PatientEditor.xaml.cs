@@ -468,6 +468,33 @@ namespace II_Windows {
 
         private void ButtonDeviceDefib_Click (object s, RoutedEventArgs e) => InitDeviceDefib ();
 
+        private void ButtonGenerateAccessionKey_Click (object sender, RoutedEventArgs e)
+            => txtAccessionKey.Text = Utility.RandomString (8);
+
+        private void ButtonApplyMirroring_Click (object s, RoutedEventArgs e) {
+            App.Mirror.PatientUpdated = new DateTime ();
+            App.Mirror.ServerQueried = new DateTime ();
+
+            if (radioInactive.IsChecked ?? true) {
+                App.Mirror.Status = Mirrors.Statuses.INACTIVE;
+                lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringDisabled"];
+            } else if (radioClient.IsChecked ?? true) {
+                App.Mirror.Status = Mirrors.Statuses.CLIENT;
+                App.Mirror.Accession = txtAccessionKey.Text;
+                App.Mirror.PasswordAccess = txtAccessPassword.Password;
+                lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringActivated"];
+            } else if (radioServer.IsChecked ?? true) {
+                if (txtAccessionKey.Text == "")
+                    txtAccessionKey.Text = Utility.RandomString (8);
+
+                App.Mirror.Status = Mirrors.Statuses.HOST;
+                App.Mirror.Accession = txtAccessionKey.Text;
+                App.Mirror.PasswordAccess = txtAccessPassword.Password;
+                App.Mirror.PasswordEdit = txtAdminPassword.Password;
+                lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringActivated"];
+            }
+        }
+
         private void ButtonResetParameters_Click (object s, RoutedEventArgs e) {
             RequestNewPatient ();
             lblStatusText.Content = App.Language.Dictionary ["PE:StatusPatientReset"];
@@ -552,6 +579,36 @@ namespace II_Windows {
                 lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroredPatientUpdated"];
         }
 
+        private void TextBoxAccessionKey_PreviewTextInput (object sender, TextCompositionEventArgs e) {
+            Regex regex = new Regex ("^[a-zA-Z0-9]*$");
+            e.Handled = !regex.IsMatch (e.Text);
+        }
+
+        private void RadioMirrorSelected_Click (object sender, RoutedEventArgs e) {
+            if (txtAccessionKey == null || txtAccessPassword == null || txtAdminPassword == null)
+                return;
+
+            if ((sender as RadioButton).Name == "radioInactive") {
+                txtAccessionKey.IsEnabled = false;
+                btnGenerateAccessionKey.IsEnabled = false;
+                txtAccessPassword.IsEnabled = false;
+                txtAdminPassword.IsEnabled = false;
+            } else if ((sender as RadioButton).Name == "radioClient") {
+                txtAccessionKey.IsEnabled = true;
+                btnGenerateAccessionKey.IsEnabled = false;
+                txtAccessPassword.IsEnabled = true;
+                txtAdminPassword.IsEnabled = false;
+            } else if ((sender as RadioButton).Name == "radioServer") {
+                txtAccessionKey.IsEnabled = true;
+                btnGenerateAccessionKey.IsEnabled = true;
+                txtAccessPassword.IsEnabled = true;
+                txtAdminPassword.IsEnabled = true;
+            }
+        }
+
+        private void Hyperlink_RequestNavigate (object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
+            => System.Diagnostics.Process.Start (e.Uri.ToString ());
+
         private void FormUpdateFields (object sender, Patient.PatientEvent_Args e) {
             if (e.EventType == Patient.PatientEvent_Args.EventTypes.Vitals_Change) {
                 numHR.Value = e.Patient.HR;
@@ -618,60 +675,6 @@ namespace II_Windows {
             }
         }
 
-        private void TxtAccessionKey_PreviewTextInput (object sender, TextCompositionEventArgs e) {
-            Regex regex = new Regex ("^[a-zA-Z0-9]*$");
-            e.Handled = !regex.IsMatch (e.Text);
-        }
-
-        private void BtnGenerateAccessionKey_Click (object sender, RoutedEventArgs e)
-            => txtAccessionKey.Text = Utility.RandomString (8);
-
-        private void RadioMirrorSelected_Click (object sender, RoutedEventArgs e) {
-            if (txtAccessionKey == null || txtAccessPassword == null || txtAdminPassword == null)
-                return;
-
-            if ((sender as RadioButton).Name == "radioInactive") {
-                txtAccessionKey.IsEnabled = false;
-                btnGenerateAccessionKey.IsEnabled = false;
-                txtAccessPassword.IsEnabled = false;
-                txtAdminPassword.IsEnabled = false;
-            } else if ((sender as RadioButton).Name == "radioClient") {
-                txtAccessionKey.IsEnabled = true;
-                btnGenerateAccessionKey.IsEnabled = false;
-                txtAccessPassword.IsEnabled = true;
-                txtAdminPassword.IsEnabled = false;
-            } else if ((sender as RadioButton).Name == "radioServer") {
-                txtAccessionKey.IsEnabled = true;
-                btnGenerateAccessionKey.IsEnabled = true;
-                txtAccessPassword.IsEnabled = true;
-                txtAdminPassword.IsEnabled = true;
-            }
-        }
-
-        private void ButtonApplyMirroring_Click (object s, RoutedEventArgs e) {
-            App.Mirror.PatientUpdated = new DateTime ();
-            App.Mirror.ServerQueried = new DateTime ();
-
-            if (radioInactive.IsChecked ?? true) {
-                App.Mirror.Status = Mirrors.Statuses.INACTIVE;
-                lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringDisabled"];
-            } else if (radioClient.IsChecked ?? true) {
-                App.Mirror.Status = Mirrors.Statuses.CLIENT;
-                App.Mirror.Accession = txtAccessionKey.Text;
-                App.Mirror.PasswordAccess = txtAccessPassword.Password;
-                lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringActivated"];
-            } else if (radioServer.IsChecked ?? true) {
-                if (txtAccessionKey.Text == "")
-                    txtAccessionKey.Text = Utility.RandomString (8);
-
-                App.Mirror.Status = Mirrors.Statuses.HOST;
-                App.Mirror.Accession = txtAccessionKey.Text;
-                App.Mirror.PasswordAccess = txtAccessPassword.Password;
-                App.Mirror.PasswordEdit = txtAdminPassword.Password;
-                lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringActivated"];
-            }
-        }
-
         private void OnRhythmSelected (object sender, SelectionChangedEventArgs e) {
             if ((bool)checkDefaultVitals.IsChecked && App.Patient != null) {
                 int si = comboCardiacRhythm.SelectedIndex;
@@ -695,8 +698,5 @@ namespace II_Windows {
         }
 
         private void OnClosed (object sender, EventArgs e) => RequestExit ();
-
-        private void Hyperlink_RequestNavigate (object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
-            => System.Diagnostics.Process.Start (e.Uri.ToString ());
     }
 }

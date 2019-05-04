@@ -1,6 +1,7 @@
 ﻿* Commit message:
 
 
+
 * Steps for Version Publishing:
 	- Update version # in:
 		- II_Core.Utility.Version

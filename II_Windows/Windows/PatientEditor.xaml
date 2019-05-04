@@ -250,9 +250,9 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBox Name="txtAccessionKey" IsEnabled="False" Grid.Column="0"
                                          VerticalContentAlignment="Center" MaxLines="1" MaxLength="8" CharacterCasing="Upper"
-                                         PreviewTextInput="TxtAccessionKey_PreviewTextInput" />
+                                         PreviewTextInput="TextBoxAccessionKey_PreviewTextInput" />
                                 <Button Name="btnGenerateAccessionKey" IsEnabled="False" Grid.Column="1" Width="25"
-                                        Content="+" Click="BtnGenerateAccessionKey_Click" />
+                                        Content="+" Click="ButtonGenerateAccessionKey_Click" />
                             </Grid>
                             <PasswordBox Name="txtAccessPassword" IsEnabled="False" VerticalContentAlignment="Center"
                                      Grid.Column="1" Grid.Row="2" />
