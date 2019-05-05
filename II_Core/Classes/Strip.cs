@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace II.Rhythm {
     public class Strip {
         public double lengthSeconds = 5.0d;               // Strip length in seconds
-        double forwardEdgeBuffer = 1.25d;                 // Coefficient of Length to draw into future as "now" for buffer
+        double forwardEdgeBuffer = 1.20d;                 // Coefficient of Length to draw into future as "now" for buffer
         DateTime scrolledLast = DateTime.UtcNow;
         bool scrollingUnpausing = false;
 
@@ -23,7 +23,8 @@ namespace II.Rhythm {
 
         public void ClearFuture () {
             for (int i = Points.Count - 1; i >= 0; i--) {
-                if (Points [i].X > lengthSeconds)
+                // Must account for forwardEdgeBuffer... otherwise will cause period of "asystole"
+                if (Points [i].X > (lengthSeconds * forwardEdgeBuffer))
                     Points.RemoveAt (i);
             }
         }

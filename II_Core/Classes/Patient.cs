@@ -458,13 +458,15 @@ namespace II {
         public void Cardiovert ()
             => InitDefibrillation (true);
 
-        public void Pacemaker (bool active, int rate = 0, int energy = 0) {
-            if (active && !timerPacemaker_Baseline.IsRunning)
-                InitPacemaker (rate, energy);
-            else if (!active && timerPacemaker_Baseline.IsRunning)
+        public void Pacemaker (bool active, int rate, int energy) {
+            Pacemaker_Rate = rate;
+            Pacemaker_Energy = energy;
+
+            // If rate == 0, must stop timer! Otherwise timer.Interval is set to 0!
+            if (!active || rate == 0 || energy == 0)
                 StopPacemaker ();
-            else if (active && timerPacemaker_Baseline.IsRunning)
-                UpdatePacemaker (rate, energy);
+            else if (active)
+                StartPacemaker ();
         }
 
         public void PacemakerPause () => timerPacemaker_Baseline.Interval = 4000;
@@ -476,19 +478,8 @@ namespace II {
                 OnDefibrillation ();
         }
 
-        private void InitPacemaker (int rate, int energy) {
-            Pacemaker_Rate = rate;
-            Pacemaker_Energy = energy;
-            timerPacemaker_Baseline.Reset ((int)((60d / rate) * 1000));
-        }
-
-        private void UpdatePacemaker () => UpdatePacemaker (Pacemaker_Rate, Pacemaker_Energy);
-
-        private void UpdatePacemaker (int rate, int energy) {
-            Pacemaker_Rate = rate;
-            Pacemaker_Energy = energy;
-            timerPacemaker_Baseline.Interval = (int)((60d / rate) * 1000);
-        }
+        private void StartPacemaker ()
+            => timerPacemaker_Baseline.Reset ((int)((60d / Pacemaker_Rate) * 1000));
 
         private void StopPacemaker () {
             timerPacemaker_Baseline.Stop ();
@@ -521,7 +512,7 @@ namespace II {
             if (Pacemaker_Energy >= Pacemaker_Threshold)
                 timerPacemaker_Spike.Reset (40);        // Adds an interval between the spike and the QRS complex
 
-            UpdatePacemaker ();         // In case pacemaker was paused... updates .Interval
+            StartPacemaker ();                          // In case pacemaker was paused... updates .Interval
         }
 
         private void OnPacemaker_Spike () {
