@@ -16,6 +16,7 @@ And Infirmary Integrated can simulate hemodynamic and other readings including:
 - Heart rate (HR)
 - Temperature (T)
 - Blood pressure (NIBP non-invasive and invasive ABP via arterial line)
+- Respiratory rate (RR)
 - Pulse oximetry (SpO2, pulse oximeter plethysmograph)
 - End-tidal capnography (ETCO2)
 - Central venous pressure (CVP)
