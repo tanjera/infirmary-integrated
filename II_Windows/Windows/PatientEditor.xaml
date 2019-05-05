@@ -310,10 +310,18 @@
                             <xctk:DecimalUpDown Name="numT" Increment="0.2" Minimum="0" Maximum="100"
                                                 Grid.Column="1" Grid.Row="4" Style="{StaticResource decUpDown}" />
 
+                            <!-- Cardiac Rhythms -->
                             <Label Name="lblCardiacRhythm" Grid.Column="0" Grid.Row="5" />
-                            <ComboBox Name="comboCardiacRhythm" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="4" SelectionChanged="OnRhythmSelected" />
+                            <ComboBox Name="comboCardiacRhythm" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="4"
+                                      SelectionChanged="OnCardiacRhythmSelected" />
 
-                            <CheckBox Name="checkDefaultVitals" Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="4" Margin="0, 5, 0, 0" IsChecked="True" />
+                            <!-- Respiratory Rhythms -->
+                            <Label Name="lblRespiratoryRhythm" Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="4" />
+                            <ComboBox Name="comboRespiratoryRhythm" Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="4"
+                                      SelectionChanged="OnRespiratoryRhythmSelected" />
+
+                            <CheckBox Name="checkDefaultVitals" Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="4"
+                                      Margin="0, 5, 0, 0" IsChecked="True" />
                         </Grid>
                     </Expander>
                 </Border>
@@ -381,8 +389,6 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -391,22 +397,18 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- Respiratory Rhythms -->
-                            <Label Name="lblRespiratoryRhythm" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4" />
-                            <ComboBox Name="comboRespiratoryRhythm" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="4" />
-
-                            <Label Name="lblMechanicallyVentilated" Grid.Column="0" Grid.Row="2" />
-                            <CheckBox Name="chkMechanicallyVentilated" Grid.Column="1" Grid.Row="2"
+                            <Label Name="lblMechanicallyVentilated" Grid.Column="0" />
+                            <CheckBox Name="chkMechanicallyVentilated" Grid.Column="1"
                                       VerticalAlignment="Center"
                                       IsChecked="False" />
 
                             <!-- I:E Ratio -->
-                            <Label Name="lblInspiratoryRatio" Grid.Column="0" Grid.Row="3" />
+                            <Label Name="lblInspiratoryRatio" Grid.Column="0" Grid.Row="1" />
                             <xctk:DecimalUpDown Name="numInspiratoryRatio" Increment="0.1" Minimum="0.1" Maximum="10"
-                                                Grid.Column="1" Grid.Row="3" Style="{StaticResource decUpDown}" />
-                            <Label Name="lblExpiratoryRatio" Grid.Column="2" Grid.Row="3" Content=":" />
+                                                Grid.Column="1" Grid.Row="1" Style="{StaticResource decUpDown}" />
+                            <Label Name="lblExpiratoryRatio" Grid.Column="2" Grid.Row="1" Content=":" />
                             <xctk:DecimalUpDown Name="numExpiratoryRatio" Increment="0.1" Minimum="0.1" Maximum="10"
-                                                Grid.Column="3" Grid.Row="3" Style="{StaticResource decUpDown}" />
+                                                Grid.Column="3" Grid.Row="1" Style="{StaticResource decUpDown}" />
                         </Grid>
                     </Expander>
                 </Border>

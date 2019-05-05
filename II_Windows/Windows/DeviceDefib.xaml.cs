@@ -118,6 +118,10 @@ namespace II_Windows {
             btntxtPacePause.Text = App.Language.Dictionary ["DEFIB:Pause"];
         }
 
+        private void UpdateInterface () {
+            listNumerics.Find (o => o.controlType.Value == Controls.DefibNumeric.ControlType.Values.DEFIB).UpdateVitals (this);
+        }
+
         public void Load_Process (string inc) {
             StringReader sRead = new StringReader (inc);
             List<string> numericTypes = new List<string> (),
@@ -218,14 +222,14 @@ namespace II_Windows {
             OnLayoutChange ();
         }
 
-        public void RemoveTracing (Controls.DefibTracing requestSender) {
-            rowsTracings -= 1;
-            listTracings.Remove (requestSender);
+        public void AddNumeric () {
+            colsNumerics += 1;
             OnLayoutChange ();
         }
 
-        public void AddNumeric () {
-            colsNumerics += 1;
+        public void RemoveTracing (Controls.DefibTracing requestSender) {
+            rowsTracings -= 1;
+            listTracings.Remove (requestSender);
             OnLayoutChange ();
         }
 
@@ -235,26 +239,37 @@ namespace II_Windows {
             OnLayoutChange ();
         }
 
-        private void UpdateInterface () {
-            listNumerics.Find (o => o.controlType.Value == Controls.DefibNumeric.ControlType.Values.DEFIB).UpdateVitals (this);
+        private void UpdatePacemaker () {
+            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
         }
 
         private void ButtonDefib_Click (object s, RoutedEventArgs e) {
             Mode = Modes.DEFIB;
+            UpdatePacemaker ();
             UpdateInterface ();
         }
 
         private void ButtonEnergyDecrease_Click (object s, RoutedEventArgs e) {
+            if (Mode != Modes.DEFIB && Mode != Modes.SYNC)
+                return;
+
             Energy = Utility.Clamp (Energy - 20, 0, 200);
             UpdateInterface ();
         }
 
         private void ButtonEnergyIncrease_Click (object s, RoutedEventArgs e) {
+            if (Mode != Modes.DEFIB && Mode != Modes.SYNC)
+                return;
+
             Energy = Utility.Clamp (Energy + 20, 0, 200);
             UpdateInterface ();
         }
 
         private void ButtonCharge_Click (object s, RoutedEventArgs e) {
+            // Only charge if in Defib or Sync mode...
+            if (Mode != Modes.DEFIB && Mode != Modes.SYNC)
+                return;
+
             Analyzed = false;
             Charged = true;
             UpdateInterface ();
@@ -278,21 +293,21 @@ namespace II_Windows {
         private void ButtonAnalyze_Click (object s, RoutedEventArgs e) {
             Analyzed = true;
             Mode = Modes.DEFIB;
-            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            UpdatePacemaker ();
             UpdateInterface ();
         }
 
         private void ButtonSync_Click (object s, RoutedEventArgs e) {
             Analyzed = false;
             Mode = (Mode != Modes.SYNC ? Modes.SYNC : Modes.DEFIB);
-            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            UpdatePacemaker ();
             UpdateInterface ();
         }
 
         private void ButtonPacer_Click (object s, RoutedEventArgs e) {
             Analyzed = false;
             Mode = (Mode != Modes.PACER ? Modes.PACER : Modes.DEFIB);
-            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            UpdatePacemaker ();
             UpdateInterface ();
         }
 
@@ -301,7 +316,7 @@ namespace II_Windows {
                 return;
 
             PacerRate = Utility.Clamp (PacerRate - 5, 0, 200);
-            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            UpdatePacemaker ();
             UpdateInterface ();
         }
 
@@ -310,7 +325,7 @@ namespace II_Windows {
                 return;
 
             PacerRate = Utility.Clamp (PacerRate + 5, 0, 200);
-            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            UpdatePacemaker ();
             UpdateInterface ();
         }
 
@@ -319,7 +334,7 @@ namespace II_Windows {
                 return;
 
             PacerEnergy = Utility.Clamp (PacerEnergy - 5, 0, 200);
-            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            UpdatePacemaker ();
             UpdateInterface ();
         }
 
@@ -328,7 +343,7 @@ namespace II_Windows {
                 return;
 
             PacerEnergy = Utility.Clamp (PacerEnergy + 5, 0, 200);
-            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            UpdatePacemaker ();
             UpdateInterface ();
         }
 
@@ -444,7 +459,7 @@ namespace II_Windows {
 
                 case Patient.PatientEvent_Args.EventTypes.Vitals_Change:
                     listTracings.ForEach (c => {
-                        c.wfStrip.ClearFuture ();
+                        c.wfStrip.ClearFuture (App.Patient);
                         c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
                     });
                     listNumerics.ForEach ((n) => n.UpdateVitals (this));

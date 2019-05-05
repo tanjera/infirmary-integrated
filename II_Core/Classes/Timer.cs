@@ -24,18 +24,24 @@ namespace II {
             Running = false;
         }
 
-        public void Reset () {
-            Last = DateTime.Now;
-            Start ();
-        }
-
         public void Set (int interval) {
             Interval = interval;
             Last = DateTime.Now;
         }
 
-        public void Reset (int interval) {
-            Set (interval);
+        public void Reset ()
+            => Last = DateTime.Now;
+
+        public void Reset (int interval)
+            => Set (interval);
+
+        public void ResetAuto () {
+            Reset ();
+            Start ();
+        }
+
+        public void ResetAuto (int interval) {
+            Reset (interval);
             Start ();
         }
 
@@ -49,6 +55,7 @@ namespace II {
             }
         }
 
-        public void Process (object sender, EventArgs e) => Process ();
+        public void Process (object sender, EventArgs e)
+            => Process ();
     }
 }

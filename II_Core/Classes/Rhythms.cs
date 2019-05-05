@@ -151,6 +151,7 @@ namespace II {
 
         public class Default_Vitals {
             public int HRMin, HRMax,
+                        RRMin, RRMax,
                         SPO2Min, SPO2Max,
                         ETCO2Min, ETCO2Max,
                         SBPMin, SBPMax, DBPMin, DBPMax,
@@ -158,11 +159,13 @@ namespace II {
 
             public Default_Vitals (
                     int hrMin, int hrMax,
+                    int rrMin, int rrMax,
                     int spo2Min, int spo2Max,
                     int etco2Min, int etco2Max,
                     int sbpMin, int sbpMax, int dbpMin, int dbpMax,
                     int pspMin, int pspMax, int pdpMin, int pdpMax) {
                 HRMin = hrMin; HRMax = hrMax;
+                RRMin = rrMin; RRMax = rrMax;
                 SPO2Min = spo2Min; SPO2Max = spo2Max;
                 ETCO2Min = etco2Min; ETCO2Max = etco2Max;
                 SBPMin = sbpMin; SBPMax = sbpMax; DBPMin = dbpMin; DBPMax = dbpMax;
@@ -172,32 +175,32 @@ namespace II {
 
         public static Default_Vitals DefaultVitals (Values Rhythm) {
             switch (Rhythm) {
-                default: return new Default_Vitals (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-                case Values.Asystole: return new Default_Vitals (0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
-                case Values.Atrial_Fibrillation: return new Default_Vitals (80, 140, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
-                case Values.Atrial_Flutter: return new Default_Vitals (80, 140, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
-                case Values.AV_Block__1st_Degree: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
-                case Values.AV_Block__3rd_Degree: return new Default_Vitals (30, 50, 78, 82, 30, 35, 70, 80, 35, 40, 10, 20, 4, 6);
-                case Values.AV_Block__Mobitz_II: return new Default_Vitals (60, 80, 88, 98, 35, 45, 80, 120, 50, 70, 20, 30, 8, 12);
-                case Values.AV_Block__Wenckebach: return new Default_Vitals (60, 80, 88, 98, 35, 45, 80, 120, 50, 70, 20, 30, 8, 12);
-                case Values.Bundle_Branch_Block: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
-                case Values.Idioventricular: return new Default_Vitals (20, 40, 78, 82, 30, 35, 70, 80, 35, 40, 10, 20, 4, 6);
-                case Values.Junctional: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
-                case Values.Pulseless_Electrical_Activity: return new Default_Vitals (60, 100, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
-                case Values.Sinus_Rhythm: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
-                case Values.Sinus_Rhythm_with_Bigeminy: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
-                case Values.Sinus_Rhythm_with_Trigeminy: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
-                case Values.Sinus_Rhythm_with_PACs: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
-                case Values.Sinus_Rhythm_with_PJCs: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
-                case Values.Sinus_Rhythm_with_PVCs_Multifocal: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
-                case Values.Sinus_Rhythm_with_PVCs_Unifocal: return new Default_Vitals (60, 100, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
-                case Values.Supraventricular_Tachycardia: return new Default_Vitals (140, 280, 88, 98, 35, 45, 80, 120, 50, 70, 20, 30, 8, 12);
-                case Values.Ventricular_Fibrillation_Coarse: return new Default_Vitals (400, 500, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
-                case Values.Ventricular_Fibrillation_Fine: return new Default_Vitals (400, 500, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
-                case Values.Ventricular_Standstill: return new Default_Vitals (40, 100, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
-                case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: return new Default_Vitals (110, 250, 88, 98, 35, 45, 80, 110, 60, 80, 20, 30, 8, 12);
-                case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: return new Default_Vitals (110, 250, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
-                case Values.Ventricular_Tachycardia_Polymorphic: return new Default_Vitals (200, 240, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
+                default: return new Default_Vitals (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+                case Values.Asystole: return new Default_Vitals (0, 0, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
+                case Values.Atrial_Fibrillation: return new Default_Vitals (80, 140, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Atrial_Flutter: return new Default_Vitals (80, 140, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.AV_Block__1st_Degree: return new Default_Vitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.AV_Block__3rd_Degree: return new Default_Vitals (30, 50, 6, 28, 78, 82, 30, 35, 70, 80, 35, 40, 10, 20, 4, 6);
+                case Values.AV_Block__Mobitz_II: return new Default_Vitals (60, 80, 6, 28, 88, 98, 35, 45, 80, 120, 50, 70, 20, 30, 8, 12);
+                case Values.AV_Block__Wenckebach: return new Default_Vitals (60, 80, 6, 28, 88, 98, 35, 45, 80, 120, 50, 70, 20, 30, 8, 12);
+                case Values.Bundle_Branch_Block: return new Default_Vitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Idioventricular: return new Default_Vitals (20, 40, 6, 28, 78, 82, 30, 35, 70, 80, 35, 40, 10, 20, 4, 6);
+                case Values.Junctional: return new Default_Vitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Pulseless_Electrical_Activity: return new Default_Vitals (60, 100, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
+                case Values.Sinus_Rhythm: return new Default_Vitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Sinus_Rhythm_with_Bigeminy: return new Default_Vitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Sinus_Rhythm_with_Trigeminy: return new Default_Vitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Sinus_Rhythm_with_PACs: return new Default_Vitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Sinus_Rhythm_with_PJCs: return new Default_Vitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Sinus_Rhythm_with_PVCs_Multifocal: return new Default_Vitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Sinus_Rhythm_with_PVCs_Unifocal: return new Default_Vitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Supraventricular_Tachycardia: return new Default_Vitals (140, 280, 8, 30, 88, 98, 35, 45, 80, 120, 50, 70, 20, 30, 8, 12);
+                case Values.Ventricular_Fibrillation_Coarse: return new Default_Vitals (400, 500, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
+                case Values.Ventricular_Fibrillation_Fine: return new Default_Vitals (400, 500, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
+                case Values.Ventricular_Standstill: return new Default_Vitals (40, 100, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
+                case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: return new Default_Vitals (110, 250, 8, 22, 88, 98, 35, 45, 80, 110, 60, 80, 20, 30, 8, 12);
+                case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: return new Default_Vitals (110, 250, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
+                case Values.Ventricular_Tachycardia_Polymorphic: return new Default_Vitals (200, 240, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
             }
         }
 
@@ -344,6 +347,23 @@ namespace II {
         public enum Values {
             Apnea,
             Regular
+        }
+
+        public class Default_Vitals {
+            public int RRMin, RRMax;
+
+            public Default_Vitals (
+                    int rrMin, int rrMax) {
+                RRMin = rrMin; RRMax = rrMax;
+            }
+        }
+
+        public static Default_Vitals DefaultVitals (Values Rhythm) {
+            switch (Rhythm) {
+                default: return new Default_Vitals (0, 0);
+                case Values.Apnea: return new Default_Vitals (0, 0);
+                case Values.Regular: return new Default_Vitals (8, 22);
+            }
         }
     }
 

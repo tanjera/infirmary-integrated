@@ -298,7 +298,7 @@ namespace II_Windows {
                 default: break;
                 case Patient.PatientEvent_Args.EventTypes.Vitals_Change:
                     listTracings.ForEach (c => {
-                        c.wfStrip.ClearFuture ();
+                        c.wfStrip.ClearFuture (App.Patient);
                         c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
                     });
 

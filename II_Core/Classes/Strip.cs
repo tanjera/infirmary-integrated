@@ -4,27 +4,37 @@ using System.Collections.Generic;
 namespace II.Rhythm {
     public class Strip {
         public double lengthSeconds = 5.0d;               // Strip length in seconds
-        double forwardEdgeBuffer = 1.20d;                 // Coefficient of Length to draw into future as "now" for buffer
+        double forwardBuffer = 1.20d;                     // Coefficient of Length to draw into future as "now" for buffer
         DateTime scrolledLast = DateTime.UtcNow;
         bool scrollingUnpausing = false;
 
         public Leads Lead;
         public List<Point> Points;
 
-        public Strip (double l, Leads.Values v) {
-            Lead = new Leads (v);
-            lengthSeconds = l;
+        public Strip (double length, Leads.Values lead) {
+            Lead = new Leads (lead);
+            lengthSeconds = length;
             Points = new List<Point> ();
+        }
+
+        private void SetForwardBuffer (Patient patient) {
+            // Set the forward edge buffer to be the length (in seconds) of 1.5 beats
+            if (IsCardiac)
+                forwardBuffer = Utility.Clamp (1 + (1.5 * (patient.HR_Seconds / lengthSeconds)), 1.2d, 20d);
+            else if (IsRespiratory)
+                forwardBuffer = Utility.Clamp (1 + (1.5 * (patient.RR_Seconds / lengthSeconds)), 1.2d, 20d);
         }
 
         public void Reset () {
             Points.Clear ();
         }
 
-        public void ClearFuture () {
+        public void ClearFuture (Patient patient) {
+            SetForwardBuffer (patient);         // Since accounting for forward edge buffer, recalculate
+
             for (int i = Points.Count - 1; i >= 0; i--) {
                 // Must account for forwardEdgeBuffer... otherwise will cause period of "asystole"
-                if (Points [i].X > (lengthSeconds * forwardEdgeBuffer))
+                if (Points [i].X > (lengthSeconds * forwardBuffer))
                     Points.RemoveAt (i);
             }
         }
@@ -37,44 +47,44 @@ namespace II.Rhythm {
                 return _In [_In.Count - 1];
         }
 
-        public void Concatenate (List<Point> _Addition) {
-            if (_Addition.Count == 0)
+        public void Concatenate (List<Point> addition) {
+            if (addition.Count == 0)
                 return;
 
             double offsetX = Last (Points).X;
 
-            for (int i = 0; i < _Addition.Count; i++)
-                Points.Add (new Point (_Addition [i].X + offsetX, _Addition [i].Y));
+            for (int i = 0; i < addition.Count; i++)
+                Points.Add (new Point (addition [i].X + offsetX, addition [i].Y));
         }
 
-        public void Overwrite (List<Point> _Replacement) {
-            if (_Replacement.Count == 0)
+        public void Overwrite (List<Point> replacement) {
+            if (replacement.Count == 0)
                 return;
 
             // Inserts into future of strip, which is X offset by Length
-            for (int i = 0; i < _Replacement.Count; i++)
-                _Replacement [i].X += lengthSeconds * forwardEdgeBuffer;
+            for (int i = 0; i < replacement.Count; i++)
+                replacement [i].X += lengthSeconds * forwardBuffer;
 
-            double minX = _Replacement [0].X,
-                maxX = _Replacement [_Replacement.Count - 1].X;
+            double minX = replacement [0].X,
+                maxX = replacement [replacement.Count - 1].X;
 
             for (int i = Points.Count - 1; i >= 0; i--)
                 if (Points [i].X > minX && Points [i].X < maxX)
                     Points.RemoveAt (i);
 
-            Points.AddRange (_Replacement);
+            Points.AddRange (replacement);
         }
 
-        public void Underwrite (List<Point> _Replacement) {
-            if (_Replacement.Count == 0)
+        public void Underwrite (List<Point> replacement) {
+            if (replacement.Count == 0)
                 return;
 
             // Inserts into future of strip, which is X offset by Length
-            for (int i = 0; i < _Replacement.Count; i++)
-                _Replacement [i].X += lengthSeconds * forwardEdgeBuffer;
+            for (int i = 0; i < replacement.Count; i++)
+                replacement [i].X += lengthSeconds * forwardBuffer;
 
-            double minX = _Replacement [0].X,
-                maxX = _Replacement [_Replacement.Count - 1].X;
+            double minX = replacement [0].X,
+                maxX = replacement [replacement.Count - 1].X;
 
             for (int i = Points.Count - 1; i >= 0; i--)
                 if (Points [i].X > minX && Points [i].X < maxX) {
@@ -84,7 +94,7 @@ namespace II.Rhythm {
                         return;
                 }
 
-            Points.AddRange (_Replacement);
+            Points.AddRange (replacement);
         }
 
         public void RemoveNull () {
@@ -125,99 +135,130 @@ namespace II.Rhythm {
             scrollingUnpausing = true;
         }
 
-        public void Add_Beat__Cardiac_Defibrillation (Patient _Patient) {
-            if (IsECG ())
-                Overwrite (Waveforms.ECG_Defibrillation (_Patient, Lead));
+        public void Add_Beat__Cardiac_Defibrillation (Patient patient) {
+            if (IsECG)
+                Overwrite (Waveforms.ECG_Defibrillation (patient, Lead));
         }
 
-        public void Add_Beat__Cardiac_Pacemaker (Patient _Patient) {
-            if (IsECG ())
-                Overwrite (Waveforms.ECG_Pacemaker (_Patient, Lead));
+        public void Add_Beat__Cardiac_Pacemaker (Patient patient) {
+            if (IsECG)
+                Overwrite (Waveforms.ECG_Pacemaker (patient, Lead));
         }
 
-        public void Add_Beat__Cardiac_Baseline (Patient _Patient) {
-            if (IsECG ()) {
-                _Patient.Cardiac_Rhythm.ECG_Isoelectric (_Patient, this);
+        public void Add_Beat__Cardiac_Baseline (Patient patient) {
+            SetForwardBuffer (patient);
+
+            if (IsECG) {
+                patient.Cardiac_Rhythm.ECG_Isoelectric (patient, this);
             } else if (Lead.Value != Leads.Values.RR && Lead.Value != Leads.Values.ETCO2) {
                 // Fill waveform through to future buffer with flatline
-                double fill = (lengthSeconds * forwardEdgeBuffer) - Last (Points).X;
-                Concatenate (Waveforms.Waveform_Flatline (fill > _Patient.HR_Seconds ? fill : _Patient.HR_Seconds, 0f));
+                double fill = (lengthSeconds * forwardBuffer) - Last (Points).X;
+                Concatenate (Waveforms.Waveform_Flatline (fill > patient.HR_Seconds ? fill : patient.HR_Seconds, 0f));
             }
 
             if (Lead.Value == Leads.Values.CVP) {
-                if (_Patient.Cardiac_Rhythm.HasPulse_Atrial && !_Patient.Cardiac_Rhythm.HasPulse_Ventricular)
-                    Overwrite (Waveforms.CVP_Rhythm (_Patient, 0.25f));
-                else if (!_Patient.Cardiac_Rhythm.HasPulse_Atrial && _Patient.Cardiac_Rhythm.HasPulse_Ventricular)
-                    Overwrite (Waveforms.CVP_Rhythm (_Patient, 0.5f));
-                else if (_Patient.Cardiac_Rhythm.HasPulse_Atrial && _Patient.Cardiac_Rhythm.HasPulse_Ventricular)
-                    Overwrite (Waveforms.CVP_Rhythm (_Patient, 1f));
+                if (patient.Cardiac_Rhythm.HasPulse_Atrial && !patient.Cardiac_Rhythm.HasPulse_Ventricular)
+                    Overwrite (Waveforms.CVP_Rhythm (patient, 0.25f));
+                else if (!patient.Cardiac_Rhythm.HasPulse_Atrial && patient.Cardiac_Rhythm.HasPulse_Ventricular)
+                    Overwrite (Waveforms.CVP_Rhythm (patient, 0.5f));
+                else if (patient.Cardiac_Rhythm.HasPulse_Atrial && patient.Cardiac_Rhythm.HasPulse_Ventricular)
+                    Overwrite (Waveforms.CVP_Rhythm (patient, 1f));
             }
         }
 
-        public void Add_Beat__Cardiac_Atrial (Patient _Patient) {
-            if (IsECG ())
-                _Patient.Cardiac_Rhythm.ECG_Atrial (_Patient, this);
+        public void Add_Beat__Cardiac_Atrial (Patient patient) {
+            if (IsECG)
+                patient.Cardiac_Rhythm.ECG_Atrial (patient, this);
         }
 
-        public void Add_Beat__Cardiac_Ventricular (Patient _Patient) {
-            if (IsECG ())
-                _Patient.Cardiac_Rhythm.ECG_Ventricular (_Patient, this);
-            else if (Lead.Value == Leads.Values.SPO2 && _Patient.Cardiac_Rhythm.HasPulse_Ventricular)
-                Overwrite (Waveforms.SPO2_Rhythm (_Patient, 1f));
+        public void Add_Beat__Cardiac_Ventricular (Patient patient) {
+            if (IsECG)
+                patient.Cardiac_Rhythm.ECG_Ventricular (patient, this);
+            else if (Lead.Value == Leads.Values.SPO2 && patient.Cardiac_Rhythm.HasPulse_Ventricular)
+                Overwrite (Waveforms.SPO2_Rhythm (patient, 1f));
             else if (Lead.Value == Leads.Values.ABP) {
-                if (_Patient.IABP_Active)
-                    Overwrite (Waveforms.IABP_ABP_Rhythm (_Patient, 1f));
-                else if (_Patient.Cardiac_Rhythm.HasPulse_Ventricular)
-                    Overwrite (Waveforms.ABP_Rhythm (_Patient, 1f));
-            } else if (Lead.Value == Leads.Values.PA && _Patient.Cardiac_Rhythm.HasPulse_Ventricular)
-                Overwrite (Waveforms.PA_Rhythm (_Patient, 1f));
-            else if (Lead.Value == Leads.Values.ICP && _Patient.Cardiac_Rhythm.HasPulse_Ventricular)
-                Overwrite (Waveforms.ICP_Rhythm (_Patient, 1f));
-            else if (Lead.Value == Leads.Values.IAP && _Patient.Cardiac_Rhythm.HasPulse_Ventricular)
-                Overwrite (Waveforms.IAP_Rhythm (_Patient, 1f));
+                if (patient.IABP_Active)
+                    Overwrite (Waveforms.IABP_ABP_Rhythm (patient, 1f));
+                else if (patient.Cardiac_Rhythm.HasPulse_Ventricular)
+                    Overwrite (Waveforms.ABP_Rhythm (patient, 1f));
+            } else if (Lead.Value == Leads.Values.PA && patient.Cardiac_Rhythm.HasPulse_Ventricular)
+                Overwrite (Waveforms.PA_Rhythm (patient, 1f));
+            else if (Lead.Value == Leads.Values.ICP && patient.Cardiac_Rhythm.HasPulse_Ventricular)
+                Overwrite (Waveforms.ICP_Rhythm (patient, 1f));
+            else if (Lead.Value == Leads.Values.IAP && patient.Cardiac_Rhythm.HasPulse_Ventricular)
+                Overwrite (Waveforms.IAP_Rhythm (patient, 1f));
 
-            if (Lead.Value == Leads.Values.IABP && _Patient.IABP_Active) {
-                if (_Patient.Cardiac_Rhythm.HasWaveform_Ventricular && _Patient.IABP_Trigger == "ECG") {
+            if (Lead.Value == Leads.Values.IABP && patient.IABP_Active) {
+                if (patient.Cardiac_Rhythm.HasWaveform_Ventricular && patient.IABP_Trigger == "ECG") {
                     // ECG Trigger works only if ventricular ECG waveform
-                    Overwrite (Waveforms.IABP_Balloon_Rhythm (_Patient, 1f));
-                } else if (_Patient.Cardiac_Rhythm.HasPulse_Ventricular && _Patient.IABP_Trigger == "Pressure") {
+                    Overwrite (Waveforms.IABP_Balloon_Rhythm (patient, 1f));
+                } else if (patient.Cardiac_Rhythm.HasPulse_Ventricular && patient.IABP_Trigger == "Pressure") {
                     // Pressure Trigger works only if ventricular pressure impulse
-                    Overwrite (Waveforms.IABP_Balloon_Rhythm (_Patient, 1f));
+                    Overwrite (Waveforms.IABP_Balloon_Rhythm (patient, 1f));
                 }
             }
         }
 
-        public void Add_Beat__Respiratory_Baseline (Patient _Patient) {
+        public void Add_Beat__Respiratory_Baseline (Patient patient) {
+            SetForwardBuffer (patient);
+
             if (Lead.Value == Leads.Values.RR || Lead.Value == Leads.Values.ETCO2) {
                 // Fill waveform through to future buffer with flatline
-                double fill = (lengthSeconds * forwardEdgeBuffer) - Last (Points).X;
-                Concatenate (Waveforms.Waveform_Flatline (fill > _Patient.RR_Seconds ? fill : _Patient.RR_Seconds, 0f));
+                double fill = (lengthSeconds * forwardBuffer) - Last (Points).X;
+                Concatenate (Waveforms.Waveform_Flatline (fill > patient.RR_Seconds ? fill : patient.RR_Seconds, 0f));
             }
         }
 
-        public void Add_Beat__Respiratory_Inspiration (Patient _Patient) {
+        public void Add_Beat__Respiratory_Inspiration (Patient patient) {
             switch (Lead.Value) {
                 default: break;
-                case Leads.Values.RR: Overwrite (Waveforms.RR_Rhythm (_Patient, true)); break;
+                case Leads.Values.RR: Overwrite (Waveforms.RR_Rhythm (patient, true)); break;
                 case Leads.Values.ETCO2: break;    // End-tidal waveform is only present on expiration!! Is flatline on inspiration.
             }
         }
 
-        public void Add_Beat__Respiratory_Expiration (Patient _Patient) {
+        public void Add_Beat__Respiratory_Expiration (Patient patient) {
             switch (Lead.Value) {
                 default: break;
-                case Leads.Values.RR: Overwrite (Waveforms.RR_Rhythm (_Patient, false)); break;
-                case Leads.Values.ETCO2: Overwrite (Waveforms.ETCO2_Rhythm (_Patient)); break;
+                case Leads.Values.RR: Overwrite (Waveforms.RR_Rhythm (patient, false)); break;
+                case Leads.Values.ETCO2: Overwrite (Waveforms.ETCO2_Rhythm (patient)); break;
             }
         }
 
-        private bool IsECG () {
-            return Lead.Value == Leads.Values.ECG_I || Lead.Value == Leads.Values.ECG_II
-                || Lead.Value == Leads.Values.ECG_III || Lead.Value == Leads.Values.ECG_AVR
-                || Lead.Value == Leads.Values.ECG_AVL || Lead.Value == Leads.Values.ECG_AVF
-                || Lead.Value == Leads.Values.ECG_V1 || Lead.Value == Leads.Values.ECG_V2
-                || Lead.Value == Leads.Values.ECG_V3 || Lead.Value == Leads.Values.ECG_V4
-                || Lead.Value == Leads.Values.ECG_V5 || Lead.Value == Leads.Values.ECG_V6;
+        private bool IsECG {
+            get {
+                return Lead.Value == Leads.Values.ECG_I || Lead.Value == Leads.Values.ECG_II
+                    || Lead.Value == Leads.Values.ECG_III || Lead.Value == Leads.Values.ECG_AVR
+                    || Lead.Value == Leads.Values.ECG_AVL || Lead.Value == Leads.Values.ECG_AVF
+                    || Lead.Value == Leads.Values.ECG_V1 || Lead.Value == Leads.Values.ECG_V2
+                    || Lead.Value == Leads.Values.ECG_V3 || Lead.Value == Leads.Values.ECG_V4
+                    || Lead.Value == Leads.Values.ECG_V5 || Lead.Value == Leads.Values.ECG_V6;
+            }
+        }
+
+        private bool IsCardiac {
+            get {
+                return Lead.Value == Leads.Values.ECG_I || Lead.Value == Leads.Values.ECG_II
+                    || Lead.Value == Leads.Values.ECG_III || Lead.Value == Leads.Values.ECG_AVR
+                    || Lead.Value == Leads.Values.ECG_AVL || Lead.Value == Leads.Values.ECG_AVF
+                    || Lead.Value == Leads.Values.ECG_V1 || Lead.Value == Leads.Values.ECG_V2
+                    || Lead.Value == Leads.Values.ECG_V3 || Lead.Value == Leads.Values.ECG_V4
+                    || Lead.Value == Leads.Values.ECG_V5 || Lead.Value == Leads.Values.ECG_V6
+                    || Lead.Value == Leads.Values.ABP
+                    || Lead.Value == Leads.Values.CVP
+                    || Lead.Value == Leads.Values.IABP
+                    || Lead.Value == Leads.Values.IAP
+                    || Lead.Value == Leads.Values.ICP
+                    || Lead.Value == Leads.Values.PA
+                    || Lead.Value == Leads.Values.SPO2;
+            }
+        }
+
+        private bool IsRespiratory {
+            get {
+                return Lead.Value == Leads.Values.ETCO2
+                    || Lead.Value == Leads.Values.RR;
+            }
         }
     }
 }

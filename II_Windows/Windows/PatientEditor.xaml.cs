@@ -37,7 +37,7 @@ namespace II_Windows {
                 LoadOpen (App.Start_Args [0]);
 
             App.Mirror.timerUpdate.Tick += delegate { App.Mirror.TimerTick (App.Patient, App.Server); };
-            App.Mirror.timerUpdate.Reset (5000);
+            App.Mirror.timerUpdate.ResetAuto (5000);
 
             /* Debugging and testing code below */
         }
@@ -675,26 +675,43 @@ namespace II_Windows {
             }
         }
 
-        private void OnRhythmSelected (object sender, SelectionChangedEventArgs e) {
-            if ((bool)checkDefaultVitals.IsChecked && App.Patient != null) {
-                int si = comboCardiacRhythm.SelectedIndex;
-                Array ev = Enum.GetValues (typeof (Cardiac_Rhythms.Values));
-                if (si < 0 || si > ev.Length - 1)
-                    return;
+        private void OnCardiacRhythmSelected (object sender, SelectionChangedEventArgs e) {
+            if (!(bool)checkDefaultVitals.IsChecked || App.Patient == null)
+                return;
 
-                Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
-                    (Cardiac_Rhythms.Values)ev.GetValue (si));
+            int si = comboCardiacRhythm.SelectedIndex;
+            Array ev = Enum.GetValues (typeof (Cardiac_Rhythms.Values));
+            if (si < 0 || si > ev.Length - 1)
+                return;
 
-                numHR.Value = (int)Utility.Clamp ((double)numHR.Value, v.HRMin, v.HRMax);
-                numSPO2.Value = (int)Utility.Clamp ((double)numSPO2.Value, v.SPO2Min, v.SPO2Max);
-                numETCO2.Value = (int)Utility.Clamp ((double)numETCO2.Value, v.ETCO2Min, v.ETCO2Max);
-                numNSBP.Value = (int)Utility.Clamp ((double)numNSBP.Value, v.SBPMin, v.SBPMax);
-                numNDBP.Value = (int)Utility.Clamp ((double)numNDBP.Value, v.DBPMin, v.DBPMax);
-                numASBP.Value = (int)Utility.Clamp ((double)numASBP.Value, v.SBPMin, v.SBPMax);
-                numADBP.Value = (int)Utility.Clamp ((double)numADBP.Value, v.DBPMin, v.DBPMax);
-                numPSP.Value = (int)Utility.Clamp ((double)numPSP.Value, v.PSPMin, v.PSPMax);
-                numPDP.Value = (int)Utility.Clamp ((double)numPDP.Value, v.PDPMin, v.PDPMax);
-            }
+            Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
+                (Cardiac_Rhythms.Values)ev.GetValue (si));
+
+            numHR.Value = (int)Utility.Clamp ((double)numHR.Value, v.HRMin, v.HRMax);
+            numRR.Value = (int)Utility.Clamp ((double)numRR.Value, v.RRMin, v.RRMax);
+            numSPO2.Value = (int)Utility.Clamp ((double)numSPO2.Value, v.SPO2Min, v.SPO2Max);
+            numETCO2.Value = (int)Utility.Clamp ((double)numETCO2.Value, v.ETCO2Min, v.ETCO2Max);
+            numNSBP.Value = (int)Utility.Clamp ((double)numNSBP.Value, v.SBPMin, v.SBPMax);
+            numNDBP.Value = (int)Utility.Clamp ((double)numNDBP.Value, v.DBPMin, v.DBPMax);
+            numASBP.Value = (int)Utility.Clamp ((double)numASBP.Value, v.SBPMin, v.SBPMax);
+            numADBP.Value = (int)Utility.Clamp ((double)numADBP.Value, v.DBPMin, v.DBPMax);
+            numPSP.Value = (int)Utility.Clamp ((double)numPSP.Value, v.PSPMin, v.PSPMax);
+            numPDP.Value = (int)Utility.Clamp ((double)numPDP.Value, v.PDPMin, v.PDPMax);
+        }
+
+        private void OnRespiratoryRhythmSelected (object sender, SelectionChangedEventArgs e) {
+            if (!(bool)checkDefaultVitals.IsChecked || App.Patient == null)
+                return;
+
+            int si = comboRespiratoryRhythm.SelectedIndex;
+            Array ev = Enum.GetValues (typeof (Respiratory_Rhythms.Values));
+            if (si < 0 || si > ev.Length - 1)
+                return;
+
+            Respiratory_Rhythms.Default_Vitals v = Respiratory_Rhythms.DefaultVitals (
+                (Respiratory_Rhythms.Values)ev.GetValue (si));
+
+            numRR.Value = (int)Utility.Clamp ((double)numRR.Value, v.RRMin, v.RRMax);
         }
 
         private void OnClosed (object sender, EventArgs e) => RequestExit ();
