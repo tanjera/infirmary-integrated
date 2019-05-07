@@ -3,6 +3,7 @@
 namespace II {
     public class Timer {
         public int Interval = 0;
+        public bool Locked = false;
 
         DateTime Last;
         bool Running = false;

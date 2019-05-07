@@ -1,5 +1,12 @@
 ﻿* Commit message:
 
+  @@ implement respiratory rhythm timers for new respiratory rhythms
+  @@@ Agonal
+  @@@ Apneustic
+  @@@ Ataxic
+  @@@ Biot
+  @@@ Cheyne Stokes
+
 
 
 * Steps for Version Publishing:

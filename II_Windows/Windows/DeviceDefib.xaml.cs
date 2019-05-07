@@ -25,7 +25,8 @@ namespace II_Windows {
         // Device settings
         public Modes Mode = Modes.DEFIB;
 
-        public bool Charged = false,
+        public bool Charging = false,
+                    Charged = false,
                     Analyzed = false;
 
         public int Energy = 200,
@@ -41,9 +42,11 @@ namespace II_Windows {
         private List<Controls.DefibTracing> listTracings = new List<Controls.DefibTracing> ();
         private List<Controls.DefibNumeric> listNumerics = new List<Controls.DefibNumeric> ();
 
-        private Timer timerTracing = new Timer (),
+        private Timer
+            timerTracing = new Timer (),
             timerVitals_Cardiac = new Timer (),
-            timerVitals_Respiratory = new Timer ();
+            timerVitals_Respiratory = new Timer (),
+            timerAncillary_Delay = new Timer ();
 
         // Define WPF UI commands for binding
         private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram;
@@ -64,20 +67,20 @@ namespace II_Windows {
         }
 
         private void InitTimers () {
-            timerTracing.Interval = Waveforms.Draw_Refresh;
             App.Timer_Main.Tick += timerTracing.Process;
-            timerTracing.Tick += OnTick_Tracing;
-            timerTracing.Start ();
-
-            timerVitals_Cardiac.Interval = Utility.Clamp ((int)(App.Patient.HR_Seconds * 1000 / 2), 2000, 6000);
-            timerVitals_Respiratory.Interval = Utility.Clamp ((int)(App.Patient.RR_Seconds * 1000 / 2), 2000, 8000);
-
             App.Timer_Main.Tick += timerVitals_Cardiac.Process;
             App.Timer_Main.Tick += timerVitals_Respiratory.Process;
+            App.Timer_Main.Tick += timerAncillary_Delay.Process;
 
+            timerTracing.Tick += OnTick_Tracing;
             timerVitals_Cardiac.Tick += OnTick_Vitals_Cardiac;
             timerVitals_Respiratory.Tick += OnTick_Vitals_Respiratory;
 
+            timerTracing.Interval = Waveforms.Draw_Refresh;
+            timerVitals_Cardiac.Interval = Utility.Clamp ((int)(App.Patient.HR_Seconds * 1000 / 2), 2000, 6000);
+            timerVitals_Respiratory.Interval = Utility.Clamp ((int)(App.Patient.RR_Seconds * 1000 / 2), 2000, 8000);
+
+            timerTracing.Start ();
             timerVitals_Cardiac.Start ();
             timerVitals_Respiratory.Start ();
         }
@@ -271,7 +274,19 @@ namespace II_Windows {
                 return;
 
             Analyzed = false;
-            Charged = true;
+
+            if (timerAncillary_Delay.Locked) {
+                Charging = false;
+                Charged = true;
+            } else {
+                Charging = true;
+                Charged = false;
+                timerAncillary_Delay.Locked = true;
+                timerAncillary_Delay.Tick += OnTick_ChargingComplete;
+                timerAncillary_Delay.Set (3000);
+                timerAncillary_Delay.Start ();
+            }
+
             UpdateInterface ();
         }
 
@@ -362,6 +377,17 @@ namespace II_Windows {
         private void MenuFullscreen_Click (object sender, RoutedEventArgs e) {
             isFullscreen = !isFullscreen;
             ApplyFullScreen ();
+        }
+
+        private void OnTick_ChargingComplete (object sender, EventArgs e) {
+            timerAncillary_Delay.Stop ();
+            timerAncillary_Delay.Locked = false;
+            timerAncillary_Delay.Tick -= OnTick_ChargingComplete;
+
+            Charging = false;
+            Charged = true;
+
+            UpdateInterface ();
         }
 
         private void OnTick_Tracing (object sender, EventArgs e) {

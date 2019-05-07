@@ -223,7 +223,9 @@ namespace II_Windows.Controls {
 
                             lblLine1.Text = App.Language.Dictionary ["DEFIB:Defibrillation"];
                             lblLine2.Text = String.Format ("{0:0} {1}", Device.Energy, App.Language.Dictionary ["DEFIB:Joules"]);
-                            if (Device.Charged)
+                            if (Device.Charging)
+                                lblLine3.Text = App.Language.Dictionary ["DEFIB:Charging"];
+                            else if (Device.Charged)
                                 lblLine3.Text = App.Language.Dictionary ["DEFIB:Charged"];
                             else if (Device.Analyzed) {
                                 switch (App.Patient.Cardiac_Rhythm.Value) {

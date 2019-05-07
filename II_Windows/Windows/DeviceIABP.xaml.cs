@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace II_Windows {
 
@@ -71,7 +72,13 @@ namespace II_Windows {
 
         public Triggering Trigger = new Triggering ();
         public Modes Mode = new Modes ();
-        public bool Running = false, Primed = false;
+
+        public bool Running = false,
+            Priming = false,
+            Prime_ThenStart = false,
+            Primed = false;
+
+        public class PrimingEventArgs : EventArgs { public bool StartWhenComplete = false; };
 
         public Settings SelectedSetting = Settings.None;
 
@@ -82,7 +89,8 @@ namespace II_Windows {
         private List<Controls.IABPNumeric> listNumerics = new List<Controls.IABPNumeric> ();
 
         private Timer timerTracing = new Timer (),
-              timerVitals = new Timer ();
+                timerVitals = new Timer (),
+                timerAncillary_Delay = new Timer ();
 
         // Define WPF UI commands for binding
         private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram;
@@ -101,14 +109,17 @@ namespace II_Windows {
         }
 
         private void InitTimers () {
-            timerTracing.Interval = Waveforms.Draw_Refresh;
-            App.Timer_Main.Tick += timerTracing.Process;
-            timerTracing.Tick += OnTick_Tracing;
-            timerTracing.Start ();
-
-            timerVitals.Interval = (int)(App.Patient.HR_Seconds * 1000);
             App.Timer_Main.Tick += timerVitals.Process;
+            App.Timer_Main.Tick += timerTracing.Process;
+            App.Timer_Main.Tick += timerAncillary_Delay.Process;
+
+            timerTracing.Interval = Waveforms.Draw_Refresh;
+            timerVitals.Interval = (int)(App.Patient.HR_Seconds * 1000);
+
+            timerTracing.Tick += OnTick_Tracing;
             timerVitals.Tick += OnTick_Vitals;
+
+            timerTracing.Start ();
             timerVitals.Start ();
         }
 
@@ -171,10 +182,40 @@ namespace II_Windows {
             var Dictionary = App.Language.Dictionary;
 
             lblTriggerSource.Text = Dictionary [Trigger.LookupString ()];
+            switch (Trigger.Value) {
+                default:
+                case Triggering.Values.ECG: lblTriggerSource.Foreground = Brushes.Green; break;
+                case Triggering.Values.Pressure: lblTriggerSource.Foreground = Brushes.Red; break;
+            }
+
             lblOperationMode.Text = Dictionary [Mode.LookupString ()];
+
             lblFrequency.Text = String.Format ("1 : {0}", Frequency);
-            lblMachineStatus.Text = Dictionary [Running ? "IABP:Running" : "IABP:Paused"];
-            lblTubingStatus.Text = Dictionary [Primed ? "IABP:Primed" : "IABP:NotPrimed"];
+            switch (Frequency) {
+                default:
+                case 1: lblFrequency.Foreground = Brushes.LightGreen; break;
+                case 2: lblFrequency.Foreground = Brushes.Yellow; break;
+                case 3: lblFrequency.Foreground = Brushes.OrangeRed; break;
+            }
+
+            if (Running) {
+                lblMachineStatus.Text = Dictionary ["IABP:Running"];
+                lblMachineStatus.Foreground = Brushes.LightGreen;
+            } else {
+                lblMachineStatus.Text = Dictionary ["IABP:Paused"];
+                lblMachineStatus.Foreground = Brushes.Yellow;
+            }
+
+            if (Priming) {
+                lblTubingStatus.Text = Dictionary ["IABP:Priming"];
+                lblTubingStatus.Foreground = Brushes.Yellow;
+            } else if (Primed) {
+                lblTubingStatus.Text = Dictionary ["IABP:Primed"];
+                lblTubingStatus.Foreground = Brushes.LightGreen;
+            } else {
+                lblTubingStatus.Text = Dictionary ["IABP:NotPrimed"];
+                lblTubingStatus.Foreground = Brushes.OrangeRed;
+            }
         }
 
         public void Load_Process (string inc) {
@@ -259,9 +300,14 @@ namespace II_Windows {
         }
 
         private void StartDevice () {
-            PrimeBalloon ();
-            Running = true;
-            UpdateInterface ();
+            if (!Primed) {
+                Prime_ThenStart = true;
+                PrimeBalloon ();
+            } else {
+                Prime_ThenStart = false;
+                Running = true;
+                UpdateInterface ();
+            }
         }
 
         private void PauseDevice () {
@@ -270,7 +316,23 @@ namespace II_Windows {
         }
 
         private void PrimeBalloon () {
-            Primed = true;
+            if (timerAncillary_Delay.Locked) {
+                Priming = false;
+                Primed = true;
+                if (Prime_ThenStart) {
+                    Running = true;
+                    Prime_ThenStart = false;
+                }
+            } else {
+                Priming = true;
+                Primed = false;
+
+                timerAncillary_Delay.Locked = true;
+                timerAncillary_Delay.Tick += OnTick_PrimingComplete;
+                timerAncillary_Delay.Set (5000);
+                timerAncillary_Delay.Start ();
+            }
+
             UpdateInterface ();
         }
 
@@ -394,6 +456,22 @@ namespace II_Windows {
         private void MenuTogglePause_Click (object s, RoutedEventArgs e) => TogglePause ();
 
         private void MenuFullscreen_Click (object sender, RoutedEventArgs e) => ToggleFullscreen ();
+
+        private void OnTick_PrimingComplete (object sender, EventArgs e) {
+            timerAncillary_Delay.Stop ();
+            timerAncillary_Delay.Locked = false;
+            timerAncillary_Delay.Tick -= OnTick_PrimingComplete;
+
+            Priming = false;
+            Primed = true;
+
+            if (Prime_ThenStart) {
+                Prime_ThenStart = false;
+                Running = true;
+            }
+
+            UpdateInterface ();
+        }
 
         private void OnTick_Tracing (object sender, EventArgs e) {
             if (isPaused)

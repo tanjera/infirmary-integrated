@@ -345,7 +345,12 @@ namespace II {
         }
 
         public enum Values {
+            Agonal,
             Apnea,
+            Apneustic,
+            Ataxic,
+            Biot,
+            CheyneStokes,
             Regular
         }
 
@@ -361,7 +366,12 @@ namespace II {
         public static Default_Vitals DefaultVitals (Values Rhythm) {
             switch (Rhythm) {
                 default: return new Default_Vitals (0, 0);
+                case Values.Agonal: return new Default_Vitals (2, 6);
                 case Values.Apnea: return new Default_Vitals (0, 0);
+                case Values.Apneustic: return new Default_Vitals (4, 8);
+                case Values.Ataxic: return new Default_Vitals (6, 10);
+                case Values.Biot: return new Default_Vitals (8, 14);
+                case Values.CheyneStokes: return new Default_Vitals (14, 20);
                 case Values.Regular: return new Default_Vitals (8, 22);
             }
         }
