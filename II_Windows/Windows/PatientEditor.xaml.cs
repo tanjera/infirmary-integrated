@@ -177,7 +177,7 @@ namespace II_Windows {
             App.Timer_Main.Tick += App.Patient.Timers_Process;
             App.Timer_Main.Tick += App.Mirror.TimerProcess;
             App.Patient.PatientEvent += FormUpdateFields;
-            FormUpdateFields (this, new Patient.PatientEvent_Args (App.Patient, Patient.PatientEvent_Args.EventTypes.Vitals_Change));
+            FormUpdateFields (this, new Patient.PatientEventArgs (App.Patient, Patient.PatientEventTypes.Vitals_Change));
         }
 
         private void InitDeviceMonitor () {
@@ -243,7 +243,7 @@ namespace II_Windows {
                 LoadFail ();
             }
 
-            FormUpdateFields (this, new Patient.PatientEvent_Args (App.Patient, Patient.PatientEvent_Args.EventTypes.Vitals_Change));
+            FormUpdateFields (this, new Patient.PatientEventArgs (App.Patient, Patient.PatientEventTypes.Vitals_Change));
         }
 
         private void LoadInit (Stream incFile) {
@@ -609,8 +609,8 @@ namespace II_Windows {
         private void Hyperlink_RequestNavigate (object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
             => System.Diagnostics.Process.Start (e.Uri.ToString ());
 
-        private void FormUpdateFields (object sender, Patient.PatientEvent_Args e) {
-            if (e.EventType == Patient.PatientEvent_Args.EventTypes.Vitals_Change) {
+        private void FormUpdateFields (object sender, Patient.PatientEventArgs e) {
+            if (e.EventType == Patient.PatientEventTypes.Vitals_Change) {
                 numHR.Value = e.Patient.HR;
                 numSPO2.Value = e.Patient.SPO2;
                 numRR.Value = e.Patient.RR;

@@ -21,7 +21,10 @@ namespace II {
             Idioventricular,
             Junctional,
             Pulseless_Electrical_Activity,
+            Sick_Sinus_Syndrome,
+            Sinus_Arrhythmia,
             Sinus_Rhythm,
+            Sinus_Rhythm_with_Arrest,
             Sinus_Rhythm_with_Bigeminy,
             Sinus_Rhythm_with_Trigeminy,
             Sinus_Rhythm_with_PACs,
@@ -187,7 +190,10 @@ namespace II {
                 case Values.Idioventricular: return new Default_Vitals (20, 40, 6, 28, 78, 82, 30, 35, 70, 80, 35, 40, 10, 20, 4, 6);
                 case Values.Junctional: return new Default_Vitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
                 case Values.Pulseless_Electrical_Activity: return new Default_Vitals (60, 100, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
+                case Values.Sick_Sinus_Syndrome: return new Default_Vitals (60, 90, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Sinus_Arrhythmia: return new Default_Vitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
                 case Values.Sinus_Rhythm: return new Default_Vitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.Sinus_Rhythm_with_Arrest: return new Default_Vitals (50, 80, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
                 case Values.Sinus_Rhythm_with_Bigeminy: return new Default_Vitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
                 case Values.Sinus_Rhythm_with_Trigeminy: return new Default_Vitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
                 case Values.Sinus_Rhythm_with_PACs: return new Default_Vitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
@@ -217,7 +223,10 @@ namespace II {
                 case Values.Idioventricular: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
                 case Values.Junctional: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
                 case Values.Pulseless_Electrical_Activity: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
+                case Values.Sick_Sinus_Syndrome: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
+                case Values.Sinus_Arrhythmia: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
                 case Values.Sinus_Rhythm: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
+                case Values.Sinus_Rhythm_with_Arrest: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
                 case Values.Sinus_Rhythm_with_Bigeminy: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
                 case Values.Sinus_Rhythm_with_Trigeminy: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
                 case Values.Sinus_Rhythm_with_PACs: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
@@ -247,7 +256,10 @@ namespace II {
                 case Values.Idioventricular: return;
                 case Values.Junctional: return;
                 case Values.Pulseless_Electrical_Activity:
+                case Values.Sick_Sinus_Syndrome: s.Overwrite (Rhythm.Waveforms.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.Sinus_Arrhythmia: s.Overwrite (Rhythm.Waveforms.ECG_Complex__P_Normal (p, s.Lead)); return;
                 case Values.Sinus_Rhythm: s.Overwrite (Rhythm.Waveforms.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm_with_Arrest: s.Overwrite (Rhythm.Waveforms.ECG_Complex__P_Normal (p, s.Lead)); return;
                 case Values.Sinus_Rhythm_with_Bigeminy: s.Overwrite (Rhythm.Waveforms.ECG_Complex__P_Normal (p, s.Lead)); return;
                 case Values.Sinus_Rhythm_with_Trigeminy: s.Overwrite (Rhythm.Waveforms.ECG_Complex__P_Normal (p, s.Lead)); return;
                 case Values.Sinus_Rhythm_with_PACs: s.Overwrite (Rhythm.Waveforms.ECG_Complex__P_Normal (p, s.Lead)); return;
@@ -280,7 +292,10 @@ namespace II {
                     case Values.Idioventricular:
                     case Values.Junctional:
                     case Values.Pulseless_Electrical_Activity:
+                    case Values.Sick_Sinus_Syndrome:
+                    case Values.Sinus_Arrhythmia:
                     case Values.Sinus_Rhythm:
+                    case Values.Sinus_Rhythm_with_Arrest:
                     case Values.Sinus_Rhythm_with_Bigeminy:
                     case Values.Sinus_Rhythm_with_Trigeminy:
                     case Values.Sinus_Rhythm_with_PACs:
@@ -316,8 +331,11 @@ namespace II {
                 case Values.Bundle_Branch_Block: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_BBB (p, s.Lead)); return;
                 case Values.Idioventricular: s.Overwrite (Rhythm.Waveforms.ECG_Complex__Idioventricular (p, s.Lead)); return;
                 case Values.Junctional: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Pulseless_Electrical_Activity:
+                case Values.Pulseless_Electrical_Activity: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.Sick_Sinus_Syndrome: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.Sinus_Arrhythmia: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
                 case Values.Sinus_Rhythm: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm_with_Arrest: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
                 case Values.Sinus_Rhythm_with_Bigeminy: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
                 case Values.Sinus_Rhythm_with_Trigeminy: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
                 case Values.Sinus_Rhythm_with_PACs: s.Overwrite (Rhythm.Waveforms.ECG_Complex__QRST_Normal (p, s.Lead)); return;
@@ -350,7 +368,7 @@ namespace II {
             Apneustic,
             Ataxic,
             Biot,
-            CheyneStokes,
+            Cheyne_Stokes,
             Regular
         }
 
@@ -371,7 +389,7 @@ namespace II {
                 case Values.Apneustic: return new Default_Vitals (4, 8);
                 case Values.Ataxic: return new Default_Vitals (6, 10);
                 case Values.Biot: return new Default_Vitals (8, 14);
-                case Values.CheyneStokes: return new Default_Vitals (14, 20);
+                case Values.Cheyne_Stokes: return new Default_Vitals (14, 20);
                 case Values.Regular: return new Default_Vitals (8, 22);
             }
         }
