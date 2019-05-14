@@ -87,9 +87,9 @@ namespace II.Server {
                 com.Parameters.Add ("?timestamp", MySqlDbType.VarChar).Value = Utility.DateTime_ToString (DateTime.UtcNow);
                 com.Parameters.Add ("?ii_version", MySqlDbType.VarChar).Value = Utility.Version;
                 com.Parameters.Add ("?client_os", MySqlDbType.VarChar).Value = Environment.OSVersion.VersionString;
-                com.Parameters.Add ("?client_ip", MySqlDbType.VarChar).Value = Utility.HashMD5 (ipAddress);
-                com.Parameters.Add ("?client_mac", MySqlDbType.VarChar).Value = Utility.HashMD5 (macAddress);
-                com.Parameters.Add ("?client_user", MySqlDbType.VarChar).Value = Utility.HashMD5 (Environment.UserName);
+                com.Parameters.Add ("?client_ip", MySqlDbType.VarChar).Value = Utility.HashSHA256 (ipAddress);
+                com.Parameters.Add ("?client_mac", MySqlDbType.VarChar).Value = Utility.HashSHA256 (macAddress);
+                com.Parameters.Add ("?client_user", MySqlDbType.VarChar).Value = Utility.HashSHA256 (Environment.UserName);
 
                 com.ExecuteNonQuery ();
                 Dispose (c, com, null);
@@ -159,9 +159,9 @@ namespace II.Server {
             MySqlCommand com = c?.CreateCommand ();
 
             try {
-                string s = Utility.HashMD5 (m.PasswordAccess);
+                string s = Utility.HashSHA256 (m.PasswordAccess);
                 com.CommandText = String.Format ("SELECT updated, patient FROM mirrors WHERE accession = '{0}' AND key_access = '{1}'",
-                    m.Accession, Utility.HashMD5 (m.PasswordAccess));
+                    m.Accession, Utility.HashSHA256 (m.PasswordAccess));
                 MySqlDataReader dr = com.ExecuteReader ();
 
                 if (!dr.Read () || dr.FieldCount < 2) {
@@ -200,7 +200,7 @@ namespace II.Server {
                     m.Accession);
                 MySqlDataReader dr = com.ExecuteReader ();
                 rowExists = dr.Read ();
-                if (rowExists && dr.GetValue (0).ToString () != Utility.HashMD5 (m.PasswordEdit)) {
+                if (rowExists && dr.GetValue (0).ToString () != Utility.HashSHA256 (m.PasswordEdit)) {
                     Dispose (c, com, dr);
                     return;
                 }
@@ -222,12 +222,12 @@ namespace II.Server {
 
                 string ipAddress = new WebClient ().DownloadString ("http://icanhazip.com").Trim ();
                 com.Parameters.Add ("?accession", MySqlDbType.VarChar).Value = m.Accession;
-                com.Parameters.Add ("?key_access", MySqlDbType.VarChar).Value = Utility.HashMD5 (m.PasswordAccess);
-                com.Parameters.Add ("?key_edit", MySqlDbType.VarChar).Value = Utility.HashMD5 (m.PasswordEdit);
+                com.Parameters.Add ("?key_access", MySqlDbType.VarChar).Value = Utility.HashSHA256 (m.PasswordAccess);
+                com.Parameters.Add ("?key_edit", MySqlDbType.VarChar).Value = Utility.HashSHA256 (m.PasswordEdit);
                 com.Parameters.Add ("?patient", MySqlDbType.LongText).Value = Utility.EncryptAES (pStr);
                 com.Parameters.Add ("?updated", MySqlDbType.VarChar).Value = Utility.DateTime_ToString (pUp);
-                com.Parameters.Add ("?client_ip", MySqlDbType.VarChar).Value = Utility.HashMD5 (ipAddress);
-                com.Parameters.Add ("?client_user", MySqlDbType.VarChar).Value = Utility.HashMD5 (Environment.UserName);
+                com.Parameters.Add ("?client_ip", MySqlDbType.VarChar).Value = Utility.HashSHA256 (ipAddress);
+                com.Parameters.Add ("?client_user", MySqlDbType.VarChar).Value = Utility.HashSHA256 (Environment.UserName);
 
                 com.ExecuteNonQuery ();
 

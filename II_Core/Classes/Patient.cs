@@ -174,6 +174,7 @@ namespace II {
 
             public PatientEventArgs (Patient p, PatientEventTypes e) {
                 EventType = e;
+                Patient = p;
                 Occurred = DateTime.Now;
             }
         }

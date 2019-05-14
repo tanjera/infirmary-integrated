@@ -6,7 +6,7 @@ using System.Text;
 
 namespace II {
     public static class Utility {
-        public const string Version = "0.99.03";
+        public const string Version = "0.99.05";
 
         public static bool IsNewerVersion (string current, string comparison) {
             string [] curSplit = current.Split ('.'),
@@ -82,24 +82,16 @@ namespace II {
             return str.Replace (' ', '_');
         }
 
-        public static string HashMD5 (string str) {
-            MD5 md5 = MD5.Create ();
-            byte [] bytes = System.Text.Encoding.ASCII.GetBytes (str);
-            byte [] hash = md5.ComputeHash (bytes);
+        public static string HashSHA256 (string str) {
+            SHA256 sha256 = SHA256.Create ();
+            byte [] bytes = Encoding.ASCII.GetBytes (str);
+            byte [] hash = sha256.ComputeHash (bytes);
 
             StringBuilder sb = new StringBuilder ();
-            for (int i = 0; i < hash.Length; i++)
-                sb.Append (hash [i].ToString ("X2"));
+            foreach (byte b in hash)
+                sb.Append (b.ToString ("X2"));
 
             return sb.ToString ();
-        }
-
-        public static string ObfuscateB64 (string str) {
-            return Convert.ToBase64String (Encoding.UTF8.GetBytes (str));
-        }
-
-        public static string UnobfuscateB64 (string str) {
-            return Encoding.UTF8.GetString (Convert.FromBase64String (str));
         }
 
         public static string EncryptAES (string str) {

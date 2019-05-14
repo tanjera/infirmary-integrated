@@ -270,7 +270,7 @@ namespace II_Windows {
             string file = Utility.DecryptAES (sr.ReadToEnd ().Trim ());
             sr.Close ();
 
-            if (hash == Utility.HashMD5 (file))
+            if (hash == Utility.HashSHA256 (file))
                 LoadProcess (file);
             else
                 LoadFail ();
@@ -371,7 +371,7 @@ namespace II_Windows {
 
             StreamWriter sw = new StreamWriter (s);
             sw.WriteLine (".ii:t1");                                      // Metadata (type 1 savefile)
-            sw.WriteLine (Utility.HashMD5 (sb.ToString ().Trim ()));      // Hash for validation
+            sw.WriteLine (Utility.HashSHA256 (sb.ToString ().Trim ()));      // Hash for validation
             sw.Write (Utility.EncryptAES (sb.ToString ().Trim ()));       // Savefile data encrypted with AES
             sw.Close ();
             s.Close ();
