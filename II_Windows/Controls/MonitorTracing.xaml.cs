@@ -189,7 +189,7 @@ namespace II_Windows.Controls {
             if (!Enum.TryParse<Leads.Values> (((MenuItem)sender).Name, out selectedValue))
                 return;
 
-            wfStrip.Lead.Value = selectedValue;
+            wfStrip.SetLead (selectedValue);
             wfStrip.Reset ();
             wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
             wfStrip.Add_Beat__Respiratory_Baseline (App.Patient);

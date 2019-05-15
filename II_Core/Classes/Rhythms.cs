@@ -1,3 +1,13 @@
+/* Rhythms.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2017
+ *
+ * Enumeration of rhythms, properties of actual rhythms (e.g. has a pulse? has an atrial
+ * pulse? an atrial waveform?), default vital signs for clamping.
+ *
+ * Note: Actual timer triggering of rhythms takes place in Patient.cs.
+ */
+
 using System;
 using System.Collections.Generic;
 
@@ -212,34 +222,34 @@ namespace II {
 
         public void ECG_Isoelectric (Patient p, Rhythm.Strip s) {
             switch (Value) {
-                case Values.Asystole: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
+                case Values.Asystole: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
                 case Values.Atrial_Fibrillation: s.Concatenate (Rhythm.Waveforms.ECG_Isoelectric__Atrial_Fibrillation (p, s.Lead)); return;
                 case Values.Atrial_Flutter: s.Concatenate (Rhythm.Waveforms.ECG_Isoelectric__Atrial_Flutter (p, s.Lead)); return;
-                case Values.AV_Block__1st_Degree: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.AV_Block__3rd_Degree: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.AV_Block__Mobitz_II: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.AV_Block__Wenckebach: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Bundle_Branch_Block: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Idioventricular: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Junctional: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Pulseless_Electrical_Activity: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Sick_Sinus_Syndrome: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Sinus_Arrhythmia: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_Arrest: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_Bigeminy: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_Trigeminy: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_PACs: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_PJCs: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_PVCs_Multifocal: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_PVCs_Unifocal: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Supraventricular_Tachycardia: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Ventricular_Fibrillation_Coarse: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Ventricular_Fibrillation_Fine: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Ventricular_Standstill: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
-                case Values.Ventricular_Tachycardia_Polymorphic: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.HR_Seconds, 0f)); return;
+                case Values.AV_Block__1st_Degree: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.AV_Block__3rd_Degree: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.AV_Block__Mobitz_II: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.AV_Block__Wenckebach: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Bundle_Branch_Block: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Idioventricular: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Junctional: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Pulseless_Electrical_Activity: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sick_Sinus_Syndrome: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sinus_Arrhythmia: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sinus_Rhythm: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sinus_Rhythm_with_Arrest: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sinus_Rhythm_with_Bigeminy: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sinus_Rhythm_with_Trigeminy: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sinus_Rhythm_with_PACs: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sinus_Rhythm_with_PJCs: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sinus_Rhythm_with_PVCs_Multifocal: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sinus_Rhythm_with_PVCs_Unifocal: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Supraventricular_Tachycardia: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Ventricular_Fibrillation_Coarse: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Ventricular_Fibrillation_Fine: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Ventricular_Standstill: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Ventricular_Tachycardia_Polymorphic: s.Concatenate (Rhythm.Waveforms.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
             }
         }
 

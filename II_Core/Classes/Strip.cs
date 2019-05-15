@@ -1,9 +1,24 @@
-﻿using System;
+﻿/* Strip.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2017
+ *
+ * Actual management of geometric plotting of waveforms in a single unit is in Strip.cs.
+ * Concatenation of waveform complexes, overwriting and underwriting (combining) wave points,
+ * marquee scrolling of the waveforms, managing and resizing a future edge buffer (important
+ * for continuity of drawing) and cleaning old data points from data collections.
+ */
+
+using System;
 using System.Collections.Generic;
 
 namespace II.Rhythm {
     public class Strip {
-        public double lengthSeconds = 5.0d;               // Strip length in seconds
+        /* Default variables for easy modification of multiple measurement/tracing functions */
+        public static double DefaultLength = 6.0d,
+            DefaultBufferLength = .2d,
+            DefaultRespiratoryCoefficient = 3d;
+
+        public double lengthSeconds = 6.0d;               // Strip length in seconds
         double forwardBuffer = 1.20d;                     // Coefficient of Length to draw into future as "now" for buffer
         DateTime scrolledLast = DateTime.UtcNow;
         bool scrollingUnpausing = false;
@@ -17,12 +32,59 @@ namespace II.Rhythm {
             Points = new List<Point> ();
         }
 
+        public Strip (Leads.Values lead) {
+            Lead = new Leads (lead);
+            lengthSeconds = IsRespiratory ? DefaultLength * DefaultRespiratoryCoefficient : DefaultLength;
+            Points = new List<Point> ();
+        }
+
+        private bool IsECG {
+            get {
+                return Lead.Value == Leads.Values.ECG_I || Lead.Value == Leads.Values.ECG_II
+                    || Lead.Value == Leads.Values.ECG_III || Lead.Value == Leads.Values.ECG_AVR
+                    || Lead.Value == Leads.Values.ECG_AVL || Lead.Value == Leads.Values.ECG_AVF
+                    || Lead.Value == Leads.Values.ECG_V1 || Lead.Value == Leads.Values.ECG_V2
+                    || Lead.Value == Leads.Values.ECG_V3 || Lead.Value == Leads.Values.ECG_V4
+                    || Lead.Value == Leads.Values.ECG_V5 || Lead.Value == Leads.Values.ECG_V6;
+            }
+        }
+
+        private bool IsCardiac {
+            get {
+                return Lead.Value == Leads.Values.ECG_I || Lead.Value == Leads.Values.ECG_II
+                    || Lead.Value == Leads.Values.ECG_III || Lead.Value == Leads.Values.ECG_AVR
+                    || Lead.Value == Leads.Values.ECG_AVL || Lead.Value == Leads.Values.ECG_AVF
+                    || Lead.Value == Leads.Values.ECG_V1 || Lead.Value == Leads.Values.ECG_V2
+                    || Lead.Value == Leads.Values.ECG_V3 || Lead.Value == Leads.Values.ECG_V4
+                    || Lead.Value == Leads.Values.ECG_V5 || Lead.Value == Leads.Values.ECG_V6
+                    || Lead.Value == Leads.Values.ABP
+                    || Lead.Value == Leads.Values.CVP
+                    || Lead.Value == Leads.Values.IABP
+                    || Lead.Value == Leads.Values.IAP
+                    || Lead.Value == Leads.Values.ICP
+                    || Lead.Value == Leads.Values.PA
+                    || Lead.Value == Leads.Values.SPO2;
+            }
+        }
+
+        private bool IsRespiratory {
+            get {
+                return Lead.Value == Leads.Values.ETCO2
+                    || Lead.Value == Leads.Values.RR;
+            }
+        }
+
+        public void SetLead (Leads.Values lead) {
+            Lead = new Leads (lead);
+            lengthSeconds = IsRespiratory ? DefaultLength * DefaultRespiratoryCoefficient : DefaultLength;
+        }
+
         private void SetForwardBuffer (Patient patient) {
             // Set the forward edge buffer to be the length (in seconds) of 1.5 beats
             if (IsCardiac)
-                forwardBuffer = Utility.Clamp (1 + (1.5 * (patient.HR_Seconds / lengthSeconds)), 1.2d, 20d);
+                forwardBuffer = Utility.Clamp (1 + (1.5 * (patient.GetHR_Seconds / lengthSeconds)), 1.2d, 20d);
             else if (IsRespiratory)
-                forwardBuffer = Utility.Clamp (1 + (1.5 * (patient.RR_Seconds / lengthSeconds)), 1.2d, 20d);
+                forwardBuffer = Utility.Clamp (1 + (1.5 * (patient.GetRR_Seconds / lengthSeconds)), 1.2d, 20d);
         }
 
         public void Reset () {
@@ -153,7 +215,7 @@ namespace II.Rhythm {
             } else if (Lead.Value != Leads.Values.RR && Lead.Value != Leads.Values.ETCO2) {
                 // Fill waveform through to future buffer with flatline
                 double fill = (lengthSeconds * forwardBuffer) - Last (Points).X;
-                Concatenate (Waveforms.Waveform_Flatline (fill > patient.HR_Seconds ? fill : patient.HR_Seconds, 0f));
+                Concatenate (Waveforms.Waveform_Flatline (fill > patient.GetHR_Seconds ? fill : patient.GetHR_Seconds, 0f));
             }
 
             if (Lead.Value == Leads.Values.CVP) {
@@ -205,7 +267,7 @@ namespace II.Rhythm {
             if (Lead.Value == Leads.Values.RR || Lead.Value == Leads.Values.ETCO2) {
                 // Fill waveform through to future buffer with flatline
                 double fill = (lengthSeconds * forwardBuffer) - Last (Points).X;
-                Concatenate (Waveforms.Waveform_Flatline (fill > patient.RR_Seconds ? fill : patient.RR_Seconds, 0f));
+                Concatenate (Waveforms.Waveform_Flatline (fill > patient.GetRR_Seconds ? fill : patient.GetRR_Seconds, 0f));
             }
         }
 
@@ -222,42 +284,6 @@ namespace II.Rhythm {
                 default: break;
                 case Leads.Values.RR: Overwrite (Waveforms.RR_Rhythm (patient, false)); break;
                 case Leads.Values.ETCO2: Overwrite (Waveforms.ETCO2_Rhythm (patient)); break;
-            }
-        }
-
-        private bool IsECG {
-            get {
-                return Lead.Value == Leads.Values.ECG_I || Lead.Value == Leads.Values.ECG_II
-                    || Lead.Value == Leads.Values.ECG_III || Lead.Value == Leads.Values.ECG_AVR
-                    || Lead.Value == Leads.Values.ECG_AVL || Lead.Value == Leads.Values.ECG_AVF
-                    || Lead.Value == Leads.Values.ECG_V1 || Lead.Value == Leads.Values.ECG_V2
-                    || Lead.Value == Leads.Values.ECG_V3 || Lead.Value == Leads.Values.ECG_V4
-                    || Lead.Value == Leads.Values.ECG_V5 || Lead.Value == Leads.Values.ECG_V6;
-            }
-        }
-
-        private bool IsCardiac {
-            get {
-                return Lead.Value == Leads.Values.ECG_I || Lead.Value == Leads.Values.ECG_II
-                    || Lead.Value == Leads.Values.ECG_III || Lead.Value == Leads.Values.ECG_AVR
-                    || Lead.Value == Leads.Values.ECG_AVL || Lead.Value == Leads.Values.ECG_AVF
-                    || Lead.Value == Leads.Values.ECG_V1 || Lead.Value == Leads.Values.ECG_V2
-                    || Lead.Value == Leads.Values.ECG_V3 || Lead.Value == Leads.Values.ECG_V4
-                    || Lead.Value == Leads.Values.ECG_V5 || Lead.Value == Leads.Values.ECG_V6
-                    || Lead.Value == Leads.Values.ABP
-                    || Lead.Value == Leads.Values.CVP
-                    || Lead.Value == Leads.Values.IABP
-                    || Lead.Value == Leads.Values.IAP
-                    || Lead.Value == Leads.Values.ICP
-                    || Lead.Value == Leads.Values.PA
-                    || Lead.Value == Leads.Values.SPO2;
-            }
-        }
-
-        private bool IsRespiratory {
-            get {
-                return Lead.Value == Leads.Values.ETCO2
-                    || Lead.Value == Leads.Values.RR;
             }
         }
     }

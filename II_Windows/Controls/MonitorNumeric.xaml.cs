@@ -1,4 +1,5 @@
 ﻿using II;
+using II.Rhythm;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -155,7 +156,8 @@ namespace II_Windows.Controls {
             switch (controlType.Value) {
                 default:
                 case ControlType.Values.ECG:
-                    lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.HR, 0.02f));
+                    lblLine1.Text = String.Format ("{0:0}", App.Patient.MeasureHR_ECG (
+                        Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
                     break;
 
                 case ControlType.Values.T:
@@ -164,16 +166,19 @@ namespace II_Windows.Controls {
 
                 case ControlType.Values.SPO2:
                     lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.SPO2, 0.01f));
-                    lblLine2.Text = String.Format ("@ {0:0}", Utility.RandomPercentRange (App.Patient.HR, 0.01f));
+                    lblLine2.Text = String.Format ("@ {0:0}", App.Patient.MeasureHR_SPO2 (
+                        Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
                     break;
 
                 case ControlType.Values.RR:
-                    lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.RR, 0.02f));
+                    lblLine1.Text = String.Format ("{0:0}", App.Patient.MeasureRR (
+                        Strip.DefaultLength * Strip.DefaultRespiratoryCoefficient, Strip.DefaultLength * Strip.DefaultBufferLength));
                     break;
 
                 case ControlType.Values.ETCO2:
                     lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.ETCO2, 0.02f));
-                    lblLine2.Text = String.Format ("@ {0:0}", Utility.RandomPercentRange (App.Patient.RR, 0.02f));
+                    lblLine2.Text = String.Format ("@ {0:0}", App.Patient.MeasureRR (
+                        Strip.DefaultLength * Strip.DefaultRespiratoryCoefficient, Strip.DefaultLength * Strip.DefaultBufferLength));
                     break;
 
                 case ControlType.Values.NIBP:

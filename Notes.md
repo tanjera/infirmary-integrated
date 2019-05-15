@@ -1,10 +1,6 @@
 ﻿* Commit message:
 
 
-  --> complete utilization of ListPatientEvents
-		- Issue #64
-
-  @@@@ complete localization
 
   @@ implement respiratory rhythm timers for new respiratory rhythms
   @@@ Agonal

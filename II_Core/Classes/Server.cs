@@ -1,4 +1,17 @@
-﻿using MySql.Data.MySqlClient;
+﻿/* Server.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera)
+ *
+ * Connection to MySQL database functioning as a data server for Infirmary Integrated.
+ * Establishes database connection, includes functions for queries/commands.
+ *
+ * Note: Information for database connection (host, database, user ID and password) are
+ * stored in Access.cs, to be ignored from git to prevent exposing login information to
+ * public git server. On changes to Access.cs, to be archived in Access.rar with password
+ * protection for version control.
+ */
+
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
 using System.Collections.Generic;

@@ -114,7 +114,7 @@ namespace II_Windows {
             App.Timer_Main.Tick += timerAncillary_Delay.Process;
 
             timerTracing.Interval = Waveforms.Draw_Refresh;
-            timerVitals.Interval = (int)(App.Patient.HR_Seconds * 1000);
+            timerVitals.Interval = (int)(App.Patient.GetHR_Seconds * 1000);
 
             timerTracing.Tick += OnTick_Tracing;
             timerVitals.Tick += OnTick_Vitals;

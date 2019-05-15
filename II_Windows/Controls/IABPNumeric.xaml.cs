@@ -1,4 +1,5 @@
 ﻿using II;
+using II.Rhythm;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -87,7 +88,8 @@ namespace II_Windows.Controls {
             switch (controlType.Value) {
                 default:
                 case ControlType.Values.ECG:
-                    lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.HR, 0.02f));
+                    lblLine1.Text = String.Format ("{0:0}", App.Patient.MeasureHR_ECG (
+                        Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
                     break;
 
                 case ControlType.Values.ABP:

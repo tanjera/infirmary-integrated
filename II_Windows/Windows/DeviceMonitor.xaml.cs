@@ -53,8 +53,8 @@ namespace II_Windows {
             timerTracing.Tick += OnTick_Tracing;
             timerTracing.Start ();
 
-            timerVitals_Cardiac.Interval = Utility.Clamp ((int)(App.Patient.HR_Seconds * 1000 / 2), 2000, 6000);
-            timerVitals_Respiratory.Interval = Utility.Clamp ((int)(App.Patient.RR_Seconds * 1000 / 2), 2000, 8000);
+            timerVitals_Cardiac.Interval = 3000;
+            timerVitals_Respiratory.Interval = 5000;
 
             App.Timer_Main.Tick += timerVitals_Cardiac.Process;
             App.Timer_Main.Tick += timerVitals_Respiratory.Process;

@@ -611,22 +611,22 @@ namespace II_Windows {
 
         private void FormUpdateFields (object sender, Patient.PatientEventArgs e) {
             if (e.EventType == Patient.PatientEventTypes.Vitals_Change) {
-                numHR.Value = e.Patient.HR;
-                numSPO2.Value = e.Patient.SPO2;
-                numRR.Value = e.Patient.RR;
-                numETCO2.Value = e.Patient.ETCO2;
-                numT.Value = (decimal)e.Patient.T;
-                numCVP.Value = e.Patient.CVP;
+                numHR.Value = e.Patient.VS_Settings.HR;
+                numSPO2.Value = e.Patient.VS_Settings.SPO2;
+                numRR.Value = e.Patient.VS_Settings.RR;
+                numETCO2.Value = e.Patient.VS_Settings.ETCO2;
+                numT.Value = (decimal)e.Patient.VS_Settings.T;
+                numCVP.Value = e.Patient.VS_Settings.CVP;
 
-                numNSBP.Value = e.Patient.NSBP;
-                numNDBP.Value = e.Patient.NDBP;
-                numASBP.Value = e.Patient.ASBP;
-                numADBP.Value = e.Patient.ADBP;
-                numPSP.Value = e.Patient.PSP;
-                numPDP.Value = e.Patient.PDP;
+                numNSBP.Value = e.Patient.VS_Settings.NSBP;
+                numNDBP.Value = e.Patient.VS_Settings.NDBP;
+                numASBP.Value = e.Patient.VS_Settings.ASBP;
+                numADBP.Value = e.Patient.VS_Settings.ADBP;
+                numPSP.Value = e.Patient.VS_Settings.PSP;
+                numPDP.Value = e.Patient.VS_Settings.PDP;
 
-                numICP.Value = e.Patient.ICP;
-                numIAP.Value = e.Patient.IAP;
+                numICP.Value = e.Patient.VS_Settings.ICP;
+                numIAP.Value = e.Patient.VS_Settings.IAP;
 
                 comboCardiacRhythm.SelectedIndex = (int)e.Patient.Cardiac_Rhythm.Value;
                 comboCardiacAxis.SelectedIndex = (int)e.Patient.Cardiac_Axis.Value;

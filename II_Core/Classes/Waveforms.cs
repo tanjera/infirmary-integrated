@@ -1,3 +1,13 @@
+/* Waveforms.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2017
+ *
+ * All mathematical modeling of waveforms are done in Waveforms.cs, including
+ * the plotting of individual waves, the plotting/ordering of multiple waves into a
+ * complex, and the transformation of waves across leads (e.g. plotting lead III
+ * based on transformations of lead II).
+ */
+
 using System;
 using System.Collections.Generic;
 
@@ -28,7 +38,7 @@ namespace II.Rhythm {
         }
 
         public static List<Point> SPO2_Rhythm (Patient _P, double _Amplitude) {
-            double _Portion = _P.HR_Seconds / 4f;
+            double _Portion = _P.GetHR_Seconds / 4f;
 
             _Amplitude *= ((new Random ().NextDouble () * 0.1) + 0.9);          // Add 10% waveform amplitude variance
 
@@ -52,7 +62,7 @@ namespace II.Rhythm {
         }
 
         public static List<Point> ABP_Rhythm (Patient _P, double _Amplitude) {
-            double _Portion = _P.HR_Seconds / 4;
+            double _Portion = _P.GetHR_Seconds / 4;
 
             _Amplitude *= ((new Random ().NextDouble () * 0.1) + 0.9);          // Add 10% waveform amplitude variance
 
@@ -77,7 +87,7 @@ namespace II.Rhythm {
         }
 
         public static List<Point> CVP_Rhythm (Patient _P, double _Amplitude) {
-            double _Portion = _P.HR_Seconds / 5;
+            double _Portion = _P.GetHR_Seconds / 5;
 
             // Adjust for intrathoracic pressure
             if (_P.Mechanically_Ventilated)
@@ -104,7 +114,7 @@ namespace II.Rhythm {
         }
 
         public static List<Point> ICP_Rhythm (Patient _P, double _Amplitude) {
-            double _Portion = _P.HR_Seconds / 3;
+            double _Portion = _P.GetHR_Seconds / 3;
 
             if (_P.Cardiac_Rhythm.AberrantBeat)                                 // Aberrant beat effect on waveform (50%)
                 _Amplitude *= 0.5f;
@@ -136,14 +146,14 @@ namespace II.Rhythm {
                 _Amplitude *= 0.5f;
 
             List<Point> thisBeat = new List<Point> ();
-            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds, 0.2f * _Amplitude, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_P.GetHR_Seconds, 0.2f * _Amplitude, 0f, Last (thisBeat)));
             return thisBeat;
         }
 
         public static List<Point> PA_Rhythm (Patient _P, double _Amplitude) {
             /* ABP during normal sinus perfusion is similar to a sine wave leaning right with dicrotic notch
 		     */
-            double _Portion = _P.HR_Seconds / 4;
+            double _Portion = _P.GetHR_Seconds / 4;
 
             // Adjust for intrathoracic pressure
             if (_P.Mechanically_Ventilated)
@@ -163,7 +173,7 @@ namespace II.Rhythm {
         }
 
         public static List<Point> IABP_Balloon_Rhythm (Patient _P, double _Amplitude) {
-            double _Portion = _P.HR_Seconds / 20;
+            double _Portion = _P.GetHR_Seconds / 20;
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Line (_Portion * 3, 0f, Last (thisBeat)));
@@ -177,7 +187,7 @@ namespace II.Rhythm {
         }
 
         public static List<Point> IABP_ABP_Rhythm (Patient _P, double _Amplitude) {
-            double _Portion = _P.HR_Seconds / 4;
+            double _Portion = _P.GetHR_Seconds / 4;
 
             List<Point> thisBeat = new List<Point> ();
 
@@ -215,7 +225,7 @@ namespace II.Rhythm {
         }
 
         public static List<Point> ETCO2_Rhythm (Patient _P) {
-            double _Length = _P.RR_Seconds_E,
+            double _Length = _P.GetRR_Seconds_E,
                     _Portion = 0.2d;
 
             List<Point> thisBeat = new List<Point> ();
@@ -226,7 +236,7 @@ namespace II.Rhythm {
         }
 
         public static List<Point> ECG_Isoelectric__Atrial_Fibrillation (Patient _P, Leads _L) {
-            int Fibrillations = (int)Math.Ceiling (_P.HR_Seconds / 0.06);
+            int Fibrillations = (int)Math.Ceiling (_P.GetHR_Seconds / 0.06);
 
             List<Point> thisBeat = new List<Point> ();
             for (int i = 1; i < Fibrillations; i++)
@@ -235,7 +245,7 @@ namespace II.Rhythm {
         }
 
         public static List<Point> ECG_Isoelectric__Atrial_Flutter (Patient _P, Leads _L) {
-            int Flutters = (int)Math.Ceiling (_P.HR_Seconds / 0.16f);
+            int Flutters = (int)Math.Ceiling (_P.GetHR_Seconds / 0.16f);
 
             List<Point> thisBeat = new List<Point> ();
             for (int i = 1; i < Flutters; i++)
@@ -326,7 +336,7 @@ namespace II.Rhythm {
         }
 
         public static List<Point> ECG_Complex__QRST_SVT (Patient _P, Leads _L) {
-            double _Length = _P.HR_Seconds;
+            double _Length = _P.GetHR_Seconds;
             double lerpCoeff = Utility.Clamp (Utility.InverseLerp (160, 240, _P.HR)),
                         QRS = Utility.Lerp (0.05f, 0.12f, 1 - lerpCoeff),
                         QT = Utility.Lerp (0.22f, 0.36f, 1 - lerpCoeff);
@@ -345,13 +355,13 @@ namespace II.Rhythm {
         public static List<Point> ECG_Complex__QRST_VT (Patient _P, Leads _L) {
             List<Point> thisBeat = new List<Point> ();
 
-            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 4,
+            thisBeat = Concatenate (thisBeat, Curve (_P.GetHR_Seconds / 4,
                 -0.1f * baseLeadCoeff [(int)_L.Value, (int)WavePart.Q],
                 -0.2f * baseLeadCoeff [(int)_L.Value, (int)WavePart.Q], Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 4,
+            thisBeat = Concatenate (thisBeat, Curve (_P.GetHR_Seconds / 4,
                 -1f * baseLeadCoeff [(int)_L.Value, (int)WavePart.R],
                 -0.3f * baseLeadCoeff [(int)_L.Value, (int)WavePart.R], Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_P.HR_Seconds / 2,
+            thisBeat = Concatenate (thisBeat, Curve (_P.GetHR_Seconds / 2,
                 0.4f * baseLeadCoeff [(int)_L.Value, (int)WavePart.T],
                 0.1f * baseLeadCoeff [(int)_L.Value, (int)WavePart.T],
                 Last (thisBeat)));
@@ -360,8 +370,8 @@ namespace II.Rhythm {
         }
 
         public static List<Point> ECG_Complex__QRST_VF (Patient _P, Leads _L, float _Amp) {
-            double _Length = _P.HR_Seconds,
-                    _Wave = _P.HR_Seconds / 2f,
+            double _Length = _P.GetHR_Seconds,
+                    _Wave = _P.GetHR_Seconds / 2f,
                     _Amplitude = Utility.RandomDouble (0.3f, 0.6f) * _Amp;
 
             List<Point> thisBeat = new List<Point> ();
@@ -378,7 +388,7 @@ namespace II.Rhythm {
         public static List<Point> ECG_Complex__Idioventricular (Patient _P, Leads _L) {
             double lerpCoeff = Utility.Clamp (Utility.InverseLerp (25, 75, _P.HR)),
                     QRS = Utility.Lerp (0.3f, 0.4f, 1 - lerpCoeff),
-                    SQ = (_P.HR_Seconds - QRS);
+                    SQ = (_P.GetHR_Seconds - QRS);
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Curve (QRS / 2,

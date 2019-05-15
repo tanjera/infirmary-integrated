@@ -1,4 +1,13 @@
-﻿using System;
+﻿/* Patient.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2017
+ *
+ * All patient modeling takes place in Patient.cs, consisting of:
+ * - Variables: vital signs and modeling parameters
+ * - Timers: for modeling cardiac and respiratory rhythms, etc.
+ */
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -42,7 +51,7 @@ namespace II {
             }
         }
 
-        private Vital_Signs VS_Settings = new Vital_Signs (),
+        public Vital_Signs VS_Settings = new Vital_Signs (),
                             VS_Actual = new Vital_Signs ();
 
         public int HR { get { return VS_Actual.HR; } }
@@ -112,14 +121,6 @@ namespace II {
             }
         }
 
-        /* Helper methods */
-        public double HR_Seconds { get { return 60d / Math.Max (1, VS_Actual.HR); } }
-        public double RR_Seconds { get { return 60d / Math.Max (1, VS_Actual.RR); } }
-        public double RR_Seconds_I { get { return (RR_Seconds / (Respiratory_IERatio_I + Respiratory_IERatio_E)) * Respiratory_IERatio_I; } }
-        public double RR_Seconds_E { get { return (RR_Seconds / (Respiratory_IERatio_I + Respiratory_IERatio_E)) * Respiratory_IERatio_E; } }
-        public static int CalculateMAP (int sbp, int dbp) { return dbp + ((sbp - dbp) / 3); }
-        public static int CalculateCPP (int icp, int map) { return map - icp; }
-
         /* Timers for modeling */
         private Timer timerCardiac_Baseline = new Timer (),
                         timerCardiac_Atrial = new Timer (),
@@ -138,8 +139,6 @@ namespace II {
         /* Internal counters and buffers for propogating aberrancies */
         private int counterCardiac_Aberrancy = 0,
                     counterCardiac_Arrhythmia = 0;
-        private int bufferParadoxus_BaseASBP = 0,
-                    bufferCardiac_BaseHR = 0;
         private bool switchParadoxus = false,
                     switchCardiac_Arrhythmia = false;
 
@@ -203,6 +202,56 @@ namespace II {
             PatientEvent?.Invoke (this, ea);
         }
 
+        public void CleanListPatientEvents () {
+            // Remove all listings older than 1 minute... prevent cluttering memory
+            for (int i = ListPatientEvents.Count - 1; i >= 0; i--)
+                if (ListPatientEvents [i].Occurred.CompareTo (DateTime.Now.AddMinutes (-1)) < 0)
+                    ListPatientEvents.RemoveAt (i);
+        }
+
+        /* Methods for counting, calculating, and measuring vital signs, timing re: vital signs, etc. */
+        public static int CalculateMAP (int sbp, int dbp) { return dbp + ((sbp - dbp) / 3); }
+        public static int CalculateCPP (int icp, int map) { return map - icp; }
+        public double GetHR_Seconds { get { return 60d / Math.Max (1, VS_Actual.HR); } }
+        public double GetRR_Seconds { get { return 60d / Math.Max (1, VS_Actual.RR); } }
+        public double GetRR_Seconds_I { get { return (GetRR_Seconds / (Respiratory_IERatio_I + Respiratory_IERatio_E)) * Respiratory_IERatio_I; } }
+        public double GetRR_Seconds_E { get { return (GetRR_Seconds / (Respiratory_IERatio_I + Respiratory_IERatio_E)) * Respiratory_IERatio_E; } }
+
+        public int MeasureHR_ECG (double lengthSeconds, double offsetSeconds)
+            => MeasureHR (lengthSeconds, offsetSeconds, false);
+        public int MeasureHR_SPO2 (double lengthSeconds, double offsetSeconds)
+            => MeasureHR (lengthSeconds, offsetSeconds, true);
+
+        public int MeasureHR (double lengthSeconds, double offsetSeconds, bool isPulse = false) {
+            CleanListPatientEvents ();
+
+            if (isPulse && !Cardiac_Rhythm.HasPulse_Ventricular)
+                return 0;
+
+            int counter = 0;
+            foreach (PatientEventArgs ea in ListPatientEvents)
+                if (ea.EventType == PatientEventTypes.Cardiac_Ventricular
+                    && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-(lengthSeconds + offsetSeconds))) >= 0
+                    && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-offsetSeconds)) <= 0)
+                    counter++;
+
+            return (int)(counter / (lengthSeconds / 60));
+        }
+
+        public int MeasureRR (double lengthSeconds, double offsetSeconds) {
+            CleanListPatientEvents ();
+
+            int counter = 0;
+            foreach (PatientEventArgs ea in ListPatientEvents)
+                if (ea.EventType == PatientEventTypes.Respiratory_Inspiration
+                    && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-(lengthSeconds + offsetSeconds))) >= 0
+                    && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-offsetSeconds)) <= 0)
+                    counter++;
+
+            return (int)(counter / (lengthSeconds / 60));
+        }
+
+        /* Process all timers for patient modeling */
         public void Timers_Process (object sender, EventArgs e) {
             /* For cross-platform compatibility with different timers ...
              * When creating a Patient object, create a native thread-safe Timer object,
@@ -224,6 +273,7 @@ namespace II {
             timerObstetric_FHRVariationFrequency.Process ();
         }
 
+        /* Process for loading Patient{} information from simulation file */
         public void Load_Process (string inc) {
             StringReader sRead = new StringReader (inc);
 
@@ -316,6 +366,7 @@ namespace II {
             OnPatientEvent (PatientEventTypes.Vitals_Change);
         }
 
+        /* Process for saving Patient{} information to simulation file  */
         public string Save () {
             StringBuilder sWrite = new StringBuilder ();
 
@@ -419,7 +470,6 @@ namespace II {
                 counterCardiac_Aberrancy = 0;
                 counterCardiac_Arrhythmia = 0;
                 switchCardiac_Arrhythmia = false;
-                bufferCardiac_BaseHR = hr;
                 Cardiac_Rhythm.AberrantBeat = false;
                 Cardiac_Rhythm.AlternansBeat = false;
             }
@@ -434,7 +484,6 @@ namespace II {
             T_Elevation = t_elev;
 
             // Reset buffers and switches for pulsus paradoxus (must be below ASBP!)
-            bufferParadoxus_BaseASBP = VS_Settings.ASBP;
             switchParadoxus = false;
             Pulsus_Paradoxus = puls_paradoxus;
             Pulsus_Alternans = puls_alternans;
@@ -479,8 +528,6 @@ namespace II {
 
             VS_Actual.Set (VS_Settings);
 
-            bufferCardiac_BaseHR = VS_Settings.HR;
-            bufferParadoxus_BaseASBP = VS_Settings.ASBP;
             switchParadoxus = false;
 
             SetTimers ();
@@ -508,7 +555,7 @@ namespace II {
         }
 
         private void SetTimers () {
-            timerCardiac_Baseline.ResetAuto ((int)(HR_Seconds * 1000f));
+            timerCardiac_Baseline.ResetAuto ((int)(GetHR_Seconds * 1000f));
             timerCardiac_Atrial.Stop ();
             timerCardiac_Ventricular.Stop ();
 
@@ -519,7 +566,7 @@ namespace II {
                 timerPacemaker_Baseline.Reset ();
             timerPacemaker_Spike.Stop ();
 
-            timerRespiratory_Baseline.ResetAuto ((int)(RR_Seconds * 1000f));
+            timerRespiratory_Baseline.ResetAuto ((int)(GetRR_Seconds * 1000f));
             timerRespiratory_Inspiration.Stop ();
             timerRespiratory_Expiration.Stop ();
 
@@ -611,7 +658,7 @@ namespace II {
 
         private void OnCardiac_Baseline () {
             OnPatientEvent (PatientEventTypes.Cardiac_Baseline);
-            timerCardiac_Baseline.Set ((int)(HR_Seconds * 1000f));
+            timerCardiac_Baseline.Set ((int)(GetHR_Seconds * 1000f));
 
             switch (Cardiac_Rhythm.Value) {
                 default:
@@ -644,7 +691,7 @@ namespace II {
 
                 // Traced as "irregular V" rhythms
                 case Cardiac_Rhythms.Values.Atrial_Fibrillation:
-                    timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval * Utility.RandomDouble (0.6, 1.4)));
+                    VS_Actual.HR = (int)(VS_Settings.HR * Utility.RandomDouble (0.6, 1.4));
                     timerCardiac_Ventricular.ResetAuto (1);
                     break;
 
@@ -660,10 +707,10 @@ namespace II {
                     if (counterCardiac_Arrhythmia <= 0) {
                         switchCardiac_Arrhythmia = !switchCardiac_Arrhythmia;
                         if (switchCardiac_Arrhythmia) {
-                            VS_Actual.HR = (int)(bufferCardiac_BaseHR * 0.60);
+                            VS_Actual.HR = (int)(VS_Settings.HR * 0.60);
                             counterCardiac_Arrhythmia = new Random ().Next (8, 12);
                         } else {
-                            VS_Actual.HR = (int)(bufferCardiac_BaseHR * 1.8);
+                            VS_Actual.HR = (int)(VS_Settings.HR * 1.8);
                             counterCardiac_Arrhythmia = new Random ().Next (20, 30);
                         }
                     } else
@@ -674,9 +721,9 @@ namespace II {
 
                 case Cardiac_Rhythms.Values.Sinus_Arrhythmia:
                     if (Respiration_Inflated)
-                        timerCardiac_Baseline.Set ((int)(HR_Seconds * 1100));
+                        VS_Actual.HR = (int)(VS_Settings.HR * 1.075);
                     else
-                        timerCardiac_Baseline.Set ((int)(HR_Seconds * 900));
+                        VS_Actual.HR = (int)(VS_Settings.HR * 0.925);
 
                     timerCardiac_Atrial.ResetAuto (1);
                     break;
@@ -686,30 +733,36 @@ namespace II {
                     if (counterCardiac_Arrhythmia <= 0) {
                         Random r = new Random ();
                         counterCardiac_Arrhythmia = r.Next (10, 16);
-                        timerCardiac_Baseline.Set ((int)(HR_Seconds * r.Next (2000, 5000)));
-                    } else
+                        VS_Actual.HR = VS_Settings.HR / 8;
+                    } else {
+                        VS_Actual.HR = VS_Settings.HR;
                         counterCardiac_Arrhythmia--;
+                    }
 
                     timerCardiac_Atrial.ResetAuto (1);
                     break;
 
                 case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PACs:
                     counterCardiac_Aberrancy -= 1;
+                    VS_Actual.HR = VS_Settings.HR;
                     if (counterCardiac_Aberrancy <= 0) {
                         counterCardiac_Aberrancy = new Random ().Next (4, 8);
-                        timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval * Utility.RandomDouble (0.6, 0.8)));
+                        VS_Actual.HR = (int)(VS_Settings.HR * Utility.RandomDouble (0.6, 0.8));
+                    } else {
+                        VS_Actual.HR = VS_Settings.HR;
                     }
                     timerCardiac_Atrial.ResetAuto (1);
                     break;
 
                 case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PJCs:
                     counterCardiac_Aberrancy -= 1;
+                    VS_Actual.HR = VS_Settings.HR;
                     if (counterCardiac_Aberrancy <= 0) {
                         counterCardiac_Aberrancy = new Random ().Next (4, 8);
                         timerCardiac_Ventricular.ResetAuto (1);
                     } else {
                         if (counterCardiac_Aberrancy == 1)
-                            timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval * Utility.RandomDouble (0.7, 0.9)));
+                            VS_Actual.HR = (int)(VS_Settings.HR * Utility.RandomDouble (0.7, 0.9));
                         timerCardiac_Atrial.ResetAuto (1);
                     }
                     break;
@@ -735,8 +788,9 @@ namespace II {
                 case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PVCs_Unifocal:
                 case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PVCs_Multifocal:
                     counterCardiac_Aberrancy -= 1;
+                    VS_Actual.HR = VS_Settings.HR;
                     if (counterCardiac_Aberrancy == 0) {  // Shorten the beat preceding the PVC, making it premature
-                        timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval * 0.8));
+                        VS_Actual.HR = (int)(VS_Settings.HR * 0.8);
                     } else if (counterCardiac_Aberrancy < 0) {   // Then throw the PVC and reset the counters
                         counterCardiac_Aberrancy = new Random ().Next (4, 9);
                         Cardiac_Rhythm.AberrantBeat = true;
@@ -832,7 +886,7 @@ namespace II {
 
         private void OnRespiratory_Baseline () {
             OnPatientEvent (PatientEventTypes.Respiratory_Baseline);
-            timerRespiratory_Baseline.Set ((int)(RR_Seconds * 1000f));
+            timerRespiratory_Baseline.Set ((int)(GetRR_Seconds * 1000f));
 
             switch (Respiratory_Rhythm.Value) {
                 default:
@@ -856,11 +910,11 @@ namespace II {
                 && (Mechanically_Ventilated || switchParadoxus)) {
                 switchParadoxus = true;
                 VS_Actual.ASBP += Mechanically_Ventilated
-                    ? -(int)(bufferParadoxus_BaseASBP * 0.15)
-                    : (int)(bufferParadoxus_BaseASBP * 0.15);
+                    ? -(int)(VS_Settings.ASBP * 0.15)
+                    : (int)(VS_Settings.ASBP * 0.15);
                 IABP_AP += Mechanically_Ventilated
-                    ? -(int)(bufferParadoxus_BaseASBP * 0.05)
-                    : (int)(bufferParadoxus_BaseASBP * 0.05);
+                    ? -(int)(VS_Settings.ASBP * 0.05)
+                    : (int)(VS_Settings.ASBP * 0.05);
             }
 
             switch (Respiratory_Rhythm.Value) {
@@ -869,7 +923,7 @@ namespace II {
                     break;
 
                 case Respiratory_Rhythms.Values.Regular:
-                    timerRespiratory_Expiration.ResetAuto ((int)(RR_Seconds_I * 1000f));     // Expiration.Interval marks end inspiration
+                    timerRespiratory_Expiration.ResetAuto ((int)(GetRR_Seconds_I * 1000f));     // Expiration.Interval marks end inspiration
                     break;
             }
         }
@@ -885,11 +939,11 @@ namespace II {
                 && (!Mechanically_Ventilated || switchParadoxus)) {
                 switchParadoxus = true;
                 VS_Actual.ASBP += Mechanically_Ventilated
-                    ? (int)(bufferParadoxus_BaseASBP * 0.15)
-                    : -(int)(bufferParadoxus_BaseASBP * 0.15);
+                    ? (int)(VS_Settings.ASBP * 0.15)
+                    : -(int)(VS_Settings.ASBP * 0.15);
                 IABP_AP += Mechanically_Ventilated
-                    ? (int)(bufferParadoxus_BaseASBP * 0.05)
-                    : -(int)(bufferParadoxus_BaseASBP * 0.05);
+                    ? (int)(VS_Settings.ASBP * 0.05)
+                    : -(int)(VS_Settings.ASBP * 0.05);
             }
         }
 

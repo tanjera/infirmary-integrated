@@ -77,8 +77,8 @@ namespace II_Windows {
             timerVitals_Respiratory.Tick += OnTick_Vitals_Respiratory;
 
             timerTracing.Interval = Waveforms.Draw_Refresh;
-            timerVitals_Cardiac.Interval = Utility.Clamp ((int)(App.Patient.HR_Seconds * 1000 / 2), 2000, 6000);
-            timerVitals_Respiratory.Interval = Utility.Clamp ((int)(App.Patient.RR_Seconds * 1000 / 2), 2000, 8000);
+            timerVitals_Cardiac.Interval = Utility.Clamp ((int)(App.Patient.GetHR_Seconds * 1000 / 2), 2000, 6000);
+            timerVitals_Respiratory.Interval = Utility.Clamp ((int)(App.Patient.GetRR_Seconds * 1000 / 2), 2000, 8000);
 
             timerTracing.Start ();
             timerVitals_Cardiac.Start ();
