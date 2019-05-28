@@ -40,7 +40,10 @@ Also, Infirmary Integrated simulates the following cardiac rhythms with waveform
 - Idioventricular
 - Junctional
 - Pulseless Electrical Activity
+- Sick Sinus Syndrome
+- Sinus Arrhythmia
 - Sinus Rhythm
+- Sinus Rhythm with Arrest (Sinoatrial Arrest)
 - Sinus Rhythm with Bigeminy
 - Sinus Rhythm with Trigeminy
 - Sinus Rhythm with PACs
@@ -54,6 +57,15 @@ Also, Infirmary Integrated simulates the following cardiac rhythms with waveform
 - Ventricular Tachycardia Monomorphic Pulsed
 - Ventricular Tachycardia Monomorphic Pulseless
 - Ventricular Tachycardia Polymorphic
+
+Infirmary Integrated also simulates the following respiratory rhythms:
+- Agonal
+- Apnea
+- Apneustic
+- Ataxic
+- Biot
+- Cheyne-Stokes
+- Regular
 
 Other main features included in Infirmary Integrated include:
 - Realistic waveforms draw according to multiple factors, accounting for:

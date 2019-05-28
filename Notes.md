@@ -2,15 +2,6 @@
 
 
 
-  @@ implement respiratory rhythm timers for new respiratory rhythms
-  @@@ Agonal
-  @@@ Apneustic
-  @@@ Ataxic
-  @@@ Biot
-  @@@ Cheyne Stokes
-
-
-
 * Steps for Version Publishing:
 	- Update version # in:
 		- II_Core.Utility.Version

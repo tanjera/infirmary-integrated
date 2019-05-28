@@ -631,9 +631,9 @@ namespace II_Windows {
                 comboCardiacRhythm.SelectedIndex = (int)e.Patient.Cardiac_Rhythm.Value;
                 comboCardiacAxis.SelectedIndex = (int)e.Patient.Cardiac_Axis.Value;
 
+                numInspiratoryRatio.Value = (decimal)e.Patient.VS_Settings.RR_IE_I;
+                numExpiratoryRatio.Value = (decimal)e.Patient.VS_Settings.RR_IE_E;
                 comboRespiratoryRhythm.SelectedIndex = (int)e.Patient.Respiratory_Rhythm.Value;
-                numInspiratoryRatio.Value = (decimal)e.Patient.Respiratory_IERatio_I;
-                numExpiratoryRatio.Value = (decimal)e.Patient.Respiratory_IERatio_E;
 
                 numPacemakerCaptureThreshold.Value = e.Patient.Pacemaker_Threshold;
 
@@ -712,6 +712,8 @@ namespace II_Windows {
                 (Respiratory_Rhythms.Values)ev.GetValue (si));
 
             numRR.Value = (int)Utility.Clamp ((double)numRR.Value, v.RRMin, v.RRMax);
+            numInspiratoryRatio.Value = (int)Utility.Clamp ((double)numInspiratoryRatio.Value, v.RR_IE_I_Min, v.RR_IE_I_Max);
+            numExpiratoryRatio.Value = (int)Utility.Clamp ((double)numExpiratoryRatio.Value, v.RR_IE_E_Min, v.RR_IE_E_Max);
         }
 
         private void OnClosed (object sender, EventArgs e) => RequestExit ();

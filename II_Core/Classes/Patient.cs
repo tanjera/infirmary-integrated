@@ -29,6 +29,8 @@ namespace II {
                         PSP, PDP, PMP,                  // Pulmonary artery pressures
                         ICP, IAP;                       // Intracranial pressure, intra-abdominal pressure
             public double T;                            // Temperature
+            public float RR_IE_I,
+                         RR_IE_E;
 
             public void Set (Vital_Signs v) {
                 HR = v.HR;
@@ -48,6 +50,8 @@ namespace II {
                 ICP = v.ICP;
                 IAP = v.IAP;
                 T = v.T;
+                RR_IE_I = v.RR_IE_I;
+                RR_IE_E = v.RR_IE_E;
             }
         }
 
@@ -71,6 +75,8 @@ namespace II {
         public int ICP { get { return VS_Actual.ICP; } }
         public int IAP { get { return VS_Actual.IAP; } }
         public double T { get { return VS_Actual.T; } }
+        public float RR_IE_I { get { return VS_Actual.RR_IE_I; } }
+        public float RR_IE_E { get { return VS_Actual.RR_IE_E; } }
 
         /* Cardiac Profile */
         public int IABP_AP, IABP_DBP, IABP_MAP;    // Intra-aortic balloon pump blood pressures
@@ -84,8 +90,6 @@ namespace II {
         public Respiratory_Rhythms Respiratory_Rhythm = new Respiratory_Rhythms ();
         public bool Respiration_Inflated = false,
                     Mechanically_Ventilated = false;
-        public float Respiratory_IERatio_I = 1f,
-                    Respiratory_IERatio_E = 2f;
 
         /* Obstetric Profile */
         public Intensity UC_Intensity = new Intensity (),
@@ -138,9 +142,11 @@ namespace II {
 
         /* Internal counters and buffers for propogating aberrancies */
         private int counterCardiac_Aberrancy = 0,
-                    counterCardiac_Arrhythmia = 0;
+                    counterCardiac_Arrhythmia = 0,
+                    counterRespiratory_Arrhythmia = 0;
         private bool switchParadoxus = false,
-                    switchCardiac_Arrhythmia = false;
+                     switchCardiac_Arrhythmia = false,
+                     switchRespiratory_Arrhythmia = false;
 
         public Patient () {
             UpdateParameters (80, 98, 18, 40,
@@ -155,7 +161,7 @@ namespace II {
                             Cardiac_Rhythms.Values.Sinus_Rhythm,
                             CardiacAxes.Values.Normal,
                             Respiratory_Rhythms.Values.Regular,
-                            1f, 1f, false,
+                            1f, 2f, false,
                             150, Intensity.Values.Absent, new List<FetalHeartDecelerations.Values> (),
                             60, 30, Intensity.Values.Moderate);
 
@@ -214,8 +220,8 @@ namespace II {
         public static int CalculateCPP (int icp, int map) { return map - icp; }
         public double GetHR_Seconds { get { return 60d / Math.Max (1, VS_Actual.HR); } }
         public double GetRR_Seconds { get { return 60d / Math.Max (1, VS_Actual.RR); } }
-        public double GetRR_Seconds_I { get { return (GetRR_Seconds / (Respiratory_IERatio_I + Respiratory_IERatio_E)) * Respiratory_IERatio_I; } }
-        public double GetRR_Seconds_E { get { return (GetRR_Seconds / (Respiratory_IERatio_I + Respiratory_IERatio_E)) * Respiratory_IERatio_E; } }
+        public double GetRR_Seconds_I { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_I; } }
+        public double GetRR_Seconds_E { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_E; } }
 
         public int MeasureHR_ECG (double lengthSeconds, double offsetSeconds)
             => MeasureHR (lengthSeconds, offsetSeconds, false);
@@ -332,8 +338,8 @@ namespace II {
 
                             case "Respiratory_Rhythm": Respiratory_Rhythm.Value = (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), pValue); break;
                             case "Respiration_Inflated": Respiration_Inflated = bool.Parse (pValue); break;
-                            case "Respiratory_IERatio_I": Respiratory_IERatio_I = int.Parse (pValue); break;
-                            case "Respiratory_IERatio_E": Respiratory_IERatio_E = int.Parse (pValue); break;
+                            case "Respiratory_IERatio_I": VS_Settings.RR_IE_I = int.Parse (pValue); break;
+                            case "Respiratory_IERatio_E": VS_Settings.RR_IE_E = int.Parse (pValue); break;
                             case "Mechanically_Ventilated": Mechanically_Ventilated = bool.Parse (pValue); break;
 
                             case "FHR": FHR = int.Parse (pValue); break;
@@ -407,8 +413,8 @@ namespace II {
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_Rhythm", Respiratory_Rhythm.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiration_Inflated", Respiration_Inflated));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_I", Respiratory_IERatio_I));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_E", Respiratory_IERatio_E));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_I", VS_Settings.RR_IE_I));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_E", VS_Settings.RR_IE_E));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Mechanically_Ventilated", Mechanically_Ventilated));
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "FHR", FHR));
@@ -442,7 +448,6 @@ namespace II {
             Updated = DateTime.UtcNow;
 
             // Set all vital sign parameters
-
             VS_Settings.HR = hr;
             VS_Settings.RR = rr;
             VS_Settings.SPO2 = spo2;
@@ -462,9 +467,6 @@ namespace II {
             VS_Settings.PDP = pdp;
             VS_Settings.PMP = pmp;
 
-            // Reset actual vital signs to set parameters
-            VS_Actual.Set (VS_Settings);
-
             // Change in cardiac or respiratory rhythm? Reset all buffer counters and switches
             if (Cardiac_Rhythm.Value != card_rhythm) {
                 counterCardiac_Aberrancy = 0;
@@ -475,23 +477,27 @@ namespace II {
             }
             if (Respiratory_Rhythm.Value != resp_rhythm) {
                 Respiration_Inflated = false;
+                counterRespiratory_Arrhythmia = 0;
+                switchRespiratory_Arrhythmia = false;
             }
 
+            // Cardiac profile
             Cardiac_Rhythm.Value = card_rhythm;
             Cardiac_Axis.Value = card_axis;
             Pacemaker_Threshold = pacer_threshold;
             ST_Elevation = st_elev;
             T_Elevation = t_elev;
 
+            // Respiratory profile
+            VS_Settings.RR_IE_I = resp_ier_i;
+            VS_Settings.RR_IE_E = resp_ier_e;
+            Respiratory_Rhythm.Value = resp_rhythm;
+            Mechanically_Ventilated = mech_vent;
+
             // Reset buffers and switches for pulsus paradoxus (must be below ASBP!)
             switchParadoxus = false;
             Pulsus_Paradoxus = puls_paradoxus;
             Pulsus_Alternans = puls_alternans;
-
-            Respiratory_Rhythm.Value = resp_rhythm;
-            Respiratory_IERatio_I = resp_ier_i;
-            Respiratory_IERatio_E = resp_ier_e;
-            Mechanically_Ventilated = mech_vent;
 
             FHR = fhr;
             FHR_Variability.Value = fhr_var;
@@ -499,6 +505,9 @@ namespace II {
             UC_Frequency = uc_freq;
             UC_Duration = uc_duration;
             UC_Intensity.Value = uc_intensity;
+
+            // Reset actual vital signs to set parameters
+            VS_Actual.Set (VS_Settings);
 
             SetTimers ();
             OnCardiac_Baseline ();
@@ -888,15 +897,67 @@ namespace II {
             OnPatientEvent (PatientEventTypes.Respiratory_Baseline);
             timerRespiratory_Baseline.Set ((int)(GetRR_Seconds * 1000f));
 
+            double c;
+
             switch (Respiratory_Rhythm.Value) {
                 default:
                 case Respiratory_Rhythms.Values.Apnea:
+                    return;
+
+                case Respiratory_Rhythms.Values.Agonal:
+                    c = Utility.RandomDouble (0.8, 1.2);
+                    VS_Actual.RR = (int)(c * VS_Settings.RR);
+                    break;
+
+                case Respiratory_Rhythms.Values.Apneustic:
+                    VS_Actual.RR = (Utility.RandomDouble (0, 1) < 0.1) ? 6 : VS_Settings.RR;
+                    break;
+
+                case Respiratory_Rhythms.Values.Ataxic:
+                    if (Utility.RandomDouble (0, 1) < 0.1)
+                        VS_Actual.RR = 4;
+                    else {
+                        c = Utility.RandomDouble (0.8, 1.2);
+                        VS_Actual.RR = (int)(c * VS_Settings.RR);
+                        VS_Actual.RR_IE_E = (int)(c * VS_Settings.RR_IE_E);
+                    }
+                    break;
+
+                case Respiratory_Rhythms.Values.Biot:
+                    if (counterRespiratory_Arrhythmia < 0) {
+                        VS_Actual.RR = 3;                               // Period of apnea, 20 sec
+                        counterRespiratory_Arrhythmia = (int)(VS_Settings.RR * 0.75);   // Counter for ~45 seconds of regular rate
+                    } else {
+                        VS_Actual.RR = VS_Settings.RR;                  // Regular breathing
+                        counterRespiratory_Arrhythmia -= 1;
+                    }
+                    break;
+
+                case Respiratory_Rhythms.Values.Cheyne_Stokes:
+                    if (!switchRespiratory_Arrhythmia && counterRespiratory_Arrhythmia <= 10) {
+                        VS_Actual.RR += 2;                              // Ramp up breath rate
+                        if (counterRespiratory_Arrhythmia == 10)        // Flip the switch when ramped up entirely
+                            switchRespiratory_Arrhythmia = true;
+                        else {
+                            if (counterRespiratory_Arrhythmia == 0)
+                                VS_Actual.RR = VS_Settings.RR;
+                            counterRespiratory_Arrhythmia += 1;
+                        }
+                    } else if (switchRespiratory_Arrhythmia && counterRespiratory_Arrhythmia > 0) {
+                        VS_Actual.RR -= 2;                              // Ramp breaths down until counter is 0
+                        counterRespiratory_Arrhythmia -= 1;
+                    } else {
+                        VS_Actual.RR = 3;                               // Apnea for 20 seconds
+                        switchRespiratory_Arrhythmia = false;           // Reset switch and counter
+                        counterRespiratory_Arrhythmia = 0;
+                    }
                     break;
 
                 case Respiratory_Rhythms.Values.Regular:
-                    timerRespiratory_Inspiration.ResetAuto (1);
                     break;
             }
+
+            timerRespiratory_Inspiration.ResetAuto (1);
         }
 
         private void OnRespiratory_Inspiration () {
@@ -922,6 +983,11 @@ namespace II {
                 case Respiratory_Rhythms.Values.Apnea:
                     break;
 
+                case Respiratory_Rhythms.Values.Agonal:
+                case Respiratory_Rhythms.Values.Apneustic:
+                case Respiratory_Rhythms.Values.Ataxic:
+                case Respiratory_Rhythms.Values.Biot:
+                case Respiratory_Rhythms.Values.Cheyne_Stokes:
                 case Respiratory_Rhythms.Values.Regular:
                     timerRespiratory_Expiration.ResetAuto ((int)(GetRR_Seconds_I * 1000f));     // Expiration.Interval marks end inspiration
                     break;

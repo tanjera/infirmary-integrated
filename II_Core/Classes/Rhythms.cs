@@ -384,23 +384,32 @@ namespace II {
 
         public class Default_Vitals {
             public int RRMin, RRMax;
+            public float RR_IE_I_Min, RR_IE_I_Max,
+                         RR_IE_E_Min, RR_IE_E_Max;
 
             public Default_Vitals (
-                    int rrMin, int rrMax) {
-                RRMin = rrMin; RRMax = rrMax;
+                    int rrMin, int rrMax,
+                    float rr_IE_I_Min, float rr_IE_I_Max,
+                    float rr_IE_E_Min, float rr_IE_E_Max) {
+                RRMin = rrMin;
+                RRMax = rrMax;
+                RR_IE_I_Min = rr_IE_I_Min;
+                RR_IE_I_Max = rr_IE_I_Max;
+                RR_IE_E_Min = rr_IE_E_Min;
+                RR_IE_E_Max = rr_IE_E_Max;
             }
         }
 
         public static Default_Vitals DefaultVitals (Values Rhythm) {
             switch (Rhythm) {
-                default: return new Default_Vitals (0, 0);
-                case Values.Agonal: return new Default_Vitals (2, 6);
-                case Values.Apnea: return new Default_Vitals (0, 0);
-                case Values.Apneustic: return new Default_Vitals (4, 8);
-                case Values.Ataxic: return new Default_Vitals (6, 10);
-                case Values.Biot: return new Default_Vitals (8, 14);
-                case Values.Cheyne_Stokes: return new Default_Vitals (14, 20);
-                case Values.Regular: return new Default_Vitals (8, 22);
+                default: return new Default_Vitals (0, 0, 1f, 1f, 2f, 4f);
+                case Values.Agonal: return new Default_Vitals (2, 6, 1f, 1f, 4f, 6f);
+                case Values.Apnea: return new Default_Vitals (0, 0, 1f, 1f, 2f, 4f);
+                case Values.Apneustic: return new Default_Vitals (4, 8, 1f, 1f, 0.5f, 1f);
+                case Values.Ataxic: return new Default_Vitals (6, 20, 1f, 1f, 2f, 4f);
+                case Values.Biot: return new Default_Vitals (8, 40, 1f, 1f, 1f, 4f);
+                case Values.Cheyne_Stokes: return new Default_Vitals (14, 20, 1f, 1f, 2f, 4f);
+                case Values.Regular: return new Default_Vitals (8, 22, 1f, 1f, 2f, 4f);
             }
         }
     }
