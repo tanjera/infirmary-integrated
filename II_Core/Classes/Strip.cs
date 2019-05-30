@@ -79,12 +79,14 @@ namespace II.Rhythm {
             lengthSeconds = IsRespiratory ? DefaultLength * DefaultRespiratoryCoefficient : DefaultLength;
         }
 
-        private void SetForwardBuffer (Patient patient) {
-            // Set the forward edge buffer to be the length (in seconds) of 1.5 beats
+        private void SetForwardBuffer (Patient patient, bool onClear = false) {
+            // Set the forward edge buffer (a coefficient of lengthSeconds!) to be the length of 2 beats/breaths
             if (IsCardiac)
-                forwardBuffer = Utility.Clamp (1 + (1.5 * (patient.GetHR_Seconds / lengthSeconds)), 1.2d, 20d);
+                forwardBuffer = Utility.Clamp (1 + (2 * (patient.GetHR_Seconds / lengthSeconds)),
+                    (onClear ? 1.1d : forwardBuffer), 10d);
             else if (IsRespiratory)
-                forwardBuffer = Utility.Clamp (1 + (1.5 * (patient.GetRR_Seconds / lengthSeconds)), 1.2d, 20d);
+                forwardBuffer = Utility.Clamp (1 + (2 * (patient.GetRR_Seconds / lengthSeconds)),
+                    (onClear ? 1.1d : forwardBuffer), 10d);
         }
 
         public void Reset () {
@@ -92,7 +94,7 @@ namespace II.Rhythm {
         }
 
         public void ClearFuture (Patient patient) {
-            SetForwardBuffer (patient);         // Since accounting for forward edge buffer, recalculate
+            SetForwardBuffer (patient, true);         // Since accounting for forward edge buffer, recalculate
 
             for (int i = Points.Count - 1; i >= 0; i--) {
                 // Must account for forwardEdgeBuffer... otherwise will cause period of "asystole"

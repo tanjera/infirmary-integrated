@@ -145,9 +145,6 @@ namespace II_Windows.Controls {
                     true, false);
 
                 for (int i = 1; i < wfStrip.Points.Count; i++) {
-                    if (wfStrip.Points [i].X > wfStrip.lengthSeconds * 2)
-                        continue;
-
                     drawContext.LineTo (new System.Windows.Point (
                         (int)(wfStrip.Points [i].X * drawXMultiplier) + drawXOffset,
                         (int)(wfStrip.Points [i].Y * drawYMultiplier) + drawYOffset),
