@@ -1,5 +1,5 @@
 ﻿Infirmary Integrated; (c) 2017-2019
-Avi 'Ibi' Keller (tanjera)
+Ibi Keller (tanjera)
 Licensed under GNU GPL V3
 
 Infirmary Integrated is free and open-source software developed to advance healthcare education for medical and nursing professionals and students. Developed as in-depth, accurate, and accessible educational tools, Infirmary Integrated can meet the needs of clinical simulators in emergency, critical care, and many other medical and nursing specialties.

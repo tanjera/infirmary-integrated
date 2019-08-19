@@ -18,6 +18,7 @@ namespace II_Windows {
         public static Mirrors Mirror = new Mirrors ();
         public static Languages Language = new Languages ();
 
+        public static Scenario Scenario;
         public static Patient Patient;
 
         public static PatientEditor Patient_Editor;

@@ -31,7 +31,7 @@ namespace II_Windows {
 
             InitInitialRun ();
             InitInterface ();
-            InitPatient ();
+            InitScenario ();
 
             if (App.Start_Args.Length > 0)
                 LoadOpen (App.Start_Args [0]);
@@ -171,9 +171,13 @@ namespace II_Windows {
             bgw.RunWorkerAsync ();
         }
 
-        private void InitPatient () {
-            App.Patient = new Patient ();
+        private void InitScenario () {
+            App.Scenario = new Scenario ();
+            App.Patient = App.Scenario.Patient;
+            InitPatientEvents ();
+        }
 
+        private void InitPatientEvents () {
             App.Timer_Main.Tick += App.Patient.Timers_Process;
             App.Timer_Main.Tick += App.Mirror.TimerProcess;
             App.Patient.PatientEvent += FormUpdateFields;
@@ -446,7 +450,8 @@ namespace II_Windows {
         }
 
         public Patient RequestNewPatient () {
-            InitPatient ();
+            App.Scenario.Patient = new Patient ();
+            InitPatientEvents ();
             return App.Patient;
         }
 
