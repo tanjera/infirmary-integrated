@@ -22,7 +22,7 @@ namespace II.Server {
             set { _Accession = value.ToUpper (); }
         }
 
-        public void TimerProcess (object sender, EventArgs e) {
+        public void ProcessTimer (object sender, EventArgs e) {
             timerUpdate.Process ();
         }
 

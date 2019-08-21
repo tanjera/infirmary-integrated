@@ -258,7 +258,7 @@ namespace II {
         }
 
         /* Process all timers for patient modeling */
-        public void Timers_Process (object sender, EventArgs e) {
+        public void ProcessTimers (object sender, EventArgs e) {
             /* For cross-platform compatibility with different timers ...
              * When creating a Patient object, create a native thread-safe Timer object,
              * short interval, and call this function on its Tick to process all Patient
@@ -288,7 +288,7 @@ namespace II {
                 while ((line = sRead.ReadLine ()) != null) {
                     if (line.Contains (":")) {
                         string pName = line.Substring (0, line.IndexOf (':')),
-                                pValue = line.Substring (line.IndexOf (':') + 1);
+                                pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
                         switch (pName) {
                             default: break;
                             case "Updated": Updated = Utility.DateTime_FromString (pValue); break;

@@ -175,13 +175,14 @@ namespace II_Windows {
 
         private void InitScenario () {
             App.Scenario = new Scenario ();
+            App.Timer_Main.Tick += App.Scenario.ProcessTimer;
             App.Patient = App.Scenario.Patient;
             InitPatientEvents ();
         }
 
         private void InitPatientEvents () {
-            App.Timer_Main.Tick += App.Patient.Timers_Process;
-            App.Timer_Main.Tick += App.Mirror.TimerProcess;
+            App.Timer_Main.Tick += App.Patient.ProcessTimers;
+            App.Timer_Main.Tick += App.Mirror.ProcessTimer;
             App.Patient.PatientEvent += FormUpdateFields;
             FormUpdateFields (this, new Patient.PatientEventArgs (App.Patient, Patient.PatientEventTypes.Vitals_Change));
         }
@@ -294,6 +295,11 @@ namespace II_Windows {
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
                             pbuffer.AppendLine (pline);
                         App.Patient.Load_Process (pbuffer.ToString ());
+                    } else if (line == "> Begin: Scenario") {
+                        pbuffer = new StringBuilder ();
+                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Scenario")
+                            pbuffer.AppendLine (pline);
+                        App.Scenario.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Editor") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Editor")
@@ -346,9 +352,9 @@ namespace II_Windows {
         private void SaveT1 (Stream s) {
             StringBuilder sb = new StringBuilder ();
 
-            sb.AppendLine ("> Begin: Patient");
-            sb.Append (App.Patient.Save ());
-            sb.AppendLine ("> End: Patient");
+            sb.AppendLine ("> Begin: Scenario");
+            sb.Append (App.Scenario.Save ());
+            sb.AppendLine ("> End: Scenario");
 
             sb.AppendLine ("> Begin: Editor");
             sb.Append (this.SaveOptions ());
@@ -507,6 +513,12 @@ namespace II_Windows {
 
         private void ButtonNextStage_Click (object s, RoutedEventArgs e)
             => App.Patient = App.Scenario.NextStage ();
+
+        private void ButtonPauseStage_Click (object s, RoutedEventArgs e)
+            => App.Scenario.PauseStage ();
+
+        private void ButtonPlayStage_Click (object s, RoutedEventArgs e)
+            => App.Scenario.PlayStage ();
 
         private void ButtonResetParameters_Click (object s, RoutedEventArgs e) {
             RequestNewPatient ();
