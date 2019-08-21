@@ -13,7 +13,7 @@ namespace II {
                     compSplit = comparison.Split ('.');
 
             for (int i = 0; i < compSplit.Length; i++) {
-                if ((i < curSplit.Length ? int.Parse (curSplit [i]) : 0) <= int.Parse (compSplit [i]))
+                if ((i < curSplit.Length ? int.Parse (curSplit [i]) : 0) < int.Parse (compSplit [i]))
                     return true;
                 else if ((i < curSplit.Length ? int.Parse (curSplit [i]) : 0) > int.Parse (compSplit [i]))
                     return false;

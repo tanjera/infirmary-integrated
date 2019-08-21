@@ -89,6 +89,10 @@ namespace II_Windows {
             lblAdminPassword.Content = App.Language.Dictionary ["PE:AdminPassword"];
             btnApplyMirroring.Content = App.Language.Dictionary ["BUTTON:ApplyChanges"];
 
+            lblGroupScenarioPlayer.Content = App.Language.Dictionary ["PE:ScenarioPlayer"];
+            btnPreviousPhase.Content = App.Language.Dictionary ["PE:PreviousPhase"];
+            btnNextPhase.Content = App.Language.Dictionary ["PE:NextPhase"];
+
             lblGroupVitalSigns.Content = App.Language.Dictionary ["PE:VitalSigns"];
             lblHR.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:HeartRate"]);
             lblNIBP.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:BloodPressure"]);
@@ -499,6 +503,12 @@ namespace II_Windows {
                 lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringActivated"];
             }
         }
+
+        private void ButtonPreviousPhase_Click (object s, RoutedEventArgs e)
+            => App.Patient = App.Scenario.LastStage ();
+
+        private void ButtonNextPhase_Click (object s, RoutedEventArgs e)
+            => App.Patient = App.Scenario.NextStage ();
 
         private void ButtonResetParameters_Click (object s, RoutedEventArgs e) {
             RequestNewPatient ();

@@ -264,6 +264,29 @@
                     </Expander>
                 </Border>
 
+                <!-- Group for Scenario Player -->
+                <Border Style="{StaticResource expBorder}">
+                    <Expander Name="expScenarioPlayer" IsExpanded="False">
+                        <Expander.Header>
+                            <Label Name="lblGroupScenarioPlayer" Style="{StaticResource expHeader}" />
+                        </Expander.Header>
+
+                        <Grid Margin="3">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button Name="btnPreviousPhase" Margin="5" Click="ButtonPreviousPhase_Click" Height="22"
+                                    Grid.Column="0" Grid.Row="0" />
+                            <Button Name="btnNextPhase" Margin="5" Click="ButtonNextPhase_Click" Height="22"
+                                    Grid.Column="1" Grid.Row="0" />
+                        </Grid>
+                    </Expander>
+                </Border>
+
                 <!-- Group for Basic Vital Signs -->
                 <Border Style="{StaticResource expBorder}">
                     <Expander Name="expVitalSigns" IsExpanded="True">
