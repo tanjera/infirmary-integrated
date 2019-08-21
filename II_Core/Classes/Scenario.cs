@@ -13,67 +13,54 @@ using System.Text;
 
 namespace II {
     public class Scenario {
-        public class Phase {
+        public class Stage {
             public Patient Patient;
             public string Name, Description;
 
-            private Timer timerProgress = new Timer ();
-            private List<Condition> Conditions = new List<Condition> ();
+            public Timer ProgressTimer = new Timer ();
+            public List<Progression> Progressions = new List<Progression> ();
 
-            /* Conditions to advance to the next phase of the scenario */
-            public class Condition {
-                public Interventions Intervention;
-                public int Counter;
+            /* Possible progressions/routes to the next stage of the scenario */
+            public class Progression {
+                public string Description;
+                public int DestinationIndex;
 
-                public enum Interventions {
-                    Defibrillation,
-                    Cardioversion,
-                    Timer
-                }
-
-                public Condition (Interventions i, int count) {
-                    Intervention = i;
-                    Counter = count;
+                public Progression (string desc, int destIndex) {
+                    Description = desc;
+                    DestinationIndex = destIndex;
                 }
             }
 
-            public Phase () {
+            public Stage () {
                 Patient = new Patient ();
             }
         }
 
-        private int Index = 0;
-        private List<Phase> Phases = new List<Phase> ();
+        public int Current = 0;
+        public List<Stage> Stages = new List<Stage> ();
 
         public Scenario () {
-            Phases.Add (new Phase ());
+            Stages.Add (new Stage ());
         }
 
         public Patient Patient {
-            get { return Phases [Index].Patient; }
-            set { Phases [Index].Patient = value; }
+            get { return Stages [Current].Patient; }
+            set { Stages [Current].Patient = value; }
         }
 
         public Patient NextStage () {
-            Index = Math.Min (Index + 1, Phases.Count);
-
-            if (Index == Phases.Count) {
-                // If we've reached the threshhold for the collection, extend with a serialized clone
-                Phases.Add (new Phase ());
-                Phases [Index].Patient.Load_Process (Phases [Index].Patient.Save ());
-            }
-
-            return Phases [Index].Patient;
+            Current = Math.Min (Current + 1, Stages.Count - 1);
+            return Stages [Current].Patient;
         }
 
         public Patient LastStage () {
-            Index = Math.Max (Index - 1, 0);
-            return Phases [Index].Patient;
+            Current = Math.Max (Current - 1, 0);
+            return Stages [Current].Patient;
         }
 
         public Patient SetStage (int incIndex) {
-            Index = Utility.Clamp (incIndex, 0, Phases.Count - 1);
-            return Phases [Index].Patient;
+            Current = Utility.Clamp (incIndex, 0, Stages.Count - 1);
+            return Stages [Current].Patient;
         }
     }
 }

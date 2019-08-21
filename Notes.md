@@ -22,6 +22,10 @@
 	- Copy Github Release into a Wordpress post on infirmary-integrated.com
 
 
+* Color Scheme
+	- Blue: 2b79c2
+	- Gray: 3b4652
+
 * References:
 - Assembly signing with certificate
 	https://www.linkedin.com/pulse/code-signing-visual-studio-jason-brower

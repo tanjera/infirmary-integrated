@@ -291,6 +291,14 @@
   <ItemGroup>
     <Resource Include="Icon_Infirmary.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Third Party\Icon_PlayerArrowBack_48.png" />
+    <Resource Include="Third Party\Icon_PlayerArrowPlay_48.png" />
+    <Resource Include="Third Party\Icon_PlayerPause_48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Third Party\Icon_PlayerArrowNext_48.png" />
+  </ItemGroup>
   <Import Project="..\II_Core\II_Core.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

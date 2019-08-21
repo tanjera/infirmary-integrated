@@ -23,6 +23,11 @@
         <BitmapImage x:Key="Icon_DeviceMonitor" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceMonitor_48.png"></BitmapImage>
         <BitmapImage x:Key="Icon_DeviceVentilator" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceVentilator_48.png"></BitmapImage>
 
+        <BitmapImage x:Key="Icon_PlayerArrowBack" UriSource="/Infirmary Integrated;component/Third Party/Icon_PlayerArrowBack_48.png"></BitmapImage>
+        <BitmapImage x:Key="Icon_PlayerArrowNext" UriSource="/Infirmary Integrated;component/Third Party/Icon_PlayerArrowNext_48.png"></BitmapImage>
+        <BitmapImage x:Key="Icon_PlayerArrowPlay" UriSource="/Infirmary Integrated;component/Third Party/Icon_PlayerArrowPlay_48.png"></BitmapImage>
+        <BitmapImage x:Key="Icon_PlayerPause" UriSource="/Infirmary Integrated;component/Third Party/Icon_PlayerPause_48.png"></BitmapImage>
+
         <!-- Icons for DeviceIABP -->
         <BitmapImage x:Key="Icon_ArrowUp" UriSource="/Infirmary Integrated;component/Third Party/Icon_ArrowUp_128.png"></BitmapImage>
         <BitmapImage x:Key="Icon_ArrowDown" UriSource="/Infirmary Integrated;component/Third Party/Icon_ArrowDown_128.png"></BitmapImage>

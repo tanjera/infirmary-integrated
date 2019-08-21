@@ -278,11 +278,25 @@
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Button Name="btnPreviousPhase" Margin="5" Click="ButtonPreviousPhase_Click" Height="22"
-                                    Grid.Column="0" Grid.Row="0" />
-                            <Button Name="btnNextPhase" Margin="5" Click="ButtonNextPhase_Click" Height="22"
-                                    Grid.Column="1" Grid.Row="0" />
+                            <Button Name="btnPreviousStage" Click="ButtonPreviousStage_Click" Style="{StaticResource btn}"
+                                    Grid.Column="0" Grid.Row="0">
+                                <Image Source="{StaticResource Icon_PlayerArrowBack}" Style="{StaticResource btnImage}" />
+                            </Button>
+                            <Button Name="btnPauseStage" Style="{StaticResource btn}"
+                                    Grid.Column="1" Grid.Row="0">
+                                <Image Source="{StaticResource Icon_PlayerPause}" Style="{StaticResource btnImage}" />
+                            </Button>
+                            <Button Name="btnPlayStage" Style="{StaticResource btn}"
+                                    Grid.Column="2" Grid.Row="0">
+                                <Image Source="{StaticResource Icon_PlayerArrowPlay}" Style="{StaticResource btnImage}" />
+                            </Button>
+                            <Button Name="btnNextStage" Click="ButtonNextStage_Click" Style="{StaticResource btn}"
+                                    Grid.Column="3" Grid.Row="0">
+                                <Image Source="{StaticResource Icon_PlayerArrowNext}" Style="{StaticResource btnImage}" />
+                            </Button>
                         </Grid>
                     </Expander>
                 </Border>
