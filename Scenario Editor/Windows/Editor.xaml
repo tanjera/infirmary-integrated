@@ -1,11 +1,11 @@
-﻿<Window x:Class="ScenarioEditor.Editor"
+﻿<Window x:Class="II.Scenario_Editor.Editor"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ScenarioEditor"
         mc:Ignorable="d"
-        Title="Infirmary Integrated: Scenario Editor" Height="450" Width="800">
+        Title="Infirmary Integrated: Scenario Editor" WindowState="Maximized">
 
     <Window.Resources>
         <Style x:Key="defGrid" TargetType="{x:Type Grid}">
@@ -31,7 +31,7 @@
 
         <Grid Style="{StaticResource defGrid}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2 *" />
+                <ColumnDefinition Width="3 *" />
                 <ColumnDefinition Width="5" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
@@ -56,12 +56,15 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
 
                     <Button Name="btnAddStage" Content="Add Stage" Click="btnAddStage_Click"
-                            Grid.Column="0" HorizontalAlignment="Stretch" Margin="0,0,5,0" />
+                            Grid.Column="0" HorizontalAlignment="Stretch" Margin="5,0,5,0" />
+                    <Button Name="btnDuplicateStage" Content="Duplicate Stage" Click="btnDuplicateStage_Click"
+                            Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,0,5,0" />
                     <Button Name="btnAddProgression" Content="Add Progression" Click="btnAddProgression_Click"
-                            Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,0,0,0" />
+                            Grid.Column="2" HorizontalAlignment="Stretch" Margin="5,0,5,0" />
                 </Grid>
             </Grid>
 

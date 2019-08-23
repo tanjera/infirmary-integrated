@@ -58,25 +58,82 @@ namespace II {
         public Vital_Signs VS_Settings = new Vital_Signs (),
                             VS_Actual = new Vital_Signs ();
 
-        public int HR { get { return VS_Actual.HR; } }
-        public int RR { get { return VS_Actual.RR; } }
-        public int ETCO2 { get { return VS_Actual.ETCO2; } }
-        public int SPO2 { get { return VS_Actual.SPO2; } }
-        public int CVP { get { return VS_Actual.CVP; } }
-        public int NSBP { get { return VS_Actual.NSBP; } }
-        public int NDBP { get { return VS_Actual.NDBP; } }
-        public int NMAP { get { return VS_Actual.NMAP; } }
-        public int ASBP { get { return VS_Actual.ASBP; } }
-        public int ADBP { get { return VS_Actual.ADBP; } }
-        public int AMAP { get { return VS_Actual.AMAP; } }
-        public int PSP { get { return VS_Actual.PSP; } }
-        public int PDP { get { return VS_Actual.PDP; } }
-        public int PMP { get { return VS_Actual.PMP; } }
-        public int ICP { get { return VS_Actual.ICP; } }
-        public int IAP { get { return VS_Actual.IAP; } }
-        public double T { get { return VS_Actual.T; } }
-        public float RR_IE_I { get { return VS_Actual.RR_IE_I; } }
-        public float RR_IE_E { get { return VS_Actual.RR_IE_E; } }
+        public int HR {
+            get { return VS_Actual.HR; }
+            set { VS_Settings.HR = value; }
+        }
+        public int RR {
+            get { return VS_Actual.RR; }
+            set { VS_Settings.RR = value; }
+        }
+        public int ETCO2 {
+            get { return VS_Actual.ETCO2; }
+            set { VS_Settings.ETCO2 = value; }
+        }
+        public int SPO2 {
+            get { return VS_Actual.SPO2; }
+            set { VS_Settings.SPO2 = value; }
+        }
+        public int CVP {
+            get { return VS_Actual.CVP; }
+            set { VS_Settings.CVP = value; }
+        }
+        public int NSBP {
+            get { return VS_Actual.NSBP; }
+            set { VS_Settings.NSBP = value; }
+        }
+        public int NDBP {
+            get { return VS_Actual.NDBP; }
+            set { VS_Settings.NDBP = value; }
+        }
+        public int NMAP {
+            get { return VS_Actual.NMAP; }
+            set { VS_Settings.NMAP = value; }
+        }
+        public int ASBP {
+            get { return VS_Actual.ASBP; }
+            set { VS_Settings.ASBP = value; }
+        }
+        public int ADBP {
+            get { return VS_Actual.ADBP; }
+            set { VS_Settings.ADBP = value; }
+        }
+        public int AMAP {
+            get { return VS_Actual.AMAP; }
+            set { VS_Settings.AMAP = value; }
+        }
+        public int PSP {
+            get { return VS_Actual.PSP; }
+            set { VS_Settings.PSP = value; }
+        }
+        public int PDP {
+            get { return VS_Actual.PDP; }
+            set { VS_Settings.PDP = value; }
+        }
+        public int PMP {
+            get { return VS_Actual.PMP; }
+            set { VS_Settings.PMP = value; }
+        }
+        public int ICP {
+            get { return VS_Actual.ICP; }
+            set { VS_Settings.ICP = value; }
+        }
+        public int IAP {
+            get { return VS_Actual.IAP; }
+            set { VS_Settings.IAP = value; }
+        }
+        public double T {
+            get { return VS_Actual.T; }
+            set { VS_Settings.T = value; }
+        }
+        public float RR_IE_I {
+            get { return VS_Actual.RR_IE_I; }
+            set { VS_Settings.RR_IE_I = value; }
+        }
+        public float RR_IE_E {
+            get { return VS_Actual.RR_IE_E; }
+            set { VS_Settings.RR_IE_E = value; }
+        }
 
         /* Cardiac Profile */
         public int IABP_AP, IABP_DBP, IABP_MAP;    // Intra-aortic balloon pump blood pressures

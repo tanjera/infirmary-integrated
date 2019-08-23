@@ -7,8 +7,10 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace ScenarioEditor {
+namespace II.Scenario_Editor {
+
     partial class About : Form {
+
         public About () {
             InitializeComponent ();
             this.Text = String.Format ("About {0}", AssemblyTitle);
@@ -79,6 +81,7 @@ namespace ScenarioEditor {
                 return ((AssemblyCompanyAttribute)attributes [0]).Company;
             }
         }
-        #endregion
+
+        #endregion Assembly Attribute Accessors
     }
 }

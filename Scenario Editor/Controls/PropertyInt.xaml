@@ -1,9 +1,10 @@
-﻿<UserControl x:Class="ScenarioEditor.PropertyItem"
+﻿<UserControl x:Class="II.Scenario_Editor.Controls.PropertyInt"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:ScenarioEditor"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:local="clr-namespace:II.Scenario_Editor.Controls"
              mc:Ignorable="d"
              HorizontalAlignment="Stretch" Margin="2">
 
@@ -20,9 +21,8 @@
         <Label Name="lblKey" Grid.Column="0" Grid.Row="0"
                HorizontalAlignment="Left" Height="Auto"
                Margin="2" />
-        <TextBox Name="txtValue" Grid.Column="1" Grid.Row="0"
-                 HorizontalAlignment="Stretch" Height="Auto"
-                 VerticalContentAlignment="Center"
-                 Margin="2" />
+        <xctk:IntegerUpDown Name="numValue" Increment="1" Minimum="0" Maximum="500"
+                            Grid.Column="1" Grid.Row="0"
+                            MinWidth="60" Height="22" Margin="5,0" />
     </Grid>
 </UserControl>
