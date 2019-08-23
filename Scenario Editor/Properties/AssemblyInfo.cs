@@ -7,12 +7,12 @@ using System.Windows;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle ("Scenario_Editor")]
-[assembly: AssemblyDescription ("")]
+[assembly: AssemblyTitle ("Infirmary Integrated: Scenario Editor")]
+[assembly: AssemblyDescription ("The Scenario Editor for Infirmary Integrated is designed to be a comprehensive tool for creating in-depth scenarios for Infirmary Integrated with an easy to use interface.")]
 [assembly: AssemblyConfiguration ("")]
-[assembly: AssemblyCompany ("")]
-[assembly: AssemblyProduct ("Scenario_Editor")]
-[assembly: AssemblyCopyright ("Copyright ©  2019")]
+[assembly: AssemblyCompany ("Ibi Keller (Tanjera)")]
+[assembly: AssemblyProduct ("Infirmary Integrated: Scenario Editor")]
+[assembly: AssemblyCopyright ("Copyright © Ibi Keller 2019")]
 [assembly: AssemblyTrademark ("")]
 [assembly: AssemblyCulture ("")]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion ("1.0.0.0")]
-[assembly: AssemblyFileVersion ("1.0.0.0")]
+[assembly: AssemblyVersion ("0.0.1.0")]
+[assembly: AssemblyFileVersion ("0.0.1.0")]

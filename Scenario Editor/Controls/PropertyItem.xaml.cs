@@ -13,15 +13,19 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Scenario_Editor {
+namespace ScenarioEditor {
 
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for TreeItem_Property.xaml
     /// </summary>
-    public partial class Editor : Window {
+    public partial class PropertyItem : UserControl {
 
-        public Editor () {
+        public PropertyItem (int row, string key, string value) {
             InitializeComponent ();
+
+            lblKey.Content = key;
+            txtValue.Text = value;
+            this.SetValue (Grid.RowProperty, row);
         }
     }
 }
