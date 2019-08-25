@@ -3,13 +3,33 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ScenarioEditor"
+        xmlns:local="clr-namespace:Scenario_Editor"
         mc:Ignorable="d"
         Title="Infirmary Integrated: Scenario Editor" WindowState="Maximized">
 
     <Window.Resources>
         <Style x:Key="defGrid" TargetType="{x:Type Grid}">
             <Setter Property="Margin" Value="5" />
+        </Style>
+
+        <Style x:Key="toolboxButton" TargetType="{x:Type Button}">
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="White" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="Padding" Value="10,2" />
+        </Style>
+
+        <Style x:Key="toolboxImage" TargetType="{x:Type Image}">
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="Width" Value="48" />
+            <Setter Property="Height" Value="48" />
+        </Style>
+
+        <Style x:Key="toolboxLabel" TargetType="{x:Type Label}">
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="16" />
         </Style>
     </Window.Resources>
 
@@ -21,57 +41,78 @@
                 <MenuItem Name="menuLoad" Header="_Load" InputGestureText="Ctrl+L" IsEnabled="False" />
                 <MenuItem Name="menuSave" Header="_Save" InputGestureText="Ctrl+S" IsEnabled="False" />
                 <Separator />
-                <MenuItem Name="menuExit" Header="E_xit" InputGestureText="Alt-F4" Click="menuExit_Click" />
+                <MenuItem Name="menuExit" Header="E_xit" InputGestureText="Alt-F4" Click="MenuItemExit_Click" />
             </MenuItem>
 
             <MenuItem Name="menuHelp" Header="_Help">
-                <MenuItem Name="menuAbout" Header="_About" Click="menuAbout_Click" />
+                <MenuItem Name="menuAbout" Header="_About" Click="MenuItemAbout_Click" />
             </MenuItem>
         </Menu>
 
+        <!-- Main Grid -->
         <Grid Style="{StaticResource defGrid}">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="3 *" />
                 <ColumnDefinition Width="5" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0" Style="{StaticResource defGrid}">
+            <!-- Toolbox -->
+            <StackPanel Grid.Column="0" Margin="3" Height="Auto">
+                <Button Name="btnAddStep" Click="ButtonAddStep_Click" Style="{StaticResource toolboxButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{StaticResource Icon_PlayerAdd}" Style="{StaticResource toolboxImage}" />
+                        <Label Name="lblAddStep" Content="Add Step" Style="{StaticResource toolboxLabel}" />
+                    </StackPanel>
+                </Button>
+                <Button Name="btnDuplicateStep" Click="ButtonDuplicateStep_Click" Style="{StaticResource toolboxButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{StaticResource Icon_Stack}" Style="{StaticResource toolboxImage}" />
+                        <Label Name="lblDuplicateStep" Content="Duplicate Step" Style="{StaticResource toolboxLabel}" />
+                    </StackPanel>
+                </Button>
+                <Button Name="btnAddProgression" Click="ButtonAddProgression_Click" Style="{StaticResource toolboxButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{StaticResource Icon_Progression}" Style="{StaticResource toolboxImage}" />
+                        <Label Name="lblAddProgression" Content="Add Progression" Style="{StaticResource toolboxLabel}" />
+                    </StackPanel>
+                </Button>
+
+                <Separator Margin="3, 10"/>
+
+                <Button Name="btnCopyPatient" Click="BtnCopyPatient_Click"  Style="{StaticResource toolboxButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{StaticResource Icon_CopyData}" Style="{StaticResource toolboxImage}" />
+                        <Label Name="lblCopyPatient" Content="Copy Patient Parameters" Style="{StaticResource toolboxLabel}" />
+                    </StackPanel>
+                </Button>
+                <Button Name="btnPastePatient" Click="BtnPastePatient_Click"  Style="{StaticResource toolboxButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{StaticResource Icon_PasteData}" Style="{StaticResource toolboxImage}" />
+                        <Label Name="lblPastePatient" Content="Paste Patient Parameters" Style="{StaticResource toolboxLabel}" />
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+
+            <!-- Designer Canvas -->
+            <Grid Grid.Column="1" Style="{StaticResource defGrid}">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-
-                <Label Name="lblInstructions" Grid.Row="0"
-                       FontSize="16" FontWeight="Bold"
-                       Content="Instructions: to be implemented..." />
 
                 <Border BorderBrush="Black" BorderThickness="1"
                         Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Canvas Name="cnvsDesigner" />
                 </Border>
-
-                <Grid Grid.Row="2" Style="{StaticResource defGrid}">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-
-                    <Button Name="btnAddStage" Content="Add Stage" Click="btnAddStage_Click"
-                            Grid.Column="0" HorizontalAlignment="Stretch" Margin="5,0,5,0" />
-                    <Button Name="btnDuplicateStage" Content="Duplicate Stage" Click="btnDuplicateStage_Click"
-                            Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,0,5,0" />
-                    <Button Name="btnAddProgression" Content="Add Progression" Click="btnAddProgression_Click"
-                            Grid.Column="2" HorizontalAlignment="Stretch" Margin="5,0,5,0" />
-                </Grid>
             </Grid>
 
-            <GridSplitter Grid.Column="1" Width="1" HorizontalAlignment="Stretch"
+            <GridSplitter Grid.Column="2" Width="1" HorizontalAlignment="Stretch"
                           Background="LightGray" BorderThickness="0" />
 
-            <Grid Grid.Column="2">
+            <!-- Property Editor -->
+            <Grid Grid.Column="3">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />

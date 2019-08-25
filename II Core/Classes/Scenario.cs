@@ -15,18 +15,22 @@ namespace II {
     public class Scenario {
         public string Name, Description, Author;
         public DateTime Updated;
-        public int Current = 0;
-        public List<Stage> Stages = new List<Stage> ();
+        public int CurrentIndex = 0;
+        public List<Step> Steps = new List<Step> ();
         public Timer ProgressTimer = new Timer ();
 
         public Scenario () {
-            Stages.Add (new Stage ());
+            Steps.Add (new Step ());
             ProgressTimer.Tick += ProgressTimer_Tick; ;
         }
 
+        public Step Current {
+            get { return Steps [CurrentIndex]; }
+        }
+
         public Patient Patient {
-            get { return Stages [Current].Patient; }
-            set { Stages [Current].Patient = value; }
+            get { return Steps [CurrentIndex].Patient; }
+            set { Steps [CurrentIndex].Patient = value; }
         }
 
         public void Load_Process (string inc) {
@@ -36,15 +40,15 @@ namespace II {
 
             try {
                 while ((line = sRead.ReadLine ()) != null) {
-                    if (line == "> Begin: Stage") {
+                    if (line == "> Begin: Step") {
                         pbuffer = new StringBuilder ();
 
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Stage")
+                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Step")
                             pbuffer.AppendLine (pline);
 
-                        Stage s = new Stage ();
+                        Step s = new Step ();
                         s.Load_Process (pbuffer.ToString ());
-                        Stages.Add (s);
+                        Steps.Add (s);
                     } else if (line.Contains (":")) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
@@ -63,7 +67,7 @@ namespace II {
                 // If the load fails... just bail on the actual value parsing and continue the load process
             }
 
-            SetStage (0);
+            SetStep (0);
             sRead.Close ();
         }
 
@@ -75,40 +79,68 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "Description", Description));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Author", Author));
 
-            foreach (Stage s in Stages) {
-                sWrite.AppendLine ("> Begin: Stage");
+            foreach (Step s in Steps) {
+                sWrite.AppendLine ("> Begin: Step");
                 sWrite.Append (s.Save ());
-                sWrite.AppendLine ("> End: Stage");
+                sWrite.AppendLine ("> End: Step");
             }
 
             return sWrite.ToString ();
         }
 
-        public Patient NextStage () {
-            Current = Math.Min (Current + 1, Stages.Count - 1);
+        public Patient NextStep () {
+            int pFrom = CurrentIndex;
+
+            CurrentIndex = Current.ProgressTo >= 0
+                ? Current.ProgressTo
+                : Math.Min (CurrentIndex + 1, Steps.Count - 1);
+
+            if (pFrom != CurrentIndex)
+                Current.ProgressFrom = pFrom;
+
             StartTimer ();
-            return Stages [Current].Patient;
+            return Current.Patient;
         }
 
-        public Patient LastStage () {
-            Current = Math.Max (Current - 1, 0);
+        public Patient LastStep () {
+            CurrentIndex = Current.ProgressFrom;
             StartTimer ();
-            return Stages [Current].Patient;
+            return Current.Patient;
         }
 
-        public Patient SetStage (int incIndex) {
-            Current = Utility.Clamp (incIndex, 0, Stages.Count - 1);
+        public Patient InsertStep () {
+            int pFrom = CurrentIndex;
+            CurrentIndex = Math.Min (CurrentIndex + 1, Steps.Count);
+
+            Step s = new Step ();
+            s.Load_Process (Steps [CurrentIndex - 1].Save ());
+            Steps.Insert (CurrentIndex, s);
+
+            Steps [pFrom].ProgressTo = CurrentIndex;
+            s.ProgressFrom = pFrom;
+
             StartTimer ();
-            return Stages [Current].Patient;
+            return Current.Patient;
         }
 
-        public void PauseStage () => ProgressTimer.Stop ();
+        public Patient SetStep (int incIndex) {
+            int pFrom = CurrentIndex;
+            CurrentIndex = Utility.Clamp (incIndex, 0, Steps.Count - 1);
 
-        public void PlayStage () => ProgressTimer.Start ();
+            if (pFrom != CurrentIndex)
+                Current.ProgressFrom = pFrom;
+
+            StartTimer ();
+            return Current.Patient;
+        }
+
+        public void PauseStep () => ProgressTimer.Stop ();
+
+        public void PlayStep () => ProgressTimer.Start ();
 
         public void StartTimer () {
-            if (Stages [Current].ProgressionTime > 0)
-                ProgressTimer.ResetAuto (Stages [Current].ProgressionTime * 1000);
+            if (Current.ProgressTime > 0)
+                ProgressTimer.ResetAuto (Current.ProgressTime * 1000);
         }
 
         public void ProcessTimer (object sender, EventArgs e) {
@@ -116,16 +148,89 @@ namespace II {
         }
 
         private void ProgressTimer_Tick (object sender, EventArgs e)
-            => NextStage ();
+            => NextStep ();
 
-        public class Stage {
+        public class Step {
             public Patient Patient;
             public string Name, Description;
 
             public List<Progression> Progressions = new List<Progression> ();
-            public int ProgressionTime = 0;
+            public int ProgressTo = -1;
+            public int ProgressFrom = -1;
+            public int ProgressTime = -1;
 
-            /* Possible progressions/routes to the next stage of the scenario */
+            public Step () {
+                Patient = new Patient ();
+            }
+
+            public void Load_Process (string inc) {
+                StringReader sRead = new StringReader (inc);
+                string line, pline;
+                StringBuilder pbuffer;
+
+                try {
+                    while ((line = sRead.ReadLine ()) != null) {
+                        if (line == "> Begin: Patient") {
+                            pbuffer = new StringBuilder ();
+
+                            while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
+                                pbuffer.AppendLine (pline);
+
+                            Patient.Load_Process (pbuffer.ToString ());
+                        } else if (line == "> Begin: Progression") {
+                            pbuffer = new StringBuilder ();
+
+                            while ((pline = sRead.ReadLine ()) != null && pline != "> End: Progression")
+                                pbuffer.AppendLine (pline);
+
+                            Progression p = new Progression ();
+                            p.Load_Process (pbuffer.ToString ());
+                            Progressions.Add (p);
+                        } else if (line.Contains (":")) {
+                            string pName = line.Substring (0, line.IndexOf (':')),
+                                    pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
+
+                            switch (pName) {
+                                default: break;
+                                case "Name": Name = pValue; break;
+                                case "Description": Description = pValue; break;
+                                case "ProgressTo": ProgressTo = int.Parse (pValue); break;
+                                case "ProgressFrom": ProgressFrom = int.Parse (pValue); break;
+                                case "ProgressTime": ProgressTime = int.Parse (pValue); break;
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    new Server.Servers ().Post_Exception (e);
+                    // If the load fails... just bail on the actual value parsing and continue the load process
+                }
+
+                sRead.Close ();
+            }
+
+            public string Save () {
+                StringBuilder sWrite = new StringBuilder ();
+
+                sWrite.AppendLine (String.Format ("{0}:{1}", "Name", Name));
+                sWrite.AppendLine (String.Format ("{0}:{1}", "Description", Description));
+                sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressTo", ProgressTo));
+                sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressFrom", ProgressFrom));
+                sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressTime", ProgressTime));
+
+                sWrite.AppendLine ("> Begin: Patient");
+                sWrite.Append (Patient.Save ());
+                sWrite.AppendLine ("> End: Patient");
+
+                foreach (Progression p in Progressions) {
+                    sWrite.AppendLine ("> Begin: Progression");
+                    sWrite.Append (p.Save ());
+                    sWrite.AppendLine ("> End: Progression");
+                }
+
+                return sWrite.ToString ();
+            }
+
+            /* Possible progressions/routes to the next step of the scenario */
             public class Progression {
                 public string Description;
                 public int DestinationIndex;
@@ -169,69 +274,6 @@ namespace II {
 
                     return sWrite.ToString ();
                 }
-            }
-
-            public Stage () {
-                Patient = new Patient ();
-            }
-
-            public void Load_Process (string inc) {
-                StringReader sRead = new StringReader (inc);
-                string line, pline;
-                StringBuilder pbuffer;
-
-                try {
-                    while ((line = sRead.ReadLine ()) != null) {
-                        if (line == "> Begin: Patient") {
-                            pbuffer = new StringBuilder ();
-
-                            while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
-                                pbuffer.AppendLine (pline);
-
-                            Patient.Load_Process (pbuffer.ToString ());
-                        } else if (line == "> Begin: Progression") {
-                            pbuffer = new StringBuilder ();
-
-                            while ((pline = sRead.ReadLine ()) != null && pline != "> End: Progression")
-                                pbuffer.AppendLine (pline);
-
-                            Progression p = new Progression ();
-                            p.Load_Process (pbuffer.ToString ());
-                            Progressions.Add (p);
-                        } else if (line.Contains (":")) {
-                            string pName = line.Substring (0, line.IndexOf (':')),
-                                    pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
-
-                            switch (pName) {
-                                default: break;
-                                case "Name": Name = pValue; break;
-                                case "Description": Description = pValue; break;
-                                case "ProgressionTime": ProgressionTime = int.Parse (pValue); break;
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    new Server.Servers ().Post_Exception (e);
-                    // If the load fails... just bail on the actual value parsing and continue the load process
-                }
-
-                sRead.Close ();
-            }
-
-            public string Save () {
-                StringBuilder sWrite = new StringBuilder ();
-
-                sWrite.AppendLine (String.Format ("{0}:{1}", "Name", Name));
-                sWrite.AppendLine (String.Format ("{0}:{1}", "Description", Description));
-                sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressionTime", ProgressionTime));
-
-                foreach (Progression p in Progressions) {
-                    sWrite.AppendLine ("> Begin: Progression");
-                    sWrite.Append (p.Save ());
-                    sWrite.AppendLine ("> End: Progression");
-                }
-
-                return sWrite.ToString ();
             }
         }
     }

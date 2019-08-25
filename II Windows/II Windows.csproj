@@ -52,7 +52,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Icon_Infirmary.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>true</SignManifests>
@@ -261,24 +262,8 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Third Party\Icon_Device12LeadECG_48.png" />
-    <Resource Include="Third Party\Icon_DeviceEFM_48.png" />
-    <Resource Include="Third Party\Icon_DeviceDefibrillator_48.png" />
-    <Resource Include="Third Party\Icon_DeviceIABP_48.png" />
-    <Resource Include="Third Party\Icon_DeviceIVPump_48.png" />
-    <Resource Include="Third Party\Icon_DeviceLabResults_48.png" />
-    <Resource Include="Third Party\Icon_DeviceMonitor_48.png" />
-    <Resource Include="Third Party\Icon_DeviceVentilator_48.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Icon_Check_32.png" />
     <Resource Include="Resources\Icon_Cross_32.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Third Party\Icon_ArrowDown_128.png" />
-    <Resource Include="Third Party\Icon_ArrowLeft_128.png" />
-    <Resource Include="Third Party\Icon_ArrowRight_128.png" />
-    <Resource Include="Third Party\Icon_ArrowUp_128.png" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Extended.Wpf.Toolkit">
@@ -289,15 +274,32 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Icon_Infirmary.ico" />
-  </ItemGroup>
-  <ItemGroup>
+    <Resource Include="Third Party\Icon_ArrowDown_128.png" />
+    <Resource Include="Third Party\Icon_ArrowLeft_128.png" />
+    <Resource Include="Third Party\Icon_ArrowRight_128.png" />
+    <Resource Include="Third Party\Icon_ArrowUp_128.png" />
+    <Resource Include="Third Party\Icon_ArrowUp_48.png" />
+    <Resource Include="Third Party\Icon_CopyData_48.png" />
+    <Resource Include="Third Party\Icon_Device12LeadECG_48.png" />
+    <Resource Include="Third Party\Icon_DeviceDefibrillator_48.png" />
+    <Resource Include="Third Party\Icon_DeviceEFM_48.png" />
+    <Resource Include="Third Party\Icon_DeviceIABP_48.png" />
+    <Resource Include="Third Party\Icon_DeviceIVPump_48.png" />
+    <Resource Include="Third Party\Icon_DeviceLabResults_48.png" />
+    <Resource Include="Third Party\Icon_DeviceMonitor_48.png" />
+    <Resource Include="Third Party\Icon_DeviceVentilator_48.png" />
+    <Resource Include="Third Party\Icon_Folder_48.png" />
+    <Resource Include="Third Party\Icon_List_48.png" />
+    <Resource Include="Third Party\Icon_PasteData_48.png" />
+    <Resource Include="Third Party\Icon_PlayerAddNext_48.png" />
+    <Resource Include="Third Party\Icon_PlayerAdd_48.png" />
     <Resource Include="Third Party\Icon_PlayerArrowBack_48.png" />
+    <Resource Include="Third Party\Icon_PlayerArrowNext_48.png" />
     <Resource Include="Third Party\Icon_PlayerArrowPlay_48.png" />
     <Resource Include="Third Party\Icon_PlayerPause_48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Third Party\Icon_PlayerArrowNext_48.png" />
+    <Resource Include="Third Party\Icon_Progression_48.png" />
+    <Resource Include="Third Party\Icon_Stack_48.png" />
+    <Resource Include="Third Party\Icon_TrashBin_48.png" />
   </ItemGroup>
   <Import Project="..\II Core\II_Core.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

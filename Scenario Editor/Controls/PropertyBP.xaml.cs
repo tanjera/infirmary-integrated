@@ -51,16 +51,18 @@ namespace II.Scenario_Editor.Controls {
             numSystolic.Increment = sysInc;
             numSystolic.Minimum = sysMin;
             numSystolic.Maximum = sysMax;
-            numSystolic.ValueChanged += onValueChanged;
+            numSystolic.ValueChanged += sendPropertyChange;
+            numSystolic.LostFocus += sendPropertyChange;
 
             numDiastolic.Value = diastolic;
             numDiastolic.Increment = diasInc;
             numDiastolic.Minimum = diasMin;
             numDiastolic.Maximum = diasMax;
-            numDiastolic.ValueChanged += onValueChanged;
+            numDiastolic.ValueChanged += sendPropertyChange;
+            numDiastolic.LostFocus += sendPropertyChange;
         }
 
-        private void onValueChanged (object sender, RoutedPropertyChangedEventArgs<object> e) {
+        private void sendPropertyChange (object sender, EventArgs e) {
             PropertyIntEventArgs ea = new PropertyIntEventArgs ();
             List<Keys> keys = new List<Keys> ();
 

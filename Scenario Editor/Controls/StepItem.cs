@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 
 namespace II.Scenario_Editor.Controls {
 
-    public sealed class StageItem : Shape {
-        public Scenario.Stage Stage = new Scenario.Stage ();
+    public sealed class StepItem : Shape {
+        public Scenario.Step Step = new Scenario.Step ();
         public Label Label = new Label ();
 
-        public StageItem () {
+        public StepItem () {
             Label.IsHitTestVisible = false;
         }
 
@@ -28,11 +28,11 @@ namespace II.Scenario_Editor.Controls {
         }
 
         public Patient Patient {
-            get { return Stage.Patient; }
+            get { return Step.Patient; }
         }
 
-        public StageItem Duplicate () {
-            StageItem dup = new StageItem ();
+        public StepItem Duplicate () {
+            StepItem dup = new StepItem ();
 
             dup.Width = this.Width;
             dup.Height = this.Height;
@@ -41,12 +41,12 @@ namespace II.Scenario_Editor.Controls {
 
             dup.Label.Content = this.Label.Content?.ToString ();
 
-            dup.Stage.Name = this.Stage.Name;
-            dup.Stage.Description = this.Stage.Description;
-            dup.Stage.Patient.Load_Process (this.Stage.Patient.Save ());
-            dup.Stage.ProgressionTime = this.Stage.ProgressionTime;
-            foreach (Scenario.Stage.Progression p in this.Stage.Progressions)
-                dup.Stage.Progressions.Add (new Scenario.Stage.Progression (p.Description, p.DestinationIndex));
+            dup.Step.Name = this.Step.Name;
+            dup.Step.Description = this.Step.Description;
+            dup.Step.Patient.Load_Process (this.Step.Patient.Save ());
+            dup.Step.ProgressTime = this.Step.ProgressTime;
+            foreach (Scenario.Step.Progression p in this.Step.Progressions)
+                dup.Step.Progressions.Add (new Scenario.Step.Progression (p.Description, p.DestinationIndex));
 
             return dup;
         }

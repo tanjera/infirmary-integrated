@@ -8,30 +8,32 @@
     <Application.Resources>
 
         <!-- Icon for Infirmary Integrated-->
-        <BitmapImage x:Key="Icon_Infirmary" UriSource="/Infirmary Integrated;component/Resources/Icon_Infirmary.ico"></BitmapImage>
+        <BitmapImage x:Key="Icon_Infirmary" UriSource="Resources/Icon_Infirmary.ico" />
 
         <!-- Icons for PatientEditor -->
-        <BitmapImage x:Key="Icon_Check_32" UriSource="/Infirmary Integrated;component/Resources/Icon_Check_32.png"></BitmapImage>
-        <BitmapImage x:Key="Icon_Cross_32" UriSource="/Infirmary Integrated;component/Resources/Icon_Cross_32.png"></BitmapImage>
+        <BitmapImage x:Key="Icon_Check_32" UriSource="Resources/Icon_Check_32.png" />
+        <BitmapImage x:Key="Icon_Cross_32" UriSource="Resources/Icon_Cross_32.png" />
 
-        <BitmapImage x:Key="Icon_DeviceDefibrillator" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceDefibrillator_48.png"></BitmapImage>
-        <BitmapImage x:Key="Icon_Device12LeadECG" UriSource="/Infirmary Integrated;component/Third Party/Icon_Device12LeadECG_48.png"></BitmapImage>
-        <BitmapImage x:Key="Icon_DeviceEFM" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceEFM_48.png"></BitmapImage>
-        <BitmapImage x:Key="Icon_DeviceIABP" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceIABP_48.png"></BitmapImage>
-        <BitmapImage x:Key="Icon_DeviceIVPump" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceIVPump_48.png"></BitmapImage>
-        <BitmapImage x:Key="Icon_DeviceLabResults" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceLabResults_48.png"></BitmapImage>
-        <BitmapImage x:Key="Icon_DeviceMonitor" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceMonitor_48.png"></BitmapImage>
-        <BitmapImage x:Key="Icon_DeviceVentilator" UriSource="/Infirmary Integrated;component/Third Party/Icon_DeviceVentilator_48.png"></BitmapImage>
+        <BitmapImage x:Key="Icon_DeviceDefibrillator" UriSource="Third Party/Icon_DeviceDefibrillator_48.png" />
+        <BitmapImage x:Key="Icon_Device12LeadECG" UriSource="Third Party/Icon_Device12LeadECG_48.png" />
+        <BitmapImage x:Key="Icon_DeviceEFM" UriSource="Third Party/Icon_DeviceEFM_48.png" />
+        <BitmapImage x:Key="Icon_DeviceIABP" UriSource="Third Party/Icon_DeviceIABP_48.png" />
+        <BitmapImage x:Key="Icon_DeviceIVPump" UriSource="Third Party/Icon_DeviceIVPump_48.png" />
+        <BitmapImage x:Key="Icon_DeviceLabResults" UriSource="Third Party/Icon_DeviceLabResults_48.png" />
+        <BitmapImage x:Key="Icon_DeviceMonitor" UriSource="Third Party/Icon_DeviceMonitor_48.png" />
+        <BitmapImage x:Key="Icon_DeviceVentilator" UriSource="Third Party/Icon_DeviceVentilator_48.png" />
 
-        <BitmapImage x:Key="Icon_PlayerArrowBack" UriSource="/Infirmary Integrated;component/Third Party/Icon_PlayerArrowBack_48.png"></BitmapImage>
-        <BitmapImage x:Key="Icon_PlayerArrowNext" UriSource="/Infirmary Integrated;component/Third Party/Icon_PlayerArrowNext_48.png"></BitmapImage>
-        <BitmapImage x:Key="Icon_PlayerArrowPlay" UriSource="/Infirmary Integrated;component/Third Party/Icon_PlayerArrowPlay_48.png"></BitmapImage>
-        <BitmapImage x:Key="Icon_PlayerPause" UriSource="/Infirmary Integrated;component/Third Party/Icon_PlayerPause_48.png"></BitmapImage>
+        <BitmapImage x:Key="Icon_PlayerArrowBack" UriSource="Third Party/Icon_PlayerArrowBack_48.png" />
+        <BitmapImage x:Key="Icon_PlayerArrowNext" UriSource="Third Party/Icon_PlayerArrowNext_48.png" />
+        <BitmapImage x:Key="Icon_PlayerArrowPlay" UriSource="Third Party/Icon_PlayerArrowPlay_48.png" />
+        <BitmapImage x:Key="Icon_PlayerAddNext" UriSource="Third Party/Icon_PlayerAddNext_48.png" />
+        <BitmapImage x:Key="Icon_PlayerAdd" UriSource="Third Party/Icon_PlayerAdd_48.png" />
+        <BitmapImage x:Key="Icon_PlayerPause" UriSource="Third Party/Icon_PlayerPause_48.png" />
 
         <!-- Icons for DeviceIABP -->
-        <BitmapImage x:Key="Icon_ArrowUp" UriSource="/Infirmary Integrated;component/Third Party/Icon_ArrowUp_128.png"></BitmapImage>
-        <BitmapImage x:Key="Icon_ArrowDown" UriSource="/Infirmary Integrated;component/Third Party/Icon_ArrowDown_128.png"></BitmapImage>
-        <BitmapImage x:Key="Icon_ArrowLeft" UriSource="/Infirmary Integrated;component/Third Party/Icon_ArrowLeft_128.png"></BitmapImage>
-        <BitmapImage x:Key="Icon_ArrowRight" UriSource="/Infirmary Integrated;component/Third Party/Icon_ArrowRight_128.png"></BitmapImage>
+        <BitmapImage x:Key="Icon_ArrowUp" UriSource="Third Party/Icon_ArrowUp_128.png" />
+        <BitmapImage x:Key="Icon_ArrowDown" UriSource="Third Party/Icon_ArrowDown_128.png" />
+        <BitmapImage x:Key="Icon_ArrowLeft" UriSource="Third Party/Icon_ArrowLeft_128.png" />
+        <BitmapImage x:Key="Icon_ArrowRight" UriSource="Third Party/Icon_ArrowRight_128.png" />
     </Application.Resources>
 </Application>

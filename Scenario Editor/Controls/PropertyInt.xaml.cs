@@ -52,10 +52,11 @@ namespace II.Scenario_Editor.Controls {
             numValue.Increment = increment;
             numValue.Minimum = minvalue;
             numValue.Maximum = maxvalue;
-            numValue.ValueChanged += onValueChanged; ;
+            numValue.ValueChanged += sendPropertyChange;
+            numValue.LostFocus += sendPropertyChange;
         }
 
-        private void onValueChanged (object sender, RoutedPropertyChangedEventArgs<object> e) {
+        private void sendPropertyChange (object sender, EventArgs e) {
             PropertyIntEventArgs ea = new PropertyIntEventArgs ();
             ea.Key = Key;
             ea.Value = numValue.Value ?? 0;

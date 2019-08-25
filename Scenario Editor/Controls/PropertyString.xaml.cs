@@ -43,10 +43,11 @@ namespace II.Scenario_Editor.Controls {
             }
 
             txtValue.Text = value;
-            txtValue.TextChanged += onTextChanged;
+            txtValue.TextChanged += sendPropertyChange;
+            txtValue.LostFocus += sendPropertyChange;
         }
 
-        private void onTextChanged (object sender, TextChangedEventArgs e) {
+        private void sendPropertyChange (object sender, EventArgs e) {
             PropertyStringEventArgs ea = new PropertyStringEventArgs ();
             ea.Key = Key;
             ea.Value = txtValue.Text ?? "";

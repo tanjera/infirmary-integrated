@@ -382,9 +382,9 @@ namespace II_Windows {
             }
 
             StreamWriter sw = new StreamWriter (s);
-            sw.WriteLine (".ii:t1");                                      // Metadata (type 1 savefile)
-            sw.WriteLine (Utility.HashSHA256 (sb.ToString ().Trim ()));      // Hash for validation
-            sw.Write (Utility.EncryptAES (sb.ToString ().Trim ()));       // Savefile data encrypted with AES
+            sw.WriteLine (".ii:t1");                                        // Metadata (type 1 savefile)
+            sw.WriteLine (Utility.HashSHA256 (sb.ToString ().Trim ()));     // Hash for validation
+            sw.Write (Utility.EncryptAES (sb.ToString ().Trim ()));         // Savefile data encrypted with AES
             sw.Close ();
             s.Close ();
         }
@@ -508,17 +508,20 @@ namespace II_Windows {
             }
         }
 
-        private void ButtonPreviousStage_Click (object s, RoutedEventArgs e)
-            => App.Patient = App.Scenario.LastStage ();
+        private void ButtonPreviousStep_Click (object s, RoutedEventArgs e)
+            => App.Patient = App.Scenario.LastStep ();
 
-        private void ButtonNextStage_Click (object s, RoutedEventArgs e)
-            => App.Patient = App.Scenario.NextStage ();
+        private void ButtonNextStep_Click (object s, RoutedEventArgs e)
+            => App.Patient = App.Scenario.NextStep ();
 
-        private void ButtonPauseStage_Click (object s, RoutedEventArgs e)
-            => App.Scenario.PauseStage ();
+        private void ButtonAddNextStep_Click (object s, RoutedEventArgs e)
+            => App.Patient = App.Scenario.InsertStep ();
 
-        private void ButtonPlayStage_Click (object s, RoutedEventArgs e)
-            => App.Scenario.PlayStage ();
+        private void ButtonPauseStep_Click (object s, RoutedEventArgs e)
+            => App.Scenario.PauseStep ();
+
+        private void ButtonPlayStep_Click (object s, RoutedEventArgs e)
+            => App.Scenario.PlayStep ();
 
         private void ButtonResetParameters_Click (object s, RoutedEventArgs e) {
             RequestNewPatient ();

@@ -26,35 +26,36 @@ namespace II.Scenario_Editor {
         private double xShape, yShape,
             xCanvas, yCanvas;
 
-        private Canvas DesignerCanvas;
+        private Canvas canvasDesigner;
         private UIElement selectedElement = null;
+        private Patient copiedPatient;
 
-        private int siIndex = -1,
+        private int selectedStep = -1,
             selectedProgression = -1;
 
-        private List<StageItem> Stages = new List<StageItem> ();
+        private List<StepItem> Steps = new List<StepItem> ();
 
         public Editor () {
             InitializeComponent ();
 
-            DesignerCanvas = cnvsDesigner;
+            canvasDesigner = cnvsDesigner;
         }
 
-        private void addStage (StageItem si = null) {
+        private void addStep (StepItem si = null) {
             if (si == null)
-                si = new StageItem ();
+                si = new StepItem ();
 
-            si.Height = 25;
+            si.Height = 50;
             si.Width = 50;
             si.Stroke = Brushes.Black;
             si.Fill = Brushes.LightGray;
-            si.MouseLeftButtonDown += elementMouseLeftButtonDown;
-            si.MouseLeftButtonUp += elementMouseLeftButtonUp;
-            si.MouseMove += elementMouseMove;
+            si.MouseLeftButtonDown += UIElementMouseLeftButtonDown;
+            si.MouseLeftButtonUp += UIElementMouseLeftButtonUp;
+            si.MouseMove += UIElementMouseMove;
 
-            Stages.Add (si);
-            DesignerCanvas.Children.Add (si);
-            DesignerCanvas.Children.Add (si.Label);
+            Steps.Add (si);
+            canvasDesigner.Children.Add (si);
+            canvasDesigner.Children.Add (si.Label);
 
             Canvas.SetLeft (si, (cnvsDesigner.ActualWidth / 2) - (si.Width / 2));
             Canvas.SetTop (si, (cnvsDesigner.ActualHeight / 2) - (si.Height / 2));
@@ -65,68 +66,6 @@ namespace II.Scenario_Editor {
             updatePropertiesView ();
         }
 
-        private void btnAddStage_Click (object sender, RoutedEventArgs e)
-            => addStage ();
-
-        private void btnDuplicateStage_Click (object sender, RoutedEventArgs e) {
-            if (selectedElement == null)
-                return;
-
-            if (selectedElement is StageItem) {
-                StageItem orig = (StageItem)selectedElement;
-                addStage (orig.Duplicate ());
-            }
-        }
-
-        private void btnAddProgression_Click (object sender, RoutedEventArgs e) {
-            throw new NotImplementedException ();
-        }
-
-        private void menuExit_Click (object sender, RoutedEventArgs e)
-            => Application.Current.Shutdown ();
-
-        private void menuAbout_Click (object sender, RoutedEventArgs e) {
-            About dlgAbout = new About ();
-            dlgAbout.ShowDialog ();
-        }
-
-        private void elementMouseLeftButtonDown (object sender, MouseButtonEventArgs e) {
-            selectedElement = sender as UIElement;
-
-            Mouse.Capture (selectedElement);
-            mouseCaptured = true;
-
-            xShape = Canvas.GetLeft (selectedElement);
-            yShape = Canvas.GetTop (selectedElement);
-            xCanvas = e.GetPosition (LayoutRoot).X;
-            yCanvas = e.GetPosition (LayoutRoot).Y;
-
-            updatePropertiesView ();
-        }
-
-        private void elementMouseLeftButtonUp (object sender, MouseButtonEventArgs e) {
-            Mouse.Capture (null);
-            mouseCaptured = false;
-        }
-
-        private void elementMouseMove (object sender, MouseEventArgs e) {
-            if (mouseCaptured) {
-                double x = e.GetPosition (LayoutRoot).X;
-                double y = e.GetPosition (LayoutRoot).Y;
-                xShape += x - xCanvas;
-                xCanvas = x;
-                yShape += y - yCanvas;
-                yCanvas = y;
-                Canvas.SetLeft (selectedElement, Utility.Clamp (xShape, 0, DesignerCanvas.ActualWidth - (sender as Shape).Width));
-                Canvas.SetTop (selectedElement, Utility.Clamp (yShape, 0, DesignerCanvas.ActualHeight - (sender as Shape).Height));
-
-                if (selectedElement is StageItem) {
-                    Canvas.SetLeft (((StageItem)selectedElement).Label, Utility.Clamp (xShape, 0, DesignerCanvas.ActualWidth - (sender as Shape).Width));
-                    Canvas.SetTop (((StageItem)selectedElement).Label, Utility.Clamp (yShape, 0, DesignerCanvas.ActualHeight - (sender as Shape).Height));
-                }
-            }
-        }
-
         private void updatePropertiesView () {
             gridProperties.Children.Clear ();
             gridProperties.RowDefinitions.Clear ();
@@ -135,11 +74,11 @@ namespace II.Scenario_Editor {
             if (selectedElement == null)
                 return;
 
-            if (selectedElement is StageItem) {
-                siIndex = Stages.FindIndex (o => { return o == selectedElement; });
-                lblProperties.Content = String.Concat ("Edit Stage: #", siIndex.ToString ("000"));
+            if (selectedElement is StepItem) {
+                selectedStep = Steps.FindIndex (o => { return o == selectedElement; });
+                lblProperties.Content = String.Concat ("Edit Step: #", selectedStep.ToString ("000"));
 
-                StageItem si = (StageItem)selectedElement;
+                StepItem si = (StepItem)selectedElement;
 
                 gridAddRows (gridProperties, 7);
 
@@ -148,11 +87,11 @@ namespace II.Scenario_Editor {
                 PropertyDouble pd;
                 PropertyBP pbp;
 
-                ps = new PropertyString (0, PropertyString.Keys.Name, si.Stage.Name ?? "");
+                ps = new PropertyString (0, PropertyString.Keys.Name, si.Step.Name ?? "");
                 ps.PropertyChanged += updateProperty;
                 gridProperties.Children.Add (ps);
 
-                ps = new PropertyString (1, PropertyString.Keys.Description, si.Stage.Description ?? "");
+                ps = new PropertyString (1, PropertyString.Keys.Description, si.Step.Description ?? "");
                 ps.PropertyChanged += updateProperty;
                 gridProperties.Children.Add (ps);
 
@@ -182,24 +121,24 @@ namespace II.Scenario_Editor {
         }
 
         private void updateProperty (object sender, PropertyString.PropertyStringEventArgs e) {
-            if (selectedElement is StageItem) {
-                StageItem si = (StageItem)selectedElement;
+            if (selectedElement is StepItem) {
+                StepItem si = (StepItem)selectedElement;
                 switch (e.Key) {
                     default: break;
                     case PropertyString.Keys.Name:
-                        si.Stage.Name = e.Value;
+                        si.Step.Name = e.Value;
                         si.Label.Content = e.Value;
                         si.Width = Math.Max (50, si.Label.ActualWidth + 8);
                         break;
 
-                    case PropertyString.Keys.Description: si.Stage.Description = e.Value; break;
+                    case PropertyString.Keys.Description: si.Step.Description = e.Value; break;
                 }
             }
         }
 
         private void updateProperty (object sender, PropertyInt.PropertyIntEventArgs e) {
-            if (selectedElement is StageItem) {
-                StageItem si = (StageItem)selectedElement;
+            if (selectedElement is StepItem) {
+                StepItem si = (StepItem)selectedElement;
                 switch (e.Key) {
                     default: break;
                     case PropertyInt.Keys.HR: si.Patient.HR = e.Value; break;
@@ -214,8 +153,8 @@ namespace II.Scenario_Editor {
         }
 
         private void updateProperty (object sender, PropertyDouble.PropertyDoubleEventArgs e) {
-            if (selectedElement is StageItem) {
-                StageItem si = (StageItem)selectedElement;
+            if (selectedElement is StepItem) {
+                StepItem si = (StepItem)selectedElement;
                 switch (e.Key) {
                     default: break;
                     case PropertyDouble.Keys.T: si.Patient.T = e.Value; break;
@@ -224,8 +163,8 @@ namespace II.Scenario_Editor {
         }
 
         private void updateProperty (object sender, PropertyBP.PropertyIntEventArgs e) {
-            if (selectedElement is StageItem) {
-                StageItem si = (StageItem)selectedElement;
+            if (selectedElement is StepItem) {
+                StepItem si = (StepItem)selectedElement;
                 switch (e.Key) {
                     default: break;
                     case PropertyBP.Keys.NSBP: si.Patient.NSBP = e.Value; break;
@@ -246,6 +185,86 @@ namespace II.Scenario_Editor {
                 RowDefinition rd = new RowDefinition ();
                 rd.Height = new GridLength (1, GridUnitType.Auto);
                 grid.RowDefinitions.Add (rd);
+            }
+        }
+
+        private void ButtonAddStep_Click (object sender, RoutedEventArgs e)
+            => addStep ();
+
+        private void ButtonDuplicateStep_Click (object sender, RoutedEventArgs e) {
+            if (selectedElement == null)
+                return;
+
+            if (selectedElement is StepItem) {
+                StepItem orig = (StepItem)selectedElement;
+                addStep (orig.Duplicate ());
+            }
+        }
+
+        private void ButtonAddProgression_Click (object sender, RoutedEventArgs e) {
+            throw new NotImplementedException ();
+        }
+
+        private void MenuItemExit_Click (object sender, RoutedEventArgs e)
+            => Application.Current.Shutdown ();
+
+        private void BtnCopyPatient_Click (object sender, RoutedEventArgs e) {
+            if (selectedElement == null)
+                return;
+
+            if (selectedElement is StepItem) {
+                copiedPatient = ((StepItem)selectedElement).Patient;
+            }
+        }
+
+        private void BtnPastePatient_Click (object sender, RoutedEventArgs e) {
+            if (selectedElement == null)
+                return;
+
+            if (selectedElement is StepItem && copiedPatient != null) {
+                ((StepItem)selectedElement).Step.Patient = copiedPatient;
+            }
+        }
+
+        private void MenuItemAbout_Click (object sender, RoutedEventArgs e) {
+            About dlgAbout = new About ();
+            dlgAbout.ShowDialog ();
+        }
+
+        private void UIElementMouseLeftButtonDown (object sender, MouseButtonEventArgs e) {
+            selectedElement = sender as UIElement;
+
+            Mouse.Capture (selectedElement);
+            mouseCaptured = true;
+
+            xShape = Canvas.GetLeft (selectedElement);
+            yShape = Canvas.GetTop (selectedElement);
+            xCanvas = e.GetPosition (LayoutRoot).X;
+            yCanvas = e.GetPosition (LayoutRoot).Y;
+
+            updatePropertiesView ();
+        }
+
+        private void UIElementMouseLeftButtonUp (object sender, MouseButtonEventArgs e) {
+            Mouse.Capture (null);
+            mouseCaptured = false;
+        }
+
+        private void UIElementMouseMove (object sender, MouseEventArgs e) {
+            if (mouseCaptured) {
+                double x = e.GetPosition (LayoutRoot).X;
+                double y = e.GetPosition (LayoutRoot).Y;
+                xShape += x - xCanvas;
+                xCanvas = x;
+                yShape += y - yCanvas;
+                yCanvas = y;
+                Canvas.SetLeft (selectedElement, Utility.Clamp (xShape, 0, canvasDesigner.ActualWidth - (sender as Shape).Width));
+                Canvas.SetTop (selectedElement, Utility.Clamp (yShape, 0, canvasDesigner.ActualHeight - (sender as Shape).Height));
+
+                if (selectedElement is StepItem) {
+                    Canvas.SetLeft (((StepItem)selectedElement).Label, Utility.Clamp (xShape, 0, canvasDesigner.ActualWidth - (sender as Shape).Width));
+                    Canvas.SetTop (((StepItem)selectedElement).Label, Utility.Clamp (yShape, 0, canvasDesigner.ActualHeight - (sender as Shape).Height));
+                }
             }
         }
     }
