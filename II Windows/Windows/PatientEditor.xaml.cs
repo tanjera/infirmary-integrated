@@ -142,8 +142,8 @@ namespace II_Windows {
                 cardiacRhythms.Add (App.Language.Dictionary [Cardiac_Rhythms.LookupString (v)]);
             comboCardiacRhythm.ItemsSource = cardiacRhythms;
 
-            foreach (CardiacAxes.Values v in Enum.GetValues (typeof (CardiacAxes.Values)))
-                cardiacAxes.Add (App.Language.Dictionary [CardiacAxes.LookupString (v)]);
+            foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
+                cardiacAxes.Add (App.Language.Dictionary [Cardiac_Axes.LookupString (v)]);
             comboCardiacAxis.ItemsSource = cardiacAxes;
 
             foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
@@ -578,7 +578,7 @@ namespace II_Windows {
 
                 (Cardiac_Rhythms.Values)Enum.GetValues (typeof (Cardiac_Rhythms.Values)).GetValue (
                     comboCardiacRhythm.SelectedIndex < 0 ? 0 : comboCardiacRhythm.SelectedIndex),
-                (CardiacAxes.Values)Enum.GetValues (typeof (CardiacAxes.Values)).GetValue (
+                (Cardiac_Axes.Values)Enum.GetValues (typeof (Cardiac_Axes.Values)).GetValue (
                     comboCardiacAxis.SelectedIndex < 0 ? 0 : comboCardiacAxis.SelectedIndex),
                 (Respiratory_Rhythms.Values)Enum.GetValues (typeof (Respiratory_Rhythms.Values)).GetValue (
                     comboRespiratoryRhythm.SelectedIndex < 0 ? 0 : comboRespiratoryRhythm.SelectedIndex),

@@ -31,14 +31,14 @@ namespace II.Scenario_Editor.Controls {
             public int Value;
         }
 
-        public PropertyBP (int row, Keys key,
+        public PropertyBP () {
+            InitializeComponent ();
+        }
+
+        public void Init (Keys key,
             int systolic, int diastolic,
             int sysInc, int sysMin, int sysMax,
             int diasInc, int diasMin, int diasMax) {
-            InitializeComponent ();
-
-            this.SetValue (Grid.RowProperty, row);
-
             Key = key;
             switch (Key) {
                 default: break;
@@ -60,6 +60,17 @@ namespace II.Scenario_Editor.Controls {
             numDiastolic.Maximum = diasMax;
             numDiastolic.ValueChanged += sendPropertyChange;
             numDiastolic.LostFocus += sendPropertyChange;
+        }
+
+        public void Set (int systolic, int diastolic) {
+            numSystolic.ValueChanged -= sendPropertyChange;
+            numDiastolic.ValueChanged -= sendPropertyChange;
+
+            numSystolic.Value = systolic;
+            numDiastolic.Value = diastolic;
+
+            numSystolic.ValueChanged += sendPropertyChange;
+            numDiastolic.ValueChanged += sendPropertyChange;
         }
 
         private void sendPropertyChange (object sender, EventArgs e) {

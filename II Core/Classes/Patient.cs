@@ -139,7 +139,7 @@ namespace II {
         public int IABP_AP, IABP_DBP, IABP_MAP;    // Intra-aortic balloon pump blood pressures
         public double [] ST_Elevation, T_Elevation;
         public Cardiac_Rhythms Cardiac_Rhythm = new Cardiac_Rhythms ();
-        public CardiacAxes Cardiac_Axis = new CardiacAxes ();
+        public Cardiac_Axes Cardiac_Axis = new Cardiac_Axes ();
         public bool Pulsus_Paradoxus = false,
                     Pulsus_Alternans = false;
 
@@ -216,7 +216,7 @@ namespace II {
                             new double [] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
                             new double [] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
                             Cardiac_Rhythms.Values.Sinus_Rhythm,
-                            CardiacAxes.Values.Normal,
+                            Cardiac_Axes.Values.Normal,
                             Respiratory_Rhythms.Values.Regular,
                             1f, 2f, false,
                             150, Intensity.Values.Absent, new List<FetalHeartDecelerations.Values> (),
@@ -379,7 +379,7 @@ namespace II {
                                 break;
 
                             case "Cardiac_Rhythm": Cardiac_Rhythm.Value = (Cardiac_Rhythms.Values)Enum.Parse (typeof (Cardiac_Rhythms.Values), pValue); break;
-                            case "Cardiac_Axis": Cardiac_Axis.Value = (CardiacAxes.Values)Enum.Parse (typeof (CardiacAxes.Values), pValue); break;
+                            case "Cardiac_Axis": Cardiac_Axis.Value = (Cardiac_Axes.Values)Enum.Parse (typeof (Cardiac_Axes.Values), pValue); break;
                             case "PulsusParadoxus": Pulsus_Paradoxus = bool.Parse (pValue); break;
                             case "PulsusAlternans": Pulsus_Alternans = bool.Parse (pValue); break;
 
@@ -395,8 +395,8 @@ namespace II {
 
                             case "Respiratory_Rhythm": Respiratory_Rhythm.Value = (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), pValue); break;
                             case "Respiration_Inflated": Respiration_Inflated = bool.Parse (pValue); break;
-                            case "Respiratory_IERatio_I": VS_Settings.RR_IE_I = int.Parse (pValue); break;
-                            case "Respiratory_IERatio_E": VS_Settings.RR_IE_E = int.Parse (pValue); break;
+                            case "Respiratory_IERatio_I": VS_Settings.RR_IE_I = float.Parse (pValue); break;
+                            case "Respiratory_IERatio_E": VS_Settings.RR_IE_E = float.Parse (pValue); break;
                             case "Mechanically_Ventilated": Mechanically_Ventilated = bool.Parse (pValue); break;
 
                             case "FHR": FHR = int.Parse (pValue); break;
@@ -496,7 +496,7 @@ namespace II {
                     bool puls_paradoxus, bool puls_alternans,
                     double [] st_elev, double [] t_elev,
                     Cardiac_Rhythms.Values card_rhythm,
-                    CardiacAxes.Values card_axis,
+                    Cardiac_Axes.Values card_axis,
                     Respiratory_Rhythms.Values resp_rhythm,
                     float resp_ier_i, float resp_ier_e,
                     bool mech_vent,

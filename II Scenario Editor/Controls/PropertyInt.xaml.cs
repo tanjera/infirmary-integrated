@@ -21,7 +21,8 @@ namespace II.Scenario_Editor.Controls {
         public enum Keys {
             HR, RR, ETCO2, SPO2,            // Heart rate, respiratory rate, end-tidal capnography, pulse oximetry
             CVP,                            // Central venous pressure,
-            ICP, IAP                        // Intracranial pressure, intra-abdominal pressure
+            ICP, IAP,                       // Intracranial pressure, intra-abdominal pressure
+            PacemakerThreshold
         }
 
         public event EventHandler<PropertyIntEventArgs> PropertyChanged;
@@ -31,11 +32,11 @@ namespace II.Scenario_Editor.Controls {
             public int Value;
         }
 
-        public PropertyInt (int row, Keys key, int value, int increment, int minvalue, int maxvalue) {
+        public PropertyInt () {
             InitializeComponent ();
+        }
 
-            this.SetValue (Grid.RowProperty, row);
-
+        public void Init (Keys key, int value, int increment, int minvalue, int maxvalue) {
             Key = key;
             switch (Key) {
                 default: break;
@@ -46,6 +47,7 @@ namespace II.Scenario_Editor.Controls {
                 case Keys.CVP: lblKey.Content = "Central Venous Pressure: "; break;
                 case Keys.ICP: lblKey.Content = "Intra-cranial Pressure: "; break;
                 case Keys.IAP: lblKey.Content = "Intra-abdominal Pressure: "; break;
+                case Keys.PacemakerThreshold: lblKey.Content = "Pacemaker Capture Threshold: "; break;
             }
 
             numValue.Value = value;
@@ -54,6 +56,12 @@ namespace II.Scenario_Editor.Controls {
             numValue.Maximum = maxvalue;
             numValue.ValueChanged += sendPropertyChange;
             numValue.LostFocus += sendPropertyChange;
+        }
+
+        public void Set (int value) {
+            numValue.ValueChanged -= sendPropertyChange;
+            numValue.Value = value;
+            numValue.ValueChanged += sendPropertyChange;
         }
 
         private void sendPropertyChange (object sender, EventArgs e) {

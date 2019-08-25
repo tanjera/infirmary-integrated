@@ -20,7 +20,7 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer, Windows", "Insta
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II Linux", "II Linux\II Linux.csproj", "{14D4C603-47F0-4028-916C-62770D9C7E1C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scenario Editor", "Scenario Editor\Scenario Editor.csproj", "{23FDB2CE-6680-4280-A1D2-1693323D3578}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II Scenario Editor", "II Scenario Editor\II Scenario Editor.csproj", "{23FDB2CE-6680-4280-A1D2-1693323D3578}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

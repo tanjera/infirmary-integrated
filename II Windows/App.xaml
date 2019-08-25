@@ -8,7 +8,7 @@
     <Application.Resources>
 
         <!-- Icon for Infirmary Integrated-->
-        <BitmapImage x:Key="Icon_Infirmary" UriSource="Resources/Icon_Infirmary.ico" />
+        <BitmapImage x:Key="Icon_Infirmary" UriSource="Resources/Icon_II.ico" />
 
         <!-- Icons for PatientEditor -->
         <BitmapImage x:Key="Icon_Check_32" UriSource="Resources/Icon_Check_32.png" />

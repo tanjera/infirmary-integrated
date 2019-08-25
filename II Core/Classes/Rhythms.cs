@@ -414,10 +414,10 @@ namespace II {
         }
     }
 
-    public class CardiacAxes {
+    public class Cardiac_Axes {
         public Values Value;
-        public CardiacAxes (Values v) { Value = v; }
-        public CardiacAxes () { Value = Values.Normal; }
+        public Cardiac_Axes (Values v) { Value = v; }
+        public Cardiac_Axes () { Value = Values.Normal; }
 
         public static string LookupString (Values value) {
             return String.Format ("CARDIAC_AXIS:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());

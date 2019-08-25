@@ -30,11 +30,11 @@ namespace II.Scenario_Editor.Controls {
             public string Value;
         }
 
-        public PropertyString (int row, Keys key, string value) {
+        public PropertyString () {
             InitializeComponent ();
+        }
 
-            this.SetValue (Grid.RowProperty, row);
-
+        public void Init (Keys key, string value) {
             Key = key;
             switch (Key) {
                 default: break;
@@ -45,6 +45,12 @@ namespace II.Scenario_Editor.Controls {
             txtValue.Text = value;
             txtValue.TextChanged += sendPropertyChange;
             txtValue.LostFocus += sendPropertyChange;
+        }
+
+        public void Set (string value) {
+            txtValue.TextChanged -= sendPropertyChange;
+            txtValue.Text = value;
+            txtValue.TextChanged += sendPropertyChange;
         }
 
         private void sendPropertyChange (object sender, EventArgs e) {

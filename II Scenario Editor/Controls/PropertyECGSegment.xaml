@@ -1,0 +1,102 @@
+﻿<UserControl x:Class="II.Scenario_Editor.Controls.PropertyECGSegment"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:local="clr-namespace:II.Scenario_Editor.Controls"
+             mc:Ignorable="d"
+             HorizontalAlignment="Stretch" Margin="0">
+
+    <UserControl.Resources>
+        <Style x:Key="dblUpDown" TargetType="{x:Type xctk:DoubleUpDown}">
+            <Setter Property="MinWidth" Value="45" />
+            <Setter Property="Height" Value="20" />
+            <Setter Property="Increment" Value="0.1" />
+            <Setter Property="Minimum" Value="-1.0" />
+            <Setter Property="Maximum"  Value="1.0" />
+        </Style>
+
+        <Style x:Key="lblECG" TargetType="{x:Type Label}">
+            <Setter Property="Margin" Value="2, 0, 1, 0" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Label Name="lblKey" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="4"
+               HorizontalAlignment="Left" Height="Auto"
+               Margin="2" />
+
+        <!-- Top row of segments -->
+        <Label Name="lblI" Grid.Column="0" Grid.Row="1"
+               Content="I" Style="{StaticResource lblECG}" />
+        <xctk:DoubleUpDown Name="dblI" Style="{StaticResource dblUpDown}"
+                            Grid.Column="1" Grid.Row="1" />
+        <Label Name="lblaVR" Grid.Column="2" Grid.Row="1"
+               Content="aVR" Style="{StaticResource lblECG}" />
+        <xctk:DoubleUpDown Name="dblaVR" Style="{StaticResource dblUpDown}"
+                            Grid.Column="3" Grid.Row="1" />
+        <Label Name="lblV1" Grid.Column="4" Grid.Row="1"
+               Content="V1" Style="{StaticResource lblECG}" />
+        <xctk:DoubleUpDown Name="dblV1" Style="{StaticResource dblUpDown}"
+                            Grid.Column="5" Grid.Row="1" />
+        <Label Name="lblV4" Grid.Column="6" Grid.Row="1"
+               Content="V4" Style="{StaticResource lblECG}" />
+        <xctk:DoubleUpDown Name="dblV4" Style="{StaticResource dblUpDown}"
+                            Grid.Column="7" Grid.Row="1" />
+
+        <!-- Middle row of segments -->
+        <Label Name="lblII" Grid.Column="0" Grid.Row="2"
+               Content="II" Style="{StaticResource lblECG}" />
+        <xctk:DoubleUpDown Name="dblII" Style="{StaticResource dblUpDown}"
+                            Grid.Column="1" Grid.Row="2" />
+        <Label Name="lblaVL" Grid.Column="2" Grid.Row="2"
+               Content="aVL" Style="{StaticResource lblECG}" />
+        <xctk:DoubleUpDown Name="dblaVL" Style="{StaticResource dblUpDown}"
+                            Grid.Column="3" Grid.Row="2" />
+        <Label Name="lblV2" Grid.Column="4" Grid.Row="2"
+               Content="V2" Style="{StaticResource lblECG}" />
+        <xctk:DoubleUpDown Name="dblV2" Style="{StaticResource dblUpDown}"
+                            Grid.Column="5" Grid.Row="2" />
+        <Label Name="lblV5" Grid.Column="6" Grid.Row="2"
+               Content="V5" Style="{StaticResource lblECG}" />
+        <xctk:DoubleUpDown Name="dblV5" Style="{StaticResource dblUpDown}"
+                            Grid.Column="7" Grid.Row="2" />
+
+        <!-- Bottom row of segments -->
+        <Label Name="lblIII" Grid.Column="0" Grid.Row="3"
+               Content="III" Style="{StaticResource lblECG}" />
+        <xctk:DoubleUpDown Name="dblIII" Style="{StaticResource dblUpDown}"
+                            Grid.Column="1" Grid.Row="3" />
+        <Label Name="lblaVF" Grid.Column="2" Grid.Row="3"
+               Content="aVF" Style="{StaticResource lblECG}" />
+        <xctk:DoubleUpDown Name="dblaVF" Style="{StaticResource dblUpDown}"
+                            Grid.Column="3" Grid.Row="3" />
+        <Label Name="lblV3" Grid.Column="4" Grid.Row="3"
+               Content="V3" Style="{StaticResource lblECG}" />
+        <xctk:DoubleUpDown Name="dblV3" Style="{StaticResource dblUpDown}"
+                            Grid.Column="5" Grid.Row="3" />
+        <Label Name="lblV6" Grid.Column="6" Grid.Row="3"
+               Content="V6" Style="{StaticResource lblECG}" />
+        <xctk:DoubleUpDown Name="dblV6" Style="{StaticResource dblUpDown}"
+                            Grid.Column="7" Grid.Row="3" />
+    </Grid>
+</UserControl>

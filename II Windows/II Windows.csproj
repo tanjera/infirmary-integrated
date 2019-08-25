@@ -52,8 +52,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>
-    </ApplicationIcon>
+    <ApplicationIcon>Icon_II.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>true</SignManifests>
@@ -241,13 +240,9 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="Temp Signing Key.pfx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resources\Icon_Infirmary.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6">
@@ -300,6 +295,13 @@
     <Resource Include="Third Party\Icon_Progression_48.png" />
     <Resource Include="Third Party\Icon_Stack_48.png" />
     <Resource Include="Third Party\Icon_TrashBin_48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icon_II.ico" />
+    <Resource Include="Resources\Icon_IISE.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icon_II.ico" />
   </ItemGroup>
   <Import Project="..\II Core\II_Core.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

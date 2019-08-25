@@ -395,7 +395,7 @@
                             <xctk:IntegerUpDown Name="numETCO2" Increment="2" Minimum="0" Maximum="100"
                                                 Grid.Column="1" Grid.Row="0" Style="{StaticResource intUpDown}" />
                             <Label Name="lblCVP" Grid.Column="0" Grid.Row="1" />
-                            <xctk:IntegerUpDown Name="numCVP" Increment="1" Minimum="-50" Maximum="50"
+                            <xctk:IntegerUpDown Name="numCVP" Increment="1" Minimum="-100" Maximum="100"
                                                 Grid.Column="1" Grid.Row="1" Style="{StaticResource intUpDown}" />
                             <Label Name="lblASBP" Grid.Column="0" Grid.Row="2" />
                             <xctk:IntegerUpDown Name="numASBP" Increment="5" Minimum="0" Maximum="300"
@@ -410,10 +410,10 @@
                             <xctk:IntegerUpDown Name="numPDP" Increment="2" Minimum="0" Maximum="200"
                                                 Grid.Column="3" Grid.Row="3" Style="{StaticResource intUpDown}" />
                             <Label Name="lblICP" Grid.Column="0" Grid.Row="4" />
-                            <xctk:IntegerUpDown Name="numICP" Increment="1" Minimum="-50" Maximum="50"
+                            <xctk:IntegerUpDown Name="numICP" Increment="1" Minimum="-100" Maximum="100"
                                                 Grid.Column="1" Grid.Row="4" Style="{StaticResource intUpDown}" />
                             <Label Name="lblIAP" Grid.Column="0" Grid.Row="5" />
-                            <xctk:IntegerUpDown Name="numIAP" Increment="1" Minimum="-50" Maximum="50"
+                            <xctk:IntegerUpDown Name="numIAP" Increment="1" Minimum="-100" Maximum="100"
                                                 Grid.Column="1" Grid.Row="5" Style="{StaticResource intUpDown}" />
                         </Grid>
                     </Expander>

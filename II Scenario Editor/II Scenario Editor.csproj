@@ -7,7 +7,7 @@
     <ProjectGuid>{23FDB2CE-6680-4280-A1D2-1693323D3578}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <RootNamespace>II.Scenario_Editor</RootNamespace>
-    <AssemblyName>Scenario Editor</AssemblyName>
+    <AssemblyName>II Scenario Editor</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -48,6 +48,9 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Icon_IISE.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Crypto, Version=1.8.3.0, Culture=neutral, PublicKeyToken=0e99375e54769942">
@@ -106,11 +109,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\PropertyECGSegment.xaml.cs">
+      <DependentUpon>PropertyECGSegment.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PropertyFloat.xaml.cs">
+      <DependentUpon>PropertyFloat.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PropertyEnum.xaml.cs">
+      <DependentUpon>PropertyEnum.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\PropertyBP.xaml.cs">
       <DependentUpon>PropertyBP.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\PropertyDouble.xaml.cs">
       <DependentUpon>PropertyDouble.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PropertyCheck.xaml.cs">
+      <DependentUpon>PropertyCheck.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\PropertyInt.xaml.cs">
       <DependentUpon>PropertyInt.xaml</DependentUpon>
@@ -118,11 +133,27 @@
     <Compile Include="Controls\PropertyString.xaml.cs">
       <DependentUpon>PropertyString.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\PropertyECGSegment.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\PropertyFloat.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\PropertyEnum.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Controls\PropertyBP.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\PropertyDouble.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\PropertyCheck.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -223,6 +254,15 @@
     <Resource Include="Third Party\Icon_Progression_48.png" />
     <Resource Include="Third Party\Icon_Stack_48.png" />
     <Resource Include="Third Party\Icon_TrashBin_48.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Icon_Check_32.png" />
+    <Resource Include="Resources\Icon_Cross_32.png" />
+    <Resource Include="Resources\Icon_II.ico" />
+    <Resource Include="Resources\Icon_IISE.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icon_IISE.ico" />
   </ItemGroup>
   <Import Project="..\II Core\II_Core.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -31,6 +31,12 @@ namespace II.Scenario_Editor.Controls {
             get { return Step.Patient; }
         }
 
+        public void SetName (string name) {
+            Step.Name = name;
+            Label.Content = name;
+            Width = Math.Max (50, Label.ActualWidth + 8);
+        }
+
         public StepItem Duplicate () {
             StepItem dup = new StepItem ();
 

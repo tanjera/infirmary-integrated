@@ -5,7 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:II.Scenario_Editor.Controls"
              mc:Ignorable="d"
-             HorizontalAlignment="Stretch" Margin="2">
+             d:DesignHeight="50" d:DesignWidth="300"
+             HorizontalAlignment="Stretch" Margin="0">
 
     <Grid>
         <Grid.ColumnDefinitions>

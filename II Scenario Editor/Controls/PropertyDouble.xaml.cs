@@ -19,7 +19,8 @@ namespace II.Scenario_Editor.Controls {
         public Keys Key;
 
         public enum Keys {
-            T
+            T,
+            RRInspiratoryRatio, RRExpiratoryRatio
         }
 
         public event EventHandler<PropertyDoubleEventArgs> PropertyChanged;
@@ -29,11 +30,11 @@ namespace II.Scenario_Editor.Controls {
             public double Value;
         }
 
-        public PropertyDouble (int row, Keys key, double value, double increment, int minvalue, int maxvalue) {
+        public PropertyDouble () {
             InitializeComponent ();
+        }
 
-            this.SetValue (Grid.RowProperty, row);
-
+        public void Init (Keys key, double value, double increment, double minvalue, double maxvalue) {
             Key = key;
             switch (Key) {
                 default: break;
@@ -46,6 +47,12 @@ namespace II.Scenario_Editor.Controls {
             numValue.Maximum = maxvalue;
             numValue.ValueChanged += sendPropertyChange;
             numValue.LostFocus += sendPropertyChange;
+        }
+
+        public void Set (double value) {
+            numValue.ValueChanged -= sendPropertyChange;
+            numValue.Value = value;
+            numValue.ValueChanged += sendPropertyChange;
         }
 
         private void sendPropertyChange (object sender, EventArgs e) {

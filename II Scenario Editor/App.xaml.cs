@@ -6,11 +6,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Scenario_Editor {
+using II.Localization;
+
+namespace II.Scenario_Editor {
 
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application {
+        public static Languages Language = new Languages ();
     }
 }
