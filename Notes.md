@@ -9,7 +9,7 @@
 		- Installer_Windows properties
 
 	- Comment any testing/debugging shortcuts
-	- Clean and compile solution and installer
+	- Clean and compile solution and install
 	- Move .msi to Releases
 	- Create .zip of .exe folder in Releases
 	- GIT COMMIT; GIT PUSH

@@ -414,6 +414,43 @@ namespace II {
         }
     }
 
+    public class PulmonaryArtery_Rhythms {
+        public Values Value;
+        public PulmonaryArtery_Rhythms (Values v) { Value = v; }
+        public PulmonaryArtery_Rhythms () { Value = Values.Pulmonary_Artery; }
+
+        public static string LookupString (Values value) {
+            return String.Format ("RHYTHM:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
+        }
+
+        public enum Values {
+            Right_Atrium,
+            Right_Ventricle,
+            Pulmonary_Artery,
+            Pulmonary_Capillary_Wedge
+        }
+
+        public class Default_Vitals {
+            public int PSPMin, PSPMax, PDPMin, PDPMax;
+
+            public Default_Vitals (
+                    int pspMin, int pspMax, int pdpMin, int pdpMax) {
+                PSPMin = pspMin; PSPMax = pspMax; PDPMin = pdpMin; PDPMax = pdpMax;
+            }
+        }
+
+        public static Default_Vitals DefaultVitals (Values Rhythm) {
+            switch (Rhythm) {
+                case Values.Right_Atrium: return new Default_Vitals (5, 15, 3, 12);
+                case Values.Right_Ventricle: return new Default_Vitals (24, 26, 0, 3);
+
+                default:
+                case Values.Pulmonary_Artery: return new Default_Vitals (15, 25, 5, 15);
+                case Values.Pulmonary_Capillary_Wedge: return new Default_Vitals (8, 12, 6, 10);
+            }
+        }
+    }
+
     public class CardiacAxes {
         public Values Value;
         public CardiacAxes (Values v) { Value = v; }

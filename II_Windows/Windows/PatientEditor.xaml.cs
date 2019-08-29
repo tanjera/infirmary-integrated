@@ -102,6 +102,8 @@ namespace II_Windows {
             lblETCO2.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:EndTidalCO2"]);
             lblCVP.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:CentralVenousPressure"]);
             lblASBP.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:ArterialBloodPressure"]);
+            lblPACatheterPlacement.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:PulmonaryArteryCatheterPlacement"]);
+
             lblPSP.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:PulmonaryArteryPressure"]);
             lblICP.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:IntracranialPressure"]);
             lblIAP.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:IntraabdominalPressure"]);
@@ -134,7 +136,8 @@ namespace II_Windows {
                 cardiacAxes = new List<string> (),
                 respiratoryRhythms = new List<string> (),
                 intensityScale = new List<string> (),
-                fetalHeartRhythms = new List<string> ();
+                fetalHeartRhythms = new List<string> (),
+                pulmonaryArteryRhythms = new List<string> ();
 
             foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
                 cardiacRhythms.Add (App.Language.Dictionary [Cardiac_Rhythms.LookupString (v)]);
@@ -156,6 +159,10 @@ namespace II_Windows {
             foreach (FetalHeartDecelerations.Values v in Enum.GetValues (typeof (FetalHeartDecelerations.Values)))
                 fetalHeartRhythms.Add (App.Language.Dictionary [FetalHeartDecelerations.LookupString (v)]);
             listFHRRhythms.ItemsSource = fetalHeartRhythms;
+
+            foreach (PulmonaryArtery_Rhythms.Values v in Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)))
+                pulmonaryArteryRhythms.Add (App.Language.Dictionary [PulmonaryArtery_Rhythms.LookupString (v)]);
+            comboPACatheterPlacement.ItemsSource = pulmonaryArteryRhythms;
 
             // Populate status bar with updated version information and make visible
             BackgroundWorker bgw = new BackgroundWorker ();
@@ -508,21 +515,32 @@ namespace II_Windows {
                 FHRRhythms.Add ((FetalHeartDecelerations.Values)Enum.GetValues (typeof (FetalHeartDecelerations.Values)).GetValue (listFHRRhythms.Items.IndexOf (o)));
 
             App.Patient.UpdateParameters (
+                // Basic vital signs
                 (int)numHR.Value,
-                (int)numSPO2.Value,
-                (int)numRR.Value,
-                (int)numETCO2.Value,
-
-                (double)numT.Value,
-                (int)numCVP.Value,
 
                 (int)numNSBP.Value,
                 (int)numNDBP.Value,
                 Patient.CalculateMAP ((int)numNSBP.Value, (int)numNDBP.Value),
 
+                (int)numRR.Value,
+                (int)numSPO2.Value,
+                (double)numT.Value,
+
+                (Cardiac_Rhythms.Values)Enum.GetValues (typeof (Cardiac_Rhythms.Values)).GetValue (
+                    comboCardiacRhythm.SelectedIndex < 0 ? 0 : comboCardiacRhythm.SelectedIndex),
+                (Respiratory_Rhythms.Values)Enum.GetValues (typeof (Respiratory_Rhythms.Values)).GetValue (
+                    comboRespiratoryRhythm.SelectedIndex < 0 ? 0 : comboRespiratoryRhythm.SelectedIndex),
+
+                // Advanced hemodynamics
+                (int)numETCO2.Value,
+                (int)numCVP.Value,
+
                 (int)numASBP.Value,
                 (int)numADBP.Value,
                 Patient.CalculateMAP ((int)numASBP.Value, (int)numADBP.Value),
+
+                (PulmonaryArtery_Rhythms.Values)Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)).GetValue (
+                    comboPACatheterPlacement.SelectedIndex < 0 ? 0 : comboPACatheterPlacement.SelectedIndex),
 
                 (int)numPSP.Value,
                 (int)numPDP.Value,
@@ -531,9 +549,19 @@ namespace II_Windows {
                 (int)numICP.Value,
                 (int)numIAP.Value,
 
+                // Respiratory profile
+                chkMechanicallyVentilated.IsChecked ?? false,
+
+                (float)numInspiratoryRatio.Value,
+                (float)numExpiratoryRatio.Value,
+
+                // Cardiac Profile
                 (int)numPacemakerCaptureThreshold.Value,
                 chkPulsusParadoxus.IsChecked ?? false,
                 chkPulsusAlternans.IsChecked ?? false,
+
+                (CardiacAxes.Values)Enum.GetValues (typeof (CardiacAxes.Values)).GetValue (
+                    comboCardiacAxis.SelectedIndex < 0 ? 0 : comboCardiacAxis.SelectedIndex),
 
                 new double [] {
                 (double)numSTE_I.Value, (double)numSTE_II.Value, (double)numSTE_III.Value,
@@ -548,18 +576,7 @@ namespace II_Windows {
                 (double)numTWE_V4.Value, (double)numTWE_V5.Value, (double)numTWE_V6.Value
                 },
 
-                (Cardiac_Rhythms.Values)Enum.GetValues (typeof (Cardiac_Rhythms.Values)).GetValue (
-                    comboCardiacRhythm.SelectedIndex < 0 ? 0 : comboCardiacRhythm.SelectedIndex),
-                (CardiacAxes.Values)Enum.GetValues (typeof (CardiacAxes.Values)).GetValue (
-                    comboCardiacAxis.SelectedIndex < 0 ? 0 : comboCardiacAxis.SelectedIndex),
-                (Respiratory_Rhythms.Values)Enum.GetValues (typeof (Respiratory_Rhythms.Values)).GetValue (
-                    comboRespiratoryRhythm.SelectedIndex < 0 ? 0 : comboRespiratoryRhythm.SelectedIndex),
-
-                (float)numInspiratoryRatio.Value,
-                (float)numExpiratoryRatio.Value,
-
-                chkMechanicallyVentilated.IsChecked ?? false,
-
+                // Obstetric profile
                 (int)numFHR.Value,
                 (Patient.Intensity.Values)Enum.GetValues (typeof (Patient.Intensity.Values)).GetValue (
                     comboFHRVariability.SelectedIndex < 0 ? 0 : comboFHRVariability.SelectedIndex),
@@ -611,31 +628,37 @@ namespace II_Windows {
 
         private void FormUpdateFields (object sender, Patient.PatientEventArgs e) {
             if (e.EventType == Patient.PatientEventTypes.Vitals_Change) {
+                // Basic vital signs
                 numHR.Value = e.Patient.VS_Settings.HR;
-                numSPO2.Value = e.Patient.VS_Settings.SPO2;
-                numRR.Value = e.Patient.VS_Settings.RR;
-                numETCO2.Value = e.Patient.VS_Settings.ETCO2;
-                numT.Value = (decimal)e.Patient.VS_Settings.T;
-                numCVP.Value = e.Patient.VS_Settings.CVP;
-
                 numNSBP.Value = e.Patient.VS_Settings.NSBP;
                 numNDBP.Value = e.Patient.VS_Settings.NDBP;
+                numRR.Value = e.Patient.VS_Settings.RR;
+                numSPO2.Value = e.Patient.VS_Settings.SPO2;
+                numT.Value = (decimal)e.Patient.VS_Settings.T;
+                comboCardiacRhythm.SelectedIndex = (int)e.Patient.Cardiac_Rhythm.Value;
+                comboRespiratoryRhythm.SelectedIndex = (int)e.Patient.Respiratory_Rhythm.Value;
+
+                // Advanced hemodynamics
+                numETCO2.Value = e.Patient.VS_Settings.ETCO2;
+                numCVP.Value = e.Patient.VS_Settings.CVP;
                 numASBP.Value = e.Patient.VS_Settings.ASBP;
                 numADBP.Value = e.Patient.VS_Settings.ADBP;
+                comboPACatheterPlacement.SelectedIndex = (int)e.Patient.PulmonaryArtery_Placement.Value;
                 numPSP.Value = e.Patient.VS_Settings.PSP;
                 numPDP.Value = e.Patient.VS_Settings.PDP;
-
                 numICP.Value = e.Patient.VS_Settings.ICP;
                 numIAP.Value = e.Patient.VS_Settings.IAP;
 
-                comboCardiacRhythm.SelectedIndex = (int)e.Patient.Cardiac_Rhythm.Value;
-                comboCardiacAxis.SelectedIndex = (int)e.Patient.Cardiac_Axis.Value;
-
+                // Respiratory profile
+                chkMechanicallyVentilated.IsChecked = e.Patient.Mechanically_Ventilated;
                 numInspiratoryRatio.Value = (decimal)e.Patient.VS_Settings.RR_IE_I;
                 numExpiratoryRatio.Value = (decimal)e.Patient.VS_Settings.RR_IE_E;
-                comboRespiratoryRhythm.SelectedIndex = (int)e.Patient.Respiratory_Rhythm.Value;
 
+                // Cardiac profile
                 numPacemakerCaptureThreshold.Value = e.Patient.Pacemaker_Threshold;
+                chkPulsusParadoxus.IsChecked = e.Patient.Pulsus_Paradoxus;
+                chkPulsusAlternans.IsChecked = e.Patient.Pulsus_Alternans;
+                comboCardiacAxis.SelectedIndex = (int)e.Patient.Cardiac_Axis.Value;
 
                 numSTE_I.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_I];
                 numSTE_II.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_II];
@@ -663,6 +686,7 @@ namespace II_Windows {
                 numTWE_V5.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V5];
                 numTWE_V6.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V6];
 
+                // Obstetric profile
                 numFHR.Value = e.Patient.FHR;
                 numUCFrequency.Value = e.Patient.UC_Frequency;
                 numUCDuration.Value = e.Patient.UC_Duration;
@@ -687,16 +711,16 @@ namespace II_Windows {
             Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
                 (Cardiac_Rhythms.Values)ev.GetValue (si));
 
-            numHR.Value = (int)Utility.Clamp ((double)numHR.Value, v.HRMin, v.HRMax);
-            numRR.Value = (int)Utility.Clamp ((double)numRR.Value, v.RRMin, v.RRMax);
-            numSPO2.Value = (int)Utility.Clamp ((double)numSPO2.Value, v.SPO2Min, v.SPO2Max);
-            numETCO2.Value = (int)Utility.Clamp ((double)numETCO2.Value, v.ETCO2Min, v.ETCO2Max);
-            numNSBP.Value = (int)Utility.Clamp ((double)numNSBP.Value, v.SBPMin, v.SBPMax);
-            numNDBP.Value = (int)Utility.Clamp ((double)numNDBP.Value, v.DBPMin, v.DBPMax);
-            numASBP.Value = (int)Utility.Clamp ((double)numASBP.Value, v.SBPMin, v.SBPMax);
-            numADBP.Value = (int)Utility.Clamp ((double)numADBP.Value, v.DBPMin, v.DBPMax);
-            numPSP.Value = (int)Utility.Clamp ((double)numPSP.Value, v.PSPMin, v.PSPMax);
-            numPDP.Value = (int)Utility.Clamp ((double)numPDP.Value, v.PDPMin, v.PDPMax);
+            numHR.Value = (int)Utility.Clamp ((double)(numHR.Value ?? 0), v.HRMin, v.HRMax);
+            numNSBP.Value = (int)Utility.Clamp ((double)(numNSBP.Value ?? 0), v.SBPMin, v.SBPMax);
+            numNDBP.Value = (int)Utility.Clamp ((double)(numNDBP.Value ?? 0), v.DBPMin, v.DBPMax);
+            numRR.Value = (int)Utility.Clamp ((double)(numRR.Value ?? 0), v.RRMin, v.RRMax);
+            numSPO2.Value = (int)Utility.Clamp ((double)(numSPO2.Value ?? 0), v.SPO2Min, v.SPO2Max);
+            numETCO2.Value = (int)Utility.Clamp ((double)(numETCO2.Value ?? 0), v.ETCO2Min, v.ETCO2Max);
+            numASBP.Value = (int)Utility.Clamp ((double)(numASBP.Value ?? 0), v.SBPMin, v.SBPMax);
+            numADBP.Value = (int)Utility.Clamp ((double)(numADBP.Value ?? 0), v.DBPMin, v.DBPMax);
+            numPSP.Value = (int)Utility.Clamp ((double)(numPSP.Value ?? 0), v.PSPMin, v.PSPMax);
+            numPDP.Value = (int)Utility.Clamp ((double)(numPDP.Value ?? 0), v.PDPMin, v.PDPMax);
         }
 
         private void OnRespiratoryRhythmSelected (object sender, SelectionChangedEventArgs e) {
@@ -711,9 +735,25 @@ namespace II_Windows {
             Respiratory_Rhythms.Default_Vitals v = Respiratory_Rhythms.DefaultVitals (
                 (Respiratory_Rhythms.Values)ev.GetValue (si));
 
-            numRR.Value = (int)Utility.Clamp ((double)numRR.Value, v.RRMin, v.RRMax);
-            numInspiratoryRatio.Value = (int)Utility.Clamp ((double)numInspiratoryRatio.Value, v.RR_IE_I_Min, v.RR_IE_I_Max);
-            numExpiratoryRatio.Value = (int)Utility.Clamp ((double)numExpiratoryRatio.Value, v.RR_IE_E_Min, v.RR_IE_E_Max);
+            numRR.Value = (int)Utility.Clamp ((double)(numRR.Value ?? 0), v.RRMin, v.RRMax);
+            numInspiratoryRatio.Value = (int)Utility.Clamp ((double)(numInspiratoryRatio.Value ?? 0), v.RR_IE_I_Min, v.RR_IE_I_Max);
+            numExpiratoryRatio.Value = (int)Utility.Clamp ((double)(numExpiratoryRatio.Value ?? 0), v.RR_IE_E_Min, v.RR_IE_E_Max);
+        }
+
+        private void OnPulmonaryArteryRhythmSelected (object sender, SelectionChangedEventArgs e) {
+            if (App.Patient == null)
+                return;
+
+            int si = comboPACatheterPlacement.SelectedIndex;
+            Array ev = Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values));
+            if (si < 0 || si > ev.Length - 1)
+                return;
+
+            PulmonaryArtery_Rhythms.Default_Vitals v = PulmonaryArtery_Rhythms.DefaultVitals (
+                (PulmonaryArtery_Rhythms.Values)ev.GetValue (si));
+
+            numPSP.Value = (int)Utility.Clamp ((double)(numPSP.Value ?? 0), v.PSPMin, v.PSPMax);
+            numPDP.Value = (int)Utility.Clamp ((double)(numPDP.Value ?? 0), v.PDPMin, v.PDPMax);
         }
 
         private void OnClosed (object sender, EventArgs e) => RequestExit ();

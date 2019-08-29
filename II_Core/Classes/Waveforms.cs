@@ -113,6 +113,79 @@ namespace II.Rhythm {
             return thisBeat;
         }
 
+        public static List<Point> RV_Rhythm (Patient _P, double _Amplitude) {
+            double _Portion = _P.GetHR_Seconds / 3;
+
+            // Adjust for intrathoracic pressure
+            if (_P.Mechanically_Ventilated)
+                _Amplitude *= _P.Respiration_Inflated ? 0.7f : 1f;
+            else
+                _Amplitude *= !_P.Respiration_Inflated ? 0.85f : 1f;
+
+            if (_P.Cardiac_Rhythm.AberrantBeat)                                 // Aberrant beat effect on waveform (50%)
+                _Amplitude *= 0.5f;
+
+            List<Point> thisBeat = new List<Point> ();
+            thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.7f * _Amplitude, 0f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, -0.05f * _Amplitude, 0f * _Amplitude, Last (thisBeat)));
+            return thisBeat;
+        }
+
+        public static List<Point> PA_Rhythm (Patient _P, double _Amplitude) {
+            double _Portion = _P.GetHR_Seconds / 4;
+
+            // Adjust for intrathoracic pressure
+            if (_P.Mechanically_Ventilated)
+                _Amplitude *= _P.Respiration_Inflated ? 0.7f : 1f;
+            else
+                _Amplitude *= !_P.Respiration_Inflated ? 0.85f : 1f;
+
+            if (_P.Cardiac_Rhythm.AberrantBeat)                                 // Aberrant beat effect on waveform (50%)
+                _Amplitude *= 0.5f;
+
+            List<Point> thisBeat = new List<Point> ();
+            thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.6f * _Amplitude, 0.5f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.3f * _Amplitude, 0.15f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.05f * _Amplitude, 0f, Last (thisBeat)));
+            return thisBeat;
+        }
+
+        public static List<Point> PCW_Rhythm (Patient _P, double _Amplitude) {
+            double _Portion = _P.GetHR_Seconds / 4;
+
+            // Adjust for intrathoracic pressure
+            if (_P.Mechanically_Ventilated)
+                _Amplitude *= _P.Respiration_Inflated ? 0.7f : 1f;
+            else
+                _Amplitude *= !_P.Respiration_Inflated ? 0.85f : 1f;
+
+            if (_P.Cardiac_Rhythm.AberrantBeat)                                 // Aberrant beat effect on waveform (50%)
+                _Amplitude *= 0.5f;
+
+            List<Point> thisBeat = new List<Point> ();
+            thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.15f * _Amplitude, 0.1f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.075f * _Amplitude, 0.0375f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.0125f * _Amplitude, 0f, Last (thisBeat)));
+            return thisBeat;
+        }
+
+        public static List<Point> IABP_Balloon_Rhythm (Patient _P, double _Amplitude) {
+            double _Portion = _P.GetHR_Seconds / 20;
+
+            List<Point> thisBeat = new List<Point> ();
+            thisBeat = Concatenate (thisBeat, Line (_Portion * 3, 0f, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion, _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion * 2, _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Curve (_Portion * 10, 0.5f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion, -0.3f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion, -0.3f * _Amplitude, Last (thisBeat)));
+            thisBeat = Concatenate (thisBeat, Line (_Portion * 2, 0f, Last (thisBeat)));
+            return thisBeat;
+        }
+
         public static List<Point> ICP_Rhythm (Patient _P, double _Amplitude) {
             double _Portion = _P.GetHR_Seconds / 3;
 
@@ -147,42 +220,6 @@ namespace II.Rhythm {
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Concatenate (thisBeat, Curve (_P.GetHR_Seconds, 0.2f * _Amplitude, 0f, Last (thisBeat)));
-            return thisBeat;
-        }
-
-        public static List<Point> PA_Rhythm (Patient _P, double _Amplitude) {
-            /* ABP during normal sinus perfusion is similar to a sine wave leaning right with dicrotic notch
-		     */
-            double _Portion = _P.GetHR_Seconds / 4;
-
-            // Adjust for intrathoracic pressure
-            if (_P.Mechanically_Ventilated)
-                _Amplitude *= _P.Respiration_Inflated ? 0.7f : 1f;
-            else
-                _Amplitude *= !_P.Respiration_Inflated ? 0.85f : 1f;
-
-            if (_P.Cardiac_Rhythm.AberrantBeat)                                 // Aberrant beat effect on waveform (50%)
-                _Amplitude *= 0.5f;
-
-            List<Point> thisBeat = new List<Point> ();
-            thisBeat = Concatenate (thisBeat, Line (_Portion, 0f, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.6f * _Amplitude, 0.5f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.3f * _Amplitude, 0.15f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_Portion, 0.05f * _Amplitude, 0f, Last (thisBeat)));
-            return thisBeat;
-        }
-
-        public static List<Point> IABP_Balloon_Rhythm (Patient _P, double _Amplitude) {
-            double _Portion = _P.GetHR_Seconds / 20;
-
-            List<Point> thisBeat = new List<Point> ();
-            thisBeat = Concatenate (thisBeat, Line (_Portion * 3, 0f, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Line (_Portion, _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Line (_Portion * 2, _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Curve (_Portion * 10, 0.5f * _Amplitude, 0.4f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Line (_Portion, -0.3f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Line (_Portion, -0.3f * _Amplitude, Last (thisBeat)));
-            thisBeat = Concatenate (thisBeat, Line (_Portion * 2, 0f, Last (thisBeat)));
             return thisBeat;
         }
 

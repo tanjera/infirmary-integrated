@@ -6,14 +6,14 @@ using System.Text;
 
 namespace II {
     public static class Utility {
-        public const string Version = "1.0";
+        public const string Version = "1.0.5";
 
         public static bool IsNewerVersion (string current, string comparison) {
             string [] curSplit = current.Split ('.'),
                     compSplit = comparison.Split ('.');
 
             for (int i = 0; i < compSplit.Length; i++) {
-                if ((i < curSplit.Length ? int.Parse (curSplit [i]) : 0) <= int.Parse (compSplit [i]))
+                if ((i < curSplit.Length ? int.Parse (curSplit [i]) : 0) < int.Parse (compSplit [i]))
                     return true;
                 else if ((i < curSplit.Length ? int.Parse (curSplit [i]) : 0) > int.Parse (compSplit [i]))
                     return false;
