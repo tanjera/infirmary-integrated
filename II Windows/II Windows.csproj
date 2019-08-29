@@ -291,6 +291,6 @@
   <ItemGroup>
     <Resource Include="Icon_Infirmary.ico" />
   </ItemGroup>
-  <Import Project="..\II_Core\II_Core.projitems" Label="Shared" />
+  <Import Project="..\II Core\II_Core.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

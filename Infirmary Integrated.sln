@@ -10,20 +10,20 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "II_Core", "II_Core\II_Core.shproj", "{D6A13684-612C-49D6-B8B3-B9720D585A71}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "II Core", "II Core\II Core.shproj", "{D6A13684-612C-49D6-B8B3-B9720D585A71}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II_MacOS", "II_MacOS\II_MacOS.csproj", "{9F02459F-A834-4AF4-8255-076508C8AC2D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II MacOS", "II MacOS\II MacOS.csproj", "{9F02459F-A834-4AF4-8255-076508C8AC2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II_Windows", "II_Windows\II_Windows.csproj", "{F66C5A84-D2A2-48FD-9E4A-984AEB4730AF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II Windows", "II Windows\II Windows.csproj", "{F66C5A84-D2A2-48FD-9E4A-984AEB4730AF}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer_Windows", "Installer_Windows\Installer_Windows.vdproj", "{135ECE45-2C14-49EC-98C7-20A0AA110B70}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer, Windows", "Installer, Windows\Installer_Windows.vdproj", "{135ECE45-2C14-49EC-98C7-20A0AA110B70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II_Linux", "II_Linux\II_Linux.csproj", "{14D4C603-47F0-4028-916C-62770D9C7E1C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II Linux", "II Linux\II Linux.csproj", "{14D4C603-47F0-4028-916C-62770D9C7E1C}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		II_Core\II_Core.projitems*{d6a13684-612c-49d6-b8b3-b9720d585a71}*SharedItemsImports = 13
-		II_Core\II_Core.projitems*{f66c5a84-d2a2-48fd-9e4a-984aeb4730af}*SharedItemsImports = 4
+		II Core\II_Core.projitems*{d6a13684-612c-49d6-b8b3-b9720d585a71}*SharedItemsImports = 13
+		II Core\II_Core.projitems*{f66c5a84-d2a2-48fd-9e4a-984aeb4730af}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
