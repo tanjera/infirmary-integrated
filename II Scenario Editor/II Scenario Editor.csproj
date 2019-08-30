@@ -165,7 +165,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="Controls\StepItem.cs" />
+    <Compile Include="Controls\ItemProgression.cs" />
+    <Compile Include="Controls\ItemStep.cs" />
     <Compile Include="Windows\About.cs">
       <SubType>Form</SubType>
     </Compile>

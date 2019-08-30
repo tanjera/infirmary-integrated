@@ -197,6 +197,7 @@
                                     <ii:PropertyInt x:Name="pintETCO2" />
                                     <ii:PropertyInt x:Name="pintCVP" />
                                     <ii:PropertyBP x:Name="pbpABP" />
+                                    <ii:PropertyEnum x:Name="penmPACatheterRhythm" />
                                     <ii:PropertyBP x:Name="pbpPBP" />
                                     <ii:PropertyInt x:Name="pintICP" />
                                     <ii:PropertyInt x:Name="pintIAP" />

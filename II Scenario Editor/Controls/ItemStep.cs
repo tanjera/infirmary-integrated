@@ -15,11 +15,12 @@ using System.Windows.Shapes;
 
 namespace II.Scenario_Editor.Controls {
 
-    public sealed class StepItem : Shape {
+    public sealed class ItemStep : Shape {
         public Scenario.Step Step = new Scenario.Step ();
         public Label Label = new Label ();
+        public ItemProgression Progression;
 
-        public StepItem () {
+        public ItemStep () {
             Label.IsHitTestVisible = false;
         }
 
@@ -34,16 +35,29 @@ namespace II.Scenario_Editor.Controls {
         public void SetName (string name) {
             Step.Name = name;
             Label.Content = name;
+
             Width = Math.Max (50, Label.ActualWidth + 8);
+            if (Progression != null)
+                Canvas.SetLeft (Progression, Canvas.GetLeft (this) + this.Width);
         }
 
-        public StepItem Duplicate () {
-            StepItem dup = new StepItem ();
-
+        public ItemStep Duplicate () {
+            ItemStep dup = new ItemStep ();
             dup.Width = this.Width;
             dup.Height = this.Height;
+
+            ItemProgression prog = new ItemProgression ();
+            prog.Width = Progression != null ? Progression.Width : 30;
+            prog.Height = Progression != null ? Progression.Height : 30;
+            prog.Stroke = Brushes.Black;
+            prog.Fill = Brushes.LightSkyBlue;
+            dup.Progression = prog;
+
             Canvas.SetLeft (dup, Canvas.GetLeft (this) + 10);
             Canvas.SetTop (dup, Canvas.GetTop (this) + 10);
+
+            Canvas.SetLeft (prog, Canvas.GetLeft (this) + 10 + this.ActualWidth);
+            Canvas.SetTop (prog, Canvas.GetTop (this) + 10);
 
             dup.Label.Content = this.Label.Content?.ToString ();
 

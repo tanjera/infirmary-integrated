@@ -33,7 +33,13 @@ namespace II.Scenario_Editor {
         private int selectedStep = -1,
             selectedProgression = -1;
 
-        private List<StepItem> Steps = new List<StepItem> ();
+        private List<ItemStep> Steps = new List<ItemStep> ();
+
+        private Point DefaultSize_StepItem = new Point (50, 50);
+        private Point DefaultSize_Progression = new Point (50, 50);
+
+        private Brush Fill = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#dddddd")),
+            Stroke = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#555555"));
 
         public Editor () {
             InitializeComponent ();
@@ -41,60 +47,36 @@ namespace II.Scenario_Editor {
             canvasDesigner = cnvsDesigner;
         }
 
-        private void addStep (StepItem si = null) {
-            if (si == null)
-                si = new StepItem ();
-
-            si.Height = 50;
-            si.Width = 50;
-            si.Stroke = Brushes.Black;
-            si.Fill = Brushes.LightGray;
-            si.MouseLeftButtonDown += UIElementMouseLeftButtonDown;
-            si.MouseLeftButtonUp += UIElementMouseLeftButtonUp;
-            si.MouseMove += UIElementMouseMove;
-
-            Steps.Add (si);
-            canvasDesigner.Children.Add (si);
-            canvasDesigner.Children.Add (si.Label);
-
-            Canvas.SetLeft (si, (cnvsDesigner.ActualWidth / 2) - (si.Width / 2));
-            Canvas.SetTop (si, (cnvsDesigner.ActualHeight / 2) - (si.Height / 2));
-            Canvas.SetLeft (si.Label, (cnvsDesigner.ActualWidth / 2) - (si.Width / 2));
-            Canvas.SetTop (si.Label, (cnvsDesigner.ActualHeight / 2) - (si.Height / 2));
-
-            selectedElement = si;
-            selectedStep = Steps.FindIndex (o => { return o == selectedElement; });
-            si.SetName (selectedStep.ToString ("000"));
-
-            initPropertiesView ();
-        }
-
-        private void initPropertiesView () {
+        private void setPropertiesView () {
             if (selectedElement == null)
                 return;
 
-            if (selectedElement is StepItem) {
+            if (selectedElement is ItemStep) {
                 selectedStep = Steps.FindIndex (o => { return o == selectedElement; });
                 lblProperties.Content = String.Concat ("Edit Step: #", selectedStep.ToString ("000"));
 
-                StepItem si = (StepItem)selectedElement;
+                ItemStep si = (ItemStep)selectedElement;
                 scrlPropertiesPatient.Visibility = Visibility.Visible;
 
                 // Populate enum string lists for readable display
                 List<string> cardiacRhythms = new List<string> (),
-                    cardiacAxes = new List<string> (),
                     respiratoryRhythms = new List<string> (),
+                    pulmonaryRhythms = new List<string> (),
+                    cardiacAxes = new List<string> (),
                     intensityScale = new List<string> (),
                     fetalHeartRhythms = new List<string> ();
 
                 foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
                     cardiacRhythms.Add (App.Language.Dictionary [Cardiac_Rhythms.LookupString (v)]);
 
-                foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
-                    cardiacAxes.Add (App.Language.Dictionary [Cardiac_Axes.LookupString (v)]);
-
                 foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
                     respiratoryRhythms.Add (App.Language.Dictionary [Respiratory_Rhythms.LookupString (v)]);
+
+                foreach (PulmonaryArtery_Rhythms.Values v in Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)))
+                    pulmonaryRhythms.Add (App.Language.Dictionary [PulmonaryArtery_Rhythms.LookupString (v)]);
+
+                foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
+                    cardiacAxes.Add (App.Language.Dictionary [Cardiac_Axes.LookupString (v)]);
 
                 // Initiate controls for editing Patient values
                 pstrName.Init (PropertyString.Keys.Name, si.Step.Name ?? "");
@@ -145,6 +127,12 @@ namespace II.Scenario_Editor {
                     5, 0, 200);
                 pbpABP.PropertyChanged += updateProperty;
 
+                penmPACatheterRhythm.Init (PropertyEnum.Keys.PACatheter_Rhythms,
+                    Enum.GetNames (typeof (PulmonaryArtery_Rhythms.Values)),
+                    pulmonaryRhythms, (int)si.Patient.PulmonaryArtery_Placement.Value);
+                penmPACatheterRhythm.PropertyChanged += updateProperty;
+                penmPACatheterRhythm.PropertyChanged += updatePACatheterRhythm;
+
                 pbpPBP.Init (PropertyBP.Keys.PSP,
                     si.Patient.VS_Settings.PSP, si.Patient.VS_Settings.PDP,
                     5, 0, 200,
@@ -192,11 +180,11 @@ namespace II.Scenario_Editor {
             if (selectedElement == null)
                 return;
 
-            if (selectedElement is StepItem) {
+            if (selectedElement is ItemStep) {
                 selectedStep = Steps.FindIndex (o => { return o == selectedElement; });
                 lblProperties.Content = String.Concat ("Edit Step: #", selectedStep.ToString ("000"));
 
-                StepItem si = (StepItem)selectedElement;
+                ItemStep si = (ItemStep)selectedElement;
                 scrlPropertiesPatient.Visibility = Visibility.Visible;
 
                 // Update all controls with Patient values
@@ -228,8 +216,8 @@ namespace II.Scenario_Editor {
         }
 
         private void updateProperty (object sender, PropertyString.PropertyStringEventArgs e) {
-            if (selectedElement is StepItem) {
-                StepItem si = (StepItem)selectedElement;
+            if (selectedElement is ItemStep) {
+                ItemStep si = (ItemStep)selectedElement;
                 switch (e.Key) {
                     default: break;
                     case PropertyString.Keys.Name:
@@ -242,8 +230,8 @@ namespace II.Scenario_Editor {
         }
 
         private void updateProperty (object sender, PropertyInt.PropertyIntEventArgs e) {
-            if (selectedElement is StepItem) {
-                StepItem si = (StepItem)selectedElement;
+            if (selectedElement is ItemStep) {
+                ItemStep si = (ItemStep)selectedElement;
                 switch (e.Key) {
                     default: break;
                     case PropertyInt.Keys.HR: si.Patient.HR = e.Value; break;
@@ -259,8 +247,8 @@ namespace II.Scenario_Editor {
         }
 
         private void updateProperty (object sender, PropertyDouble.PropertyDoubleEventArgs e) {
-            if (selectedElement is StepItem) {
-                StepItem si = (StepItem)selectedElement;
+            if (selectedElement is ItemStep) {
+                ItemStep si = (ItemStep)selectedElement;
                 switch (e.Key) {
                     default: break;
                     case PropertyDouble.Keys.T: si.Patient.T = e.Value; break;
@@ -269,8 +257,8 @@ namespace II.Scenario_Editor {
         }
 
         private void updateProperty (object sender, PropertyFloat.PropertyFloatEventArgs e) {
-            if (selectedElement is StepItem) {
-                StepItem si = (StepItem)selectedElement;
+            if (selectedElement is ItemStep) {
+                ItemStep si = (ItemStep)selectedElement;
                 switch (e.Key) {
                     default: break;
                     case PropertyFloat.Keys.RRInspiratoryRatio: si.Patient.RR_IE_I = e.Value; break;
@@ -280,8 +268,8 @@ namespace II.Scenario_Editor {
         }
 
         private void updateProperty (object sender, PropertyBP.PropertyIntEventArgs e) {
-            if (selectedElement is StepItem) {
-                StepItem si = (StepItem)selectedElement;
+            if (selectedElement is ItemStep) {
+                ItemStep si = (ItemStep)selectedElement;
                 switch (e.Key) {
                     default: break;
                     case PropertyBP.Keys.NSBP: si.Patient.NSBP = e.Value; break;
@@ -298,8 +286,8 @@ namespace II.Scenario_Editor {
         }
 
         private void updateProperty (object sender, PropertyEnum.PropertyEnumEventArgs e) {
-            if (selectedElement is StepItem) {
-                StepItem si = (StepItem)selectedElement;
+            if (selectedElement is ItemStep) {
+                ItemStep si = (ItemStep)selectedElement;
                 switch (e.Key) {
                     default: break;
 
@@ -314,13 +302,17 @@ namespace II.Scenario_Editor {
                     case PropertyEnum.Keys.Respiratory_Rhythms:
                         si.Patient.Respiratory_Rhythm.Value = (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), e.Value);
                         break;
+
+                    case PropertyEnum.Keys.PACatheter_Rhythms:
+                        si.Patient.PulmonaryArtery_Placement.Value = (PulmonaryArtery_Rhythms.Values)Enum.Parse (typeof (PulmonaryArtery_Rhythms.Values), e.Value);
+                        break;
                 }
             }
         }
 
         private void updateProperty (object sender, PropertyCheck.PropertyCheckEventArgs e) {
-            if (selectedElement is StepItem) {
-                StepItem si = (StepItem)selectedElement;
+            if (selectedElement is ItemStep) {
+                ItemStep si = (ItemStep)selectedElement;
                 switch (e.Key) {
                     default: break;
                     case PropertyCheck.Keys.PulsusParadoxus: si.Patient.Pulsus_Paradoxus = e.Value; break;
@@ -331,8 +323,8 @@ namespace II.Scenario_Editor {
         }
 
         private void updateProperty (object sender, PropertyECGSegment.PropertyECGEventArgs e) {
-            if (selectedElement is StepItem) {
-                StepItem si = (StepItem)selectedElement;
+            if (selectedElement is ItemStep) {
+                ItemStep si = (ItemStep)selectedElement;
                 switch (e.Key) {
                     default: break;
                     case PropertyECGSegment.Keys.STElevation: si.Patient.ST_Elevation = e.Values; break;
@@ -345,8 +337,8 @@ namespace II.Scenario_Editor {
             if (!chkClampVitals.IsChecked ?? false || selectedElement == null)
                 return;
 
-            if (selectedElement is StepItem) {
-                Patient p = ((StepItem)selectedElement).Patient;
+            if (selectedElement is ItemStep) {
+                Patient p = ((ItemStep)selectedElement).Patient;
 
                 Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
                     (Cardiac_Rhythms.Values)Enum.Parse (typeof (Cardiac_Rhythms.Values), e.Value));
@@ -370,8 +362,8 @@ namespace II.Scenario_Editor {
             if (!chkClampVitals.IsChecked ?? false || selectedElement == null)
                 return;
 
-            if (selectedElement is StepItem) {
-                Patient p = ((StepItem)selectedElement).Patient;
+            if (selectedElement is ItemStep) {
+                Patient p = ((ItemStep)selectedElement).Patient;
 
                 Respiratory_Rhythms.Default_Vitals v = Respiratory_Rhythms.DefaultVitals (
                     (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), e.Value));
@@ -384,6 +376,80 @@ namespace II.Scenario_Editor {
             }
         }
 
+        private void updatePACatheterRhythm (object sender, PropertyEnum.PropertyEnumEventArgs e) {
+            if (selectedElement == null)
+                return;
+
+            if (selectedElement is ItemStep) {
+                Patient p = ((ItemStep)selectedElement).Patient;
+
+                PulmonaryArtery_Rhythms.Default_Vitals v = PulmonaryArtery_Rhythms.DefaultVitals (
+                    (PulmonaryArtery_Rhythms.Values)Enum.Parse (typeof (PulmonaryArtery_Rhythms.Values), e.Value));
+
+                p.PSP = (int)Utility.Clamp ((double)p.PSP, v.PSPMin, v.PSPMax);
+                p.PDP = (int)Utility.Clamp ((double)p.PDP, v.PDPMin, v.PDPMax);
+
+                updatePropertiesView ();
+            }
+        }
+
+        private void addStep (ItemStep ist = null, ItemProgression ip = null) {
+            if (ist == null)
+                ist = new ItemStep ();
+
+            if (ip == null)
+                ip = new ItemProgression ();
+
+            // Tie the two elements together
+            ist.Progression = ip;
+            ip.Step = ist;
+
+            // Set ItemStep properties
+            ist.Width = DefaultSize_StepItem.X;
+            ist.Height = DefaultSize_StepItem.Y;
+            ist.Fill = Fill;
+            ist.Stroke = Stroke;
+            ist.StrokeThickness = 1.0;
+            ist.MouseLeftButtonDown += UIElementMouseLeftButtonDown;
+            ist.MouseLeftButtonUp += UIElementMouseLeftButtonUp;
+            ist.MouseMove += UIElementMouseMove;
+
+            // Set ItemProgression properties
+            ip.Width = DefaultSize_Progression.X;
+            ip.Height = DefaultSize_Progression.Y;
+            ip.Fill = Fill;
+            ip.Stroke = Stroke;
+            ip.StrokeThickness = 0.75;
+            ip.MouseLeftButtonDown += UIElementMouseLeftButtonDown;
+            ip.MouseLeftButtonUp += UIElementMouseLeftButtonUp;
+
+            // Add to lists and display elements
+            Steps.Add (ist);
+            canvasDesigner.Children.Add (ist);
+            canvasDesigner.Children.Add (ist.Label);
+            canvasDesigner.Children.Add (ip);
+
+            // Set positions in visual space
+            Canvas.SetLeft (ist, (cnvsDesigner.ActualWidth / 2) - (ist.Width / 2));
+            Canvas.SetTop (ist, (cnvsDesigner.ActualHeight / 2) - (ist.Height / 2));
+            Canvas.SetLeft (ist.Label, (cnvsDesigner.ActualWidth / 2) - (ist.Width / 2));
+            Canvas.SetTop (ist.Label, (cnvsDesigner.ActualHeight / 2) - (ist.Height / 2));
+            Canvas.SetLeft (ip, (cnvsDesigner.ActualWidth / 2) + (ist.Width / 2));
+            Canvas.SetTop (ip, (cnvsDesigner.ActualHeight / 2) - (ip.Height / 2));
+
+            // Select the added step, give a default name by its index
+            selectedElement = ist;
+            selectedStep = Steps.FindIndex (o => { return o == selectedElement; });
+            ist.SetName (selectedStep.ToString ("000"));
+
+            // Refresh the Properties View with the newly selected step
+            setPropertiesView ();
+        }
+
+        private void addProgression (ItemProgression pfrom, ItemStep sto) {
+            throw new NotImplementedException ();
+        }
+
         private void ButtonAddStep_Click (object sender, RoutedEventArgs e)
             => addStep ();
 
@@ -391,9 +457,10 @@ namespace II.Scenario_Editor {
             if (selectedElement == null)
                 return;
 
-            if (selectedElement is StepItem) {
-                StepItem orig = (StepItem)selectedElement;
-                addStep (orig.Duplicate ());
+            if (selectedElement is ItemStep) {
+                ItemStep orig = (ItemStep)selectedElement;
+                ItemStep dupe = orig.Duplicate ();
+                addStep (dupe, dupe.Progression);
             }
         }
 
@@ -408,9 +475,9 @@ namespace II.Scenario_Editor {
             if (selectedElement == null)
                 return;
 
-            if (selectedElement is StepItem) {
+            if (selectedElement is ItemStep) {
                 copiedPatient = new Patient ();
-                copiedPatient.Load_Process (((StepItem)selectedElement).Patient.Save ());
+                copiedPatient.Load_Process (((ItemStep)selectedElement).Patient.Save ());
             }
         }
 
@@ -418,8 +485,8 @@ namespace II.Scenario_Editor {
             if (selectedElement == null)
                 return;
 
-            if (selectedElement is StepItem && copiedPatient != null) {
-                ((StepItem)selectedElement).Step.Patient.Load_Process (copiedPatient.Save ());
+            if (selectedElement is ItemStep && copiedPatient != null) {
+                ((ItemStep)selectedElement).Step.Patient.Load_Process (copiedPatient.Save ());
             }
 
             updatePropertiesView ();
@@ -436,10 +503,12 @@ namespace II.Scenario_Editor {
             Mouse.Capture (selectedElement);
             mouseCaptured = true;
 
-            xShape = Canvas.GetLeft (selectedElement);
-            yShape = Canvas.GetTop (selectedElement);
-            xCanvas = e.GetPosition (LayoutRoot).X;
-            yCanvas = e.GetPosition (LayoutRoot).Y;
+            if (selectedElement is ItemStep) {
+                xShape = Canvas.GetLeft (selectedElement);
+                yShape = Canvas.GetTop (selectedElement);
+                xCanvas = e.GetPosition (LayoutRoot).X;
+                yCanvas = e.GetPosition (LayoutRoot).Y;
+            }
 
             updatePropertiesView ();
         }
@@ -447,10 +516,17 @@ namespace II.Scenario_Editor {
         private void UIElementMouseLeftButtonUp (object sender, MouseButtonEventArgs e) {
             Mouse.Capture (null);
             mouseCaptured = false;
+
+            if (selectedElement is ItemProgression) {
+                if (Mouse.DirectlyOver is ItemProgression)
+                    addProgression (selectedElement as ItemProgression, ((ItemProgression)Mouse.DirectlyOver).Step);
+                else if (Mouse.DirectlyOver is ItemStep)
+                    addProgression (selectedElement as ItemProgression, (ItemStep)Mouse.DirectlyOver);
+            }
         }
 
         private void UIElementMouseMove (object sender, MouseEventArgs e) {
-            if (mouseCaptured) {
+            if (mouseCaptured && selectedElement is ItemStep) {
                 double x = e.GetPosition (LayoutRoot).X;
                 double y = e.GetPosition (LayoutRoot).Y;
                 xShape += x - xCanvas;
@@ -460,9 +536,13 @@ namespace II.Scenario_Editor {
                 Canvas.SetLeft (selectedElement, Utility.Clamp (xShape, 0, canvasDesigner.ActualWidth - (sender as Shape).Width));
                 Canvas.SetTop (selectedElement, Utility.Clamp (yShape, 0, canvasDesigner.ActualHeight - (sender as Shape).Height));
 
-                if (selectedElement is StepItem) {
-                    Canvas.SetLeft (((StepItem)selectedElement).Label, Utility.Clamp (xShape, 0, canvasDesigner.ActualWidth - (sender as Shape).Width));
-                    Canvas.SetTop (((StepItem)selectedElement).Label, Utility.Clamp (yShape, 0, canvasDesigner.ActualHeight - (sender as Shape).Height));
+                if (selectedElement is ItemStep) {
+                    Canvas.SetLeft (((ItemStep)selectedElement).Label, Utility.Clamp (xShape, 0, canvasDesigner.ActualWidth - (sender as Shape).Width));
+                    Canvas.SetTop (((ItemStep)selectedElement).Label, Utility.Clamp (yShape, 0, canvasDesigner.ActualHeight - (sender as Shape).Height));
+
+                    Canvas.SetLeft (((ItemStep)selectedElement).Progression, Utility.Clamp (xShape + (sender as Shape).Width,
+                        0, canvasDesigner.ActualWidth - (sender as Shape).Width));
+                    Canvas.SetTop (((ItemStep)selectedElement).Progression, Utility.Clamp (yShape, 0, canvasDesigner.ActualHeight - (sender as Shape).Height));
                 }
             }
         }

@@ -19,6 +19,9 @@
 		- MySQL database
 	- Create a Github Release
 	- Update infirmary-integrated.com's “Downloads” page
+	  - Update latest version #
+	  - Change link destination for Windows OS icon!
+	  - Change link destination for text "click here to download"
 	- Copy Github Release into a Wordpress post on infirmary-integrated.com
 
 

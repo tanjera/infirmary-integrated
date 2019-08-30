@@ -22,7 +22,8 @@ namespace II.Scenario_Editor.Controls {
         public enum Keys {
             Cardiac_Axis,
             Cardiac_Rhythms,
-            Respiratory_Rhythms
+            Respiratory_Rhythms,
+            PACatheter_Rhythms
         }
 
         public event EventHandler<PropertyEnumEventArgs> PropertyChanged;
@@ -45,6 +46,7 @@ namespace II.Scenario_Editor.Controls {
                 case Keys.Cardiac_Axis: lblKey.Content = "Cardiac Axis: "; break;
                 case Keys.Cardiac_Rhythms: lblKey.Content = "Cardiac Rhythm: "; break;
                 case Keys.Respiratory_Rhythms: lblKey.Content = "Respiratory Rhythm: "; break;
+                case Keys.PACatheter_Rhythms: lblKey.Content = "Pulmonary Artery Catheter Placement: "; break;
             }
 
             cmbEnumeration.Items.Clear ();
