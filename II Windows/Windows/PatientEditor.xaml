@@ -59,6 +59,10 @@
             <Setter Property="Padding" Value="10,2" />
         </Style>
 
+        <Style x:Key="cmb" TargetType="{x:Type ComboBox}">
+            <Setter Property="Margin" Value="0, 1, 0, 4" />
+        </Style>
+
         <Style x:Key="btnLabel" TargetType="{x:Type Label}">
             <Setter Property="Margin" Value="2" />
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -354,16 +358,18 @@
 
                             <!-- Cardiac Rhythms -->
                             <Label Name="lblCardiacRhythm" Grid.Column="0" Grid.Row="5" />
-                            <ComboBox Name="comboCardiacRhythm" Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="4"
+                            <ComboBox Name="comboCardiacRhythm"
+                                      Grid.Column="0" Grid.Row="6" Grid.ColumnSpan="4" Style="{StaticResource cmb}"
                                       SelectionChanged="OnCardiacRhythmSelected" />
 
                             <!-- Respiratory Rhythms -->
                             <Label Name="lblRespiratoryRhythm" Grid.Column="0" Grid.Row="7" Grid.ColumnSpan="4" />
-                            <ComboBox Name="comboRespiratoryRhythm" Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="4"
+                            <ComboBox Name="comboRespiratoryRhythm"
+                                      Grid.Column="0" Grid.Row="8" Grid.ColumnSpan="4" Style="{StaticResource cmb}"
                                       SelectionChanged="OnRespiratoryRhythmSelected" />
 
                             <CheckBox Name="checkDefaultVitals" Grid.Column="0" Grid.Row="9" Grid.ColumnSpan="4"
-                                      Margin="0, 5, 0, 0" IsChecked="True" />
+                                      IsChecked="True" />
                         </Grid>
                     </Expander>
                 </Border>
@@ -377,6 +383,8 @@
 
                         <Grid Margin="3">
                             <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
@@ -403,18 +411,25 @@
                             <Label Name="lblADBP" Grid.Column="2" Grid.Row="2" Content="/" />
                             <xctk:IntegerUpDown Name="numADBP" Increment="5" Minimum="0" Maximum="200"
                                                 Grid.Column="3" Grid.Row="2" Style="{StaticResource intUpDown}" />
-                            <Label Name="lblPSP" Grid.Column="0" Grid.Row="3" />
+
+                            <!-- Pulmonary Artery Catheter Rhythms -->
+                            <Label Name="lblPACatheterPlacement" Grid.Column="0" Grid.Row="3" Grid.ColumnSpan="4" />
+                            <ComboBox Name="comboPACatheterPlacement"
+                                      Grid.Column="0" Grid.Row="4" Grid.ColumnSpan="4" Style="{StaticResource cmb}"
+                                      SelectionChanged="OnPulmonaryArteryRhythmSelected" />
+
+                            <Label Name="lblPSP" Grid.Column="0" Grid.Row="5" />
                             <xctk:IntegerUpDown Name="numPSP" Increment="2" Minimum="0" Maximum="200"
-                                                Grid.Column="1" Grid.Row="3" Style="{StaticResource intUpDown}" />
-                            <Label Name="lblPDP" Grid.Column="2" Grid.Row="3" Content="/" />
-                            <xctk:IntegerUpDown Name="numPDP" Increment="2" Minimum="0" Maximum="200"
-                                                Grid.Column="3" Grid.Row="3" Style="{StaticResource intUpDown}" />
-                            <Label Name="lblICP" Grid.Column="0" Grid.Row="4" />
-                            <xctk:IntegerUpDown Name="numICP" Increment="1" Minimum="-100" Maximum="100"
-                                                Grid.Column="1" Grid.Row="4" Style="{StaticResource intUpDown}" />
-                            <Label Name="lblIAP" Grid.Column="0" Grid.Row="5" />
-                            <xctk:IntegerUpDown Name="numIAP" Increment="1" Minimum="-100" Maximum="100"
                                                 Grid.Column="1" Grid.Row="5" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblPDP" Grid.Column="2" Grid.Row="5" Content="/" />
+                            <xctk:IntegerUpDown Name="numPDP" Increment="2" Minimum="0" Maximum="200"
+                                                Grid.Column="3" Grid.Row="5" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblICP" Grid.Column="0" Grid.Row="6" />
+                            <xctk:IntegerUpDown Name="numICP" Increment="1" Minimum="-50" Maximum="50"
+                                                Grid.Column="1" Grid.Row="6" Style="{StaticResource intUpDown}" />
+                            <Label Name="lblIAP" Grid.Column="0" Grid.Row="7" />
+                            <xctk:IntegerUpDown Name="numIAP" Increment="1" Minimum="-50" Maximum="50"
+                                                Grid.Column="1" Grid.Row="7" Style="{StaticResource intUpDown}" />
                         </Grid>
                     </Expander>
                 </Border>

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace II {
     public static class Utility {
-        public const string Version = "1.0";
+        public const string Version = "1.0.5";
 
         public static bool IsNewerVersion (string current, string comparison) {
             string [] curSplit = current.Split ('.'),
