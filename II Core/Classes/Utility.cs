@@ -11,9 +11,14 @@ namespace II {
         public static bool IsNewerVersion (string current, string comparison) {
             string [] curSplit = current.Split ('.'),
                     compSplit = comparison.Split ('.');
+            int buffer;
 
             for (int i = 0; i < compSplit.Length; i++) {
-                if ((i < curSplit.Length ? int.Parse (curSplit [i]) : 0) < int.Parse (compSplit [i]))
+                if (!int.TryParse (curSplit [i], out buffer))           // Error in parsing current version?
+                    return true;                                            // Then send for newer version!
+                else if (!int.TryParse (compSplit [i], out buffer))     // Error in parsing comparison version?
+                    return false;                                           // Then dodge the newer version!
+                else if ((i < curSplit.Length ? int.Parse (curSplit [i]) : 0) < int.Parse (compSplit [i]))
                     return true;
                 else if ((i < curSplit.Length ? int.Parse (curSplit [i]) : 0) > int.Parse (compSplit [i]))
                     return false;

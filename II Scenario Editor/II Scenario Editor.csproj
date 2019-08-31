@@ -109,6 +109,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\ItemStep.xaml.cs">
+      <DependentUpon>ItemStep.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\PropertyECGSegment.xaml.cs">
       <DependentUpon>PropertyECGSegment.xaml</DependentUpon>
     </Compile>
@@ -133,6 +136,10 @@
     <Compile Include="Controls\PropertyString.xaml.cs">
       <DependentUpon>PropertyString.xaml</DependentUpon>
     </Compile>
+    <Page Include="Controls\ItemStep.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\PropertyECGSegment.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -165,8 +172,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="Controls\ItemProgression.cs" />
-    <Compile Include="Controls\ItemStep.cs" />
     <Compile Include="Windows\About.cs">
       <SubType>Form</SubType>
     </Compile>

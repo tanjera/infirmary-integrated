@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II Linux", "II Linux\II Lin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II Scenario Editor", "II Scenario Editor\II Scenario Editor.csproj", "{23FDB2CE-6680-4280-A1D2-1693323D3578}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unit Testing", "Unit Testing\Unit Testing.csproj", "{62368E1B-8ED2-4118-A5FC-C894C4994989}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		II Core\II_Core.projitems*{23fdb2ce-6680-4280-a1d2-1693323d3578}*SharedItemsImports = 4
@@ -64,6 +66,12 @@ Global
 		{23FDB2CE-6680-4280-A1D2-1693323D3578}.DefaultBuild|Any CPU.Build.0 = Debug|Any CPU
 		{23FDB2CE-6680-4280-A1D2-1693323D3578}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{23FDB2CE-6680-4280-A1D2-1693323D3578}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62368E1B-8ED2-4118-A5FC-C894C4994989}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62368E1B-8ED2-4118-A5FC-C894C4994989}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62368E1B-8ED2-4118-A5FC-C894C4994989}.DefaultBuild|Any CPU.ActiveCfg = Debug|Any CPU
+		{62368E1B-8ED2-4118-A5FC-C894C4994989}.DefaultBuild|Any CPU.Build.0 = Debug|Any CPU
+		{62368E1B-8ED2-4118-A5FC-C894C4994989}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62368E1B-8ED2-4118-A5FC-C894C4994989}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

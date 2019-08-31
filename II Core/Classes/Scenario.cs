@@ -139,8 +139,8 @@ namespace II {
         public void PlayStep () => ProgressTimer.Start ();
 
         public void StartTimer () {
-            if (Current.ProgressTime > 0)
-                ProgressTimer.ResetAuto (Current.ProgressTime * 1000);
+            if (Current.ProgressTimer > 0)
+                ProgressTimer.ResetAuto (Current.ProgressTimer * 1000);
         }
 
         public void ProcessTimer (object sender, EventArgs e) {
@@ -157,7 +157,7 @@ namespace II {
             public List<Progression> Progressions = new List<Progression> ();
             public int ProgressTo = -1;
             public int ProgressFrom = -1;
-            public int ProgressTime = -1;
+            public int ProgressTimer = -1;
 
             public Step () {
                 Patient = new Patient ();
@@ -196,7 +196,7 @@ namespace II {
                                 case "Description": Description = pValue; break;
                                 case "ProgressTo": ProgressTo = int.Parse (pValue); break;
                                 case "ProgressFrom": ProgressFrom = int.Parse (pValue); break;
-                                case "ProgressTime": ProgressTime = int.Parse (pValue); break;
+                                case "ProgressTime": ProgressTimer = int.Parse (pValue); break;
                             }
                         }
                     }
@@ -215,7 +215,7 @@ namespace II {
                 sWrite.AppendLine (String.Format ("{0}:{1}", "Description", Description));
                 sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressTo", ProgressTo));
                 sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressFrom", ProgressFrom));
-                sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressTime", ProgressTime));
+                sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressTime", ProgressTimer));
 
                 sWrite.AppendLine ("> Begin: Patient");
                 sWrite.Append (Patient.Save ());
