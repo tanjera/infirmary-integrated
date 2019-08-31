@@ -18,7 +18,8 @@ namespace II.Scenario_Editor.Controls {
     public partial class ItemStep : UserControl {
         /* Interface items */
         public UIEStep IStep;
-        public UIEProgression IProgression;
+        public UEIStepEnd IStepEnd;
+        public List<UIEProgression> IProgressions = new List<UIEProgression> ();
         public Label ILabel { get { return lblName; } }
 
         /* Data structures */
@@ -52,7 +53,7 @@ namespace II.Scenario_Editor.Controls {
             InitializeComponent ();
 
             IStep = new UIEStep (this);
-            IProgression = new UIEProgression (this);
+            IStepEnd = new UEIStepEnd (this);
 
             ILabel.IsHitTestVisible = false;
         }
@@ -68,18 +69,18 @@ namespace II.Scenario_Editor.Controls {
             gridMain.Children.Add (IStep);
             Grid.SetColumn (IStep, 0);
 
-            IProgression.Width = MinSize_IProgression.X;
-            IProgression.Height = MinSize_IProgression.Y;
-            IProgression.Fill = Fill;
-            IProgression.Stroke = Stroke;
-            IProgression.StrokeThickness = 0.75;
-            IProgression.VerticalAlignment = VerticalAlignment.Center;
-            IProgression.Margin = new Thickness (3);
-            gridMain.Children.Add (IProgression);
-            Grid.SetColumn (IProgression, 1);
+            IStepEnd.Width = MinSize_IProgression.X;
+            IStepEnd.Height = MinSize_IProgression.Y;
+            IStepEnd.Fill = Fill;
+            IStepEnd.Stroke = Stroke;
+            IStepEnd.StrokeThickness = 0.75;
+            IStepEnd.VerticalAlignment = VerticalAlignment.Center;
+            IStepEnd.Margin = new Thickness (3);
+            gridMain.Children.Add (IStepEnd);
+            Grid.SetColumn (IStepEnd, 1);
 
-            Grid.SetZIndex (IStep, 0);
-            Grid.SetZIndex (IProgression, 1);
+            Grid.SetZIndex (IStep, 1);
+            Grid.SetZIndex (IStepEnd, 1);
             Grid.SetZIndex (ILabel, 2);
         }
 
@@ -108,7 +109,7 @@ namespace II.Scenario_Editor.Controls {
             dup.Step.ProgressTimer = Step.ProgressTimer;
 
             foreach (Scenario.Step.Progression p in this.Step.Progressions)
-                dup.Step.Progressions.Add (new Scenario.Step.Progression (p.Description, p.DestinationIndex));
+                dup.Step.Progressions.Add (new Scenario.Step.Progression (p.DestinationIndex, p.Description));
 
             return dup;
         }
@@ -123,17 +124,78 @@ namespace II.Scenario_Editor.Controls {
             protected override Geometry DefiningGeometry {
                 get { return new RectangleGeometry (new Rect (0, 0, Math.Max (this.Width, this.MinWidth), Math.Max (this.Height, this.MinHeight))); }
             }
+
+            public Point GetPosition (UIElement relativeTo) {
+                return this.TranslatePoint (new Point (0, 0), relativeTo);
+            }
+
+            public Point GetCenter (UIElement relativeTo) {
+                return this.TranslatePoint (new Point (this.ActualWidth / 2, this.ActualHeight / 2), relativeTo);
+            }
         }
 
-        public sealed class UIEProgression : Shape {
+        public sealed class UEIStepEnd : Shape {
             public ItemStep ItemStep;
 
-            public UIEProgression (ItemStep itemstep) {
+            public UEIStepEnd (ItemStep itemstep) {
                 ItemStep = itemstep;
             }
 
             protected override Geometry DefiningGeometry {
                 get { return new EllipseGeometry (new Rect (0, 0, Math.Max (this.Width, this.MinWidth), Math.Max (this.Height, this.MinHeight))); }
+            }
+
+            public Point GetPosition (UIElement relativeTo) {
+                return this.TranslatePoint (new Point (0, 0), relativeTo);
+            }
+
+            public Point GetCenter (UIElement relativeTo) {
+                return this.TranslatePoint (new Point (this.ActualWidth / 2, this.ActualHeight / 2), relativeTo);
+            }
+        }
+
+        public class UIEProgression : Shape {
+            public ItemStep From, To;
+            public UIElement Canvas;
+
+            public double X1 { get; set; }
+            public double Y1 { get; set; }
+            public double X2 { get; set; }
+            public double Y2 { get; set; }
+
+            protected override Geometry DefiningGeometry {
+                get { return new LineGeometry (new Point (X1, Y1), new Point (X2, Y2)); }
+            }
+
+            public UIEProgression (ItemStep from, ItemStep to, UIElement canvas) {
+                From = from;
+                To = to;
+                Canvas = canvas;
+
+                Point pFrom = From.IStepEnd.GetCenter (Canvas);
+                X1 = pFrom.X;
+                Y1 = pFrom.Y;
+
+                Point pTo = To.IStep.GetCenter (Canvas);
+                X2 = pTo.X;
+                Y2 = pTo.Y;
+
+                Stroke = Brushes.Black;
+                StrokeThickness = 1.0;
+                HorizontalAlignment = HorizontalAlignment.Left;
+                VerticalAlignment = VerticalAlignment.Center;
+            }
+
+            public void UpdatePositions () {
+                Point pFrom = From.IStepEnd.GetCenter (Canvas);
+                X1 = pFrom.X;
+                Y1 = pFrom.Y;
+
+                Point pTo = To.IStep.GetCenter (Canvas);
+                X2 = pTo.X;
+                Y2 = pTo.Y;
+
+                InvalidateVisual ();
             }
         }
     }

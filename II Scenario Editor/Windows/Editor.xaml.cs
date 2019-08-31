@@ -28,7 +28,7 @@ namespace II.Scenario_Editor {
 
         private Canvas canvasDesigner;
         private ItemStep selStep;
-        private ItemStep.UIEProgression selProgression;
+        private ItemStep.UEIStepEnd selEnd;
 
         private int indexStep = -1,
             indexProgression = -1;
@@ -171,6 +171,8 @@ namespace II.Scenario_Editor {
 
             pintProgressTimer.Init (PropertyInt.Keys.ProgressTimer, selStep.Step.ProgressTimer, 1, -1, 1000);
             pintProgressTimer.PropertyChanged += updateProperty;
+
+            setOptionalProgressionProperties ();
         }
 
         private void updatePropertyView () {
@@ -207,6 +209,29 @@ namespace II.Scenario_Editor {
             pintProgressFrom.Set (selStep.Step.ProgressFrom);
             pintProgressTo.Set (selStep.Step.ProgressTo);
             pintProgressTimer.Set (selStep.Step.ProgressTimer);
+
+            setOptionalProgressionProperties ();
+        }
+
+        private void setOptionalProgressionProperties () {
+            stackOptionalProgressions.Children.Clear ();
+
+            for (int i = 0; i < selStep.Step.Progressions.Count; i++) {
+                Scenario.Step.Progression p = selStep.Step.Progressions [i];
+                PropertyProgression pp = new PropertyProgression ();
+                pp.Init (i, p.DestinationIndex, p.Description);
+                pp.PropertyChanged += updateProperty;
+                stackOptionalProgressions.Children.Add (pp);
+            }
+        }
+
+        private void updateProperty (object sender, PropertyProgression.PropertyProgressionEventArgs e) {
+            if (e.Index >= selStep.Step.Progressions.Count)
+                return;
+
+            Scenario.Step.Progression p = selStep.Step.Progressions [e.Index];
+            p.DestinationIndex = e.IndexStepTo;
+            p.Description = e.Description;
         }
 
         private void updateProperty (object sender, PropertyString.PropertyStringEventArgs e) {
@@ -372,11 +397,12 @@ namespace II.Scenario_Editor {
             ist.IStep.MouseLeftButtonUp += IStep_MouseLeftButtonUp;
             ist.IStep.MouseMove += IStep_MouseMove;
 
-            ist.IProgression.MouseLeftButtonDown += IProgression_MouseLeftButtonDown;
+            ist.IStepEnd.MouseLeftButtonDown += IStepEnd_MouseLeftButtonDown;
 
             // Add to lists and display elements
             Steps.Add (ist);
             canvasDesigner.Children.Add (ist);
+            Canvas.SetZIndex (ist, 1);
 
             // Set positions in visual space
             Canvas.SetLeft (ist, (cnvsDesigner.ActualWidth / 2) - (ist.Width / 2));
@@ -395,23 +421,65 @@ namespace II.Scenario_Editor {
         }
 
         private void addProgression (ItemStep stepFrom, ItemStep stepTo) {
-            //throw new NotImplementedException ();
             if (stepFrom == stepTo)
                 return;
 
             int indexFrom = Steps.FindIndex (o => { return o == stepFrom; });
             int indexTo = Steps.FindIndex (o => { return o == stepTo; });
 
-            if (stepFrom.Step.ProgressTo < 0)
-                stepFrom.Step.ProgressTo = indexTo;
-
             if (stepTo.Step.ProgressFrom < 0)
                 stepTo.Step.ProgressFrom = indexFrom;
 
+            if (stepFrom.Step.ProgressTo < 0)               // Create a default progression
+                stepFrom.Step.ProgressTo = indexTo;
+            else                                            // Create an optional progression
+                stepFrom.Step.Progressions.Add (new Scenario.Step.Progression (indexTo));
+
+            drawIProgressions ();
             setPropertyView ();
 
             expStepProperty.IsExpanded = false;
             expProgressionProperty.IsExpanded = true;
+        }
+
+        private void drawIProgressions () {
+            // Completely recreate and add all progression lines to list and canvas
+            foreach (ItemStep iStep in Steps) {
+                foreach (ItemStep.UIEProgression uiep in iStep.IProgressions)
+                    canvasDesigner.Children.Remove (uiep);
+
+                iStep.IProgressions.Clear ();
+
+                if (iStep.Step.ProgressTo > -1 && iStep.Step.ProgressTo < Steps.Count) {
+                    // Draw default progress
+                    ItemStep iTo = Steps [iStep.Step.ProgressTo];
+                    ItemStep.UIEProgression uiep = new ItemStep.UIEProgression (iStep, iTo, canvasDesigner);
+                    iStep.IProgressions.Add (uiep);
+                }
+
+                foreach (Scenario.Step.Progression p in iStep.Step.Progressions) {
+                    if (p.DestinationIndex >= Steps.Count)
+                        continue;
+
+                    ItemStep iTo = Steps [p.DestinationIndex];
+                    ItemStep.UIEProgression uiep = new ItemStep.UIEProgression (iStep, iTo, canvasDesigner);
+                    iStep.IProgressions.Add (uiep);
+                }
+
+                // Add all new progression lines to canvas
+                foreach (ItemStep.UIEProgression uiep in iStep.IProgressions) {
+                    canvasDesigner.Children.Add (uiep);
+                    Canvas.SetZIndex (uiep, 0);
+                }
+            }
+        }
+
+        private void updateIProgressions () {
+            // Redraw progressions between sources to destinations
+            foreach (ItemStep iStep in Steps) {
+                foreach (ItemStep.UIEProgression uiep in iStep.IProgressions)
+                    uiep.UpdatePositions ();
+            }
         }
 
         private void ButtonAddStep_Click (object sender, RoutedEventArgs e)
@@ -495,12 +563,13 @@ namespace II.Scenario_Editor {
                 ItemStep istep = ((ItemStep.UIEStep)sender).ItemStep;
                 Canvas.SetLeft (selStep, Utility.Clamp (xShape, 0, canvasDesigner.ActualWidth - istep.ActualWidth));
                 Canvas.SetTop (selStep, Utility.Clamp (yShape, 0, canvasDesigner.ActualHeight - istep.ActualHeight));
+                updateIProgressions ();
             }
         }
 
-        private void IProgression_MouseLeftButtonDown (object sender, MouseButtonEventArgs e) {
-            selStep = ((ItemStep.UIEProgression)sender).ItemStep;
-            selProgression = (ItemStep.UIEProgression)sender;
+        private void IStepEnd_MouseLeftButtonDown (object sender, MouseButtonEventArgs e) {
+            selStep = ((ItemStep.UEIStepEnd)sender).ItemStep;
+            selEnd = (ItemStep.UEIStepEnd)sender;
 
             updatePropertyView ();
 
@@ -511,16 +580,16 @@ namespace II.Scenario_Editor {
         protected override void OnMouseLeftButtonUp (MouseButtonEventArgs e) {
             base.OnMouseLeftButtonUp (e);
 
-            if (selProgression != null) {
-                if (Mouse.DirectlyOver is ItemStep.UIEProgression) {
-                    addProgression (selStep, ((ItemStep.UIEProgression)Mouse.DirectlyOver).ItemStep);
+            if (selEnd != null) {
+                if (Mouse.DirectlyOver is ItemStep.UEIStepEnd) {
+                    addProgression (selStep, ((ItemStep.UEIStepEnd)Mouse.DirectlyOver).ItemStep);
                 } else if (Mouse.DirectlyOver is ItemStep.UIEStep)
                     addProgression (selStep, ((ItemStep.UIEStep)Mouse.DirectlyOver).ItemStep);
                 else if (Mouse.DirectlyOver is ItemStep)
                     addProgression (selStep, (ItemStep)Mouse.DirectlyOver);
             }
 
-            selProgression = null;
+            selEnd = null;
         }
     }
 }

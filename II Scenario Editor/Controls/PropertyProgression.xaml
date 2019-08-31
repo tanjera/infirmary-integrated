@@ -1,0 +1,63 @@
+﻿<UserControl x:Class="II.Scenario_Editor.Controls.PropertyProgression"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+             xmlns:local="clr-namespace:II.Scenario_Editor.Controls"
+             mc:Ignorable="d"
+             HorizontalAlignment="Stretch" Margin="0">
+
+    <UserControl.Resources>
+        <Style x:Key="expBorder" TargetType="{x:Type Border}">
+            <Setter Property="BorderBrush" Value="Black" />
+            <Setter Property="BorderThickness" Value=".25" />
+            <Setter Property="CornerRadius" Value="2" />
+            <Setter Property="Margin" Value="5" />
+            <Setter Property="Padding" Value="5,2" />
+        </Style>
+
+        <Style x:Key="expHeader" TargetType="{x:Type Label}">
+            <Setter Property="Margin" Value="2" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+    </UserControl.Resources>
+
+    <Border Style="{StaticResource expBorder}">
+        <Expander Name="expProgressionProperty" IsExpanded="True">
+            <Expander.Header>
+                <Label Name="lblProgressionProperty" Content="Edit Optional Progression #"
+                               Style="{StaticResource expHeader}" />
+            </Expander.Header>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Label Name="lblStepTo" Grid.Column="0" Grid.Row="0"
+                   Content="Step To Progress To:"
+                   HorizontalAlignment="Left" Height="Auto"
+                   Margin="2" />
+                <xctk:IntegerUpDown Name="numStepTo" Increment="1" Minimum="0" Maximum="1000"
+                                Grid.Column="1" Grid.Row="0"
+                                MinWidth="60" Height="22" Margin="5,0" />
+
+                <Label Name="lblDescription" Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2"
+                   Content="Description or Prerequisite for Progression:"
+                   HorizontalAlignment="Left" Height="Auto"
+                   Margin="2" />
+                <TextBox Name="txtDescription" Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2"
+                     Height="22" Margin="5, 2" />
+            </Grid>
+        </Expander>
+    </Border>
+</UserControl>

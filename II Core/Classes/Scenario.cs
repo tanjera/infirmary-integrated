@@ -232,13 +232,13 @@ namespace II {
 
             /* Possible progressions/routes to the next step of the scenario */
             public class Progression {
-                public string Description;
                 public int DestinationIndex;
+                public string Description;
 
                 public Progression () { }
-                public Progression (string desc, int destIndex) {
+                public Progression (int dest, string desc = "") {
+                    DestinationIndex = dest;
                     Description = desc;
-                    DestinationIndex = destIndex;
                 }
 
                 public void Load_Process (string inc) {

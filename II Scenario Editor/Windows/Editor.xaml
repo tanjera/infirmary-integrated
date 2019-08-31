@@ -129,16 +129,17 @@
                           Background="LightGray" BorderThickness="0" />
 
             <!-- Property Editor -->
-            <StackPanel Grid.Column="4" Orientation="Vertical">
 
-                <Expander Name="expStepProperty" IsExpanded="False">
-                    <Expander.Header>
-                        <Label Name="lblStepProperty" Content="Edit Step and Patient Properties"
-                               Style="{StaticResource expHeader}" />
-                    </Expander.Header>
-
-                    <ScrollViewer Name="scrlPropertiesPatient"
+            <ScrollViewer Name="scrlProperties" Grid.Column="4"
                               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <StackPanel Orientation="Vertical">
+
+                    <Expander Name="expStepProperty" IsExpanded="False">
+                        <Expander.Header>
+                            <Label Name="lblStepProperty" Content="Edit Step and Patient Properties"
+                               Style="{StaticResource expHeader}" />
+                        </Expander.Header>
+
                         <StackPanel Margin="3" Height="Auto" Orientation="Vertical">
 
                             <!-- Step Information -->
@@ -229,28 +230,32 @@
                                 </Expander>
                             </Border>
                         </StackPanel>
-                    </ScrollViewer>
-                </Expander>
+                    </Expander>
 
-                <Expander Name="expProgressionProperty" IsExpanded="False">
-                    <Expander.Header>
-                        <Label Name="lblProgressionProperty" Content="Edit Progressions"
+                    <Separator />
+
+                    <Border Style="{StaticResource expBorder}">
+                        <Expander Name="expProgressionProperty" IsExpanded="False">
+                            <Expander.Header>
+                                <Label Name="lblProgressionProperty" Content="Edit Progressions"
                                Style="{StaticResource expHeader}" />
-                    </Expander.Header>
+                            </Expander.Header>
+                            <StackPanel>
+                                <StackPanel Margin="3" Height="Auto" Orientation="Vertical">
 
-                    <ScrollViewer Name="scrlProgressionsProperties"
-                              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                        <StackPanel Margin="3" Height="Auto" Orientation="Vertical">
+                                    <ii:PropertyInt x:Name="pintProgressFrom" />
+                                    <ii:PropertyInt x:Name="pintProgressTo" />
+                                    <ii:PropertyInt x:Name="pintProgressTimer" IsEnabled="False" />
+                                    <CheckBox Name="chkProgressTimer" IsChecked="False" Content="Enable Progression Timer?"
+                                          Click="ChkProgressTimer_Click" />
+                                </StackPanel>
 
-                            <ii:PropertyInt x:Name="pintProgressFrom" />
-                            <ii:PropertyInt x:Name="pintProgressTo" />
-                            <ii:PropertyInt x:Name="pintProgressTimer" IsEnabled="False" />
-                            <CheckBox Name="chkProgressTimer" IsChecked="False" Content="Enable Progression Timer?"
-                                      Click="ChkProgressTimer_Click" />
-                        </StackPanel>
-                    </ScrollViewer>
-                </Expander>
-            </StackPanel>
+                                <StackPanel Name="stackOptionalProgressions" Margin="3" Height="Auto" Orientation="Vertical" />
+                            </StackPanel>
+                        </Expander>
+                    </Border>
+                </StackPanel>
+            </ScrollViewer>
         </Grid>
     </DockPanel>
 </Window>
