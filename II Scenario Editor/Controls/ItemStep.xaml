@@ -12,6 +12,14 @@
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
-        <Label Name="lblName" Grid.Column="0" Margin="5" />
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Label Name="lblNumber" Grid.Column="0" Grid.Row="0"
+                   Margin="5, 2" />
+        <Label Name="lblName" Grid.Column="0" Grid.Row="1"
+                   Margin="5, 2" />
     </Grid>
 </UserControl>

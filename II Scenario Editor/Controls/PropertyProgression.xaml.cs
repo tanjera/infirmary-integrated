@@ -15,20 +15,21 @@ using System.Windows.Shapes;
 
 namespace II.Scenario_Editor.Controls {
 
-    public partial class PropertyProgression : UserControl {
+    public partial class PropertyOptProgression : UserControl {
         public int Index;
         public int IndexStepTo;
         public string Description;
 
-        public event EventHandler<PropertyProgressionEventArgs> PropertyChanged;
+        public event EventHandler<PropertyOptProgressionEventArgs> PropertyChanged;
 
-        public class PropertyProgressionEventArgs : EventArgs {
+        public class PropertyOptProgressionEventArgs : EventArgs {
             public int Index;
             public int IndexStepTo;
             public string Description;
+            public bool ToDelete = false;
         }
 
-        public PropertyProgression () {
+        public PropertyOptProgression () {
             InitializeComponent ();
         }
 
@@ -49,8 +50,16 @@ namespace II.Scenario_Editor.Controls {
             txtDescription.LostFocus += sendPropertyChange;
         }
 
+        private void BtnDelete_Click (object sender, RoutedEventArgs e) {
+            PropertyOptProgressionEventArgs ea = new PropertyOptProgressionEventArgs ();
+            ea.Index = Index;
+            ea.IndexStepTo = IndexStepTo;
+            ea.ToDelete = true;
+            PropertyChanged (this, ea);
+        }
+
         private void sendPropertyChange (object sender, EventArgs e) {
-            PropertyProgressionEventArgs ea = new PropertyProgressionEventArgs ();
+            PropertyOptProgressionEventArgs ea = new PropertyOptProgressionEventArgs ();
             ea.Index = Index;
             ea.IndexStepTo = IndexStepTo;
             ea.Description = Description;

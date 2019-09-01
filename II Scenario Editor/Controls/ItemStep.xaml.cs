@@ -26,6 +26,7 @@ namespace II.Scenario_Editor.Controls {
         public Scenario.Step Step = new Scenario.Step ();
 
         /* Exposed properties */
+        public int Index;
 
         public double Left {
             get { return double.IsNaN (Canvas.GetLeft (this)) ? (double)0 : Canvas.GetLeft (this); }
@@ -55,33 +56,50 @@ namespace II.Scenario_Editor.Controls {
             IStep = new UIEStep (this);
             IStepEnd = new UEIStepEnd (this);
 
+            lblNumber.IsHitTestVisible = false;
             ILabel.IsHitTestVisible = false;
         }
 
         public void Init () {
-            IStep.Width = MinSize_IStep.X;                              // Will at least be 50 x 50
-            IStep.Height = MinSize_IStep.Y;
-            IStep.HorizontalAlignment = HorizontalAlignment.Stretch;    // Will fill the grid space
+            IStep.MinWidth = MinSize_IStep.X;
+            IStep.MinHeight = MinSize_IStep.Y;
+            IStep.Stretch = Stretch.Fill;
+            IStep.RadiusX = 5;
+            IStep.RadiusY = 5;
             IStep.Fill = Fill;
             IStep.Stroke = Stroke;
             IStep.StrokeThickness = 1.0;
             IStep.Margin = new Thickness (3);
-            gridMain.Children.Add (IStep);
-            Grid.SetColumn (IStep, 0);
 
-            IStepEnd.Width = MinSize_IProgression.X;
-            IStepEnd.Height = MinSize_IProgression.Y;
+            Grid.SetColumn (IStep, 0);
+            Grid.SetRow (IStep, 0);
+            Grid.SetRowSpan (IStep, 2);
+
+            IStepEnd.MinWidth = MinSize_IProgression.X;
+            IStepEnd.MinHeight = MinSize_IProgression.Y;
             IStepEnd.Fill = Fill;
             IStepEnd.Stroke = Stroke;
             IStepEnd.StrokeThickness = 0.75;
+            IStepEnd.HorizontalAlignment = HorizontalAlignment.Center;
             IStepEnd.VerticalAlignment = VerticalAlignment.Center;
             IStepEnd.Margin = new Thickness (3);
-            gridMain.Children.Add (IStepEnd);
+
             Grid.SetColumn (IStepEnd, 1);
+            Grid.SetRow (IStepEnd, 0);
+            Grid.SetRowSpan (IStepEnd, 2);
 
             Grid.SetZIndex (IStep, 1);
             Grid.SetZIndex (IStepEnd, 1);
+            Grid.SetZIndex (lblNumber, 2);
             Grid.SetZIndex (ILabel, 2);
+
+            gridMain.Children.Add (IStep);
+            gridMain.Children.Add (IStepEnd);
+        }
+
+        public void SetNumber (int index) {
+            Index = index;
+            lblNumber.Content = Index.ToString ();
         }
 
         public void SetName (string name) {
@@ -117,12 +135,22 @@ namespace II.Scenario_Editor.Controls {
         public sealed class UIEStep : Shape {
             public ItemStep ItemStep;
 
+            public int RadiusX = 0,
+                        RadiusY = 0;
+
             public UIEStep (ItemStep itemstep) {
                 ItemStep = itemstep;
             }
 
             protected override Geometry DefiningGeometry {
-                get { return new RectangleGeometry (new Rect (0, 0, Math.Max (this.Width, this.MinWidth), Math.Max (this.Height, this.MinHeight))); }
+                get {
+                    return new RectangleGeometry (new Rect (0, 0,
+                        Math.Max ((double.IsNaN (this.Width) ? 0 : this.Width),
+                            double.IsNaN (this.MinWidth) ? 0 : this.MinWidth),
+                        Math.Max ((double.IsNaN (this.Height) ? 0 : this.Height),
+                            double.IsNaN (this.MinHeight) ? 0 : this.MinHeight)),
+                            RadiusX, RadiusY);
+                }
             }
 
             public Point GetPosition (UIElement relativeTo) {
@@ -142,7 +170,13 @@ namespace II.Scenario_Editor.Controls {
             }
 
             protected override Geometry DefiningGeometry {
-                get { return new EllipseGeometry (new Rect (0, 0, Math.Max (this.Width, this.MinWidth), Math.Max (this.Height, this.MinHeight))); }
+                get {
+                    return new EllipseGeometry (new Rect (0, 0,
+                            Math.Max ((double.IsNaN (this.Width) ? 0 : this.Width),
+                                double.IsNaN (this.MinWidth) ? 0 : this.MinWidth),
+                            Math.Max ((double.IsNaN (this.Height) ? 0 : this.Height),
+                                double.IsNaN (this.MinHeight) ? 0 : this.MinHeight)));
+                }
             }
 
             public Point GetPosition (UIElement relativeTo) {

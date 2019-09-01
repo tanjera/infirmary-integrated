@@ -71,11 +71,11 @@
         <!-- Main Grid -->
         <Grid Style="{StaticResource defGrid}">
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1 *" />
+                <ColumnDefinition Width="10" />
+                <ColumnDefinition Width="3 *" />
+                <ColumnDefinition Width="10" />
                 <ColumnDefinition Width="1.5 *" />
-                <ColumnDefinition Width="10" />
-                <ColumnDefinition Width="4 *" />
-                <ColumnDefinition Width="10" />
-                <ColumnDefinition Width="1.75 *" />
             </Grid.ColumnDefinitions>
 
             <!-- Toolbox -->
@@ -90,6 +90,13 @@
                     <StackPanel Orientation="Horizontal">
                         <Image Source="{StaticResource Icon_Stack}" Style="{StaticResource toolboxImage}" />
                         <Label Name="lblDuplicateStep" Content="Duplicate Step" Style="{StaticResource toolboxLabel}" />
+                    </StackPanel>
+                </Button>
+
+                <Button Name="btnDeleteStep" Click="BtnDeleteStep_Click"  Style="{StaticResource toolboxButton}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{StaticResource Icon_Delete}" Style="{StaticResource toolboxImage}" />
+                        <Label Name="lblDeleteStep" Content="Delete Step" Style="{StaticResource toolboxLabel}" />
                     </StackPanel>
                 </Button>
 
@@ -133,106 +140,107 @@
             <ScrollViewer Name="scrlProperties" Grid.Column="4"
                               VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
                 <StackPanel Orientation="Vertical">
+                    <Border Style="{StaticResource expBorder}">
+                        <Expander Name="expStepProperty" IsExpanded="False">
+                            <Expander.Header>
+                                <Label Name="lblStepProperty" Content="Edit Step and Patient Properties"
+                                   Style="{StaticResource expHeader}" />
+                            </Expander.Header>
 
-                    <Expander Name="expStepProperty" IsExpanded="False">
-                        <Expander.Header>
-                            <Label Name="lblStepProperty" Content="Edit Step and Patient Properties"
-                               Style="{StaticResource expHeader}" />
-                        </Expander.Header>
+                            <StackPanel Margin="3" Height="Auto" Orientation="Vertical">
 
-                        <StackPanel Margin="3" Height="Auto" Orientation="Vertical">
+                                <!-- Step Information -->
+                                <Border Style="{StaticResource expBorder}">
+                                    <Expander IsExpanded="True" Style="{StaticResource expParameters}">
+                                        <Expander.Header>
+                                            <Label Name="lblStepInformation" Content="Step Information" Style="{StaticResource expHeader}" />
+                                        </Expander.Header>
 
-                            <!-- Step Information -->
-                            <Border Style="{StaticResource expBorder}">
-                                <Expander IsExpanded="True" Style="{StaticResource expParameters}">
-                                    <Expander.Header>
-                                        <Label Name="lblStepInformation" Content="Step Information" Style="{StaticResource expHeader}" />
-                                    </Expander.Header>
+                                        <StackPanel Margin="3" Height="Auto" Orientation="Vertical">
+                                            <ii:PropertyString x:Name="pstrName" />
+                                            <ii:PropertyString x:Name="pstrDescription" />
+                                        </StackPanel>
+                                    </Expander>
+                                </Border>
 
-                                    <StackPanel Margin="3" Height="Auto" Orientation="Vertical">
-                                        <ii:PropertyString x:Name="pstrName" />
-                                        <ii:PropertyString x:Name="pstrDescription" />
-                                    </StackPanel>
-                                </Expander>
-                            </Border>
+                                <!-- Basic Vital Signs -->
+                                <Border Style="{StaticResource expBorder}">
+                                    <Expander IsExpanded="True" Style="{StaticResource expParameters}">
+                                        <Expander.Header>
+                                            <Label Name="lblBasicVitalSigns" Content="Basic Vital Signs" Style="{StaticResource expHeader}" />
+                                        </Expander.Header>
 
-                            <!-- Basic Vital Signs -->
-                            <Border Style="{StaticResource expBorder}">
-                                <Expander IsExpanded="True" Style="{StaticResource expParameters}">
-                                    <Expander.Header>
-                                        <Label Name="lblBasicVitalSigns" Content="Basic Vital Signs" Style="{StaticResource expHeader}" />
-                                    </Expander.Header>
+                                        <StackPanel Margin="3" Height="Auto" Orientation="Vertical">
+                                            <ii:PropertyInt x:Name="pintHR" />
+                                            <ii:PropertyBP x:Name="pbpNBP" />
+                                            <ii:PropertyInt x:Name="pintRR" />
+                                            <ii:PropertyInt x:Name="pintSPO2" />
+                                            <ii:PropertyDouble x:Name="pdblT" />
+                                            <ii:PropertyEnum x:Name="penmCardiacRhythms" />
+                                            <ii:PropertyEnum x:Name="penmRespiratoryRhythms" />
+                                            <CheckBox x:Name="chkClampVitals" IsChecked="False" Margin="5,10"
+                                                  Content="Use default vital signs per cardiac rhythm?" />
+                                        </StackPanel>
+                                    </Expander>
+                                </Border>
 
-                                    <StackPanel Margin="3" Height="Auto" Orientation="Vertical">
-                                        <ii:PropertyInt x:Name="pintHR" />
-                                        <ii:PropertyBP x:Name="pbpNBP" />
-                                        <ii:PropertyInt x:Name="pintRR" />
-                                        <ii:PropertyInt x:Name="pintSPO2" />
-                                        <ii:PropertyDouble x:Name="pdblT" />
-                                        <ii:PropertyEnum x:Name="penmCardiacRhythms" />
-                                        <ii:PropertyEnum x:Name="penmRespiratoryRhythms" />
-                                        <CheckBox x:Name="chkClampVitals" IsChecked="False" Margin="5,10"
-                                              Content="Use default vital signs per cardiac rhythm?" />
-                                    </StackPanel>
-                                </Expander>
-                            </Border>
+                                <!-- Advanced Hemodynamics -->
+                                <Border Style="{StaticResource expBorder}">
+                                    <Expander IsExpanded="True" Style="{StaticResource expParameters}">
+                                        <Expander.Header>
+                                            <Label Name="lblAdvancedHemodynamics" Content="Advanced Hemodynamics" Style="{StaticResource expHeader}" />
+                                        </Expander.Header>
 
-                            <!-- Advanced Hemodynamics -->
-                            <Border Style="{StaticResource expBorder}">
-                                <Expander IsExpanded="True" Style="{StaticResource expParameters}">
-                                    <Expander.Header>
-                                        <Label Name="lblAdvancedHemodynamics" Content="Advanced Hemodynamics" Style="{StaticResource expHeader}" />
-                                    </Expander.Header>
+                                        <StackPanel Margin="3" Height="Auto" Orientation="Vertical">
+                                            <ii:PropertyInt x:Name="pintETCO2" />
+                                            <ii:PropertyInt x:Name="pintCVP" />
+                                            <ii:PropertyBP x:Name="pbpABP" />
+                                            <ii:PropertyEnum x:Name="penmPACatheterRhythm" />
+                                            <ii:PropertyBP x:Name="pbpPBP" />
+                                            <ii:PropertyInt x:Name="pintICP" />
+                                            <ii:PropertyInt x:Name="pintIAP" />
+                                        </StackPanel>
+                                    </Expander>
+                                </Border>
 
-                                    <StackPanel Margin="3" Height="Auto" Orientation="Vertical">
-                                        <ii:PropertyInt x:Name="pintETCO2" />
-                                        <ii:PropertyInt x:Name="pintCVP" />
-                                        <ii:PropertyBP x:Name="pbpABP" />
-                                        <ii:PropertyEnum x:Name="penmPACatheterRhythm" />
-                                        <ii:PropertyBP x:Name="pbpPBP" />
-                                        <ii:PropertyInt x:Name="pintICP" />
-                                        <ii:PropertyInt x:Name="pintIAP" />
-                                    </StackPanel>
-                                </Expander>
-                            </Border>
+                                <!-- Respiratory Profile -->
+                                <Border Style="{StaticResource expBorder}">
+                                    <Expander IsExpanded="True" Style="{StaticResource expParameters}">
+                                        <Expander.Header>
+                                            <Label Name="lblRespiratoryProfile" Content="Respiratory Profile" Style="{StaticResource expHeader}" />
+                                        </Expander.Header>
 
-                            <!-- Respiratory Profile -->
-                            <Border Style="{StaticResource expBorder}">
-                                <Expander IsExpanded="True" Style="{StaticResource expParameters}">
-                                    <Expander.Header>
-                                        <Label Name="lblRespiratoryProfile" Content="Respiratory Profile" Style="{StaticResource expHeader}" />
-                                    </Expander.Header>
+                                        <StackPanel Margin="3" Height="Auto" Orientation="Vertical">
+                                            <ii:PropertyCheck x:Name="pchkMechanicallyVentilated" />
+                                            <ii:PropertyFloat x:Name="pdblInspiratoryRatio" />
+                                            <ii:PropertyFloat x:Name="pdblExpiratoryRatio" />
+                                        </StackPanel>
+                                    </Expander>
+                                </Border>
 
-                                    <StackPanel Margin="3" Height="Auto" Orientation="Vertical">
-                                        <ii:PropertyCheck x:Name="pchkMechanicallyVentilated" />
-                                        <ii:PropertyFloat x:Name="pdblInspiratoryRatio" />
-                                        <ii:PropertyFloat x:Name="pdblExpiratoryRatio" />
-                                    </StackPanel>
-                                </Expander>
-                            </Border>
+                                <!-- Cardiac Profile -->
+                                <Border Style="{StaticResource expBorder}">
+                                    <Expander IsExpanded="True" Style="{StaticResource expParameters}">
+                                        <Expander.Header>
+                                            <Label Name="lblCardiacProfile" Content="Cardiac Profile" Style="{StaticResource expHeader}" />
+                                        </Expander.Header>
 
-                            <!-- Cardiac Profile -->
-                            <Border Style="{StaticResource expBorder}">
-                                <Expander IsExpanded="True" Style="{StaticResource expParameters}">
-                                    <Expander.Header>
-                                        <Label Name="lblCardiacProfile" Content="Cardiac Profile" Style="{StaticResource expHeader}" />
-                                    </Expander.Header>
+                                        <StackPanel Margin="3" Height="Auto" Orientation="Vertical">
 
-                                    <StackPanel Margin="3" Height="Auto" Orientation="Vertical">
+                                            <ii:PropertyInt x:Name="pintPacemakerThreshold" />
+                                            <ii:PropertyCheck x:Name="pchkPulsusParadoxus" />
+                                            <ii:PropertyCheck x:Name="pchkPulsusAlternans" />
+                                            <ii:PropertyEnum x:Name="penmCardiacAxis" />
+                                            <ii:PropertyECGSegment x:Name="pecgSTSegment" />
+                                            <ii:PropertyECGSegment x:Name="pecgTWave" />
+                                        </StackPanel>
+                                    </Expander>
+                                </Border>
+                            </StackPanel>
+                        </Expander>
+                    </Border>
 
-                                        <ii:PropertyInt x:Name="pintPacemakerThreshold" />
-                                        <ii:PropertyCheck x:Name="pchkPulsusParadoxus" />
-                                        <ii:PropertyCheck x:Name="pchkPulsusAlternans" />
-                                        <ii:PropertyEnum x:Name="penmCardiacAxis" />
-                                        <ii:PropertyECGSegment x:Name="pecgSTSegment" />
-                                        <ii:PropertyECGSegment x:Name="pecgTWave" />
-                                    </StackPanel>
-                                </Expander>
-                            </Border>
-                        </StackPanel>
-                    </Expander>
-
-                    <Separator />
+                    <Separator Margin="5, 2" />
 
                     <Border Style="{StaticResource expBorder}">
                         <Expander Name="expProgressionProperty" IsExpanded="False">
@@ -246,8 +254,12 @@
                                     <ii:PropertyInt x:Name="pintProgressFrom" />
                                     <ii:PropertyInt x:Name="pintProgressTo" />
                                     <ii:PropertyInt x:Name="pintProgressTimer" IsEnabled="False" />
-                                    <CheckBox Name="chkProgressTimer" IsChecked="False" Content="Enable Progression Timer?"
-                                          Click="ChkProgressTimer_Click" />
+                                    <CheckBox Name="chkProgressTimer" IsChecked="False"
+                                              Content="Enable Progression Timer?" Click="ChkProgressTimer_Click"
+                                              Margin="5, 2" />
+                                    <Button Name="btnDeleteProgression" Height="22"
+                                            Content="Delete Default Progression" Click="BtnDeleteDefaultProgression_Click"
+                                            Margin="5, 2" />
                                 </StackPanel>
 
                                 <StackPanel Name="stackOptionalProgressions" Margin="3" Height="Auto" Orientation="Vertical" />

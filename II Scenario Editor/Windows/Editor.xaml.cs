@@ -218,20 +218,27 @@ namespace II.Scenario_Editor {
 
             for (int i = 0; i < selStep.Step.Progressions.Count; i++) {
                 Scenario.Step.Progression p = selStep.Step.Progressions [i];
-                PropertyProgression pp = new PropertyProgression ();
+                PropertyOptProgression pp = new PropertyOptProgression ();
                 pp.Init (i, p.DestinationIndex, p.Description);
                 pp.PropertyChanged += updateProperty;
                 stackOptionalProgressions.Children.Add (pp);
             }
         }
 
-        private void updateProperty (object sender, PropertyProgression.PropertyProgressionEventArgs e) {
+        private void updateProperty (object sender, PropertyOptProgression.PropertyOptProgressionEventArgs e) {
             if (e.Index >= selStep.Step.Progressions.Count)
                 return;
 
             Scenario.Step.Progression p = selStep.Step.Progressions [e.Index];
             p.DestinationIndex = e.IndexStepTo;
             p.Description = e.Description;
+
+            // Deletes an optional progression via this route
+            if (e.ToDelete) {
+                selStep.Step.Progressions.RemoveAt (e.Index);
+                setOptionalProgressionProperties ();
+                drawIProgressions ();
+            }
         }
 
         private void updateProperty (object sender, PropertyString.PropertyStringEventArgs e) {
@@ -411,13 +418,56 @@ namespace II.Scenario_Editor {
             // Select the added step, give a default name by its index
             selStep = ist;
             indexStep = Steps.FindIndex (o => { return o == selStep; });
-            ist.SetName (indexStep.ToString ("000"));
+            ist.SetNumber (indexStep);
 
             // Refresh the Properties View with the newly selected step
             setPropertyView ();
 
             expStepProperty.IsExpanded = true;
             expProgressionProperty.IsExpanded = true;
+        }
+
+        private void deleteStep (ItemStep ist) {
+            int iStep = Steps.FindIndex (obj => { return obj == ist; });
+
+            int iFrom = (ist.Step.ProgressFrom > iStep)
+                ? ist.Step.ProgressFrom - 1 : ist.Step.ProgressFrom;
+            int iTo = (ist.Step.ProgressTo > iStep)
+                ? ist.Step.ProgressTo - 1 : ist.Step.ProgressTo;
+
+            // Remove the selected Step from the stack and visual
+            Steps.RemoveAt (iStep);
+            canvasDesigner.Children.Remove (ist);
+            foreach (ItemStep.UIEProgression uiep in ist.IProgressions)
+                canvasDesigner.Children.Remove (uiep);
+
+            foreach (ItemStep s in Steps) {
+                // Adjust all references past the index -= 1
+                if (s.Step.ProgressTo > iStep)
+                    s.Step.ProgressTo -= 1;
+                if (s.Step.ProgressFrom > iStep)
+                    s.Step.ProgressFrom -= 1;
+
+                // Tie any references to the removed Step to its references Steps
+                if (s.Step.ProgressTo == iStep)
+                    s.Step.ProgressTo = iTo;
+                if (s.Step.ProgressFrom == iStep)
+                    s.Step.ProgressFrom = iFrom;
+
+                // Remove any optional Progressions that target the deleted Step
+                for (int i = 0; i < s.Step.Progressions.Count; i++) {
+                    Scenario.Step.Progression p = s.Step.Progressions [i];
+
+                    if (p.DestinationIndex == iStep)
+                        s.Step.Progressions.RemoveAt (i);
+                }
+            }
+
+            // Set all Steps' indices for their Labels
+            for (int i = 0; i < Steps.Count; i++)
+                Steps [i].SetNumber (i);
+            // Refresh all IProgressions (visual lines)
+            drawIProgressions ();
         }
 
         private void addProgression (ItemStep stepFrom, ItemStep stepTo) {
@@ -440,6 +490,14 @@ namespace II.Scenario_Editor {
 
             expStepProperty.IsExpanded = false;
             expProgressionProperty.IsExpanded = true;
+        }
+
+        private void deleteDefaultProgression () {
+            selStep.Step.ProgressTo = -1;
+            selStep.Step.ProgressTimer = -1;
+
+            updatePropertyView ();
+            drawIProgressions ();
         }
 
         private void drawIProgressions () {
@@ -489,11 +547,14 @@ namespace II.Scenario_Editor {
             if (selStep == null)
                 return;
 
-            addStep (((ItemStep)selStep).Duplicate ());
+            addStep (selStep.Duplicate ());
         }
 
-        private void ButtonEditProgressions_Click (object sender, RoutedEventArgs e) {
-            throw new NotImplementedException ();
+        private void BtnDeleteStep_Click (object sender, RoutedEventArgs e) {
+            if (selStep == null)
+                return;
+
+            deleteStep (selStep);
         }
 
         private void BtnCopyPatient_Click (object sender, RoutedEventArgs e) {
@@ -520,6 +581,9 @@ namespace II.Scenario_Editor {
             if (chkProgressTimer.IsChecked ?? false == false)
                 pintProgressTimer.numValue.Value = -1;
         }
+
+        private void BtnDeleteDefaultProgression_Click (object sender, RoutedEventArgs e)
+            => deleteDefaultProgression ();
 
         private void MenuItemExit_Click (object sender, RoutedEventArgs e)
             => Application.Current.Shutdown ();
