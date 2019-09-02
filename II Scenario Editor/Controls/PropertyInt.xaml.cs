@@ -39,7 +39,7 @@ namespace II.Scenario_Editor.Controls {
             InitializeComponent ();
         }
 
-        public void Init (Keys key, int value, int increment, int minvalue, int maxvalue) {
+        public void Init (Keys key, int increment, int minvalue, int maxvalue) {
             Key = key;
             switch (Key) {
                 default: break;
@@ -57,7 +57,6 @@ namespace II.Scenario_Editor.Controls {
                 case Keys.ProgressTimer: lblKey.Content = "Time (in seconds) until next step: "; break;
             }
 
-            numValue.Value = value;
             numValue.Increment = increment;
             numValue.Minimum = minvalue;
             numValue.Maximum = maxvalue;

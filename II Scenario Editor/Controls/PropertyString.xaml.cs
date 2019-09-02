@@ -19,8 +19,11 @@ namespace II.Scenario_Editor.Controls {
         public Keys Key;
 
         public enum Keys {
-            Name,
-            Description
+            ScenarioAuthor,
+            ScenarioName,
+            ScenarioDescription,
+            StepName,
+            StepDescription
         }
 
         public event EventHandler<PropertyStringEventArgs> PropertyChanged;
@@ -34,15 +37,17 @@ namespace II.Scenario_Editor.Controls {
             InitializeComponent ();
         }
 
-        public void Init (Keys key, string value) {
+        public void Init (Keys key) {
             Key = key;
             switch (Key) {
                 default: break;
-                case Keys.Name: lblKey.Content = "Name: "; break;
-                case Keys.Description: lblKey.Content = "Description: "; break;
+                case Keys.ScenarioAuthor: lblKey.Content = "Author: "; break;
+                case Keys.ScenarioName: lblKey.Content = "Title: "; break;
+                case Keys.ScenarioDescription: lblKey.Content = "Description: "; break;
+                case Keys.StepName: lblKey.Content = "Name: "; break;
+                case Keys.StepDescription: lblKey.Content = "Description: "; break;
             }
 
-            txtValue.Text = value;
             txtValue.TextChanged += sendPropertyChange;
             txtValue.LostFocus += sendPropertyChange;
         }

@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:II.Scenario_Editor"
         xmlns:ii="clr-namespace:II.Scenario_Editor.Controls"
         mc:Ignorable="d"
-        Title="Infirmary Integrated: Scenario Editor" WindowState="Maximized">
+        Title="Infirmary Integrated: Scenario Editor" WindowState="Maximized" Height="800" Width="1200">
 
     <Window.Resources>
         <Style x:Key="expParameters" TargetType="{x:Type Expander}">
@@ -52,15 +52,23 @@
         </Style>
     </Window.Resources>
 
+    <Window.InputBindings>
+        <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding IC_NewFile}" />
+        <KeyBinding Key="L" Modifiers="Ctrl" Command="{Binding IC_LoadFile}" />
+        <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding IC_SaveFile}" />
+    </Window.InputBindings>
+
     <DockPanel LastChildFill="True" x:Name="LayoutRoot">
 
         <!-- Main Menu -->
         <Menu DockPanel.Dock="Top" Width="Auto" Background="White">
             <MenuItem Name="menuFile" Header="_File">
-                <MenuItem Name="menuLoad" Header="_Load" InputGestureText="Ctrl+L" IsEnabled="False" />
-                <MenuItem Name="menuSave" Header="_Save" InputGestureText="Ctrl+S" IsEnabled="False" />
+                <MenuItem Name="menuNew" Header="_New Scenario" Click="MenuItemNew_Click" InputGestureText="Ctrl+N" />
                 <Separator />
-                <MenuItem Name="menuExit" Header="E_xit" InputGestureText="Alt-F4" Click="MenuItemExit_Click" />
+                <MenuItem Name="menuLoad" Header="_Load Scenario" Click="MenuItemLoad_Click" InputGestureText="Ctrl+L" />
+                <MenuItem Name="menuSave" Header="_Save Scenario" Click="MenuSave_Click" InputGestureText="Ctrl+S" />
+                <Separator />
+                <MenuItem Name="menuExit" Header="E_xit Program" Click="MenuItemExit_Click" InputGestureText="Alt-F4" />
             </MenuItem>
 
             <MenuItem Name="menuHelp" Header="_Help">
@@ -73,48 +81,68 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="1 *" />
                 <ColumnDefinition Width="10" />
-                <ColumnDefinition Width="3 *" />
+                <ColumnDefinition Width="2 *" />
                 <ColumnDefinition Width="10" />
-                <ColumnDefinition Width="1.5 *" />
+                <ColumnDefinition Width="1 *" />
             </Grid.ColumnDefinitions>
 
-            <!-- Toolbox -->
-            <StackPanel Grid.Column="0" Margin="3" Height="Auto">
-                <Button Name="btnAddStep" Click="ButtonAddStep_Click" Style="{StaticResource toolboxButton}">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="{StaticResource Icon_PlayerAdd}" Style="{StaticResource toolboxImage}" />
-                        <Label Name="lblAddStep" Content="Add Step" Style="{StaticResource toolboxLabel}" />
-                    </StackPanel>
-                </Button>
-                <Button Name="btnDuplicateStep" Click="ButtonDuplicateStep_Click" Style="{StaticResource toolboxButton}">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="{StaticResource Icon_Stack}" Style="{StaticResource toolboxImage}" />
-                        <Label Name="lblDuplicateStep" Content="Duplicate Step" Style="{StaticResource toolboxLabel}" />
-                    </StackPanel>
-                </Button>
+            <ScrollViewer Name="scrollToolbox" Grid.Column="0"
+                              VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <StackPanel  Margin="3" Height="Auto">
 
-                <Button Name="btnDeleteStep" Click="BtnDeleteStep_Click"  Style="{StaticResource toolboxButton}">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="{StaticResource Icon_Delete}" Style="{StaticResource toolboxImage}" />
-                        <Label Name="lblDeleteStep" Content="Delete Step" Style="{StaticResource toolboxLabel}" />
-                    </StackPanel>
-                </Button>
+                    <!-- Scenario properties -->
+                    <Border Style="{StaticResource expBorder}">
+                        <Expander Name="expScenarioProperty" IsExpanded="True">
+                            <Expander.Header>
+                                <Label Name="lblScenarioProperty" Content="Edit Scenario Properties"
+                                   Style="{StaticResource expHeader}" />
+                            </Expander.Header>
 
-                <Separator Margin="3, 10" />
+                            <StackPanel Margin="3" Height="Auto" Orientation="Vertical">
+                                <ii:PropertyString x:Name="pstrScenarioAuthor" />
+                                <ii:PropertyString x:Name="pstrScenarioName" />
+                                <ii:PropertyString x:Name="pstrScenarioDescription" />
+                            </StackPanel>
+                        </Expander>
+                    </Border>
 
-                <Button Name="btnCopyPatient" Click="BtnCopyPatient_Click"  Style="{StaticResource toolboxButton}">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="{StaticResource Icon_CopyData}" Style="{StaticResource toolboxImage}" />
-                        <Label Name="lblCopyPatient" Content="Copy Patient Parameters" Style="{StaticResource toolboxLabel}" />
-                    </StackPanel>
-                </Button>
-                <Button Name="btnPastePatient" Click="BtnPastePatient_Click"  Style="{StaticResource toolboxButton}">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="{StaticResource Icon_PasteData}" Style="{StaticResource toolboxImage}" />
-                        <Label Name="lblPastePatient" Content="Paste Patient Parameters" Style="{StaticResource toolboxLabel}" />
-                    </StackPanel>
-                </Button>
-            </StackPanel>
+                    <!-- Toolbox -->
+                    <Button Name="btnAddStep" Click="ButtonAddStep_Click" Style="{StaticResource toolboxButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource Icon_PlayerAdd}" Style="{StaticResource toolboxImage}" />
+                            <Label Name="lblAddStep" Content="Add Step" Style="{StaticResource toolboxLabel}" />
+                        </StackPanel>
+                    </Button>
+                    <Button Name="btnDuplicateStep" Click="ButtonDuplicateStep_Click" Style="{StaticResource toolboxButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource Icon_Stack}" Style="{StaticResource toolboxImage}" />
+                            <Label Name="lblDuplicateStep" Content="Duplicate Step" Style="{StaticResource toolboxLabel}" />
+                        </StackPanel>
+                    </Button>
+
+                    <Button Name="btnDeleteStep" Click="BtnDeleteStep_Click"  Style="{StaticResource toolboxButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource Icon_Delete}" Style="{StaticResource toolboxImage}" />
+                            <Label Name="lblDeleteStep" Content="Delete Step" Style="{StaticResource toolboxLabel}" />
+                        </StackPanel>
+                    </Button>
+
+                    <Separator Margin="3, 10" />
+
+                    <Button Name="btnCopyPatient" Click="BtnCopyPatient_Click"  Style="{StaticResource toolboxButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource Icon_CopyData}" Style="{StaticResource toolboxImage}" />
+                            <Label Name="lblCopyPatient" Content="Copy Patient Properties" Style="{StaticResource toolboxLabel}" />
+                        </StackPanel>
+                    </Button>
+                    <Button Name="btnPastePatient" Click="BtnPastePatient_Click"  Style="{StaticResource toolboxButton}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource Icon_PasteData}" Style="{StaticResource toolboxImage}" />
+                            <Label Name="lblPastePatient" Content="Paste Patient Properties" Style="{StaticResource toolboxLabel}" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </ScrollViewer>
 
             <GridSplitter Grid.Column="1" Width="3" HorizontalAlignment="Stretch"
                           Background="LightGray" BorderThickness="0" />
@@ -157,8 +185,8 @@
                                         </Expander.Header>
 
                                         <StackPanel Margin="3" Height="Auto" Orientation="Vertical">
-                                            <ii:PropertyString x:Name="pstrName" />
-                                            <ii:PropertyString x:Name="pstrDescription" />
+                                            <ii:PropertyString x:Name="pstrStepName" />
+                                            <ii:PropertyString x:Name="pstrStepDescription" />
                                         </StackPanel>
                                     </Expander>
                                 </Border>

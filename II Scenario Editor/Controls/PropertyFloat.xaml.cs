@@ -33,7 +33,7 @@ namespace II.Scenario_Editor.Controls {
             InitializeComponent ();
         }
 
-        public void Init (Keys key, float value, double increment, double minvalue, double maxvalue) {
+        public void Init (Keys key, double increment, double minvalue, double maxvalue) {
             Key = key;
             switch (Key) {
                 default: break;
@@ -41,7 +41,6 @@ namespace II.Scenario_Editor.Controls {
                 case Keys.RRExpiratoryRatio: lblKey.Content = "Expiratory Ratio: "; break;
             }
 
-            numValue.Value = (decimal)value;
             numValue.Increment = (decimal)increment;
             numValue.Minimum = (decimal)minvalue;
             numValue.Maximum = (decimal)maxvalue;

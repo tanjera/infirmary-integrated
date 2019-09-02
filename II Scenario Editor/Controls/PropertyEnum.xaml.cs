@@ -37,7 +37,7 @@ namespace II.Scenario_Editor.Controls {
             InitializeComponent ();
         }
 
-        public void Init (Keys key, string [] values, List<string> readable, int index) {
+        public void Init (Keys key, string [] values, List<string> readable) {
             Key = key;
             Values = new List<string> (values);
 
@@ -55,8 +55,6 @@ namespace II.Scenario_Editor.Controls {
                 cbi.Content = s;
                 cmbEnumeration.Items.Add (cbi);
             }
-
-            cmbEnumeration.SelectedIndex = index;
 
             cmbEnumeration.SelectionChanged += sendPropertyChange;
             cmbEnumeration.LostFocus += sendPropertyChange;

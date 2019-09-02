@@ -34,14 +34,13 @@ namespace II.Scenario_Editor.Controls {
             InitializeComponent ();
         }
 
-        public void Init (Keys key, double value, double increment, double minvalue, double maxvalue) {
+        public void Init (Keys key, double increment, double minvalue, double maxvalue) {
             Key = key;
             switch (Key) {
                 default: break;
                 case Keys.T: lblKey.Content = "Temperature: "; break;
             }
 
-            numValue.Value = value;
             numValue.Increment = increment;
             numValue.Minimum = minvalue;
             numValue.Maximum = maxvalue;

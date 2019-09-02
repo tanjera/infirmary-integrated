@@ -19,13 +19,25 @@ namespace II {
         public List<Step> Steps = new List<Step> ();
         public Timer ProgressTimer = new Timer ();
 
-        public Scenario () {
-            Steps.Add (new Step ());
-            ProgressTimer.Tick += ProgressTimer_Tick; ;
+        public Scenario (bool toInit) {
+            if (toInit)
+                Steps.Add (new Step ());
+
+            ProgressTimer.Tick += ProgressTimer_Tick;
         }
 
         public Step Current {
             get { return Steps [CurrentIndex]; }
+        }
+
+        public void Reset () {
+            Steps.Clear ();
+            CurrentIndex = 0;
+
+            Name = "";
+            Description = "";
+            Author = "";
+            Updated = DateTime.Now;
         }
 
         public Patient Patient {
@@ -37,6 +49,8 @@ namespace II {
             StringReader sRead = new StringReader (inc);
             string line, pline;
             StringBuilder pbuffer;
+
+            this.Reset ();
 
             try {
                 while ((line = sRead.ReadLine ()) != null) {
@@ -79,9 +93,9 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "Description", Description));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Author", Author));
 
-            foreach (Step s in Steps) {
+            for (int i = 0; i < Steps.Count; i++) {
                 sWrite.AppendLine ("> Begin: Step");
-                sWrite.Append (s.Save ());
+                sWrite.Append (Steps [i].Save ());
                 sWrite.AppendLine ("> End: Step");
             }
 
@@ -99,12 +113,16 @@ namespace II {
                 Current.ProgressFrom = pFrom;
 
             StartTimer ();
+            CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
             return Current.Patient;
         }
 
         public Patient LastStep () {
+            int pFrom = CurrentIndex;
             CurrentIndex = Current.ProgressFrom;
+
             StartTimer ();
+            CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
             return Current.Patient;
         }
 
@@ -120,6 +138,7 @@ namespace II {
             s.ProgressFrom = pFrom;
 
             StartTimer ();
+            CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
             return Current.Patient;
         }
 
@@ -131,7 +150,16 @@ namespace II {
                 Current.ProgressFrom = pFrom;
 
             StartTimer ();
+            CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
             return Current.Patient;
+        }
+
+        public void CopyDeviceStatus (Patient lastPatient, Patient thisPatient) {
+            thisPatient.TransducerZeroed_CVP = lastPatient.TransducerZeroed_CVP;
+            thisPatient.TransducerZeroed_ABP = lastPatient.TransducerZeroed_ABP;
+            thisPatient.TransducerZeroed_PA = lastPatient.TransducerZeroed_PA;
+            thisPatient.TransducerZeroed_ICP = lastPatient.TransducerZeroed_ICP;
+            thisPatient.TransducerZeroed_IAP = lastPatient.TransducerZeroed_IAP;
         }
 
         public void PauseStep () => ProgressTimer.Stop ();
@@ -158,6 +186,9 @@ namespace II {
             public int ProgressTo = -1;
             public int ProgressFrom = -1;
             public int ProgressTimer = -1;
+
+            // Metadata: for drawing interface items in Scenario Editor
+            public double IPositionX, IPositionY;
 
             public Step () {
                 Patient = new Patient ();
@@ -197,6 +228,8 @@ namespace II {
                                 case "ProgressTo": ProgressTo = int.Parse (pValue); break;
                                 case "ProgressFrom": ProgressFrom = int.Parse (pValue); break;
                                 case "ProgressTime": ProgressTimer = int.Parse (pValue); break;
+                                case "IPositionX": IPositionX = double.Parse (pValue); break;
+                                case "IPositionY": IPositionY = double.Parse (pValue); break;
                             }
                         }
                     }
@@ -216,6 +249,8 @@ namespace II {
                 sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressTo", ProgressTo));
                 sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressFrom", ProgressFrom));
                 sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressTime", ProgressTimer));
+                sWrite.AppendLine (String.Format ("{0}:{1}", "IPositionX", IPositionX));
+                sWrite.AppendLine (String.Format ("{0}:{1}", "IPositionY", IPositionY));
 
                 sWrite.AppendLine ("> Begin: Patient");
                 sWrite.Append (Patient.Save ());

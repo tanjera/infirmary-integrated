@@ -180,7 +180,7 @@ namespace II_Windows {
         }
 
         private void InitScenario () {
-            App.Scenario = new Scenario ();
+            App.Scenario = new Scenario (true);
             App.Timer_Main.Tick += App.Scenario.ProcessTimer;
             App.Patient = App.Scenario.Patient;
             InitPatientEvents ();
@@ -273,7 +273,7 @@ namespace II_Windows {
         }
 
         private void LoadValidateT1 (StreamReader sr) {
-            /* Savefile type 1: validated and obfuscated, not encrypted or data protected
+            /* Savefile type 1: validated and encrypted
                 * Line 1 is metadata (.ii:t1)
                 * Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
                 * Line 3 is savefile data encrypted by AES encoding
@@ -300,22 +300,29 @@ namespace II_Windows {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
                             pbuffer.AppendLine (pline);
+
+                        App.Patient = new Patient ();
                         App.Patient.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Scenario") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Scenario")
                             pbuffer.AppendLine (pline);
+
+                        App.Scenario = new Scenario (false);
                         App.Scenario.Load_Process (pbuffer.ToString ());
+                        App.Patient = App.Scenario.Patient;
                     } else if (line == "> Begin: Editor") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Editor")
                             pbuffer.AppendLine (pline);
+
                         this.LoadOptions (pbuffer.ToString ());
                     } else if (line == "> Begin: Cardiac Monitor") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Cardiac Monitor")
                             pbuffer.AppendLine (pline);
 
+                        App.Device_Monitor = new DeviceMonitor ();
                         InitDeviceMonitor ();
                         App.Device_Monitor.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: 12 Lead ECG") {
@@ -323,6 +330,7 @@ namespace II_Windows {
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: 12 Lead ECG")
                             pbuffer.AppendLine (pline);
 
+                        App.Device_ECG = new DeviceECG ();
                         InitDeviceECG ();
                         App.Device_ECG.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Defibrillator") {
@@ -330,6 +338,7 @@ namespace II_Windows {
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Defibrillator")
                             pbuffer.AppendLine (pline);
 
+                        App.Device_Defib = new DeviceDefib ();
                         InitDeviceDefib ();
                         App.Device_Defib.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Intra-aortic Balloon Pump") {
@@ -337,6 +346,7 @@ namespace II_Windows {
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Intra-aortic Balloon Pump")
                             pbuffer.AppendLine (pline);
 
+                        App.Device_IABP = new DeviceIABP ();
                         InitDeviceIABP ();
                         App.Device_IABP.Load_Process (pbuffer.ToString ());
                     }

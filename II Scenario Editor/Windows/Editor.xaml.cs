@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
 
 using II;
 using II.Scenario_Editor.Controls;
@@ -20,33 +22,239 @@ namespace II.Scenario_Editor {
 
     public partial class Editor : Window {
 
+        // Master List of all Steps in the Scenario and other Scenario variables
+        private List<ItemStep> Steps = new List<ItemStep> ();
+
+        private string ScenarioAuthor, ScenarioName, ScenarioDescription;
+
+        // Variables and pointers for using UI Elements
+        private Canvas canvasDesigner;
+
+        private ItemStep selStep;
+        private ItemStep.UEIStepEnd selEnd;
+
+        // For copy/pasting Patient parameters
+        private Patient copiedPatient;
+
         // Variables for capturing mouse and dragging UI elements
         private bool mouseCaptured = false;
 
         private double xShape, yShape,
             xCanvas, yCanvas;
 
-        private Canvas canvasDesigner;
-        private ItemStep selStep;
-        private ItemStep.UEIStepEnd selEnd;
+        // Define WPF UI commands for binding
+        private ICommand icNewFile, icLoadFile, icSaveFile;
 
-        private int indexStep = -1,
-            indexProgression = -1;
-
-        private Patient copiedPatient;
-
-        private List<ItemStep> Steps = new List<ItemStep> ();
+        public ICommand IC_NewFile { get { return icNewFile; } }
+        public ICommand IC_LoadFile { get { return icLoadFile; } }
+        public ICommand IC_SaveFile { get { return icSaveFile; } }
 
         public Editor () {
             InitializeComponent ();
+            DataContext = this;
 
             canvasDesigner = cnvsDesigner;
+
+            // Initiate ICommands for KeyBindings
+            icNewFile = new ActionCommand (() => newScenario ());
+            icLoadFile = new ActionCommand (() => loadScenario ());
+            icSaveFile = new ActionCommand (() => saveScenario ());
+
+            initScenarioProperty ();
+            initPropertyView ();
         }
 
-        private void setPropertyView () {
-            if (selStep == null)
+        private void newScenario () {
+            if (MessageBox.Show (
+                    "Are you sure you want to create a new scenario? All unsaved work will be lost!",
+                    "Create New Scenario?",
+                    MessageBoxButton.OKCancel, MessageBoxImage.Warning) != MessageBoxResult.OK)
                 return;
 
+            // Reset buffer parameters
+            selStep = null;
+            selEnd = null;
+            mouseCaptured = false;
+
+            // Clear master lists and UI elements
+            canvasDesigner.Children.Clear ();
+            Steps.Clear ();
+
+            // Clear scenario data
+            ScenarioAuthor = "";
+            ScenarioName = "";
+            ScenarioDescription = "";
+
+            updateScenarioProperty ();
+        }
+
+        private void loadScenario () {
+            Stream s;
+            Microsoft.Win32.OpenFileDialog dlgLoad = new Microsoft.Win32.OpenFileDialog ();
+
+            dlgLoad.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
+            dlgLoad.FilterIndex = 1;
+            dlgLoad.RestoreDirectory = true;
+
+            if (dlgLoad.ShowDialog () == true) {
+                if ((s = dlgLoad.OpenFile ()) != null) {
+                    StreamReader sr = new StreamReader (s);
+
+                    // Read savefile metadata indicating data formatting
+                    // Supports II:T1 file structure
+                    string metadata = sr.ReadLine ();
+                    if (!metadata.StartsWith (".ii:t1")) {
+                        loadFail ();
+                        return;
+                    }
+
+                    // Savefile type 1: validated and encrypted
+                    // Line 1 is metadata (.ii:t1)
+                    // Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
+                    // Line 3 is savefile data encrypted by AES encoding
+                    string hash = sr.ReadLine ().Trim ();
+                    string file = Utility.DecryptAES (sr.ReadToEnd ().Trim ());
+                    sr.Close ();
+                    s.Close ();
+
+                    if (hash != Utility.HashSHA256 (file)) {
+                        loadFail ();
+                        return;
+                    }
+
+                    StringReader sRead = new StringReader (file);
+                    string line, pline;
+                    StringBuilder pbuffer;
+
+                    Scenario sc = new Scenario (false);
+
+                    try {
+                        while ((line = sRead.ReadLine ()) != null) {
+                            if (line == "> Begin: Scenario") {
+                                pbuffer = new StringBuilder ();
+                                while ((pline = sRead.ReadLine ()) != null && pline != "> End: Scenario")
+                                    pbuffer.AppendLine (pline);
+                                sc.Load_Process (pbuffer.ToString ());
+                            }
+                        }
+                    } catch (Exception e) {
+                        loadFail ();
+                    } finally {
+                        sRead.Close ();
+                    }
+
+                    // Convert loaded scenario to Scenario Editor data structures
+                    ScenarioAuthor = sc.Author;
+                    ScenarioName = sc.Name;
+                    ScenarioDescription = sc.Description;
+
+                    Steps.Clear ();
+                    canvasDesigner.Children.Clear ();
+
+                    for (int i = 0; i < sc.Steps.Count; i++) {
+                        // Add to the main Steps stack
+                        ItemStep ist = new ItemStep ();
+                        ist.Init ();
+                        ist.Step = sc.Steps [i];
+                        ist.SetNumber (i);
+                        ist.SetName (ist.Step.Name);
+
+                        ist.IStep.MouseLeftButtonDown += IStep_MouseLeftButtonDown;
+                        ist.IStep.MouseLeftButtonUp += IStep_MouseLeftButtonUp;
+                        ist.IStep.MouseMove += IStep_MouseMove;
+
+                        ist.IStepEnd.MouseLeftButtonDown += IStepEnd_MouseLeftButtonDown;
+
+                        // Add to lists and display elements
+                        Steps.Add (ist);
+                        canvasDesigner.Children.Add (ist);
+
+                        Canvas.SetZIndex (ist, 1);
+                        Canvas.SetLeft (ist, ist.Step.IPositionX);
+                        Canvas.SetTop (ist, ist.Step.IPositionY);
+                    }
+
+                    // Refresh the Properties View with the newly selected step
+                    selStep = Steps.Count > 0 ? Steps [0] : null;
+                    updatePropertyView ();
+                    updateScenarioProperty ();
+                    drawIProgressions ();
+                    expStepProperty.IsExpanded = true;
+                    expProgressionProperty.IsExpanded = true;
+                }
+            }
+        }
+
+        private void loadFail () {
+            MessageBox.Show (
+                    "The selected file was unable to be loaded. Perhaps the file was damaged or edited outside of Infirmary Integrated.",
+                    "Unable to Load File", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private void saveScenario () {
+            // Prepare Scenario for saving
+            Scenario sc = new Scenario (false);
+
+            sc.Updated = DateTime.Now;
+            sc.Author = ScenarioAuthor;
+            sc.Name = ScenarioName;
+            sc.Description = ScenarioDescription;
+
+            for (int i = 0; i < Steps.Count; i++) {
+                // Set metadata for saving
+                Steps [i].Step.IPositionX = Steps [i].Left;
+                Steps [i].Step.IPositionY = Steps [i].Top;
+
+                // And add to the main Scenario stack
+                sc.Steps.Add (Steps [i].Step);
+            }
+
+            // Initiate IO stream, show Save File dialog to select file destination
+            Stream s;
+            Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
+
+            dlgSave.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
+            dlgSave.FilterIndex = 1;
+            dlgSave.RestoreDirectory = true;
+
+            if (dlgSave.ShowDialog () == true) {
+                if ((s = dlgSave.OpenFile ()) != null) {
+                    // Save in II:T1 format
+                    StringBuilder sb = new StringBuilder ();
+
+                    sb.AppendLine ("> Begin: Scenario");
+                    sb.Append (sc.Save ());
+                    sb.AppendLine ("> End: Scenario");
+
+                    StreamWriter sw = new StreamWriter (s);
+                    sw.WriteLine (".ii:t1");                                        // Metadata (type 1 savefile)
+                    sw.WriteLine (Utility.HashSHA256 (sb.ToString ().Trim ()));     // Hash for validation
+                    sw.Write (Utility.EncryptAES (sb.ToString ().Trim ()));         // Savefile data encrypted with AES
+                    sw.Close ();
+                    s.Close ();
+                }
+            }
+        }
+
+        private void initScenarioProperty () {
+            // Initiate controls for editing Scenario properties
+            pstrScenarioAuthor.Init (PropertyString.Keys.ScenarioAuthor);
+            pstrScenarioAuthor.PropertyChanged += updateProperty;
+
+            pstrScenarioName.Init (PropertyString.Keys.ScenarioName);
+            pstrScenarioName.PropertyChanged += updateProperty;
+
+            pstrScenarioDescription.Init (PropertyString.Keys.ScenarioDescription);
+            pstrScenarioDescription.PropertyChanged += updateProperty;
+        }
+
+        private void updateScenarioProperty () {
+            pstrScenarioAuthor.Set (ScenarioAuthor ?? "");
+            pstrScenarioName.Set (ScenarioName ?? "");
+            pstrScenarioDescription.Set (ScenarioDescription ?? "");
+        }
+
+        private void initPropertyView () {
             // Populate enum string lists for readable display
             List<string> cardiacRhythms = new List<string> (),
                 respiratoryRhythms = new List<string> (),
@@ -68,111 +276,102 @@ namespace II.Scenario_Editor {
                 cardiacAxes.Add (App.Language.Dictionary [Cardiac_Axes.LookupString (v)]);
 
             // Initiate controls for editing Patient values
-            pstrName.Init (PropertyString.Keys.Name, selStep.Step.Name ?? "");
-            pstrName.PropertyChanged += updateProperty;
+            pstrStepName.Init (PropertyString.Keys.StepName);
+            pstrStepName.PropertyChanged += updateProperty;
 
-            pstrDescription.Init (PropertyString.Keys.Description, selStep.Step.Description ?? "");
-            pstrDescription.PropertyChanged += updateProperty;
+            pstrStepDescription.Init (PropertyString.Keys.StepDescription);
+            pstrStepDescription.PropertyChanged += updateProperty;
 
-            pintHR.Init (PropertyInt.Keys.HR, selStep.Patient.VS_Settings.HR, 5, 0, 500);
+            pintHR.Init (PropertyInt.Keys.HR, 5, 0, 500);
             pintHR.PropertyChanged += updateProperty;
 
             pbpNBP.Init (PropertyBP.Keys.NSBP,
-                selStep.Patient.VS_Settings.NSBP, selStep.Patient.VS_Settings.NDBP,
                 5, 0, 300,
                 5, 0, 200);
             pbpNBP.PropertyChanged += updateProperty;
 
-            pintRR.Init (PropertyInt.Keys.RR, selStep.Patient.VS_Settings.RR, 2, 0, 100);
+            pintRR.Init (PropertyInt.Keys.RR, 2, 0, 100);
             pintRR.PropertyChanged += updateProperty;
 
-            pintSPO2.Init (PropertyInt.Keys.SPO2, selStep.Patient.VS_Settings.SPO2, 2, 0, 100);
+            pintSPO2.Init (PropertyInt.Keys.SPO2, 2, 0, 100);
             pintSPO2.PropertyChanged += updateProperty;
 
-            pdblT.Init (PropertyDouble.Keys.T, selStep.Patient.VS_Settings.T, 0.2, 0, 100);
+            pdblT.Init (PropertyDouble.Keys.T, 0.2, 0, 100);
             pdblT.PropertyChanged += updateProperty;
 
             penmCardiacRhythms.Init (PropertyEnum.Keys.Cardiac_Rhythms,
-                Enum.GetNames (typeof (Cardiac_Rhythms.Values)),
-                cardiacRhythms, (int)selStep.Patient.Cardiac_Rhythm.Value);
+                Enum.GetNames (typeof (Cardiac_Rhythms.Values)), cardiacRhythms);
             penmCardiacRhythms.PropertyChanged += updateProperty;
             penmCardiacRhythms.PropertyChanged += updateCardiacRhythm;
 
             penmRespiratoryRhythms.Init (PropertyEnum.Keys.Respiratory_Rhythms,
-                Enum.GetNames (typeof (Respiratory_Rhythms.Values)),
-                respiratoryRhythms, (int)selStep.Patient.Respiratory_Rhythm.Value);
+                Enum.GetNames (typeof (Respiratory_Rhythms.Values)), respiratoryRhythms);
             penmRespiratoryRhythms.PropertyChanged += updateProperty;
             penmRespiratoryRhythms.PropertyChanged += updateRespiratoryRhythm;
 
-            pintETCO2.Init (PropertyInt.Keys.ETCO2, selStep.Patient.VS_Settings.ETCO2, 2, 0, 100);
+            pintETCO2.Init (PropertyInt.Keys.ETCO2, 2, 0, 100);
             pintETCO2.PropertyChanged += updateProperty;
 
-            pintCVP.Init (PropertyInt.Keys.CVP, selStep.Patient.VS_Settings.CVP, 1, -100, 100);
+            pintCVP.Init (PropertyInt.Keys.CVP, 1, -100, 100);
             pintCVP.PropertyChanged += updateProperty;
 
             pbpABP.Init (PropertyBP.Keys.ASBP,
-                selStep.Patient.VS_Settings.ASBP, selStep.Patient.VS_Settings.ADBP,
                 5, 0, 300,
                 5, 0, 200);
             pbpABP.PropertyChanged += updateProperty;
 
             penmPACatheterRhythm.Init (PropertyEnum.Keys.PACatheter_Rhythms,
-                Enum.GetNames (typeof (PulmonaryArtery_Rhythms.Values)),
-                pulmonaryRhythms, (int)selStep.Patient.PulmonaryArtery_Placement.Value);
+                Enum.GetNames (typeof (PulmonaryArtery_Rhythms.Values)), pulmonaryRhythms);
             penmPACatheterRhythm.PropertyChanged += updateProperty;
             penmPACatheterRhythm.PropertyChanged += updatePACatheterRhythm;
 
             pbpPBP.Init (PropertyBP.Keys.PSP,
-                selStep.Patient.VS_Settings.PSP, selStep.Patient.VS_Settings.PDP,
                 5, 0, 200,
                 5, 0, 200);
             pbpPBP.PropertyChanged += updateProperty;
 
-            pintICP.Init (PropertyInt.Keys.ICP, selStep.Patient.VS_Settings.ICP, 1, -100, 100);
+            pintICP.Init (PropertyInt.Keys.ICP, 1, -100, 100);
             pintICP.PropertyChanged += updateProperty;
 
-            pintIAP.Init (PropertyInt.Keys.IAP, selStep.Patient.VS_Settings.IAP, 1, -100, 100);
+            pintIAP.Init (PropertyInt.Keys.IAP, 1, -100, 100);
             pintIAP.PropertyChanged += updateProperty;
 
-            pchkMechanicallyVentilated.Init (PropertyCheck.Keys.MechanicallyVentilated, selStep.Patient.Mechanically_Ventilated);
+            pchkMechanicallyVentilated.Init (PropertyCheck.Keys.MechanicallyVentilated);
             pchkMechanicallyVentilated.PropertyChanged += updateProperty;
 
-            pdblInspiratoryRatio.Init (PropertyFloat.Keys.RRInspiratoryRatio, selStep.Patient.VS_Settings.RR_IE_I, 0.1, 0.1, 10);
+            pdblInspiratoryRatio.Init (PropertyFloat.Keys.RRInspiratoryRatio, 0.1, 0.1, 10);
             pdblInspiratoryRatio.PropertyChanged += updateProperty;
 
-            pdblExpiratoryRatio.Init (PropertyFloat.Keys.RRExpiratoryRatio, selStep.Patient.VS_Settings.RR_IE_E, 0.1, 0.1, 10);
+            pdblExpiratoryRatio.Init (PropertyFloat.Keys.RRExpiratoryRatio, 0.1, 0.1, 10);
             pdblExpiratoryRatio.PropertyChanged += updateProperty;
 
-            pintPacemakerThreshold.Init (PropertyInt.Keys.PacemakerThreshold, selStep.Patient.Pacemaker_Threshold, 5, 0, 200);
+            pintPacemakerThreshold.Init (PropertyInt.Keys.PacemakerThreshold, 5, 0, 200);
             pintPacemakerThreshold.PropertyChanged += updateProperty;
 
-            pchkPulsusParadoxus.Init (PropertyCheck.Keys.PulsusParadoxus, selStep.Patient.Pulsus_Paradoxus);
+            pchkPulsusParadoxus.Init (PropertyCheck.Keys.PulsusParadoxus);
             pchkPulsusParadoxus.PropertyChanged += updateProperty;
 
-            pchkPulsusAlternans.Init (PropertyCheck.Keys.PulsusAlternans, selStep.Patient.Pulsus_Alternans);
+            pchkPulsusAlternans.Init (PropertyCheck.Keys.PulsusAlternans);
             pchkPulsusAlternans.PropertyChanged += updateProperty;
 
             penmCardiacAxis.Init (PropertyEnum.Keys.Cardiac_Axis,
-                Enum.GetNames (typeof (Cardiac_Axes.Values)),
-                cardiacAxes, (int)selStep.Patient.Cardiac_Axis.Value);
+                Enum.GetNames (typeof (Cardiac_Axes.Values)), cardiacAxes);
             penmCardiacAxis.PropertyChanged += updateProperty;
 
-            pecgSTSegment.Init (PropertyECGSegment.Keys.STElevation, selStep.Patient.ST_Elevation);
+            pecgSTSegment.Init (PropertyECGSegment.Keys.STElevation);
             pecgSTSegment.PropertyChanged += updateProperty;
 
-            pecgTWave.Init (PropertyECGSegment.Keys.TWave, selStep.Patient.T_Elevation);
+            pecgTWave.Init (PropertyECGSegment.Keys.TWave);
             pecgTWave.PropertyChanged += updateProperty;
 
-            pintProgressFrom.Init (PropertyInt.Keys.ProgressFrom, selStep.Step.ProgressFrom, 1, -1, 1000);
+            pintProgressFrom.Init (PropertyInt.Keys.ProgressFrom, 1, -1, 1000);
             pintProgressFrom.PropertyChanged += updateProperty;
 
-            pintProgressTo.Init (PropertyInt.Keys.ProgressTo, selStep.Step.ProgressTo, 1, -1, 1000);
+            pintProgressTo.Init (PropertyInt.Keys.ProgressTo, 1, -1, 1000);
             pintProgressTo.PropertyChanged += updateProperty;
 
-            pintProgressTimer.Init (PropertyInt.Keys.ProgressTimer, selStep.Step.ProgressTimer, 1, -1, 1000);
+            pintProgressTimer.Init (PropertyInt.Keys.ProgressTimer, 1, -1, 1000);
             pintProgressTimer.PropertyChanged += updateProperty;
-
-            setOptionalProgressionProperties ();
         }
 
         private void updatePropertyView () {
@@ -180,8 +379,8 @@ namespace II.Scenario_Editor {
                 return;
 
             // Update all controls with Patient values
-            pstrName.Set (selStep.Step.Name ?? "");
-            pstrDescription.Set (selStep.Step.Description ?? "");
+            pstrStepName.Set (selStep.Step.Name ?? "");
+            pstrStepDescription.Set (selStep.Step.Description ?? "");
             pintHR.Set (selStep.Patient.VS_Settings.HR);
             pbpNBP.Set (selStep.Patient.VS_Settings.NSBP, selStep.Patient.VS_Settings.NDBP);
             pintRR.Set (selStep.Patient.VS_Settings.RR);
@@ -210,10 +409,10 @@ namespace II.Scenario_Editor {
             pintProgressTo.Set (selStep.Step.ProgressTo);
             pintProgressTimer.Set (selStep.Step.ProgressTimer);
 
-            setOptionalProgressionProperties ();
+            updateOptionalProgressionView ();
         }
 
-        private void setOptionalProgressionProperties () {
+        private void updateOptionalProgressionView () {
             stackOptionalProgressions.Children.Clear ();
 
             for (int i = 0; i < selStep.Step.Progressions.Count; i++) {
@@ -236,7 +435,7 @@ namespace II.Scenario_Editor {
             // Deletes an optional progression via this route
             if (e.ToDelete) {
                 selStep.Step.Progressions.RemoveAt (e.Index);
-                setOptionalProgressionProperties ();
+                updateOptionalProgressionView ();
                 drawIProgressions ();
             }
         }
@@ -244,11 +443,11 @@ namespace II.Scenario_Editor {
         private void updateProperty (object sender, PropertyString.PropertyStringEventArgs e) {
             switch (e.Key) {
                 default: break;
-                case PropertyString.Keys.Name:
-                    selStep.SetName (e.Value);
-                    break;
-
-                case PropertyString.Keys.Description: selStep.Step.Description = e.Value; break;
+                case PropertyString.Keys.ScenarioAuthor: ScenarioAuthor = e.Value; break;
+                case PropertyString.Keys.ScenarioName: ScenarioName = e.Value; break;
+                case PropertyString.Keys.ScenarioDescription: ScenarioDescription = e.Value; break;
+                case PropertyString.Keys.StepName: selStep.SetName (e.Value); break;
+                case PropertyString.Keys.StepDescription: selStep.Step.Description = e.Value; break;
             }
         }
 
@@ -411,17 +610,12 @@ namespace II.Scenario_Editor {
             canvasDesigner.Children.Add (ist);
             Canvas.SetZIndex (ist, 1);
 
-            // Set positions in visual space
-            Canvas.SetLeft (ist, (cnvsDesigner.ActualWidth / 2) - (ist.Width / 2));
-            Canvas.SetTop (ist, (cnvsDesigner.ActualHeight / 2) - (ist.Height / 2));
-
             // Select the added step, give a default name by its index
             selStep = ist;
-            indexStep = Steps.FindIndex (o => { return o == selStep; });
-            ist.SetNumber (indexStep);
+            ist.SetNumber (Steps.FindIndex (o => { return o == selStep; }));
 
             // Refresh the Properties View with the newly selected step
-            setPropertyView ();
+            updatePropertyView ();
 
             expStepProperty.IsExpanded = true;
             expProgressionProperty.IsExpanded = true;
@@ -486,7 +680,7 @@ namespace II.Scenario_Editor {
                 stepFrom.Step.Progressions.Add (new Scenario.Step.Progression (indexTo));
 
             drawIProgressions ();
-            setPropertyView ();
+            updatePropertyView ();
 
             expStepProperty.IsExpanded = false;
             expProgressionProperty.IsExpanded = true;
@@ -584,6 +778,15 @@ namespace II.Scenario_Editor {
 
         private void BtnDeleteDefaultProgression_Click (object sender, RoutedEventArgs e)
             => deleteDefaultProgression ();
+
+        private void MenuItemNew_Click (object sender, RoutedEventArgs e)
+            => newScenario ();
+
+        private void MenuItemLoad_Click (object sender, RoutedEventArgs e)
+            => loadScenario ();
+
+        private void MenuSave_Click (object sender, RoutedEventArgs e)
+            => saveScenario ();
 
         private void MenuItemExit_Click (object sender, RoutedEventArgs e)
             => Application.Current.Shutdown ();

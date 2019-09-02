@@ -36,7 +36,6 @@ namespace II.Scenario_Editor.Controls {
         }
 
         public void Init (Keys key,
-            int systolic, int diastolic,
             int sysInc, int sysMin, int sysMax,
             int diasInc, int diasMin, int diasMax) {
             Key = key;
@@ -47,14 +46,12 @@ namespace II.Scenario_Editor.Controls {
                 case Keys.PSP: lblKey.Content = "Pulmonary Arterial Pressures: "; break;
             }
 
-            numSystolic.Value = systolic;
             numSystolic.Increment = sysInc;
             numSystolic.Minimum = sysMin;
             numSystolic.Maximum = sysMax;
             numSystolic.ValueChanged += sendPropertyChange;
             numSystolic.LostFocus += sendPropertyChange;
 
-            numDiastolic.Value = diastolic;
             numDiastolic.Increment = diasInc;
             numDiastolic.Minimum = diasMin;
             numDiastolic.Maximum = diasMax;

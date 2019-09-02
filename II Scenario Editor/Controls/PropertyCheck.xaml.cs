@@ -35,7 +35,7 @@ namespace II.Scenario_Editor.Controls {
             InitializeComponent ();
         }
 
-        public void Init (Keys key, bool check) {
+        public void Init (Keys key) {
             Key = key;
             switch (Key) {
                 default: break;
@@ -44,7 +44,6 @@ namespace II.Scenario_Editor.Controls {
                 case Keys.MechanicallyVentilated: chkValue.Content = "Mechanically ventilated?"; break;
             }
 
-            chkValue.IsChecked = check;
             chkValue.Checked += sendPropertyChange;
             chkValue.LostFocus += sendPropertyChange;
         }

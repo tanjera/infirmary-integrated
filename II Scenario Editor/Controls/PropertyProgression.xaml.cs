@@ -61,8 +61,8 @@ namespace II.Scenario_Editor.Controls {
         private void sendPropertyChange (object sender, EventArgs e) {
             PropertyOptProgressionEventArgs ea = new PropertyOptProgressionEventArgs ();
             ea.Index = Index;
-            ea.IndexStepTo = IndexStepTo;
-            ea.Description = Description;
+            ea.IndexStepTo = numStepTo.Value ?? -1;
+            ea.Description = txtDescription.Text;
             PropertyChanged (this, ea);
         }
     }

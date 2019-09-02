@@ -34,26 +34,13 @@ namespace II.Scenario_Editor.Controls {
             InitializeComponent ();
         }
 
-        public void Init (Keys key, double [] values) {
+        public void Init (Keys key) {
             Key = key;
             switch (Key) {
                 default: break;
                 case Keys.STElevation: lblKey.Content = "ST Segment Elevation: "; break;
                 case Keys.TWave: lblKey.Content = "T Wave Elevation: "; break;
             }
-
-            dblI.Value = values [0];
-            dblII.Value = values [1];
-            dblIII.Value = values [2];
-            dblaVR.Value = values [3];
-            dblaVL.Value = values [4];
-            dblaVF.Value = values [5];
-            dblV1.Value = values [6];
-            dblV2.Value = values [7];
-            dblV3.Value = values [8];
-            dblV4.Value = values [9];
-            dblV5.Value = values [10];
-            dblV6.Value = values [11];
 
             dblI.ValueChanged += sendPropertyChange;
             dblII.ValueChanged += sendPropertyChange;
