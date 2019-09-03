@@ -90,7 +90,7 @@ namespace II_Windows {
             icToggleFullscreen = new ActionCommand (() => ToggleFullscreen ());
             icPauseDevice = new ActionCommand (() => TogglePause ());
             icCloseDevice = new ActionCommand (() => this.Close ());
-            icExitProgram = new ActionCommand (() => App.Patient_Editor.RequestExit ());
+            icExitProgram = new ActionCommand (() => App.Patient_Editor.Exit ());
 
             // Populate UI strings per language selection
             wdwDeviceDefib.Title = App.Language.Dictionary ["DEFIB:WindowTitle"];
@@ -366,7 +366,7 @@ namespace II_Windows {
 
         private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
 
-        private void MenuExit_Click (object s, RoutedEventArgs e) => App.Patient_Editor.RequestExit ();
+        private void MenuExit_Click (object s, RoutedEventArgs e) => App.Patient_Editor.Exit ();
 
         private void MenuAddNumeric_Click (object s, RoutedEventArgs e) => AddNumeric ();
 

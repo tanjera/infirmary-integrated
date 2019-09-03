@@ -12,6 +12,15 @@ namespace II {
 
         public event EventHandler<EventArgs> Tick;
 
+        ~Timer () => Dispose ();
+
+        public void Dispose () => UnsubscribeTick ();
+
+        public void UnsubscribeTick () {
+            foreach (Delegate d in Tick?.GetInvocationList ())
+                Tick -= (EventHandler<EventArgs>)d;
+        }
+
         public void Start () {
             Running = true;
         }

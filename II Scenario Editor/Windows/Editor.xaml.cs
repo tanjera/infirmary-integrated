@@ -42,6 +42,9 @@ namespace II.Scenario_Editor {
         private double xShape, yShape,
             xCanvas, yCanvas;
 
+        // Switch for processing elements ina  loading sequence
+        private bool isLoading = false;
+
         // Define WPF UI commands for binding
         private ICommand icNewFile, icLoadFile, icSaveFile;
 
@@ -158,6 +161,10 @@ namespace II.Scenario_Editor {
                         ist.Step = sc.Steps [i];
                         ist.SetNumber (i);
                         ist.SetName (ist.Step.Name);
+
+                        // After all UIElements are initialized, will need to "refresh" the line positions via loadIProgressions
+                        isLoading = true;
+                        ist.LayoutUpdated += loadIProgressions;
 
                         ist.IStep.MouseLeftButtonDown += IStep_MouseLeftButtonDown;
                         ist.IStep.MouseLeftButtonUp += IStep_MouseLeftButtonUp;
@@ -692,6 +699,13 @@ namespace II.Scenario_Editor {
 
             updatePropertyView ();
             drawIProgressions ();
+        }
+
+        private void loadIProgressions (object sender, EventArgs e) {
+            if (isLoading) {
+                updateIProgressions ();
+                isLoading = false;
+            }
         }
 
         private void drawIProgressions () {

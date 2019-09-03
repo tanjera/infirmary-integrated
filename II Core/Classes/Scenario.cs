@@ -26,8 +26,18 @@ namespace II {
             ProgressTimer.Tick += ProgressTimer_Tick;
         }
 
+        ~Scenario () => Dispose ();
+
+        public void Dispose () {
+            ProgressTimer.Dispose ();
+        }
+
         public Step Current {
             get { return Steps [CurrentIndex]; }
+        }
+
+        public bool IsScenario {    // If there's only one Step- it's a regular Patient parameter
+            get { return Steps.Count != 1; }
         }
 
         public void Reset () {
@@ -102,12 +112,15 @@ namespace II {
             return sWrite.ToString ();
         }
 
-        public Patient NextStep () {
+        public Patient NextStep (int optProg = -1) {
             int pFrom = CurrentIndex;
 
-            CurrentIndex = Current.ProgressTo >= 0
-                ? Current.ProgressTo
-                : Math.Min (CurrentIndex + 1, Steps.Count - 1);
+            if (optProg < 0 || optProg >= Current.Progressions.Count)       // Default Progression
+                CurrentIndex = Current.ProgressTo >= 0
+                    ? Current.ProgressTo
+                    : Math.Min (CurrentIndex + 1, Steps.Count - 1);
+            else                                                            // Optional Progression
+                CurrentIndex = Current.Progressions [optProg].DestinationIndex;
 
             if (pFrom != CurrentIndex)
                 Current.ProgressFrom = pFrom;

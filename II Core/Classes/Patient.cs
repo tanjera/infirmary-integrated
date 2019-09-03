@@ -244,6 +244,29 @@ namespace II {
             SetTimers ();
         }
 
+        ~Patient () => Dispose ();
+
+        public void Dispose () {
+            timerCardiac_Baseline.Dispose ();
+            timerCardiac_Atrial.Dispose ();
+            timerCardiac_Ventricular.Dispose ();
+            timerDefibrillation.Dispose ();
+            timerPacemaker_Baseline.Dispose ();
+            timerPacemaker_Spike.Dispose ();
+            timerRespiratory_Baseline.Dispose ();
+            timerRespiratory_Inspiration.Dispose ();
+            timerRespiratory_Expiration.Dispose ();
+            timerObstetric_Baseline.Dispose ();
+            timerObstetric_ContractionDuration.Dispose ();
+            timerObstetric_ContractionFrequency.Dispose ();
+            timerObstetric_FHRVariationFrequency.Dispose ();
+        }
+
+        public void UnsubscribePatientEvent () {
+            foreach (Delegate d in PatientEvent?.GetInvocationList ())
+                PatientEvent -= (EventHandler<PatientEventArgs>)d;
+        }
+
         /* PatientEvent event, handler, and caller */
         public List<PatientEventArgs> ListPatientEvents = new List<PatientEventArgs> ();
         public event EventHandler<PatientEventArgs> PatientEvent;

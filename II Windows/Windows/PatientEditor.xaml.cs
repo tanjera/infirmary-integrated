@@ -19,8 +19,9 @@ namespace II_Windows {
     public partial class PatientEditor : Window {
 
         // Define WPF UI commands for binding
-        private ICommand icLoadFile, icSaveFile;
+        private ICommand icNewFile, icLoadFile, icSaveFile;
 
+        public ICommand IC_NewFile { get { return icNewFile; } }
         public ICommand IC_LoadFile { get { return icLoadFile; } }
         public ICommand IC_SaveFile { get { return icSaveFile; } }
 
@@ -31,13 +32,11 @@ namespace II_Windows {
 
             InitInitialRun ();
             InitInterface ();
-            InitScenario ();
+            InitMirroring ();
+            InitScenario (true);
 
             if (App.Start_Args.Length > 0)
                 LoadOpen (App.Start_Args [0]);
-
-            App.Mirror.timerUpdate.Tick += delegate { App.Mirror.TimerTick (App.Patient, App.Server); };
-            App.Mirror.timerUpdate.ResetAuto (5000);
 
             /* Debugging and testing code below */
         }
@@ -53,11 +52,13 @@ namespace II_Windows {
 
         private void InitInterface () {
             // Initiate ICommands for KeyBindings
+            icNewFile = new ActionCommand (() => RefreshScenario (true));
             icLoadFile = new ActionCommand (() => LoadFile ());
             icSaveFile = new ActionCommand (() => SaveFile ());
 
             // Populate UI strings per language selection
             wdwPatientEditor.Title = App.Language.Dictionary ["PE:WindowTitle"];
+            menuNew.Header = App.Language.Dictionary ["PE:MenuNewFile"];
             menuFile.Header = App.Language.Dictionary ["PE:MenuFile"];
             menuLoad.Header = App.Language.Dictionary ["PE:MenuLoadSimulation"];
             menuSave.Header = App.Language.Dictionary ["PE:MenuSaveSimulation"];
@@ -90,6 +91,7 @@ namespace II_Windows {
             btnApplyMirroring.Content = App.Language.Dictionary ["BUTTON:ApplyChanges"];
 
             lblGroupScenarioPlayer.Content = App.Language.Dictionary ["PE:ScenarioPlayer"];
+            lblProgressionOptions.Content = App.Language.Dictionary ["PE:ProgressionOptions"];
 
             lblGroupVitalSigns.Content = App.Language.Dictionary ["PE:VitalSigns"];
             lblHR.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:HeartRate"]);
@@ -179,18 +181,73 @@ namespace II_Windows {
             bgw.RunWorkerAsync ();
         }
 
-        private void InitScenario () {
-            App.Scenario = new Scenario (true);
+        private void InitMirroring () {
+            App.Timer_Main.Tick += App.Mirror.ProcessTimer;
+            App.Mirror.timerUpdate.Tick += delegate { App.Mirror.TimerTick (App.Patient, App.Server); };
+            App.Mirror.timerUpdate.ResetAuto (5000);
+        }
+
+        private void InitScenario (bool toInit) {
+            App.Scenario = new Scenario (toInit);
             App.Timer_Main.Tick += App.Scenario.ProcessTimer;
+
+            if (toInit)         // If toInit is false, Patient is null- InitPatient() will need to be called manually
+                InitPatient ();
+        }
+
+        private void UnloadScenario () {
+            App.Patient.Dispose ();
+            App.Scenario.Dispose ();
+        }
+
+        private void RefreshScenario (bool toInit) {
+            UnloadScenario ();
+            InitScenario (toInit);
+        }
+
+        private void InitPatient () {
             App.Patient = App.Scenario.Patient;
+
             InitPatientEvents ();
+            InitStep ();
+        }
+
+        private void RefreshPatient () {
+            UnloadPatientEvents ();
+
+            App.Patient.Dispose ();
+            App.Patient = new Patient ();
+
+            InitPatient ();
         }
 
         private void InitPatientEvents () {
+            // Tie the Patient's Timer to the Main Timer
             App.Timer_Main.Tick += App.Patient.ProcessTimers;
-            App.Timer_Main.Tick += App.Mirror.ProcessTimer;
+
+            // Tie PatientEvents to the PatientEditor UI! And trigger.
             App.Patient.PatientEvent += FormUpdateFields;
             FormUpdateFields (this, new Patient.PatientEventArgs (App.Patient, Patient.PatientEventTypes.Vitals_Change));
+
+            // Tie PatientEvents to Devices!
+            if (App.Device_Monitor != null && App.Device_Monitor.IsLoaded)
+                App.Patient.PatientEvent += App.Device_Monitor.OnPatientEvent;
+            if (App.Device_ECG != null && App.Device_ECG.IsLoaded)
+                App.Patient.PatientEvent += App.Device_ECG.OnPatientEvent;
+            if (App.Device_Defib != null && App.Device_Defib.IsLoaded)
+                App.Patient.PatientEvent += App.Device_Defib.OnPatientEvent;
+            if (App.Device_IABP != null && App.Device_IABP.IsLoaded)
+                App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
+        }
+
+        private void UnloadPatientEvents () {
+            // Unloading the Patient from the Main Timer also stops all the Patient's Timers
+            // and results in that Patient not triggering PatientEvent's
+            App.Timer_Main.Tick -= App.Patient.ProcessTimers;
+
+            // But it's still important to clear PatientEvent subscriptions so they're not adding
+            // as duplicates when InitPatientEvents() is called!!
+            App.Patient.UnsubscribePatientEvent ();
         }
 
         private void InitDeviceMonitor () {
@@ -248,6 +305,22 @@ namespace II_Windows {
             App.Dialog_About.ShowDialog ();
         }
 
+        private void LoadFile () {
+            Stream s;
+            Microsoft.Win32.OpenFileDialog dlgLoad = new Microsoft.Win32.OpenFileDialog ();
+
+            dlgLoad.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
+            dlgLoad.FilterIndex = 1;
+            dlgLoad.RestoreDirectory = true;
+
+            if (dlgLoad.ShowDialog () == true) {
+                if ((s = dlgLoad.OpenFile ()) != null) {
+                    LoadInit (s);
+                    s.Close ();
+                }
+            }
+        }
+
         private void LoadOpen (string fileName) {
             if (File.Exists (fileName)) {
                 Stream s = new FileStream (fileName, FileMode.Open);
@@ -296,21 +369,21 @@ namespace II_Windows {
 
             try {
                 while ((line = sRead.ReadLine ()) != null) {
-                    if (line == "> Begin: Patient") {
+                    if (line == "> Begin: Patient") {           // Load files saved by Infirmary Integrated (base)
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
                             pbuffer.AppendLine (pline);
 
-                        App.Patient = new Patient ();
+                        RefreshScenario (true);
                         App.Patient.Load_Process (pbuffer.ToString ());
-                    } else if (line == "> Begin: Scenario") {
+                    } else if (line == "> Begin: Scenario") {   // Load files saved by Infirmary Integrated Scenario Editor
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Scenario")
                             pbuffer.AppendLine (pline);
 
-                        App.Scenario = new Scenario (false);
+                        RefreshScenario (false);
                         App.Scenario.Load_Process (pbuffer.ToString ());
-                        App.Patient = App.Scenario.Patient;
+                        InitPatient ();     // Needs to be called manually since InitScenario(false) doesn't init a Patient
                     } else if (line == "> Begin: Editor") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Editor")
@@ -357,20 +430,90 @@ namespace II_Windows {
             } finally {
                 sRead.Close ();
             }
+
+            // Initialize the first step of the scenario
+            if (App.Scenario.IsScenario)
+                InitStep ();
+
+            // Set Expanders IsExpanded and IsEnabled on whether is a Scenario
+            bool isScene = App.Scenario.IsScenario;
+            expScenarioPlayer.IsEnabled = isScene;
+            expScenarioPlayer.IsExpanded = isScene;
+            expVitalSigns.IsExpanded = !isScene;
+            expHemodynamics.IsExpanded = !isScene;
+            expRespiratoryProfile.IsExpanded = !isScene;
+            expCardiacProfile.IsExpanded = !isScene;
+            expObstetricProfile.IsExpanded = !isScene;
+        }
+
+        private void LoadOptions (string inc) {
+            StringReader sRead = new StringReader (inc);
+
+            try {
+                string line;
+                while ((line = sRead.ReadLine ()) != null) {
+                    if (line.Contains (":")) {
+                        string pName = line.Substring (0, line.IndexOf (':')),
+                                pValue = line.Substring (line.IndexOf (':') + 1);
+                        switch (pName) {
+                            default: break;
+                            case "checkDefaultVitals": checkDefaultVitals.IsChecked = bool.Parse (pValue); break;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                App.Server.Post_Exception (e);
+                sRead.Close ();
+                return;
+            }
+
+            sRead.Close ();
         }
 
         private void LoadFail () {
             MessageBox.Show (
-                    "The selected file was unable to be loaded. Perhaps the file was damaged or edited outside of Infirmary Integrated.",
-                    "Unable to Load File", MessageBoxButton.OK, MessageBoxImage.Error);
+                    App.Language.Dictionary ["PE:LoadFailMessage"],
+                    App.Language.Dictionary ["PE:LoadFailTitle"],
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private void SaveFile () {
+            // Only save single Patient files in base Infirmary Integrated!
+            // Scenario files should be created/edited/saved via II Scenario Editor!
+            if (App.Scenario.IsScenario) {
+                MessageBox.Show (
+                    App.Language.Dictionary ["PE:SaveFailScenarioMessage"],
+                    App.Language.Dictionary ["PE:SaveFailScenarioTitle"],
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            Stream s;
+            Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
+
+            dlgSave.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
+            dlgSave.FilterIndex = 1;
+            dlgSave.RestoreDirectory = true;
+
+            if (dlgSave.ShowDialog () == true) {
+                if ((s = dlgSave.OpenFile ()) != null) {
+                    SaveT1 (s);
+                }
+            }
         }
 
         private void SaveT1 (Stream s) {
+            // Ensure only saving Patient file, not Scenario file; is screened in SaveFile()
+            if (App.Scenario.IsScenario) {
+                s.Close ();
+                return;
+            }
+
             StringBuilder sb = new StringBuilder ();
 
-            sb.AppendLine ("> Begin: Scenario");
-            sb.Append (App.Scenario.Save ());
-            sb.AppendLine ("> End: Scenario");
+            sb.AppendLine ("> Begin: Patient");
+            sb.Append (App.Patient.Save ());
+            sb.AppendLine ("> End: Patient");
 
             sb.AppendLine ("> Begin: Editor");
             sb.Append (this.SaveOptions ());
@@ -405,30 +548,6 @@ namespace II_Windows {
             s.Close ();
         }
 
-        private void LoadOptions (string inc) {
-            StringReader sRead = new StringReader (inc);
-
-            try {
-                string line;
-                while ((line = sRead.ReadLine ()) != null) {
-                    if (line.Contains (":")) {
-                        string pName = line.Substring (0, line.IndexOf (':')),
-                                pValue = line.Substring (line.IndexOf (':') + 1);
-                        switch (pName) {
-                            default: break;
-                            case "checkDefaultVitals": checkDefaultVitals.IsChecked = bool.Parse (pValue); break;
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                App.Server.Post_Exception (e);
-                sRead.Close ();
-                return;
-            }
-
-            sRead.Close ();
-        }
-
         private string SaveOptions () {
             StringBuilder sWrite = new StringBuilder ();
 
@@ -437,53 +556,71 @@ namespace II_Windows {
             return sWrite.ToString ();
         }
 
-        private void LoadFile () {
-            Stream s;
-            Microsoft.Win32.OpenFileDialog dlgLoad = new Microsoft.Win32.OpenFileDialog ();
-
-            dlgLoad.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
-            dlgLoad.FilterIndex = 1;
-            dlgLoad.RestoreDirectory = true;
-
-            if (dlgLoad.ShowDialog () == true) {
-                if ((s = dlgLoad.OpenFile ()) != null) {
-                    LoadInit (s);
-                    s.Close ();
-                }
-            }
-        }
-
-        private void SaveFile () {
-            Stream s;
-            Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
-
-            dlgSave.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
-            dlgSave.FilterIndex = 1;
-            dlgSave.RestoreDirectory = true;
-
-            if (dlgSave.ShowDialog () == true) {
-                if ((s = dlgSave.OpenFile ()) != null) {
-                    SaveT1 (s);
-                }
-            }
-        }
-
-        public bool RequestExit () {
+        public bool Exit () {
             Application.Current.Shutdown ();
             return true;
         }
 
-        public Patient RequestNewPatient () {
-            App.Scenario.Patient = new Patient ();
-            InitPatientEvents ();
-            return App.Patient;
+        private void InitStep () {
+            // Re-populate a StackPanel with RadioButtons for Progression options, including "Default Option"
+            stackProgressions.Children.Clear ();
+
+            stackProgressions.Children.Add (new RadioButton () {
+                IsChecked = true,
+                Name = "radioProgression_Default",
+                Content = App.Language.Dictionary ["PE:ProgressionDefault"],
+                GroupName = "ProgressionOptions"
+            });
+
+            for (int i = 0; i < App.Scenario.Current.Progressions.Count; i++) {
+                Scenario.Step.Progression p = App.Scenario.Current.Progressions [i];
+
+                stackProgressions.Children.Add (new RadioButton () {
+                    IsChecked = false,
+                    Content = p.Description,
+                    Name = String.Format ("radioProgression_{0}", i),
+                    GroupName = "ProgressionOptions"
+                });
+            }
         }
+
+        private void NextStep () {
+            UnloadPatientEvents ();
+
+            if (App.Scenario.Current.Progressions.Count == 0)
+                App.Patient = App.Scenario.NextStep ();
+            else {
+                foreach (RadioButton rb in stackProgressions.Children)
+                    if (rb.IsChecked ?? false && rb.Name.Contains ("_")) {
+                        string prog = rb.Name.Substring (rb.Name.IndexOf ("_") + 1);
+                        int optProg = -1;
+                        App.Patient = App.Scenario.NextStep (
+                            prog == "Default" ? -1
+                                : (int.TryParse (prog, out optProg) ? optProg : -1));
+                        break;
+                    }
+            }
+
+            InitPatientEvents ();
+            InitStep ();
+        }
+
+        private void PreviousStep () {
+            UnloadPatientEvents ();
+
+            App.Patient = App.Scenario.LastStep ();
+
+            InitPatientEvents ();
+            InitStep ();
+        }
+
+        private void MenuNewSimulation_Click (object s, RoutedEventArgs e) => RefreshScenario (true);
 
         private void MenuLoadFile_Click (object s, RoutedEventArgs e) => LoadFile ();
 
         private void MenuSaveFile_Click (object s, RoutedEventArgs e) => SaveFile ();
 
-        private void MenuExit_Click (object s, RoutedEventArgs e) => RequestExit ();
+        private void MenuExit_Click (object s, RoutedEventArgs e) => Exit ();
 
         private void MenuSetLanguage_Click (object s, RoutedEventArgs e) => DialogInitial (true);
 
@@ -524,14 +661,9 @@ namespace II_Windows {
             }
         }
 
-        private void ButtonPreviousStep_Click (object s, RoutedEventArgs e)
-            => App.Patient = App.Scenario.LastStep ();
+        private void ButtonPreviousStep_Click (object s, RoutedEventArgs e) => PreviousStep ();
 
-        private void ButtonNextStep_Click (object s, RoutedEventArgs e)
-            => App.Patient = App.Scenario.NextStep ();
-
-        private void ButtonAddNextStep_Click (object s, RoutedEventArgs e)
-            => App.Patient = App.Scenario.InsertStep ();
+        private void ButtonNextStep_Click (object s, RoutedEventArgs e) => NextStep ();
 
         private void ButtonPauseStep_Click (object s, RoutedEventArgs e)
             => App.Scenario.PauseStep ();
@@ -540,7 +672,7 @@ namespace II_Windows {
             => App.Scenario.PlayStep ();
 
         private void ButtonResetParameters_Click (object s, RoutedEventArgs e) {
-            RequestNewPatient ();
+            RefreshPatient ();
             lblStatusText.Content = App.Language.Dictionary ["PE:StatusPatientReset"];
         }
 
@@ -793,6 +925,6 @@ namespace II_Windows {
             numPDP.Value = (int)Utility.Clamp ((double)(numPDP.Value ?? 0), v.PDPMin, v.PDPMax);
         }
 
-        private void OnClosed (object sender, EventArgs e) => RequestExit ();
+        private void OnClosed (object sender, EventArgs e) => Exit ();
     }
 }

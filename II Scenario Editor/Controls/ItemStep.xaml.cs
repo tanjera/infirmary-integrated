@@ -122,12 +122,11 @@ namespace II.Scenario_Editor.Controls {
 
             dup.Step.Patient.Load_Process (Step.Patient.Save ());
 
-            dup.Step.ProgressFrom = Step.ProgressFrom;
-            dup.Step.ProgressTo = Step.ProgressTo;
-            dup.Step.ProgressTimer = Step.ProgressTimer;
-
-            foreach (Scenario.Step.Progression p in this.Step.Progressions)
-                dup.Step.Progressions.Add (new Scenario.Step.Progression (p.DestinationIndex, p.Description));
+            /* Specifically DON'T duplicate Progressions!!
+             * Because that would cause a mess of Progressions that the user likely doesn't want!
+             * Let the user manually add progressions. Duplicating an ItemStep is more for maintaining
+             * Patient parameters.
+             */
 
             return dup;
         }

@@ -14,6 +14,7 @@
         Closed="OnClosed">
 
     <Window.InputBindings>
+        <KeyBinding Key="N" Modifiers="Ctrl" Command="{Binding IC_NewFile}" />
         <KeyBinding Key="L" Modifiers="Ctrl" Command="{Binding IC_LoadFile}" />
         <KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding IC_SaveFile}" />
     </Window.InputBindings>
@@ -101,6 +102,8 @@
         <!-- Main Menu -->
         <Menu DockPanel.Dock="Top" Width="Auto" Background="White">
             <MenuItem Name="menuFile">
+                <MenuItem Name="menuNew" Click="MenuNewSimulation_Click" InputGestureText="Ctrl+N" />
+                <Separator />
                 <MenuItem Name="menuLoad" Click="MenuLoadFile_Click" InputGestureText="Ctrl+L" />
                 <MenuItem Name="menuSave" Click="MenuSaveFile_Click" InputGestureText="Ctrl+S" />
                 <Separator />
@@ -269,8 +272,8 @@
                 </Border>
 
                 <!-- Group for Scenario Player -->
-                <Border Style="{StaticResource expBorder}">
-                    <Expander Name="expScenarioPlayer" IsExpanded="False">
+                <Border Name="brdScenarioPlayer" Style="{StaticResource expBorder}">
+                    <Expander Name="expScenarioPlayer" IsExpanded="False" IsEnabled="False">
                         <Expander.Header>
                             <Label Name="lblGroupScenarioPlayer" Style="{StaticResource expHeader}" />
                         </Expander.Header>
@@ -278,9 +281,9 @@
                         <Grid Margin="3">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
@@ -302,10 +305,14 @@
                                     Grid.Column="3" Grid.Row="0">
                                 <Image Source="{StaticResource Icon_PlayerArrowNext}" Style="{StaticResource btnImage}" />
                             </Button>
-                            <Button Name="btnAddNextStep" Click="ButtonAddNextStep_Click" Style="{StaticResource btn}"
-                                    Grid.Column="4" Grid.Row="0">
-                                <Image Source="{StaticResource Icon_PlayerAddNext}" Style="{StaticResource btnImage}" />
-                            </Button>
+
+                            <GroupBox Name="grpProgressions" Margin="5, 2"
+                                     Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="4">
+                                <GroupBox.Header>
+                                    <Label Name="lblProgressionOptions" Margin="5, 2" />
+                                </GroupBox.Header>
+                                <StackPanel Name="stackProgressions" Orientation="Vertical" />
+                            </GroupBox>
                         </Grid>
                     </Expander>
                 </Border>
