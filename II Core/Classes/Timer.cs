@@ -17,6 +17,9 @@ namespace II {
         public void Dispose () => UnsubscribeTick ();
 
         public void UnsubscribeTick () {
+            if (Tick == null)
+                return;
+
             foreach (Delegate d in Tick?.GetInvocationList ())
                 Tick -= (EventHandler<EventArgs>)d;
         }

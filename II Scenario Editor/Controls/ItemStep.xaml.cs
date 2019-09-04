@@ -47,8 +47,13 @@ namespace II.Scenario_Editor.Controls {
         private readonly Point MinSize_IStep = new Point (50, 50);
         private readonly Point MinSize_IProgression = new Point (30, 30);
 
-        private readonly Brush Fill = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#dddddd")),
-                            Stroke = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#555555"));
+        public readonly Brush
+            Stroke_Default = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#555555")),
+            Fill_Default = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#dddddd")),
+            Fill_StepZero = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#b0d68b")),
+            Fill_StepEndNoProgression = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#d4a29b")),
+            Fill_StepEndNoOptionalProgression = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#dee685")),
+            Fill_StepEndMultipleProgressions = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#b9cfa3"));
 
         public ItemStep () {
             InitializeComponent ();
@@ -66,8 +71,8 @@ namespace II.Scenario_Editor.Controls {
             IStep.Stretch = Stretch.Fill;
             IStep.RadiusX = 5;
             IStep.RadiusY = 5;
-            IStep.Fill = Fill;
-            IStep.Stroke = Stroke;
+            IStep.Fill = Fill_Default;
+            IStep.Stroke = Stroke_Default;
             IStep.StrokeThickness = 1.0;
             IStep.Margin = new Thickness (3);
 
@@ -77,8 +82,8 @@ namespace II.Scenario_Editor.Controls {
 
             IStepEnd.MinWidth = MinSize_IProgression.X;
             IStepEnd.MinHeight = MinSize_IProgression.Y;
-            IStepEnd.Fill = Fill;
-            IStepEnd.Stroke = Stroke;
+            IStepEnd.Fill = Fill_Default;
+            IStepEnd.Stroke = Stroke_Default;
             IStepEnd.StrokeThickness = 0.75;
             IStepEnd.HorizontalAlignment = HorizontalAlignment.Center;
             IStepEnd.VerticalAlignment = VerticalAlignment.Center;
@@ -100,6 +105,7 @@ namespace II.Scenario_Editor.Controls {
         public void SetNumber (int index) {
             Index = index;
             lblNumber.Content = Index.ToString ();
+            IStep.Fill = (index == 0) ? Fill_StepZero : IStep.Fill = Fill_Default;
         }
 
         public void SetName (string name) {

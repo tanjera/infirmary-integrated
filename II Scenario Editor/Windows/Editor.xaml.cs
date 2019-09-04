@@ -621,8 +621,9 @@ namespace II.Scenario_Editor {
             selStep = ist;
             ist.SetNumber (Steps.FindIndex (o => { return o == selStep; }));
 
-            // Refresh the Properties View with the newly selected step
+            // Refresh the Properties View and draw Progression elements/colors
             updatePropertyView ();
+            drawIProgressions ();
 
             expStepProperty.IsExpanded = true;
             expProgressionProperty.IsExpanded = true;
@@ -737,6 +738,14 @@ namespace II.Scenario_Editor {
                     canvasDesigner.Children.Add (uiep);
                     Canvas.SetZIndex (uiep, 0);
                 }
+
+                // Color IStepEnd depending on whether it has progressions
+                if (iStep?.IProgressions?.Count == 0)
+                    iStep.IStepEnd.Fill = iStep.Fill_StepEndNoProgression;
+                else if (iStep?.IProgressions?.Count == 1)
+                    iStep.IStepEnd.Fill = iStep.Fill_StepEndNoOptionalProgression;
+                else if (iStep?.IProgressions?.Count > 1)
+                    iStep.IStepEnd.Fill = iStep.Fill_StepEndMultipleProgressions;
             }
         }
 

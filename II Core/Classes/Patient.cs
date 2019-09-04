@@ -263,6 +263,9 @@ namespace II {
         }
 
         public void UnsubscribePatientEvent () {
+            if (PatientEvent == null)
+                return;
+
             foreach (Delegate d in PatientEvent?.GetInvocationList ())
                 PatientEvent -= (EventHandler<PatientEventArgs>)d;
         }
