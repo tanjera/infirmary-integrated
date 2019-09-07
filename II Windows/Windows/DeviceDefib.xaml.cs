@@ -76,9 +76,9 @@ namespace II_Windows {
             timerVitals_Cardiac.Tick += OnTick_Vitals_Cardiac;
             timerVitals_Respiratory.Tick += OnTick_Vitals_Respiratory;
 
-            timerTracing.Interval = Waveforms.Draw_Refresh;
-            timerVitals_Cardiac.Interval = Utility.Clamp ((int)(App.Patient.GetHR_Seconds * 1000 / 2), 2000, 6000);
-            timerVitals_Respiratory.Interval = Utility.Clamp ((int)(App.Patient.GetRR_Seconds * 1000 / 2), 2000, 8000);
+            timerTracing.Set (Waveforms.Draw_Refresh);
+            timerVitals_Cardiac.Set (Utility.Clamp ((int)(App.Patient.GetHR_Seconds * 1000 / 2), 2000, 6000));
+            timerVitals_Respiratory.Set (Utility.Clamp ((int)(App.Patient.GetRR_Seconds * 1000 / 2), 2000, 8000));
 
             timerTracing.Start ();
             timerVitals_Cardiac.Start ();
@@ -275,13 +275,13 @@ namespace II_Windows {
 
             Analyzed = false;
 
-            if (timerAncillary_Delay.Locked) {
+            if (timerAncillary_Delay.IsLocked) {
                 Charging = false;
                 Charged = true;
             } else {
                 Charging = true;
                 Charged = false;
-                timerAncillary_Delay.Locked = true;
+                timerAncillary_Delay.Lock ();
                 timerAncillary_Delay.Tick += OnTick_ChargingComplete;
                 timerAncillary_Delay.Set (3000);
                 timerAncillary_Delay.Start ();
@@ -381,7 +381,7 @@ namespace II_Windows {
 
         private void OnTick_ChargingComplete (object sender, EventArgs e) {
             timerAncillary_Delay.Stop ();
-            timerAncillary_Delay.Locked = false;
+            timerAncillary_Delay.Unlock ();
             timerAncillary_Delay.Tick -= OnTick_ChargingComplete;
 
             Charging = false;

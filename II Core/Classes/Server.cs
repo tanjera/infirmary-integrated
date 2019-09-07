@@ -71,6 +71,7 @@ namespace II.Server {
                 listConnections.Remove (c);
                 c.Dispose ();
             } catch {
+                return;
             }
         }
 

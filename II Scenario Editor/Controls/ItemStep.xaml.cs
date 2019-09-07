@@ -55,6 +55,10 @@ namespace II.Scenario_Editor.Controls {
             Fill_StepEndNoOptionalProgression = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#dee685")),
             Fill_StepEndMultipleProgressions = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#b9cfa3"));
 
+        public readonly double
+            StrokeThickness_Default = .5,
+            StrokeThickness_Selected = 2.0;
+
         public ItemStep () {
             InitializeComponent ();
 
@@ -73,7 +77,7 @@ namespace II.Scenario_Editor.Controls {
             IStep.RadiusY = 5;
             IStep.Fill = Fill_Default;
             IStep.Stroke = Stroke_Default;
-            IStep.StrokeThickness = 1.0;
+            IStep.StrokeThickness = StrokeThickness_Default;
             IStep.Margin = new Thickness (3);
 
             Grid.SetColumn (IStep, 0);
@@ -84,7 +88,7 @@ namespace II.Scenario_Editor.Controls {
             IStepEnd.MinHeight = MinSize_IProgression.Y;
             IStepEnd.Fill = Fill_Default;
             IStepEnd.Stroke = Stroke_Default;
-            IStepEnd.StrokeThickness = 0.75;
+            IStepEnd.StrokeThickness = StrokeThickness_Default;
             IStepEnd.HorizontalAlignment = HorizontalAlignment.Center;
             IStepEnd.VerticalAlignment = VerticalAlignment.Center;
             IStepEnd.Margin = new Thickness (3);

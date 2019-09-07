@@ -48,13 +48,13 @@ namespace II_Windows {
         }
 
         private void InitTimers () {
-            timerTracing.Interval = Waveforms.Draw_Refresh;
+            timerTracing.Set (Waveforms.Draw_Refresh);
             App.Timer_Main.Tick += timerTracing.Process;
             timerTracing.Tick += OnTick_Tracing;
             timerTracing.Start ();
 
-            timerVitals_Cardiac.Interval = 3000;
-            timerVitals_Respiratory.Interval = 5000;
+            timerVitals_Cardiac.Set (3000);
+            timerVitals_Respiratory.Set (5000);
 
             App.Timer_Main.Tick += timerVitals_Cardiac.Process;
             App.Timer_Main.Tick += timerVitals_Respiratory.Process;

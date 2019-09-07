@@ -742,7 +742,7 @@ namespace II {
                 StartPacemaker ();
         }
 
-        public void PacemakerPause () => timerPacemaker_Baseline.Interval = 4000;
+        public void PacemakerPause () => timerPacemaker_Baseline.Set (4000);
 
         private void InitDefibrillation (bool toSynchronize) {
             if (toSynchronize)
@@ -778,7 +778,7 @@ namespace II {
 
         private void OnDefibrillation_End () {
             timerDefibrillation.Stop ();
-            timerCardiac_Baseline.ResetAuto (timerCardiac_Baseline.Interval);
+            timerCardiac_Baseline.ResetAuto ();
         }
 
         private void OnCardioversion (object sender, EventArgs e) {

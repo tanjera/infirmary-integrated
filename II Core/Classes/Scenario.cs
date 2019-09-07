@@ -19,6 +19,9 @@ namespace II {
         public List<Step> Steps = new List<Step> ();
         public Timer ProgressTimer = new Timer ();
 
+        public event EventHandler<EventArgs> StepChangeRequest;
+        public event EventHandler<EventArgs> StepChanged;
+
         public Scenario (bool toInit) {
             if (toInit)
                 Steps.Add (new Step ());
@@ -112,7 +115,9 @@ namespace II {
             return sWrite.ToString ();
         }
 
-        public Patient NextStep (int optProg = -1) {
+        public void NextStep (int optProg = -1) {
+            StepChangeRequest (this, new EventArgs ());
+
             int pFrom = CurrentIndex;
 
             if (optProg < 0 || optProg >= Current.Progressions.Count)       // Default Progression
@@ -125,46 +130,37 @@ namespace II {
             if (pFrom != CurrentIndex)
                 Current.ProgressFrom = pFrom;
 
-            StartTimer ();
+            SetTimer ();
             CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
-            return Current.Patient;
+
+            StepChanged (this, new EventArgs ());
         }
 
-        public Patient LastStep () {
+        public void LastStep () {
+            StepChangeRequest (this, new EventArgs ());
+
             int pFrom = CurrentIndex;
             CurrentIndex = Current.ProgressFrom;
 
-            StartTimer ();
+            SetTimer ();
             CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
-            return Current.Patient;
+
+            StepChanged (this, new EventArgs ());
         }
 
-        public Patient InsertStep () {
-            int pFrom = CurrentIndex;
-            CurrentIndex = Math.Min (CurrentIndex + 1, Steps.Count);
+        public void SetStep (int incIndex) {
+            StepChangeRequest (this, new EventArgs ());
 
-            Step s = new Step ();
-            s.Load_Process (Steps [CurrentIndex - 1].Save ());
-            Steps.Insert (CurrentIndex, s);
-
-            Steps [pFrom].ProgressTo = CurrentIndex;
-            s.ProgressFrom = pFrom;
-
-            StartTimer ();
-            CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
-            return Current.Patient;
-        }
-
-        public Patient SetStep (int incIndex) {
             int pFrom = CurrentIndex;
             CurrentIndex = Utility.Clamp (incIndex, 0, Steps.Count - 1);
 
             if (pFrom != CurrentIndex)
                 Current.ProgressFrom = pFrom;
 
-            StartTimer ();
+            SetTimer ();
             CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
-            return Current.Patient;
+
+            StepChanged (this, new EventArgs ());
         }
 
         public void CopyDeviceStatus (Patient lastPatient, Patient thisPatient) {
@@ -179,14 +175,19 @@ namespace II {
 
         public void PlayStep () => ProgressTimer.Start ();
 
-        public void StartTimer () {
+        public void SetTimer () {
             if (Current.ProgressTimer > 0)
                 ProgressTimer.ResetAuto (Current.ProgressTimer * 1000);
+            else
+                ProgressTimer.Stop ();
         }
 
-        public void ProcessTimer (object sender, EventArgs e) {
-            ProgressTimer.Process ();
-        }
+        public void StopTimer () => ProgressTimer.Stop ();
+
+        public void ResumeTimer () => ProgressTimer.Start ();
+
+        public void ProcessTimer (object sender, EventArgs e)
+            => ProgressTimer.Process ();
 
         private void ProgressTimer_Tick (object sender, EventArgs e)
             => NextStep ();

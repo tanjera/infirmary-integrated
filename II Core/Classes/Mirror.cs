@@ -10,6 +10,7 @@ namespace II.Server {
 
         private int RefreshSeconds = 5;
         private string _Accession = "";
+        private BackgroundWorker _BackgroundWorker = new BackgroundWorker ();
 
         public Statuses Status = Statuses.INACTIVE;
         public string PasswordAccess = "",
@@ -22,6 +23,10 @@ namespace II.Server {
             set { _Accession = value.ToUpper (); }
         }
 
+        public Mirrors () {
+            _BackgroundWorker.WorkerSupportsCancellation = true;
+        }
+
         public void ProcessTimer (object sender, EventArgs e) {
             timerUpdate.Process ();
         }
@@ -29,6 +34,15 @@ namespace II.Server {
         public void TimerTick (Patient p, Servers s) {
             timerUpdate.ResetAuto (5000);
             GetPatient (p, s);
+        }
+
+        public void CancelOperation () {
+            try {
+                _BackgroundWorker.CancelAsync ();
+            } catch {
+            } finally {
+                ThreadLock = false;
+            }
         }
 
         public void GetPatient (Patient p, Servers s) {
@@ -40,19 +54,18 @@ namespace II.Server {
             if (DateTime.Compare (ServerQueried, DateTime.UtcNow.Subtract (new TimeSpan (0, 0, RefreshSeconds))) < 0) {
                 // Must use intermediary Patient(), if App.Patient is thread-locked, Waveforms stop populating!!
                 Patient pBuffer = new Patient ();
-                BackgroundWorker bgw = new BackgroundWorker ();
 
-                bgw.DoWork += delegate {
+                _BackgroundWorker.DoWork += delegate {
                     pBuffer = s.Get_PatientMirror (this);
                 };
-                bgw.RunWorkerCompleted += delegate {
+                _BackgroundWorker.RunWorkerCompleted += delegate {
                     ThreadLock = false;
                     if (pBuffer != null)
                         p.Load_Process (pBuffer.Save ());
                 };
                 if (!ThreadLock) {
                     ThreadLock = true;
-                    bgw.RunWorkerAsync ();
+                    _BackgroundWorker.RunWorkerAsync ();
                 }
             }
         }
@@ -64,16 +77,15 @@ namespace II.Server {
             // Must use intermediary objects, if App.Patient is thread-locked, Waveforms stop populating!!
             string pStr = p.Save ();
             DateTime pUp = p.Updated;
-            BackgroundWorker bgw = new BackgroundWorker ();
 
             if (Accession == "")
                 Accession = Utility.RandomString (8);
 
-            bgw.DoWork += delegate { s.Post_PatientMirror (this, pStr, pUp); };
-            bgw.RunWorkerCompleted += delegate { ThreadLock = false; };
+            _BackgroundWorker.DoWork += delegate { s.Post_PatientMirror (this, pStr, pUp); };
+            _BackgroundWorker.RunWorkerCompleted += delegate { ThreadLock = false; };
             if (!ThreadLock) {
                 ThreadLock = true;
-                bgw.RunWorkerAsync ();
+                _BackgroundWorker.RunWorkerAsync ();
             }
         }
     }

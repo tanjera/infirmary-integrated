@@ -183,12 +183,14 @@ namespace II_Windows {
 
         private void InitMirroring () {
             App.Timer_Main.Tick += App.Mirror.ProcessTimer;
-            App.Mirror.timerUpdate.Tick += delegate { App.Mirror.TimerTick (App.Patient, App.Server); };
+            App.Mirror.timerUpdate.Tick += OnMirrorTick;
             App.Mirror.timerUpdate.ResetAuto (5000);
         }
 
         private void InitScenario (bool toInit) {
             App.Scenario = new Scenario (toInit);
+            App.Scenario.StepChangeRequest += OnStepChangeRequest;    // Allows unlinking of Timers immediately prior to Step change
+            App.Scenario.StepChanged += OnStepChanged;                  // Updates App.Patient, allows PatientEditor UI to update
             App.Timer_Main.Tick += App.Scenario.ProcessTimer;
 
             if (toInit)         // If toInit is false, Patient is null- InitPatient() will need to be called manually
@@ -196,8 +198,12 @@ namespace II_Windows {
         }
 
         private void UnloadScenario () {
-            App.Patient.Dispose ();
-            App.Scenario.Dispose ();
+            App.Scenario.StepChangeRequest -= OnStepChangeRequest;
+            App.Scenario.StepChanged -= OnStepChanged;          // Unlink PatientEditor UI and App.Patient updates from Scenario
+            App.Timer_Main.Tick -= App.Scenario.ProcessTimer;   // Unlink Scenario from App/Main Timer
+
+            App.Patient.Dispose ();         // Disposes Patient's Timers
+            App.Scenario.Dispose ();        // Disposes Scenario's Timer
         }
 
         private void RefreshScenario (bool toInit) {
@@ -431,6 +437,13 @@ namespace II_Windows {
                 sRead.Close ();
             }
 
+            // On loading a file, ensure Mirroring is not in Client mode! Will conflict...
+            if (App.Mirror.Status == Mirrors.Statuses.CLIENT) {
+                App.Mirror.Status = Mirrors.Statuses.INACTIVE;
+                App.Mirror.CancelOperation ();      // Attempt to cancel any possible Mirror downloads
+                lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringDisabled"];
+            }
+
             // Initialize the first step of the scenario
             if (App.Scenario.IsScenario)
                 InitStep ();
@@ -561,7 +574,43 @@ namespace II_Windows {
             return true;
         }
 
+        private void OnMirrorTick (object sender, EventArgs e)
+            => App.Mirror.TimerTick (App.Patient, App.Server);
+
+        private void OnStepChangeRequest (object sender, EventArgs e)
+            => UnloadPatientEvents ();
+
+        private void OnStepChanged (object sender, EventArgs e) {
+            App.Patient = App.Scenario.Patient;
+
+            InitPatientEvents ();
+            InitStep ();
+        }
+
         private void InitStep () {
+            Scenario.Step s = App.Scenario.Current;
+
+            // Set Previous, Next, Pause, and Play buttons .IsEnabled based on Step properties
+            btnPreviousStep.IsEnabled = (s.ProgressFrom >= 0);
+            btnNextStep.IsEnabled = (s.ProgressTo >= 0 || s.Progressions.Count > 0);
+            btnPauseStep.IsEnabled = (s.ProgressTimer > 0);
+            btnPlayStep.IsEnabled = false;
+
+            // Display Scenario's Step count
+            lblScenarioStep.Content = String.Format ("{0} {1} / {2}",
+                App.Language.Dictionary ["PE:ProgressionStep"],
+                App.Scenario.CurrentIndex,          // Retaining zero-based index to confuse end-user
+                App.Scenario.Steps.Count - 1);      // But also for consistency with Scenario Editor and program development
+
+            // Display Progress Timer if applicable, otherwise instruct that the Step requires manual progression
+            if (s.ProgressTimer == -1)
+                lblTimerStep.Content = App.Language.Dictionary ["PE:ProgressionManual"];
+            else
+                lblTimerStep.Content = String.Format ("{0} {1} {2}",
+                    App.Language.Dictionary ["PE:ProgressionAutomatic"],
+                    s.ProgressTimer,
+                    App.Language.Dictionary ["PE:ProgressionSeconds"]);
+
             // Re-populate a StackPanel with RadioButtons for Progression options, including "Default Option"
             stackProgressions.Children.Clear ();
 
@@ -572,8 +621,8 @@ namespace II_Windows {
                 GroupName = "ProgressionOptions"
             });
 
-            for (int i = 0; i < App.Scenario.Current.Progressions.Count; i++) {
-                Scenario.Step.Progression p = App.Scenario.Current.Progressions [i];
+            for (int i = 0; i < s.Progressions.Count; i++) {
+                Scenario.Step.Progression p = s.Progressions [i];
 
                 stackProgressions.Children.Add (new RadioButton () {
                     IsChecked = false,
@@ -585,33 +634,47 @@ namespace II_Windows {
         }
 
         private void NextStep () {
-            UnloadPatientEvents ();
-
             if (App.Scenario.Current.Progressions.Count == 0)
-                App.Patient = App.Scenario.NextStep ();
+                App.Scenario.NextStep ();
             else {
                 foreach (RadioButton rb in stackProgressions.Children)
                     if (rb.IsChecked ?? false && rb.Name.Contains ("_")) {
                         string prog = rb.Name.Substring (rb.Name.IndexOf ("_") + 1);
                         int optProg = -1;
-                        App.Patient = App.Scenario.NextStep (
+                        App.Scenario.NextStep (
                             prog == "Default" ? -1
                                 : (int.TryParse (prog, out optProg) ? optProg : -1));
                         break;
                     }
             }
-
-            InitPatientEvents ();
-            InitStep ();
         }
 
         private void PreviousStep () {
-            UnloadPatientEvents ();
+            App.Scenario.LastStep ();
+        }
 
-            App.Patient = App.Scenario.LastStep ();
+        private void PauseStep () {
+            btnPauseStep.IsEnabled = false;
+            btnPlayStep.IsEnabled = true;
 
-            InitPatientEvents ();
-            InitStep ();
+            App.Scenario.PauseStep ();
+
+            lblTimerStep.Content = App.Language.Dictionary ["PE:ProgressionPaused"];
+        }
+
+        private void PlayStep () {
+            btnPauseStep.IsEnabled = true;
+            btnPlayStep.IsEnabled = false;
+
+            App.Scenario.PlayStep ();
+
+            if (App.Scenario.Current.ProgressTimer == -1)
+                lblTimerStep.Content = App.Language.Dictionary ["PE:ProgressionManual"];
+            else
+                lblTimerStep.Content = String.Format ("{0} {1} {2}",
+                    App.Language.Dictionary ["PE:ProgressionAutomatic"],
+                    App.Scenario.Current.ProgressTimer - (App.Scenario.ProgressTimer.Elapsed / 1000),
+                    App.Language.Dictionary ["PE:ProgressionSeconds"]);
         }
 
         private void MenuNewSimulation_Click (object s, RoutedEventArgs e) => RefreshScenario (true);
@@ -645,10 +708,16 @@ namespace II_Windows {
                 App.Mirror.Status = Mirrors.Statuses.INACTIVE;
                 lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringDisabled"];
             } else if (radioClient.IsChecked ?? true) {
+                // Set client mirroring status
                 App.Mirror.Status = Mirrors.Statuses.CLIENT;
                 App.Mirror.Accession = txtAccessionKey.Text;
                 App.Mirror.PasswordAccess = txtAccessPassword.Password;
                 lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringActivated"];
+
+                // When mirroring another patient, disable scenario player and Scenario timer
+                expScenarioPlayer.IsExpanded = false;   // Can be re-enabled by loading a scenario
+                expScenarioPlayer.IsEnabled = false;
+                App.Scenario.StopTimer ();
             } else if (radioServer.IsChecked ?? true) {
                 if (txtAccessionKey.Text == "")
                     txtAccessionKey.Text = Utility.RandomString (8);
@@ -665,11 +734,9 @@ namespace II_Windows {
 
         private void ButtonNextStep_Click (object s, RoutedEventArgs e) => NextStep ();
 
-        private void ButtonPauseStep_Click (object s, RoutedEventArgs e)
-            => App.Scenario.PauseStep ();
+        private void ButtonPauseStep_Click (object s, RoutedEventArgs e) => PauseStep ();
 
-        private void ButtonPlayStep_Click (object s, RoutedEventArgs e)
-            => App.Scenario.PlayStep ();
+        private void ButtonPlayStep_Click (object s, RoutedEventArgs e) => PlayStep ();
 
         private void ButtonResetParameters_Click (object s, RoutedEventArgs e) {
             RefreshPatient ();

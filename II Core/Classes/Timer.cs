@@ -2,8 +2,8 @@
 
 namespace II {
     public class Timer {
-        public int Interval = 0;
-        public bool Locked = false;
+        private int _Interval = 0;
+        private bool _Locked = false;
 
         DateTime Last;
         bool Running = false;
@@ -24,12 +24,19 @@ namespace II {
                 Tick -= (EventHandler<EventArgs>)d;
         }
 
+        public bool IsLocked { get => _Locked; }
+        public int Interval { get => _Interval; }
+        public int Elapsed { get => (int)((DateTime.Now - Last).TotalSeconds * 1000); }
+
+        public void Lock () => _Locked = true;
+        public void Unlock () => _Locked = false;
+
         public void Start () {
             Running = true;
         }
 
         public void Continue (int interval) {
-            Interval = interval;
+            _Interval = interval;
             Running = true;
         }
 
@@ -38,7 +45,7 @@ namespace II {
         }
 
         public void Set (int interval) {
-            Interval = interval;
+            _Interval = interval;
             Last = DateTime.Now;
         }
 
@@ -62,7 +69,7 @@ namespace II {
             if (!Running)
                 return;
 
-            if ((DateTime.Now - Last).TotalSeconds * 1000 > Interval) {
+            if ((DateTime.Now - Last).TotalSeconds * 1000 > _Interval) {
                 Last = DateTime.Now;
                 Tick?.Invoke (this, new EventArgs ());
             }

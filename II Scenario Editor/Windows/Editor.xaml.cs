@@ -140,7 +140,7 @@ namespace II.Scenario_Editor {
                                 sc.Load_Process (pbuffer.ToString ());
                             }
                         }
-                    } catch (Exception e) {
+                    } catch {
                         loadFail ();
                     } finally {
                         sRead.Close ();
@@ -182,7 +182,7 @@ namespace II.Scenario_Editor {
                     }
 
                     // Refresh the Properties View with the newly selected step
-                    selStep = Steps.Count > 0 ? Steps [0] : null;
+                    selectStep (Steps.Count > 0 ? Steps [0] : null);
                     updatePropertyView ();
                     updateScenarioProperty ();
                     drawIProgressions ();
@@ -398,6 +398,7 @@ namespace II.Scenario_Editor {
             pintETCO2.Set (selStep.Patient.VS_Settings.ETCO2);
             pintCVP.Set (selStep.Patient.VS_Settings.CVP);
             pbpABP.Set (selStep.Patient.VS_Settings.ASBP, selStep.Patient.VS_Settings.ADBP);
+            penmPACatheterRhythm.Set ((int)selStep.Patient.PulmonaryArtery_Placement.Value);
             pbpPBP.Set (selStep.Patient.VS_Settings.PSP, selStep.Patient.VS_Settings.PDP);
             pintICP.Set (selStep.Patient.VS_Settings.ICP);
             pintIAP.Set (selStep.Patient.VS_Settings.IAP);
@@ -599,7 +600,21 @@ namespace II.Scenario_Editor {
             updatePropertyView ();
         }
 
-        private void addStep (ItemStep ist = null) {
+        private void selectStep (ItemStep ist) {
+            selStep = ist;
+
+            foreach (ItemStep i in Steps)
+                i.IStep.StrokeThickness = (i == selStep) ? i.StrokeThickness_Selected : i.StrokeThickness_Default;
+        }
+
+        private void selectStepEnd (ItemStep.UEIStepEnd iste) {
+            selEnd = iste;
+
+            foreach (ItemStep i in Steps)
+                i.IStepEnd.StrokeThickness = (i.IStepEnd == selEnd) ? i.StrokeThickness_Selected : i.StrokeThickness_Default;
+        }
+
+        private void addStep (ItemStep ist) {
             if (ist == null)
                 ist = new ItemStep ();
 
@@ -618,7 +633,7 @@ namespace II.Scenario_Editor {
             Canvas.SetZIndex (ist, 1);
 
             // Select the added step, give a default name by its index
-            selStep = ist;
+            selectStep (ist);
             ist.SetNumber (Steps.FindIndex (o => { return o == selStep; }));
 
             // Refresh the Properties View and draw Progression elements/colors
@@ -758,7 +773,7 @@ namespace II.Scenario_Editor {
         }
 
         private void ButtonAddStep_Click (object sender, RoutedEventArgs e)
-            => addStep ();
+            => addStep (null);
 
         private void ButtonDuplicateStep_Click (object sender, RoutedEventArgs e) {
             if (selStep == null)
@@ -793,12 +808,6 @@ namespace II.Scenario_Editor {
             updatePropertyView ();
         }
 
-        private void ChkProgressTimer_Click (object sender, RoutedEventArgs e) {
-            pintProgressTimer.IsEnabled = chkProgressTimer.IsChecked ?? false;
-            if (chkProgressTimer.IsChecked ?? false == false)
-                pintProgressTimer.numValue.Value = -1;
-        }
-
         private void BtnDeleteDefaultProgression_Click (object sender, RoutedEventArgs e)
             => deleteDefaultProgression ();
 
@@ -820,7 +829,8 @@ namespace II.Scenario_Editor {
         }
 
         private void IStep_MouseLeftButtonDown (object sender, MouseButtonEventArgs e) {
-            selStep = ((ItemStep.UIEStep)sender).ItemStep;
+            selectStep (((ItemStep.UIEStep)sender).ItemStep);
+            selectStepEnd (null);
 
             Mouse.Capture (sender as ItemStep.UIEStep);
             mouseCaptured = true;
@@ -858,8 +868,8 @@ namespace II.Scenario_Editor {
         }
 
         private void IStepEnd_MouseLeftButtonDown (object sender, MouseButtonEventArgs e) {
-            selStep = ((ItemStep.UEIStepEnd)sender).ItemStep;
-            selEnd = (ItemStep.UEIStepEnd)sender;
+            selectStep (((ItemStep.UEIStepEnd)sender).ItemStep);
+            selectStepEnd ((ItemStep.UEIStepEnd)sender);
 
             updatePropertyView ();
 
@@ -878,8 +888,6 @@ namespace II.Scenario_Editor {
                 else if (Mouse.DirectlyOver is ItemStep)
                     addProgression (selStep, (ItemStep)Mouse.DirectlyOver);
             }
-
-            selEnd = null;
         }
     }
 }

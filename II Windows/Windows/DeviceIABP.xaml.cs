@@ -113,8 +113,8 @@ namespace II_Windows {
             App.Timer_Main.Tick += timerTracing.Process;
             App.Timer_Main.Tick += timerAncillary_Delay.Process;
 
-            timerTracing.Interval = Waveforms.Draw_Refresh;
-            timerVitals.Interval = (int)(App.Patient.GetHR_Seconds * 1000);
+            timerTracing.Set (Waveforms.Draw_Refresh);
+            timerVitals.Set ((int)(App.Patient.GetHR_Seconds * 1000));
 
             timerTracing.Tick += OnTick_Tracing;
             timerVitals.Tick += OnTick_Vitals;
@@ -316,7 +316,7 @@ namespace II_Windows {
         }
 
         private void PrimeBalloon () {
-            if (timerAncillary_Delay.Locked) {
+            if (timerAncillary_Delay.IsLocked) {
                 Priming = false;
                 Primed = true;
                 if (Prime_ThenStart) {
@@ -327,7 +327,7 @@ namespace II_Windows {
                 Priming = true;
                 Primed = false;
 
-                timerAncillary_Delay.Locked = true;
+                timerAncillary_Delay.Lock ();
                 timerAncillary_Delay.Tick += OnTick_PrimingComplete;
                 timerAncillary_Delay.Set (5000);
                 timerAncillary_Delay.Start ();
@@ -459,7 +459,7 @@ namespace II_Windows {
 
         private void OnTick_PrimingComplete (object sender, EventArgs e) {
             timerAncillary_Delay.Stop ();
-            timerAncillary_Delay.Locked = false;
+            timerAncillary_Delay.Unlock ();
             timerAncillary_Delay.Tick -= OnTick_PrimingComplete;
 
             Priming = false;
