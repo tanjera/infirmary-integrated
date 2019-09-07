@@ -116,7 +116,7 @@ namespace II {
         }
 
         public void NextStep (int optProg = -1) {
-            StepChangeRequest (this, new EventArgs ());
+            StepChangeRequest?.Invoke (this, new EventArgs ());
 
             int pFrom = CurrentIndex;
 
@@ -133,11 +133,11 @@ namespace II {
             SetTimer ();
             CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
 
-            StepChanged (this, new EventArgs ());
+            StepChanged?.Invoke (this, new EventArgs ());
         }
 
         public void LastStep () {
-            StepChangeRequest (this, new EventArgs ());
+            StepChangeRequest?.Invoke (this, new EventArgs ());
 
             int pFrom = CurrentIndex;
             CurrentIndex = Current.ProgressFrom;
@@ -145,11 +145,11 @@ namespace II {
             SetTimer ();
             CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
 
-            StepChanged (this, new EventArgs ());
+            StepChanged?.Invoke (this, new EventArgs ());
         }
 
         public void SetStep (int incIndex) {
-            StepChangeRequest (this, new EventArgs ());
+            StepChangeRequest?.Invoke (this, new EventArgs ());
 
             int pFrom = CurrentIndex;
             CurrentIndex = Utility.Clamp (incIndex, 0, Steps.Count - 1);
@@ -160,7 +160,7 @@ namespace II {
             SetTimer ();
             CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
 
-            StepChanged (this, new EventArgs ());
+            StepChanged?.Invoke (this, new EventArgs ());
         }
 
         public void CopyDeviceStatus (Patient lastPatient, Patient thisPatient) {
