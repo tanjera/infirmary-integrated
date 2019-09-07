@@ -16,13 +16,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II MacOS", "II MacOS\II Mac
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II Windows", "II Windows\II Windows.csproj", "{F66C5A84-D2A2-48FD-9E4A-984AEB4730AF}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer, Windows", "Installer, Windows\Installer_Windows.vdproj", "{135ECE45-2C14-49EC-98C7-20A0AA110B70}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II Linux", "II Linux\II Linux.csproj", "{14D4C603-47F0-4028-916C-62770D9C7E1C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II Scenario Editor", "II Scenario Editor\II Scenario Editor.csproj", "{23FDB2CE-6680-4280-A1D2-1693323D3578}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unit Testing", "Unit Testing\Unit Testing.csproj", "{62368E1B-8ED2-4118-A5FC-C894C4994989}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer, Windows", "Installer, Windows\Installer, Windows.vdproj", "{69DDA1E8-B837-47A3-AB0E-8D496166F208}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -48,12 +48,6 @@ Global
 		{F66C5A84-D2A2-48FD-9E4A-984AEB4730AF}.DefaultBuild|Any CPU.Build.0 = Debug|Any CPU
 		{F66C5A84-D2A2-48FD-9E4A-984AEB4730AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F66C5A84-D2A2-48FD-9E4A-984AEB4730AF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{135ECE45-2C14-49EC-98C7-20A0AA110B70}.Debug|Any CPU.ActiveCfg = Debug
-		{135ECE45-2C14-49EC-98C7-20A0AA110B70}.Debug|Any CPU.Build.0 = Debug
-		{135ECE45-2C14-49EC-98C7-20A0AA110B70}.DefaultBuild|Any CPU.ActiveCfg = Debug
-		{135ECE45-2C14-49EC-98C7-20A0AA110B70}.DefaultBuild|Any CPU.Build.0 = Debug
-		{135ECE45-2C14-49EC-98C7-20A0AA110B70}.Release|Any CPU.ActiveCfg = Release
-		{135ECE45-2C14-49EC-98C7-20A0AA110B70}.Release|Any CPU.Build.0 = Release
 		{14D4C603-47F0-4028-916C-62770D9C7E1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{14D4C603-47F0-4028-916C-62770D9C7E1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{14D4C603-47F0-4028-916C-62770D9C7E1C}.DefaultBuild|Any CPU.ActiveCfg = Debug|Any CPU
@@ -72,6 +66,9 @@ Global
 		{62368E1B-8ED2-4118-A5FC-C894C4994989}.DefaultBuild|Any CPU.Build.0 = Debug|Any CPU
 		{62368E1B-8ED2-4118-A5FC-C894C4994989}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{62368E1B-8ED2-4118-A5FC-C894C4994989}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69DDA1E8-B837-47A3-AB0E-8D496166F208}.Debug|Any CPU.ActiveCfg = Debug
+		{69DDA1E8-B837-47A3-AB0E-8D496166F208}.DefaultBuild|Any CPU.ActiveCfg = Debug
+		{69DDA1E8-B837-47A3-AB0E-8D496166F208}.Release|Any CPU.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
