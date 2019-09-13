@@ -80,13 +80,14 @@ namespace II.Rhythm {
         }
 
         private void SetForwardBuffer (Patient patient, bool onClear = false) {
+
             // Set the forward edge buffer (a coefficient of lengthSeconds!) to be the length of 2 beats/breaths
             if (IsCardiac)
-                forwardBuffer = Utility.Clamp (1 + (2 * (patient.GetHR_Seconds / lengthSeconds)),
-                    (onClear ? 1.1d : forwardBuffer), 10d);
+                forwardBuffer = Math.Max (1 + (2 * (patient.GetHR_Seconds / lengthSeconds)),
+                    (onClear ? 1.1d : forwardBuffer));
             else if (IsRespiratory)
-                forwardBuffer = Utility.Clamp (1 + (2 * (patient.GetRR_Seconds / lengthSeconds)),
-                    (onClear ? 1.1d : forwardBuffer), 10d);
+                forwardBuffer = Math.Max (1 + (2 * (patient.GetRR_Seconds / lengthSeconds)),
+                    (onClear ? 1.1d : forwardBuffer));
         }
 
         public void Reset () {
@@ -97,6 +98,7 @@ namespace II.Rhythm {
             SetForwardBuffer (patient, true);         // Since accounting for forward edge buffer, recalculate
 
             for (int i = Points.Count - 1; i >= 0; i--) {
+
                 // Must account for forwardEdgeBuffer... otherwise will cause period of "asystole"
                 if (Points [i].X > (lengthSeconds * forwardBuffer))
                     Points.RemoveAt (i);
@@ -105,6 +107,7 @@ namespace II.Rhythm {
 
         public Point Last (List<Point> _In) {
             if (_In.Count < 1)
+
                 // New vectors are added to Points beginning at 5 seconds to marquee backwards to 0
                 return new Point (lengthSeconds, 0);
             else
@@ -215,6 +218,7 @@ namespace II.Rhythm {
             if (IsECG) {
                 p.Cardiac_Rhythm.ECG_Isoelectric (p, this);
             } else if (Lead.Value != Leads.Values.RR && Lead.Value != Leads.Values.ETCO2) {
+
                 // Fill waveform through to future buffer with flatline
                 double fill = (lengthSeconds * forwardBuffer) - Last (Points).X;
                 Concatenate (Waveforms.Waveform_Flatline (fill > p.GetHR_Seconds ? fill : p.GetHR_Seconds, 0f));
@@ -248,6 +252,7 @@ namespace II.Rhythm {
                 else if (p.Cardiac_Rhythm.HasPulse_Ventricular)
                     Overwrite (Waveforms.ABP_Rhythm (p, 1f));
             } else if (Lead.Value == Leads.Values.PA && p.Cardiac_Rhythm.HasPulse_Ventricular) {
+
                 // Vary PA waveforms based on PA catheter placement
                 if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Ventricle)
                     Overwrite (Waveforms.RV_Rhythm (p, 1f));
@@ -262,9 +267,11 @@ namespace II.Rhythm {
 
             if (Lead.Value == Leads.Values.IABP && p.IABP_Active) {
                 if (p.Cardiac_Rhythm.HasWaveform_Ventricular && p.IABP_Trigger == "ECG") {
+
                     // ECG Trigger works only if ventricular ECG waveform
                     Overwrite (Waveforms.IABP_Balloon_Rhythm (p, 1f));
                 } else if (p.Cardiac_Rhythm.HasPulse_Ventricular && p.IABP_Trigger == "Pressure") {
+
                     // Pressure Trigger works only if ventricular pressure impulse
                     Overwrite (Waveforms.IABP_Balloon_Rhythm (p, 1f));
                 }
@@ -275,6 +282,7 @@ namespace II.Rhythm {
             SetForwardBuffer (p);
 
             if (Lead.Value == Leads.Values.RR || Lead.Value == Leads.Values.ETCO2) {
+
                 // Fill waveform through to future buffer with flatline
                 double fill = (lengthSeconds * forwardBuffer) - Last (Points).X;
                 Concatenate (Waveforms.Waveform_Flatline (fill > p.GetRR_Seconds ? fill : p.GetRR_Seconds, 0f));

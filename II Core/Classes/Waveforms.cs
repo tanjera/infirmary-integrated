@@ -104,6 +104,7 @@ namespace II.Rhythm {
         }
 
         public static List<Point> IAP_Rhythm (Patient _P, double _Amplitude) {
+
             // Adjust for intrathoracic pressure
             if (_P.Mechanically_Ventilated)
                 _Amplitude *= _P.Respiration_Inflated ? 1f : 0.7f;
@@ -414,6 +415,7 @@ namespace II.Rhythm {
             List<Point> thisBeat = new List<Point> ();
             while (_Length > 0f) {
                 thisBeat = Concatenate (thisBeat, Curve (_Wave, _Amplitude, 0f, Last (thisBeat)));
+
                 // Flip the sign of amplitude and randomly crawl larger/smaller, models the
                 // flippant waves in v-fib.
                 _Amplitude = 0 - Utility.Clamp (Utility.RandomDouble (_Amplitude - 0.1f, _Amplitude + 0.1f), -1f, 1f);
@@ -473,6 +475,7 @@ namespace II.Rhythm {
                 return _Original [_Original.Count - 1];
         }
         static List<Point> Concatenate (List<Point> _Original, List<Point> _Addition) {
+
             // Offsets the X value of a Point[] so that it can be placed at the end
             // of an existing Point[] and continue from that point on.
 
@@ -561,8 +564,11 @@ namespace II.Rhythm {
                 return new List<Point> ();
 
             List<Point> _Out = new List<Point> ();
-            for (double x = 0; x <= _Length; x += Draw_Resolve)
+
+            // For a long line, multiply Draw_Resolve!! For performance
+            for (double x = 0; x <= _Length; x += (Draw_Resolve * 100))
                 _Out.Add (new Point (_Start.X + x, _mV));
+
             return _Out;
         }
 
@@ -635,6 +641,7 @@ namespace II.Rhythm {
 
         // Coefficients to transform base lead (Lead 2) into 12 lead ECG
         static double [,] baseLeadCoeff = new double [,] {
+
             // P through T are multipliers; segments are additions
             { 0.7f,     0.7f,   0.7f,   0.7f,   0.7f,   0.8f,       0f,     0f,     0f },     // L1
             { 1f,       1f,     1f,     1f,     1f,     1f,         0f,     0f,     0f },     // L2
@@ -656,6 +663,7 @@ namespace II.Rhythm {
 
         // Coefficients to modify 12 lead ECG per cardiac axis deviation
         static double [,,] axisLeadCoeff = new double [,,] {
+
             // P through T are multipliers; segments are additions
             {   // Normal axis
                 {   1f,     1f,     1f  },              // L1

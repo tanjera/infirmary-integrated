@@ -32,7 +32,24 @@ namespace II {
         ~Scenario () => Dispose ();
 
         public void Dispose () {
+            UnsubscribeEvents ();
+
+            foreach (Step s in Steps)
+                s.Patient.Dispose ();
+
             ProgressTimer.Dispose ();
+        }
+
+        public void UnsubscribeEvents () {
+            if (StepChangeRequest != null) {
+                foreach (Delegate d in StepChangeRequest?.GetInvocationList ())
+                    StepChangeRequest -= (EventHandler<EventArgs>)d;
+            }
+
+            if (StepChanged != null) {
+                foreach (Delegate d in StepChanged?.GetInvocationList ())
+                    StepChanged -= (EventHandler<EventArgs>)d;
+            }
         }
 
         public Step Current {
@@ -91,6 +108,7 @@ namespace II {
                 }
             } catch (Exception e) {
                 new Server.Servers ().Post_Exception (e);
+
                 // If the load fails... just bail on the actual value parsing and continue the load process
             }
 
@@ -127,13 +145,19 @@ namespace II {
             else                                                            // Optional Progression
                 CurrentIndex = Current.Progressions [optProg].DestinationIndex;
 
-            if (pFrom != CurrentIndex)
+            if (pFrom != CurrentIndex) {                                    // If the actual step Index changed
                 Current.ProgressFrom = pFrom;
+                CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
+                Steps [pFrom].Patient.Deactivate ();                        // Additional unlinking of events and timers!
+            }
 
+            // Init step regardless of whether step Index changed; step may have been deactivated by StepChangeRequest()
             SetTimer ();
-            CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
+            Current.Patient.Activate ();
 
+            // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
+            Current.Patient.OnPatientEvent (Patient.PatientEventTypes.Vitals_Change);
         }
 
         public void LastStep () {
@@ -142,10 +166,18 @@ namespace II {
             int pFrom = CurrentIndex;
             CurrentIndex = Current.ProgressFrom;
 
-            SetTimer ();
-            CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
+            if (pFrom != CurrentIndex) {                                    // If the actual step Index changed
+                CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
+                Steps [pFrom].Patient.Deactivate ();                        // Additional unlinking of events and timers!
+            }
 
+            // Init step regardless of whether step Index changed; step may have been deactivated by StepChangeRequest()
+            SetTimer ();
+            Current.Patient.Activate ();
+
+            // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
+            Current.Patient.OnPatientEvent (Patient.PatientEventTypes.Vitals_Change);
         }
 
         public void SetStep (int incIndex) {
@@ -154,13 +186,18 @@ namespace II {
             int pFrom = CurrentIndex;
             CurrentIndex = Utility.Clamp (incIndex, 0, Steps.Count - 1);
 
-            if (pFrom != CurrentIndex)
-                Current.ProgressFrom = pFrom;
+            if (pFrom != CurrentIndex) {                                    // If the actual step Index changed
+                CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
+                Steps [pFrom].Patient.Deactivate ();                        // Additional unlinking of events and timers!
+            }
 
+            // Init step regardless of whether step Index changed; step may have been deactivated by StepChangeRequest()
             SetTimer ();
-            CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
+            Current.Patient.Activate ();
 
+            // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
+            Current.Patient.OnPatientEvent (Patient.PatientEventTypes.Vitals_Change);
         }
 
         public void CopyDeviceStatus (Patient lastPatient, Patient thisPatient) {
@@ -249,6 +286,7 @@ namespace II {
                     }
                 } catch (Exception e) {
                     new Server.Servers ().Post_Exception (e);
+
                     // If the load fails... just bail on the actual value parsing and continue the load process
                 }
 
@@ -309,6 +347,7 @@ namespace II {
                         }
                     } catch (Exception e) {
                         new Server.Servers ().Post_Exception (e);
+
                         // If the load fails... just bail on the actual value parsing and continue the load process
                     }
 

@@ -203,6 +203,7 @@ namespace II {
 
         public Patient () {
             UpdateParameters (
+
                             // Basic vital signs
                             80,
                             120, 80, 95,
@@ -247,6 +248,8 @@ namespace II {
         ~Patient () => Dispose ();
 
         public void Dispose () {
+            UnsubscribePatientEvent ();
+
             timerCardiac_Baseline.Dispose ();
             timerCardiac_Atrial.Dispose ();
             timerCardiac_Ventricular.Dispose ();
@@ -262,12 +265,20 @@ namespace II {
             timerObstetric_FHRVariationFrequency.Dispose ();
         }
 
-        public void UnsubscribePatientEvent () {
-            if (PatientEvent == null)
-                return;
+        public void Activate () {
+            SetTimers ();
+        }
 
-            foreach (Delegate d in PatientEvent?.GetInvocationList ())
-                PatientEvent -= (EventHandler<PatientEventArgs>)d;
+        public void Deactivate () {
+            UnsubscribePatientEvent ();
+            StopTimers ();
+        }
+
+        public void UnsubscribePatientEvent () {
+            if (PatientEvent != null) {
+                foreach (Delegate d in PatientEvent?.GetInvocationList ())
+                    PatientEvent -= (EventHandler<PatientEventArgs>)d;
+            }
         }
 
         /* PatientEvent event, handler, and caller */
@@ -310,6 +321,7 @@ namespace II {
         }
 
         public void CleanListPatientEvents () {
+
             // Remove all listings older than 1 minute... prevent cluttering memory
             for (int i = ListPatientEvents.Count - 1; i >= 0; i--)
                 if (ListPatientEvents [i].Occurred.CompareTo (DateTime.Now.AddMinutes (-1)) < 0)
@@ -392,6 +404,7 @@ namespace II {
                                 pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
                         switch (pName) {
                             default: break;
+
                             // Patient/scenario information
                             case "Updated": Updated = Utility.DateTime_FromString (pValue); break;
 
@@ -468,6 +481,7 @@ namespace II {
                 }
             } catch (Exception e) {
                 new Server.Servers ().Post_Exception (e);
+
                 // If the load fails... just bail on the actual value parsing and continue the load process
             }
 
@@ -486,6 +500,7 @@ namespace II {
         /* Process for saving Patient{} information to simulation file  */
         public string Save () {
             StringBuilder sWrite = new StringBuilder ();
+
             // File/scenario information
             sWrite.AppendLine (String.Format ("{0}:{1}", "Updated", Utility.DateTime_ToString (Updated)));
 
@@ -548,6 +563,7 @@ namespace II {
         }
 
         public void UpdateParameters (
+
                     // Basic vital signs
                     int hr,
                     int nsbp, int ndbp, int nmap,
@@ -725,6 +741,24 @@ namespace II {
             timerObstetric_FHRVariationFrequency.Stop ();
         }
 
+        private void StopTimers () {
+            timerCardiac_Baseline.Stop ();
+            timerCardiac_Atrial.Stop ();
+            timerCardiac_Ventricular.Stop ();
+            timerDefibrillation.Stop ();
+            timerPacemaker_Baseline.Stop ();
+            timerPacemaker_Spike.Stop ();
+
+            timerRespiratory_Baseline.Stop ();
+            timerRespiratory_Inspiration.Stop ();
+            timerRespiratory_Expiration.Stop ();
+
+            timerObstetric_Baseline.Stop ();
+            timerObstetric_ContractionFrequency.Stop ();
+            timerObstetric_ContractionDuration.Stop ();
+            timerObstetric_FHRVariationFrequency.Stop ();
+        }
+
         public void Defibrillate ()
             => InitDefibrillation (false);
 
@@ -772,6 +806,7 @@ namespace II {
             timerCardiac_Atrial.Stop ();
             timerCardiac_Ventricular.Stop ();
             timerDefibrillation.ResetAuto (20);
+
             // Invoke the defibrillation event *after* starting the timer- IsDefibrillating() checks the timer!
             OnPatientEvent (PatientEventTypes.Cardiac_Defibrillation);
         }
@@ -798,6 +833,7 @@ namespace II {
 
         private void OnPacemaker_Spike () {
             timerPacemaker_Spike.Stop ();
+
             // Trigger the QRS complex, then reset the heart's intrinsic timers
             Cardiac_Rhythm.AberrantBeat = true;
             OnPatientEvent (PatientEventTypes.Cardiac_Ventricular);
@@ -852,6 +888,7 @@ namespace II {
                     break;
 
                 case Cardiac_Rhythms.Values.Sick_Sinus_Syndrome:
+
                     // Countdown to 0; on 0, switch between tachy/brady; brady runs 8-12 beats, tachy runs 20-30 beats
                     if (counterCardiac_Arrhythmia <= 0) {
                         switchCardiac_Arrhythmia = !switchCardiac_Arrhythmia;
@@ -878,6 +915,7 @@ namespace II {
                     break;
 
                 case Cardiac_Rhythms.Values.Sinus_Rhythm_with_Arrest:
+
                     // Every 10-25 beats, sinus arrest
                     if (counterCardiac_Arrhythmia <= 0) {
                         Random r = new Random ();
@@ -1015,6 +1053,7 @@ namespace II {
                     break;
 
                 case Cardiac_Rhythms.Values.AV_Block__3rd_Degree:
+
                     // Specifically let atrial timer continue to run and propogate P-waves!
                     break;
             }

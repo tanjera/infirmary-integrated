@@ -51,6 +51,7 @@ namespace II_Windows {
         }
 
         private void InitInterface () {
+
             // Initiate ICommands for KeyBindings
             icNewFile = new ActionCommand (() => RefreshScenario (true));
             icLoadFile = new ActionCommand (() => LoadFile ());
@@ -75,6 +76,7 @@ namespace II_Windows {
             lblDevice12LeadECG.Content = App.Language.Dictionary ["PE:12LeadECG"];
             lblDeviceDefibrillator.Content = App.Language.Dictionary ["PE:Defibrillator"];
             lblDeviceIABP.Content = App.Language.Dictionary ["PE:IABP"];
+
             //lblDeviceVentilator.Content = App.Language.Dictionary["PE:Ventilator"];
             //lblDeviceEFM.Content = App.Language.Dictionary["PE:EFM"];
             //lblDeviceIVPump.Content = App.Language.Dictionary["PE:IVPump"];
@@ -198,12 +200,8 @@ namespace II_Windows {
         }
 
         private void UnloadScenario () {
-            App.Scenario.StepChangeRequest -= OnStepChangeRequest;
-            App.Scenario.StepChanged -= OnStepChanged;          // Unlink PatientEditor UI and App.Patient updates from Scenario
             App.Timer_Main.Tick -= App.Scenario.ProcessTimer;   // Unlink Scenario from App/Main Timer
-
-            App.Patient.Dispose ();         // Disposes Patient's Timers
-            App.Scenario.Dispose ();        // Disposes Scenario's Timer
+            App.Scenario.Dispose ();        // Disposes Scenario's events and timer, and all Patients' events and timers
         }
 
         private void RefreshScenario (bool toInit) {
@@ -228,6 +226,7 @@ namespace II_Windows {
         }
 
         private void InitPatientEvents () {
+
             // Tie the Patient's Timer to the Main Timer
             App.Timer_Main.Tick += App.Patient.ProcessTimers;
 
@@ -247,6 +246,7 @@ namespace II_Windows {
         }
 
         private void UnloadPatientEvents () {
+
             // Unloading the Patient from the Main Timer also stops all the Patient's Timers
             // and results in that Patient not triggering PatientEvent's
             App.Timer_Main.Tick -= App.Patient.ProcessTimers;
@@ -491,6 +491,7 @@ namespace II_Windows {
         }
 
         private void SaveFile () {
+
             // Only save single Patient files in base Infirmary Integrated!
             // Scenario files should be created/edited/saved via II Scenario Editor!
             if (App.Scenario.IsScenario) {
@@ -516,6 +517,7 @@ namespace II_Windows {
         }
 
         private void SaveT1 (Stream s) {
+
             // Ensure only saving Patient file, not Scenario file; is screened in SaveFile()
             if (App.Scenario.IsScenario) {
                 s.Close ();
@@ -708,6 +710,7 @@ namespace II_Windows {
                 App.Mirror.Status = Mirrors.Statuses.INACTIVE;
                 lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringDisabled"];
             } else if (radioClient.IsChecked ?? true) {
+
                 // Set client mirroring status
                 App.Mirror.Status = Mirrors.Statuses.CLIENT;
                 App.Mirror.Accession = txtAccessionKey.Text;
@@ -751,6 +754,7 @@ namespace II_Windows {
                 FHRRhythms.Add ((FetalHeartDecelerations.Values)Enum.GetValues (typeof (FetalHeartDecelerations.Values)).GetValue (listFHRRhythms.Items.IndexOf (o)));
 
             App.Patient.UpdateParameters (
+
                 // Basic vital signs
                 (int)numHR.Value,
 
@@ -864,6 +868,7 @@ namespace II_Windows {
 
         private void FormUpdateFields (object sender, Patient.PatientEventArgs e) {
             if (e.EventType == Patient.PatientEventTypes.Vitals_Change) {
+
                 // Basic vital signs
                 numHR.Value = e.Patient.VS_Settings.HR;
                 numNSBP.Value = e.Patient.VS_Settings.NSBP;
