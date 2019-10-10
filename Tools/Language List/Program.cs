@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text;
 using System.Windows.Forms;
 
-namespace LanguageList {
+namespace Language_List {
     class Program {
         [STAThread]
         static void Main (string [] args) {

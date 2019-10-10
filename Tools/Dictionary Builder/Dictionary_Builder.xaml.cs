@@ -9,7 +9,7 @@ using System.Windows;
 using Excel = Microsoft.Office.Interop.Excel;
 
 
-namespace DictionaryBuilder {
+namespace Dictionary_Builder {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
