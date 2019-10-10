@@ -2,7 +2,7 @@
 using System.ComponentModel;
 
 namespace II.Server {
-    public class Mirrors {
+    public class Mirror {
         private bool ThreadLock = false;
         public Timer timerUpdate = new Timer ();
 
@@ -23,7 +23,7 @@ namespace II.Server {
             set { _Accession = value.ToUpper (); }
         }
 
-        public Mirrors () {
+        public Mirror () {
             _BackgroundWorker.WorkerSupportsCancellation = true;
         }
 
@@ -31,7 +31,7 @@ namespace II.Server {
             timerUpdate.Process ();
         }
 
-        public void TimerTick (Patient p, Servers s) {
+        public void TimerTick (Patient p, Server s) {
             timerUpdate.ResetAuto (5000);
             GetPatient (p, s);
         }
@@ -45,7 +45,7 @@ namespace II.Server {
             }
         }
 
-        public void GetPatient (Patient p, Servers s) {
+        public void GetPatient (Patient p, Server s) {
             // Mirroring not active; neither client or host
             if (Status != Statuses.CLIENT)
                 return;
@@ -70,7 +70,7 @@ namespace II.Server {
             }
         }
 
-        public void PostPatient (Patient p, Servers s) {
+        public void PostPatient (Patient p, Server s) {
             if (Status != Statuses.HOST)
                 return;
 

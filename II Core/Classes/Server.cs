@@ -22,11 +22,11 @@ using System.Net.NetworkInformation;
 using System.Text;
 
 namespace II.Server {
-    public partial class Servers {
+    public partial class Server {
         private List<MySqlConnection> listConnections;
         private string connectionString;
 
-        public Servers () {
+        public Server () {
             listConnections = new List<MySqlConnection> ();
 
             connectionString = String.Format ("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};",
@@ -166,7 +166,7 @@ namespace II.Server {
             }
         }
 
-        public Patient Get_PatientMirror (Mirrors m) {
+        public Patient Get_PatientMirror (Mirror m) {
             MySqlConnection c;
             if ((c = Open ()) == null)
                 return null;
@@ -202,7 +202,7 @@ namespace II.Server {
             }
         }
 
-        public void Post_PatientMirror (Mirrors m, string pStr, DateTime pUp) {
+        public void Post_PatientMirror (Mirror m, string pStr, DateTime pUp) {
             MySqlConnection c;
             if ((c = Open ()) == null)
                 return;

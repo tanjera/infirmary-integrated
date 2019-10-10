@@ -13,14 +13,13 @@ namespace II_Windows.Controls {
     /// Interaction logic for Tracing.xaml
     /// </summary>
     public partial class DefibTracing : UserControl {
-        public Strip wfStrip;
-        public Leads Lead { get { return wfStrip.Lead; } }
+        public Strip Strip;
+        public Lead Lead { get { return Strip.Lead; } }
         public double Amplitude = 1.0;
 
         // Drawing variables, offsets and multipliers
-        private Path drawPath;
-
         private Brush drawBrush;
+
         private StreamGeometry drawGeometry;
         private StreamGeometryContext drawContext;
         private int drawXOffset, drawYOffset;
@@ -30,15 +29,16 @@ namespace II_Windows.Controls {
             InitializeComponent ();
             DataContext = this;
 
-            wfStrip = strip;
+            Strip = strip;
 
             InitInterface ();
             UpdateInterface (null, null);
         }
 
         private void InitInterface () {
+
             // Populate UI strings per language selection
-            Languages.Values l = App.Language.Value;
+            Language.Values l = App.Language.Value;
 
             // Context Menu (right-click menu!)
             ContextMenu contextMenu = new ContextMenu ();
@@ -82,7 +82,8 @@ namespace II_Windows.Controls {
             menuECGLeads.Header = App.Language.Dictionary ["TRACING:ECG"];
             menuSelectInput.Items.Add (menuECGLeads);
 
-            foreach (Leads.Values v in Enum.GetValues (typeof (Leads.Values))) {
+            foreach (Lead.Values v in Enum.GetValues (typeof (Lead.Values))) {
+
                 // Only include certain leads- e.g. bedside monitors don't interface with IABP or EFM
                 string el = v.ToString ();
                 if (!el.StartsWith ("ECG") && el != "SPO2" && el != "CVP" && el != "ABP"
@@ -90,7 +91,7 @@ namespace II_Windows.Controls {
                     continue;
 
                 MenuItem mi = new MenuItem ();
-                mi.Header = App.Language.Dictionary [Leads.LookupString (v)];
+                mi.Header = App.Language.Dictionary [Lead.LookupString (v)];
                 mi.Name = v.ToString ();
                 mi.Click += MenuSelectInputSource;
                 if (mi.Name.StartsWith ("ECG"))
@@ -105,62 +106,60 @@ namespace II_Windows.Controls {
         private void UpdateInterface (object sender, SizeChangedEventArgs e) {
             switch (Lead.Value) {
                 default: drawBrush = Brushes.Green; break;
-                case Leads.Values.ABP: drawBrush = Brushes.Red; break;
-                case Leads.Values.CVP: drawBrush = Brushes.Blue; break;
-                case Leads.Values.PA: drawBrush = Brushes.Yellow; break;
-                case Leads.Values.IABP: drawBrush = Brushes.SkyBlue; break;
-                case Leads.Values.RR: drawBrush = Brushes.Salmon; break;
-                case Leads.Values.ETCO2: drawBrush = Brushes.Aqua; break;
-                case Leads.Values.SPO2: drawBrush = Brushes.Orange; break;
+                case Lead.Values.ABP: drawBrush = Brushes.Red; break;
+                case Lead.Values.CVP: drawBrush = Brushes.Blue; break;
+                case Lead.Values.PA: drawBrush = Brushes.Yellow; break;
+                case Lead.Values.IABP: drawBrush = Brushes.SkyBlue; break;
+                case Lead.Values.RR: drawBrush = Brushes.Salmon; break;
+                case Lead.Values.ETCO2: drawBrush = Brushes.Aqua; break;
+                case Lead.Values.SPO2: drawBrush = Brushes.Orange; break;
             }
 
             borderTracing.BorderBrush = drawBrush;
 
             lblLead.Foreground = drawBrush;
-            lblLead.Content = App.Language.Dictionary [Leads.LookupString (Lead.Value)];
+            lblLead.Content = App.Language.Dictionary [Lead.LookupString (Lead.Value)];
         }
 
         public void Draw () {
             drawXOffset = 0;
             drawYOffset = (int)canvasTracing.ActualHeight / 2;
-            drawXMultiplier = (int)canvasTracing.ActualWidth / wfStrip.lengthSeconds;
+            drawXMultiplier = (int)canvasTracing.ActualWidth / Strip.lengthSeconds;
             drawYMultiplier = (-(int)canvasTracing.ActualHeight / 2) * Amplitude;
 
-            if (wfStrip.Points.Count < 2)
+            if (Strip.Points.Count < 2)
                 return;
 
-            wfStrip.RemoveNull ();
-            wfStrip.Sort ();
+            Strip.RemoveNull ();
+            Strip.Sort ();
 
-            drawPath = new Path { Stroke = drawBrush, StrokeThickness = 1 };
+            drawPath.Stroke = drawBrush;
+            drawPath.StrokeThickness = 1;
             drawGeometry = new StreamGeometry { FillRule = FillRule.EvenOdd };
 
             using (drawContext = drawGeometry.Open ()) {
                 drawContext.BeginFigure (new System.Windows.Point (
-                    (int)(wfStrip.Points [0].X * drawXMultiplier) + drawXOffset,
-                    (int)(wfStrip.Points [0].Y * drawYMultiplier) + drawYOffset),
+                    (int)(Strip.Points [0].X * drawXMultiplier) + drawXOffset,
+                    (int)(Strip.Points [0].Y * drawYMultiplier) + drawYOffset),
                     true, false);
 
-                for (int i = 1; i < wfStrip.Points.Count; i++) {
+                for (int i = 1; i < Strip.Points.Count; i++) {
                     drawContext.LineTo (new System.Windows.Point (
-                        (int)(wfStrip.Points [i].X * drawXMultiplier) + drawXOffset,
-                        (int)(wfStrip.Points [i].Y * drawYMultiplier) + drawYOffset),
+                        (int)(Strip.Points [i].X * drawXMultiplier) + drawXOffset,
+                        (int)(Strip.Points [i].Y * drawYMultiplier) + drawYOffset),
                         true, true);
                 }
             }
 
             drawGeometry.Freeze ();
             drawPath.Data = drawGeometry;
-
-            canvasTracing.Children.Clear ();
-            canvasTracing.Children.Add (drawPath);
         }
 
         private void MenuZeroTransducer_Click (object sender, RoutedEventArgs e) {
             switch (Lead.Value) {
-                case Leads.Values.ABP: App.Patient.TransducerZeroed_ABP = true; return;
-                case Leads.Values.CVP: App.Patient.TransducerZeroed_CVP = true; return;
-                case Leads.Values.PA: App.Patient.TransducerZeroed_PA = true; return;
+                case Lead.Values.ABP: App.Patient.TransducerZeroed_ABP = true; return;
+                case Lead.Values.CVP: App.Patient.TransducerZeroed_CVP = true; return;
+                case Lead.Values.PA: App.Patient.TransducerZeroed_PA = true; return;
             }
         }
 
@@ -177,14 +176,14 @@ namespace II_Windows.Controls {
             => Amplitude = Utility.Clamp (Amplitude - 0.2, 0.2, 2.0);
 
         private void MenuSelectInputSource (object sender, RoutedEventArgs e) {
-            Leads.Values selectedValue;
-            if (!Enum.TryParse<Leads.Values> (((MenuItem)sender).Name, out selectedValue))
+            Lead.Values selectedValue;
+            if (!Enum.TryParse<Lead.Values> (((MenuItem)sender).Name, out selectedValue))
                 return;
 
-            wfStrip.SetLead (selectedValue);
-            wfStrip.Reset ();
-            wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
-            wfStrip.Add_Beat__Respiratory_Baseline (App.Patient);
+            Strip.SetLead (selectedValue);
+            Strip.Reset ();
+            Strip.Add_Beat__Cardiac_Baseline (App.Patient);
+            Strip.Add_Beat__Respiratory_Baseline (App.Patient);
 
             UpdateInterface (null, null);
         }

@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 
 namespace II.Localization {
-    public partial class Languages {
+    public partial class Language {
         public Values Value;
-        public Languages (Values v) { Value = v; }
-        public Languages () {
+        public Language (Values v) { Value = v; }
+        public Language () {
             if (Enum.TryParse<Values> (CultureInfo.InstalledUICulture.ThreeLetterWindowsLanguageName.ToUpper (), out Values tryParse))
                 Value = tryParse;
             else
@@ -44,7 +44,7 @@ namespace II.Localization {
                 else
                     return Values.ENU;
             } catch (Exception e) {
-                new Server.Servers ().Post_Exception (e);
+                new Server.Server ().Post_Exception (e);
                 return Values.ENU;
             }
         }

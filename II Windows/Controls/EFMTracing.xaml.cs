@@ -11,10 +11,9 @@ namespace II_Windows.Controls {
     /// Interaction logic for Tracing.xaml
     /// </summary>
     public partial class EFMTracing : UserControl {
-        public Strip wfStrip;
+        public Strip Strip;
 
         // Drawing variables, offsets and multipliers
-        private Path drawPath;
 
         private Brush drawBrush;
         private StreamGeometry drawGeometry;
@@ -26,7 +25,7 @@ namespace II_Windows.Controls {
             InitializeComponent ();
             DataContext = this;
 
-            wfStrip = strip;
+            Strip = strip;
             UpdateInterface (null, null);
         }
 
@@ -34,46 +33,44 @@ namespace II_Windows.Controls {
             drawBrush = Brushes.Green;
 
             lblLead.Foreground = drawBrush;
-            lblLead.Content = App.Language.Dictionary [Leads.LookupString (wfStrip.Lead.Value, true)];
+            lblLead.Content = App.Language.Dictionary [Lead.LookupString (Strip.Lead.Value, true)];
         }
 
         public void Draw () {
             drawXOffset = 0;
             drawYOffset = (int)canvasTracing.ActualHeight / 2;
-            drawXMultiplier = (int)canvasTracing.ActualWidth / wfStrip.lengthSeconds;
+            drawXMultiplier = (int)canvasTracing.ActualWidth / Strip.lengthSeconds;
             drawYMultiplier = -(int)canvasTracing.ActualHeight / 2;
 
-            if (wfStrip.Points.Count < 2)
+            if (Strip.Points.Count < 2)
                 return;
 
-            wfStrip.RemoveNull ();
-            wfStrip.Sort ();
+            Strip.RemoveNull ();
+            Strip.Sort ();
 
-            drawPath = new Path { Stroke = drawBrush, StrokeThickness = 1 };
+            drawPath.Stroke = drawBrush;
+            drawPath.StrokeThickness = 1;
             drawGeometry = new StreamGeometry { FillRule = FillRule.EvenOdd };
 
             using (drawContext = drawGeometry.Open ()) {
                 drawContext.BeginFigure (new System.Windows.Point (
-                    (int)(wfStrip.Points [0].X * drawXMultiplier) + drawXOffset,
-                    (int)(wfStrip.Points [0].Y * drawYMultiplier) + drawYOffset),
+                    (int)(Strip.Points [0].X * drawXMultiplier) + drawXOffset,
+                    (int)(Strip.Points [0].Y * drawYMultiplier) + drawYOffset),
                     true, false);
 
-                for (int i = 1; i < wfStrip.Points.Count; i++) {
-                    if (wfStrip.Points [i].X > wfStrip.lengthSeconds * 2)
+                for (int i = 1; i < Strip.Points.Count; i++) {
+                    if (Strip.Points [i].X > Strip.lengthSeconds * 2)
                         continue;
 
                     drawContext.LineTo (new System.Windows.Point (
-                        (int)(wfStrip.Points [i].X * drawXMultiplier) + drawXOffset,
-                        (int)(wfStrip.Points [i].Y * drawYMultiplier) + drawYOffset),
+                        (int)(Strip.Points [i].X * drawXMultiplier) + drawXOffset,
+                        (int)(Strip.Points [i].Y * drawYMultiplier) + drawYOffset),
                         true, true);
                 }
             }
 
             drawGeometry.Freeze ();
             drawPath.Data = drawGeometry;
-
-            canvasTracing.Children.Clear ();
-            canvasTracing.Children.Add (drawPath);
         }
     }
 }

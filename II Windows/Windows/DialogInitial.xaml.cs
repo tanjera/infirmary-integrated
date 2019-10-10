@@ -18,12 +18,12 @@ namespace II_Windows {
             txtAgreeTerms.Text = App.Language.Dictionary ["INITIAL:AgreeToTerms"];
             btnContinue.Content = App.Language.Dictionary ["BUTTON:Continue"];
 
-            cmbLanguages.ItemsSource = Languages.Descriptions;
-            cmbLanguages.SelectedIndex = (int)Languages.Values.ENU;
+            cmbLanguages.ItemsSource = II.Localization.Language.Descriptions;
+            cmbLanguages.SelectedIndex = (int)II.Localization.Language.Values.ENU;
         }
 
         private void OnClick_Continue (object sender, RoutedEventArgs e) {
-            App.Language.Value = (Languages.Values)Enum.GetValues (typeof (Languages.Values)).GetValue (cmbLanguages.SelectedIndex);
+            App.Language.Value = (Language.Values)Enum.GetValues (typeof (Language.Values)).GetValue (cmbLanguages.SelectedIndex);
 
             Properties.Settings.Default.Language = App.Language.Value.ToString ();
             Properties.Settings.Default.Save ();

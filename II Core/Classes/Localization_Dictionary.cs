@@ -5,7 +5,7 @@ using System.Text;
 
 namespace II.Localization {
 
-	public partial class Languages {
+	public partial class Language {
 
 		static Dictionary<string, string> ENU = new Dictionary<string, string> () {
 			{"BUTTON:Continue",                                           "Continue"},

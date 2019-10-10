@@ -113,7 +113,7 @@ namespace II_Windows {
             App.Timer_Main.Tick += timerTracing.Process;
             App.Timer_Main.Tick += timerAncillary_Delay.Process;
 
-            timerTracing.Set (Waveforms.Draw_Refresh);
+            timerTracing.Set (Waveform.Draw_Refresh);
             timerVitals.Set ((int)(App.Patient.GetHR_Seconds * 1000));
 
             timerTracing.Tick += OnTick_Tracing;
@@ -158,9 +158,9 @@ namespace II_Windows {
                 Utility.RandomDouble (20, 80));
 
             // Instantiate and add Tracings to UI
-            listTracings.Add (new Controls.IABPTracing (new Strip (6f, Leads.Values.ECG_II)));
-            listTracings.Add (new Controls.IABPTracing (new Strip (6f, Leads.Values.ABP)));
-            listTracings.Add (new Controls.IABPTracing (new Strip (6f, Leads.Values.IABP)));
+            listTracings.Add (new Controls.IABPTracing (new Strip (6f, Lead.Values.ECG_II)));
+            listTracings.Add (new Controls.IABPTracing (new Strip (6f, Lead.Values.ABP)));
+            listTracings.Add (new Controls.IABPTracing (new Strip (6f, Lead.Values.IABP)));
             for (int i = 0; i < listTracings.Count; i++) {
                 listTracings [i].SetValue (Grid.RowProperty, i);
                 listTracings [i].SetValue (Grid.ColumnProperty, 1);
@@ -291,7 +291,7 @@ namespace II_Windows {
             menuPauseDevice.IsChecked = isPaused;
 
             if (!isPaused)
-                listTracings.ForEach (c => c.wfStrip.Unpause ()); ;
+                listTracings.ForEach (c => c.Strip.Unpause ()); ;
         }
 
         private void ToggleFullscreen () {
@@ -478,7 +478,7 @@ namespace II_Windows {
                 return;
 
             listTracings.ForEach (c => {
-                c.wfStrip.Scroll ();
+                c.Strip.Scroll ();
                 c.Draw ();
             });
         }
@@ -508,17 +508,17 @@ namespace II_Windows {
                 default: break;
                 case Patient.PatientEventTypes.Vitals_Change:
                     listTracings.ForEach (c => {
-                        c.wfStrip.ClearFuture (App.Patient);
-                        c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
+                        c.Strip.ClearFuture (App.Patient);
+                        c.Strip.Add_Beat__Cardiac_Baseline (App.Patient);
                     });
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Defibrillation:
-                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Defibrillation (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Defibrillation (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_PacerSpike:
-                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Pacemaker (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Pacemaker (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Baseline:
@@ -527,18 +527,18 @@ namespace II_Windows {
                         || (Trigger.Value == Triggering.Values.Pressure && App.Patient.Cardiac_Rhythm.HasPulse_Ventricular));
                     App.Patient.IABP_Trigger = Trigger.Value.ToString ();
 
-                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Baseline (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Atrial:
-                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Atrial (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular:
                     if (Running)
                         Frequency_Iter++;
 
-                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Ventricular (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular (App.Patient));
                     break;
             }
         }

@@ -15,7 +15,7 @@ namespace II_Windows {
             InitializeComponent ();
 
             // Populate UI strings per language selection
-            Languages.Values l = App.Language.Value;
+            Language.Values l = App.Language.Value;
 
             dlgAbout.Title = App.Language.Dictionary ["ABOUT:AboutProgram"];
             lblInfirmaryIntegrated.Content = App.Language.Dictionary ["II:InfirmaryIntegrated"];

@@ -7,27 +7,29 @@
              mc:Ignorable="d"
              SizeChanged="UpdateInterface">
 
-  <Border Name="borderTracing" Margin="5"
+	<Border Name="borderTracing" Margin="5"
           BorderBrush="Black" BorderThickness="0.5" CornerRadius="5">
 
-    <Grid>
-      <Grid.RowDefinitions>
-        <RowDefinition Height="Auto" />
-        <RowDefinition />
-      </Grid.RowDefinitions>
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition />
-      </Grid.ColumnDefinitions>
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto" />
+				<RowDefinition />
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition />
+			</Grid.ColumnDefinitions>
 
-      <Canvas Name="canvasTracing" Panel.ZIndex="1" ClipToBounds="True"
-              Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
-              VerticalAlignment="Stretch" MinHeight="150"
-              Background="Black" />
+			<Canvas Name="canvasTracing" Panel.ZIndex="1" ClipToBounds="True"
+					Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+					VerticalAlignment="Stretch" MinHeight="150"
+					Background="Black">
+				<Path Name="drawPath" />
+			</Canvas>
 
-      <Label Name="lblLead" Panel.ZIndex="2" Height="Auto"
+			<Label Name="lblLead" Panel.ZIndex="2" Height="Auto"
              Margin="0" Padding="2"
              Grid.Column="0" Grid.Row="0"
              HorizontalAlignment="Right" />
-    </Grid>
-  </Border>
+		</Grid>
+	</Border>
 </UserControl>

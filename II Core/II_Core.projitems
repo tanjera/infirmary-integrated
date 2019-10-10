@@ -25,7 +25,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Strip.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Timer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Utility.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\Waveforms.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Waveform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Localization.cs" />
   </ItemGroup>
 </Project>

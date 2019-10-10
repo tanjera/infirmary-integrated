@@ -11,35 +11,59 @@
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="Auto" />
-			<RowDefinition Height="Auto" />
 			<RowDefinition Height="*" />
 		</Grid.RowDefinitions>
 
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="*" />
-			<ColumnDefinition Width="*" />
-		</Grid.ColumnDefinitions>
+		<GroupBox Header="Draw Resolution and Length Settings"
+			  Grid.Row="0"
+			  BorderBrush="Black" BorderThickness="1">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
 
-		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
 					Grid.Row="0" Grid.Column="0">
-			<Label Content="Draw Length: " />
-			<xctk:IntegerUpDown Name="intDrawLength" Value="1" />
-			<Label Content=" seconds" />
-		</StackPanel>
+					<Label Content="Draw Length: " />
+					<xctk:IntegerUpDown Name="intDrawLength" Value="1" />
+					<Label Content=" seconds" />
+				</StackPanel>
 
-		<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+				<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
 					Grid.Row="0" Grid.Column="1">
-			<Label Content="Draw Resolution (X Axis): " />
-			<xctk:IntegerUpDown Name="intDrawResolution" Value="100" />
-			<Label Content=" milliseconds" />
-		</StackPanel>
+					<Label Content="Draw Resolution (X Axis): " />
+					<xctk:IntegerUpDown Name="intDrawResolution" Value="100" />
+					<Label Content=" milliseconds" />
+				</StackPanel>
 
-		<Button Name="btnApplyResolutions" HorizontalAlignment="Stretch"
-				Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
-				Content="Apply Draw Resolution and Length Settings"
-				Click="btnApplyResolutions_Click" />
+				<Button Name="btnApplyResolutions" HorizontalAlignment="Stretch"
+					Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+					Margin="5,5,5,2"
+					Content="Apply Draw Resolution and Length Settings"
+					Click="btnApplyResolutions_Click" />
+			</Grid>
+		</GroupBox>
 
-		<Canvas Name="cnvDrawing" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-			Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" />
+		<Canvas Name="cnvDrawing"
+				HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+				Grid.Row="1" Background="White"
+				MouseDown="cnvDrawing_MouseDown"
+				MouseMove="cnvDrawing_MouseMove"
+				MouseWheel="cnvDrawing_MouseWheel">
+			<Path Name="pathWave"
+				  Stroke="Black" StrokeThickness="1" />
+			<Path Name="pathReferenceHigh"
+				  Stroke="LightBlue" StrokeThickness="1" />
+			<Path Name="pathReferenceMid"
+				  Stroke="LightGray" StrokeThickness="1" />
+			<Path Name="pathReferenceLow"
+				  Stroke="LightGreen" StrokeThickness="1" />
+		</Canvas>
 	</Grid>
 </Window>

@@ -39,7 +39,7 @@ namespace II_Windows {
         }
 
         private void InitTimers () {
-            timerTracing.Set (Waveforms.Draw_Refresh);
+            timerTracing.Set (Waveform.Draw_Refresh);
             App.Timer_Main.Tick += timerTracing.Process;
             timerTracing.Tick += OnTick_Tracing;
             timerTracing.Start ();
@@ -61,8 +61,8 @@ namespace II_Windows {
             menuExitProgram.Header = App.Language.Dictionary ["MENU:MenuExitProgram"];
 
             /* 12 Lead ECG Interface layout */
-            List<Leads.Values> listLeads = new List<Leads.Values> ();
-            foreach (Leads.Values v in Enum.GetValues (typeof (Leads.Values))) {
+            List<Lead.Values> listLeads = new List<Lead.Values> ();
+            foreach (Lead.Values v in Enum.GetValues (typeof (Lead.Values))) {
                 if (v.ToString ().StartsWith ("ECG"))
                     listLeads.Add (v);
             }
@@ -89,7 +89,7 @@ namespace II_Windows {
             }
 
             // Add Lead II running along bottom spanning all columns
-            Controls.ECGTracing leadII = new Controls.ECGTracing (new Strip (12f, Leads.Values.ECG_II));
+            Controls.ECGTracing leadII = new Controls.ECGTracing (new Strip (12f, Lead.Values.ECG_II));
             leadII.SetValue (Grid.ColumnProperty, 0);
             leadII.SetValue (Grid.RowProperty, 4);
             leadII.SetValue (Grid.ColumnSpanProperty, 4);
@@ -155,7 +155,7 @@ namespace II_Windows {
             menuPauseDevice.IsChecked = isPaused;
 
             if (!isPaused)
-                listTracings.ForEach (c => c.wfStrip.Unpause ());
+                listTracings.ForEach (c => c.Strip.Unpause ());
         }
 
         private void ToggleFullscreen () {
@@ -176,7 +176,7 @@ namespace II_Windows {
                 return;
 
             listTracings.ForEach (c => {
-                c.wfStrip.Scroll ();
+                c.Strip.Scroll ();
                 c.Draw ();
             });
         }
@@ -186,29 +186,29 @@ namespace II_Windows {
                 default: break;
                 case Patient.PatientEventTypes.Vitals_Change:
                     listTracings.ForEach (c => {
-                        c.wfStrip.ClearFuture (App.Patient);
-                        c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
+                        c.Strip.ClearFuture (App.Patient);
+                        c.Strip.Add_Beat__Cardiac_Baseline (App.Patient);
                     });
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Defibrillation:
-                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Defibrillation (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Defibrillation (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_PacerSpike:
-                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Pacemaker (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Pacemaker (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Baseline:
-                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Baseline (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Atrial:
-                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Atrial (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular:
-                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Ventricular (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular (App.Patient));
                     break;
             }
         }

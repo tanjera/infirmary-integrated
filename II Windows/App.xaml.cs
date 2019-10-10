@@ -14,9 +14,9 @@ namespace II_Windows {
     public partial class App : Application {
         public static string [] Start_Args;
 
-        public static Servers Server = new Servers ();
-        public static Mirrors Mirror = new Mirrors ();
-        public static Languages Language = new Languages ();
+        public static Server Server = new Server ();
+        public static Mirror Mirror = new Mirror ();
+        public static Language Language = new Language ();
 
         public static Scenario Scenario;
         public static Patient Patient;

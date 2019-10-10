@@ -1,9 +1,9 @@
 using System;
 
 namespace II {
-    public class Leads {
+    public class Lead {
         public Values Value;
-        public Leads (Values v) { Value = v; }
+        public Lead (Values v) { Value = v; }
 
         public enum Values {
             ECG_I, ECG_II, ECG_III,

@@ -48,7 +48,7 @@ namespace II_Windows {
         }
 
         private void InitTimers () {
-            timerTracing.Set (Waveforms.Draw_Refresh);
+            timerTracing.Set (Waveform.Draw_Refresh);
             App.Timer_Main.Tick += timerTracing.Process;
             timerTracing.Tick += OnTick_Tracing;
             timerTracing.Start ();
@@ -67,6 +67,7 @@ namespace II_Windows {
         }
 
         private void InitInterface () {
+
             // Initiate ICommands for KeyBindings
             icToggleFullscreen = new ActionCommand (() => ToggleFullscreen ());
             icPauseDevice = new ActionCommand (() => TogglePause ());
@@ -127,7 +128,7 @@ namespace II_Windows {
                          tracingTypes = new List<string> ();
 
             listNumerics.ForEach (o => { numericTypes.Add (o.controlType.Value.ToString ()); });
-            listTracings.ForEach (o => { tracingTypes.Add (o.wfStrip.Lead.Value.ToString ()); });
+            listTracings.ForEach (o => { tracingTypes.Add (o.Strip.Lead.Value.ToString ()); });
             sWrite.AppendLine (String.Format ("{0}:{1}", "numericTypes", string.Join (",", numericTypes)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "tracingTypes", string.Join (",", tracingTypes)));
 
@@ -158,7 +159,7 @@ namespace II_Windows {
             menuPauseDevice.IsChecked = isPaused;
 
             if (!isPaused)
-                listTracings.ForEach (c => c.wfStrip.Unpause ());
+                listTracings.ForEach (c => c.Strip.Unpause ());
         }
 
         public void ToggleFullscreen () {
@@ -205,7 +206,7 @@ namespace II_Windows {
                 return;
 
             listTracings.ForEach (c => {
-                c.wfStrip.Scroll ();
+                c.Strip.Scroll ();
                 c.Draw ();
             });
         }
@@ -235,6 +236,7 @@ namespace II_Windows {
         }
 
         private void OnLayoutChange (List<string> numericTypes = null, List<string> tracingTypes = null) {
+
             // If numericTypes or tracingTypes are not null... then we are loading a file; clear lNumerics and lTracings!
             if (numericTypes != null)
                 listNumerics.Clear ();
@@ -270,7 +272,7 @@ namespace II_Windows {
             // Cap available amount of tracings
             rowsTracings = Utility.Clamp (rowsTracings, 1, tracingTypes.Count);
             for (int i = listTracings.Count; i < rowsTracings && i < tracingTypes.Count; i++) {
-                Strip newStrip = new Strip (6f, (Leads.Values)Enum.Parse (typeof (Leads.Values), tracingTypes [i]));
+                Strip newStrip = new Strip (6f, (Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]));
                 Controls.MonitorTracing newTracing = new Controls.MonitorTracing (newStrip);
                 listTracings.Add (newTracing);
             }
@@ -298,43 +300,43 @@ namespace II_Windows {
                 default: break;
                 case Patient.PatientEventTypes.Vitals_Change:
                     listTracings.ForEach (c => {
-                        c.wfStrip.ClearFuture (App.Patient);
-                        c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient);
+                        c.Strip.ClearFuture (App.Patient);
+                        c.Strip.Add_Beat__Cardiac_Baseline (App.Patient);
                     });
 
                     listNumerics.ForEach (n => n.UpdateVitals ());
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Defibrillation:
-                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Defibrillation (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Defibrillation (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_PacerSpike:
-                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Pacemaker (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Pacemaker (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Baseline:
-                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Baseline (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Atrial:
-                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Atrial (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular:
-                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Cardiac_Ventricular (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Respiratory_Baseline:
-                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Respiratory_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Respiratory_Baseline (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Respiratory_Inspiration:
-                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Respiratory_Inspiration (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Respiratory_Inspiration (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Respiratory_Expiration:
-                    listTracings.ForEach (c => c.wfStrip.Add_Beat__Respiratory_Expiration (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Respiratory_Expiration (App.Patient));
                     break;
             }
         }

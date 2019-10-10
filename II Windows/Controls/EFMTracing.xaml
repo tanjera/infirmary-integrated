@@ -7,23 +7,25 @@
              mc:Ignorable="d"
              SizeChanged="UpdateInterface">
 
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition />
-            </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-        </Grid.ColumnDefinitions>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition />
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition />
+		</Grid.ColumnDefinitions>
 
-        <Canvas Name="canvasTracing" Panel.ZIndex="1" ClipToBounds="True"
+		<Canvas Name="canvasTracing" Panel.ZIndex="1" ClipToBounds="True"
                 Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
                 VerticalAlignment="Stretch" MinHeight="150"
-                Background="Black" />
+                Background="Black">
+			<Path Name="drawPath" />
+		</Canvas>
 
-        <Label Name="lblLead" Panel.ZIndex="2" Height="Auto"
+		<Label Name="lblLead" Panel.ZIndex="2" Height="Auto"
                 Margin="0" Padding="2"
                 Grid.Column="0" Grid.Row="0"
                 HorizontalAlignment="Right" />
-        </Grid>
+	</Grid>
 </UserControl>

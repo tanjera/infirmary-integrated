@@ -44,8 +44,8 @@ namespace II_Windows {
         private void InitInitialRun () {
             string setLang = Properties.Settings.Default.Language;
             if (setLang == null || setLang == ""
-                || !Enum.TryParse<Languages.Values> (setLang, out App.Language.Value)) {
-                App.Language = new Languages ();
+                || !Enum.TryParse<Language.Values> (setLang, out App.Language.Value)) {
+                App.Language = new Language ();
                 DialogInitial ();
             }
         }
@@ -438,8 +438,8 @@ namespace II_Windows {
             }
 
             // On loading a file, ensure Mirroring is not in Client mode! Will conflict...
-            if (App.Mirror.Status == Mirrors.Statuses.CLIENT) {
-                App.Mirror.Status = Mirrors.Statuses.INACTIVE;
+            if (App.Mirror.Status == Mirror.Statuses.CLIENT) {
+                App.Mirror.Status = Mirror.Statuses.INACTIVE;
                 App.Mirror.CancelOperation ();      // Attempt to cancel any possible Mirror downloads
                 lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringDisabled"];
             }
@@ -707,12 +707,12 @@ namespace II_Windows {
             App.Mirror.ServerQueried = new DateTime ();
 
             if (radioInactive.IsChecked ?? true) {
-                App.Mirror.Status = Mirrors.Statuses.INACTIVE;
+                App.Mirror.Status = Mirror.Statuses.INACTIVE;
                 lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringDisabled"];
             } else if (radioClient.IsChecked ?? true) {
 
                 // Set client mirroring status
-                App.Mirror.Status = Mirrors.Statuses.CLIENT;
+                App.Mirror.Status = Mirror.Statuses.CLIENT;
                 App.Mirror.Accession = txtAccessionKey.Text;
                 App.Mirror.PasswordAccess = txtAccessPassword.Password;
                 lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringActivated"];
@@ -725,7 +725,7 @@ namespace II_Windows {
                 if (txtAccessionKey.Text == "")
                     txtAccessionKey.Text = Utility.RandomString (8);
 
-                App.Mirror.Status = Mirrors.Statuses.HOST;
+                App.Mirror.Status = Mirror.Statuses.HOST;
                 App.Mirror.Accession = txtAccessionKey.Text;
                 App.Mirror.PasswordAccess = txtAccessPassword.Password;
                 App.Mirror.PasswordEdit = txtAdminPassword.Password;
@@ -830,9 +830,9 @@ namespace II_Windows {
             App.Mirror.PostPatient (App.Patient, App.Server);
             txtAccessionKey.Text = App.Mirror.Accession;
 
-            if (App.Mirror.Status == Mirrors.Statuses.INACTIVE)
+            if (App.Mirror.Status == Mirror.Statuses.INACTIVE)
                 lblStatusText.Content = App.Language.Dictionary ["PE:StatusPatientUpdated"];
-            else if (App.Mirror.Status == Mirrors.Statuses.HOST)
+            else if (App.Mirror.Status == Mirror.Statuses.HOST)
                 lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroredPatientUpdated"];
         }
 
@@ -901,31 +901,31 @@ namespace II_Windows {
                 chkPulsusAlternans.IsChecked = e.Patient.Pulsus_Alternans;
                 comboCardiacAxis.SelectedIndex = (int)e.Patient.Cardiac_Axis.Value;
 
-                numSTE_I.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_I];
-                numSTE_II.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_II];
-                numSTE_III.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_III];
-                numSTE_aVR.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_AVR];
-                numSTE_aVL.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_AVL];
-                numSTE_aVF.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_AVF];
-                numSTE_V1.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_V1];
-                numSTE_V2.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_V2];
-                numSTE_V3.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_V3];
-                numSTE_V4.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_V4];
-                numSTE_V5.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_V5];
-                numSTE_V6.Value = (decimal)e.Patient.ST_Elevation [(int)Leads.Values.ECG_V6];
+                numSTE_I.Value = (decimal)e.Patient.ST_Elevation [(int)Lead.Values.ECG_I];
+                numSTE_II.Value = (decimal)e.Patient.ST_Elevation [(int)Lead.Values.ECG_II];
+                numSTE_III.Value = (decimal)e.Patient.ST_Elevation [(int)Lead.Values.ECG_III];
+                numSTE_aVR.Value = (decimal)e.Patient.ST_Elevation [(int)Lead.Values.ECG_AVR];
+                numSTE_aVL.Value = (decimal)e.Patient.ST_Elevation [(int)Lead.Values.ECG_AVL];
+                numSTE_aVF.Value = (decimal)e.Patient.ST_Elevation [(int)Lead.Values.ECG_AVF];
+                numSTE_V1.Value = (decimal)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V1];
+                numSTE_V2.Value = (decimal)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V2];
+                numSTE_V3.Value = (decimal)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V3];
+                numSTE_V4.Value = (decimal)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V4];
+                numSTE_V5.Value = (decimal)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V5];
+                numSTE_V6.Value = (decimal)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V6];
 
-                numTWE_I.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_I];
-                numTWE_II.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_II];
-                numTWE_III.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_III];
-                numTWE_aVR.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_AVR];
-                numTWE_aVL.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_AVL];
-                numTWE_aVF.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_AVF];
-                numTWE_V1.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V1];
-                numTWE_V2.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V2];
-                numTWE_V3.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V3];
-                numTWE_V4.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V4];
-                numTWE_V5.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V5];
-                numTWE_V6.Value = (decimal)e.Patient.T_Elevation [(int)Leads.Values.ECG_V6];
+                numTWE_I.Value = (decimal)e.Patient.T_Elevation [(int)Lead.Values.ECG_I];
+                numTWE_II.Value = (decimal)e.Patient.T_Elevation [(int)Lead.Values.ECG_II];
+                numTWE_III.Value = (decimal)e.Patient.T_Elevation [(int)Lead.Values.ECG_III];
+                numTWE_aVR.Value = (decimal)e.Patient.T_Elevation [(int)Lead.Values.ECG_AVR];
+                numTWE_aVL.Value = (decimal)e.Patient.T_Elevation [(int)Lead.Values.ECG_AVL];
+                numTWE_aVF.Value = (decimal)e.Patient.T_Elevation [(int)Lead.Values.ECG_AVF];
+                numTWE_V1.Value = (decimal)e.Patient.T_Elevation [(int)Lead.Values.ECG_V1];
+                numTWE_V2.Value = (decimal)e.Patient.T_Elevation [(int)Lead.Values.ECG_V2];
+                numTWE_V3.Value = (decimal)e.Patient.T_Elevation [(int)Lead.Values.ECG_V3];
+                numTWE_V4.Value = (decimal)e.Patient.T_Elevation [(int)Lead.Values.ECG_V4];
+                numTWE_V5.Value = (decimal)e.Patient.T_Elevation [(int)Lead.Values.ECG_V5];
+                numTWE_V6.Value = (decimal)e.Patient.T_Elevation [(int)Lead.Values.ECG_V6];
 
                 // Obstetric profile
                 numFHR.Value = e.Patient.FHR;

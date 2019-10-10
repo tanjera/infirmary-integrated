@@ -14,6 +14,6 @@ namespace II.Scenario_Editor {
     /// Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application {
-        public static Languages Language = new Languages ();
+        public static Language Language = new Language ();
     }
 }
