@@ -61,10 +61,10 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>A49EF28EC8118EDE20AB5F37482DA36C4A06593B</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>7181E848B1A4E26DEA27DEFB5874FF22C73CD914</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>Temp Signing Key.pfx</ManifestKeyFile>
+    <ManifestKeyFile>II Windows_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>
@@ -235,6 +235,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="II Windows_TemporaryKey.pfx" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

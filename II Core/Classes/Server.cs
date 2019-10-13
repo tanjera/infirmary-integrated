@@ -16,6 +16,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -43,6 +44,7 @@ namespace II.Server {
                 c.Open ();
                 return c;
             } catch {
+
                 // When handling errors, you can your application's response based on the error number.
                 // The two most common error numbers when connecting are as follows:
                 // 0: Cannot connect to server.
@@ -146,22 +148,21 @@ namespace II.Server {
 
         public string Get_LatestVersion () {
             string version = "0.0";
-            MySqlConnection c;
-            if ((c = Open ()) == null)
-                return version;
-            MySqlCommand com = c?.CreateCommand ();
 
             try {
-                com.CommandText = "SELECT version FROM versioning ORDER BY accession DESC LIMIT 1";
-                MySqlDataReader dr = com.ExecuteReader ();
+                WebRequest req = WebRequest.Create ("http://server.infirmary-integrated.com/version.php");
+                WebResponse resp = req.GetResponse ();
+                Stream str = resp.GetResponseStream ();
+                string body = String.Empty;
 
-                if (dr.Read ())
-                    version = dr.GetValue (0).ToString ();
+                using (StreamReader sr = new StreamReader (str))
+                    body = sr.ReadToEnd ();
 
-                Dispose (c, com, dr);
-                return version;
-            } catch {
-                Close (c);
+                if (body.Contains ("<<"))
+                    return body.Substring (0, body.IndexOf ("<<"));
+                else
+                    return version;
+            } catch (Exception e) {
                 return version;
             }
         }

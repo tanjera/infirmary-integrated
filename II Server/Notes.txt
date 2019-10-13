@@ -1,2 +1,0 @@
-When pushing a script:
-- Must set permissions "chmod 755"s

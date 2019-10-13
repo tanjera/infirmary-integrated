@@ -140,7 +140,7 @@ namespace Waveform_Editor {
         }
 
         private int NearestVertexByDistance (Point refPoint) {
-            if (Vertices.Count == 0)
+            if (Vertices == null || Vertices.Count == 0)
                 return -1;
 
             int nearestIndex = 0;
@@ -159,7 +159,7 @@ namespace Waveform_Editor {
         }
 
         private int NearestVertexByXAxis (Point refPoint) {
-            if (Vertices.Count == 0)
+            if (Vertices == null || Vertices.Count == 0)
                 return -1;
 
             int nearestIndex = 0;
