@@ -76,6 +76,8 @@ namespace II.Server {
                 return;
             }
         }
+        private string PHPArgument (string inc)
+            => inc.Replace ("#", "_").Replace ("$", "_");
 
         public void Post_UsageStatistics () {
             MySqlConnection c;
@@ -156,100 +158,71 @@ namespace II.Server {
                 string body = String.Empty;
 
                 using (StreamReader sr = new StreamReader (str))
-                    body = sr.ReadToEnd ();
+                    body = sr.ReadLine ();
 
-                if (body.Contains ("<<"))
-                    return body.Substring (0, body.IndexOf ("<<"));
-                else
-                    return version;
-            } catch (Exception e) {
+                resp.Close ();
+                str.Close ();
+
+                return String.IsNullOrEmpty (body) ? version : body;
+            } catch {
                 return version;
             }
         }
 
         public Patient Get_PatientMirror (Mirror m) {
-            MySqlConnection c;
-            if ((c = Open ()) == null)
-                return null;
-            MySqlCommand com = c?.CreateCommand ();
-
             try {
-                string s = Utility.HashSHA256 (m.PasswordAccess);
-                com.CommandText = String.Format ("SELECT updated, patient FROM mirrors WHERE accession = '{0}' AND key_access = '{1}'",
-                    m.Accession, Utility.HashSHA256 (m.PasswordAccess));
-                MySqlDataReader dr = com.ExecuteReader ();
+                WebRequest req = WebRequest.Create (String.Format (
+                    "http://server.infirmary-integrated.com/mirror_get.php?accession={0}&accesshash={1}",
+                    PHPArgument (m.Accession), Utility.HashSHA256 (m.PasswordAccess)));
+                WebResponse resp = req.GetResponse ();
+                Stream str = resp.GetResponseStream ();
 
-                if (!dr.Read () || dr.FieldCount < 2) {
-                    Dispose (c, com, dr);
-                    return null;
+                string updated = String.Empty;
+                string patient = String.Empty;
+                using (StreamReader sr = new StreamReader (str)) {
+                    updated = sr.ReadLine ();
+                    patient = sr.ReadLine ();
                 }
 
-                DateTime serverUpdated = Utility.DateTime_FromString (dr.GetValue (0).ToString ());
-                if (DateTime.Compare (serverUpdated, m.PatientUpdated) <= 0) {
-                    Dispose (c, com, dr);
+                resp.Close ();
+                str.Close ();
+
+                DateTime serverUpdated = Utility.DateTime_FromString (updated);
+                if (DateTime.Compare (serverUpdated, m.PatientUpdated) <= 0)
                     return null;
-                }
 
                 m.ServerQueried = DateTime.UtcNow;
                 m.PatientUpdated = serverUpdated;
                 Patient p = new Patient ();
-                p.Load_Process (Utility.DecryptAES (dr.GetValue (1).ToString ()));
+                p.Load_Process (Utility.DecryptAES (patient));
 
-                Dispose (c, com, dr);
                 return p;
-            } catch {
-                Close (c);
+            } catch (Exception e) {
                 return null;
             }
         }
 
         public void Post_PatientMirror (Mirror m, string pStr, DateTime pUp) {
-            MySqlConnection c;
-            if ((c = Open ()) == null)
-                return;
-            MySqlCommand com = c?.CreateCommand ();
-
             try {
-                bool rowExists = false;
-                com.CommandText = String.Format ("SELECT key_edit FROM mirrors WHERE accession = '{0}'",
-                    m.Accession);
-                MySqlDataReader dr = com.ExecuteReader ();
-                rowExists = dr.Read ();
-                if (rowExists && dr.GetValue (0).ToString () != Utility.HashSHA256 (m.PasswordEdit)) {
-                    Dispose (c, com, dr);
-                    return;
-                }
-                dr.Close ();
-
-                com = c?.CreateCommand ();
-                if (rowExists)
-                    com.CommandText =
-                        "UPDATE mirrors SET " +
-                        "accession = ?accession, key_access = ?key_access, key_edit = ?key_edit, " +
-                        "patient = ?patient, updated = ?updated, client_ip = ?client_ip, client_user = ?client_user " +
-                        String.Format ("WHERE accession = '{0}'", m.Accession);
-                else
-                    com.CommandText =
-                        "INSERT INTO mirrors " +
-                        "(accession, key_access, key_edit, patient, updated, client_ip, client_user) " +
-                        "VALUES " +
-                        "(?accession, ?key_access, ?key_edit, ?patient, ?updated, ?client_ip, ?client_user)";
-
                 string ipAddress = new WebClient ().DownloadString ("http://icanhazip.com").Trim ();
-                com.Parameters.Add ("?accession", MySqlDbType.VarChar).Value = m.Accession;
-                com.Parameters.Add ("?key_access", MySqlDbType.VarChar).Value = Utility.HashSHA256 (m.PasswordAccess);
-                com.Parameters.Add ("?key_edit", MySqlDbType.VarChar).Value = Utility.HashSHA256 (m.PasswordEdit);
-                com.Parameters.Add ("?patient", MySqlDbType.LongText).Value = Utility.EncryptAES (pStr);
-                com.Parameters.Add ("?updated", MySqlDbType.VarChar).Value = Utility.DateTime_ToString (pUp);
-                com.Parameters.Add ("?client_ip", MySqlDbType.VarChar).Value = Utility.HashSHA256 (ipAddress);
-                com.Parameters.Add ("?client_user", MySqlDbType.VarChar).Value = Utility.HashSHA256 (Environment.UserName);
 
-                com.ExecuteNonQuery ();
+                WebRequest req = WebRequest.Create (String.Format (
+                    "http://server.infirmary-integrated.com/mirror_post.php" +
+                    "?accession={0}&key_access={1}&key_edit={2}&patient={3}&updated={4}&client_ip={5}&client_user={6}",
+                    PHPArgument (m.Accession),
+                    Utility.HashSHA256 (m.PasswordAccess),
+                    Utility.HashSHA256 (m.PasswordEdit),
+                    Utility.EncryptAES (pStr),
+                    Utility.DateTime_ToString (pUp),
+                    Utility.HashSHA256 (ipAddress),
+                    Utility.HashSHA256 (Environment.UserName)));
 
-                Dispose (c, com, dr);
+                WebResponse resp = req.GetResponse ();
+                Stream str = resp.GetResponseStream ();
+                StreamReader sr = new StreamReader (str);
+                string response = sr.ReadToEnd ();
                 return;
-            } catch {
-                Close (c);
+            } catch (Exception e) {
                 return;
             }
         }
