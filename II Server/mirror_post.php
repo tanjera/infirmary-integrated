@@ -16,13 +16,16 @@ try {
     $sql->bind_result($existing);
     $sql->execute();
 
-
     $row_exists = false;
     if ($sql->fetch()) {            // An entry exists for this accession
         if ($existing != filter_input(INPUT_GET, 'key_edit')) {
             $conn->close();
             die();
         } else if ($existing == filter_input(INPUT_GET, 'key_edit')) {
+
+            $conn->refresh();
+            $sql->reset();
+
             if ($sql = $conn->prepare(
                     "UPDATE mirrors SET key_access = ?, key_edit = ?, " .
                     "patient = ?, updated = ?, client_ip = ?, client_user = ? " .
@@ -44,6 +47,9 @@ try {
             $conn->close();
         }
     } else if (!$sql->fetch()) {    // No entry exists for this accession
+        $conn->refresh();
+        $sql->reset();
+
         if ($sql = $conn->prepare(
                 "INSERT INTO mirrors " .
                 "(accession, key_access, key_edit, patient, updated, client_ip, client_user) " .

@@ -158,7 +158,7 @@ namespace II.Server {
                 string body = String.Empty;
 
                 using (StreamReader sr = new StreamReader (str))
-                    body = sr.ReadLine ();
+                    body = sr.ReadLine ().Trim ();
 
                 resp.Close ();
                 str.Close ();
@@ -180,8 +180,8 @@ namespace II.Server {
                 string updated = String.Empty;
                 string patient = String.Empty;
                 using (StreamReader sr = new StreamReader (str)) {
-                    updated = sr.ReadLine ();
-                    patient = sr.ReadLine ();
+                    updated = sr.ReadLine ().Trim ();
+                    patient = sr.ReadLine ().Trim ();
                 }
 
                 resp.Close ();
@@ -217,10 +217,7 @@ namespace II.Server {
                     Utility.HashSHA256 (ipAddress),
                     Utility.HashSHA256 (Environment.UserName)));
 
-                WebResponse resp = req.GetResponse ();
-                Stream str = resp.GetResponseStream ();
-                StreamReader sr = new StreamReader (str);
-                string response = sr.ReadToEnd ();
+                req.GetResponse ();
                 return;
             } catch (Exception e) {
                 return;
