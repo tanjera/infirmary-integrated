@@ -516,7 +516,7 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "NMAP", VS_Settings.NMAP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "RR", VS_Settings.RR));
             sWrite.AppendLine (String.Format ("{0}:{1}", "SPO2", VS_Settings.SPO2));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "T", VS_Settings.T));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "T", Math.Round (VS_Settings.T, 1)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Rhythm", Cardiac_Rhythm.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_Rhythm", Respiratory_Rhythm.Value));
 
@@ -535,8 +535,8 @@ namespace II {
 
             // Respiratory profile
             sWrite.AppendLine (String.Format ("{0}:{1}", "Mechanically_Ventilated", Mechanically_Ventilated));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_I", VS_Settings.RR_IE_I));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_E", VS_Settings.RR_IE_E));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_I", Math.Round (VS_Settings.RR_IE_I, 1)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_E", Math.Round (VS_Settings.RR_IE_E, 1)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiration_Inflated", Respiration_Inflated));
 
             // Cardiac profile

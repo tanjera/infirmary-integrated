@@ -298,8 +298,8 @@ namespace II {
                 sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressTo", ProgressTo));
                 sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressFrom", ProgressFrom));
                 sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressTime", ProgressTimer));
-                sWrite.AppendLine (String.Format ("{0}:{1}", "IPositionX", IPositionX));
-                sWrite.AppendLine (String.Format ("{0}:{1}", "IPositionY", IPositionY));
+                sWrite.AppendLine (String.Format ("{0}:{1}", "IPositionX", Math.Round (IPositionX, 2)));
+                sWrite.AppendLine (String.Format ("{0}:{1}", "IPositionY", Math.Round (IPositionY, 2)));
 
                 sWrite.AppendLine ("> Begin: Patient");
                 sWrite.Append (Patient.Save ());

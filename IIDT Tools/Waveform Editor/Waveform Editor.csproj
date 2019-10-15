@@ -78,6 +78,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Classes\ActionCommand.cs" />
     <Compile Include="Classes\Math.cs" />
     <Compile Include="Classes\Vertex.cs" />
     <Compile Include="Editor.xaml.cs">
