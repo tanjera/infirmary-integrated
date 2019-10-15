@@ -24,6 +24,11 @@ namespace II.Server {
         }
 
         public Mirror () {
+            ResetBackgroundWorker ();
+        }
+
+        private void ResetBackgroundWorker () {
+            _BackgroundWorker = new BackgroundWorker ();
             _BackgroundWorker.WorkerSupportsCancellation = true;
         }
 
@@ -42,16 +47,19 @@ namespace II.Server {
             } catch {
             } finally {
                 ThreadLock = false;
+                ResetBackgroundWorker ();
             }
         }
 
         public void GetPatient (Patient p, Server s) {
+
             // Mirroring not active; neither client or host
             if (Status != Statuses.CLIENT)
                 return;
 
             // Mirroring as client, check server q RefreshSeconds
             if (DateTime.Compare (ServerQueried, DateTime.UtcNow.Subtract (new TimeSpan (0, 0, RefreshSeconds))) < 0) {
+
                 // Must use intermediary Patient(), if App.Patient is thread-locked, Waveforms stop populating!!
                 Patient pBuffer = new Patient ();
 
@@ -60,6 +68,8 @@ namespace II.Server {
                 };
                 _BackgroundWorker.RunWorkerCompleted += delegate {
                     ThreadLock = false;
+                    ResetBackgroundWorker ();
+
                     if (pBuffer != null)
                         p.Load_Process (pBuffer.Save ());
                 };
@@ -82,7 +92,11 @@ namespace II.Server {
                 Accession = Utility.RandomString (8);
 
             _BackgroundWorker.DoWork += delegate { s.Post_PatientMirror (this, pStr, pUp); };
-            _BackgroundWorker.RunWorkerCompleted += delegate { ThreadLock = false; };
+            _BackgroundWorker.RunWorkerCompleted += delegate {
+                ThreadLock = false;
+                ResetBackgroundWorker ();
+            };
+
             if (!ThreadLock) {
                 ThreadLock = true;
                 _BackgroundWorker.RunWorkerAsync ();

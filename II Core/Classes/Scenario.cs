@@ -106,8 +106,7 @@ namespace II {
                         }
                     }
                 }
-            } catch (Exception e) {
-                new Server.Server ().Post_Exception (e);
+            } catch {
 
                 // If the load fails... just bail on the actual value parsing and continue the load process
             }
@@ -284,10 +283,8 @@ namespace II {
                             }
                         }
                     }
-                } catch (Exception e) {
-                    new Server.Server ().Post_Exception (e);
-
-                    // If the load fails... just bail on the actual value parsing and continue the load process
+                } catch {
+                    /* If the load fails... just bail on the actual value parsing and continue the load process */
                 }
 
                 sRead.Close ();
@@ -345,10 +342,8 @@ namespace II {
                                 }
                             }
                         }
-                    } catch (Exception e) {
-                        new Server.Server ().Post_Exception (e);
-
-                        // If the load fails... just bail on the actual value parsing and continue the load process
+                    } catch {
+                        /* If the load fails... just bail on the actual value parsing and continue the load process */
                     }
 
                     sRead.Close ();

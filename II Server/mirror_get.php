@@ -13,9 +13,13 @@ try {
             "SELECT updated, patient FROM mirrors "
             . "WHERE accession = ? AND key_access = ?");
 
+    $get_accession = $_GET['accession'] ?? "";
+    $get_accesshash = $_GET['accesshash'] ?? "";
+
     $sql->bind_param("ss",
-            filter_input(INPUT_GET, 'accession'),
-            filter_input(INPUT_GET, 'accesshash'));
+            $get_accession,
+            $get_accesshash);
+
     $sql->bind_result($updated, $patient);
     $sql->execute();
 

@@ -8,11 +8,20 @@ if ($conn->connect_error) {
     die();
 }
 
+$get_accession = $_GET['accession'] ?? "";
+$get_key_access = $_GET['key_access'] ?? "";
+$get_key_edit = $_GET['key_edit'] ?? "";
+$get_patient = $_GET['patient'] ?? "";
+$get_updated = $_GET['updated'] ?? "";
+$get_client_ip = $_GET['client_ip'] ?? "";
+$get_client_user = $_GET['client_user'] ?? "";
+
 try {
     $sql = $conn->prepare(
             "SELECT key_edit FROM mirrors WHERE accession = ?");
 
-    $sql->bind_param("s", filter_input(INPUT_GET, 'accession'));
+    $sql->bind_param("s",
+            $get_accession);
     $sql->bind_result($existing);
     $sql->execute();
 
@@ -32,13 +41,13 @@ try {
                     "WHERE accession = ?")) {
 
                 $sql->bind_param("sssssss",
-                        filter_input(INPUT_GET, 'key_access'),
-                        filter_input(INPUT_GET, 'key_edit'),
-                        filter_input(INPUT_GET, 'patient'),
-                        filter_input(INPUT_GET, 'updated'),
-                        filter_input(INPUT_GET, 'client_ip'),
-                        filter_input(INPUT_GET, 'client_user'),
-                        filter_input(INPUT_GET, 'accession'));
+                        $get_key_access,
+                        $get_key_edit,
+                        $get_patient,
+                        $get_updated,
+                        $get_client_ip,
+                        $get_client_user,
+                        $get_accession);
 
                 $sql->execute();
                 $sql->close();
@@ -57,13 +66,13 @@ try {
                 "(?, ?, ?, ?, ?, ?, ?)")) {
 
             $sql->bind_param("sssssss",
-                    filter_input(INPUT_GET, 'accession'),
-                    filter_input(INPUT_GET, 'key_access'),
-                    filter_input(INPUT_GET, 'key_edit'),
-                    filter_input(INPUT_GET, 'patient'),
-                    filter_input(INPUT_GET, 'updated'),
-                    filter_input(INPUT_GET, 'client_ip'),
-                    filter_input(INPUT_GET, 'client_user'));
+                    $get_accession,
+                    $get_key_access,
+                    $get_key_edit,
+                    $get_patient,
+                    $get_updated,
+                    $get_client_ip,
+                    $get_client_user);
 
             $sql->execute();
             $sql->close();

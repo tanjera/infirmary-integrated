@@ -170,17 +170,18 @@ namespace II_Windows {
             listFHRRhythms.ItemsSource = fetalHeartRhythms;
 
             // Populate status bar with updated version information and make visible
-            BackgroundWorker bgw = new BackgroundWorker ();
-            string latestVersion = "";
-            bgw.DoWork += delegate { latestVersion = App.Server.Get_LatestVersion (); };
-            bgw.RunWorkerCompleted += delegate {
-                if (Utility.IsNewerVersion (Utility.Version, latestVersion)) {
-                    txtUpdateAvailable.Text = String.Format (App.Language.Dictionary ["STATUS:UpdateAvailable"], latestVersion).Trim ();
-                } else {
-                    statusUpdateAvailable.Visibility = Visibility.Collapsed;
-                }
-            };
-            bgw.RunWorkerAsync ();
+            using (BackgroundWorker bgw = new BackgroundWorker ()) {
+                string latestVersion = "";
+                bgw.DoWork += delegate { latestVersion = App.Server.Get_LatestVersion (); };
+                bgw.RunWorkerCompleted += delegate {
+                    if (Utility.IsNewerVersion (Utility.Version, latestVersion)) {
+                        txtUpdateAvailable.Text = String.Format (App.Language.Dictionary ["STATUS:UpdateAvailable"], latestVersion).Trim ();
+                    } else {
+                        statusUpdateAvailable.Visibility = Visibility.Collapsed;
+                    }
+                };
+                bgw.RunWorkerAsync ();
+            }
         }
 
         private void InitMirroring () {
@@ -430,8 +431,7 @@ namespace II_Windows {
                         App.Device_IABP.Load_Process (pbuffer.ToString ());
                     }
                 }
-            } catch (Exception e) {
-                App.Server.Post_Exception (e);
+            } catch {
                 LoadFail ();
             } finally {
                 sRead.Close ();
@@ -474,8 +474,7 @@ namespace II_Windows {
                         }
                     }
                 }
-            } catch (Exception e) {
-                App.Server.Post_Exception (e);
+            } catch {
                 sRead.Close ();
                 return;
             }

@@ -43,8 +43,7 @@ namespace II.Localization {
                     return (Values)Enum.GetValues (typeof (Values)).GetValue (i);
                 else
                     return Values.ENU;
-            } catch (Exception e) {
-                new Server.Server ().Post_Exception (e);
+            } catch {
                 return Values.ENU;
             }
         }

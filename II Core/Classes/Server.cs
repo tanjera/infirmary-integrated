@@ -16,6 +16,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -24,67 +25,10 @@ using System.Text;
 
 namespace II.Server {
     public partial class Server {
-        private List<MySqlConnection> listConnections;
-        private string connectionString;
-
-        public Server () {
-            listConnections = new List<MySqlConnection> ();
-
-            connectionString = String.Format ("SERVER={0};DATABASE={1};UID={2};PASSWORD={3};",
-                Access.Server.Host,
-                Access.Server.Database,
-                Access.Server.Uid,
-                Access.Server.Password);
-        }
-
-        private MySqlConnection Open () {
-            try {
-                MySqlConnection c = new MySqlConnection (connectionString);
-                listConnections.Add (c);
-                c.Open ();
-                return c;
-            } catch {
-
-                // When handling errors, you can your application's response based on the error number.
-                // The two most common error numbers when connecting are as follows:
-                // 0: Cannot connect to server.
-                // 1045: Invalid user name and/or password.
-                return null;
-            }
-        }
-
-        private bool Close (MySqlConnection c) {
-            try {
-                c.Close ();
-                listConnections.Remove (c);
-                c.Dispose ();
-                return true;
-            } catch {
-                return false;
-            }
-        }
-
-        private void Dispose (MySqlConnection c, MySqlCommand com, MySqlDataReader dr) {
-            try {
-                com?.Dispose ();
-                dr?.Close ();
-                dr?.Dispose ();
-                c.Close ();
-                listConnections.Remove (c);
-                c.Dispose ();
-            } catch {
-                return;
-            }
-        }
-        private string PHPArgument (string inc)
+        private string FormatForPHP (string inc)
             => inc.Replace ("#", "_").Replace ("$", "_");
 
         public void Post_UsageStatistics () {
-            MySqlConnection c;
-            if ((c = Open ()) == null)
-                return;
-            MySqlCommand com = c?.CreateCommand ();
-
             try {
                 string macAddress = "",
                         ipAddress = "";
@@ -98,53 +42,46 @@ namespace II.Server {
                     ipAddress = new WebClient ().DownloadString ("http://icanhazip.com").Trim ();
                 }
 
-                com.CommandText = "INSERT INTO usage_statistics" +
-                    "(timestamp, ii_version, client_os, client_ip, client_mac, client_user) " +
-                    "VALUES" +
-                    "(?timestamp, ?ii_version, ?client_os, ?client_ip, ?client_mac, ?client_user)";
-                com.Parameters.Add ("?timestamp", MySqlDbType.VarChar).Value = Utility.DateTime_ToString (DateTime.UtcNow);
-                com.Parameters.Add ("?ii_version", MySqlDbType.VarChar).Value = Utility.Version;
-                com.Parameters.Add ("?client_os", MySqlDbType.VarChar).Value = Environment.OSVersion.VersionString;
-                com.Parameters.Add ("?client_ip", MySqlDbType.VarChar).Value = Utility.HashSHA256 (ipAddress);
-                com.Parameters.Add ("?client_mac", MySqlDbType.VarChar).Value = Utility.HashSHA256 (macAddress);
-                com.Parameters.Add ("?client_user", MySqlDbType.VarChar).Value = Utility.HashSHA256 (Environment.UserName);
+                CultureInfo ci = CultureInfo.CurrentUICulture;
 
-                com.ExecuteNonQuery ();
-                Dispose (c, com, null);
+                WebRequest req = WebRequest.Create (FormatForPHP (String.Format (
+                    "http://server.infirmary-integrated.com/usage_post.php" +
+                        "?timestamp={0}&ii_version={1}&env_os={2}&env_lang={3}&client_ip={4}&client_mac={5}&client_user={6}",
+
+                    Utility.DateTime_ToString (DateTime.UtcNow),
+                    Utility.Version,
+                    Environment.OSVersion.VersionString,
+                    ci.ThreeLetterWindowsLanguageName,
+                    Utility.HashSHA256 (ipAddress),
+                    Utility.HashSHA256 (macAddress),
+                    Utility.HashSHA256 (Environment.UserName))));
+
+                req.GetResponse ();
             } catch {
-                Close (c);
             }
         }
 
         public void Post_Exception (Exception e) {
-            MySqlConnection c;
-            if ((c = Open ()) == null)
-                return;
-            MySqlCommand com = c?.CreateCommand ();
-
             try {
                 StringBuilder excData = new StringBuilder ();
                 foreach (DictionaryEntry entry in e.Data)
                     excData.AppendLine (String.Format ("{0,-20} '{1}'", entry.Key.ToString (), entry.Value.ToString ()));
 
-                com.CommandText = "INSERT INTO exceptions" +
-                    "(timestamp, ii_version, client_os, exception_message, exception_method, exception_stacktrace, exception_hresult, exception_data) " +
-                    "VALUES" +
-                    "(?timestamp, ?ii_version, ?client_os, ?exception_message, ?exception_method, ?exception_stacktrace, ?exception_hresult, ?exception_data)";
-                com.Parameters.Add ("?timestamp", MySqlDbType.VarChar).Value = Utility.DateTime_ToString (DateTime.UtcNow);
-                com.Parameters.Add ("?ii_version", MySqlDbType.VarChar).Value = Utility.Version;
-                com.Parameters.Add ("?client_os", MySqlDbType.VarChar).Value = Environment.OSVersion.VersionString;
-                com.Parameters.Add ("?exception_message", MySqlDbType.VarChar).Value = e.Message ?? "null";
-                com.Parameters.Add ("?exception_method", MySqlDbType.VarChar).Value = e.TargetSite?.Name ?? "null";
-                com.Parameters.Add ("?exception_stacktrace", MySqlDbType.VarChar).Value = e.StackTrace ?? "null";
-                com.Parameters.Add ("?exception_hresult", MySqlDbType.VarChar).Value = e.HResult.ToString () ?? "null";
-                com.Parameters.Add ("?exception_data", MySqlDbType.VarChar).Value = excData.ToString () ?? "null";
+                WebRequest req = WebRequest.Create (FormatForPHP (String.Format (
+                    "http://server.infirmary-integrated.com/exception_post.php" +
+                        "?timestamp={0}&ii_version={1}&client_os={2}&exception_message={3}&exception_method={4}&exception_stacktrace={5}&exception_hresult={6}&exception_data={7}",
 
-                com.ExecuteNonQuery ();
-                Dispose (c, com, null);
-                return;
+                    Utility.DateTime_ToString (DateTime.UtcNow),
+                    Utility.Version,
+                    Environment.OSVersion.VersionString,
+                    e.Message ?? "null",
+                    e.TargetSite?.Name ?? "null",
+                    e.StackTrace ?? "null",
+                    e.HResult.ToString () ?? "null",
+                    excData.ToString () ?? "null")));
+
+                req.GetResponse ();
             } catch {
-                Close (c);
             }
         }
 
@@ -171,9 +108,10 @@ namespace II.Server {
 
         public Patient Get_PatientMirror (Mirror m) {
             try {
-                WebRequest req = WebRequest.Create (String.Format (
+                WebRequest req = WebRequest.Create (FormatForPHP (String.Format (
                     "http://server.infirmary-integrated.com/mirror_get.php?accession={0}&accesshash={1}",
-                    PHPArgument (m.Accession), Utility.HashSHA256 (m.PasswordAccess)));
+                    m.Accession,
+                    Utility.HashSHA256 (m.PasswordAccess))));
                 WebResponse resp = req.GetResponse ();
                 Stream str = resp.GetResponseStream ();
 
@@ -197,7 +135,7 @@ namespace II.Server {
                 p.Load_Process (Utility.DecryptAES (patient));
 
                 return p;
-            } catch (Exception e) {
+            } catch {
                 return null;
             }
         }
@@ -206,21 +144,19 @@ namespace II.Server {
             try {
                 string ipAddress = new WebClient ().DownloadString ("http://icanhazip.com").Trim ();
 
-                WebRequest req = WebRequest.Create (String.Format (
+                WebRequest req = WebRequest.Create (FormatForPHP (String.Format (
                     "http://server.infirmary-integrated.com/mirror_post.php" +
                     "?accession={0}&key_access={1}&key_edit={2}&patient={3}&updated={4}&client_ip={5}&client_user={6}",
-                    PHPArgument (m.Accession),
+                    m.Accession,
                     Utility.HashSHA256 (m.PasswordAccess),
                     Utility.HashSHA256 (m.PasswordEdit),
                     Utility.EncryptAES (pStr),
                     Utility.DateTime_ToString (pUp),
                     Utility.HashSHA256 (ipAddress),
-                    Utility.HashSHA256 (Environment.UserName)));
+                    Utility.HashSHA256 (Environment.UserName))));
 
                 req.GetResponse ();
-                return;
             } catch (Exception e) {
-                return;
             }
         }
     }

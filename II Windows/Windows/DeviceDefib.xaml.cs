@@ -86,6 +86,7 @@ namespace II_Windows {
         }
 
         private void InitInterface () {
+
             // Initiate ICommands for KeyBindings
             icToggleFullscreen = new ActionCommand (() => ToggleFullscreen ());
             icPauseDevice = new ActionCommand (() => TogglePause ());
@@ -153,9 +154,7 @@ namespace II_Windows {
                         }
                     }
                 }
-            } catch (Exception e) {
-                App.Server.Post_Exception (e);
-                throw e;
+            } catch {
             } finally {
                 sRead.Close ();
                 OnLayoutChange (numericTypes, tracingTypes);
@@ -269,6 +268,7 @@ namespace II_Windows {
         }
 
         private void ButtonCharge_Click (object s, RoutedEventArgs e) {
+
             // Only charge if in Defib or Sync mode...
             if (Mode != Modes.DEFIB && Mode != Modes.SYNC)
                 return;
@@ -425,6 +425,7 @@ namespace II_Windows {
         }
 
         private void OnLayoutChange (List<string> numericTypes = null, List<string> tracingTypes = null) {
+
             // If numericTypes or tracingTypes are not null... then we are loading a file; clear lNumerics and lTracings!
             if (numericTypes != null)
                 listNumerics.Clear ();

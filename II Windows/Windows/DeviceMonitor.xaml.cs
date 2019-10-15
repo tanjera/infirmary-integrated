@@ -107,9 +107,7 @@ namespace II_Windows {
                         }
                     }
                 }
-            } catch (Exception e) {
-                App.Server.Post_Exception (e);
-                throw e;
+            } catch {
             } finally {
                 sRead.Close ();
                 OnLayoutChange (numericTypes, tracingTypes);
