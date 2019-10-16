@@ -25,14 +25,16 @@ namespace Waveform_Editor {
 
         /* Waveform settings */
         private int DrawResolution;
-        private int DrawLength;
+        private double DrawLength;
         private int IndexOffset;
+        private string WaveName;
 
         /* Settings for display */
         private double DisplayYOffset = 0;
 
         /* Settings for editing vertices */
         private double EditYAmplitude = 0.1;
+        private Image referenceImage = new Image ();
 
         /* Drawing variables, offsets and multipliers */
         private StreamGeometry drawGeometry;
@@ -67,13 +69,13 @@ namespace Waveform_Editor {
                 return;
 
             DrawResolution = 100;
-            intDrawResolution.Value = 100; ;
+            intDrawResolution.Value = 100;
 
             DrawLength = 1;
-            intDrawLength.Value = 1; ;
+            dblDrawLength.Value = 1;
 
             IndexOffset = 0;
-            intIndexOffset.Value = 0; ;
+            intIndexOffset.Value = 0;
 
             Vertices = new List<Vertex> ();
             for (int i = 0; i < (DrawResolution * DrawLength); i++)
@@ -83,9 +85,19 @@ namespace Waveform_Editor {
         }
 
         private void SaveFile () {
+            txtWaveName.Text = txtWaveName.Text.Trim ().Replace (' ', '_');
+            WaveName = txtWaveName.Text;
+
+            if (String.IsNullOrEmpty (WaveName)) {
+                MessageBox.Show (
+                        "You must enter a name for the Waveform in order to save.",
+                        "Waveform Name Required", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             Stream s;
             Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
-
+            dlgSave.FileName = String.Format ("{0}.iiwf", WaveName);
             dlgSave.Filter = "Infirmary Integrated waveform files (*.iiwf)|*.iiwf|All files (*.*)|*.*";
             dlgSave.FilterIndex = 1;
             dlgSave.RestoreDirectory = true;
@@ -94,8 +106,9 @@ namespace Waveform_Editor {
                 if ((s = dlgSave.OpenFile ()) != null) {
                     StringBuilder sb = new StringBuilder ();
 
+                    sb.AppendLine (String.Format ("{0}:{1}", "WaveName", WaveName));
                     sb.AppendLine (String.Format ("{0}:{1}", "DrawResolution", DrawResolution));
-                    sb.AppendLine (String.Format ("{0}:{1}", "DrawLength", DrawLength));
+                    sb.AppendLine (String.Format ("{0}:{1}", "DrawLength", System.Math.Round (DrawLength, 1)));
                     sb.AppendLine (String.Format ("{0}:{1}", "IndexOffset", IndexOffset));
 
                     StringBuilder sbVert = new StringBuilder ();
@@ -138,8 +151,10 @@ namespace Waveform_Editor {
                                         pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
                                 switch (pName) {
                                     default: break;
+
+                                    case "WaveName": txtWaveName.Text = pValue; break;
                                     case "DrawResolution": DrawResolution = int.Parse (pValue); break;
-                                    case "DrawLength": DrawLength = int.Parse (pValue); break;
+                                    case "DrawLength": DrawLength = double.Parse (pValue); break;
                                     case "IndexOffset": IndexOffset = int.Parse (pValue); break;
 
                                     case "Vertices":
@@ -185,6 +200,38 @@ namespace Waveform_Editor {
                     "Unable to Load File", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
+        private void SetBackground () {
+            Microsoft.Win32.OpenFileDialog dlgLoad = new Microsoft.Win32.OpenFileDialog ();
+
+            dlgLoad.Filter = "Image Files(*.bmp;*.jpg;*.gif;*.png)|*.bmp;*.jpg;*.gif;*.png|All files (*.*)|*.*";
+            dlgLoad.FilterIndex = 1;
+            dlgLoad.RestoreDirectory = true;
+
+            if (dlgLoad.ShowDialog () == true) {
+                cnvDrawing.Children.Remove (referenceImage);
+
+                referenceImage = new Image ();
+                BitmapImage bi = new BitmapImage (new Uri (dlgLoad.FileName, UriKind.Absolute));
+
+                referenceImage = new Image {
+                    Width = bi.Width,
+                    Height = bi.Height,
+                    Source = bi,
+                    Stretch = Stretch.Fill
+                };
+
+                cnvDrawing.Children.Add (referenceImage);
+                Canvas.SetTop (referenceImage, 0);
+                Canvas.SetLeft (referenceImage, 0);
+
+                SetZAxes ();
+            }
+        }
+
+        private void RemoveBackground () {
+            cnvDrawing.Children.Remove (referenceImage);
+        }
+
         private void UpdateWave () {
             CalculateDrawOffsets ();
 
@@ -196,6 +243,7 @@ namespace Waveform_Editor {
 
             DrawReferences ();
             DrawOffsetReference ();
+            SetZAxes ();
         }
 
         private void CalculateDrawOffsets () {
@@ -213,8 +261,8 @@ namespace Waveform_Editor {
 
         private void TranslatePointToPixel (int vertexIndex) {
             Vertices [vertexIndex].Pixel = new Point (
-                        Math.Clamp ((int)((vertexIndex * drawXMultiplier) + drawXOffset), 0, cnvDrawing.ActualWidth),
-                        Math.Clamp ((int)((Vertices [vertexIndex].Y * drawYMultiplier) + drawYOffset), 0, cnvDrawing.ActualHeight));
+                        Utility.Clamp ((int)((vertexIndex * drawXMultiplier) + drawXOffset), 0, cnvDrawing.ActualWidth),
+                        Utility.Clamp ((int)((Vertices [vertexIndex].Y * drawYMultiplier) + drawYOffset), 0, cnvDrawing.ActualHeight));
         }
 
         private void TranslatePointsToPixels () {
@@ -238,8 +286,8 @@ namespace Waveform_Editor {
             drawGeometry = new StreamGeometry { FillRule = FillRule.EvenOdd };
 
             using (drawContext = drawGeometry.Open ()) {
-                drawContext.BeginFigure (new Point (0, Math.Clamp (yOffset, 0, cnvDrawing.ActualHeight)), true, false);
-                drawContext.LineTo (new Point (cnvDrawing.ActualWidth, Math.Clamp (yOffset, 0, cnvDrawing.ActualHeight)), true, true);
+                drawContext.BeginFigure (new Point (0, Utility.Clamp (yOffset, 0, cnvDrawing.ActualHeight)), true, false);
+                drawContext.LineTo (new Point (cnvDrawing.ActualWidth, Utility.Clamp (yOffset, 0, cnvDrawing.ActualHeight)), true, true);
             }
 
             drawGeometry.Freeze ();
@@ -250,8 +298,8 @@ namespace Waveform_Editor {
             drawGeometry = new StreamGeometry { FillRule = FillRule.EvenOdd };
 
             using (drawContext = drawGeometry.Open ()) {
-                drawContext.BeginFigure (new Point (Math.Clamp ((int)((IndexOffset * drawXMultiplier) + drawXOffset), 0, cnvDrawing.ActualWidth), 0), true, false);
-                drawContext.LineTo (new Point (Math.Clamp ((int)((IndexOffset * drawXMultiplier) + drawXOffset), 0, cnvDrawing.ActualWidth), cnvDrawing.ActualHeight), true, true);
+                drawContext.BeginFigure (new Point (Utility.Clamp ((int)((IndexOffset * drawXMultiplier) + drawXOffset), 0, cnvDrawing.ActualWidth), 0), true, false);
+                drawContext.LineTo (new Point (Utility.Clamp ((int)((IndexOffset * drawXMultiplier) + drawXOffset), 0, cnvDrawing.ActualWidth), cnvDrawing.ActualHeight), true, true);
             }
 
             drawGeometry.Freeze ();
@@ -272,11 +320,52 @@ namespace Waveform_Editor {
             pathWave.Data = drawGeometry;
         }
 
+        private void TrimWave () {
+            TrimWaveStart ();
+            TrimWaveEnd ();
+        }
+
+        private void TrimWaveStart () {
+            int removed = 0;
+
+            for (int i = 0; i < Vertices.Count - 2 && i < IndexOffset; i++) {
+                if (Vertices [i].Y == 0 && Vertices [i + 1].Y == 0) {
+                    Vertices.RemoveAt (i);
+                    removed++;
+                    i--;
+                } else {
+                    break;
+                }
+            }
+
+            IndexOffset -= removed;
+            intIndexOffset.Value = IndexOffset;
+
+            DrawLength = (double)Vertices.Count / (double)DrawResolution;
+            dblDrawLength.Value = (decimal)DrawLength;
+
+            UpdateWave ();
+        }
+
+        private void TrimWaveEnd () {
+            for (int i = Vertices.Count - 2; i > 2 && i > IndexOffset; i--) {
+                if (Vertices [i].Y == 0 && Vertices [i + 1].Y == 0) {
+                    Vertices.RemoveAt (i + 1);
+                } else {
+                    break;
+                }
+            }
+
+            DrawLength = (double)Vertices.Count / (double)DrawResolution;
+            dblDrawLength.Value = (decimal)DrawLength;
+            UpdateWave ();
+        }
+
         private void SetVertex (int index, double amount) {
             if (index < 0 || index > Vertices.Count)
                 return;
 
-            Vertices [index].Y = Math.Clamp (amount, -1.0, 1.0);
+            Vertices [index].Y = Utility.Clamp (amount, -1.0, 1.0);
             TranslatePointToPixel (index);
             DrawWave ();
         }
@@ -293,13 +382,13 @@ namespace Waveform_Editor {
             if (index < 0 || index > Vertices.Count)
                 return;
 
-            Vertices [index].Y = Math.Clamp ((Vertices [index].Y + (EditYAmplitude * amount)), -1.0, 1.0);
+            Vertices [index].Y = Utility.Clamp ((Vertices [index].Y + (EditYAmplitude * amount)), -1.0, 1.0);
             TranslatePointToPixel (index);
             DrawWave ();
         }
 
         private void MoveReference (double amount) {
-            DisplayYOffset = Math.Clamp ((DisplayYOffset + (amount * 0.1)), -1.0, 1.0);
+            DisplayYOffset = Utility.Clamp ((DisplayYOffset + (amount * 0.1)), -1.0, 1.0);
             UpdateWave ();      // Calculates draw offsets as well
             DrawReferences ();
         }
@@ -349,6 +438,16 @@ namespace Waveform_Editor {
             return nearestIndex;
         }
 
+        private void SetZAxes () {
+            /* Ensures all cnvDrawing.Children aren't overlapping improperly */
+            Canvas.SetZIndex (referenceImage, 1);
+            Canvas.SetZIndex (pathReferenceHigh, 2);
+            Canvas.SetZIndex (pathReferenceMid, 2);
+            Canvas.SetZIndex (pathReferenceLow, 2);
+            Canvas.SetZIndex (pathIndexOffset, 3);
+            Canvas.SetZIndex (pathWave, 4);
+        }
+
         private void MenuItemNew_Click (object sender, RoutedEventArgs e)
             => NewFile ();
 
@@ -361,9 +460,26 @@ namespace Waveform_Editor {
         private void MenuItemExit_Click (object sender, RoutedEventArgs e)
             => Application.Current.Shutdown ();
 
+        private void MenuItemSetBackground_Click (object sender, RoutedEventArgs e)
+            => SetBackground ();
+
+        private void MenuItemRemoveBackground_Click (object sender, RoutedEventArgs e)
+            => RemoveBackground ();
+
+        private void MenuItemTrimWave_Click (object sender, RoutedEventArgs e)
+            => TrimWave ();
+
+        private void MenuItemTrimWaveStart_Click (object sender, RoutedEventArgs e)
+            => TrimWaveStart ();
+
+        private void MenuItemTrimWaveEnd_Click (object sender, RoutedEventArgs e)
+            => TrimWaveEnd ();
+
         private void btnApplyResolutions_Click (object sender, RoutedEventArgs e) {
+            txtWaveName.Text = txtWaveName.Text.Trim ().Replace (' ', '_');
+            WaveName = txtWaveName.Text;
             DrawResolution = intDrawResolution.Value ?? 0;
-            DrawLength = intDrawLength.Value ?? 0;
+            DrawLength = (double)(dblDrawLength.Value ?? 0);
             IndexOffset = intIndexOffset.Value ?? 0;
 
             Vertices = new List<Vertex> ();
@@ -373,11 +489,66 @@ namespace Waveform_Editor {
             UpdateWave ();
         }
 
+        private void cnvDrawing_KeyDown (object sender, KeyEventArgs e) {
+            if (Keyboard.IsKeyDown (Key.LeftShift) || Keyboard.IsKeyDown (Key.RightShift)) {
+                switch (e.Key) {
+                    default: break;
+
+                    case Key.Up:
+                        referenceImage.Height -= 10;
+                        break;
+
+                    case Key.Down:
+                        referenceImage.Height += 10;
+                        break;
+
+                    case Key.Left:
+                        referenceImage.Width -= 10;
+                        break;
+
+                    case Key.Right:
+                        referenceImage.Width += 10;
+                        break;
+                }
+            } else {
+                switch (e.Key) {
+                    default: break;
+
+                    case Key.Up:
+                        Canvas.SetTop (referenceImage,
+                            Utility.Clamp (Canvas.GetTop (referenceImage) - 10, 0,
+                            cnvDrawing.ActualHeight - referenceImage.ActualHeight));
+                        break;
+
+                    case Key.Down:
+                        Canvas.SetTop (referenceImage,
+                            Utility.Clamp (Canvas.GetTop (referenceImage) + 10, 0,
+                            cnvDrawing.ActualHeight - referenceImage.ActualHeight));
+                        break;
+
+                    case Key.Left:
+                        Canvas.SetLeft (referenceImage,
+                            Utility.Clamp (Canvas.GetLeft (referenceImage) - 10, 0,
+                            cnvDrawing.ActualWidth - referenceImage.ActualWidth));
+                        break;
+
+                    case Key.Right:
+                        Canvas.SetLeft (referenceImage,
+                            Utility.Clamp (Canvas.GetLeft (referenceImage) + 10, 0,
+                            cnvDrawing.ActualWidth - referenceImage.ActualWidth));
+                        break;
+                }
+            }
+            e.Handled = true;
+        }
+
         private void cnvDrawing_MouseDown (object sender, MouseButtonEventArgs e) {
             Point pos = e.GetPosition (sender as IInputElement);
             int index = NearestVertexByXAxis (pos);
 
-            if (Mouse.LeftButton == MouseButtonState.Pressed) {
+            if (e.ChangedButton == MouseButton.Left) {
+                cnvDrawing.Focus ();
+
                 if (Keyboard.IsKeyDown (Key.LeftCtrl) || Keyboard.IsKeyDown (Key.RightCtrl)) {
                     MoveOffset (index);
                 } else {

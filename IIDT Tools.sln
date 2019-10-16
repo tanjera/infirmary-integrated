@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dictionary Builder", "IIDT 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Waveform Editor", "IIDT Tools\Waveform Editor\Waveform Editor.csproj", "{07350CC5-2AD2-4875-AA25-00CA6B5C4458}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Waveform Dictionary Builder", "IIDT Tools\Waveform Dictionary Builder\Waveform Dictionary Builder.csproj", "{C5096C42-4395-439C-BF3D-D56AF36A55DA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{07350CC5-2AD2-4875-AA25-00CA6B5C4458}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07350CC5-2AD2-4875-AA25-00CA6B5C4458}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07350CC5-2AD2-4875-AA25-00CA6B5C4458}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5096C42-4395-439C-BF3D-D56AF36A55DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5096C42-4395-439C-BF3D-D56AF36A55DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5096C42-4395-439C-BF3D-D56AF36A55DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5096C42-4395-439C-BF3D-D56AF36A55DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Waveform_Editor {
 
-    internal static class Math {
+    internal static class Utility {
 
         public static double Clamp (double value, double min, double max) {
             if (value < min)

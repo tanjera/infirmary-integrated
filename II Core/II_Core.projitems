@@ -21,11 +21,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Patient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Rhythms.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Server.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\Access.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Strip.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Timer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Utility.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Waveform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Localization.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Waveform_Dictionary.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Waveforms\" />
   </ItemGroup>
 </Project>

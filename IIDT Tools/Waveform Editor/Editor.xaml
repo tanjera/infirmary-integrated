@@ -49,6 +49,29 @@
 						  Click="MenuItemExit_Click"
 						  InputGestureText="Alt-F4" />
 			</MenuItem>
+
+			<MenuItem Name="menuEdit"
+					  Header="_Edit">
+				<MenuItem Name="menuTrimStart"
+						  Header="Trim Start"
+						  Click="MenuItemTrimWaveStart_Click" />
+				<MenuItem Name="menuTrimEnd"
+						  Header="Trim End"
+						  Click="MenuItemTrimWaveEnd_Click" />
+				<MenuItem Name="menuTrim"
+						  Header="Trim Entire Wave"
+						  Click="MenuItemTrimWave_Click" />
+			</MenuItem>
+
+			<MenuItem Name="menuView"
+					  Header="_View">
+				<MenuItem Name="menuSetBackground"
+						  Header="Set Background Image"
+						  Click="MenuItemSetBackground_Click" />
+				<MenuItem Name="menuRemoveBackground"
+						  Header="Remove Background Image"
+						  Click="MenuItemRemoveBackground_Click" />
+			</MenuItem>
 		</Menu>
 
 		<!-- Application View -->
@@ -71,24 +94,38 @@
 						<ColumnDefinition Width="*" />
 						<ColumnDefinition Width="*" />
 						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="*" />
 					</Grid.ColumnDefinitions>
 
+					<Grid Grid.Row="0" Grid.Column="0">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto" />
+							<ColumnDefinition Width="*" />
+						</Grid.ColumnDefinitions>
+
+						<Label Grid.Column="0"
+							   Content="Name: " />
+						<TextBox Grid.Column="1"
+								 Name="txtWaveName"
+								 HorizontalAlignment="Stretch" VerticalContentAlignment="Center" />
+					</Grid>
+
 					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
-					Grid.Row="0" Grid.Column="0">
+					Grid.Row="0" Grid.Column="1">
 						<Label Content="Draw Length: " />
-						<xctk:IntegerUpDown Name="intDrawLength" Value="1" />
+						<xctk:DecimalUpDown Name="dblDrawLength" Value="1" Minimum="0.1" />
 						<Label Content=" seconds" />
 					</StackPanel>
 
 					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
-					Grid.Row="0" Grid.Column="1">
+					Grid.Row="0" Grid.Column="2">
 						<Label Content="Draw Resolution (X Axis): " />
 						<xctk:IntegerUpDown Name="intDrawResolution" Value="100" />
-						<Label Content=" milliseconds" />
+						<Label Content=" points per second" />
 					</StackPanel>
 
 					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
-					Grid.Row="0" Grid.Column="2">
+					Grid.Row="0" Grid.Column="3">
 						<Label Content="Index (X Axis) Offset: " />
 						<xctk:IntegerUpDown Name="intIndexOffset" Value="0" Minimum="0" />
 						<Label Content=" vertices" />
@@ -103,11 +140,13 @@
 			</GroupBox>
 
 			<Canvas Name="cnvDrawing"
-				HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-				Grid.Row="1" Background="White"
-				MouseDown="cnvDrawing_MouseDown"
-				MouseMove="cnvDrawing_MouseMove"
-				MouseWheel="cnvDrawing_MouseWheel">
+					HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+					Grid.Row="1" Background="White"
+					Focusable="True"
+					MouseDown="cnvDrawing_MouseDown"
+					MouseMove="cnvDrawing_MouseMove"
+					MouseWheel="cnvDrawing_MouseWheel"
+					KeyDown="cnvDrawing_KeyDown">
 				<Path Name="pathWave"
 				  Stroke="Black" StrokeThickness="1" />
 				<Path Name="pathIndexOffset"
