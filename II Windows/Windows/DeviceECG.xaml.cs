@@ -39,7 +39,7 @@ namespace II_Windows {
         }
 
         private void InitTimers () {
-            timerTracing.Set (Waveform.Draw_Refresh);
+            timerTracing.Set (Waveform.DrawRefresh);
             App.Timer_Main.Tick += timerTracing.Process;
             timerTracing.Tick += OnTick_Tracing;
             timerTracing.Start ();

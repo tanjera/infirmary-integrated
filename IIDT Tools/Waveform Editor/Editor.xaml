@@ -43,6 +43,9 @@
 						  Header="_Save Waveform"
 						  Click="MenuItemSave_Click"
 						  InputGestureText="Ctrl+S" />
+				<MenuItem Name="menuSaveAs"
+						  Header="_Save Waveform As..."
+						  Click="MenuItemSaveAs_Click" />
 				<Separator />
 				<MenuItem Name="menuExit"
 						  Header="E_xit Program"
@@ -58,9 +61,13 @@
 				<MenuItem Name="menuTrimEnd"
 						  Header="Trim End"
 						  Click="MenuItemTrimWaveEnd_Click" />
-				<MenuItem Name="menuTrim"
+				<MenuItem Name="menuTrimAll"
 						  Header="Trim Entire Wave"
 						  Click="MenuItemTrimWave_Click" />
+				<Separator />
+				<MenuItem Name="menuTrimOffset"
+						  Header="Trim To Offset"
+						  Click="MenuItemTrimOffset_Click" />
 			</MenuItem>
 
 			<MenuItem Name="menuView"
@@ -120,8 +127,8 @@
 					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
 					Grid.Row="0" Grid.Column="2">
 						<Label Content="Draw Resolution (X Axis): " />
-						<xctk:IntegerUpDown Name="intDrawResolution" Value="100" />
-						<Label Content=" points per second" />
+						<xctk:IntegerUpDown Name="intDrawResolution" Value="10" />
+						<Label Content=" milliseconds per point" />
 					</StackPanel>
 
 					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"

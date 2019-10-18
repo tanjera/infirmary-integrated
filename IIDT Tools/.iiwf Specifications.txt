@@ -1,0 +1,15 @@
+File Format:
+
+WaveName:[WaveName]
+DrawResolution:[DrawResolution]
+DrawLength:[DrawLength]
+IndexOffset:[IndexOffset]
+Vertices:[(x1 y1) (x2 y2) ...]
+
+
+Notes:
+WaveName: must be a compatible string for both a function name and a file name!
+DrawResolution: drawing resolution *in milliseconds per point*
+DrawLength: length of the waveform *in seconds*
+IndexOffset: offset for when the waveform's "starting point" is; used for back-tracing
+Vertices: actual vertices, x is the integer index, y is the double amplitude

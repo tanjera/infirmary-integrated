@@ -8,6 +8,12 @@ namespace II {
     public static class Utility {
         public const string Version = "1.1.2";
 
+        public static class Encryption {
+            private static string keyString = "!8x/A?b(G+KbPe$hVkYpEs6V9y$B&E)H";
+            public static byte [] Key { get { return Encoding.UTF8.GetBytes (keyString); } }
+            public static byte [] IV { get { return Encoding.UTF8.GetBytes (keyString).Take (16).ToArray (); } }
+        }
+
         public static bool IsNewerVersion (string current, string comparison) {
             string [] curSplit = current.Split ('.'),
                     compSplit = comparison.Split ('.');
@@ -106,8 +112,8 @@ namespace II {
         public static string EncryptAES (string str) {
             byte [] output;
             using (AesManaged aes = new AesManaged ()) {
-                aes.Key = Access.Encryption.Key;
-                aes.IV = Access.Encryption.IV;
+                aes.Key = Encryption.Key;
+                aes.IV = Encryption.IV;
                 ICryptoTransform encryptor = aes.CreateEncryptor (aes.Key, aes.IV);
                 using (MemoryStream ms = new MemoryStream ()) {
                     using (CryptoStream cs = new CryptoStream (ms, encryptor, CryptoStreamMode.Write)) {
@@ -123,8 +129,8 @@ namespace II {
         public static string DecryptAES (string str) {
             string output;
             using (AesManaged aes = new AesManaged ()) {
-                aes.Key = Access.Encryption.Key;
-                aes.IV = Access.Encryption.IV;
+                aes.Key = Encryption.Key;
+                aes.IV = Encryption.IV;
                 ICryptoTransform decryptor = aes.CreateDecryptor (aes.Key, aes.IV);
                 using (MemoryStream ms = new MemoryStream (Convert.FromBase64String (str))) {
                     using (CryptoStream cs = new CryptoStream (ms, decryptor, CryptoStreamMode.Read)) {

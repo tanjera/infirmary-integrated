@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Leads.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Localization_Dictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Mirror.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Point.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Scales.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Scenario.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Patient.cs" />
@@ -27,6 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Waveform.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Localization.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Waveform_Dictionary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Plotting.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Waveforms\" />

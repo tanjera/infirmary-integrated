@@ -156,7 +156,7 @@ namespace II.Server {
                     Utility.HashSHA256 (Environment.UserName))));
 
                 req.GetResponse ();
-            } catch (Exception e) {
+            } catch {
             }
         }
     }

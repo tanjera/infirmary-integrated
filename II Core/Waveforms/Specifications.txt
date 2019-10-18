@@ -1,0 +1,8 @@
+Default waveforms should be drawn at a reference heart rate of 60
+- Will allow for easier scaling based on heart rate
+
+Delays will be created in code, not in the waveform file
+- e.g. delay from electrical beat to mechanical pulse
+
+General modifications based on clinical condition will be made to default waveforms in code, not in waveform file
+- e.g. pulsus paradoxus, pulsus alternans, and abberant beats will decrease amplitude by 50%

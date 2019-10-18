@@ -76,7 +76,7 @@ namespace II_Windows {
             timerVitals_Cardiac.Tick += OnTick_Vitals_Cardiac;
             timerVitals_Respiratory.Tick += OnTick_Vitals_Respiratory;
 
-            timerTracing.Set (Waveform.Draw_Refresh);
+            timerTracing.Set (Waveform.DrawRefresh);
             timerVitals_Cardiac.Set (Utility.Clamp ((int)(App.Patient.GetHR_Seconds * 1000 / 2), 2000, 6000));
             timerVitals_Respiratory.Set (Utility.Clamp ((int)(App.Patient.GetRR_Seconds * 1000 / 2), 2000, 8000));
 

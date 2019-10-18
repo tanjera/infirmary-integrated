@@ -113,7 +113,7 @@ namespace II_Windows {
             App.Timer_Main.Tick += timerTracing.Process;
             App.Timer_Main.Tick += timerAncillary_Delay.Process;
 
-            timerTracing.Set (Waveform.Draw_Refresh);
+            timerTracing.Set (Waveform.DrawRefresh);
             timerVitals.Set ((int)(App.Patient.GetHR_Seconds * 1000));
 
             timerTracing.Tick += OnTick_Tracing;

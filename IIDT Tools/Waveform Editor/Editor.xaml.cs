@@ -42,6 +42,9 @@ namespace Waveform_Editor {
         private int drawXOffset, drawYOffset;
         private double drawXMultiplier, drawYMultiplier;
 
+        /* For Save vs. Save As*/
+        private string FilePath;
+
         // Define WPF UI commands for binding
         private ICommand icNewFile, icLoadFile, icSaveFile;
 
@@ -68,8 +71,10 @@ namespace Waveform_Editor {
                     MessageBoxButton.OKCancel, MessageBoxImage.Warning) != MessageBoxResult.OK)
                 return;
 
-            DrawResolution = 100;
-            intDrawResolution.Value = 100;
+            FilePath = "";
+
+            DrawResolution = 10;
+            intDrawResolution.Value = 10;
 
             DrawLength = 1;
             dblDrawLength.Value = 1;
@@ -78,7 +83,7 @@ namespace Waveform_Editor {
             intIndexOffset.Value = 0;
 
             Vertices = new List<Vertex> ();
-            for (int i = 0; i < (DrawResolution * DrawLength); i++)
+            for (int i = 0; i < ((DrawLength * 1000) / DrawResolution); i++)
                 Vertices.Add (new Vertex () { Y = 0 });
 
             UpdateWave ();
@@ -95,35 +100,47 @@ namespace Waveform_Editor {
                 return;
             }
 
-            Stream s;
+            if (String.IsNullOrEmpty (FilePath)) {
+                SaveAsFile ();
+                return;
+            }
+
+            using (StreamWriter sw = new StreamWriter (FilePath)) {
+                StringBuilder sb = new StringBuilder ();
+
+                sb.AppendLine (String.Format ("{0}:{1}", "WaveName", WaveName));
+                sb.AppendLine (String.Format ("{0}:{1}", "DrawResolution", DrawResolution));
+                sb.AppendLine (String.Format ("{0}:{1}", "DrawLength", Math.Round (DrawLength, 1)));
+                sb.AppendLine (String.Format ("{0}:{1}", "IndexOffset", IndexOffset));
+
+                StringBuilder sbVert = new StringBuilder ();
+                for (int i = 0; i < Vertices.Count; i++)
+                    sbVert.Append (String.Format ("({0} {1}) ", i, Math.Round (Vertices [i].Y, 2)));
+
+                sb.AppendLine (String.Format ("{0}:{1}", "Vertices", sbVert.ToString ().Trim ()));
+
+                sw.Write (sb.ToString ().Trim ());
+
+                sw.Close ();
+            }
+
+            MessageBox.Show (
+                        "File saved successfully.",
+                        "File Saved", MessageBoxButton.OK, MessageBoxImage.Information);
+            return;
+        }
+
+        private void SaveAsFile () {
             Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
             dlgSave.FileName = String.Format ("{0}.iiwf", WaveName);
             dlgSave.Filter = "Infirmary Integrated waveform files (*.iiwf)|*.iiwf|All files (*.*)|*.*";
             dlgSave.FilterIndex = 1;
             dlgSave.RestoreDirectory = true;
 
-            if (dlgSave.ShowDialog () == true) {
-                if ((s = dlgSave.OpenFile ()) != null) {
-                    StringBuilder sb = new StringBuilder ();
+            if (dlgSave.ShowDialog () == true)
+                FilePath = dlgSave.FileName;
 
-                    sb.AppendLine (String.Format ("{0}:{1}", "WaveName", WaveName));
-                    sb.AppendLine (String.Format ("{0}:{1}", "DrawResolution", DrawResolution));
-                    sb.AppendLine (String.Format ("{0}:{1}", "DrawLength", System.Math.Round (DrawLength, 1)));
-                    sb.AppendLine (String.Format ("{0}:{1}", "IndexOffset", IndexOffset));
-
-                    StringBuilder sbVert = new StringBuilder ();
-                    for (int i = 0; i < Vertices.Count; i++)
-                        sbVert.Append (String.Format ("({0} {1}) ", i, System.Math.Round (Vertices [i].Y, 2)));
-
-                    sb.AppendLine (String.Format ("{0}:{1}", "Vertices", sbVert.ToString ().Trim ()));
-
-                    StreamWriter sw = new StreamWriter (s);
-                    sw.Write (sb.ToString ().Trim ());
-
-                    sw.Close ();
-                    s.Close ();
-                }
-            }
+            SaveFile ();
         }
 
         private void LoadFile () {
@@ -152,7 +169,7 @@ namespace Waveform_Editor {
                                 switch (pName) {
                                     default: break;
 
-                                    case "WaveName": txtWaveName.Text = pValue; break;
+                                    case "WaveName": WaveName = pValue; break;
                                     case "DrawResolution": DrawResolution = int.Parse (pValue); break;
                                     case "DrawLength": DrawLength = double.Parse (pValue); break;
                                     case "IndexOffset": IndexOffset = int.Parse (pValue); break;
@@ -183,6 +200,8 @@ namespace Waveform_Editor {
                                 }
                             }
                         }
+
+                        FilePath = dlgLoad.FileName;
                     } catch {
                         LoadFail ();
                     } finally {
@@ -191,6 +210,7 @@ namespace Waveform_Editor {
                 }
             }
 
+            UpdateUI ();
             UpdateWave ();
         }
 
@@ -232,6 +252,13 @@ namespace Waveform_Editor {
             cnvDrawing.Children.Remove (referenceImage);
         }
 
+        private void UpdateUI () {
+            txtWaveName.Text = WaveName;
+            intDrawResolution.Value = DrawResolution;
+            dblDrawLength.Value = Math.Round ((decimal)DrawLength, 1);
+            intIndexOffset.Value = IndexOffset;
+        }
+
         private void UpdateWave () {
             CalculateDrawOffsets ();
 
@@ -248,7 +275,7 @@ namespace Waveform_Editor {
 
         private void CalculateDrawOffsets () {
             /* +2 accounts for beginning and end margin */
-            drawXMultiplier = cnvDrawing.ActualWidth / ((DrawLength * DrawResolution) + 2);
+            drawXMultiplier = cnvDrawing.ActualWidth / (((DrawLength * 1000) / DrawResolution) + 2);
             drawYMultiplier = -cnvDrawing.ActualHeight / 2;
 
             drawXOffset = (int)drawXMultiplier;
@@ -341,7 +368,7 @@ namespace Waveform_Editor {
             IndexOffset -= removed;
             intIndexOffset.Value = IndexOffset;
 
-            DrawLength = (double)Vertices.Count / (double)DrawResolution;
+            DrawLength = ((double)Vertices.Count * (double)DrawResolution) / 1000;
             dblDrawLength.Value = (decimal)DrawLength;
 
             UpdateWave ();
@@ -356,7 +383,19 @@ namespace Waveform_Editor {
                 }
             }
 
-            DrawLength = (double)Vertices.Count / (double)DrawResolution;
+            DrawLength = ((double)Vertices.Count * (double)DrawResolution) / 1000;
+            dblDrawLength.Value = (decimal)DrawLength;
+            UpdateWave ();
+        }
+
+        private void TrimWaveOffset () {
+            for (int i = 0; i < IndexOffset;) {
+                Vertices.RemoveAt (i);
+                IndexOffset--;
+            }
+
+            intIndexOffset.Value = IndexOffset;
+            DrawLength = ((double)Vertices.Count * (double)DrawResolution) / 1000;
             dblDrawLength.Value = (decimal)DrawLength;
             UpdateWave ();
         }
@@ -457,6 +496,9 @@ namespace Waveform_Editor {
         private void MenuItemSave_Click (object sender, RoutedEventArgs e)
             => SaveFile ();
 
+        private void MenuItemSaveAs_Click (object sender, RoutedEventArgs e)
+            => SaveAsFile ();
+
         private void MenuItemExit_Click (object sender, RoutedEventArgs e)
             => Application.Current.Shutdown ();
 
@@ -475,21 +517,27 @@ namespace Waveform_Editor {
         private void MenuItemTrimWaveEnd_Click (object sender, RoutedEventArgs e)
             => TrimWaveEnd ();
 
+        private void MenuItemTrimOffset_Click (object sender, RoutedEventArgs e)
+            => TrimWaveOffset ();
+
         private void btnApplyResolutions_Click (object sender, RoutedEventArgs e) {
             txtWaveName.Text = txtWaveName.Text.Trim ().Replace (' ', '_');
             WaveName = txtWaveName.Text;
-            DrawResolution = intDrawResolution.Value ?? 0;
-            DrawLength = (double)(dblDrawLength.Value ?? 0);
+            DrawResolution = intDrawResolution.Value ?? 10;
+            DrawLength = (double)(dblDrawLength.Value ?? 1);
             IndexOffset = intIndexOffset.Value ?? 0;
 
             Vertices = new List<Vertex> ();
-            for (int i = 0; i < (DrawResolution * DrawLength); i++)
+            for (int i = 0; i < ((DrawLength * 1000) / DrawResolution); i++)
                 Vertices.Add (new Vertex () { Y = 0 });
 
             UpdateWave ();
         }
 
         private void cnvDrawing_KeyDown (object sender, KeyEventArgs e) {
+            if (Keyboard.IsKeyDown (Key.LeftCtrl) || Keyboard.IsKeyDown (Key.RightCtrl))
+                return; // Prevent keyboard shortcuts from being "handled" and not actually running!
+
             if (Keyboard.IsKeyDown (Key.LeftShift) || Keyboard.IsKeyDown (Key.RightShift)) {
                 switch (e.Key) {
                     default: break;
@@ -539,6 +587,7 @@ namespace Waveform_Editor {
                         break;
                 }
             }
+
             e.Handled = true;
         }
 
@@ -559,6 +608,9 @@ namespace Waveform_Editor {
 
         private void cnvDrawing_MouseMove (object sender, MouseEventArgs e) {
             if (Mouse.LeftButton == MouseButtonState.Pressed) {
+                if (Keyboard.IsKeyDown (Key.LeftCtrl) || Keyboard.IsKeyDown (Key.RightCtrl))
+                    return;                                 // Moving index offset
+
                 Point pos = e.GetPosition (sender as IInputElement);
                 int index = NearestVertexByXAxis (pos);
                 SetVertexToPixel (index, pos);
@@ -570,15 +622,6 @@ namespace Waveform_Editor {
             if (Keyboard.IsKeyDown (Key.LeftShift) || Keyboard.IsKeyDown (Key.RightShift)) {
                 /* Shift moves the Y reference point! */
                 MoveReference (e.Delta / 120);
-            } else if (Keyboard.IsKeyDown (Key.LeftAlt) || Keyboard.IsKeyDown (Key.RightAlt)) {
-                /* Alt selects nearest vertex by actual distance (across X and Y axis) */
-                MoveVertex (NearestVertexByDistance (e.GetPosition (sender as IInputElement)), e.Delta / 120);
-            } else if (Keyboard.IsKeyDown (Key.LeftCtrl) || Keyboard.IsKeyDown (Key.RightCtrl)) {
-                /* Ctrl selects nearest vertex by distance only on X axis but with higher editing precision*/
-                MoveVertex (NearestVertexByXAxis (e.GetPosition (sender as IInputElement)), e.Delta / 480);
-            } else {
-                /* No modifier selects nearest vertex by distance only on X axis */
-                MoveVertex (NearestVertexByXAxis (e.GetPosition (sender as IInputElement)), e.Delta / 120);
             }
         }
     }
