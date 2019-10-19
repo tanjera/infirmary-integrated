@@ -84,7 +84,6 @@ namespace Waveform_Generator {
 
                     sb.AppendLine (String.Format ("{0}:{1}", "WaveName", WaveName));
                     sb.AppendLine (String.Format ("{0}:{1}", "DrawResolution", DrawResolution));
-                    sb.AppendLine (String.Format ("{0}:{1}", "DrawLength", Math.Round (DrawLength, 1)));
                     sb.AppendLine (String.Format ("{0}:{1}", "IndexOffset", IndexOffset));
 
                     StringBuilder sbVert = new StringBuilder ();

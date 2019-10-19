@@ -11,6 +11,8 @@
 using System;
 using System.Collections.Generic;
 
+using II.Waveform;
+
 namespace II.Rhythm {
     public class Strip {
         /* Default variables for easy modification of multiple measurement/tracing functions */
@@ -204,12 +206,12 @@ namespace II.Rhythm {
 
         public void Add_Beat__Cardiac_Defibrillation (Patient p) {
             if (IsECG)
-                Overwrite (Waveform.ECG_Defibrillation (p, Lead));
+                Overwrite (Draw.ECG_Defibrillation (p, Lead));
         }
 
         public void Add_Beat__Cardiac_Pacemaker (Patient p) {
             if (IsECG)
-                Overwrite (Waveform.ECG_Pacemaker (p, Lead));
+                Overwrite (Draw.ECG_Pacemaker (p, Lead));
         }
 
         public void Add_Beat__Cardiac_Baseline (Patient p) {
@@ -221,18 +223,18 @@ namespace II.Rhythm {
 
                 // Fill waveform through to future buffer with flatline
                 double fill = (lengthSeconds * forwardBuffer) - Last (Points).X;
-                Concatenate (Waveform.Waveform_Flatline (fill > p.GetHR_Seconds ? fill : p.GetHR_Seconds, 0f));
+                Concatenate (Draw.Waveform_Flatline (fill > p.GetHR_Seconds ? fill : p.GetHR_Seconds, 0f));
             }
 
             if (Lead.Value == Lead.Values.CVP
                 || (Lead.Value == Lead.Values.PA   // PA catheter in RA has CVP waveform
                     && p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Atrium)) {
                 if (p.Cardiac_Rhythm.HasPulse_Atrial && !p.Cardiac_Rhythm.HasPulse_Ventricular)
-                    Overwrite (Waveform.CVP_Rhythm (p, 0.25f));
+                    Overwrite (Draw.CVP_Rhythm (p, 0.25f));
                 else if (!p.Cardiac_Rhythm.HasPulse_Atrial && p.Cardiac_Rhythm.HasPulse_Ventricular)
-                    Overwrite (Waveform.CVP_Rhythm (p, 0.5f));
+                    Overwrite (Draw.CVP_Rhythm (p, 0.5f));
                 else if (p.Cardiac_Rhythm.HasPulse_Atrial && p.Cardiac_Rhythm.HasPulse_Ventricular)
-                    Overwrite (Waveform.CVP_Rhythm (p, 1f));
+                    Overwrite (Draw.CVP_Rhythm (p, 1f));
             }
         }
 
@@ -245,35 +247,35 @@ namespace II.Rhythm {
             if (IsECG)
                 p.Cardiac_Rhythm.ECG_Ventricular (p, this);
             else if (Lead.Value == Lead.Values.SPO2 && p.Cardiac_Rhythm.HasPulse_Ventricular)
-                Overwrite (Waveform.SPO2_Rhythm (p, 1f));
+                Overwrite (Draw.SPO2_Rhythm (p, 1f));
             else if (Lead.Value == Lead.Values.ABP) {
                 if (p.IABP_Active)
-                    Overwrite (Waveform.IABP_ABP_Rhythm (p, 1f));
+                    Overwrite (Draw.IABP_ABP_Rhythm (p, 1f));
                 else if (p.Cardiac_Rhythm.HasPulse_Ventricular)
-                    Overwrite (Waveform.ABP_Rhythm (p, 1f));
+                    Overwrite (Draw.ABP_Rhythm (p, 1f));
             } else if (Lead.Value == Lead.Values.PA && p.Cardiac_Rhythm.HasPulse_Ventricular) {
 
                 // Vary PA waveforms based on PA catheter placement
                 if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Ventricle)
-                    Overwrite (Waveform.RV_Rhythm (p, 1f));
+                    Overwrite (Draw.RV_Rhythm (p, 1f));
                 else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Pulmonary_Artery)
-                    Overwrite (Waveform.PA_Rhythm (p, 1f));
+                    Overwrite (Draw.PA_Rhythm (p, 1f));
                 else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Pulmonary_Capillary_Wedge)
-                    Overwrite (Waveform.PCW_Rhythm (p, 1f));
+                    Overwrite (Draw.PCW_Rhythm (p, 1f));
             } else if (Lead.Value == Lead.Values.ICP && p.Cardiac_Rhythm.HasPulse_Ventricular)
-                Overwrite (Waveform.ICP_Rhythm (p, 1f));
+                Overwrite (Draw.ICP_Rhythm (p, 1f));
             else if (Lead.Value == Lead.Values.IAP && p.Cardiac_Rhythm.HasPulse_Ventricular)
-                Overwrite (Waveform.IAP_Rhythm (p, 1f));
+                Overwrite (Draw.IAP_Rhythm (p, 1f));
 
             if (Lead.Value == Lead.Values.IABP && p.IABP_Active) {
                 if (p.Cardiac_Rhythm.HasWaveform_Ventricular && p.IABP_Trigger == "ECG") {
 
                     // ECG Trigger works only if ventricular ECG waveform
-                    Overwrite (Waveform.IABP_Balloon_Rhythm (p, 1f));
+                    Overwrite (Draw.IABP_Balloon_Rhythm (p, 1f));
                 } else if (p.Cardiac_Rhythm.HasPulse_Ventricular && p.IABP_Trigger == "Pressure") {
 
                     // Pressure Trigger works only if ventricular pressure impulse
-                    Overwrite (Waveform.IABP_Balloon_Rhythm (p, 1f));
+                    Overwrite (Draw.IABP_Balloon_Rhythm (p, 1f));
                 }
             }
         }
@@ -285,14 +287,14 @@ namespace II.Rhythm {
 
                 // Fill waveform through to future buffer with flatline
                 double fill = (lengthSeconds * forwardBuffer) - Last (Points).X;
-                Concatenate (Waveform.Waveform_Flatline (fill > p.GetRR_Seconds ? fill : p.GetRR_Seconds, 0f));
+                Concatenate (Draw.Waveform_Flatline (fill > p.GetRR_Seconds ? fill : p.GetRR_Seconds, 0f));
             }
         }
 
         public void Add_Beat__Respiratory_Inspiration (Patient p) {
             switch (Lead.Value) {
                 default: break;
-                case Lead.Values.RR: Overwrite (Waveform.RR_Rhythm (p, true)); break;
+                case Lead.Values.RR: Overwrite (Draw.RR_Rhythm (p, true)); break;
                 case Lead.Values.ETCO2: break;    // End-tidal waveform is only present on expiration!! Is flatline on inspiration.
             }
         }
@@ -300,8 +302,8 @@ namespace II.Rhythm {
         public void Add_Beat__Respiratory_Expiration (Patient p) {
             switch (Lead.Value) {
                 default: break;
-                case Lead.Values.RR: Overwrite (Waveform.RR_Rhythm (p, false)); break;
-                case Lead.Values.ETCO2: Overwrite (Waveform.ETCO2_Rhythm (p)); break;
+                case Lead.Values.RR: Overwrite (Draw.RR_Rhythm (p, false)); break;
+                case Lead.Values.ETCO2: Overwrite (Draw.ETCO2_Rhythm (p)); break;
             }
         }
     }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace II.Rhythm {
+namespace II.Waveform {
     public static class Plotting {
         /*
 	     * Shaping and point plotting functions

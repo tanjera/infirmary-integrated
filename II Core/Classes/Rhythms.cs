@@ -11,6 +11,8 @@
 using System;
 using System.Collections.Generic;
 
+using II.Waveform;
+
 namespace II {
     public class Cardiac_Rhythms {
         public Values Value;
@@ -222,34 +224,34 @@ namespace II {
 
         public void ECG_Isoelectric (Patient p, Rhythm.Strip s) {
             switch (Value) {
-                case Values.Asystole: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Atrial_Fibrillation: s.Concatenate (Rhythm.Waveform.ECG_Isoelectric__Atrial_Fibrillation (p, s.Lead)); return;
-                case Values.Atrial_Flutter: s.Concatenate (Rhythm.Waveform.ECG_Isoelectric__Atrial_Flutter (p, s.Lead)); return;
-                case Values.AV_Block__1st_Degree: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.AV_Block__3rd_Degree: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.AV_Block__Mobitz_II: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.AV_Block__Wenckebach: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Bundle_Branch_Block: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Idioventricular: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Junctional: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Pulseless_Electrical_Activity: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Sick_Sinus_Syndrome: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Sinus_Arrhythmia: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_Arrest: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_Bigeminy: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_Trigeminy: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_PACs: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_PJCs: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_PVCs_Multifocal: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_PVCs_Unifocal: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Supraventricular_Tachycardia: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Ventricular_Fibrillation_Coarse: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Ventricular_Fibrillation_Fine: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Ventricular_Standstill: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
-                case Values.Ventricular_Tachycardia_Polymorphic: s.Concatenate (Rhythm.Waveform.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Asystole: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Atrial_Fibrillation: s.Concatenate (Draw.ECG_Isoelectric__Atrial_Fibrillation (p, s.Lead)); return;
+                case Values.Atrial_Flutter: s.Concatenate (Draw.ECG_Isoelectric__Atrial_Flutter (p, s.Lead)); return;
+                case Values.AV_Block__1st_Degree: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.AV_Block__3rd_Degree: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.AV_Block__Mobitz_II: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.AV_Block__Wenckebach: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Bundle_Branch_Block: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Idioventricular: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Junctional: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Pulseless_Electrical_Activity: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sick_Sinus_Syndrome: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sinus_Arrhythmia: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sinus_Rhythm: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sinus_Rhythm_with_Arrest: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sinus_Rhythm_with_Bigeminy: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sinus_Rhythm_with_Trigeminy: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sinus_Rhythm_with_PACs: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sinus_Rhythm_with_PJCs: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sinus_Rhythm_with_PVCs_Multifocal: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Sinus_Rhythm_with_PVCs_Unifocal: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Supraventricular_Tachycardia: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Ventricular_Fibrillation_Coarse: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Ventricular_Fibrillation_Fine: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Ventricular_Standstill: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
+                case Values.Ventricular_Tachycardia_Polymorphic: s.Concatenate (Draw.Waveform_Flatline (p.GetHR_Seconds, 0f)); return;
             }
         }
 
@@ -258,28 +260,28 @@ namespace II {
                 case Values.Asystole: return;
                 case Values.Atrial_Fibrillation: return;
                 case Values.Atrial_Flutter: return;
-                case Values.AV_Block__1st_Degree: s.Overwrite (Rhythm.Waveform.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.AV_Block__Wenckebach: s.Overwrite (Rhythm.Waveform.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.AV_Block__Mobitz_II: s.Overwrite (Rhythm.Waveform.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.AV_Block__3rd_Degree: s.Underwrite (Rhythm.Waveform.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Bundle_Branch_Block: s.Overwrite (Rhythm.Waveform.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.AV_Block__1st_Degree: s.Overwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.AV_Block__Wenckebach: s.Overwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.AV_Block__Mobitz_II: s.Overwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.AV_Block__3rd_Degree: s.Underwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.Bundle_Branch_Block: s.Overwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
                 case Values.Idioventricular: return;
                 case Values.Junctional: return;
                 case Values.Pulseless_Electrical_Activity:
-                case Values.Sick_Sinus_Syndrome: s.Overwrite (Rhythm.Waveform.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Sinus_Arrhythmia: s.Overwrite (Rhythm.Waveform.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm: s.Overwrite (Rhythm.Waveform.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_Arrest: s.Overwrite (Rhythm.Waveform.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_Bigeminy: s.Overwrite (Rhythm.Waveform.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_Trigeminy: s.Overwrite (Rhythm.Waveform.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_PACs: s.Overwrite (Rhythm.Waveform.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_PJCs: s.Overwrite (Rhythm.Waveform.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_PVCs_Multifocal: s.Overwrite (Rhythm.Waveform.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_PVCs_Unifocal: s.Overwrite (Rhythm.Waveform.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.Sick_Sinus_Syndrome: s.Overwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.Sinus_Arrhythmia: s.Overwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm: s.Overwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm_with_Arrest: s.Overwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm_with_Bigeminy: s.Overwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm_with_Trigeminy: s.Overwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm_with_PACs: s.Overwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm_with_PJCs: s.Overwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm_with_PVCs_Multifocal: s.Overwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm_with_PVCs_Unifocal: s.Overwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
                 case Values.Supraventricular_Tachycardia: return;
                 case Values.Ventricular_Fibrillation_Coarse: return;
                 case Values.Ventricular_Fibrillation_Fine: return;
-                case Values.Ventricular_Standstill: s.Overwrite (Rhythm.Waveform.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.Ventricular_Standstill: s.Overwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
                 case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: return;
                 case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: return;
                 case Values.Ventricular_Tachycardia_Polymorphic: return;
@@ -287,6 +289,7 @@ namespace II {
         }
 
         public void ECG_Ventricular (Patient p, Rhythm.Strip s) {
+
             // Handle aberrant beats (may be triggered by pacemaker...)
             if (p.Cardiac_Rhythm.AberrantBeat)
                 switch (Value) {
@@ -315,15 +318,15 @@ namespace II {
                     case Values.Ventricular_Standstill:
                     case Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
                     case Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
-                        s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Aberrant_3 (p, s.Lead));
+                        s.Overwrite (Draw.ECG_Complex__QRST_Aberrant_3 (p, s.Lead));
                         return;
 
                     case Values.Sinus_Rhythm_with_PVCs_Multifocal:
                         switch (new Random ().Next (0, 3)) {
                             default:
-                            case 0: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Aberrant_1 (p, s.Lead)); break;
-                            case 1: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Aberrant_2 (p, s.Lead)); break;
-                            case 2: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Aberrant_3 (p, s.Lead)); break;
+                            case 0: s.Overwrite (Draw.ECG_Complex__QRST_Aberrant_1 (p, s.Lead)); break;
+                            case 1: s.Overwrite (Draw.ECG_Complex__QRST_Aberrant_2 (p, s.Lead)); break;
+                            case 2: s.Overwrite (Draw.ECG_Complex__QRST_Aberrant_3 (p, s.Lead)); break;
                         }
                         return;
                 }
@@ -332,33 +335,33 @@ namespace II {
             switch (Value) {
                 default: return;
                 case Values.Asystole: return;
-                case Values.Atrial_Flutter: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Atrial_Fibrillation: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.AV_Block__1st_Degree: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.AV_Block__Wenckebach: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.AV_Block__Mobitz_II: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.AV_Block__3rd_Degree: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Aberrant_1 (p, s.Lead)); return;
-                case Values.Bundle_Branch_Block: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_BBB (p, s.Lead)); return;
-                case Values.Idioventricular: s.Overwrite (Rhythm.Waveform.ECG_Complex__Idioventricular (p, s.Lead)); return;
-                case Values.Junctional: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Pulseless_Electrical_Activity: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sick_Sinus_Syndrome: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sinus_Arrhythmia: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_Arrest: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_Bigeminy: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_Trigeminy: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_PACs: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_PJCs: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_PVCs_Multifocal: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_PVCs_Unifocal: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Supraventricular_Tachycardia: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_SVT (p, s.Lead)); return;
-                case Values.Ventricular_Fibrillation_Coarse: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_VF (p, s.Lead, 0.7f)); return;
-                case Values.Ventricular_Fibrillation_Fine: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_VF (p, s.Lead, 0.1f)); return;
+                case Values.Atrial_Flutter: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.Atrial_Fibrillation: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.AV_Block__1st_Degree: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.AV_Block__Wenckebach: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.AV_Block__Mobitz_II: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.AV_Block__3rd_Degree: s.Overwrite (Draw.ECG_Complex__QRST_Aberrant_1 (p, s.Lead)); return;
+                case Values.Bundle_Branch_Block: s.Overwrite (Draw.ECG_Complex__QRST_BBB (p, s.Lead)); return;
+                case Values.Idioventricular: s.Overwrite (Draw.ECG_Complex__Idioventricular (p, s.Lead)); return;
+                case Values.Junctional: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.Pulseless_Electrical_Activity: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.Sick_Sinus_Syndrome: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.Sinus_Arrhythmia: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm_with_Arrest: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm_with_Bigeminy: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm_with_Trigeminy: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm_with_PACs: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm_with_PJCs: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm_with_PVCs_Multifocal: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.Sinus_Rhythm_with_PVCs_Unifocal: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.Supraventricular_Tachycardia: s.Overwrite (Draw.ECG_Complex__QRST_SVT (p, s.Lead)); return;
+                case Values.Ventricular_Fibrillation_Coarse: s.Overwrite (Draw.ECG_Complex__QRST_VF (p, s.Lead, 0.7f)); return;
+                case Values.Ventricular_Fibrillation_Fine: s.Overwrite (Draw.ECG_Complex__QRST_VF (p, s.Lead, 0.1f)); return;
                 case Values.Ventricular_Standstill: return;
-                case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_VT (p, s.Lead)); return;
-                case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_VT (p, s.Lead)); return;
-                case Values.Ventricular_Tachycardia_Polymorphic: s.Overwrite (Rhythm.Waveform.ECG_Complex__QRST_VF (p, s.Lead, 1f)); return;
+                case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: s.Overwrite (Draw.ECG_Complex__QRST_VT (p, s.Lead)); return;
+                case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: s.Overwrite (Draw.ECG_Complex__QRST_VT (p, s.Lead)); return;
+                case Values.Ventricular_Tachycardia_Polymorphic: s.Overwrite (Draw.ECG_Complex__QRST_VF (p, s.Lead, 1f)); return;
             }
         }
     }

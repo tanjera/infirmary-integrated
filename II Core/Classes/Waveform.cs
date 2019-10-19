@@ -12,15 +12,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace II.Rhythm {
-    public class WaveData {
-        public int DrawResolution;
-        public int IndexOffset;
-        public double DrawLength;
-        public double [] Vertices;
-    }
-
-    public static partial class Waveform {
+namespace II.Waveform {
+    public static class Draw {
         public const int DrawResolution = 10;           // Tracing resolution milliseconds per drawing point
         public const int DrawRefresh = 17;              // Tracing draw refresh time in milliseconds (60 fps = ~17ms)
 

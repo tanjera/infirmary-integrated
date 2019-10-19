@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace II.Rhythm {
+namespace II.Waveform {
     public class Point {
         public double X, Y;
         public Point (double x, double y) { X = x; Y = y; }

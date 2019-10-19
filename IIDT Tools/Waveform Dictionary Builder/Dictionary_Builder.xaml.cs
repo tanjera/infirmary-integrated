@@ -72,8 +72,13 @@ namespace Waveform_Dictionary_Builder {
               "using System;\n"
             + "using System.Collections.Generic;\n\n"
 
-            + "namespace II.Rhythm {\n\n"
-            + "\tpublic static partial class Waveform {\n\n");
+            + "namespace II.Waveform {\n"
+            + "\tpublic static class Dictionary {\n"
+            + "\t\tpublic class Plot {\n"
+            + "\t\t\tpublic int DrawResolution;\n"
+            + "\t\t\tpublic int IndexOffset;\n"
+            + "\t\t\tpublic double [] Vertices;\n"
+            + "\t\t}\n\n");
 
             worker.ReportProgress (1, "Processing waveform files.\n");
             string [] files = Directory.GetFiles (e.Argument.ToString (), "*.iiwf");
@@ -84,7 +89,6 @@ namespace Waveform_Dictionary_Builder {
 
                 string WaveName = "";
                 int DrawResolution = 0;
-                double DrawLength = 0.0;
                 int IndexOffset = 0;
                 List<Vertex> Vertices = new List<Vertex> ();
 
@@ -106,7 +110,6 @@ namespace Waveform_Dictionary_Builder {
 
                                 case "WaveName": WaveName = pValue; break;
                                 case "DrawResolution": DrawResolution = int.Parse (pValue); break;
-                                case "DrawLength": DrawLength = double.Parse (pValue); break;
                                 case "IndexOffset": IndexOffset = int.Parse (pValue); break;
 
                                 case "Vertices":
@@ -134,12 +137,9 @@ namespace Waveform_Dictionary_Builder {
 
                     /* Write .iiwf as WaveData to dictOut */
 
-                    dictOut.AppendLine (String.Format ("\t\tprivate static WaveData {0} = new WaveData () {{", WaveName));
-
+                    dictOut.AppendLine (String.Format ("\t\tprivate static Plot {0} = new Plot () {{", WaveName));
                     dictOut.AppendLine (String.Format ("\t\t\tDrawResolution = {0},", DrawResolution));
-                    dictOut.AppendLine (String.Format ("\t\t\tDrawLength = {0},", DrawLength));
                     dictOut.AppendLine (String.Format ("\t\t\tIndexOffset = {0},", IndexOffset));
-
                     dictOut.AppendLine (String.Format ("\t\t\tVertices = new double[] {{", IndexOffset));
 
                     for (int v = 0; v < Vertices.Count; v++) {
