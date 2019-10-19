@@ -14,21 +14,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Leads.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\Localization_Dictionary.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\Mirror.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\Point.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Localization.Dictionary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Server.Mirror.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Waveform.Point.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Scales.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Scenario.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Patient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Rhythms.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Server.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\Strip.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Rhythm.Strip.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Timer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Utility.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\Waveform.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Waveform.Draw.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Localization.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\Waveform_Dictionary.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\Plotting.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Waveform.Dictionary.Plots.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Waveform.Dictionary.Functions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Waveform.Plotting.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Waveforms\" />

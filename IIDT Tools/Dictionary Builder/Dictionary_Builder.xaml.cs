@@ -8,20 +8,20 @@ using System.Windows;
 
 using Excel = Microsoft.Office.Interop.Excel;
 
-
 namespace Dictionary_Builder {
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class DictionaryBuild : Window {
-        BackgroundWorker bgWorker = new BackgroundWorker();
-        StringBuilder dictOut = new StringBuilder();
+        private BackgroundWorker bgWorker = new BackgroundWorker ();
+        private StringBuilder dictOut = new StringBuilder ();
 
         public DictionaryBuild () {
             InitializeComponent ();
 
             // Set up "Load File" dialog
-            Microsoft.Win32.OpenFileDialog dlgLoad = new Microsoft.Win32.OpenFileDialog();
+            Microsoft.Win32.OpenFileDialog dlgLoad = new Microsoft.Win32.OpenFileDialog ();
             dlgLoad.Title = "Select location of Localization Strings.xlsx";
             dlgLoad.FileName = "Localization Strings";
             dlgLoad.DefaultExt = ".xlsx";
@@ -30,9 +30,9 @@ namespace Dictionary_Builder {
             dlgLoad.RestoreDirectory = true;
 
             // Set up "Load File" dialog
-            Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog();
-            dlgSave.Title = "Destination to save Localization_Dictionary.cs";
-            dlgSave.FileName = "Localization_Dictionary"; // Default file name
+            Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
+            dlgSave.Title = "Destination to save Localization.Dictionary.cs";
+            dlgSave.FileName = "Localization.Dictionary"; // Default file name
             dlgSave.DefaultExt = ".cs"; // Default file extension
             dlgSave.Filter = "C# File (*.cs)|*.cs|All files (*.*)|*.*";
             dlgSave.FilterIndex = 1;
@@ -42,24 +42,24 @@ namespace Dictionary_Builder {
             // Set up BackgroundWorker to report process and finish output
             bgWorker.WorkerReportsProgress = true;
 
-            bgWorker.DoWork += new DoWorkEventHandler(ProcessSpreadsheet);
+            bgWorker.DoWork += new DoWorkEventHandler (ProcessSpreadsheet);
 
             bgWorker.ProgressChanged += (s, e) =>
-                txtOutput.AppendText(e.UserState.ToString());
+                txtOutput.AppendText (e.UserState.ToString ());
 
             // Run the program!
-            txtOutput.Clear();
-            if (dlgLoad.ShowDialog() == true) {
-                bgWorker.RunWorkerAsync(dlgLoad.FileName);
+            txtOutput.Clear ();
+            if (dlgLoad.ShowDialog () == true) {
+                bgWorker.RunWorkerAsync (dlgLoad.FileName);
             }
 
             bgWorker.RunWorkerCompleted += (s, e) => {
-                if (dlgSave.ShowDialog() == true) {
-                    StreamWriter outFile = new StreamWriter(dlgSave.FileName, false);
-                    outFile.Write(dictOut.ToString());
-                    outFile.Close();
-                    txtOutput.AppendText(String.Format("\n\nOutput written to {0}\n", dlgSave.FileName));
-                    txtOutput.AppendText("You may now close this program.");
+                if (dlgSave.ShowDialog () == true) {
+                    StreamWriter outFile = new StreamWriter (dlgSave.FileName, false);
+                    outFile.Write (dictOut.ToString ());
+                    outFile.Close ();
+                    txtOutput.AppendText (String.Format ("\n\nOutput written to {0}\n", dlgSave.FileName));
+                    txtOutput.AppendText ("You may now close this program.");
                 }
             };
         }
@@ -67,12 +67,12 @@ namespace Dictionary_Builder {
         private void ProcessSpreadsheet (object sender, DoWorkEventArgs e) {
             BackgroundWorker worker = sender as BackgroundWorker;
 
-            List<string> Languages = new List<string>();
-            List<Dictionary<string, string>> Dictionaries = new List<Dictionary<string, string>>();
+            List<string> Languages = new List<string> ();
+            List<Dictionary<string, string>> Dictionaries = new List<Dictionary<string, string>> ();
 
-            Excel.Application xApp = new Excel.Application();
-            Excel.Workbook xWorkbook = xApp.Workbooks.Open(e.Argument.ToString(), 0, true, 5, "", "", true, Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
-            Excel.Worksheet xWorksheet = (Excel.Worksheet)xWorkbook.Sheets[1];
+            Excel.Application xApp = new Excel.Application ();
+            Excel.Workbook xWorkbook = xApp.Workbooks.Open (e.Argument.ToString (), 0, true, 5, "", "", true, Excel.XlPlatform.xlWindows, "\t", false, false, 0, true, 1, 0);
+            Excel.Worksheet xWorksheet = (Excel.Worksheet)xWorkbook.Sheets [1];
 
             Excel.Range xRange = xWorksheet.UsedRange;
             int rowCount = xRange.Rows.Count;
@@ -81,34 +81,34 @@ namespace Dictionary_Builder {
             string key;
             Excel.Range range;
 
+            worker.ReportProgress (1, "Processing language codes.\n");
 
-            worker.ReportProgress(1, "Processing language codes.\n");
             // $B1 -> $...1: language codes
             for (int j = 2; j <= colCount; j++) {
-                Languages.Add((xWorksheet.Cells[1, j] as Excel.Range).Value.ToString().ToUpper().Substring(0, 3));
-                Dictionaries.Add(new Dictionary<string, string>());
+                Languages.Add ((xWorksheet.Cells [1, j] as Excel.Range).Value.ToString ().ToUpper ().Substring (0, 3));
+                Dictionaries.Add (new Dictionary<string, string> ());
             }
 
             // Iterate all rows, populate respective dictionaries
             for (int i = 2; i <= rowCount; i++) {
-                range = xWorksheet.Cells[i, 1] as Excel.Range;
+                range = xWorksheet.Cells [i, 1] as Excel.Range;
                 if (range == null || range.Value == null)
                     continue;
 
-                key = range.Value.ToString();
-                worker.ReportProgress(1, String.Format("Processing row {0:000}: {1}\n", i, key));
+                key = range.Value.ToString ();
+                worker.ReportProgress (1, String.Format ("Processing row {0:000}: {1}\n", i, key));
 
                 for (int j = 2; j <= colCount; j++) {
-                    range = xWorksheet.Cells[i, j] as Excel.Range;
-                    Dictionaries[j - 2].Add(key, range.Value == null ? "" : range.Value.ToString());
+                    range = xWorksheet.Cells [i, j] as Excel.Range;
+                    Dictionaries [j - 2].Add (key, range.Value == null ? "" : range.Value.ToString ());
                 }
             }
 
-            xWorkbook.Close();
-            xApp.Quit();
+            xWorkbook.Close ();
+            xApp.Quit ();
 
             // Compile dictionaries into C# localization code
-            dictOut.Append(
+            dictOut.Append (
               "using System;\n"
             + "using System.Collections.Generic;\n"
             + "using System.Globalization;\n"
@@ -117,21 +117,21 @@ namespace Dictionary_Builder {
             + "\tpublic partial class Languages {\n\n");
 
             for (int i = 0; i < Languages.Count; i++) {
-                dictOut.AppendLine(String.Format("\t\tstatic Dictionary<string, string> {0} = new Dictionary<string, string> () {{", Languages[i]));
+                dictOut.AppendLine (String.Format ("\t\tstatic Dictionary<string, string> {0} = new Dictionary<string, string> () {{", Languages [i]));
 
-                foreach (KeyValuePair<string, string> pair in Dictionaries[i])
-                    dictOut.AppendLine(String.Format("\t\t\t{{{0,-60} {1}}},",
-                        String.Format("\"{0}\",", pair.Key),
-                        String.Format("\"{0}\"", pair.Value)));
+                foreach (KeyValuePair<string, string> pair in Dictionaries [i])
+                    dictOut.AppendLine (String.Format ("\t\t\t{{{0,-60} {1}}},",
+                        String.Format ("\"{0}\",", pair.Key),
+                        String.Format ("\"{0}\"", pair.Value)));
 
-                dictOut.AppendLine("\t\t};\n");
+                dictOut.AppendLine ("\t\t};\n");
             }
 
-            dictOut.AppendLine("\t}\n}");
+            dictOut.AppendLine ("\t}\n}");
         }
 
-        private void txtOutput_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) {
-            txtOutput.ScrollToEnd();
+        private void txtOutput_TextChanged (object sender, System.Windows.Controls.TextChangedEventArgs e) {
+            txtOutput.ScrollToEnd ();
         }
     }
 }

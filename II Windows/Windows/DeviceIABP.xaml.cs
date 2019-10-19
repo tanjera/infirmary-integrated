@@ -1,6 +1,4 @@
-﻿using II;
-using II.Rhythm;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -8,6 +6,10 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+
+using II;
+using II.Rhythm;
+using II.Waveform;
 
 namespace II_Windows {
 
@@ -113,7 +115,7 @@ namespace II_Windows {
             App.Timer_Main.Tick += timerTracing.Process;
             App.Timer_Main.Tick += timerAncillary_Delay.Process;
 
-            timerTracing.Set (Waveform.DrawRefresh);
+            timerTracing.Set (Draw.RefreshTime);
             timerVitals.Set ((int)(App.Patient.GetHR_Seconds * 1000));
 
             timerTracing.Tick += OnTick_Tracing;
@@ -529,15 +531,23 @@ namespace II_Windows {
                     listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Baseline (App.Patient));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Atrial:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial (App.Patient));
+                case Patient.PatientEventTypes.Cardiac_Atrial_Electric:
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial_Electrical (App.Patient));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Ventricular:
+                case Patient.PatientEventTypes.Cardiac_Ventricular_Electric:
                     if (Running)
                         Frequency_Iter++;
 
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Electrical (App.Patient));
+                    break;
+
+                case Patient.PatientEventTypes.Cardiac_Atrial_Mechanical:
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial_Mechanical (App.Patient));
+                    break;
+
+                case Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical:
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Mechanical (App.Patient));
                     break;
             }
         }

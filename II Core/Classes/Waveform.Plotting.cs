@@ -14,16 +14,26 @@ namespace II.Waveform {
             else
                 return _Original [_Original.Count - 1];
         }
-        public static List<Point> Concatenate (List<Point> _Original, List<Point> _Addition) {
 
-            // Offsets the X value of a Point[] so that it can be placed at the end
-            // of an existing Point[] and continue from that point on.
+        public static List<Point> Multiply (List<Point> _Original, double _Coeff) {
+            for (int i = 0; i < _Original.Count; i++)
+                _Original [i].Y *= _Coeff;
+
+            return _Original;
+        }
+
+        public static List<Point> Concatenate (List<Point> _Original, List<Point> _Addition, double _Amplitude = 1d) {
+            Concatenate (ref _Original, _Addition, _Amplitude);
+            return _Original;
+        }
+
+        public static void Concatenate (ref List<Point> _Original, List<Point> _Addition, double _Amplitude = 1d) {
+            /* Offsets the X value of a Point[] so that it can be placed at the end
+             * of an existing Point[] and continue from that point on. */
 
             // Nothing to add? Return something.
-            if (_Original.Count == 0 && _Addition.Count == 0)
-                return new List<Point> ();
-            else if (_Addition.Count == 0)
-                return _Original;
+            if ((_Original.Count == 0 && _Addition.Count == 0) || (_Addition.Count == 0))
+                return;
 
             double _Offset = 0f;
             if (_Original.Count == 0)
@@ -32,9 +42,32 @@ namespace II.Waveform {
                 _Offset = _Original [_Original.Count - 1].X;
 
             foreach (Point eachVector in _Addition)
-                _Original.Add (new Point (eachVector.X + _Offset, eachVector.Y));
+                _Original.Add (new Point (
+                    eachVector.X + _Offset,
+                    eachVector.Y * _Amplitude));
+        }
 
-            return _Original;
+        public static List<Point> Stretch (Dictionary.Plot _Addition, double _Length) {
+            int lengthAddition = (_Addition.Vertices.Length - 1) * _Addition.DrawResolution;
+            double lengthCoeff = (_Length * 1000) / lengthAddition;
+
+            List<Point> _Output = new List<Point> ();
+            for (int i = 0; i < _Addition.Vertices.Length; i++)
+                _Output.Add (new Point (
+                    (double)_Addition.DrawResolution / 1000 * i * lengthCoeff,
+                    _Addition.Vertices [i]));
+
+            return _Output;
+        }
+
+        public static List<Point> Convert (Dictionary.Plot _Addition) {
+            List<Point> _Output = new List<Point> ();
+            for (int i = 0; i < _Addition.Vertices.Length; i++)
+                _Output.Add (new Point (
+                    (double)_Addition.DrawResolution / 1000 * i,
+                    _Addition.Vertices [i]));
+
+            return _Output;
         }
 
         public static double Slope (Point _P1, Point _P2) {

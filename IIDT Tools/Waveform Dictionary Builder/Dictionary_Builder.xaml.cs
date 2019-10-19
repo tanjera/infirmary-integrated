@@ -32,8 +32,8 @@ namespace Waveform_Dictionary_Builder {
 
             // Set up "Save File" dialog
             Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
-            dlgSave.Title = "Destination to save Waveform_Dictionary.cs";
-            dlgSave.FileName = "Waveform_Dictionary"; // Default file name
+            dlgSave.Title = "Destination to save Waveform.Dictionary.Plots.cs";
+            dlgSave.FileName = "Waveform.Dictionary.Plots"; // Default file name
             dlgSave.DefaultExt = ".cs"; // Default file extension
             dlgSave.Filter = "C# File (*.cs)|*.cs|All files (*.*)|*.*";
             dlgSave.FilterIndex = 1;
@@ -73,12 +73,7 @@ namespace Waveform_Dictionary_Builder {
             + "using System.Collections.Generic;\n\n"
 
             + "namespace II.Waveform {\n"
-            + "\tpublic static class Dictionary {\n"
-            + "\t\tpublic class Plot {\n"
-            + "\t\t\tpublic int DrawResolution;\n"
-            + "\t\t\tpublic int IndexOffset;\n"
-            + "\t\t\tpublic double [] Vertices;\n"
-            + "\t\t}\n\n");
+            + "\tpublic static partial class Dictionary {\n");
 
             worker.ReportProgress (1, "Processing waveform files.\n");
             string [] files = Directory.GetFiles (e.Argument.ToString (), "*.iiwf");
@@ -135,9 +130,9 @@ namespace Waveform_Dictionary_Builder {
                         }
                     }
 
-                    /* Write .iiwf as WaveData to dictOut */
+                    /* Write .iiwf as PlotData to dictOut */
 
-                    dictOut.AppendLine (String.Format ("\t\tprivate static Plot {0} = new Plot () {{", WaveName));
+                    dictOut.AppendLine (String.Format ("\t\tpublic static Plot {0} = new Plot () {{", WaveName));
                     dictOut.AppendLine (String.Format ("\t\t\tDrawResolution = {0},", DrawResolution));
                     dictOut.AppendLine (String.Format ("\t\t\tIndexOffset = {0},", IndexOffset));
                     dictOut.AppendLine (String.Format ("\t\t\tVertices = new double[] {{", IndexOffset));

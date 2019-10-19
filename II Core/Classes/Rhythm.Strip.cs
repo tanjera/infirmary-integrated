@@ -16,12 +16,12 @@ using II.Waveform;
 namespace II.Rhythm {
     public class Strip {
         /* Default variables for easy modification of multiple measurement/tracing functions */
-        public static double DefaultLength = 6.0d,
-            DefaultBufferLength = .2d,
-            DefaultRespiratoryCoefficient = 3d;
+        public static double DefaultLength = 6.0d;
+        public static double DefaultBufferLength = .2d;
+        public static double DefaultRespiratoryCoefficient = 3d;
 
         public double lengthSeconds = 6.0d;               // Strip length in seconds
-        double forwardBuffer = 1.20d;                     // Coefficient of Length to draw into future as "now" for buffer
+        double forwardBuffer = 1.0d;                     // Coefficient of Length to draw into future as "now" for buffer
         DateTime scrolledLast = DateTime.UtcNow;
         bool scrollingUnpausing = false;
 
@@ -223,7 +223,7 @@ namespace II.Rhythm {
 
                 // Fill waveform through to future buffer with flatline
                 double fill = (lengthSeconds * forwardBuffer) - Last (Points).X;
-                Concatenate (Draw.Waveform_Flatline (fill > p.GetHR_Seconds ? fill : p.GetHR_Seconds, 0f));
+                Concatenate (Draw.Flat_Line (fill > p.GetHR_Seconds ? fill : p.GetHR_Seconds, 0f));
             }
 
             if (Lead.Value == Lead.Values.CVP
@@ -238,45 +238,61 @@ namespace II.Rhythm {
             }
         }
 
-        public void Add_Beat__Cardiac_Atrial (Patient p) {
+        public void Add_Beat__Cardiac_Atrial_Electrical (Patient p) {
             if (IsECG)
                 p.Cardiac_Rhythm.ECG_Atrial (p, this);
         }
 
-        public void Add_Beat__Cardiac_Ventricular (Patient p) {
+        public void Add_Beat__Cardiac_Ventricular_Electrical (Patient p) {
             if (IsECG)
                 p.Cardiac_Rhythm.ECG_Ventricular (p, this);
-            else if (Lead.Value == Lead.Values.SPO2 && p.Cardiac_Rhythm.HasPulse_Ventricular)
-                Overwrite (Draw.SPO2_Rhythm (p, 1f));
-            else if (Lead.Value == Lead.Values.ABP) {
-                if (p.IABP_Active)
-                    Overwrite (Draw.IABP_ABP_Rhythm (p, 1f));
-                else if (p.Cardiac_Rhythm.HasPulse_Ventricular)
-                    Overwrite (Draw.ABP_Rhythm (p, 1f));
-            } else if (Lead.Value == Lead.Values.PA && p.Cardiac_Rhythm.HasPulse_Ventricular) {
-
-                // Vary PA waveforms based on PA catheter placement
-                if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Ventricle)
-                    Overwrite (Draw.RV_Rhythm (p, 1f));
-                else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Pulmonary_Artery)
-                    Overwrite (Draw.PA_Rhythm (p, 1f));
-                else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Pulmonary_Capillary_Wedge)
-                    Overwrite (Draw.PCW_Rhythm (p, 1f));
-            } else if (Lead.Value == Lead.Values.ICP && p.Cardiac_Rhythm.HasPulse_Ventricular)
-                Overwrite (Draw.ICP_Rhythm (p, 1f));
-            else if (Lead.Value == Lead.Values.IAP && p.Cardiac_Rhythm.HasPulse_Ventricular)
-                Overwrite (Draw.IAP_Rhythm (p, 1f));
 
             if (Lead.Value == Lead.Values.IABP && p.IABP_Active) {
                 if (p.Cardiac_Rhythm.HasWaveform_Ventricular && p.IABP_Trigger == "ECG") {
-
-                    // ECG Trigger works only if ventricular ECG waveform
+                    /* ECG Trigger works only if ventricular ECG waveform */
                     Overwrite (Draw.IABP_Balloon_Rhythm (p, 1f));
                 } else if (p.Cardiac_Rhythm.HasPulse_Ventricular && p.IABP_Trigger == "Pressure") {
-
-                    // Pressure Trigger works only if ventricular pressure impulse
+                    /* Pressure Trigger works only if ventricular pressure impulse */
                     Overwrite (Draw.IABP_Balloon_Rhythm (p, 1f));
                 }
+            }
+        }
+
+        public void Add_Beat__Cardiac_Atrial_Mechanical (Patient p) {
+            return;
+        }
+
+        public void Add_Beat__Cardiac_Ventricular_Mechanical (Patient p) {
+            switch (Lead.Value) {
+                default: break;
+
+                case Lead.Values.SPO2:
+                    Overwrite (Draw.SPO2_Rhythm (p, 1f));
+                    break;
+
+                case Lead.Values.ABP:
+                    if (p.IABP_Active)
+                        Overwrite (Draw.IABP_ABP_Rhythm (p, 1f));
+                    else if (p.Cardiac_Rhythm.HasPulse_Ventricular)
+                        Overwrite (Draw.ABP_Rhythm (p, 1f));
+                    break;
+
+                case Lead.Values.PA:    // Vary PA waveforms based on PA catheter placement
+                    if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Ventricle)
+                        Overwrite (Draw.RV_Rhythm (p, 1f));
+                    else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Pulmonary_Artery)
+                        Overwrite (Draw.PA_Rhythm (p, 1f));
+                    else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Pulmonary_Capillary_Wedge)
+                        Overwrite (Draw.PCW_Rhythm (p, 1f));
+                    break;
+
+                case Lead.Values.ICP:
+                    Overwrite (Draw.ICP_Rhythm (p, 1f));
+                    break;
+
+                case Lead.Values.IAP:
+                    Overwrite (Draw.IAP_Rhythm (p, 1f));
+                    break;
             }
         }
 
@@ -287,7 +303,7 @@ namespace II.Rhythm {
 
                 // Fill waveform through to future buffer with flatline
                 double fill = (lengthSeconds * forwardBuffer) - Last (Points).X;
-                Concatenate (Draw.Waveform_Flatline (fill > p.GetRR_Seconds ? fill : p.GetRR_Seconds, 0f));
+                Concatenate (Draw.Flat_Line (fill > p.GetRR_Seconds ? fill : p.GetRR_Seconds, 0f));
             }
         }
 

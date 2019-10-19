@@ -1,6 +1,4 @@
-﻿using II;
-using II.Rhythm;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,6 +6,10 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+
+using II;
+using II.Rhythm;
+using II.Waveform;
 
 namespace II_Windows {
 
@@ -76,7 +78,7 @@ namespace II_Windows {
             timerVitals_Cardiac.Tick += OnTick_Vitals_Cardiac;
             timerVitals_Respiratory.Tick += OnTick_Vitals_Respiratory;
 
-            timerTracing.Set (Waveform.DrawRefresh);
+            timerTracing.Set (Draw.RefreshTime);
             timerVitals_Cardiac.Set (Utility.Clamp ((int)(App.Patient.GetHR_Seconds * 1000 / 2), 2000, 6000));
             timerVitals_Respiratory.Set (Utility.Clamp ((int)(App.Patient.GetRR_Seconds * 1000 / 2), 2000, 8000));
 
@@ -504,12 +506,20 @@ namespace II_Windows {
                     listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Baseline (App.Patient));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Atrial:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial (App.Patient));
+                case Patient.PatientEventTypes.Cardiac_Atrial_Electric:
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial_Electrical (App.Patient));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Ventricular:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular (App.Patient));
+                case Patient.PatientEventTypes.Cardiac_Ventricular_Electric:
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Electrical (App.Patient));
+                    break;
+
+                case Patient.PatientEventTypes.Cardiac_Atrial_Mechanical:
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial_Mechanical (App.Patient));
+                    break;
+
+                case Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical:
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Mechanical (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Respiratory_Baseline:

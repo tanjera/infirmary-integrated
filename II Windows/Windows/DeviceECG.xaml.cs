@@ -1,12 +1,14 @@
-﻿using II;
-using II.Rhythm;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+
+using II;
+using II.Rhythm;
+using II.Waveform;
 
 namespace II_Windows {
 
@@ -39,7 +41,7 @@ namespace II_Windows {
         }
 
         private void InitTimers () {
-            timerTracing.Set (Waveform.DrawRefresh);
+            timerTracing.Set (Draw.RefreshTime);
             App.Timer_Main.Tick += timerTracing.Process;
             timerTracing.Tick += OnTick_Tracing;
             timerTracing.Start ();
@@ -202,12 +204,20 @@ namespace II_Windows {
                     listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Baseline (App.Patient));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Atrial:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial (App.Patient));
+                case Patient.PatientEventTypes.Cardiac_Atrial_Electric:
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial_Electrical (App.Patient));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Ventricular:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular (App.Patient));
+                case Patient.PatientEventTypes.Cardiac_Ventricular_Electric:
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Electrical (App.Patient));
+                    break;
+
+                case Patient.PatientEventTypes.Cardiac_Atrial_Mechanical:
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial_Mechanical (App.Patient));
+                    break;
+
+                case Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical:
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Mechanical (App.Patient));
                     break;
             }
         }

@@ -139,7 +139,7 @@
 					</StackPanel>
 
 					<Button Name="btnApplyResolutions" HorizontalAlignment="Stretch"
-					Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
+					Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="4"
 					Margin="5,5,5,2"
 					Content="Apply Draw Resolution and Length Settings"
 					Click="btnApplyResolutions_Click" />

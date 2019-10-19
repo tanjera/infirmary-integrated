@@ -56,14 +56,16 @@ namespace II {
                     Pacemaker_Energy;               // DeviceDefib's pacemaker energy delivery amount
 
         /* Intra-aortic balloon pump parameters */
-        public int IABP_AP, IABP_DBP, IABP_MAP;    // Intra-aortic balloon pump blood pressures
+        public int IABP_AP, IABP_DBP, IABP_MAP;     // Intra-aortic balloon pump blood pressures
         public bool IABP_Active = false;            // Is the Device_IABP currently augmenting?
         public string IABP_Trigger;                 // Device_IABP's trigger; data backflow for strip processing
 
         /* Timers for modeling */
         private Timer timerCardiac_Baseline = new Timer (),
-                        timerCardiac_Atrial = new Timer (),
-                        timerCardiac_Ventricular = new Timer (),
+                        timerCardiac_Atrial_Electric = new Timer (),
+                        timerCardiac_Ventricular_Electric = new Timer (),
+                        timerCardiac_Atrial_Mechanical = new Timer (),
+                        timerCardiac_Ventricular_Mechanical = new Timer (),
                         timerDefibrillation = new Timer (),
                         timerPacemaker_Baseline = new Timer (),
                         timerPacemaker_Spike = new Timer (),
@@ -74,6 +76,8 @@ namespace II {
                         timerObstetric_ContractionFrequency = new Timer (),
                         timerObstetric_ContractionDuration = new Timer (),
                         timerObstetric_FHRVariationFrequency = new Timer ();
+
+        private static int Default_Electromechanical_Delay = 180;   // Delay in electrical to mechanical capture in milliseconds
 
         /* Internal counters and buffers for propogating aberrancies */
         private int counterCardiac_Aberrancy = 0,
@@ -251,8 +255,8 @@ namespace II {
             UnsubscribePatientEvent ();
 
             timerCardiac_Baseline.Dispose ();
-            timerCardiac_Atrial.Dispose ();
-            timerCardiac_Ventricular.Dispose ();
+            timerCardiac_Atrial_Electric.Dispose ();
+            timerCardiac_Ventricular_Electric.Dispose ();
             timerDefibrillation.Dispose ();
             timerPacemaker_Baseline.Dispose ();
             timerPacemaker_Spike.Dispose ();
@@ -299,8 +303,10 @@ namespace II {
         public enum PatientEventTypes {
             Vitals_Change,
             Cardiac_Baseline,
-            Cardiac_Atrial,
-            Cardiac_Ventricular,
+            Cardiac_Atrial_Electric,
+            Cardiac_Ventricular_Electric,
+            Cardiac_Atrial_Mechanical,
+            Cardiac_Ventricular_Mechanical,
             Cardiac_Defibrillation,
             Cardiac_PacerSpike,
             Respiratory_Baseline,
@@ -335,6 +341,7 @@ namespace II {
         public double GetRR_Seconds { get { return 60d / Math.Max (1, VS_Actual.RR); } }
         public double GetRR_Seconds_I { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_I; } }
         public double GetRR_Seconds_E { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_E; } }
+        public double GetPulsatility_Seconds { get { return Math.Min (GetHR_Seconds * 0.75, 0.75); } }
 
         public int MeasureHR_ECG (double lengthSeconds, double offsetSeconds)
             => MeasureHR (lengthSeconds, offsetSeconds, false);
@@ -349,7 +356,7 @@ namespace II {
 
             int counter = 0;
             foreach (PatientEventArgs ea in ListPatientEvents)
-                if (ea.EventType == PatientEventTypes.Cardiac_Ventricular
+                if (ea.EventType == PatientEventTypes.Cardiac_Ventricular_Electric
                     && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-(lengthSeconds + offsetSeconds))) >= 0
                     && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-offsetSeconds)) <= 0)
                     counter++;
@@ -378,8 +385,10 @@ namespace II {
              * timers.
              */
             timerCardiac_Baseline.Process ();
-            timerCardiac_Atrial.Process ();
-            timerCardiac_Ventricular.Process ();
+            timerCardiac_Atrial_Electric.Process ();
+            timerCardiac_Ventricular_Electric.Process ();
+            timerCardiac_Atrial_Mechanical.Process ();
+            timerCardiac_Ventricular_Mechanical.Process ();
             timerDefibrillation.Process ();
             timerPacemaker_Baseline.Process ();
             timerPacemaker_Spike.Process ();
@@ -701,8 +710,10 @@ namespace II {
 
         private void InitTimers () {
             timerCardiac_Baseline.Tick += delegate { OnCardiac_Baseline (); };
-            timerCardiac_Atrial.Tick += delegate { OnCardiac_Atrial (); };
-            timerCardiac_Ventricular.Tick += delegate { OnCardiac_Ventricular (); };
+            timerCardiac_Atrial_Electric.Tick += delegate { OnCardiac_Atrial_Electric (); };
+            timerCardiac_Ventricular_Electric.Tick += delegate { OnCardiac_Ventricular_Electric (); };
+            timerCardiac_Atrial_Mechanical.Tick += delegate { OnCardiac_Atrial_Mechanical (); };
+            timerCardiac_Ventricular_Mechanical.Tick += delegate { OnCardiac_Ventricular_Mechanical (); };
             timerDefibrillation.Tick += delegate { OnDefibrillation_End (); };
             timerPacemaker_Baseline.Tick += delegate { OnPacemaker_Baseline (); };
             timerPacemaker_Spike.Tick += delegate { OnPacemaker_Spike (); };
@@ -719,8 +730,8 @@ namespace II {
 
         private void SetTimers () {
             timerCardiac_Baseline.ResetAuto ((int)(GetHR_Seconds * 1000f));
-            timerCardiac_Atrial.Stop ();
-            timerCardiac_Ventricular.Stop ();
+            timerCardiac_Atrial_Electric.Stop ();
+            timerCardiac_Ventricular_Electric.Stop ();
 
             timerDefibrillation.ResetAuto ();
             if (timerPacemaker_Baseline.IsRunning)
@@ -741,8 +752,8 @@ namespace II {
 
         private void StopTimers () {
             timerCardiac_Baseline.Stop ();
-            timerCardiac_Atrial.Stop ();
-            timerCardiac_Ventricular.Stop ();
+            timerCardiac_Atrial_Electric.Stop ();
+            timerCardiac_Ventricular_Electric.Stop ();
             timerDefibrillation.Stop ();
             timerPacemaker_Baseline.Stop ();
             timerPacemaker_Spike.Stop ();
@@ -778,7 +789,7 @@ namespace II {
 
         private void InitDefibrillation (bool toSynchronize) {
             if (toSynchronize)
-                timerCardiac_Ventricular.Tick += OnCardioversion;
+                timerCardiac_Ventricular_Electric.Tick += OnCardioversion;
             else
                 OnDefibrillation ();
         }
@@ -801,8 +812,8 @@ namespace II {
 
         private void OnDefibrillation () {
             timerCardiac_Baseline.Stop ();
-            timerCardiac_Atrial.Stop ();
-            timerCardiac_Ventricular.Stop ();
+            timerCardiac_Atrial_Electric.Stop ();
+            timerCardiac_Ventricular_Electric.Stop ();
             timerDefibrillation.ResetAuto (20);
 
             // Invoke the defibrillation event *after* starting the timer- IsDefibrillating() checks the timer!
@@ -815,7 +826,7 @@ namespace II {
         }
 
         private void OnCardioversion (object sender, EventArgs e) {
-            timerCardiac_Ventricular.Tick -= OnCardioversion;
+            timerCardiac_Ventricular_Electric.Tick -= OnCardioversion;
             OnDefibrillation ();
         }
 
@@ -834,7 +845,7 @@ namespace II {
 
             // Trigger the QRS complex, then reset the heart's intrinsic timers
             Cardiac_Rhythm.AberrantBeat = true;
-            OnPatientEvent (PatientEventTypes.Cardiac_Ventricular);
+            OnPatientEvent (PatientEventTypes.Cardiac_Ventricular_Electric);
             Cardiac_Rhythm.AberrantBeat = false;
             timerCardiac_Baseline.ResetAuto ();
         }
@@ -858,7 +869,7 @@ namespace II {
                 case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Polymorphic:
                 case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Coarse:
                 case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Fine:
-                    timerCardiac_Ventricular.ResetAuto (1);
+                    timerCardiac_Ventricular_Electric.ResetAuto (1);
                     break;
 
                 // Traced as "regular A" or "regular A -> V" Rhythms
@@ -869,20 +880,20 @@ namespace II {
                 case Cardiac_Rhythms.Values.Sinus_Rhythm:
                 case Cardiac_Rhythms.Values.Pulseless_Electrical_Activity:
                 case Cardiac_Rhythms.Values.Ventricular_Standstill:
-                    timerCardiac_Atrial.ResetAuto (1);
+                    timerCardiac_Atrial_Electric.ResetAuto (1);
                     break;
 
                 // Traced as "irregular V" rhythms
                 case Cardiac_Rhythms.Values.Atrial_Fibrillation:
                     VS_Actual.HR = (int)(VS_Settings.HR * Utility.RandomDouble (0.6, 1.4));
-                    timerCardiac_Ventricular.ResetAuto (1);
+                    timerCardiac_Ventricular_Electric.ResetAuto (1);
                     break;
 
                 /* Special Cases */
                 case Cardiac_Rhythms.Values.AV_Block__3rd_Degree:
-                    if (!timerCardiac_Atrial.IsRunning)
-                        timerCardiac_Atrial.ResetAuto ((int)(timerCardiac_Baseline.Interval * 0.6));
-                    timerCardiac_Ventricular.ResetAuto (160);
+                    if (!timerCardiac_Atrial_Electric.IsRunning)
+                        timerCardiac_Atrial_Electric.ResetAuto ((int)(timerCardiac_Baseline.Interval * 0.6));
+                    timerCardiac_Ventricular_Electric.ResetAuto (160);
                     break;
 
                 case Cardiac_Rhythms.Values.Sick_Sinus_Syndrome:
@@ -900,7 +911,7 @@ namespace II {
                     } else
                         counterCardiac_Arrhythmia--;
 
-                    timerCardiac_Atrial.ResetAuto (1);
+                    timerCardiac_Atrial_Electric.ResetAuto (1);
                     break;
 
                 case Cardiac_Rhythms.Values.Sinus_Arrhythmia:
@@ -909,7 +920,7 @@ namespace II {
                     else
                         VS_Actual.HR = (int)(VS_Settings.HR * 0.925);
 
-                    timerCardiac_Atrial.ResetAuto (1);
+                    timerCardiac_Atrial_Electric.ResetAuto (1);
                     break;
 
                 case Cardiac_Rhythms.Values.Sinus_Rhythm_with_Arrest:
@@ -924,7 +935,7 @@ namespace II {
                         counterCardiac_Arrhythmia--;
                     }
 
-                    timerCardiac_Atrial.ResetAuto (1);
+                    timerCardiac_Atrial_Electric.ResetAuto (1);
                     break;
 
                 case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PACs:
@@ -936,7 +947,7 @@ namespace II {
                     } else {
                         VS_Actual.HR = VS_Settings.HR;
                     }
-                    timerCardiac_Atrial.ResetAuto (1);
+                    timerCardiac_Atrial_Electric.ResetAuto (1);
                     break;
 
                 case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PJCs:
@@ -944,11 +955,11 @@ namespace II {
                     VS_Actual.HR = VS_Settings.HR;
                     if (counterCardiac_Aberrancy <= 0) {
                         counterCardiac_Aberrancy = new Random ().Next (4, 8);
-                        timerCardiac_Ventricular.ResetAuto (1);
+                        timerCardiac_Ventricular_Electric.ResetAuto (1);
                     } else {
                         if (counterCardiac_Aberrancy == 1)
                             VS_Actual.HR = (int)(VS_Settings.HR * Utility.RandomDouble (0.7, 0.9));
-                        timerCardiac_Atrial.ResetAuto (1);
+                        timerCardiac_Atrial_Electric.ResetAuto (1);
                     }
                     break;
 
@@ -963,10 +974,10 @@ namespace II {
                         else if (Cardiac_Rhythm.Value == Cardiac_Rhythms.Values.Sinus_Rhythm_with_Trigeminy)
                             counterCardiac_Aberrancy = 2;
                         Cardiac_Rhythm.AberrantBeat = true;
-                        timerCardiac_Ventricular.ResetAuto (1);
+                        timerCardiac_Ventricular_Electric.ResetAuto (1);
                         break;
                     }
-                    timerCardiac_Atrial.ResetAuto (1);
+                    timerCardiac_Atrial_Electric.ResetAuto (1);
                     Cardiac_Rhythm.AberrantBeat = false;
                     break;
 
@@ -979,17 +990,20 @@ namespace II {
                     } else if (counterCardiac_Aberrancy < 0) {   // Then throw the PVC and reset the counters
                         counterCardiac_Aberrancy = new Random ().Next (4, 9);
                         Cardiac_Rhythm.AberrantBeat = true;
-                        timerCardiac_Ventricular.ResetAuto (1);
+                        timerCardiac_Ventricular_Electric.ResetAuto (1);
                         break;
                     }
                     Cardiac_Rhythm.AberrantBeat = false;
-                    timerCardiac_Atrial.ResetAuto (1);
+                    timerCardiac_Atrial_Electric.ResetAuto (1);
                     break;
             }
         }
 
-        private void OnCardiac_Atrial () {
-            OnPatientEvent (PatientEventTypes.Cardiac_Atrial);
+        private void OnCardiac_Atrial_Electric () {
+            OnPatientEvent (PatientEventTypes.Cardiac_Atrial_Electric);
+
+            if (Cardiac_Rhythm.HasPulse_Atrial)
+                timerCardiac_Atrial_Mechanical.ResetAuto (Default_Electromechanical_Delay);
 
             switch (Cardiac_Rhythm.Value) {
                 default:
@@ -998,7 +1012,7 @@ namespace II {
 
                 // Regular A Rhythms
                 case Cardiac_Rhythms.Values.Ventricular_Standstill:
-                    timerCardiac_Atrial.Stop ();
+                    timerCardiac_Atrial_Electric.Stop ();
                     break;
 
                 // Regular A -> V rhythms
@@ -1014,38 +1028,38 @@ namespace II {
                 case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PVCs_Unifocal:
                 case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PVCs_Multifocal:
                 case Cardiac_Rhythms.Values.Pulseless_Electrical_Activity:
-                    timerCardiac_Atrial.Stop ();
-                    timerCardiac_Ventricular.ResetAuto (160);
+                    timerCardiac_Atrial_Electric.Stop ();
+                    timerCardiac_Ventricular_Electric.ResetAuto (160);
                     break;
 
                 /* Special cases */
 
                 case Cardiac_Rhythms.Values.AV_Block__1st_Degree:
-                    timerCardiac_Atrial.Stop ();
-                    timerCardiac_Ventricular.ResetAuto (240);
+                    timerCardiac_Atrial_Electric.Stop ();
+                    timerCardiac_Ventricular_Electric.ResetAuto (240);
                     break;
 
                 case Cardiac_Rhythms.Values.AV_Block__Mobitz_II:
-                    timerCardiac_Atrial.Stop ();
+                    timerCardiac_Atrial_Electric.Stop ();
                     counterCardiac_Aberrancy -= 1;
                     if (counterCardiac_Aberrancy < 0) {
                         counterCardiac_Aberrancy = 2;
                         Cardiac_Rhythm.AberrantBeat = true;
                     } else {
-                        timerCardiac_Ventricular.ResetAuto (160);
+                        timerCardiac_Ventricular_Electric.ResetAuto (160);
                         Cardiac_Rhythm.AberrantBeat = false;
                     }
                     break;
 
                 case Cardiac_Rhythms.Values.AV_Block__Wenckebach:
-                    timerCardiac_Atrial.Stop ();
+                    timerCardiac_Atrial_Electric.Stop ();
                     counterCardiac_Aberrancy -= 1;
                     if (counterCardiac_Aberrancy < 0) {
                         counterCardiac_Aberrancy = 3;
                         Cardiac_Rhythm.AberrantBeat = true;
                     } else {
                         timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval + (160 * (3 - counterCardiac_Aberrancy))));
-                        timerCardiac_Ventricular.ResetAuto ((int)(160 * (3 - counterCardiac_Aberrancy)));
+                        timerCardiac_Ventricular_Electric.ResetAuto ((int)(160 * (3 - counterCardiac_Aberrancy)));
                         Cardiac_Rhythm.AberrantBeat = false;
                     }
                     break;
@@ -1057,8 +1071,11 @@ namespace II {
             }
         }
 
-        private void OnCardiac_Ventricular () {
-            OnPatientEvent (PatientEventTypes.Cardiac_Ventricular);
+        private void OnCardiac_Ventricular_Electric () {
+            OnPatientEvent (PatientEventTypes.Cardiac_Ventricular_Electric);
+
+            if (Cardiac_Rhythm.HasPulse_Ventricular)
+                timerCardiac_Ventricular_Mechanical.ResetAuto (Default_Electromechanical_Delay);
 
             // Flip the switch on pulsus alternans
             Cardiac_Rhythm.AlternansBeat = Pulsus_Alternans ? !Cardiac_Rhythm.AlternansBeat : false;
@@ -1067,7 +1084,19 @@ namespace II {
                 default: break;
             }
 
-            timerCardiac_Ventricular.Stop ();
+            timerCardiac_Ventricular_Electric.Stop ();
+        }
+
+        private void OnCardiac_Atrial_Mechanical () {
+            OnPatientEvent (PatientEventTypes.Cardiac_Atrial_Mechanical);
+
+            timerCardiac_Atrial_Mechanical.Stop ();
+        }
+
+        private void OnCardiac_Ventricular_Mechanical () {
+            OnPatientEvent (PatientEventTypes.Cardiac_Ventricular_Mechanical);
+
+            timerCardiac_Ventricular_Mechanical.Stop ();
         }
 
         private void OnRespiratory_Baseline () {
