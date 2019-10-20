@@ -17,6 +17,14 @@ namespace II.Waveform {
         public const int ResolutionTime = 10;           // Tracing resolution milliseconds per drawing point
         public const int RefreshTime = 17;              // Tracing draw refresh time in milliseconds (60 fps = ~17ms)
 
+        /* Reference pressures for scaling transduced waveforms based on systolic/diastolic */
+        public const int ScalePressureMin = 0;
+        public const int ScalePressureMax_ABP = 200;
+        public const int ScalePressureMax_CVP = 20;
+        public const int ScalePressureMax_PA = 50;
+        public const int ScalePressureMax_ICP = 50;
+        public const int ScalePressureMax_IAP = 30;
+
         private static void VaryAmplitude_Random (double _Margin, ref double _Amplitude)
             => _Amplitude *= ((new Random ().NextDouble () * _Margin) + (1 - _Margin));
 
@@ -147,7 +155,7 @@ namespace II.Waveform {
 
         public static List<Point> IABP_Balloon_Rhythm (Patient _P, double _Amplitude) {
             return Plotting.Concatenate (new List<Point> (),
-                Plotting.Stretch (Dictionary.IABP_Balloon_Default, _P.GetHR_Seconds),
+                Plotting.Stretch (Dictionary.IABP_Balloon_Default, _P.GetHR_Seconds * 0.6),
                 _Amplitude);
         }
 

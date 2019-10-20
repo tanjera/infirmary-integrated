@@ -66,6 +66,7 @@ namespace II {
                         timerCardiac_Ventricular_Electric = new Timer (),
                         timerCardiac_Atrial_Mechanical = new Timer (),
                         timerCardiac_Ventricular_Mechanical = new Timer (),
+                        timerIABP_Balloon_Trigger = new Timer (),
                         timerDefibrillation = new Timer (),
                         timerPacemaker_Baseline = new Timer (),
                         timerPacemaker_Spike = new Timer (),
@@ -257,6 +258,9 @@ namespace II {
             timerCardiac_Baseline.Dispose ();
             timerCardiac_Atrial_Electric.Dispose ();
             timerCardiac_Ventricular_Electric.Dispose ();
+            timerCardiac_Atrial_Mechanical.Dispose ();
+            timerCardiac_Ventricular_Mechanical.Dispose ();
+            timerIABP_Balloon_Trigger.Dispose ();
             timerDefibrillation.Dispose ();
             timerPacemaker_Baseline.Dispose ();
             timerPacemaker_Spike.Dispose ();
@@ -307,13 +311,12 @@ namespace II {
             Cardiac_Ventricular_Electric,
             Cardiac_Atrial_Mechanical,
             Cardiac_Ventricular_Mechanical,
-            Cardiac_Defibrillation,
-            Cardiac_PacerSpike,
+            IABP_Balloon_Inflation,
+            Defibrillation,
+            Pacermaker_Spike,
             Respiratory_Baseline,
             Respiratory_Inspiration,
             Respiratory_Expiration,
-            IABP_Inflate,
-            IABP_Deflate,
             Obstetric_Baseline,
             Obstetric_ContractionStart,
             Obstetric_ContractionEnd,
@@ -389,6 +392,7 @@ namespace II {
             timerCardiac_Ventricular_Electric.Process ();
             timerCardiac_Atrial_Mechanical.Process ();
             timerCardiac_Ventricular_Mechanical.Process ();
+            timerIABP_Balloon_Trigger.Process ();
             timerDefibrillation.Process ();
             timerPacemaker_Baseline.Process ();
             timerPacemaker_Spike.Process ();
@@ -714,6 +718,7 @@ namespace II {
             timerCardiac_Ventricular_Electric.Tick += delegate { OnCardiac_Ventricular_Electric (); };
             timerCardiac_Atrial_Mechanical.Tick += delegate { OnCardiac_Atrial_Mechanical (); };
             timerCardiac_Ventricular_Mechanical.Tick += delegate { OnCardiac_Ventricular_Mechanical (); };
+            timerIABP_Balloon_Trigger.Tick += delegate { OnIABP_Balloon_Inflate (); };
             timerDefibrillation.Tick += delegate { OnDefibrillation_End (); };
             timerPacemaker_Baseline.Tick += delegate { OnPacemaker_Baseline (); };
             timerPacemaker_Spike.Tick += delegate { OnPacemaker_Spike (); };
@@ -732,6 +737,9 @@ namespace II {
             timerCardiac_Baseline.ResetAuto ((int)(GetHR_Seconds * 1000f));
             timerCardiac_Atrial_Electric.Stop ();
             timerCardiac_Ventricular_Electric.Stop ();
+            timerCardiac_Atrial_Mechanical.Stop ();
+            timerCardiac_Ventricular_Mechanical.Stop ();
+            timerIABP_Balloon_Trigger.Stop ();
 
             timerDefibrillation.ResetAuto ();
             if (timerPacemaker_Baseline.IsRunning)
@@ -754,6 +762,9 @@ namespace II {
             timerCardiac_Baseline.Stop ();
             timerCardiac_Atrial_Electric.Stop ();
             timerCardiac_Ventricular_Electric.Stop ();
+            timerCardiac_Atrial_Mechanical.Stop ();
+            timerCardiac_Ventricular_Mechanical.Stop ();
+            timerIABP_Balloon_Trigger.Stop ();
             timerDefibrillation.Stop ();
             timerPacemaker_Baseline.Stop ();
             timerPacemaker_Spike.Stop ();
@@ -814,10 +825,12 @@ namespace II {
             timerCardiac_Baseline.Stop ();
             timerCardiac_Atrial_Electric.Stop ();
             timerCardiac_Ventricular_Electric.Stop ();
+            timerCardiac_Atrial_Mechanical.Stop ();
+            timerCardiac_Ventricular_Mechanical.Stop ();
             timerDefibrillation.ResetAuto (20);
 
             // Invoke the defibrillation event *after* starting the timer- IsDefibrillating() checks the timer!
-            OnPatientEvent (PatientEventTypes.Cardiac_Defibrillation);
+            OnPatientEvent (PatientEventTypes.Defibrillation);
         }
 
         private void OnDefibrillation_End () {
@@ -832,7 +845,7 @@ namespace II {
 
         private void OnPacemaker_Baseline () {
             if (Pacemaker_Energy > 0)
-                OnPatientEvent (PatientEventTypes.Cardiac_PacerSpike);
+                OnPatientEvent (PatientEventTypes.Pacermaker_Spike);
 
             if (Pacemaker_Energy >= Pacemaker_Threshold)
                 timerPacemaker_Spike.ResetAuto (40);        // Adds an interval between the spike and the QRS complex
@@ -897,8 +910,7 @@ namespace II {
                     break;
 
                 case Cardiac_Rhythms.Values.Sick_Sinus_Syndrome:
-
-                    // Countdown to 0; on 0, switch between tachy/brady; brady runs 8-12 beats, tachy runs 20-30 beats
+                    /* Countdown to 0; on 0, switch between tachy/brady; brady runs 8-12 beats, tachy runs 20-30 beats */
                     if (counterCardiac_Arrhythmia <= 0) {
                         switchCardiac_Arrhythmia = !switchCardiac_Arrhythmia;
                         if (switchCardiac_Arrhythmia) {
@@ -1065,8 +1077,7 @@ namespace II {
                     break;
 
                 case Cardiac_Rhythms.Values.AV_Block__3rd_Degree:
-
-                    // Specifically let atrial timer continue to run and propogate P-waves!
+                    /* Specifically let atrial timer continue to run and propogate P-waves! */
                     break;
             }
         }
@@ -1077,12 +1088,8 @@ namespace II {
             if (Cardiac_Rhythm.HasPulse_Ventricular)
                 timerCardiac_Ventricular_Mechanical.ResetAuto (Default_Electromechanical_Delay);
 
-            // Flip the switch on pulsus alternans
+            /* Flip the switch on pulsus alternans */
             Cardiac_Rhythm.AlternansBeat = Pulsus_Alternans ? !Cardiac_Rhythm.AlternansBeat : false;
-
-            switch (Cardiac_Rhythm.Value) {
-                default: break;
-            }
 
             timerCardiac_Ventricular_Electric.Stop ();
         }
@@ -1096,7 +1103,16 @@ namespace II {
         private void OnCardiac_Ventricular_Mechanical () {
             OnPatientEvent (PatientEventTypes.Cardiac_Ventricular_Mechanical);
 
+            if (IABP_Active)
+                timerIABP_Balloon_Trigger.ResetAuto ((int)(GetHR_Seconds * 1000 * 0.35));
+
             timerCardiac_Ventricular_Mechanical.Stop ();
+        }
+
+        private void OnIABP_Balloon_Inflate () {
+            OnPatientEvent (PatientEventTypes.IABP_Balloon_Inflation);
+
+            timerIABP_Balloon_Trigger.Stop ();
         }
 
         private void OnRespiratory_Baseline () {

@@ -1,9 +1,11 @@
-﻿using II;
-using II.Rhythm;
+﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+
+using II;
+using II.Rhythm;
 
 namespace II_Windows.Controls {
 
@@ -14,9 +16,10 @@ namespace II_Windows.Controls {
         public Strip Strip;
         public Lead Lead { get { return Strip.Lead; } }
 
-        // Drawing variables, offsets and multipliers
+        /* Drawing variables, offsets and multipliers */
+        private Brush tracingBrush = Brushes.Black;
+        private Brush referenceBrush = Brushes.DarkGray;
 
-        private Brush drawBrush;
         private StreamGeometry drawGeometry;
         private StreamGeometryContext drawContext;
         private int drawXOffset, drawYOffset;
@@ -33,49 +36,65 @@ namespace II_Windows.Controls {
 
         private void UpdateInterface (object sender, SizeChangedEventArgs e) {
             switch (Strip.Lead.Value) {
-                default: drawBrush = Brushes.Green; break;
-                case Lead.Values.ABP: drawBrush = Brushes.Red; break;
-                case Lead.Values.IABP: drawBrush = Brushes.SkyBlue; break;
+                default: tracingBrush = Brushes.Green; break;
+                case Lead.Values.ABP: tracingBrush = Brushes.Red; break;
+                case Lead.Values.IABP: tracingBrush = Brushes.SkyBlue; break;
             }
 
-            borderTracing.BorderBrush = drawBrush;
+            borderTracing.BorderBrush = tracingBrush;
 
-            lblLead.Foreground = drawBrush;
+            lblLead.Foreground = tracingBrush;
             lblLead.Content = App.Language.Dictionary [Lead.LookupString (Lead.Value)];
         }
 
-        public void Draw () {
+        public void CalculateOffsets () {
             drawXOffset = 0;
-            drawYOffset = (int)canvasTracing.ActualHeight / 2;
-            drawXMultiplier = (int)canvasTracing.ActualWidth / Strip.lengthSeconds;
-            drawYMultiplier = -(int)canvasTracing.ActualHeight / 2;
+            drawYOffset = (int)(canvasTracing.ActualHeight / 2)
+               - (int)(canvasTracing.ActualHeight / 2 * Strip.Offset);
+            drawXMultiplier = (int)canvasTracing.ActualWidth / Strip.Length;
+            drawYMultiplier = (-(int)canvasTracing.ActualHeight / 2) * Strip.Amplitude;
+        }
 
-            if (Strip.Points.Count < 2)
-                return;
-
+        public void DrawTracing () {
             Strip.RemoveNull ();
             Strip.Sort ();
 
-            drawPath.Stroke = drawBrush;
-            drawPath.StrokeThickness = 1;
+            DrawPath (drawPath, Strip.Points, tracingBrush, 1);
+        }
+
+        public void DrawReference ()
+            => DrawPath (drawReference, Strip.Reference, referenceBrush, 1);
+
+        public void DrawPath (Path _Path, List<II.Waveform.Point> _Points, Brush _Brush, double _Thickness) {
+            if (_Points.Count < 2)
+                return;
+
+            _Path.Stroke = _Brush;
+            _Path.StrokeThickness = _Thickness;
             drawGeometry = new StreamGeometry { FillRule = FillRule.EvenOdd };
 
             using (drawContext = drawGeometry.Open ()) {
                 drawContext.BeginFigure (new System.Windows.Point (
-                    (int)(Strip.Points [0].X * drawXMultiplier) + drawXOffset,
-                    (int)(Strip.Points [0].Y * drawYMultiplier) + drawYOffset),
+                    (int)(_Points [0].X * drawXMultiplier) + drawXOffset,
+                    (int)(_Points [0].Y * drawYMultiplier) + drawYOffset),
                     true, false);
 
-                for (int i = 1; i < Strip.Points.Count; i++) {
+                for (int i = 1; i < _Points.Count; i++) {
                     drawContext.LineTo (new System.Windows.Point (
-                        (int)(Strip.Points [i].X * drawXMultiplier) + drawXOffset,
-                        (int)(Strip.Points [i].Y * drawYMultiplier) + drawYOffset),
+                        (int)(_Points [i].X * drawXMultiplier) + drawXOffset,
+                        (int)(_Points [i].Y * drawYMultiplier) + drawYOffset),
                         true, true);
                 }
             }
 
             drawGeometry.Freeze ();
-            drawPath.Data = drawGeometry;
+            _Path.Data = drawGeometry;
+        }
+
+        private void canvasTracing_SizeChanged (object sender, SizeChangedEventArgs e) {
+            CalculateOffsets ();
+
+            //DrawReference ();
         }
     }
 }

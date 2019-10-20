@@ -480,7 +480,7 @@ namespace II_Windows {
 
             listTracings.ForEach (c => {
                 c.Strip.Scroll ();
-                c.Draw ();
+                c.DrawTracing ();
             });
         }
 
@@ -514,11 +514,11 @@ namespace II_Windows {
                     });
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Defibrillation:
+                case Patient.PatientEventTypes.Defibrillation:
                     listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Defibrillation (App.Patient));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_PacerSpike:
+                case Patient.PatientEventTypes.Pacermaker_Spike:
                     listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Pacemaker (App.Patient));
                     break;
 
@@ -548,6 +548,10 @@ namespace II_Windows {
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical:
                     listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Mechanical (App.Patient));
+                    break;
+
+                case Patient.PatientEventTypes.IABP_Balloon_Inflation:
+                    listTracings.ForEach (c => c.Strip.Add_Beat__IABP_Balloon (App.Patient));
                     break;
             }
         }

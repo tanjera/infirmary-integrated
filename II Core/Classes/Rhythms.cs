@@ -444,12 +444,12 @@ namespace II {
 
         public static Default_Vitals DefaultVitals (Values Rhythm) {
             switch (Rhythm) {
-                case Values.Right_Atrium: return new Default_Vitals (5, 15, 3, 12);
-                case Values.Right_Ventricle: return new Default_Vitals (24, 26, 0, 3);
+                case Values.Right_Atrium: return new Default_Vitals (7, 11, 0, 3);
+                case Values.Right_Ventricle: return new Default_Vitals (21, 25, -7, -3);
 
                 default:
-                case Values.Pulmonary_Artery: return new Default_Vitals (15, 25, 5, 15);
-                case Values.Pulmonary_Capillary_Wedge: return new Default_Vitals (8, 12, 6, 10);
+                case Values.Pulmonary_Artery: return new Default_Vitals (21, 25, 10, 12);
+                case Values.Pulmonary_Capillary_Wedge: return new Default_Vitals (10, 12, 6, 8);
             }
         }
     }

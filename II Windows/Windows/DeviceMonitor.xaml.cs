@@ -207,7 +207,7 @@ namespace II_Windows {
 
             listTracings.ForEach (c => {
                 c.Strip.Scroll ();
-                c.Draw ();
+                c.DrawTracing ();
             });
         }
 
@@ -307,11 +307,11 @@ namespace II_Windows {
                     listNumerics.ForEach (n => n.UpdateVitals ());
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Defibrillation:
+                case Patient.PatientEventTypes.Defibrillation:
                     listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Defibrillation (App.Patient));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_PacerSpike:
+                case Patient.PatientEventTypes.Pacermaker_Spike:
                     listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Pacemaker (App.Patient));
                     break;
 
@@ -336,15 +336,15 @@ namespace II_Windows {
                     break;
 
                 case Patient.PatientEventTypes.Respiratory_Baseline:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Respiratory_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Breath__Respiratory_Baseline (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Respiratory_Inspiration:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Respiratory_Inspiration (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Breath__Respiratory_Inspiration (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Respiratory_Expiration:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Respiratory_Expiration (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Breath__Respiratory_Expiration (App.Patient));
                     break;
             }
         }
