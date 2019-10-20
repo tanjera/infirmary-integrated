@@ -161,9 +161,9 @@ namespace II_Windows {
                 Utility.RandomDouble (20, 80));
 
             // Instantiate and add Tracings to UI
-            listTracings.Add (new Controls.IABPTracing (new Strip (6f, Lead.Values.ECG_II)));
-            listTracings.Add (new Controls.IABPTracing (new Strip (6f, Lead.Values.ABP)));
-            listTracings.Add (new Controls.IABPTracing (new Strip (6f, Lead.Values.IABP)));
+            listTracings.Add (new Controls.IABPTracing (new Strip (Lead.Values.ECG_II, 6d)));
+            listTracings.Add (new Controls.IABPTracing (new Strip (Lead.Values.ABP, 6d)));
+            listTracings.Add (new Controls.IABPTracing (new Strip (Lead.Values.IABP, 6d)));
             for (int i = 0; i < listTracings.Count; i++) {
                 listTracings [i].SetValue (Grid.RowProperty, i);
                 listTracings [i].SetValue (Grid.ColumnProperty, 1);

@@ -60,7 +60,7 @@ namespace II.Waveform {
             DampenAmplitude_PulsusParadoxus (_P, ref _Amplitude);
 
             return Plotting.Concatenate (new List<Point> (),
-                Plotting.Stretch (Dictionary.SPO2_Rhythm, _P.GetPulsatility_Seconds),
+                Plotting.Stretch (Dictionary.SPO2_Rhythm, _P.GetHR_Seconds),
                 _Amplitude);
         }
 

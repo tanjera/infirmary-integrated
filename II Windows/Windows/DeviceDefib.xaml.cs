@@ -459,7 +459,7 @@ namespace II_Windows {
             }
 
             for (int i = listTracings.Count; i < rowsTracings && i < tracingTypes.Count; i++) {
-                Strip newStrip = new Strip (6f, (Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]));
+                Strip newStrip = new Strip ((Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]), 6d);
                 Controls.DefibTracing newTracing = new Controls.DefibTracing (newStrip);
                 listTracings.Add (newTracing);
             }

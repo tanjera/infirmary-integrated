@@ -28,6 +28,7 @@ namespace II.Rhythm {
         public static double DefaultOffset_ReferenceZero = -0.015;      // Accounts for line thickness, for clarity
 
         public double Length = 6.0d;                      // Strip length in seconds
+        public double DisplayLength = 6.0d;
 
         private double forwardBuffer = 1.0d;              // Coefficient of Length to draw into future as "now" for buffer
         private DateTime scrolledLast = DateTime.UtcNow;
@@ -40,20 +41,22 @@ namespace II.Rhythm {
         public List<Point> Points;                        // Clinical waveform tracing points
         public List<Point> Reference;                     // Reference line tracing points
 
-        public Strip (double length, Lead.Values lead) {
+        public Strip (Lead.Values lead) {
+            double length = IsRespiratory ? DefaultLength * DefaultRespiratoryCoefficient : DefaultLength;
+            Initialize (lead, length, length);
+        }
+
+        public Strip (Lead.Values lead, double length)
+            => Initialize (lead, length, length);
+
+        public Strip (Lead.Values lead, double length, double displayLength)
+            => Initialize (lead, length, displayLength);
+
+        public void Initialize (Lead.Values lead, double length, double displayLength) {
             Lead = new Lead (lead);
 
             Length = length;
-            Points = new List<Point> ();
-            Reference = new List<Point> ();
-
-            SetOffset ();
-            SetReference ();
-        }
-
-        public Strip (Lead.Values lead) {
-            Lead = new Lead (lead);
-            Length = IsRespiratory ? DefaultLength * DefaultRespiratoryCoefficient : DefaultLength;
+            DisplayLength = displayLength;
 
             Points = new List<Point> ();
             Reference = new List<Point> ();

@@ -45,7 +45,7 @@ namespace II_Windows.Controls {
             drawXOffset = 0;
             drawYOffset = (int)(canvasTracing.ActualHeight / 2)
                - (int)(canvasTracing.ActualHeight / 2 * Strip.Offset);
-            drawXMultiplier = (int)canvasTracing.ActualWidth / Strip.Length;
+            drawXMultiplier = (int)canvasTracing.ActualWidth / Strip.DisplayLength;
             drawYMultiplier = (-(int)canvasTracing.ActualHeight / 2) * Strip.Amplitude;
         }
 
