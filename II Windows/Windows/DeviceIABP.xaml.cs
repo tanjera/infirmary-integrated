@@ -478,10 +478,10 @@ namespace II_Windows {
             if (isPaused)
                 return;
 
-            listTracings.ForEach (c => {
-                c.Strip.Scroll ();
-                c.DrawTracing ();
-            });
+            for (int i = 0; i < listTracings.Count; i++) {
+                listTracings [i].Strip.Scroll ();
+                listTracings [i].DrawTracing ();
+            }
         }
 
         private void OnTick_Vitals (object sender, EventArgs e) {

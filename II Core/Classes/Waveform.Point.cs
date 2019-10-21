@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Drawing;
 using System.Collections.Generic;
 using System.Text;
 
 namespace II.Waveform {
     public class Point {
         public double X, Y;
+
         public Point (double x, double y) { X = x; Y = y; }
 
         public static Point Lerp (Point a, Point b, double t) {

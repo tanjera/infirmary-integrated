@@ -131,12 +131,8 @@ namespace II_Windows.Controls {
             drawYMultiplier = (-(int)canvasTracing.ActualHeight / 2) * Strip.Amplitude;
         }
 
-        public void DrawTracing () {
-            Strip.RemoveNull ();
-            Strip.Sort ();
-
-            DrawPath (drawPath, Strip.Points, tracingBrush, 1);
-        }
+        public void DrawTracing ()
+            => DrawPath (drawPath, Strip.Points, tracingBrush, 1);
 
         public void DrawReference ()
             => DrawPath (drawReference, Strip.Reference, referenceBrush, 1);

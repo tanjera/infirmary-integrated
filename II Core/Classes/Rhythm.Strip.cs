@@ -213,10 +213,7 @@ namespace II.Rhythm {
             double minX = replacement [0].X,
                 maxX = replacement [replacement.Count - 1].X;
 
-            for (int i = Points.Count - 1; i >= 0; i--)
-                if (Points [i].X > minX && Points [i].X < maxX)
-                    Points.RemoveAt (i);
-
+            Points.RemoveAll (p => { return p.X > minX && p.X < maxX; });
             Points.AddRange (replacement);
         }
 
@@ -231,31 +228,20 @@ namespace II.Rhythm {
             double minX = replacement [0].X,
                 maxX = replacement [replacement.Count - 1].X;
 
-            for (int i = Points.Count - 1; i >= 0; i--)
-                if (Points [i].X > minX && Points [i].X < maxX) {
-                    if (Points [i].Y == 0f)
-                        Points.RemoveAt (i);
-                    else
-                        return;
-                }
-
+            Points.RemoveAll (p => { return p.X > minX && p.X < maxX && p.Y == 0d; });
             Points.AddRange (replacement);
         }
 
-        public void RemoveNull () {
-            for (int i = Points.Count - 1; i >= 0; i--)
-                if (Points [i] == null)
-                    Points.RemoveAt (i);
-        }
+        public void TrimPoints ()
+            => Points.RemoveAll (p => { return p == null || p.X < -Length; });
 
-        public void Sort () {
-            Points.Sort (delegate (Point p1, Point p2) {
+        public void SortPoints ()
+            => Points.Sort (delegate (Point p1, Point p2) {
                 if (p1 == null && p2 == null) return 0;
                 else if (p1 == null) return -1;
                 else if (p2 == null) return 1;
                 else return p1.X.CompareTo (p2.X);
             });
-        }
 
         public void Scroll () {
             if (scrollingUnpausing) {
@@ -269,59 +255,44 @@ namespace II.Rhythm {
 
             for (int i = Points.Count - 1; i >= 0; i--)
                 Points [i].X -= scrollBy;
-
-            for (int i = Points.Count - 1; i >= 0; i--) {
-                if (Points [i].X < -Length)
-                    Points.RemoveAt (i);
-            }
         }
 
         public void Unpause () {
             scrollingUnpausing = true;
         }
 
-        public void Add_Beat__Cardiac_Defibrillation (Patient p) {
-            if (IsECG)
-                Overwrite (Draw.ECG_Defibrillation (p, Lead));
-        }
-
-        public void Add_Beat__Cardiac_Pacemaker (Patient p) {
-            if (IsECG)
-                Overwrite (Draw.ECG_Pacemaker (p, Lead));
-        }
-
         public void Add_Beat__Cardiac_Baseline (Patient p) {
             SetForwardBuffer (p);
+            TrimPoints ();
 
             if (IsECG) {
                 p.Cardiac_Rhythm.ECG_Isoelectric (p, this);
             } else if (Lead.Value != Lead.Values.RR && Lead.Value != Lead.Values.ETCO2) {
-
-                // Fill waveform through to future buffer with flatline
+                /* Fill waveform through to future buffer with flatline */
                 double fill = (Length * forwardBuffer) - Last (Points).X;
                 Concatenate (Draw.Flat_Line (fill > p.GetHR_Seconds ? fill : p.GetHR_Seconds, 0f));
-            }
+            } else
+                return;
 
-            if (Lead.Value == Lead.Values.CVP
-                || (Lead.Value == Lead.Values.PA   // PA catheter in RA has CVP waveform
-                    && p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Atrium)) {
-                if (p.Cardiac_Rhythm.HasPulse_Atrial && !p.Cardiac_Rhythm.HasPulse_Ventricular)
-                    Overwrite (Draw.CVP_Rhythm (p, 0.25f));
-                else if (!p.Cardiac_Rhythm.HasPulse_Atrial && p.Cardiac_Rhythm.HasPulse_Ventricular)
-                    Overwrite (Draw.CVP_Rhythm (p, 0.5f));
-                else if (p.Cardiac_Rhythm.HasPulse_Atrial && p.Cardiac_Rhythm.HasPulse_Ventricular)
-                    Overwrite (Draw.CVP_Rhythm (p, 1f));
-            }
+            SortPoints ();
         }
 
         public void Add_Beat__Cardiac_Atrial_Electrical (Patient p) {
-            if (IsECG)
-                p.Cardiac_Rhythm.ECG_Atrial (p, this);
+            if (!IsECG)
+                return;
+
+            p.Cardiac_Rhythm.ECG_Atrial (p, this);
+
+            SortPoints ();
         }
 
         public void Add_Beat__Cardiac_Ventricular_Electrical (Patient p) {
-            if (IsECG)
-                p.Cardiac_Rhythm.ECG_Ventricular (p, this);
+            if (!IsECG)
+                return;
+
+            p.Cardiac_Rhythm.ECG_Ventricular (p, this);
+
+            SortPoints ();
         }
 
         public void Add_Beat__Cardiac_Atrial_Mechanical (Patient p) {
@@ -330,7 +301,7 @@ namespace II.Rhythm {
 
         public void Add_Beat__Cardiac_Ventricular_Mechanical (Patient p) {
             switch (Lead.Value) {
-                default: break;
+                default: return;
 
                 case Lead.Values.SPO2:
                     Overwrite (Draw.SPO2_Rhythm (p, 1f));
@@ -343,8 +314,14 @@ namespace II.Rhythm {
                         Overwrite (Draw.ABP_Rhythm (p, 1f));
                     break;
 
+                case Lead.Values.CVP:
+                    Overwrite (Draw.CVP_Rhythm (p, 1f));
+                    break;
+
                 case Lead.Values.PA:    // Vary PA waveforms based on PA catheter placement
-                    if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Ventricle)
+                    if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Atrium)
+                        Overwrite (Draw.CVP_Rhythm (p, 1f));
+                    else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Ventricle)
                         Overwrite (Draw.RV_Rhythm (p, 1f));
                     else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Pulmonary_Artery)
                         Overwrite (Draw.PA_Rhythm (p, 1f));
@@ -360,37 +337,65 @@ namespace II.Rhythm {
                     Overwrite (Draw.IAP_Rhythm (p, 1f));
                     break;
             }
+
+            SortPoints ();
         }
 
         public void Add_Beat__IABP_Balloon (Patient p) {
-            if (Lead.Value == Lead.Values.IABP && p.IABP_Active) {
-                if (p.Cardiac_Rhythm.HasWaveform_Ventricular && p.IABP_Trigger == "ECG") {
-                    /* ECG Trigger works only if ventricular ECG waveform */
-                    Overwrite (Draw.IABP_Balloon_Rhythm (p, 1f));
-                } else if (p.Cardiac_Rhythm.HasPulse_Ventricular && p.IABP_Trigger == "Pressure") {
-                    /* Pressure Trigger works only if ventricular pressure impulse */
-                    Overwrite (Draw.IABP_Balloon_Rhythm (p, 1f));
-                }
+            if (Lead.Value != Lead.Values.IABP || !p.IABP_Active)
+                return;
+
+            if (p.Cardiac_Rhythm.HasWaveform_Ventricular && p.IABP_Trigger == "ECG") {
+                /* ECG Trigger works only if ventricular ECG waveform */
+                Overwrite (Draw.IABP_Balloon_Rhythm (p, 1f));
+            } else if (p.Cardiac_Rhythm.HasPulse_Ventricular && p.IABP_Trigger == "Pressure") {
+                /* Pressure Trigger works only if ventricular pressure impulse */
+                Overwrite (Draw.IABP_Balloon_Rhythm (p, 1f));
             }
+
+            SortPoints ();
+        }
+
+        public void Add_Beat__Cardiac_Defibrillation (Patient p) {
+            if (!IsECG)
+                return;
+
+            Overwrite (Draw.ECG_Defibrillation (p, Lead));
+
+            SortPoints ();
+        }
+
+        public void Add_Beat__Cardiac_Pacemaker (Patient p) {
+            if (!IsECG)
+                return;
+
+            Overwrite (Draw.ECG_Pacemaker (p, Lead));
+
+            SortPoints ();
         }
 
         public void Add_Breath__Respiratory_Baseline (Patient p) {
             SetForwardBuffer (p);
+            TrimPoints ();
 
-            if (Lead.Value == Lead.Values.RR || Lead.Value == Lead.Values.ETCO2) {
+            if (Lead.Value != Lead.Values.RR && Lead.Value != Lead.Values.ETCO2)
+                return;
 
-                // Fill waveform through to future buffer with flatline
-                double fill = (Length * forwardBuffer) - Last (Points).X;
-                Concatenate (Draw.Flat_Line (fill > p.GetRR_Seconds ? fill : p.GetRR_Seconds, 0f));
-            }
+            /* Fill waveform through to future buffer with flatline */
+            double fill = (Length * forwardBuffer) - Last (Points).X;
+            Concatenate (Draw.Flat_Line (fill > p.GetRR_Seconds ? fill : p.GetRR_Seconds, 0f));
+
+            SortPoints ();
         }
 
         public void Add_Breath__Respiratory_Inspiration (Patient p) {
             switch (Lead.Value) {
-                default: break;
+                default: return;
                 case Lead.Values.RR: Overwrite (Draw.RR_Rhythm (p, true)); break;
                 case Lead.Values.ETCO2: break;    // End-tidal waveform is only present on expiration!! Is flatline on inspiration.
             }
+
+            SortPoints ();
         }
 
         public void Add_Breath__Respiratory_Expiration (Patient p) {
@@ -399,6 +404,8 @@ namespace II.Rhythm {
                 case Lead.Values.RR: Overwrite (Draw.RR_Rhythm (p, false)); break;
                 case Lead.Values.ETCO2: Overwrite (Draw.ETCO2_Rhythm (p)); break;
             }
+
+            SortPoints ();
         }
     }
 }
