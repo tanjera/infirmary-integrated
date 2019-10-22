@@ -15,12 +15,6 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_0FA3FCA948C94A46942378219FDF6D59"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
         "MsmKey" = "8:_1FF46233187DD54467A838CF63EC6EB4"
         "OwnerKey" = "8:_6FCD58B8CD2F93F2F3E59C17A6F22C50"
         "MsmSig" = "8:_UNDEFINED"
@@ -28,19 +22,13 @@
         "Entry"
         {
         "MsmKey" = "8:_1FF46233187DD54467A838CF63EC6EB4"
-        "OwnerKey" = "8:_99434732507E413485CF9F6267F1C66C"
+        "OwnerKey" = "8:_DFF62957960A4F5F887171630142C509"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_1FF46233187DD54467A838CF63EC6EB4"
-        "OwnerKey" = "8:_DFF62957960A4F5F887171630142C509"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_3448B78F26F4B04383E9D6ADE3A812C3"
-        "OwnerKey" = "8:_DFF62957960A4F5F887171630142C509"
+        "OwnerKey" = "8:_99434732507E413485CF9F6267F1C66C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -51,7 +39,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_3F2888397070611FC1B9F7F30DC8737B"
+        "MsmKey" = "8:_3448B78F26F4B04383E9D6ADE3A812C3"
         "OwnerKey" = "8:_DFF62957960A4F5F887171630142C509"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -63,7 +51,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_508FE04698A12E5F8AC128437236E379"
+        "MsmKey" = "8:_3F2888397070611FC1B9F7F30DC8737B"
         "OwnerKey" = "8:_DFF62957960A4F5F887171630142C509"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -71,6 +59,12 @@
         {
         "MsmKey" = "8:_508FE04698A12E5F8AC128437236E379"
         "OwnerKey" = "8:_99434732507E413485CF9F6267F1C66C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_508FE04698A12E5F8AC128437236E379"
+        "OwnerKey" = "8:_DFF62957960A4F5F887171630142C509"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -82,13 +76,13 @@
         "Entry"
         {
         "MsmKey" = "8:_529123C61E27E4F08C90333EC8B9619D"
-        "OwnerKey" = "8:_DFF62957960A4F5F887171630142C509"
+        "OwnerKey" = "8:_99434732507E413485CF9F6267F1C66C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_529123C61E27E4F08C90333EC8B9619D"
-        "OwnerKey" = "8:_99434732507E413485CF9F6267F1C66C"
+        "OwnerKey" = "8:_DFF62957960A4F5F887171630142C509"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -100,18 +94,12 @@
         "Entry"
         {
         "MsmKey" = "8:_5B0A53550D4EFECFD622FDA06101BF22"
-        "OwnerKey" = "8:_DFF62957960A4F5F887171630142C509"
+        "OwnerKey" = "8:_99434732507E413485CF9F6267F1C66C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_5B0A53550D4EFECFD622FDA06101BF22"
-        "OwnerKey" = "8:_99434732507E413485CF9F6267F1C66C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_6FCD58B8CD2F93F2F3E59C17A6F22C50"
         "OwnerKey" = "8:_DFF62957960A4F5F887171630142C509"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -123,7 +111,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_79331D4584FCE92ED8C559A4240655D0"
+        "MsmKey" = "8:_6FCD58B8CD2F93F2F3E59C17A6F22C50"
         "OwnerKey" = "8:_DFF62957960A4F5F887171630142C509"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -131,6 +119,12 @@
         {
         "MsmKey" = "8:_79331D4584FCE92ED8C559A4240655D0"
         "OwnerKey" = "8:_99434732507E413485CF9F6267F1C66C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_79331D4584FCE92ED8C559A4240655D0"
+        "OwnerKey" = "8:_DFF62957960A4F5F887171630142C509"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -148,18 +142,12 @@
         "Entry"
         {
         "MsmKey" = "8:_B3C018C1E494E74EE914EA9C4A3214D3"
-        "OwnerKey" = "8:_DFF62957960A4F5F887171630142C509"
+        "OwnerKey" = "8:_99434732507E413485CF9F6267F1C66C"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_B3C018C1E494E74EE914EA9C4A3214D3"
-        "OwnerKey" = "8:_99434732507E413485CF9F6267F1C66C"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_B78BB483163948246C09AC985970AE5B"
         "OwnerKey" = "8:_DFF62957960A4F5F887171630142C509"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -167,6 +155,12 @@
         {
         "MsmKey" = "8:_B78BB483163948246C09AC985970AE5B"
         "OwnerKey" = "8:_99434732507E413485CF9F6267F1C66C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_B78BB483163948246C09AC985970AE5B"
+        "OwnerKey" = "8:_DFF62957960A4F5F887171630142C509"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -177,14 +171,20 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_FDA8D29CC0E309A1B9D5EC54AEEC76B1"
-        "OwnerKey" = "8:_DFF62957960A4F5F887171630142C509"
+        "MsmKey" = "8:_F2F41FBD479548A4A760562994345E3E"
+        "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_FDA8D29CC0E309A1B9D5EC54AEEC76B1"
         "OwnerKey" = "8:_99434732507E413485CF9F6267F1C66C"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_FDA8D29CC0E309A1B9D5EC54AEEC76B1"
+        "OwnerKey" = "8:_DFF62957960A4F5F887171630142C509"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -378,26 +378,6 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_0FA3FCA948C94A46942378219FDF6D59"
-            {
-            "SourcePath" = "8:..\\II Scenario Editor\\Icon_IISE.ico"
-            "TargetName" = "8:Icon_IISE.ico"
-            "Tag" = "8:"
-            "Folder" = "8:_B802499D66F54BE88679E32C87F3937D"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_1FF46233187DD54467A838CF63EC6EB4"
             {
             "AssemblyRegister" = "3:1"
@@ -728,6 +708,26 @@
             "IsDependency" = "11:TRUE"
             "IsolateTo" = "8:"
             }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F2F41FBD479548A4A760562994345E3E"
+            {
+            "SourcePath" = "8:..\\IISE Windows\\Icon_IISE.ico"
+            "TargetName" = "8:Icon_IISE.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_B802499D66F54BE88679E32C87F3937D"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
             "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_FDA8D29CC0E309A1B9D5EC54AEEC76B1"
             {
             "AssemblyRegister" = "3:1"
@@ -838,15 +838,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Infirmary Integrated"
-        "ProductCode" = "8:{0205E771-B728-4A00-A4A3-947A48922063}"
-        "PackageCode" = "8:{EB01CCA3-47E9-4274-B66F-1382FDE10065}"
+        "ProductCode" = "8:{023A35C2-F3B0-4845-BC6B-09DCEB8E5421}"
+        "PackageCode" = "8:{73C4E02C-612F-4DE3-9DC9-0B51073C6EA3}"
         "UpgradeCode" = "8:{313C57F9-7AA1-479F-825E-6CDC994FF165}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:FALSE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:TRUE"
-        "ProductVersion" = "8:1.1.2"
+        "ProductVersion" = "8:1.2.0"
         "Manufacturer" = "8:Ibi Keller"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:http://www.infirmary-integrated.com/"
@@ -959,18 +959,18 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_30646B7A32EF47D6ACBF76039F50EC91"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_45EDA1BE9F0D41AD9332017161261B85"
             {
             "Name" = "8:Infirmary Integrated Scenario Editor"
             "Arguments" = "8:"
-            "Description" = "8:Infirmary Integrated Scenario Editor"
+            "Description" = "8:"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:"
+            "Target" = "8:_99434732507E413485CF9F6267F1C66C"
             "Folder" = "8:_326DF3FE79344F61BDD23F4471A0884F"
             "WorkingFolder" = "8:_B802499D66F54BE88679E32C87F3937D"
-            "Icon" = "8:_0FA3FCA948C94A46942378219FDF6D59"
+            "Icon" = "8:_F2F41FBD479548A4A760562994345E3E"
             "Feature" = "8:"
             }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_8F9AE116813F4A569784E8A97ACA3101"
@@ -1388,7 +1388,7 @@
         {
             "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_99434732507E413485CF9F6267F1C66C"
             {
-            "SourcePath" = "8:..\\II Scenario Editor\\obj\\Release\\II Scenario Editor.exe"
+            "SourcePath" = "8:..\\IISE Windows\\obj\\Release\\II Scenario Editor.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B802499D66F54BE88679E32C87F3937D"

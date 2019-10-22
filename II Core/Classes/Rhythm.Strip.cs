@@ -2,7 +2,7 @@
  * Infirmary Integrated
  * By Ibi Keller (Tanjera), (c) 2017
  *
- * Actual management of geometric plotting of waveforms in a single unit is in Strip.cs.
+ * Actual management of geometric plotting of waveforms as a single tracing is in Strip.cs.
  * Concatenation of waveform complexes, overwriting and underwriting (combining) wave points,
  * marquee scrolling of the waveforms, managing and resizing a future edge buffer (important
  * for continuity of drawing) and cleaning old data points from data collections.
@@ -20,13 +20,21 @@ namespace II.Rhythm {
         public static double DefaultBufferLength = .2d;
         public static double DefaultRespiratoryCoefficient = 3d;
 
+        /* Default offsets and amplitudes */
         public static double DefaultOffset_Transduced = -0.5;
         public static double DefaultOffset_NonTransduced = -0.8;
         public static double DefaultAmplitude_Transduced = 1.2;
         public static double DefaultAmplitude_NonTransduced = 1.6;
-
         public static double DefaultOffset_ReferenceZero = -0.015;      // Accounts for line thickness, for clarity
 
+        /* Reference pressures for scaling transduced waveforms based on systolic/diastolic */
+        public const double ScaleMargin = 0.2d;
+        public const int DefaultScaleMin_ABP = 0;
+        public const int DefaultScaleMin_PA = -10;
+        public const int DefaultScaleMax_ABP = 200;
+        public const int DefaultScaleMax_PA = 50;
+
+        /* Variables for real-time strip tracing processing */
         public double Length = 6.0d;                      // Strip length in seconds
         public double DisplayLength = 6.0d;
 
@@ -34,9 +42,13 @@ namespace II.Rhythm {
         private DateTime scrolledLast = DateTime.UtcNow;
         private bool scrollingUnpausing = false;
 
-        public double Offset = 0d;                        // Implement yOffset here for cross-platform compatibility
+        public double Offset = 0d;
         public double Amplitude = 1d;
 
+        public int ScaleMin;                              // For scaling waveforms to pressure limits
+        public int ScaleMax;
+
+        /* Data structures for tracing information */
         public Lead Lead;
         public List<Point> Points;                        // Clinical waveform tracing points
         public List<Point> Reference;                     // Reference line tracing points
@@ -61,6 +73,7 @@ namespace II.Rhythm {
             Points = new List<Point> ();
             Reference = new List<Point> ();
 
+            SetScale ();
             SetOffset ();
             SetReference ();
         }
@@ -101,14 +114,36 @@ namespace II.Rhythm {
             }
         }
 
+        public bool CanScale {
+            get {
+                return Lead.Value == Lead.Values.ABP
+                    || Lead.Value == Lead.Values.PA;
+            }
+        }
+
         public void SetLead (Lead.Values lead) {
             Lead = new Lead (lead);
             Length = IsRespiratory ? DefaultLength * DefaultRespiratoryCoefficient : DefaultLength;
 
+            SetScale ();
             SetOffset ();
             SetReference ();
         }
 
+        private void SetScale () {
+            switch (Lead.Value) {
+                default: break;
+                case Lead.Values.ABP:
+                    ScaleMin = DefaultScaleMin_ABP;
+                    ScaleMax = DefaultScaleMax_ABP;
+                    break;
+
+                case Lead.Values.PA:
+                    ScaleMin = DefaultScaleMin_PA;
+                    ScaleMax = DefaultScaleMax_PA;
+                    break;
+            }
+        }
         private void SetOffset () {
             /* Define yOffset based on lead type; pressure waveforms offset down, electric remains centered */
             switch (Lead.Value) {
@@ -148,7 +183,6 @@ namespace II.Rhythm {
                 case Lead.Values.CVP:
                 case Lead.Values.IAP:
                 case Lead.Values.ICP:
-
                     break;
             }
         }
@@ -261,18 +295,57 @@ namespace II.Rhythm {
             scrollingUnpausing = true;
         }
 
+        public List<Point> Scale (Patient p, List<Point> addition) {
+            if (!CanScale || addition.Count == 0)
+                return addition;
+
+            int diastolic, systolic;
+            switch (Lead.Value) {
+                default: return addition;
+
+                case Lead.Values.ABP:
+                    systolic = p.ASBP;
+                    diastolic = p.ADBP;
+                    break;
+
+                case Lead.Values.PA:
+                    systolic = p.PSP;
+                    diastolic = p.PDP;
+                    break;
+            }
+
+            // Get the existing max values; minimum for scaling should be 0
+            double min = 0, max = 0;
+            for (int i = 1; i < addition.Count; i++)
+                max = (max > addition [i].Y) ? max : addition [i].Y;
+            max = (min != max) ? max : 1;           // For flat lines, scale 0 to 1
+
+            // Get new min and max vaules for the desired tracing
+            ScaleMax = Math.Max (ScaleMax, 1);              // Prevent DivideByZeroException
+            double newMin = ((diastolic - (int)(diastolic * ScaleMargin)) / (double)ScaleMax) - (double)(ScaleMin / ScaleMax);
+            double newMax = (systolic + (int)(systolic * ScaleMargin)) / (double)ScaleMax;
+
+            // Run the List<Point> through the normalization equation
+            for (int i = 0; i < addition.Count; i++)
+                addition [i].Y = ((addition [i].Y - min) * ((newMax - newMin) / (max - min))) + newMin;
+
+            return addition;
+        }
+
         public void Add_Beat__Cardiac_Baseline (Patient p) {
             SetForwardBuffer (p);
             TrimPoints ();
 
             if (IsECG) {
                 p.Cardiac_Rhythm.ECG_Isoelectric (p, this);
-            } else if (Lead.Value != Lead.Values.RR && Lead.Value != Lead.Values.ETCO2) {
+            } else if (CanScale) {
+                double fill = (Length * forwardBuffer) - Last (Points).X;
+                Concatenate (Scale (p, Draw.Flat_Line (fill > p.GetHR_Seconds ? fill : p.GetHR_Seconds, 0f)));
+            } else {
                 /* Fill waveform through to future buffer with flatline */
                 double fill = (Length * forwardBuffer) - Last (Points).X;
                 Concatenate (Draw.Flat_Line (fill > p.GetHR_Seconds ? fill : p.GetHR_Seconds, 0f));
-            } else
-                return;
+            }
 
             SortPoints ();
         }
@@ -309,9 +382,9 @@ namespace II.Rhythm {
 
                 case Lead.Values.ABP:
                     if (p.IABP_Active)
-                        Overwrite (Draw.IABP_ABP_Rhythm (p, 1f));
+                        Overwrite (Scale (p, Draw.IABP_ABP_Rhythm (p, 1f)));
                     else if (p.Cardiac_Rhythm.HasPulse_Ventricular)
-                        Overwrite (Draw.ABP_Rhythm (p, 1f));
+                        Overwrite (Scale (p, Draw.ABP_Rhythm (p, 1f)));
                     break;
 
                 case Lead.Values.CVP:
@@ -320,13 +393,13 @@ namespace II.Rhythm {
 
                 case Lead.Values.PA:    // Vary PA waveforms based on PA catheter placement
                     if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Atrium)
-                        Overwrite (Draw.CVP_Rhythm (p, 1f));
+                        Overwrite (Scale (p, Draw.CVP_Rhythm (p, 1f)));
                     else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Ventricle)
-                        Overwrite (Draw.RV_Rhythm (p, 1f));
+                        Overwrite (Scale (p, Draw.RV_Rhythm (p, 1f)));
                     else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Pulmonary_Artery)
-                        Overwrite (Draw.PA_Rhythm (p, 1f));
+                        Overwrite (Scale (p, Draw.PA_Rhythm (p, 1f)));
                     else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Pulmonary_Capillary_Wedge)
-                        Overwrite (Draw.PCW_Rhythm (p, 1f));
+                        Overwrite (Scale (p, Draw.PCW_Rhythm (p, 1f)));
                     break;
 
                 case Lead.Values.ICP:

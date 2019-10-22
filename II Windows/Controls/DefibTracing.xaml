@@ -13,14 +13,15 @@
 		<Grid>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
-				<RowDefinition />
+				<RowDefinition Height="*" />
+				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition />
 			</Grid.ColumnDefinitions>
 
 			<Canvas Name="canvasTracing" Panel.ZIndex="1" ClipToBounds="True"
-                    Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                    Grid.Column="0" Grid.Row="0" Grid.RowSpan="3"
                     VerticalAlignment="Stretch"
                     Background="Black"
 					SizeChanged="canvasTracing_SizeChanged">
@@ -32,6 +33,16 @@
                    Margin="0" Padding="2"
                    Grid.Column="0" Grid.Row="0"
                    HorizontalAlignment="Right" />
+
+			<Label Name="lblScaleMax" Panel.ZIndex="2" Height="Auto"
+                   Margin="0" Padding="2"
+                   Grid.Column="0" Grid.Row="0"
+                   HorizontalAlignment="Left" />
+
+			<Label Name="lblScaleMin" Panel.ZIndex="2" Height="Auto"
+                   Margin="0" Padding="2"
+                   Grid.Column="0" Grid.Row="2"
+                   HorizontalAlignment="Left" />
 		</Grid>
 	</Border>
 </UserControl>

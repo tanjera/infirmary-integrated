@@ -114,7 +114,7 @@ namespace Dictionary_Builder {
             + "using System.Globalization;\n"
             + "using System.Text;\n\n"
             + "namespace II.Localization {\n\n"
-            + "\tpublic partial class Languages {\n\n");
+            + "\tpublic partial class Language {\n\n");
 
             for (int i = 0; i < Languages.Count; i++) {
                 dictOut.AppendLine (String.Format ("\t\tstatic Dictionary<string, string> {0} = new Dictionary<string, string> () {{", Languages [i]));

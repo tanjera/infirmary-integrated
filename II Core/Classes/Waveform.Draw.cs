@@ -17,14 +17,6 @@ namespace II.Waveform {
         public const int ResolutionTime = 10;           // Tracing resolution milliseconds per drawing point
         public const int RefreshTime = 17;              // Tracing draw refresh time in milliseconds (60 fps = ~17ms)
 
-        /* Reference pressures for scaling transduced waveforms based on systolic/diastolic */
-        public const int ScalePressureMin = 0;
-        public const int ScalePressureMax_ABP = 200;
-        public const int ScalePressureMax_CVP = 20;
-        public const int ScalePressureMax_PA = 50;
-        public const int ScalePressureMax_ICP = 50;
-        public const int ScalePressureMax_IAP = 30;
-
         private static void VaryAmplitude_Random (double _Margin, ref double _Amplitude)
             => _Amplitude *= ((new Random ().NextDouble () * _Margin) + (1 - _Margin));
 

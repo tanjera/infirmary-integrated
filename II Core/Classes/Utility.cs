@@ -6,7 +6,7 @@ using System.Text;
 
 namespace II {
     public static class Utility {
-        public const string Version = "1.1.2";
+        public const string Version = "1.2.0";
 
         public static class Encryption {
             private static string keyString = "!8x/A?b(G+KbPe$hVkYpEs6V9y$B&E)H";

@@ -39,6 +39,14 @@ namespace II_Windows.Controls {
 
             lblLead.Foreground = tracingBrush;
             lblLead.Content = App.Language.Dictionary [Lead.LookupString (Lead.Value, true)];
+
+            if (Strip.CanScale) {
+                lblScaleMin.Foreground = tracingBrush;
+                lblScaleMax.Foreground = tracingBrush;
+
+                lblScaleMin.Content = Strip.ScaleMin.ToString ();
+                lblScaleMax.Content = Strip.ScaleMax.ToString ();
+            }
         }
 
         public void CalculateOffsets () {
