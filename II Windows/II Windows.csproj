@@ -300,6 +300,9 @@
   <ItemGroup>
     <SplashScreen Include="SplashScreen_Infirmary_800x480.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\12L ECG Grid.png" />
+  </ItemGroup>
   <Import Project="..\II Core\II_Core.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

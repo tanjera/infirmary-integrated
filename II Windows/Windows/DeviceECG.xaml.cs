@@ -5,6 +5,8 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 using II;
 using II.Rhythm;
@@ -23,6 +25,9 @@ namespace II_Windows {
         private List<Controls.ECGTracing> listTracings = new List<Controls.ECGTracing> ();
 
         private Timer timerTracing = new Timer ();
+        private bool showGrid = false;
+        private ColorSchemes colorScheme = ColorSchemes.Light;
+        private ImageBrush gridBackground;
 
         // Define WPF UI commands for binding
         private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram;
@@ -32,12 +37,18 @@ namespace II_Windows {
         public ICommand IC_CloseDevice { get { return icCloseDevice; } }
         public ICommand IC_ExitProgram { get { return icExitProgram; } }
 
+        public enum ColorSchemes {
+            Dark,
+            Light
+        }
+
         public DeviceECG () {
             InitializeComponent ();
             DataContext = this;
 
             InitTimers ();
             InitInterface ();
+            SetColorScheme (colorScheme);
         }
 
         private void InitTimers () {
@@ -58,9 +69,17 @@ namespace II_Windows {
             wdwDeviceECG.Title = App.Language.Dictionary ["ECG:WindowTitle"];
             menuDevice.Header = App.Language.Dictionary ["MENU:MenuDeviceOptions"];
             menuPauseDevice.Header = App.Language.Dictionary ["MENU:MenuPauseDevice"];
+            menuShowGrid.Header = App.Language.Dictionary ["MENU:MenuShowGrid"];
             menuToggleFullscreen.Header = App.Language.Dictionary ["MENU:MenuToggleFullscreen"];
             menuCloseDevice.Header = App.Language.Dictionary ["MENU:MenuCloseDevice"];
             menuExitProgram.Header = App.Language.Dictionary ["MENU:MenuExitProgram"];
+            menuColor.Header = App.Language.Dictionary ["MENU:MenuColorScheme"];
+            menuColorLight.Header = App.Language.Dictionary ["MENU:MenuColorSchemeLight"];
+            menuColorDark.Header = App.Language.Dictionary ["MENU:MenuColorSchemeDark"];
+
+            /* Set background image for grid lines */
+            gridBackground = new ImageBrush (new BitmapImage (
+                new Uri ("pack://application:,,,/Resources/12L ECG Grid.png")));
 
             /* 12 Lead ECG Interface layout */
             List<Lead.Values> listLeads = new List<Lead.Values> ();
@@ -100,6 +119,30 @@ namespace II_Windows {
             layoutGrid.Children.Add (listTracings [indexLeads]);
         }
 
+        private void UpdateInterface () {
+            for (int i = 0; i < listTracings.Count; i++)
+                listTracings [i].SetColors (colorScheme, showGrid);
+
+            switch (colorScheme) {
+                default: break;
+
+                case ColorSchemes.Light:
+                    menuColorLight.IsChecked = true;
+                    menuColorDark.IsChecked = false;
+                    layoutGrid.Background = Brushes.White;
+                    break;
+
+                case ColorSchemes.Dark:
+                    menuColorDark.IsChecked = true;
+                    menuColorLight.IsChecked = false;
+                    layoutGrid.Background = Brushes.Black;
+                    break;
+            }
+
+            if (showGrid)
+                layoutGrid.Background = gridBackground;
+        }
+
         public void Load_Process (string inc) {
             StringReader sRead = new StringReader (inc);
 
@@ -129,6 +172,19 @@ namespace II_Windows {
             sWrite.AppendLine (String.Format ("{0}:{1}", "isFullscreen", isFullscreen));
 
             return sWrite.ToString ();
+        }
+
+        private void SetColorScheme (ColorSchemes scheme) {
+            colorScheme = scheme;
+
+            UpdateInterface ();
+        }
+
+        private void ToggleGrid () {
+            showGrid = !showGrid;
+            menuShowGrid.IsChecked = showGrid;
+
+            UpdateInterface ();
         }
 
         private void ApplyFullScreen () {
@@ -163,13 +219,26 @@ namespace II_Windows {
             ApplyFullScreen ();
         }
 
-        private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
+        private void MenuClose_Click (object s, RoutedEventArgs e)
+            => this.Close ();
 
-        private void MenuExit_Click (object s, RoutedEventArgs e) => App.Patient_Editor.Exit ();
+        private void MenuExit_Click (object s, RoutedEventArgs e)
+            => App.Patient_Editor.Exit ();
 
-        private void MenuTogglePause_Click (object s, RoutedEventArgs e) => TogglePause ();
+        private void MenuTogglePause_Click (object s, RoutedEventArgs e)
+            => TogglePause ();
 
-        private void MenuFullscreen_Click (object sender, RoutedEventArgs e) => ToggleFullscreen ();
+        private void MenuShowGrid_Click (object sender, RoutedEventArgs e)
+            => ToggleGrid ();
+
+        private void MenuFullscreen_Click (object sender, RoutedEventArgs e)
+            => ToggleFullscreen ();
+
+        private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
+            => SetColorScheme (ColorSchemes.Light);
+
+        private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
+            => SetColorScheme (ColorSchemes.Dark);
 
         private void OnTick_Tracing (object sender, EventArgs e) {
             if (isPaused)

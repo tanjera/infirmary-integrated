@@ -17,7 +17,9 @@ namespace II_Windows.Controls {
         public Lead Lead { get { return Strip.Lead; } }
 
         /* Drawing variables, offsets and multipliers */
-        private Brush tracingBrush = Brushes.Black;
+        private DeviceECG.ColorSchemes colorScheme;
+        private bool showGrid = false;
+        private Brush tracingBrush = Brushes.Green;
         private Brush referenceBrush = Brushes.DarkGray;
 
         private StreamGeometry drawGeometry;
@@ -35,8 +37,6 @@ namespace II_Windows.Controls {
         }
 
         private void UpdateInterface (object sender, SizeChangedEventArgs e) {
-            tracingBrush = Brushes.Green;
-
             lblLead.Foreground = tracingBrush;
             lblLead.Content = App.Language.Dictionary [Lead.LookupString (Lead.Value, true)];
         }
@@ -102,6 +102,32 @@ namespace II_Windows.Controls {
 
             drawGeometry.Freeze ();
             _Path.Data = drawGeometry;
+        }
+
+        public void SetColors (DeviceECG.ColorSchemes scheme, bool grid) {
+            colorScheme = scheme;
+            showGrid = grid;
+
+            switch (scheme) {
+                default:
+                case DeviceECG.ColorSchemes.Light:
+                    tracingBrush = Brushes.Black;
+                    referenceBrush = Brushes.DarkGray;
+                    canvasTracing.Background = showGrid
+                        ? Brushes.Transparent
+                        : Brushes.White;
+                    break;
+
+                case DeviceECG.ColorSchemes.Dark:
+                    tracingBrush = Brushes.Green;
+                    referenceBrush = Brushes.DarkGray;
+                    canvasTracing.Background = showGrid
+                        ? Brushes.Transparent
+                        : Brushes.Black;
+                    break;
+            }
+
+            UpdateInterface (null, null);
         }
 
         private void canvasTracing_SizeChanged (object sender, SizeChangedEventArgs e) {

@@ -12,28 +12,36 @@
         Width="1200" Height="800"
         Background="Black">
 
-    <Window.InputBindings>
-        <KeyBinding Key="F" Modifiers="Ctrl" Command="{Binding IC_ToggleFullscreen}" />
-        <KeyBinding Key="U" Modifiers="Ctrl" Command="{Binding IC_PauseDevice}" />
-        <KeyBinding Key="F4" Modifiers="Ctrl" Command="{Binding IC_CloseDevice}" />
-        <KeyBinding Key="F4" Modifiers="Alt" Command="{Binding IC_ExitProgram}" />
-    </Window.InputBindings>
+	<Window.InputBindings>
+		<KeyBinding Key="F" Modifiers="Ctrl" Command="{Binding IC_ToggleFullscreen}" />
+		<KeyBinding Key="U" Modifiers="Ctrl" Command="{Binding IC_PauseDevice}" />
+		<KeyBinding Key="F4" Modifiers="Ctrl" Command="{Binding IC_CloseDevice}" />
+		<KeyBinding Key="F4" Modifiers="Alt" Command="{Binding IC_ExitProgram}" />
+	</Window.InputBindings>
 
-    <DockPanel LastChildFill="True">
+	<DockPanel LastChildFill="True">
 
-        <!-- Main Menu -->
-        <Menu DockPanel.Dock="Top" Width="Auto" Background="White">
-            <MenuItem Name="menuDevice">
-                <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" InputGestureText="Ctrl+U" />
-                <Separator />
-                <MenuItem Name="menuToggleFullscreen" Click="MenuFullscreen_Click" InputGestureText="Ctrl+F" />
-                <Separator />
-                <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGestureText="Ctrl-F4" />
-                <MenuItem Name="menuExitProgram" Click="MenuExit_Click" InputGestureText="Alt-F4" />
-            </MenuItem>
-        </Menu>
+		<!-- Main Menu -->
+		<Menu DockPanel.Dock="Top" Width="Auto" Background="White">
 
-        <!-- 12 Lead ECG Tracings added to layoutGrid programmatically -->
-        <Grid Name="layoutGrid" />
-    </DockPanel>
+			<MenuItem Name="menuDevice">
+				<MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" InputGestureText="Ctrl+U" />
+				<Separator />
+				<MenuItem Name="menuShowGrid" Click="MenuShowGrid_Click" IsCheckable="True" />
+				<Separator />
+				<MenuItem Name="menuToggleFullscreen" Click="MenuFullscreen_Click" InputGestureText="Ctrl+F" />
+				<Separator />
+				<MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGestureText="Ctrl-F4" />
+				<MenuItem Name="menuExitProgram" Click="MenuExit_Click" InputGestureText="Alt-F4" />
+			</MenuItem>
+
+			<MenuItem Name="menuColor">
+				<MenuItem Name="menuColorLight" Click="MenuColorScheme_Light" IsCheckable="True" />
+				<MenuItem Name="menuColorDark" Click="MenuColorScheme_Dark" IsCheckable="True" />
+			</MenuItem>
+		</Menu>
+
+		<!-- 12 Lead ECG Tracings added to layoutGrid programmatically -->
+		<Grid Name="layoutGrid" />
+	</DockPanel>
 </Window>
