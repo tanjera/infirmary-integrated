@@ -75,24 +75,26 @@ namespace II_Windows {
         public Triggering Trigger = new Triggering ();
         public Modes Mode = new Modes ();
 
-        public bool Running = false,
-            Priming = false,
-            Prime_ThenStart = false,
-            Primed = false;
+        public bool Running = false;
+        public bool Priming = false;
+        public bool Prime_ThenStart = false;
+        public bool Primed = false;
 
         public class PrimingEventArgs : EventArgs { public bool StartWhenComplete = false; };
 
         public Settings SelectedSetting = Settings.None;
 
-        private bool isFullscreen = false,
-             isPaused = false;
+        private int autoScale_iter = Strip.DefaultAutoScale_Iterations;
+
+        private bool isFullscreen = false;
+        private bool isPaused = false;
 
         private List<Controls.IABPTracing> listTracings = new List<Controls.IABPTracing> ();
         private List<Controls.IABPNumeric> listNumerics = new List<Controls.IABPNumeric> ();
 
-        private Timer timerTracing = new Timer (),
-                timerVitals = new Timer (),
-                timerAncillary_Delay = new Timer ();
+        private Timer timerTracing = new Timer ();
+        private Timer timerVitals = new Timer ();
+        private Timer timerAncillary_Delay = new Timer ();
 
         // Define WPF UI commands for binding
         private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram;
@@ -548,6 +550,17 @@ namespace II_Windows {
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical:
                     listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Mechanical (App.Patient));
+
+                    /* Iterations and trigger for auto-scaling pressure waveform strips */
+                    autoScale_iter -= 1;
+                    if (autoScale_iter <= 0) {
+                        for (int i = 0; i < listTracings.Count; i++) {
+                            listTracings [i].Strip.SetAutoScale (App.Patient);
+                            listTracings [i].UpdateScale ();
+                        }
+
+                        autoScale_iter = Strip.DefaultAutoScale_Iterations;
+                    }
                     break;
 
                 case Patient.PatientEventTypes.IABP_Balloon_Inflation:

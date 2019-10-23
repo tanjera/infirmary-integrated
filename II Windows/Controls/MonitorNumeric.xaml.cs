@@ -14,6 +14,8 @@ namespace II_Windows.Controls {
     public partial class MonitorNumeric : UserControl {
         public ControlType controlType;
 
+        private MenuItem menuZeroTransducer;
+
         public class ControlType {
             public Values Value;
 
@@ -67,6 +69,7 @@ namespace II_Windows.Controls {
         }
 
         private void InitInterface () {
+
             // Context Menu (right-click menu!)
             ContextMenu contextMenu = new ContextMenu ();
             layoutGrid.ContextMenu = contextMenu;
@@ -78,7 +81,7 @@ namespace II_Windows.Controls {
             vbLine2.ContextMenu = contextMenu;
             vbLine3.ContextMenu = contextMenu;
 
-            MenuItem menuZeroTransducer = new MenuItem ();
+            menuZeroTransducer = new MenuItem ();
             menuZeroTransducer.Header = App.Language.Dictionary ["MENU:MenuZeroTransducer"];
             menuZeroTransducer.Click += MenuZeroTransducer_Click;
             contextMenu.Items.Add (menuZeroTransducer);
@@ -125,6 +128,7 @@ namespace II_Windows.Controls {
 
             lblNumType.Text = App.Language.Dictionary [ControlType.LookupString (controlType.Value)];
 
+            /* Set lines to be visible/hidden as appropriate */
             switch (controlType.Value) {
                 default:
                 case ControlType.Values.NIBP:
@@ -145,6 +149,21 @@ namespace II_Windows.Controls {
                 case ControlType.Values.ETCO2:
                 case ControlType.Values.ICP:
                     lblLine3.Visibility = Visibility.Hidden;
+                    break;
+            }
+
+            /* Set menu items enabled/disabled accordingly */
+            switch (controlType.Value) {
+                default:
+                    menuZeroTransducer.IsEnabled = false;
+                    break;
+
+                case ControlType.Values.ABP:
+                case ControlType.Values.CVP:
+                case ControlType.Values.IAP:
+                case ControlType.Values.ICP:
+                case ControlType.Values.PA:
+                    menuZeroTransducer.IsEnabled = true;
                     break;
             }
         }

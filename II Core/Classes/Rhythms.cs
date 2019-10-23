@@ -30,6 +30,7 @@ namespace II {
             AV_Block__Mobitz_II,
             AV_Block__Wenckebach,
             Bundle_Branch_Block,
+            CPR_Artifact,
             Idioventricular,
             Junctional,
             Pulseless_Electrical_Activity,
@@ -63,6 +64,7 @@ namespace II {
                     case Values.Atrial_Fibrillation:
                     case Values.Atrial_Flutter:
                     case Values.AV_Block__3rd_Degree:
+                    case Values.CPR_Artifact:
                     case Values.Idioventricular:
                     case Values.Junctional:
                     case Values.Pulseless_Electrical_Activity:
@@ -112,6 +114,7 @@ namespace II {
                     case Values.AV_Block__Mobitz_II:
                     case Values.AV_Block__Wenckebach:
                     case Values.Bundle_Branch_Block:
+                    case Values.CPR_Artifact:
                     case Values.Idioventricular:
                     case Values.Junctional:
                     case Values.Sinus_Rhythm:
@@ -144,6 +147,7 @@ namespace II {
                     case Values.AV_Block__Mobitz_II:
                     case Values.AV_Block__Wenckebach:
                     case Values.Bundle_Branch_Block:
+                    case Values.CPR_Artifact:
                     case Values.Idioventricular:
                     case Values.Junctional:
                     case Values.Pulseless_Electrical_Activity:
@@ -199,6 +203,7 @@ namespace II {
                 case Values.AV_Block__Mobitz_II: return new Default_Vitals (60, 80, 6, 28, 88, 98, 35, 45, 80, 120, 50, 70, 20, 30, 8, 12);
                 case Values.AV_Block__Wenckebach: return new Default_Vitals (60, 80, 6, 28, 88, 98, 35, 45, 80, 120, 50, 70, 20, 30, 8, 12);
                 case Values.Bundle_Branch_Block: return new Default_Vitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
+                case Values.CPR_Artifact: return new Default_Vitals (100, 120, 0, 20, 0, 45, 0, 15, 0, 50, 0, 25, 0, 8, 0, 4);
                 case Values.Idioventricular: return new Default_Vitals (20, 40, 6, 28, 78, 82, 30, 35, 70, 80, 35, 40, 10, 20, 4, 6);
                 case Values.Junctional: return new Default_Vitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12);
                 case Values.Pulseless_Electrical_Activity: return new Default_Vitals (60, 100, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0);
@@ -232,6 +237,7 @@ namespace II {
                 case Values.AV_Block__Mobitz_II: s.Concatenate (Draw.Flat_Line (p.GetHR_Seconds, 0f)); return;
                 case Values.AV_Block__Wenckebach: s.Concatenate (Draw.Flat_Line (p.GetHR_Seconds, 0f)); return;
                 case Values.Bundle_Branch_Block: s.Concatenate (Draw.Flat_Line (p.GetHR_Seconds, 0f)); return;
+                case Values.CPR_Artifact: s.Concatenate (Draw.Flat_Line (p.GetHR_Seconds, 0f)); return;
                 case Values.Idioventricular: s.Concatenate (Draw.Flat_Line (p.GetHR_Seconds, 0f)); return;
                 case Values.Junctional: s.Concatenate (Draw.Flat_Line (p.GetHR_Seconds, 0f)); return;
                 case Values.Pulseless_Electrical_Activity: s.Concatenate (Draw.Flat_Line (p.GetHR_Seconds, 0f)); return;
@@ -265,6 +271,7 @@ namespace II {
                 case Values.AV_Block__Mobitz_II: s.Overwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
                 case Values.AV_Block__3rd_Degree: s.Underwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
                 case Values.Bundle_Branch_Block: s.Overwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.CPR_Artifact: return;
                 case Values.Idioventricular: return;
                 case Values.Junctional: return;
                 case Values.Pulseless_Electrical_Activity:
@@ -342,6 +349,7 @@ namespace II {
                 case Values.AV_Block__Mobitz_II: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
                 case Values.AV_Block__3rd_Degree: s.Overwrite (Draw.ECG_Complex__QRST_Aberrant_1 (p, s.Lead)); return;
                 case Values.Bundle_Branch_Block: s.Overwrite (Draw.ECG_Complex__QRST_BBB (p, s.Lead)); return;
+                case Values.CPR_Artifact: s.Overwrite (Draw.ECG_CPR_Artifact (p, s.Lead)); return;
                 case Values.Idioventricular: s.Overwrite (Draw.ECG_Complex__Idioventricular (p, s.Lead)); return;
                 case Values.Junctional: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
                 case Values.Pulseless_Electrical_Activity: s.Overwrite (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;

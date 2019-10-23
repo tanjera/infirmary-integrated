@@ -110,10 +110,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Controls\EFMTracing.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Controls\IABPNumeric.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -173,9 +169,6 @@
     <Compile Include="Classes\ActionCommand.cs" />
     <Compile Include="Controls\IABPTracing.xaml.cs">
       <DependentUpon>IABPTracing.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\EFMTracing.xaml.cs">
-      <DependentUpon>EFMTracing.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\IABPNumeric.xaml.cs">
       <DependentUpon>IABPNumeric.xaml</DependentUpon>

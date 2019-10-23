@@ -21,13 +21,10 @@ namespace II.Rhythm {
         public static double DefaultRespiratoryCoefficient = 3d;
 
         /* Default offsets and amplitudes */
-        public static double DefaultOffset_Transduced = -0.5;
-        public static double DefaultOffset_NonTransduced = -0.8;
-        public static double DefaultAmplitude_Transduced = 1.2;
-        public static double DefaultAmplitude_NonTransduced = 1.6;
         public static double DefaultOffset_ReferenceZero = -0.015;      // Accounts for line thickness, for clarity
 
         /* Reference pressures for scaling transduced waveforms based on systolic/diastolic */
+        public const int DefaultAutoScale_Iterations = 10;
         public const double ScaleMargin = 0.2d;
         public const int DefaultScaleMin_ABP = 0;
         public const int DefaultScaleMin_PA = -10;
@@ -42,9 +39,10 @@ namespace II.Rhythm {
         private DateTime scrolledLast = DateTime.UtcNow;
         private bool scrollingUnpausing = false;
 
-        public double Offset = 0d;
+        public Offsets Offset = Offsets.Center;
         public double Amplitude = 1d;
 
+        public bool ScaleAuto;
         public int ScaleMin;                              // For scaling waveforms to pressure limits
         public int ScaleMax;
 
@@ -52,6 +50,12 @@ namespace II.Rhythm {
         public Lead Lead;
         public List<Point> Points;                        // Clinical waveform tracing points
         public List<Point> Reference;                     // Reference line tracing points
+
+        public enum Offsets {
+            Center,
+            Stretch,
+            Scaled
+        }
 
         public Strip (Lead.Values lead) {
             double length = IsRespiratory ? DefaultLength * DefaultRespiratoryCoefficient : DefaultLength;
@@ -134,34 +138,79 @@ namespace II.Rhythm {
             switch (Lead.Value) {
                 default: break;
                 case Lead.Values.ABP:
+                    ScaleAuto = true;
                     ScaleMin = DefaultScaleMin_ABP;
                     ScaleMax = DefaultScaleMax_ABP;
                     break;
 
                 case Lead.Values.PA:
+                    ScaleAuto = false;
                     ScaleMin = DefaultScaleMin_PA;
                     ScaleMax = DefaultScaleMax_PA;
                     break;
             }
         }
+
+        public void SetAutoScale (Patient _P) {
+            if (!CanScale || !ScaleAuto)
+                return;
+
+            int systolic = 0;
+            int diastolic = 0;
+
+            int j = 0;
+            for (int i = _P.ListPatientEvents.Count; i > 0 && j < DefaultAutoScale_Iterations;) {
+                i--;
+
+                if (_P.ListPatientEvents [i].EventType != Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical)
+                    continue;
+                else
+                    j++;
+
+                switch (Lead.Value) {
+                    default: return;
+                    case Lead.Values.ABP:
+                        systolic += _P.ListPatientEvents [i].Vitals.ASBP;
+                        diastolic += _P.ListPatientEvents [i].Vitals.ADBP;
+                        break;
+
+                    case Lead.Values.PA:
+                        systolic += _P.ListPatientEvents [i].Vitals.PSP;
+                        diastolic += _P.ListPatientEvents [i].Vitals.PDP;
+                        break;
+                }
+            }
+
+            diastolic = (diastolic / DefaultAutoScale_Iterations);
+            systolic = (systolic / DefaultAutoScale_Iterations);
+
+            ScaleMin = diastolic - (int)(diastolic * ScaleMargin);
+            ScaleMax = systolic + (int)(systolic * ScaleMargin);
+        }
+
         private void SetOffset () {
             /* Define yOffset based on lead type; pressure waveforms offset down, electric remains centered */
             switch (Lead.Value) {
-                default: break;
+                default:
+                    Offset = Offsets.Center;
+                    Amplitude = 1d;
+                    break;
 
                 case Lead.Values.ETCO2:
                 case Lead.Values.SPO2:
-                    Offset = DefaultOffset_NonTransduced;
-                    Amplitude = DefaultAmplitude_NonTransduced;
+                case Lead.Values.IABP:
+                    Offset = Offsets.Stretch;
                     break;
 
                 case Lead.Values.ABP:
                 case Lead.Values.PA:
+                    Offset = Offsets.Scaled;
+                    break;
+
                 case Lead.Values.CVP:
                 case Lead.Values.IAP:
                 case Lead.Values.ICP:
-                    Offset = DefaultOffset_Transduced;
-                    Amplitude = DefaultAmplitude_Transduced;
+                    Offset = Offsets.Center;
                     break;
             }
         }
@@ -299,7 +348,7 @@ namespace II.Rhythm {
             if (!CanScale || addition.Count == 0)
                 return addition;
 
-            int diastolic, systolic;
+            int systolic, diastolic;
             switch (Lead.Value) {
                 default: return addition;
 
@@ -318,12 +367,11 @@ namespace II.Rhythm {
             double min = 0, max = 0;
             for (int i = 1; i < addition.Count; i++)
                 max = (max > addition [i].Y) ? max : addition [i].Y;
-            max = (min != max) ? max : 1;           // For flat lines, scale 0 to 1
+            max = (min != max) ? max : 1;           // Scaled waveforms should be 0.0 to 1.0
 
             // Get new min and max vaules for the desired tracing
-            ScaleMax = Math.Max (ScaleMax, 1);              // Prevent DivideByZeroException
-            double newMin = ((diastolic - (int)(diastolic * ScaleMargin)) / (double)ScaleMax) - (double)(ScaleMin / ScaleMax);
-            double newMax = (systolic + (int)(systolic * ScaleMargin)) / (double)ScaleMax;
+            double newMin = Utility.InverseLerp (ScaleMin, ScaleMax, diastolic);
+            double newMax = Utility.InverseLerp (ScaleMin, ScaleMax, systolic);
 
             // Run the List<Point> through the normalization equation
             for (int i = 0; i < addition.Count; i++)

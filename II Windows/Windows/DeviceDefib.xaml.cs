@@ -35,11 +35,13 @@ namespace II_Windows {
                     PacerEnergy = 0,
                     PacerRate = 80;
 
-        private int rowsTracings = 1,
-            colsNumerics = 4;
+        private int rowsTracings = 1;
+        private int colsNumerics = 4;
 
-        private bool isFullscreen = false,
-             isPaused = false;
+        private int autoScale_iter = Strip.DefaultAutoScale_Iterations;
+
+        private bool isFullscreen = false;
+        private bool isPaused = false;
 
         private List<Controls.DefibTracing> listTracings = new List<Controls.DefibTracing> ();
         private List<Controls.DefibNumeric> listNumerics = new List<Controls.DefibNumeric> ();
@@ -520,6 +522,17 @@ namespace II_Windows {
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical:
                     listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Mechanical (App.Patient));
+
+                    /* Iterations and trigger for auto-scaling pressure waveform strips */
+                    autoScale_iter -= 1;
+                    if (autoScale_iter <= 0) {
+                        for (int i = 0; i < listTracings.Count; i++) {
+                            listTracings [i].Strip.SetAutoScale (App.Patient);
+                            listTracings [i].UpdateScale ();
+                        }
+
+                        autoScale_iter = Strip.DefaultAutoScale_Iterations;
+                    }
                     break;
 
                 case Patient.PatientEventTypes.Respiratory_Baseline:

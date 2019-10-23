@@ -106,6 +106,10 @@ namespace II {
             public float RR_IE_I,               // Inspiratory to expiratory ratio
                          RR_IE_E;
 
+            public Vital_Signs () { }
+            public Vital_Signs (Vital_Signs v)
+                => Set (v);
+
             public void Set (Vital_Signs v) {
                 HR = v.HR;
                 RR = v.RR;
@@ -293,13 +297,15 @@ namespace II {
         public List<PatientEventArgs> ListPatientEvents = new List<PatientEventArgs> ();
         public event EventHandler<PatientEventArgs> PatientEvent;
         public class PatientEventArgs : EventArgs {
-            public Patient Patient;
+            public Patient Patient;                         // Remains as a pointer
+            public Vital_Signs Vitals;                      // Copies over as a clone, not a pointer
             public PatientEventTypes EventType;
             public DateTime Occurred;
 
             public PatientEventArgs (Patient p, PatientEventTypes e) {
                 EventType = e;
                 Patient = p;
+                Vitals = new Vital_Signs (p.VS_Actual);
                 Occurred = DateTime.Now;
             }
         }
@@ -874,6 +880,7 @@ namespace II {
 
                 // Traced as "regular V" Rhythms
                 case Cardiac_Rhythms.Values.Atrial_Flutter:
+                case Cardiac_Rhythms.Values.CPR_Artifact:
                 case Cardiac_Rhythms.Values.Junctional:
                 case Cardiac_Rhythms.Values.Idioventricular:
                 case Cardiac_Rhythms.Values.Supraventricular_Tachycardia:

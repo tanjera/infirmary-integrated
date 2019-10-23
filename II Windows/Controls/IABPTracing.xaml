@@ -13,6 +13,7 @@
 		<Grid>
 			<Grid.RowDefinitions>
 				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
 				<RowDefinition Height="*" />
 				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
@@ -30,18 +31,23 @@
 			</Canvas>
 
 			<Label Name="lblLead" Panel.ZIndex="2" Height="Auto"
-             Margin="0" Padding="2"
-             Grid.Column="0" Grid.Row="0"
-             HorizontalAlignment="Right" />
+					Margin="0" Padding="2"
+					Grid.Column="0" Grid.Row="0"
+					HorizontalAlignment="Right" />
 
-			<Label Name="lblScaleMax" Panel.ZIndex="2" Height="Auto"
+			<Label Name="lblScaleAuto" Panel.ZIndex="2" Height="Auto"
                    Margin="0" Padding="2"
                    Grid.Column="0" Grid.Row="0"
                    HorizontalAlignment="Left" />
 
+			<Label Name="lblScaleMax" Panel.ZIndex="2" Height="Auto"
+                   Margin="0" Padding="2"
+                   Grid.Column="0" Grid.Row="1"
+                   HorizontalAlignment="Left" />
+
 			<Label Name="lblScaleMin" Panel.ZIndex="2" Height="Auto"
                    Margin="0" Padding="2"
-                   Grid.Column="0" Grid.Row="2"
+                   Grid.Column="0" Grid.Row="3"
                    HorizontalAlignment="Left" />
 		</Grid>
 	</Border>

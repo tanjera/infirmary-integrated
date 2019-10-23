@@ -48,14 +48,13 @@ namespace II_Windows {
         }
 
         private void InitInterface () {
-
-            // Initiate ICommands for KeyBindings
+            /* Initiate ICommands for KeyBindings */
             icToggleFullscreen = new ActionCommand (() => ToggleFullscreen ());
             icPauseDevice = new ActionCommand (() => TogglePause ());
             icCloseDevice = new ActionCommand (() => this.Close ());
             icExitProgram = new ActionCommand (() => App.Patient_Editor.Exit ());
 
-            // Populate UI strings per language selection
+            /* Populate UI strings per language selection */
             wdwDeviceECG.Title = App.Language.Dictionary ["ECG:WindowTitle"];
             menuDevice.Header = App.Language.Dictionary ["MENU:MenuDeviceOptions"];
             menuPauseDevice.Header = App.Language.Dictionary ["MENU:MenuPauseDevice"];

@@ -47,6 +47,22 @@ namespace II_Windows.Controls {
             lblLead.Content = App.Language.Dictionary [Lead.LookupString (Lead.Value)];
 
             if (Strip.CanScale) {
+                lblScaleAuto.Foreground = tracingBrush;
+                lblScaleMin.Foreground = tracingBrush;
+                lblScaleMax.Foreground = tracingBrush;
+
+                lblScaleAuto.Content = Strip.ScaleAuto
+                    ? App.Language.Dictionary ["TRACING:Auto"]
+                    : App.Language.Dictionary ["TRACING:Fixed"];
+                lblScaleMin.Content = Strip.ScaleMin.ToString ();
+                lblScaleMax.Content = Strip.ScaleMax.ToString ();
+            }
+
+            CalculateOffsets ();
+        }
+
+        public void UpdateScale () {
+            if (Strip.CanScale) {
                 lblScaleMin.Foreground = tracingBrush;
                 lblScaleMax.Foreground = tracingBrush;
 
@@ -57,10 +73,24 @@ namespace II_Windows.Controls {
 
         public void CalculateOffsets () {
             drawXOffset = 0;
-            drawYOffset = (int)(canvasTracing.ActualHeight / 2)
-               - (int)(canvasTracing.ActualHeight / 2 * Strip.Offset);
             drawXMultiplier = (int)canvasTracing.ActualWidth / Strip.DisplayLength;
-            drawYMultiplier = (-(int)canvasTracing.ActualHeight / 2) * Strip.Amplitude;
+
+            switch (Strip.Offset) {
+                case Strip.Offsets.Center:
+                    drawYOffset = (int)(canvasTracing.ActualHeight / 2);
+                    drawYMultiplier = (-(int)canvasTracing.ActualHeight / 2) * Strip.Amplitude;
+                    break;
+
+                case Strip.Offsets.Stretch:
+                    drawYOffset = (int)(canvasTracing.ActualHeight * 0.9);
+                    drawYMultiplier = -(int)canvasTracing.ActualHeight * 0.8 * Strip.Amplitude;
+                    break;
+
+                case Strip.Offsets.Scaled:
+                    drawYOffset = (int)(canvasTracing.ActualHeight * 0.9);
+                    drawYMultiplier = -(int)canvasTracing.ActualHeight;
+                    break;
+            }
         }
 
         public void DrawTracing ()
@@ -83,12 +113,17 @@ namespace II_Windows.Controls {
                     (int)(_Points [0].Y * drawYMultiplier) + drawYOffset),
                     true, false);
 
-                for (int i = 1; i < _Points.Count; i++) {
+                for (int i = 1; i < _Points.Count - 1; i++) {
                     drawContext.LineTo (new System.Windows.Point (
                         (int)(_Points [i].X * drawXMultiplier) + drawXOffset,
                         (int)(_Points [i].Y * drawYMultiplier) + drawYOffset),
                         true, true);
                 }
+
+                drawContext.LineTo (new System.Windows.Point (
+                        (int)(_Points [_Points.Count - 1].X * drawXMultiplier) + drawXOffset,
+                        (int)(_Points [_Points.Count - 1].Y * drawYMultiplier) + drawYOffset),
+                        true, true);
             }
 
             drawGeometry.Freeze ();

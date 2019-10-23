@@ -94,9 +94,6 @@ namespace II.Waveform {
 
         public static List<Point> ABP_Rhythm (Patient _P, double _Amplitude) {
             VaryAmplitude_Random (0.1, ref _Amplitude);
-            DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
-            DampenAmplitude_PulsusAlternans (_P, ref _Amplitude);
-            DampenAmplitude_PulsusParadoxus (_P, ref _Amplitude);
 
             return Plotting.Concatenate (new List<Point> (),
                 Plotting.Stretch (Dictionary.ABP_Default, _P.GetPulsatility_Seconds),
@@ -311,6 +308,13 @@ namespace II.Waveform {
             return Plotting.Concatenate (new List<Point> (),
                 Plotting.Multiply (
                     Plotting.Stretch (Dictionary.ECG_Complex_Idioventricular, _P.GetHR_Seconds),
+                baseLeadCoeff [(int)_L.Value, (int)WavePart.QRST]));
+        }
+
+        public static List<Point> ECG_CPR_Artifact (Patient _P, Lead _L) {
+            return Plotting.Concatenate (new List<Point> (),
+                Plotting.Multiply (
+                    Plotting.Stretch (Dictionary.ECG_CPR_Artifact, _P.GetHR_Seconds),
                 baseLeadCoeff [(int)_L.Value, (int)WavePart.QRST]));
         }
 

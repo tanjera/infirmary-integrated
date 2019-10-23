@@ -17,19 +17,20 @@ namespace II_Windows {
     /// Interaction logic for DeviceMonitor.xaml
     /// </summary>
     public partial class DeviceMonitor : Window {
+        private int rowsTracings = 3;
+        private int rowsNumerics = 3;
 
-        private int rowsTracings = 3,
-            rowsNumerics = 3;
+        private int autoScale_iter = Strip.DefaultAutoScale_Iterations;
 
-        private bool isFullscreen = false,
-             isPaused = false;
+        private bool isFullscreen = false;
+        private bool isPaused = false;
 
         private List<Controls.MonitorTracing> listTracings = new List<Controls.MonitorTracing> ();
         private List<Controls.MonitorNumeric> listNumerics = new List<Controls.MonitorNumeric> ();
 
-        private Timer timerTracing = new Timer (),
-            timerVitals_Cardiac = new Timer (),
-            timerVitals_Respiratory = new Timer ();
+        private Timer timerTracing = new Timer ();
+        private Timer timerVitals_Cardiac = new Timer ();
+        private Timer timerVitals_Respiratory = new Timer ();
 
         // Define WPF UI commands for binding
         private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram;
@@ -333,6 +334,17 @@ namespace II_Windows {
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical:
                     listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Mechanical (App.Patient));
+
+                    /* Iterations and trigger for auto-scaling pressure waveform strips */
+                    autoScale_iter -= 1;
+                    if (autoScale_iter <= 0) {
+                        for (int i = 0; i < listTracings.Count; i++) {
+                            listTracings [i].Strip.SetAutoScale (App.Patient);
+                            listTracings [i].UpdateScale ();
+                        }
+
+                        autoScale_iter = Strip.DefaultAutoScale_Iterations;
+                    }
                     break;
 
                 case Patient.PatientEventTypes.Respiratory_Baseline:
