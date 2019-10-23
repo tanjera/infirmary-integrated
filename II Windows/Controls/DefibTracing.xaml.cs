@@ -202,10 +202,13 @@ namespace II_Windows.Controls {
                     true, false);
 
                 for (int i = 1; i < _Points.Count - 1; i++) {
-                    drawContext.LineTo (new System.Windows.Point (
-                        (int)(_Points [i].X * drawXMultiplier) + drawXOffset,
-                        (int)(_Points [i].Y * drawYMultiplier) + drawYOffset),
-                        true, true);
+                    if (_Points [i].Y == _Points [i - 1].Y && _Points [i].Y == _Points [i + 1].Y)
+                        continue;
+                    else
+                        drawContext.LineTo (new System.Windows.Point (
+                            (int)(_Points [i].X * drawXMultiplier) + drawXOffset,
+                            (int)(_Points [i].Y * drawYMultiplier) + drawYOffset),
+                            true, true);
                 }
 
                 drawContext.LineTo (new System.Windows.Point (
