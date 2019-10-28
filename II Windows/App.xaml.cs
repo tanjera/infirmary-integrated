@@ -39,11 +39,6 @@ namespace II_Windows {
 
             Timer_Main.Interval = new TimeSpan (100000); // q 10 milliseconds
             Timer_Main.Start ();
-
-            // Send usage statistics to server in background
-            BackgroundWorker bgw = new BackgroundWorker ();
-            bgw.DoWork += delegate { Server.Post_UsageStatistics (); };
-            bgw.RunWorkerAsync ();
         }
     }
 }

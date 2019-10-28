@@ -11,7 +11,6 @@
  * protection for version control.
  */
 
-using MySql.Data.MySqlClient;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,12 +22,14 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Text;
 
+using II.Localization;
+
 namespace II.Server {
     public partial class Server {
         private string FormatForPHP (string inc)
             => inc.Replace ("#", "_").Replace ("$", "_");
 
-        public void Post_UsageStatistics () {
+        public void Post_UsageStatistics (Language appLanguage) {
             try {
                 string macAddress = "",
                         ipAddress = "";
@@ -46,12 +47,13 @@ namespace II.Server {
 
                 WebRequest req = WebRequest.Create (FormatForPHP (String.Format (
                     "http://server.infirmary-integrated.com/usage_post.php" +
-                        "?timestamp={0}&ii_version={1}&env_os={2}&env_lang={3}&client_ip={4}&client_mac={5}&client_user={6}",
+                        "?timestamp={0}&ii_version={1}&env_os={2}&env_lang={3}&client_lang={4}&client_ip={5}&client_mac={6}&client_user={7}",
 
                     Utility.DateTime_ToString (DateTime.UtcNow),
                     Utility.Version,
                     Environment.OSVersion.VersionString,
                     ci.ThreeLetterWindowsLanguageName,
+                    appLanguage.Value.ToString (),
                     Utility.HashSHA256 (ipAddress),
                     Utility.HashSHA256 (macAddress),
                     Utility.HashSHA256 (Environment.UserName))));

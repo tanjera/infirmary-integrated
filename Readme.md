@@ -52,6 +52,7 @@ Also, Infirmary Integrated simulates the following cardiac rhythms with waveform
 - AV Block, Mobitz II
 - AV Block, Wenckebach
 - Bundle Branch Block
+- CPR Artifact
 - Idioventricular
 - Junctional
 - Pulseless Electrical Activity

@@ -156,6 +156,8 @@ namespace II_Windows {
                             default: break;
                             case "isPaused": isPaused = bool.Parse (pValue); break;
                             case "isFullscreen": isFullscreen = bool.Parse (pValue); break;
+                            case "colorScheme": colorScheme = (ColorSchemes)Enum.Parse (typeof (ColorSchemes), pValue); break;
+                            case "showGrid": showGrid = bool.Parse (pValue); break;
                         }
                     }
                 }
@@ -170,6 +172,8 @@ namespace II_Windows {
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", isPaused));
             sWrite.AppendLine (String.Format ("{0}:{1}", "isFullscreen", isFullscreen));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "colorScheme", colorScheme));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "showGrid", showGrid));
 
             return sWrite.ToString ();
         }
@@ -258,6 +262,7 @@ namespace II_Windows {
                         c.Strip.ClearFuture (App.Patient);
                         c.Strip.Add_Beat__Cardiac_Baseline (App.Patient);
                     });
+
                     break;
 
                 case Patient.PatientEventTypes.Defibrillation:

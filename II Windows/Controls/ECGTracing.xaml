@@ -27,8 +27,9 @@
 		</Canvas>
 
 		<Label Name="lblLead" Panel.ZIndex="2" Height="Auto"
-                Margin="0" Padding="2"
+                Margin="8" Padding="2"
                 Grid.Column="0" Grid.Row="0"
-                HorizontalAlignment="Right" />
+                HorizontalAlignment="Left"
+			    FontWeight="Bold" />
 	</Grid>
 </UserControl>

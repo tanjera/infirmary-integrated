@@ -33,6 +33,7 @@ namespace II_Windows {
             App.Patient_Editor = this;
 
             InitInitialRun ();
+            InitUsageStatistics ();
             InitInterface ();
             InitMirroring ();
             InitScenario (true);
@@ -50,6 +51,14 @@ namespace II_Windows {
                 App.Language = new Language ();
                 DialogInitial ();
             }
+        }
+
+        private void InitUsageStatistics () {
+
+            // Send usage statistics to server in background
+            BackgroundWorker bgw = new BackgroundWorker ();
+            bgw.DoWork += delegate { App.Server.Post_UsageStatistics (App.Language); };
+            bgw.RunWorkerAsync ();
         }
 
         private void InitInterface () {

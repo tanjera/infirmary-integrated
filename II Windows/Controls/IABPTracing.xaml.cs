@@ -71,27 +71,9 @@ namespace II_Windows.Controls {
             }
         }
 
-        public void CalculateOffsets () {
-            drawXOffset = 0;
-            drawXMultiplier = (int)canvasTracing.ActualWidth / Strip.DisplayLength;
-
-            switch (Strip.Offset) {
-                case Strip.Offsets.Center:
-                    drawYOffset = (int)(canvasTracing.ActualHeight / 2);
-                    drawYMultiplier = (-(int)canvasTracing.ActualHeight / 2) * Strip.Amplitude;
-                    break;
-
-                case Strip.Offsets.Stretch:
-                    drawYOffset = (int)(canvasTracing.ActualHeight * 0.9);
-                    drawYMultiplier = -(int)canvasTracing.ActualHeight * 0.8 * Strip.Amplitude;
-                    break;
-
-                case Strip.Offsets.Scaled:
-                    drawYOffset = (int)(canvasTracing.ActualHeight * 0.9);
-                    drawYMultiplier = -(int)canvasTracing.ActualHeight;
-                    break;
-            }
-        }
+        public void CalculateOffsets ()
+            => Tracing.CalculateOffsets (Strip, canvasTracing.ActualWidth, canvasTracing.ActualHeight,
+                ref drawXOffset, ref drawYOffset, ref drawXMultiplier, ref drawYMultiplier);
 
         public void DrawTracing ()
             => DrawPath (drawPath, Strip.Points, tracingBrush, 1);
@@ -99,39 +81,9 @@ namespace II_Windows.Controls {
         public void DrawReference ()
             => DrawPath (drawReference, Strip.Reference, referenceBrush, 1);
 
-        public void DrawPath (Path _Path, List<II.Waveform.Point> _Points, Brush _Brush, double _Thickness) {
-            if (_Points.Count < 2)
-                return;
-
-            _Path.Stroke = _Brush;
-            _Path.StrokeThickness = _Thickness;
-            drawGeometry = new StreamGeometry { FillRule = FillRule.EvenOdd };
-
-            using (drawContext = drawGeometry.Open ()) {
-                drawContext.BeginFigure (new System.Windows.Point (
-                    (int)(_Points [0].X * drawXMultiplier) + drawXOffset,
-                    (int)(_Points [0].Y * drawYMultiplier) + drawYOffset),
-                    true, false);
-
-                for (int i = 1; i < _Points.Count - 1; i++) {
-                    if (_Points [i].Y == _Points [i - 1].Y && _Points [i].Y == _Points [i + 1].Y)
-                        continue;
-                    else
-                        drawContext.LineTo (new System.Windows.Point (
-                            (int)(_Points [i].X * drawXMultiplier) + drawXOffset,
-                            (int)(_Points [i].Y * drawYMultiplier) + drawYOffset),
-                            true, true);
-                }
-
-                drawContext.LineTo (new System.Windows.Point (
-                        (int)(_Points [_Points.Count - 1].X * drawXMultiplier) + drawXOffset,
-                        (int)(_Points [_Points.Count - 1].Y * drawYMultiplier) + drawYOffset),
-                        true, true);
-            }
-
-            drawGeometry.Freeze ();
-            _Path.Data = drawGeometry;
-        }
+        public void DrawPath (Path _Path, List<II.Waveform.Point> _Points, Brush _Brush, double _Thickness)
+            => Tracings.DrawPath (_Path, _Points, _Brush, _Thickness,
+                drawGeometry, drawContext, drawXOffset, drawYOffset, drawXMultiplier, drawYMultiplier);
 
         private void canvasTracing_SizeChanged (object sender, SizeChangedEventArgs e) {
             CalculateOffsets ();
