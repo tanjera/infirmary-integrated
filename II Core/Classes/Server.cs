@@ -29,6 +29,39 @@ namespace II.Server {
         private string FormatForPHP (string inc)
             => inc.Replace ("#", "_").Replace ("$", "_");
 
+        private string GetCountryCode (string ipAddress) {
+            try {
+                WebRequest req = WebRequest.Create (FormatForPHP (String.Format (
+                    "http://server.infirmary-integrated.com/ipdata_provider.php?ip_address={0}",
+                    ipAddress)));
+                WebResponse resp = req.GetResponse ();
+                Stream str = resp.GetResponseStream ();
+                string body = String.Empty;
+
+                using (StreamReader sr = new StreamReader (str)) {
+                    while (!sr.EndOfStream) {
+                        body = sr.ReadLine ();
+
+                        if (body.Contains ("country_code"))
+                            break;
+                    }
+                }
+
+                if (!body.Contains ("country_code"))
+                    return "--";
+
+                resp.Close ();
+                str.Close ();
+
+                int start = body.IndexOf (": \"") + 3;
+                int length = body.IndexOf ("\",") - start;
+
+                return body.Substring (start, length);
+            } catch {
+                return "--";
+            }
+        }
+
         public void Post_UsageStatistics (Language appLanguage) {
             try {
                 string macAddress = "",
@@ -40,23 +73,26 @@ namespace II.Server {
                     .First ();
                 if (nInterface != null) {
                     macAddress = nInterface.GetPhysicalAddress ().ToString ();
-                    ipAddress = new WebClient ().DownloadString ("http://icanhazip.com").Trim ();
+                    ipAddress = new WebClient ().DownloadString ("http://ipv4.icanhazip.com/").Trim ();
                 }
 
                 CultureInfo ci = CultureInfo.CurrentUICulture;
 
                 WebRequest req = WebRequest.Create (FormatForPHP (String.Format (
                     "http://server.infirmary-integrated.com/usage_post.php" +
-                        "?timestamp={0}&ii_version={1}&env_os={2}&env_lang={3}&client_lang={4}&client_ip={5}&client_mac={6}&client_user={7}",
+                        "?timestamp={0}&ii_version={1}&env_os={2}&env_lang={3}&client_lang={4}&client_country={5}"
+                        + "&client_ip={6}&client_mac={7}&client_user={8}",
 
                     Utility.DateTime_ToString (DateTime.UtcNow),
                     Utility.Version,
                     Environment.OSVersion.VersionString,
                     ci.ThreeLetterWindowsLanguageName,
                     appLanguage.Value.ToString (),
+                    GetCountryCode (ipAddress),
                     Utility.HashSHA256 (ipAddress),
                     Utility.HashSHA256 (macAddress),
-                    Utility.HashSHA256 (Environment.UserName))));
+                    Utility.HashSHA256 (Environment.UserName)
+                    )));
 
                 req.GetResponse ();
             } catch {
