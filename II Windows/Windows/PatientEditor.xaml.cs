@@ -1,7 +1,4 @@
-﻿using II;
-using II.Localization;
-using II.Server;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -12,6 +9,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+
+using II;
+using II.Localization;
+using II.Server;
+
+using Xceed.Wpf.Toolkit;
 
 namespace II_Windows {
 
@@ -27,6 +30,16 @@ namespace II_Windows {
         public ICommand IC_LoadFile { get { return icLoadFile; } }
         public ICommand IC_SaveFile { get { return icSaveFile; } }
 
+        private object uiBufferValue;
+        private ParameterStatuses ParameterStatus = ParameterStatuses.Null;
+
+        private enum ParameterStatuses {
+            Null,
+            AutoApply,
+            ChangesPending,
+            ChangesApplied
+        }
+
         public PatientEditor () {
             InitializeComponent ();
             DataContext = this;
@@ -40,6 +53,8 @@ namespace II_Windows {
 
             if (App.Start_Args.Length > 0)
                 LoadOpen (App.Start_Args [0]);
+
+            SetParameterStatus (Properties.Settings.Default.AutoApplyChanges);
 
             /* Debugging and testing code below */
         }
@@ -69,84 +84,87 @@ namespace II_Windows {
             icSaveFile = new ActionCommand (() => SaveFile ());
 
             // Populate UI strings per language selection
-            wdwPatientEditor.Title = App.Language.Dictionary ["PE:WindowTitle"];
-            menuNew.Header = App.Language.Dictionary ["PE:MenuNewFile"];
-            menuFile.Header = App.Language.Dictionary ["PE:MenuFile"];
-            menuLoad.Header = App.Language.Dictionary ["PE:MenuLoadSimulation"];
-            menuSave.Header = App.Language.Dictionary ["PE:MenuSaveSimulation"];
-            menuExit.Header = App.Language.Dictionary ["PE:MenuExitProgram"];
+            wdwPatientEditor.Title = App.Language.Localize ("PE:WindowTitle");
+            menuNew.Header = App.Language.Localize ("PE:MenuNewFile");
+            menuFile.Header = App.Language.Localize ("PE:MenuFile");
+            menuLoad.Header = App.Language.Localize ("PE:MenuLoadSimulation");
+            menuSave.Header = App.Language.Localize ("PE:MenuSaveSimulation");
+            menuExit.Header = App.Language.Localize ("PE:MenuExitProgram");
 
-            menuSettings.Header = App.Language.Dictionary ["PE:MenuSettings"];
-            menuSetLanguage.Header = App.Language.Dictionary ["PE:MenuSetLanguage"];
+            menuSettings.Header = App.Language.Localize ("PE:MenuSettings");
+            menuSetLanguage.Header = App.Language.Localize ("PE:MenuSetLanguage");
 
-            menuHelp.Header = App.Language.Dictionary ["PE:MenuHelp"];
-            menuAbout.Header = App.Language.Dictionary ["PE:MenuAboutProgram"];
+            menuHelp.Header = App.Language.Localize ("PE:MenuHelp");
+            menuAbout.Header = App.Language.Localize ("PE:MenuAboutProgram");
 
-            lblGroupDevices.Content = App.Language.Dictionary ["PE:Devices"];
-            lblDeviceMonitor.Content = App.Language.Dictionary ["PE:CardiacMonitor"];
-            lblDevice12LeadECG.Content = App.Language.Dictionary ["PE:12LeadECG"];
-            lblDeviceDefibrillator.Content = App.Language.Dictionary ["PE:Defibrillator"];
-            lblDeviceIABP.Content = App.Language.Dictionary ["PE:IABP"];
+            lblGroupDevices.Content = App.Language.Localize ("PE:Devices");
+            lblDeviceMonitor.Content = App.Language.Localize ("PE:CardiacMonitor");
+            lblDevice12LeadECG.Content = App.Language.Localize ("PE:12LeadECG");
+            lblDeviceDefibrillator.Content = App.Language.Localize ("PE:Defibrillator");
+            lblDeviceIABP.Content = App.Language.Localize ("PE:IABP");
 
             //lblDeviceVentilator.Content = App.Language.Dictionary["PE:Ventilator"];
             //lblDeviceEFM.Content = App.Language.Dictionary["PE:EFM"];
             //lblDeviceIVPump.Content = App.Language.Dictionary["PE:IVPump"];
             //lblDeviceLabResults.Content = App.Language.Dictionary["PE:LabResults"];
 
-            lblGroupMirroring.Content = App.Language.Dictionary ["PE:MirrorPatientData"];
-            lblMirrorStatus.Content = App.Language.Dictionary ["PE:Status"];
-            radioInactive.Content = App.Language.Dictionary ["PE:Inactive"];
-            radioServer.Content = App.Language.Dictionary ["PE:Server"];
-            radioClient.Content = App.Language.Dictionary ["PE:Client"];
-            lblAccessionKey.Content = App.Language.Dictionary ["PE:AccessionKey"];
-            lblAccessPassword.Content = App.Language.Dictionary ["PE:AccessPassword"];
-            lblAdminPassword.Content = App.Language.Dictionary ["PE:AdminPassword"];
-            btnApplyMirroring.Content = App.Language.Dictionary ["BUTTON:ApplyChanges"];
+            lblGroupMirroring.Content = App.Language.Localize ("PE:MirrorPatientData");
+            lblMirrorStatus.Content = App.Language.Localize ("PE:Status");
+            radioInactive.Content = App.Language.Localize ("PE:Inactive");
+            radioServer.Content = App.Language.Localize ("PE:Server");
+            radioClient.Content = App.Language.Localize ("PE:Client");
+            lblAccessionKey.Content = App.Language.Localize ("PE:AccessionKey");
+            lblAccessPassword.Content = App.Language.Localize ("PE:AccessPassword");
+            lblAdminPassword.Content = App.Language.Localize ("PE:AdminPassword");
+            btnApplyMirroring.Content = App.Language.Localize ("BUTTON:ApplyChanges");
 
-            lblGroupScenarioPlayer.Content = App.Language.Dictionary ["PE:ScenarioPlayer"];
-            lblProgressionOptions.Content = App.Language.Dictionary ["PE:ProgressionOptions"];
+            lblGroupScenarioPlayer.Content = App.Language.Localize ("PE:ScenarioPlayer");
+            lblProgressionOptions.Content = App.Language.Localize ("PE:ProgressionOptions");
 
-            lblGroupVitalSigns.Content = App.Language.Dictionary ["PE:VitalSigns"];
-            lblHR.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:HeartRate"]);
-            lblNIBP.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:BloodPressure"]);
-            lblRR.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:RespiratoryRate"]);
-            lblSPO2.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:PulseOximetry"]);
-            lblT.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:Temperature"]);
-            lblCardiacRhythm.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:CardiacRhythm"]);
-            checkDefaultVitals.Content = App.Language.Dictionary ["PE:UseDefaultVitalSignRanges"];
+            lblGroupVitalSigns.Content = App.Language.Localize ("PE:VitalSigns");
+            lblHR.Content = String.Format ("{0}:", App.Language.Localize ("PE:HeartRate"));
+            lblNIBP.Content = String.Format ("{0}:", App.Language.Localize ("PE:BloodPressure"));
+            lblRR.Content = String.Format ("{0}:", App.Language.Localize ("PE:RespiratoryRate"));
+            lblSPO2.Content = String.Format ("{0}:", App.Language.Localize ("PE:PulseOximetry"));
+            lblT.Content = String.Format ("{0}:", App.Language.Localize ("PE:Temperature"));
+            lblCardiacRhythm.Content = String.Format ("{0}:", App.Language.Localize ("PE:CardiacRhythm"));
+            checkDefaultVitals.Content = App.Language.Localize ("PE:UseDefaultVitalSignRanges");
 
-            lblGroupHemodynamics.Content = App.Language.Dictionary ["PE:AdvancedHemodynamics"];
-            lblETCO2.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:EndTidalCO2"]);
-            lblCVP.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:CentralVenousPressure"]);
-            lblASBP.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:ArterialBloodPressure"]);
-            lblPACatheterPlacement.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:PulmonaryArteryCatheterPlacement"]);
-            lblPSP.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:PulmonaryArteryPressure"]);
-            lblICP.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:IntracranialPressure"]);
-            lblIAP.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:IntraabdominalPressure"]);
+            lblGroupHemodynamics.Content = App.Language.Localize ("PE:AdvancedHemodynamics");
+            lblETCO2.Content = String.Format ("{0}:", App.Language.Localize ("PE:EndTidalCO2"));
+            lblCVP.Content = String.Format ("{0}:", App.Language.Localize ("PE:CentralVenousPressure"));
+            lblASBP.Content = String.Format ("{0}:", App.Language.Localize ("PE:ArterialBloodPressure"));
+            lblPACatheterPlacement.Content = String.Format ("{0}:", App.Language.Localize ("PE:PulmonaryArteryCatheterPlacement"));
+            lblPSP.Content = String.Format ("{0}:", App.Language.Localize ("PE:PulmonaryArteryPressure"));
+            lblICP.Content = String.Format ("{0}:", App.Language.Localize ("PE:IntracranialPressure"));
+            lblIAP.Content = String.Format ("{0}:", App.Language.Localize ("PE:IntraabdominalPressure"));
 
-            lblGroupRespiratoryProfile.Content = App.Language.Dictionary ["PE:RespiratoryProfile"];
-            lblRespiratoryRhythm.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:RespiratoryRhythm"]);
-            lblMechanicallyVentilated.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:MechanicallyVentilated"]);
-            lblInspiratoryRatio.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:InspiratoryExpiratoryRatio"]);
+            lblGroupRespiratoryProfile.Content = App.Language.Localize ("PE:RespiratoryProfile");
+            lblRespiratoryRhythm.Content = String.Format ("{0}:", App.Language.Localize ("PE:RespiratoryRhythm"));
+            lblMechanicallyVentilated.Content = String.Format ("{0}:", App.Language.Localize ("PE:MechanicallyVentilated"));
+            lblInspiratoryRatio.Content = String.Format ("{0}:", App.Language.Localize ("PE:InspiratoryExpiratoryRatio"));
 
-            lblGroupCardiacProfile.Content = App.Language.Dictionary ["PE:CardiacProfile"];
-            lblPacemakerCaptureThreshold.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:PacemakerCaptureThreshold"]);
-            lblPulsusParadoxus.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:PulsusParadoxus"]);
-            lblPulsusAlternans.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:PulsusAlternans"]);
-            lblCardiacAxis.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:CardiacAxis"]);
-            grpSTSegmentElevation.Header = App.Language.Dictionary ["PE:STSegmentElevation"];
-            grpTWaveElevation.Header = App.Language.Dictionary ["PE:TWaveElevation"];
+            lblGroupCardiacProfile.Content = App.Language.Localize ("PE:CardiacProfile");
+            lblPacemakerCaptureThreshold.Content = String.Format ("{0}:", App.Language.Localize ("PE:PacemakerCaptureThreshold"));
+            lblPulsusParadoxus.Content = String.Format ("{0}:", App.Language.Localize ("PE:PulsusParadoxus"));
+            lblPulsusAlternans.Content = String.Format ("{0}:", App.Language.Localize ("PE:PulsusAlternans"));
+            lblCardiacAxis.Content = String.Format ("{0}:", App.Language.Localize ("PE:CardiacAxis"));
+            grpSTSegmentElevation.Header = App.Language.Localize ("PE:STSegmentElevation");
+            grpTWaveElevation.Header = App.Language.Localize ("PE:TWaveElevation");
 
-            lblGroupObstetricProfile.Content = App.Language.Dictionary ["PE:ObstetricProfile"];
-            lblFHR.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:FetalHeartRate"]);
-            lblFHRRhythms.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:FetalHeartRhythms"]);
-            lblFHRVariability.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:FetalHeartVariability"]);
-            lblUCFrequency.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:UterineContractionFrequency"]);
-            lblUCDuration.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:UterineContractionDuration"]);
-            lblUCIntensity.Content = String.Format ("{0}:", App.Language.Dictionary ["PE:UterineContractionIntensity"]);
+            lblGroupObstetricProfile.Content = App.Language.Localize ("PE:ObstetricProfile");
+            lblFHR.Content = String.Format ("{0}:", App.Language.Localize ("PE:FetalHeartRate"));
+            lblFHRRhythms.Content = String.Format ("{0}:", App.Language.Localize ("PE:FetalHeartRhythms"));
+            lblFHRVariability.Content = String.Format ("{0}:", App.Language.Localize ("PE:FetalHeartVariability"));
+            lblUCFrequency.Content = String.Format ("{0}:", App.Language.Localize ("PE:UterineContractionFrequency"));
+            lblUCDuration.Content = String.Format ("{0}:", App.Language.Localize ("PE:UterineContractionDuration"));
+            lblUCIntensity.Content = String.Format ("{0}:", App.Language.Localize ("PE:UterineContractionIntensity"));
 
-            lblParametersApply.Content = App.Language.Dictionary ["BUTTON:ApplyChanges"];
-            lblParametersReset.Content = App.Language.Dictionary ["BUTTON:ResetParameters"];
+            chkAutoApplyChanges.Content = App.Language.Localize ("BUTTON:AutoApplyChanges");
+            lblParametersApply.Content = App.Language.Localize ("BUTTON:ApplyChanges");
+            lblParametersReset.Content = App.Language.Localize ("BUTTON:ResetParameters");
+
+            chkAutoApplyChanges.IsChecked = Properties.Settings.Default.AutoApplyChanges;
 
             List<string> cardiacRhythms = new List<string> (),
                 respiratoryRhythms = new List<string> (),
@@ -156,28 +174,28 @@ namespace II_Windows {
                 fetalHeartRhythms = new List<string> ();
 
             foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
-                cardiacRhythms.Add (App.Language.Dictionary [Cardiac_Rhythms.LookupString (v)]);
+                cardiacRhythms.Add (App.Language.Localize (Cardiac_Rhythms.LookupString (v)));
             comboCardiacRhythm.ItemsSource = cardiacRhythms;
 
             foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
-                respiratoryRhythms.Add (App.Language.Dictionary [Respiratory_Rhythms.LookupString (v)]);
+                respiratoryRhythms.Add (App.Language.Localize (Respiratory_Rhythms.LookupString (v)));
             comboRespiratoryRhythm.ItemsSource = respiratoryRhythms;
 
             foreach (PulmonaryArtery_Rhythms.Values v in Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)))
-                pulmonaryArteryRhythms.Add (App.Language.Dictionary [PulmonaryArtery_Rhythms.LookupString (v)]);
+                pulmonaryArteryRhythms.Add (App.Language.Localize (PulmonaryArtery_Rhythms.LookupString (v)));
             comboPACatheterPlacement.ItemsSource = pulmonaryArteryRhythms;
 
             foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
-                cardiacAxes.Add (App.Language.Dictionary [Cardiac_Axes.LookupString (v)]);
+                cardiacAxes.Add (App.Language.Localize (Cardiac_Axes.LookupString (v)));
             comboCardiacAxis.ItemsSource = cardiacAxes;
 
             foreach (Scales.Intensity.Values v in Enum.GetValues (typeof (Scales.Intensity.Values)))
-                intensityScale.Add (App.Language.Dictionary [Scales.Intensity.LookupString (v)]);
+                intensityScale.Add (App.Language.Localize (Scales.Intensity.LookupString (v)));
             comboFHRVariability.ItemsSource = intensityScale;
             comboUCIntensity.ItemsSource = intensityScale;
 
             foreach (FetalHeartDecelerations.Values v in Enum.GetValues (typeof (FetalHeartDecelerations.Values)))
-                fetalHeartRhythms.Add (App.Language.Dictionary [FetalHeartDecelerations.LookupString (v)]);
+                fetalHeartRhythms.Add (App.Language.Localize (FetalHeartDecelerations.LookupString (v)));
             listFHRRhythms.ItemsSource = fetalHeartRhythms;
 
             // Populate status bar with updated version information and make visible
@@ -186,7 +204,7 @@ namespace II_Windows {
                 bgw.DoWork += delegate { latestVersion = App.Server.Get_LatestVersion (); };
                 bgw.RunWorkerCompleted += delegate {
                     if (Utility.IsNewerVersion (Utility.Version, latestVersion)) {
-                        txtUpdateAvailable.Text = String.Format (App.Language.Dictionary ["STATUS:UpdateAvailable"], latestVersion).Trim ();
+                        txtUpdateAvailable.Text = String.Format (App.Language.Localize ("STATUS:UpdateAvailable"), latestVersion).Trim ();
                     } else {
                         statusUpdateAvailable.Visibility = Visibility.Collapsed;
                     }
@@ -238,15 +256,14 @@ namespace II_Windows {
         }
 
         private void InitPatientEvents () {
-
-            // Tie the Patient's Timer to the Main Timer
+            /* Tie the Patient's Timer to the Main Timer */
             App.Timer_Main.Tick += App.Patient.ProcessTimers;
 
-            // Tie PatientEvents to the PatientEditor UI! And trigger.
+            /* Tie PatientEvents to the PatientEditor UI! And trigger. */
             App.Patient.PatientEvent += FormUpdateFields;
             FormUpdateFields (this, new Patient.PatientEventArgs (App.Patient, Patient.PatientEventTypes.Vitals_Change));
 
-            // Tie PatientEvents to Devices!
+            /* Tie PatientEvents to Devices! */
             if (App.Device_Monitor != null && App.Device_Monitor.IsLoaded)
                 App.Patient.PatientEvent += App.Device_Monitor.OnPatientEvent;
             if (App.Device_ECG != null && App.Device_ECG.IsLoaded)
@@ -258,13 +275,12 @@ namespace II_Windows {
         }
 
         private void UnloadPatientEvents () {
-
-            // Unloading the Patient from the Main Timer also stops all the Patient's Timers
-            // and results in that Patient not triggering PatientEvent's
+            /* Unloading the Patient from the Main Timer also stops all the Patient's Timers
+            /* and results in that Patient not triggering PatientEvent's */
             App.Timer_Main.Tick -= App.Patient.ProcessTimers;
 
-            // But it's still important to clear PatientEvent subscriptions so they're not adding
-            // as duplicates when InitPatientEvents() is called!!
+            /* But it's still important to clear PatientEvent subscriptions so they're not adding
+            /* as duplicates when InitPatientEvents() is called!! */
             App.Patient.UnsubscribePatientEvent ();
         }
 
@@ -321,6 +337,53 @@ namespace II_Windows {
             App.Dialog_About = new DialogAbout ();
             App.Dialog_About.Activate ();
             App.Dialog_About.ShowDialog ();
+        }
+
+        private void SetParameterStatus (bool autoApplyChanges) {
+            ParameterStatus = autoApplyChanges
+               ? ParameterStatuses.AutoApply
+               : ParameterStatuses.ChangesApplied;
+
+            UpdateParameterIndicators ();
+        }
+
+        private void AdvanceParameterStatus (ParameterStatuses status) {
+            /* Toggles between pending changes or changes applied; bypasses if auto-applying or null */
+            if (status == ParameterStatuses.AutoApply || ParameterStatus == ParameterStatuses.AutoApply)
+                ParameterStatus = ParameterStatuses.AutoApply;
+            else if (status == ParameterStatuses.ChangesApplied && ParameterStatus == ParameterStatuses.ChangesPending)
+                ParameterStatus = ParameterStatuses.ChangesApplied;
+            else if (status == ParameterStatuses.ChangesPending && ParameterStatus == ParameterStatuses.ChangesApplied)
+                ParameterStatus = ParameterStatuses.ChangesPending;
+
+            UpdateParameterIndicators ();
+        }
+
+        private void UpdateParameterIndicators () {
+            switch (ParameterStatus) {
+                default:
+                case ParameterStatuses.Null:
+                    brdPendingChangesIndicator.BorderBrush = Brushes.Transparent;
+                    break;
+
+                case ParameterStatuses.ChangesPending:
+                    brdPendingChangesIndicator.BorderBrush = Brushes.Red;
+                    lblStatusText.Content = App.Language.Localize ("PE:StatusPatientChangesPending");
+                    break;
+
+                case ParameterStatuses.ChangesApplied:
+                    brdPendingChangesIndicator.BorderBrush = Brushes.Green;
+
+                    if (App.Mirror.Status == Mirror.Statuses.INACTIVE)
+                        lblStatusText.Content = App.Language.Localize ("PE:StatusPatientUpdated");
+                    else if (App.Mirror.Status == Mirror.Statuses.HOST)
+                        lblStatusText.Content = App.Language.Localize ("PE:StatusMirroredPatientUpdated");
+                    break;
+
+                case ParameterStatuses.AutoApply:
+                    brdPendingChangesIndicator.BorderBrush = Brushes.Orange;
+                    break;
+            }
         }
 
         private void LoadFile () {
@@ -452,7 +515,7 @@ namespace II_Windows {
             if (App.Mirror.Status == Mirror.Statuses.CLIENT) {
                 App.Mirror.Status = Mirror.Statuses.INACTIVE;
                 App.Mirror.CancelOperation ();      // Attempt to cancel any possible Mirror downloads
-                lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringDisabled"];
+                lblStatusText.Content = App.Language.Localize ("PE:StatusMirroringDisabled");
             }
 
             // Initialize the first step of the scenario
@@ -494,9 +557,9 @@ namespace II_Windows {
         }
 
         private void LoadFail () {
-            MessageBox.Show (
-                    App.Language.Dictionary ["PE:LoadFailMessage"],
-                    App.Language.Dictionary ["PE:LoadFailTitle"],
+            System.Windows.MessageBox.Show (
+                    App.Language.Localize ("PE:LoadFailMessage"),
+                    App.Language.Localize ("PE:LoadFailTitle"),
                     MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
@@ -505,9 +568,9 @@ namespace II_Windows {
             // Only save single Patient files in base Infirmary Integrated!
             // Scenario files should be created/edited/saved via II Scenario Editor!
             if (App.Scenario.IsScenario) {
-                MessageBox.Show (
-                    App.Language.Dictionary ["PE:SaveFailScenarioMessage"],
-                    App.Language.Dictionary ["PE:SaveFailScenarioTitle"],
+                System.Windows.MessageBox.Show (
+                    App.Language.Localize ("PE:SaveFailScenarioMessage"),
+                    App.Language.Localize ("PE:SaveFailScenarioTitle"),
                     MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
@@ -610,18 +673,18 @@ namespace II_Windows {
 
             // Display Scenario's Step count
             lblScenarioStep.Content = String.Format ("{0} {1} / {2}",
-                App.Language.Dictionary ["PE:ProgressionStep"],
+                App.Language.Localize ("PE:ProgressionStep"),
                 App.Scenario.CurrentIndex,          // Retaining zero-based index to confuse end-user
                 App.Scenario.Steps.Count - 1);      // But also for consistency with Scenario Editor and program development
 
             // Display Progress Timer if applicable, otherwise instruct that the Step requires manual progression
             if (s.ProgressTimer == -1)
-                lblTimerStep.Content = App.Language.Dictionary ["PE:ProgressionManual"];
+                lblTimerStep.Content = App.Language.Localize ("PE:ProgressionManual");
             else
                 lblTimerStep.Content = String.Format ("{0} {1} {2}",
-                    App.Language.Dictionary ["PE:ProgressionAutomatic"],
+                    App.Language.Localize ("PE:ProgressionAutomatic"),
                     s.ProgressTimer,
-                    App.Language.Dictionary ["PE:ProgressionSeconds"]);
+                    App.Language.Localize ("PE:ProgressionSeconds"));
 
             // Re-populate a StackPanel with RadioButtons for Progression options, including "Default Option"
             stackProgressions.Children.Clear ();
@@ -629,7 +692,7 @@ namespace II_Windows {
             stackProgressions.Children.Add (new RadioButton () {
                 IsChecked = true,
                 Name = "radioProgression_Default",
-                Content = App.Language.Dictionary ["PE:ProgressionDefault"],
+                Content = App.Language.Localize ("PE:ProgressionDefault"),
                 GroupName = "ProgressionOptions"
             });
 
@@ -671,7 +734,7 @@ namespace II_Windows {
 
             App.Scenario.PauseStep ();
 
-            lblTimerStep.Content = App.Language.Dictionary ["PE:ProgressionPaused"];
+            lblTimerStep.Content = App.Language.Localize ("PE:ProgressionPaused");
         }
 
         private void PlayStep () {
@@ -681,12 +744,135 @@ namespace II_Windows {
             App.Scenario.PlayStep ();
 
             if (App.Scenario.Current.ProgressTimer == -1)
-                lblTimerStep.Content = App.Language.Dictionary ["PE:ProgressionManual"];
+                lblTimerStep.Content = App.Language.Localize ("PE:ProgressionManual");
             else
                 lblTimerStep.Content = String.Format ("{0} {1} {2}",
-                    App.Language.Dictionary ["PE:ProgressionAutomatic"],
+                    App.Language.Localize ("PE:ProgressionAutomatic"),
                     App.Scenario.Current.ProgressTimer - (App.Scenario.ProgressTimer.Elapsed / 1000),
-                    App.Language.Dictionary ["PE:ProgressionSeconds"]);
+                    App.Language.Localize ("PE:ProgressionSeconds"));
+        }
+
+        private void ApplyMirroring () {
+            App.Mirror.PatientUpdated = new DateTime ();
+            App.Mirror.ServerQueried = new DateTime ();
+
+            if (radioInactive.IsChecked ?? true) {
+                App.Mirror.Status = Mirror.Statuses.INACTIVE;
+                lblStatusText.Content = App.Language.Localize ("PE:StatusMirroringDisabled");
+            } else if (radioClient.IsChecked ?? true) {
+
+                // Set client mirroring status
+                App.Mirror.Status = Mirror.Statuses.CLIENT;
+                App.Mirror.Accession = txtAccessionKey.Text;
+                App.Mirror.PasswordAccess = txtAccessPassword.Password;
+                lblStatusText.Content = App.Language.Localize ("PE:StatusMirroringActivated");
+
+                // When mirroring another patient, disable scenario player and Scenario timer
+                expScenarioPlayer.IsExpanded = false;   // Can be re-enabled by loading a scenario
+                expScenarioPlayer.IsEnabled = false;
+                App.Scenario.StopTimer ();
+            } else if (radioServer.IsChecked ?? true) {
+                if (txtAccessionKey.Text == "")
+                    txtAccessionKey.Text = Utility.RandomString (8);
+
+                App.Mirror.Status = Mirror.Statuses.HOST;
+                App.Mirror.Accession = txtAccessionKey.Text;
+                App.Mirror.PasswordAccess = txtAccessPassword.Password;
+                App.Mirror.PasswordEdit = txtAdminPassword.Password;
+                lblStatusText.Content = App.Language.Localize ("PE:StatusMirroringActivated");
+            }
+        }
+
+        private void ResetPatientParameters () {
+            RefreshPatient ();
+            lblStatusText.Content = App.Language.Localize ("PE:StatusPatientReset");
+        }
+
+        private void ApplyPatientParameters () {
+            ApplyMirroring ();
+
+            List<FetalHeartDecelerations.Values> FHRRhythms = new List<FetalHeartDecelerations.Values> ();
+            foreach (object o in listFHRRhythms.SelectedItems)
+                FHRRhythms.Add ((FetalHeartDecelerations.Values)Enum.GetValues (typeof (FetalHeartDecelerations.Values)).GetValue (listFHRRhythms.Items.IndexOf (o)));
+
+            App.Patient.UpdateParameters (
+
+                // Basic vital signs
+                (int)(numHR?.Value ?? 0),
+
+                (int)(numNSBP?.Value ?? 0),
+                (int)(numNDBP?.Value ?? 0),
+                Patient.CalculateMAP ((int)(numNSBP?.Value ?? 0), (int)(numNDBP.Value ?? 0)),
+
+                (int)(numRR?.Value ?? 0),
+                (int)(numSPO2?.Value ?? 0),
+                (double)(numT?.Value ?? 0),
+
+                (Cardiac_Rhythms.Values)Enum.GetValues (typeof (Cardiac_Rhythms.Values)).GetValue (
+                    comboCardiacRhythm.SelectedIndex < 0 ? 0 : comboCardiacRhythm.SelectedIndex),
+                (Respiratory_Rhythms.Values)Enum.GetValues (typeof (Respiratory_Rhythms.Values)).GetValue (
+                    comboRespiratoryRhythm.SelectedIndex < 0 ? 0 : comboRespiratoryRhythm.SelectedIndex),
+
+                // Advanced hemodynamics
+                (int)(numETCO2?.Value ?? 0),
+                (int)(numCVP?.Value ?? 0),
+
+                (int)(numASBP?.Value ?? 0),
+                (int)(numADBP?.Value ?? 0),
+                Patient.CalculateMAP ((int)(numASBP?.Value ?? 0), (int)(numADBP.Value ?? 0)),
+
+                (PulmonaryArtery_Rhythms.Values)Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)).GetValue (
+                    comboPACatheterPlacement.SelectedIndex < 0 ? 0 : comboPACatheterPlacement.SelectedIndex),
+
+                (int)(numPSP?.Value ?? 0),
+                (int)(numPDP?.Value ?? 0),
+                Patient.CalculateMAP ((int)(numPSP?.Value ?? 0), (int)(numPDP.Value ?? 0)),
+
+                (int)(numICP?.Value ?? 0),
+                (int)(numIAP?.Value ?? 0),
+
+                // Respiratory profile
+                chkMechanicallyVentilated.IsChecked ?? false,
+
+                (float)(numInspiratoryRatio?.Value ?? 0),
+                (float)(numExpiratoryRatio?.Value ?? 0),
+
+                // Cardiac Profile
+                (int)(numPacemakerCaptureThreshold?.Value ?? 0),
+                chkPulsusParadoxus.IsChecked ?? false,
+                chkPulsusAlternans.IsChecked ?? false,
+
+                (Cardiac_Axes.Values)Enum.GetValues (typeof (Cardiac_Axes.Values)).GetValue (
+                    comboCardiacAxis.SelectedIndex < 0 ? 0 : comboCardiacAxis.SelectedIndex),
+
+                new double [] {
+                (double)(numSTE_I?.Value ?? 0), (double)(numSTE_II?.Value ?? 0), (double)(numSTE_III?.Value ?? 0),
+                (double)(numSTE_aVR?.Value ?? 0), (double)(numSTE_aVL?.Value ?? 0), (double)(numSTE_aVF?.Value ?? 0),
+                (double)(numSTE_V1?.Value ?? 0), (double)(numSTE_V2?.Value ?? 0), (double)(numSTE_V3?.Value ?? 0),
+                (double)(numSTE_V4?.Value ?? 0), (double)(numSTE_V5?.Value ?? 0), (double)(numSTE_V6.Value ?? 0)
+                },
+                new double [] {
+                (double)(numTWE_I?.Value ?? 0), (double)(numTWE_II?.Value ?? 0), (double)(numTWE_III?.Value ?? 0),
+                (double)(numTWE_aVR?.Value ?? 0), (double)(numTWE_aVL?.Value ?? 0), (double)(numTWE_aVF?.Value ?? 0),
+                (double)(numTWE_V1?.Value ?? 0), (double)(numTWE_V2?.Value ?? 0), (double)(numTWE_V3?.Value ?? 0),
+                (double)(numTWE_V4?.Value ?? 0), (double)(numTWE_V5?.Value ?? 0), (double)(numTWE_V6.Value ?? 0)
+                },
+
+                // Obstetric profile
+                (int)(numFHR?.Value ?? 0),
+                (Scales.Intensity.Values)Enum.GetValues (typeof (Scales.Intensity.Values)).GetValue (
+                    comboFHRVariability.SelectedIndex < 0 ? 0 : comboFHRVariability.SelectedIndex),
+                FHRRhythms,
+                (int)(numUCFrequency?.Value ?? 0),
+                (int)(numUCDuration?.Value ?? 0),
+                (Scales.Intensity.Values)Enum.GetValues (typeof (Scales.Intensity.Values)).GetValue (
+                    comboUCIntensity.SelectedIndex < 0 ? 0 : comboUCIntensity.SelectedIndex)
+            );
+
+            App.Mirror.PostPatient (App.Patient, App.Server);
+            txtAccessionKey.Text = App.Mirror.Accession;
+
+            AdvanceParameterStatus (ParameterStatuses.ChangesApplied);
         }
 
         private void MenuNewSimulation_Click (object s, RoutedEventArgs e) => RefreshScenario (true);
@@ -712,36 +898,8 @@ namespace II_Windows {
         private void ButtonGenerateAccessionKey_Click (object sender, RoutedEventArgs e)
             => txtAccessionKey.Text = Utility.RandomString (8);
 
-        private void ButtonApplyMirroring_Click (object s, RoutedEventArgs e) {
-            App.Mirror.PatientUpdated = new DateTime ();
-            App.Mirror.ServerQueried = new DateTime ();
-
-            if (radioInactive.IsChecked ?? true) {
-                App.Mirror.Status = Mirror.Statuses.INACTIVE;
-                lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringDisabled"];
-            } else if (radioClient.IsChecked ?? true) {
-
-                // Set client mirroring status
-                App.Mirror.Status = Mirror.Statuses.CLIENT;
-                App.Mirror.Accession = txtAccessionKey.Text;
-                App.Mirror.PasswordAccess = txtAccessPassword.Password;
-                lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringActivated"];
-
-                // When mirroring another patient, disable scenario player and Scenario timer
-                expScenarioPlayer.IsExpanded = false;   // Can be re-enabled by loading a scenario
-                expScenarioPlayer.IsEnabled = false;
-                App.Scenario.StopTimer ();
-            } else if (radioServer.IsChecked ?? true) {
-                if (txtAccessionKey.Text == "")
-                    txtAccessionKey.Text = Utility.RandomString (8);
-
-                App.Mirror.Status = Mirror.Statuses.HOST;
-                App.Mirror.Accession = txtAccessionKey.Text;
-                App.Mirror.PasswordAccess = txtAccessPassword.Password;
-                App.Mirror.PasswordEdit = txtAdminPassword.Password;
-                lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroringActivated"];
-            }
-        }
+        private void ButtonApplyMirroring_Click (object s, RoutedEventArgs e)
+            => ApplyMirroring ();
 
         private void ButtonPreviousStep_Click (object s, RoutedEventArgs e) => PreviousStep ();
 
@@ -751,100 +909,11 @@ namespace II_Windows {
 
         private void ButtonPlayStep_Click (object s, RoutedEventArgs e) => PlayStep ();
 
-        private void ButtonResetParameters_Click (object s, RoutedEventArgs e) {
-            RefreshPatient ();
-            lblStatusText.Content = App.Language.Dictionary ["PE:StatusPatientReset"];
-        }
+        private void ButtonResetParameters_Click (object s, RoutedEventArgs e)
+            => ResetPatientParameters ();
 
-        private void ButtonApplyParameters_Click (object sender, RoutedEventArgs e) {
-            ButtonApplyMirroring_Click (sender, e);
-
-            List<FetalHeartDecelerations.Values> FHRRhythms = new List<FetalHeartDecelerations.Values> ();
-            foreach (object o in listFHRRhythms.SelectedItems)
-                FHRRhythms.Add ((FetalHeartDecelerations.Values)Enum.GetValues (typeof (FetalHeartDecelerations.Values)).GetValue (listFHRRhythms.Items.IndexOf (o)));
-
-            App.Patient.UpdateParameters (
-
-                // Basic vital signs
-                (int)numHR.Value,
-
-                (int)numNSBP.Value,
-                (int)numNDBP.Value,
-                Patient.CalculateMAP ((int)numNSBP.Value, (int)numNDBP.Value),
-
-                (int)numRR.Value,
-                (int)numSPO2.Value,
-                (double)numT.Value,
-
-                (Cardiac_Rhythms.Values)Enum.GetValues (typeof (Cardiac_Rhythms.Values)).GetValue (
-                    comboCardiacRhythm.SelectedIndex < 0 ? 0 : comboCardiacRhythm.SelectedIndex),
-                (Respiratory_Rhythms.Values)Enum.GetValues (typeof (Respiratory_Rhythms.Values)).GetValue (
-                    comboRespiratoryRhythm.SelectedIndex < 0 ? 0 : comboRespiratoryRhythm.SelectedIndex),
-
-                // Advanced hemodynamics
-                (int)numETCO2.Value,
-                (int)numCVP.Value,
-
-                (int)numASBP.Value,
-                (int)numADBP.Value,
-                Patient.CalculateMAP ((int)numASBP.Value, (int)numADBP.Value),
-
-                (PulmonaryArtery_Rhythms.Values)Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)).GetValue (
-                    comboPACatheterPlacement.SelectedIndex < 0 ? 0 : comboPACatheterPlacement.SelectedIndex),
-
-                (int)numPSP.Value,
-                (int)numPDP.Value,
-                Patient.CalculateMAP ((int)numPSP.Value, (int)numPDP.Value),
-
-                (int)numICP.Value,
-                (int)numIAP.Value,
-
-                // Respiratory profile
-                chkMechanicallyVentilated.IsChecked ?? false,
-
-                (float)numInspiratoryRatio.Value,
-                (float)numExpiratoryRatio.Value,
-
-                // Cardiac Profile
-                (int)numPacemakerCaptureThreshold.Value,
-                chkPulsusParadoxus.IsChecked ?? false,
-                chkPulsusAlternans.IsChecked ?? false,
-
-                (Cardiac_Axes.Values)Enum.GetValues (typeof (Cardiac_Axes.Values)).GetValue (
-                    comboCardiacAxis.SelectedIndex < 0 ? 0 : comboCardiacAxis.SelectedIndex),
-
-                new double [] {
-                (double)numSTE_I.Value, (double)numSTE_II.Value, (double)numSTE_III.Value,
-                (double)numSTE_aVR.Value, (double)numSTE_aVL.Value, (double)numSTE_aVF.Value,
-                (double)numSTE_V1.Value, (double)numSTE_V2.Value, (double)numSTE_V3.Value,
-                (double)numSTE_V4.Value, (double)numSTE_V5.Value, (double)numSTE_V6.Value
-                },
-                new double [] {
-                (double)numTWE_I.Value, (double)numTWE_II.Value, (double)numTWE_III.Value,
-                (double)numTWE_aVR.Value, (double)numTWE_aVL.Value, (double)numTWE_aVF.Value,
-                (double)numTWE_V1.Value, (double)numTWE_V2.Value, (double)numTWE_V3.Value,
-                (double)numTWE_V4.Value, (double)numTWE_V5.Value, (double)numTWE_V6.Value
-                },
-
-                // Obstetric profile
-                (int)numFHR.Value,
-                (Scales.Intensity.Values)Enum.GetValues (typeof (Scales.Intensity.Values)).GetValue (
-                    comboFHRVariability.SelectedIndex < 0 ? 0 : comboFHRVariability.SelectedIndex),
-                FHRRhythms,
-                (int)numUCFrequency.Value,
-                (int)numUCDuration.Value,
-                (Scales.Intensity.Values)Enum.GetValues (typeof (Scales.Intensity.Values)).GetValue (
-                    comboUCIntensity.SelectedIndex < 0 ? 0 : comboUCIntensity.SelectedIndex)
-            );
-
-            App.Mirror.PostPatient (App.Patient, App.Server);
-            txtAccessionKey.Text = App.Mirror.Accession;
-
-            if (App.Mirror.Status == Mirror.Statuses.INACTIVE)
-                lblStatusText.Content = App.Language.Dictionary ["PE:StatusPatientUpdated"];
-            else if (App.Mirror.Status == Mirror.Statuses.HOST)
-                lblStatusText.Content = App.Language.Dictionary ["PE:StatusMirroredPatientUpdated"];
-        }
+        private void ButtonApplyParameters_Click (object sender, RoutedEventArgs e)
+            => ApplyPatientParameters ();
 
         private void TextBoxAccessionKey_PreviewTextInput (object sender, TextCompositionEventArgs e) {
             Regex regex = new Regex ("^[a-zA-Z0-9]*$");
@@ -875,6 +944,124 @@ namespace II_Windows {
 
         private void Hyperlink_RequestNavigate (object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
             => System.Diagnostics.Process.Start (e.Uri.ToString ());
+
+        private void OnAutoApplyChanges_Changed (object sender, RoutedEventArgs e) {
+            Properties.Settings.Default.AutoApplyChanges = chkAutoApplyChanges.IsChecked ?? true;
+            Properties.Settings.Default.Save ();
+
+            SetParameterStatus (Properties.Settings.Default.AutoApplyChanges);
+        }
+
+        private void OnUIPatientParameter_KeyDown (object sender, KeyEventArgs e) {
+            if (e.Key == Key.Enter)
+                OnUIPatientParameter_ProcessChanged (sender, null);
+        }
+
+        private void OnUIPatientParameter_GotFocus (object sender, RoutedEventArgs e) {
+            if (sender is IntegerUpDown)
+                uiBufferValue = (sender as IntegerUpDown).Value;
+            else if (sender is DecimalUpDown)
+                uiBufferValue = (sender as DecimalUpDown).Value;
+            else if (sender is CheckBox)
+                uiBufferValue = (sender as CheckBox).IsChecked;
+            else if (sender is ComboBox)
+                uiBufferValue = (sender as ComboBox).SelectedIndex;
+        }
+
+        private void OnUIPatientParameter_LostFocus (object sender, RoutedEventArgs e)
+            => OnUIPatientParameter_ProcessChanged (sender, e);
+
+        private void OnUIPatientParameter_ProcessChanged (object sender, RoutedEventArgs e) {
+            if (sender is IntegerUpDown && (sender as IntegerUpDown).Value != (int)uiBufferValue)
+                OnUIPatientParameter_Changed (sender, e);
+            else if (sender is DecimalUpDown && (sender as DecimalUpDown).Value != (decimal)uiBufferValue)
+                OnUIPatientParameter_Changed (sender, e);
+            else if (sender is CheckBox && (sender as CheckBox).IsChecked != (bool)uiBufferValue)
+                OnUIPatientParameter_Changed (sender, e);
+            else if (sender is ComboBox && (sender as ComboBox).SelectedIndex != (int)uiBufferValue)
+                OnUIPatientParameter_Changed (sender, e);
+        }
+
+        private void OnUIPatientParameter_Changed (object sender, RoutedEventArgs e) {
+            switch (ParameterStatus) {
+                default:
+                case ParameterStatuses.Null:            // For loading state
+                    break;
+
+                case ParameterStatuses.ChangesApplied:
+                case ParameterStatuses.ChangesPending:
+                    AdvanceParameterStatus (ParameterStatuses.ChangesPending);
+                    break;
+
+                case ParameterStatuses.AutoApply:
+                    ApplyPatientParameters ();
+                    UpdateParameterIndicators ();
+                    break;
+            }
+        }
+
+        private void OnCardiacRhythm_Selected (object sender, SelectionChangedEventArgs e) {
+            if (!(bool)checkDefaultVitals.IsChecked || App.Patient == null)
+                return;
+
+            int si = comboCardiacRhythm.SelectedIndex;
+            Array ev = Enum.GetValues (typeof (Cardiac_Rhythms.Values));
+            if (si < 0 || si > ev.Length - 1)
+                return;
+
+            Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
+                (Cardiac_Rhythms.Values)ev.GetValue (si));
+
+            numHR.Value = (int)Utility.Clamp ((double)(numHR.Value ?? 0), v.HRMin, v.HRMax);
+            numNSBP.Value = (int)Utility.Clamp ((double)(numNSBP.Value ?? 0), v.SBPMin, v.SBPMax);
+            numNDBP.Value = (int)Utility.Clamp ((double)(numNDBP.Value ?? 0), v.DBPMin, v.DBPMax);
+            numRR.Value = (int)Utility.Clamp ((double)(numRR.Value ?? 0), v.RRMin, v.RRMax);
+            numSPO2.Value = (int)Utility.Clamp ((double)(numSPO2.Value ?? 0), v.SPO2Min, v.SPO2Max);
+            numETCO2.Value = (int)Utility.Clamp ((double)(numETCO2.Value ?? 0), v.ETCO2Min, v.ETCO2Max);
+            numASBP.Value = (int)Utility.Clamp ((double)(numASBP.Value ?? 0), v.SBPMin, v.SBPMax);
+            numADBP.Value = (int)Utility.Clamp ((double)(numADBP.Value ?? 0), v.DBPMin, v.DBPMax);
+            numPSP.Value = (int)Utility.Clamp ((double)(numPSP.Value ?? 0), v.PSPMin, v.PSPMax);
+            numPDP.Value = (int)Utility.Clamp ((double)(numPDP.Value ?? 0), v.PDPMin, v.PDPMax);
+
+            OnUIPatientParameter_Changed (sender, e);
+        }
+
+        private void OnRespiratoryRhythm_Selected (object sender, SelectionChangedEventArgs e) {
+            if (!(bool)checkDefaultVitals.IsChecked || App.Patient == null)
+                return;
+
+            int si = comboRespiratoryRhythm.SelectedIndex;
+            Array ev = Enum.GetValues (typeof (Respiratory_Rhythms.Values));
+            if (si < 0 || si > ev.Length - 1)
+                return;
+
+            Respiratory_Rhythms.Default_Vitals v = Respiratory_Rhythms.DefaultVitals (
+                (Respiratory_Rhythms.Values)ev.GetValue (si));
+
+            numRR.Value = (int)Utility.Clamp ((double)(numRR.Value ?? 0), v.RRMin, v.RRMax);
+            numInspiratoryRatio.Value = (int)Utility.Clamp ((double)(numInspiratoryRatio.Value ?? 0), v.RR_IE_I_Min, v.RR_IE_I_Max);
+            numExpiratoryRatio.Value = (int)Utility.Clamp ((double)(numExpiratoryRatio.Value ?? 0), v.RR_IE_E_Min, v.RR_IE_E_Max);
+
+            OnUIPatientParameter_Changed (sender, e);
+        }
+
+        private void OnPulmonaryArteryRhythm_Selected (object sender, SelectionChangedEventArgs e) {
+            if (App.Patient == null)
+                return;
+
+            int si = comboPACatheterPlacement.SelectedIndex;
+            Array ev = Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values));
+            if (si < 0 || si > ev.Length - 1)
+                return;
+
+            PulmonaryArtery_Rhythms.Default_Vitals v = PulmonaryArtery_Rhythms.DefaultVitals (
+                (PulmonaryArtery_Rhythms.Values)ev.GetValue (si));
+
+            numPSP.Value = (int)Utility.Clamp ((double)(numPSP.Value ?? 0), v.PSPMin, v.PSPMax);
+            numPDP.Value = (int)Utility.Clamp ((double)(numPDP.Value ?? 0), v.PDPMin, v.PDPMax);
+
+            OnUIPatientParameter_Changed (sender, e);
+        }
 
         private void FormUpdateFields (object sender, Patient.PatientEventArgs e) {
             if (e.EventType == Patient.PatientEventTypes.Vitals_Change) {
@@ -948,63 +1135,6 @@ namespace II_Windows {
                 foreach (FetalHeartDecelerations.Values fhr_rhythm in e.Patient.FHR_Decelerations.ValueList)
                     listFHRRhythms.SelectedItems.Add (listFHRRhythms.Items.GetItemAt ((int)fhr_rhythm));
             }
-        }
-
-        private void OnCardiacRhythmSelected (object sender, SelectionChangedEventArgs e) {
-            if (!(bool)checkDefaultVitals.IsChecked || App.Patient == null)
-                return;
-
-            int si = comboCardiacRhythm.SelectedIndex;
-            Array ev = Enum.GetValues (typeof (Cardiac_Rhythms.Values));
-            if (si < 0 || si > ev.Length - 1)
-                return;
-
-            Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
-                (Cardiac_Rhythms.Values)ev.GetValue (si));
-
-            numHR.Value = (int)Utility.Clamp ((double)(numHR.Value ?? 0), v.HRMin, v.HRMax);
-            numNSBP.Value = (int)Utility.Clamp ((double)(numNSBP.Value ?? 0), v.SBPMin, v.SBPMax);
-            numNDBP.Value = (int)Utility.Clamp ((double)(numNDBP.Value ?? 0), v.DBPMin, v.DBPMax);
-            numRR.Value = (int)Utility.Clamp ((double)(numRR.Value ?? 0), v.RRMin, v.RRMax);
-            numSPO2.Value = (int)Utility.Clamp ((double)(numSPO2.Value ?? 0), v.SPO2Min, v.SPO2Max);
-            numETCO2.Value = (int)Utility.Clamp ((double)(numETCO2.Value ?? 0), v.ETCO2Min, v.ETCO2Max);
-            numASBP.Value = (int)Utility.Clamp ((double)(numASBP.Value ?? 0), v.SBPMin, v.SBPMax);
-            numADBP.Value = (int)Utility.Clamp ((double)(numADBP.Value ?? 0), v.DBPMin, v.DBPMax);
-            numPSP.Value = (int)Utility.Clamp ((double)(numPSP.Value ?? 0), v.PSPMin, v.PSPMax);
-            numPDP.Value = (int)Utility.Clamp ((double)(numPDP.Value ?? 0), v.PDPMin, v.PDPMax);
-        }
-
-        private void OnRespiratoryRhythmSelected (object sender, SelectionChangedEventArgs e) {
-            if (!(bool)checkDefaultVitals.IsChecked || App.Patient == null)
-                return;
-
-            int si = comboRespiratoryRhythm.SelectedIndex;
-            Array ev = Enum.GetValues (typeof (Respiratory_Rhythms.Values));
-            if (si < 0 || si > ev.Length - 1)
-                return;
-
-            Respiratory_Rhythms.Default_Vitals v = Respiratory_Rhythms.DefaultVitals (
-                (Respiratory_Rhythms.Values)ev.GetValue (si));
-
-            numRR.Value = (int)Utility.Clamp ((double)(numRR.Value ?? 0), v.RRMin, v.RRMax);
-            numInspiratoryRatio.Value = (int)Utility.Clamp ((double)(numInspiratoryRatio.Value ?? 0), v.RR_IE_I_Min, v.RR_IE_I_Max);
-            numExpiratoryRatio.Value = (int)Utility.Clamp ((double)(numExpiratoryRatio.Value ?? 0), v.RR_IE_E_Min, v.RR_IE_E_Max);
-        }
-
-        private void OnPulmonaryArteryRhythmSelected (object sender, SelectionChangedEventArgs e) {
-            if (App.Patient == null)
-                return;
-
-            int si = comboPACatheterPlacement.SelectedIndex;
-            Array ev = Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values));
-            if (si < 0 || si > ev.Length - 1)
-                return;
-
-            PulmonaryArtery_Rhythms.Default_Vitals v = PulmonaryArtery_Rhythms.DefaultVitals (
-                (PulmonaryArtery_Rhythms.Values)ev.GetValue (si));
-
-            numPSP.Value = (int)Utility.Clamp ((double)(numPSP.Value ?? 0), v.PSPMin, v.PSPMax);
-            numPDP.Value = (int)Utility.Clamp ((double)(numPDP.Value ?? 0), v.PDPMin, v.PDPMax);
         }
 
         private void OnClosed (object sender, EventArgs e) => Exit ();

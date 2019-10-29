@@ -82,30 +82,30 @@ namespace II_Windows.Controls {
             vbLine3.ContextMenu = contextMenu;
 
             menuZeroTransducer = new MenuItem ();
-            menuZeroTransducer.Header = App.Language.Dictionary ["MENU:MenuZeroTransducer"];
+            menuZeroTransducer.Header = App.Language.Localize ("MENU:MenuZeroTransducer");
             menuZeroTransducer.Click += MenuZeroTransducer_Click;
             contextMenu.Items.Add (menuZeroTransducer);
 
             contextMenu.Items.Add (new Separator ());
 
             MenuItem menuAddNumeric = new MenuItem ();
-            menuAddNumeric.Header = App.Language.Dictionary ["MENU:MenuAddNumeric"];
+            menuAddNumeric.Header = App.Language.Localize ("MENU:MenuAddNumeric");
             menuAddNumeric.Click += MenuAddNumeric_Click;
             contextMenu.Items.Add (menuAddNumeric);
 
             MenuItem menuRemoveNumeric = new MenuItem ();
-            menuRemoveNumeric.Header = App.Language.Dictionary ["MENU:MenuRemoveNumeric"];
+            menuRemoveNumeric.Header = App.Language.Localize ("MENU:MenuRemoveNumeric");
             menuRemoveNumeric.Click += MenuRemoveNumeric_Click;
             contextMenu.Items.Add (menuRemoveNumeric);
 
             contextMenu.Items.Add (new Separator ());
 
             MenuItem menuSelectInput = new MenuItem ();
-            menuSelectInput.Header = App.Language.Dictionary ["MENU:MenuSelectInputSource"];
+            menuSelectInput.Header = App.Language.Localize ("MENU:MenuSelectInputSource");
 
             foreach (ControlType.Values v in Enum.GetValues (typeof (ControlType.Values))) {
                 MenuItem mi = new MenuItem ();
-                mi.Header = App.Language.Dictionary [ControlType.LookupString (v)];
+                mi.Header = App.Language.Localize (ControlType.LookupString (v));
                 mi.Name = v.ToString ();
                 mi.Click += MenuSelectInputSource;
                 menuSelectInput.Items.Add (mi);
@@ -126,7 +126,7 @@ namespace II_Windows.Controls {
             lblLine2.Visibility = Visibility.Visible;
             lblLine3.Visibility = Visibility.Visible;
 
-            lblNumType.Text = App.Language.Dictionary [ControlType.LookupString (controlType.Value)];
+            lblNumType.Text = App.Language.Localize (ControlType.LookupString (controlType.Value));
 
             /* Set lines to be visible/hidden as appropriate */
             switch (controlType.Value) {
@@ -213,7 +213,7 @@ namespace II_Windows.Controls {
                             (App.Patient.IABP_Active ? App.Patient.IABP_DBP : App.Patient.ADBP), 0.02f));
                         lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.AMAP, 0.02f));
                     } else {
-                        lblLine1.Text = Utility.WrapString (App.Language.Dictionary ["NUMERIC:ZeroTransducer"]);
+                        lblLine1.Text = Utility.WrapString (App.Language.Localize ("NUMERIC:ZeroTransducer"));
                         lblLine2.Text = "";
                         lblLine3.Text = "";
                     }
@@ -223,7 +223,7 @@ namespace II_Windows.Controls {
                     if (App.Patient.TransducerZeroed_CVP)
                         lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.CVP, 0.02f));
                     else
-                        lblLine1.Text = App.Language.Dictionary ["NUMERIC:ZeroTransducer"];
+                        lblLine1.Text = App.Language.Localize ("NUMERIC:ZeroTransducer");
                     break;
 
                 case ControlType.Values.PA:
@@ -232,7 +232,7 @@ namespace II_Windows.Controls {
                         lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (App.Patient.PDP, 0.02f));
                         lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.PMP, 0.02f));
                     } else {
-                        lblLine1.Text = App.Language.Dictionary ["NUMERIC:ZeroTransducer"];
+                        lblLine1.Text = App.Language.Localize ("NUMERIC:ZeroTransducer");
                         lblLine2.Text = "";
                         lblLine3.Text = "";
                     }
@@ -243,7 +243,7 @@ namespace II_Windows.Controls {
                         lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.ICP, 0.02f));
                         lblLine2.Text = String.Format ("({0:0})", Patient.CalculateCPP (App.Patient.ICP, App.Patient.AMAP));
                     } else {
-                        lblLine1.Text = App.Language.Dictionary ["NUMERIC:ZeroTransducer"];
+                        lblLine1.Text = App.Language.Localize ("NUMERIC:ZeroTransducer");
                         lblLine2.Text = "";
                     }
                     break;
@@ -252,7 +252,7 @@ namespace II_Windows.Controls {
                     if (App.Patient.TransducerZeroed_IAP)
                         lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.IAP, 0.02f));
                     else
-                        lblLine1.Text = App.Language.Dictionary ["NUMERIC:ZeroTransducer"];
+                        lblLine1.Text = App.Language.Localize ("NUMERIC:ZeroTransducer");
                     break;
             }
         }

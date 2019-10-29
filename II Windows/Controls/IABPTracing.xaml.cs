@@ -44,7 +44,7 @@ namespace II_Windows.Controls {
             borderTracing.BorderBrush = tracingBrush;
 
             lblLead.Foreground = tracingBrush;
-            lblLead.Content = App.Language.Dictionary [Lead.LookupString (Lead.Value)];
+            lblLead.Content = App.Language.Localize (Lead.LookupString (Lead.Value));
 
             if (Strip.CanScale) {
                 lblScaleAuto.Foreground = tracingBrush;
@@ -52,8 +52,8 @@ namespace II_Windows.Controls {
                 lblScaleMax.Foreground = tracingBrush;
 
                 lblScaleAuto.Content = Strip.ScaleAuto
-                    ? App.Language.Dictionary ["TRACING:Auto"]
-                    : App.Language.Dictionary ["TRACING:Fixed"];
+                    ? App.Language.Localize ("TRACING:Auto")
+                    : App.Language.Localize ("TRACING:Fixed");
                 lblScaleMin.Content = Strip.ScaleMin.ToString ();
                 lblScaleMax.Content = Strip.ScaleMax.ToString ();
             }

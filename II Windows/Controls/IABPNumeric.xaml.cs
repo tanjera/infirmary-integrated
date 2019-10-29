@@ -66,7 +66,7 @@ namespace II_Windows.Controls {
             lblLine2.Visibility = Visibility.Visible;
             lblLine3.Visibility = Visibility.Visible;
 
-            lblNumType.Text = App.Language.Dictionary [ControlType.LookupString (controlType.Value)];
+            lblNumType.Text = App.Language.Localize (ControlType.LookupString (controlType.Value));
 
             switch (controlType.Value) {
                 default:
@@ -101,7 +101,7 @@ namespace II_Windows.Controls {
                         // IABP shows MAP calculated by IABP!! Different from how monitors calculate MAP...
                         lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.IABP_MAP, 0.02f));
                     } else {
-                        lblLine1.Text = Utility.WrapString (App.Language.Dictionary ["NUMERIC:ZeroTransducer"]);
+                        lblLine1.Text = Utility.WrapString (App.Language.Localize ("NUMERIC:ZeroTransducer"));
                         lblLine2.Text = "";
                         lblLine3.Text = "";
                     }
@@ -117,7 +117,7 @@ namespace II_Windows.Controls {
                     lblLine1.Text = App.Device_IABP.Running ? String.Format ("{0:0}", App.Patient.IABP_AP) : "";
 
                     lblLine2.Text = String.Format ("{0:0}%", App.Device_IABP.Augmentation);
-                    lblLine3.Text = String.Format ("{0}: {1:0}", App.Language.Dictionary ["IABP:Alarm"],
+                    lblLine3.Text = String.Format ("{0}: {1:0}", App.Language.Localize ("IABP:Alarm"),
                         App.Device_IABP.AugmentationAlarm);
                     break;
             }

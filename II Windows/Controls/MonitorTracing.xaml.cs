@@ -51,38 +51,38 @@ namespace II_Windows.Controls {
             lblLead.ContextMenu = contextMenu;
 
             menuZeroTransducer = new MenuItem ();
-            menuZeroTransducer.Header = App.Language.Dictionary ["MENU:MenuZeroTransducer"];
+            menuZeroTransducer.Header = App.Language.Localize ("MENU:MenuZeroTransducer");
             menuZeroTransducer.Click += MenuZeroTransducer_Click;
             contextMenu.Items.Add (menuZeroTransducer);
 
             contextMenu.Items.Add (new Separator ());
 
             MenuItem menuAddTracing = new MenuItem ();
-            menuAddTracing.Header = App.Language.Dictionary ["MENU:MenuAddTracing"];
+            menuAddTracing.Header = App.Language.Localize ("MENU:MenuAddTracing");
             menuAddTracing.Click += MenuAddTracing_Click;
             contextMenu.Items.Add (menuAddTracing);
 
             MenuItem menuRemoveTracing = new MenuItem ();
-            menuRemoveTracing.Header = App.Language.Dictionary ["MENU:MenuRemoveTracing"];
+            menuRemoveTracing.Header = App.Language.Localize ("MENU:MenuRemoveTracing");
             menuRemoveTracing.Click += MenuRemoveTracing_Click;
             contextMenu.Items.Add (menuRemoveTracing);
 
             contextMenu.Items.Add (new Separator ());
 
             MenuItem menuIncreaseAmplitude = new MenuItem ();
-            menuIncreaseAmplitude.Header = App.Language.Dictionary ["MENU:IncreaseAmplitude"];
+            menuIncreaseAmplitude.Header = App.Language.Localize ("MENU:IncreaseAmplitude");
             menuIncreaseAmplitude.Click += MenuIncreaseAmplitude_Click;
             contextMenu.Items.Add (menuIncreaseAmplitude);
 
             MenuItem menuDecreaseAmplitude = new MenuItem ();
-            menuDecreaseAmplitude.Header = App.Language.Dictionary ["MENU:DecreaseAmplitude"];
+            menuDecreaseAmplitude.Header = App.Language.Localize ("MENU:DecreaseAmplitude");
             menuDecreaseAmplitude.Click += MenuDecreaseAmplitude_Click;
             contextMenu.Items.Add (menuDecreaseAmplitude);
 
             contextMenu.Items.Add (new Separator ());
 
             menuToggleAutoScale = new MenuItem ();
-            menuToggleAutoScale.Header = App.Language.Dictionary ["MENU:ToggleAutoScaling"];
+            menuToggleAutoScale.Header = App.Language.Localize ("MENU:ToggleAutoScaling");
             menuToggleAutoScale.Click += MenuToggleAutoScale_Click;
             contextMenu.Items.Add (menuToggleAutoScale);
 
@@ -90,8 +90,8 @@ namespace II_Windows.Controls {
 
             MenuItem menuSelectInput = new MenuItem (),
                      menuECGLeads = new MenuItem ();
-            menuSelectInput.Header = App.Language.Dictionary ["MENU:MenuSelectInputSource"];
-            menuECGLeads.Header = App.Language.Dictionary ["TRACING:ECG"];
+            menuSelectInput.Header = App.Language.Localize ("MENU:MenuSelectInputSource");
+            menuECGLeads.Header = App.Language.Localize ("TRACING:ECG");
             menuSelectInput.Items.Add (menuECGLeads);
 
             foreach (Lead.Values v in Enum.GetValues (typeof (Lead.Values))) {
@@ -104,7 +104,7 @@ namespace II_Windows.Controls {
                     continue;
 
                 MenuItem mi = new MenuItem ();
-                mi.Header = App.Language.Dictionary [Lead.LookupString (v)];
+                mi.Header = App.Language.Localize (Lead.LookupString (v));
                 mi.Name = v.ToString ();
                 mi.Click += MenuSelectInputSource;
                 if (mi.Name.StartsWith ("ECG"))
@@ -133,7 +133,7 @@ namespace II_Windows.Controls {
             borderTracing.BorderBrush = tracingBrush;
 
             lblLead.Foreground = tracingBrush;
-            lblLead.Content = App.Language.Dictionary [Lead.LookupString (Lead.Value)];
+            lblLead.Content = App.Language.Localize (Lead.LookupString (Lead.Value));
 
             menuZeroTransducer.IsEnabled = Strip.Lead.IsTransduced ();
             menuToggleAutoScale.IsEnabled = Strip.CanScale;
@@ -144,8 +144,8 @@ namespace II_Windows.Controls {
                 lblScaleMax.Foreground = tracingBrush;
 
                 lblScaleAuto.Content = Strip.ScaleAuto
-                    ? App.Language.Dictionary ["TRACING:Auto"]
-                    : App.Language.Dictionary ["TRACING:Fixed"];
+                    ? App.Language.Localize ("TRACING:Auto")
+                    : App.Language.Localize ("TRACING:Fixed");
                 lblScaleMin.Content = Strip.ScaleMin.ToString ();
                 lblScaleMax.Content = Strip.ScaleMax.ToString ();
             }

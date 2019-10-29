@@ -66,16 +66,16 @@ namespace II_Windows {
             icExitProgram = new ActionCommand (() => App.Patient_Editor.Exit ());
 
             /* Populate UI strings per language selection */
-            wdwDeviceECG.Title = App.Language.Dictionary ["ECG:WindowTitle"];
-            menuDevice.Header = App.Language.Dictionary ["MENU:MenuDeviceOptions"];
-            menuPauseDevice.Header = App.Language.Dictionary ["MENU:MenuPauseDevice"];
-            menuShowGrid.Header = App.Language.Dictionary ["MENU:MenuShowGrid"];
-            menuToggleFullscreen.Header = App.Language.Dictionary ["MENU:MenuToggleFullscreen"];
-            menuCloseDevice.Header = App.Language.Dictionary ["MENU:MenuCloseDevice"];
-            menuExitProgram.Header = App.Language.Dictionary ["MENU:MenuExitProgram"];
-            menuColor.Header = App.Language.Dictionary ["MENU:MenuColorScheme"];
-            menuColorLight.Header = App.Language.Dictionary ["MENU:MenuColorSchemeLight"];
-            menuColorDark.Header = App.Language.Dictionary ["MENU:MenuColorSchemeDark"];
+            wdwDeviceECG.Title = App.Language.Localize ("ECG:WindowTitle");
+            menuDevice.Header = App.Language.Localize ("MENU:MenuDeviceOptions");
+            menuPauseDevice.Header = App.Language.Localize ("MENU:MenuPauseDevice");
+            menuShowGrid.Header = App.Language.Localize ("MENU:MenuShowGrid");
+            menuToggleFullscreen.Header = App.Language.Localize ("MENU:MenuToggleFullscreen");
+            menuCloseDevice.Header = App.Language.Localize ("MENU:MenuCloseDevice");
+            menuExitProgram.Header = App.Language.Localize ("MENU:MenuExitProgram");
+            menuColor.Header = App.Language.Localize ("MENU:MenuColorScheme");
+            menuColorLight.Header = App.Language.Localize ("MENU:MenuColorSchemeLight");
+            menuColorDark.Header = App.Language.Localize ("MENU:MenuColorSchemeDark");
 
             /* Set background image for grid lines */
             gridBackground = new ImageBrush (new BitmapImage (

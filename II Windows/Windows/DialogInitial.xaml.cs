@@ -13,10 +13,10 @@ namespace II_Windows {
             InitializeComponent ();
 
             // Populate UI strings per language selection
-            dlgLanguage.Title = App.Language.Dictionary ["INITIAL:LanguageAndTerms"];
-            lblChooseLanguage.Content = App.Language.Dictionary ["INITIAL:ChooseLanguage"];
-            txtAgreeTerms.Text = App.Language.Dictionary ["INITIAL:AgreeToTerms"];
-            btnContinue.Content = App.Language.Dictionary ["BUTTON:Continue"];
+            dlgLanguage.Title = App.Language.Localize ("INITIAL:LanguageAndTerms");
+            lblChooseLanguage.Content = App.Language.Localize ("INITIAL:ChooseLanguage");
+            txtAgreeTerms.Text = App.Language.Localize ("INITIAL:AgreeToTerms");
+            btnContinue.Content = App.Language.Localize ("BUTTON:Continue");
 
             cmbLanguages.ItemsSource = II.Localization.Language.Descriptions;
             cmbLanguages.SelectedIndex = (int)II.Localization.Language.Values.ENU;

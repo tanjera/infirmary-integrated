@@ -98,32 +98,32 @@ namespace II_Windows {
             icExitProgram = new ActionCommand (() => App.Patient_Editor.Exit ());
 
             // Populate UI strings per language selection
-            wdwDeviceDefib.Title = App.Language.Dictionary ["DEFIB:WindowTitle"];
-            menuDevice.Header = App.Language.Dictionary ["MENU:MenuDeviceOptions"];
-            menuPauseDevice.Header = App.Language.Dictionary ["MENU:MenuPauseDevice"];
-            menuAddNumeric.Header = App.Language.Dictionary ["MENU:MenuAddNumeric"];
-            menuAddTracing.Header = App.Language.Dictionary ["MENU:MenuAddTracing"];
-            menuToggleFullscreen.Header = App.Language.Dictionary ["MENU:MenuToggleFullscreen"];
-            menuCloseDevice.Header = App.Language.Dictionary ["MENU:MenuCloseDevice"];
-            menuExitProgram.Header = App.Language.Dictionary ["MENU:MenuExitProgram"];
+            wdwDeviceDefib.Title = App.Language.Localize ("DEFIB:WindowTitle");
+            menuDevice.Header = App.Language.Localize ("MENU:MenuDeviceOptions");
+            menuPauseDevice.Header = App.Language.Localize ("MENU:MenuPauseDevice");
+            menuAddNumeric.Header = App.Language.Localize ("MENU:MenuAddNumeric");
+            menuAddTracing.Header = App.Language.Localize ("MENU:MenuAddTracing");
+            menuToggleFullscreen.Header = App.Language.Localize ("MENU:MenuToggleFullscreen");
+            menuCloseDevice.Header = App.Language.Localize ("MENU:MenuCloseDevice");
+            menuExitProgram.Header = App.Language.Localize ("MENU:MenuExitProgram");
 
-            btntxtDefib.Text = App.Language.Dictionary ["DEFIB:Defibrillator"];
-            txtEnergyAmount.Text = App.Language.Dictionary ["DEFIB:EnergyAmount"];
-            btntxtEnergyDecrease.Text = App.Language.Dictionary ["DEFIB:Decrease"];
-            btntxtEnergyIncrease.Text = App.Language.Dictionary ["DEFIB:Increase"];
-            btntxtCharge.Text = App.Language.Dictionary ["DEFIB:Charge"];
-            btntxtShock.Text = App.Language.Dictionary ["DEFIB:Shock"];
-            btntxtAnalyze.Text = App.Language.Dictionary ["DEFIB:Analyze"];
-            btntxtSync.Text = App.Language.Dictionary ["DEFIB:Sync"];
+            btntxtDefib.Text = App.Language.Localize ("DEFIB:Defibrillator");
+            txtEnergyAmount.Text = App.Language.Localize ("DEFIB:EnergyAmount");
+            btntxtEnergyDecrease.Text = App.Language.Localize ("DEFIB:Decrease");
+            btntxtEnergyIncrease.Text = App.Language.Localize ("DEFIB:Increase");
+            btntxtCharge.Text = App.Language.Localize ("DEFIB:Charge");
+            btntxtShock.Text = App.Language.Localize ("DEFIB:Shock");
+            btntxtAnalyze.Text = App.Language.Localize ("DEFIB:Analyze");
+            btntxtSync.Text = App.Language.Localize ("DEFIB:Sync");
 
-            btntxtPacer.Text = App.Language.Dictionary ["DEFIB:Pacer"];
-            txtPaceRate.Text = App.Language.Dictionary ["DEFIB:Rate"];
-            btntxtPaceRateDecrease.Text = App.Language.Dictionary ["DEFIB:Decrease"];
-            btntxtPaceRateIncrease.Text = App.Language.Dictionary ["DEFIB:Increase"];
-            txtPaceEnergy.Text = App.Language.Dictionary ["DEFIB:EnergyAmount"];
-            btntxtPaceEnergyDecrease.Text = App.Language.Dictionary ["DEFIB:Decrease"];
-            btntxtPaceEnergyIncrease.Text = App.Language.Dictionary ["DEFIB:Increase"];
-            btntxtPacePause.Text = App.Language.Dictionary ["DEFIB:Pause"];
+            btntxtPacer.Text = App.Language.Localize ("DEFIB:Pacer");
+            txtPaceRate.Text = App.Language.Localize ("DEFIB:Rate");
+            btntxtPaceRateDecrease.Text = App.Language.Localize ("DEFIB:Decrease");
+            btntxtPaceRateIncrease.Text = App.Language.Localize ("DEFIB:Increase");
+            txtPaceEnergy.Text = App.Language.Localize ("DEFIB:EnergyAmount");
+            btntxtPaceEnergyDecrease.Text = App.Language.Localize ("DEFIB:Decrease");
+            btntxtPaceEnergyIncrease.Text = App.Language.Localize ("DEFIB:Increase");
+            btntxtPacePause.Text = App.Language.Localize ("DEFIB:Pause");
         }
 
         private void UpdateInterface () {

@@ -17,10 +17,10 @@ namespace II_Windows {
             // Populate UI strings per language selection
             Language.Values l = App.Language.Value;
 
-            dlgAbout.Title = App.Language.Dictionary ["ABOUT:AboutProgram"];
-            lblInfirmaryIntegrated.Content = App.Language.Dictionary ["II:InfirmaryIntegrated"];
-            lblVersion.Content = String.Format (App.Language.Dictionary ["ABOUT:Version"], II.Utility.Version);
-            tblDescription.Text = App.Language.Dictionary ["ABOUT:Description"];
+            dlgAbout.Title = App.Language.Localize ("ABOUT:AboutProgram");
+            lblInfirmaryIntegrated.Content = App.Language.Localize ("II:InfirmaryIntegrated");
+            lblVersion.Content = String.Format (App.Language.Localize ("ABOUT:Version"), II.Utility.Version);
+            tblDescription.Text = App.Language.Localize ("ABOUT:Description");
         }
 
         private void Hyperlink_RequestNavigate (object sender, RequestNavigateEventArgs e) {

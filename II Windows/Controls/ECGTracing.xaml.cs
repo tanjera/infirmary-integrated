@@ -38,7 +38,7 @@ namespace II_Windows.Controls {
 
         private void UpdateInterface (object sender, SizeChangedEventArgs e) {
             lblLead.Foreground = tracingBrush;
-            lblLead.Content = App.Language.Dictionary [Lead.LookupString (Lead.Value, true)];
+            lblLead.Content = App.Language.Localize (Lead.LookupString (Lead.Value, true));
         }
 
         public void CalculateOffsets ()

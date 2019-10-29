@@ -81,30 +81,30 @@ namespace II_Windows.Controls {
             vbLine3.ContextMenu = contextMenu;
 
             menuZeroTransducer = new MenuItem ();
-            menuZeroTransducer.Header = App.Language.Dictionary ["MENU:MenuZeroTransducer"];
+            menuZeroTransducer.Header = App.Language.Localize ("MENU:MenuZeroTransducer");
             menuZeroTransducer.Click += MenuZeroTransducer_Click;
             contextMenu.Items.Add (menuZeroTransducer);
 
             contextMenu.Items.Add (new Separator ());
 
             MenuItem menuAddNumeric = new MenuItem ();
-            menuAddNumeric.Header = App.Language.Dictionary ["MENU:MenuAddNumeric"];
+            menuAddNumeric.Header = App.Language.Localize ("MENU:MenuAddNumeric");
             menuAddNumeric.Click += MenuAddNumeric_Click;
             contextMenu.Items.Add (menuAddNumeric);
 
             MenuItem menuRemoveNumeric = new MenuItem ();
-            menuRemoveNumeric.Header = App.Language.Dictionary ["MENU:MenuRemoveNumeric"];
+            menuRemoveNumeric.Header = App.Language.Localize ("MENU:MenuRemoveNumeric");
             menuRemoveNumeric.Click += MenuRemoveNumeric_Click;
             contextMenu.Items.Add (menuRemoveNumeric);
 
             contextMenu.Items.Add (new Separator ());
 
             MenuItem menuSelectInput = new MenuItem ();
-            menuSelectInput.Header = App.Language.Dictionary ["MENU:MenuSelectInputSource"];
+            menuSelectInput.Header = App.Language.Localize ("MENU:MenuSelectInputSource");
 
             foreach (ControlType.Values v in Enum.GetValues (typeof (ControlType.Values))) {
                 MenuItem mi = new MenuItem ();
-                mi.Header = App.Language.Dictionary [ControlType.LookupString (v)];
+                mi.Header = App.Language.Localize (ControlType.LookupString (v));
                 mi.Name = v.ToString ();
                 mi.Click += MenuSelectInputSource;
                 menuSelectInput.Items.Add (mi);
@@ -125,7 +125,7 @@ namespace II_Windows.Controls {
             lblLine2.Visibility = Visibility.Visible;
             lblLine3.Visibility = Visibility.Visible;
 
-            lblNumType.Text = App.Language.Dictionary [ControlType.LookupString (controlType.Value)];
+            lblNumType.Text = App.Language.Localize (ControlType.LookupString (controlType.Value));
 
             switch (controlType.Value) {
                 default:
@@ -208,7 +208,7 @@ namespace II_Windows.Controls {
                             (App.Patient.IABP_Active ? App.Patient.IABP_DBP : App.Patient.ADBP), 0.02f));
                         lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.AMAP, 0.02f));
                     } else {
-                        lblLine1.Text = Utility.WrapString (App.Language.Dictionary ["NUMERIC:ZeroTransducer"]);
+                        lblLine1.Text = Utility.WrapString (App.Language.Localize ("NUMERIC:ZeroTransducer"));
                         lblLine2.Text = "";
                         lblLine3.Text = "";
                     }
@@ -218,7 +218,7 @@ namespace II_Windows.Controls {
                     if (App.Patient.TransducerZeroed_CVP)
                         lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.CVP, 0.02f));
                     else
-                        lblLine1.Text = App.Language.Dictionary ["NUMERIC:ZeroTransducer"];
+                        lblLine1.Text = App.Language.Localize ("NUMERIC:ZeroTransducer");
                     break;
 
                 case ControlType.Values.PA:
@@ -227,7 +227,7 @@ namespace II_Windows.Controls {
                         lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (App.Patient.PDP, 0.02f));
                         lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.PMP, 0.02f));
                     } else {
-                        lblLine1.Text = App.Language.Dictionary ["NUMERIC:ZeroTransducer"];
+                        lblLine1.Text = App.Language.Localize ("NUMERIC:ZeroTransducer");
                         lblLine2.Text = "";
                         lblLine3.Text = "";
                     }
@@ -242,16 +242,16 @@ namespace II_Windows.Controls {
                             lblLine2.Visibility = Visibility.Visible;
                             lblLine3.Visibility = Visibility.Visible;
 
-                            lblLine1.Text = App.Language.Dictionary ["DEFIB:Defibrillation"];
-                            lblLine2.Text = String.Format ("{0:0} {1}", Device.Energy, App.Language.Dictionary ["DEFIB:Joules"]);
+                            lblLine1.Text = App.Language.Localize ("DEFIB:Defibrillation");
+                            lblLine2.Text = String.Format ("{0:0} {1}", Device.Energy, App.Language.Localize ("DEFIB:Joules"));
                             if (Device.Charging)
-                                lblLine3.Text = App.Language.Dictionary ["DEFIB:Charging"];
+                                lblLine3.Text = App.Language.Localize ("DEFIB:Charging");
                             else if (Device.Charged)
-                                lblLine3.Text = App.Language.Dictionary ["DEFIB:Charged"];
+                                lblLine3.Text = App.Language.Localize ("DEFIB:Charged");
                             else if (Device.Analyzed) {
                                 switch (App.Patient.Cardiac_Rhythm.Value) {
                                     default:
-                                        lblLine3.Text = App.Language.Dictionary ["DEFIB:NoShockAdvised"];
+                                        lblLine3.Text = App.Language.Localize ("DEFIB:NoShockAdvised");
                                         break;
 
                                     case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Coarse:
@@ -259,7 +259,7 @@ namespace II_Windows.Controls {
                                     case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
                                     case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
                                     case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Polymorphic:
-                                        lblLine3.Text = App.Language.Dictionary ["DEFIB:ShockAdvised"];
+                                        lblLine3.Text = App.Language.Localize ("DEFIB:ShockAdvised");
                                         break;
                                 }
                             } else
@@ -271,9 +271,9 @@ namespace II_Windows.Controls {
                             lblLine2.Visibility = Visibility.Visible;
                             lblLine3.Visibility = Visibility.Visible;
 
-                            lblLine1.Text = App.Language.Dictionary ["DEFIB:Synchronized"];
-                            lblLine2.Text = String.Format ("{0:0} {1}", Device.Energy, App.Language.Dictionary ["DEFIB:Joules"]);
-                            lblLine3.Text = Device.Charged ? App.Language.Dictionary ["DEFIB:Charged"] : "";
+                            lblLine1.Text = App.Language.Localize ("DEFIB:Synchronized");
+                            lblLine2.Text = String.Format ("{0:0} {1}", Device.Energy, App.Language.Localize ("DEFIB:Joules"));
+                            lblLine3.Text = Device.Charged ? App.Language.Localize ("DEFIB:Charged") : "";
                             break;
 
                         case DeviceDefib.Modes.PACER:
@@ -281,9 +281,9 @@ namespace II_Windows.Controls {
                             lblLine2.Visibility = Visibility.Visible;
                             lblLine3.Visibility = Visibility.Visible;
 
-                            lblLine1.Text = App.Language.Dictionary ["DEFIB:Pacing"];
-                            lblLine2.Text = String.Format ("{0:0} {1}", Device.PacerEnergy, App.Language.Dictionary ["DEFIB:Milliamps"]);
-                            lblLine3.Text = String.Format ("{0}: {1:0}", App.Language.Dictionary ["DEFIB:Rate"], Device.PacerRate);
+                            lblLine1.Text = App.Language.Localize ("DEFIB:Pacing");
+                            lblLine2.Text = String.Format ("{0:0} {1}", Device.PacerEnergy, App.Language.Localize ("DEFIB:Milliamps"));
+                            lblLine3.Text = String.Format ("{0}: {1:0}", App.Language.Localize ("DEFIB:Rate"), Device.PacerRate);
                             break;
                     }
                     break;

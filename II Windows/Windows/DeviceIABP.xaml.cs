@@ -136,30 +136,29 @@ namespace II_Windows {
             icExitProgram = new ActionCommand (() => App.Patient_Editor.Exit ());
 
             // Populate UI strings per language selection
-            var Dictionary = App.Language.Dictionary;
-            wdwDeviceIABP.Title = Dictionary ["IABP:WindowTitle"];
-            menuDevice.Header = Dictionary ["MENU:MenuDeviceOptions"];
-            menuPauseDevice.Header = Dictionary ["MENU:MenuPauseDevice"];
-            menuToggleFullscreen.Header = Dictionary ["MENU:MenuToggleFullscreen"];
-            menuCloseDevice.Header = Dictionary ["MENU:MenuCloseDevice"];
-            menuExitProgram.Header = Dictionary ["MENU:MenuExitProgram"];
+            wdwDeviceIABP.Title = App.Language.Localize ("IABP:WindowTitle");
+            menuDevice.Header = App.Language.Localize ("MENU:MenuDeviceOptions");
+            menuPauseDevice.Header = App.Language.Localize ("MENU:MenuPauseDevice");
+            menuToggleFullscreen.Header = App.Language.Localize ("MENU:MenuToggleFullscreen");
+            menuCloseDevice.Header = App.Language.Localize ("MENU:MenuCloseDevice");
+            menuExitProgram.Header = App.Language.Localize ("MENU:MenuExitProgram");
 
-            buttonModeAuto.Text = Dictionary ["IABPMODE:Auto"];
-            buttonModeSemiAuto.Text = Dictionary ["IABPMODE:SemiAuto"];
-            buttonZero.Text = Utility.WrapString (Dictionary ["IABPBUTTON:ZeroPressure"]);
-            buttonStart.Text = Dictionary ["IABPBUTTON:Start"];
-            buttonPause.Text = Dictionary ["IABPBUTTON:Pause"];
-            btntxtTrigger.Text = Utility.WrapString (Dictionary ["IABPBUTTON:Trigger"]);
-            btntxtFrequency.Text = Utility.WrapString (Dictionary ["IABPBUTTON:Frequency"]);
-            buttonPrimeBalloon.Text = Utility.WrapString (Dictionary ["IABPBUTTON:PrimeBalloon"]);
-            btntxtAugmentationPressure.Text = Utility.WrapString (Dictionary ["IABP:AugmentationPressure"]);
-            btntxtAugmentationAlarm.Text = Utility.WrapString (Dictionary ["IABP:AugmentationAlarm"]);
-            btntxtIncrease.Text = Utility.WrapString (Dictionary ["IABPBUTTON:Increase"]);
-            btntxtDecrease.Text = Utility.WrapString (Dictionary ["IABPBUTTON:Decrease"]);
+            buttonModeAuto.Text = App.Language.Localize ("IABPMODE:Auto");
+            buttonModeSemiAuto.Text = App.Language.Localize ("IABPMODE:SemiAuto");
+            buttonZero.Text = Utility.WrapString (App.Language.Localize ("IABPBUTTON:ZeroPressure"));
+            buttonStart.Text = App.Language.Localize ("IABPBUTTON:Start");
+            buttonPause.Text = App.Language.Localize ("IABPBUTTON:Pause");
+            btntxtTrigger.Text = Utility.WrapString (App.Language.Localize ("IABPBUTTON:Trigger"));
+            btntxtFrequency.Text = Utility.WrapString (App.Language.Localize ("IABPBUTTON:Frequency"));
+            buttonPrimeBalloon.Text = Utility.WrapString (App.Language.Localize ("IABPBUTTON:PrimeBalloon"));
+            btntxtAugmentationPressure.Text = Utility.WrapString (App.Language.Localize ("IABP:AugmentationPressure"));
+            btntxtAugmentationAlarm.Text = Utility.WrapString (App.Language.Localize ("IABP:AugmentationAlarm"));
+            btntxtIncrease.Text = Utility.WrapString (App.Language.Localize ("IABPBUTTON:Increase"));
+            btntxtDecrease.Text = Utility.WrapString (App.Language.Localize ("IABPBUTTON:Decrease"));
 
             // Random helium tank remaining amount... it's for show!
             lblHelium.Text = String.Format ("{0}: {1:0}%",
-                Utility.WrapString (Dictionary ["IABP:Helium"]),
+                Utility.WrapString (App.Language.Localize ("IABP:Helium")),
                 Utility.RandomDouble (20, 80));
 
             // Instantiate and add Tracings to UI
@@ -186,14 +185,14 @@ namespace II_Windows {
         private void UpdateInterface () {
             var Dictionary = App.Language.Dictionary;
 
-            lblTriggerSource.Text = Dictionary [Trigger.LookupString ()];
+            lblTriggerSource.Text = App.Language.Localize (Trigger.LookupString ());
             switch (Trigger.Value) {
                 default:
                 case Triggering.Values.ECG: lblTriggerSource.Foreground = Brushes.Green; break;
                 case Triggering.Values.Pressure: lblTriggerSource.Foreground = Brushes.Red; break;
             }
 
-            lblOperationMode.Text = Dictionary [Mode.LookupString ()];
+            lblOperationMode.Text = App.Language.Localize (Mode.LookupString ());
 
             lblFrequency.Text = String.Format ("1 : {0}", Frequency);
             switch (Frequency) {
@@ -204,21 +203,21 @@ namespace II_Windows {
             }
 
             if (Running) {
-                lblMachineStatus.Text = Dictionary ["IABP:Running"];
+                lblMachineStatus.Text = App.Language.Localize ("IABP:Running");
                 lblMachineStatus.Foreground = Brushes.LightGreen;
             } else {
-                lblMachineStatus.Text = Dictionary ["IABP:Paused"];
+                lblMachineStatus.Text = App.Language.Localize ("IABP:Paused");
                 lblMachineStatus.Foreground = Brushes.Yellow;
             }
 
             if (Priming) {
-                lblTubingStatus.Text = Dictionary ["IABP:Priming"];
+                lblTubingStatus.Text = App.Language.Localize ("IABP:Priming");
                 lblTubingStatus.Foreground = Brushes.Yellow;
             } else if (Primed) {
-                lblTubingStatus.Text = Dictionary ["IABP:Primed"];
+                lblTubingStatus.Text = App.Language.Localize ("IABP:Primed");
                 lblTubingStatus.Foreground = Brushes.LightGreen;
             } else {
-                lblTubingStatus.Text = Dictionary ["IABP:NotPrimed"];
+                lblTubingStatus.Text = App.Language.Localize ("IABP:NotPrimed");
                 lblTubingStatus.Foreground = Brushes.OrangeRed;
             }
         }

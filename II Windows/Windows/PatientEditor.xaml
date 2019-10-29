@@ -9,10 +9,9 @@
 		Name="wdwPatientEditor"
 		Title="PatientEditor"
 		Icon="{StaticResource Icon_Infirmary}"
-		WindowStartupLocation="CenterScreen"
+		WindowState="Maximized"
 		MinHeight="560"
 		MinWidth="700"
-		Height="600"
 		SizeToContent="Width"
 		Closed="OnClosed">
 
@@ -302,84 +301,89 @@
 		<!-- Column for Patient Editor -->
 		<ScrollViewer VerticalScrollBarVisibility="Auto"
 					  HorizontalScrollBarVisibility="Auto">
-			<StackPanel Margin="3"
-						Height="Auto">
+			<Border Name="brdPendingChangesIndicator"
+					Margin="5, 0"
+					BorderThickness="0 0 5 0"
+					BorderBrush="Transparent">
 
-				<!-- Group for Patient Mirroring -->
-				<Border Margin="5,18,5,5"
+				<StackPanel Margin="3"
+							Height="Auto">
+
+					<!-- Group for Patient Mirroring -->
+					<Border Margin="5,18,5,5"
 						Style="{StaticResource expBorder}">
-					<Expander Name="expMirroring"
+						<Expander Name="expMirroring"
 							  IsExpanded="False">
-						<Expander.Header>
-							<Label Name="lblGroupMirroring"
+							<Expander.Header>
+								<Label Name="lblGroupMirroring"
 								   Style="{StaticResource expHeader}" />
-						</Expander.Header>
+							</Expander.Header>
 
-						<Grid>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition />
-								<ColumnDefinition />
-							</Grid.ColumnDefinitions>
-							<Grid.RowDefinitions>
-								<RowDefinition />
-								<RowDefinition />
-								<RowDefinition />
-								<RowDefinition />
-								<RowDefinition />
-							</Grid.RowDefinitions>
-							<GroupBox Margin="3"
+							<Grid>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition />
+									<ColumnDefinition />
+								</Grid.ColumnDefinitions>
+								<Grid.RowDefinitions>
+									<RowDefinition />
+									<RowDefinition />
+									<RowDefinition />
+									<RowDefinition />
+									<RowDefinition />
+								</Grid.RowDefinitions>
+								<GroupBox Margin="3"
 									  Grid.Column="0"
 									  Grid.Row="0"
 									  Grid.ColumnSpan="2">
-								<GroupBox.Header>
-									<Label Name="lblMirrorStatus" />
-								</GroupBox.Header>
+									<GroupBox.Header>
+										<Label Name="lblMirrorStatus" />
+									</GroupBox.Header>
 
-								<Grid>
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="*" />
-										<ColumnDefinition Width="*" />
-										<ColumnDefinition Width="*" />
-									</Grid.ColumnDefinitions>
+									<Grid>
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="*" />
+											<ColumnDefinition Width="*" />
+											<ColumnDefinition Width="*" />
+										</Grid.ColumnDefinitions>
 
-									<RadioButton Name="radioInactive"
+										<RadioButton Name="radioInactive"
 												 Margin="5,3"
 												 IsChecked="True"
 												 Checked="RadioMirrorSelected_Click"
 												 GroupName="mirrorStatus"
 												 Grid.Column="0" />
-									<RadioButton Name="radioClient"
+										<RadioButton Name="radioClient"
 												 Margin="5,3"
 												 Checked="RadioMirrorSelected_Click"
 												 GroupName="mirrorStatus"
 												 Grid.Column="1" />
-									<RadioButton Name="radioServer"
+										<RadioButton Name="radioServer"
 												 Margin="5,3"
 												 Checked="RadioMirrorSelected_Click"
 												 GroupName="mirrorStatus"
 												 Grid.Column="2" />
-								</Grid>
-							</GroupBox>
+									</Grid>
+								</GroupBox>
 
-							<Label Name="lblAccessionKey"
+								<Label Name="lblAccessionKey"
 								   Grid.Column="0"
 								   Grid.Row="1" />
-							<Label Name="lblAccessPassword"
+								<Label Name="lblAccessPassword"
 								   Grid.Column="0"
 								   Grid.Row="2" />
-							<Label Name="lblAdminPassword"
+								<Label Name="lblAdminPassword"
 								   Grid.Column="0"
 								   Grid.Row="3" />
-							<Grid Grid.Column="1"
+								<Grid Grid.Column="1"
 								  Grid.Row="1">
-								<Grid.RowDefinitions>
-									<RowDefinition />
-								</Grid.RowDefinitions>
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="*" />
-									<ColumnDefinition Width="Auto" />
-								</Grid.ColumnDefinitions>
-								<TextBox Name="txtAccessionKey"
+									<Grid.RowDefinitions>
+										<RowDefinition />
+									</Grid.RowDefinitions>
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="*" />
+										<ColumnDefinition Width="Auto" />
+									</Grid.ColumnDefinitions>
+									<TextBox Name="txtAccessionKey"
 										 IsEnabled="False"
 										 Grid.Column="0"
 										 VerticalContentAlignment="Center"
@@ -387,901 +391,1062 @@
 										 MaxLength="8"
 										 CharacterCasing="Upper"
 										 PreviewTextInput="TextBoxAccessionKey_PreviewTextInput" />
-								<Button Name="btnGenerateAccessionKey"
+									<Button Name="btnGenerateAccessionKey"
 										IsEnabled="False"
 										Grid.Column="1"
 										Width="25"
 										Content="+"
 										Click="ButtonGenerateAccessionKey_Click" />
-							</Grid>
-							<PasswordBox Name="txtAccessPassword"
+								</Grid>
+								<PasswordBox Name="txtAccessPassword"
 										 IsEnabled="False"
 										 VerticalContentAlignment="Center"
 										 Grid.Column="1"
 										 Grid.Row="2" />
-							<PasswordBox Name="txtAdminPassword"
+								<PasswordBox Name="txtAdminPassword"
 										 IsEnabled="False"
 										 VerticalContentAlignment="Center"
 										 Grid.Column="1"
 										 Grid.Row="3" />
-							<Button Name="btnApplyMirroring"
+								<Button Name="btnApplyMirroring"
 									Margin="5"
 									Click="ButtonApplyMirroring_Click"
 									Height="22"
 									Grid.Column="0"
 									Grid.Row="4"
 									Grid.ColumnSpan="2" />
-						</Grid>
-					</Expander>
-				</Border>
+							</Grid>
+						</Expander>
+					</Border>
 
-				<!-- Group for Scenario Player -->
-				<Border Name="brdScenarioPlayer"
+					<!-- Group for Scenario Player -->
+					<Border Name="brdScenarioPlayer"
 						Style="{StaticResource expBorder}">
-					<Expander Name="expScenarioPlayer"
+						<Expander Name="expScenarioPlayer"
 							  IsExpanded="False"
 							  IsEnabled="False">
-						<Expander.Header>
-							<Label Name="lblGroupScenarioPlayer"
+							<Expander.Header>
+								<Label Name="lblGroupScenarioPlayer"
 								   Style="{StaticResource expHeader}" />
-						</Expander.Header>
+							</Expander.Header>
 
-						<Grid Margin="3">
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-							</Grid.RowDefinitions>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="*" />
-								<ColumnDefinition Width="*" />
-								<ColumnDefinition Width="*" />
-								<ColumnDefinition Width="*" />
-							</Grid.ColumnDefinitions>
-							<Button Name="btnPreviousStep"
+							<Grid Margin="3">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*" />
+									<ColumnDefinition Width="*" />
+									<ColumnDefinition Width="*" />
+									<ColumnDefinition Width="*" />
+								</Grid.ColumnDefinitions>
+								<Button Name="btnPreviousStep"
 									Click="ButtonPreviousStep_Click"
 									Style="{StaticResource btn}"
 									Grid.Column="0"
 									Grid.Row="0">
-								<Image Source="{StaticResource Icon_PlayerArrowBack}"
+									<Image Source="{StaticResource Icon_PlayerArrowBack}"
 									   Style="{StaticResource btnImage}" />
-							</Button>
-							<Button Name="btnPauseStep"
+								</Button>
+								<Button Name="btnPauseStep"
 									IsEnabled="False"
 									Click="ButtonPauseStep_Click"
 									Style="{StaticResource btn}"
 									Grid.Column="1"
 									Grid.Row="0">
-								<Image Source="{StaticResource Icon_PlayerPause}"
+									<Image Source="{StaticResource Icon_PlayerPause}"
 									   Style="{StaticResource btnImage}" />
-							</Button>
-							<Button Name="btnPlayStep"
+								</Button>
+								<Button Name="btnPlayStep"
 									IsEnabled="False"
 									Click="ButtonPlayStep_Click"
 									Style="{StaticResource btn}"
 									Grid.Column="2"
 									Grid.Row="0">
-								<Image Source="{StaticResource Icon_PlayerArrowPlay}"
+									<Image Source="{StaticResource Icon_PlayerArrowPlay}"
 									   Style="{StaticResource btnImage}" />
-							</Button>
-							<Button Name="btnNextStep"
+								</Button>
+								<Button Name="btnNextStep"
 									Click="ButtonNextStep_Click"
 									Style="{StaticResource btn}"
 									Grid.Column="3"
 									Grid.Row="0">
-								<Image Source="{StaticResource Icon_PlayerArrowNext}"
+									<Image Source="{StaticResource Icon_PlayerArrowNext}"
 									   Style="{StaticResource btnImage}" />
-							</Button>
+								</Button>
 
-							<Label Name="lblScenarioStep"
+								<Label Name="lblScenarioStep"
 								   HorizontalAlignment="Center"
 								   Grid.Column="0"
 								   Grid.Row="1"
 								   Grid.ColumnSpan="4" />
 
-							<Label Name="lblTimerStep"
+								<Label Name="lblTimerStep"
 								   HorizontalAlignment="Center"
 								   Grid.Column="0"
 								   Grid.Row="2"
 								   Grid.ColumnSpan="4" />
 
-							<GroupBox Name="grpProgressions"
+								<GroupBox Name="grpProgressions"
 									  Margin="5, 2"
 									  Grid.Column="0"
 									  Grid.Row="3"
 									  Grid.ColumnSpan="4">
-								<GroupBox.Header>
-									<Label Name="lblProgressionOptions"
+									<GroupBox.Header>
+										<Label Name="lblProgressionOptions"
 										   Margin="5, 2" />
-								</GroupBox.Header>
-								<StackPanel Name="stackProgressions"
+									</GroupBox.Header>
+									<StackPanel Name="stackProgressions"
 											Orientation="Vertical" />
-							</GroupBox>
-						</Grid>
-					</Expander>
-				</Border>
+								</GroupBox>
+							</Grid>
+						</Expander>
+					</Border>
 
-				<!-- Group for Basic Vital Signs -->
-				<Border Style="{StaticResource expBorder}">
-					<Expander Name="expVitalSigns"
+					<!-- Group for Basic Vital Signs -->
+					<Border Style="{StaticResource expBorder}">
+						<Expander Name="expVitalSigns"
 							  IsExpanded="True">
-						<Expander.Header>
-							<Label Name="lblGroupVitalSigns"
+							<Expander.Header>
+								<Label Name="lblGroupVitalSigns"
 								   Style="{StaticResource expHeader}" />
-						</Expander.Header>
+							</Expander.Header>
 
-						<Grid Margin="3">
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-							</Grid.RowDefinitions>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="Auto" />
-							</Grid.ColumnDefinitions>
+							<Grid Margin="3">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
+								</Grid.ColumnDefinitions>
 
-							<Label Name="lblHR"
+								<Label Name="lblHR"
 								   Grid.Column="0"
 								   Grid.Row="0" />
-							<xctk:IntegerUpDown Name="numHR"
+								<xctk:IntegerUpDown Name="numHR"
 												Increment="5"
 												Minimum="0"
 												Maximum="500"
 												Grid.Column="1"
 												Grid.Row="0"
-												Style="{StaticResource intUpDown}" />
-							<Label Name="lblNIBP"
+												Style="{StaticResource intUpDown}"
+												KeyDown="OnUIPatientParameter_KeyDown"
+												GotFocus="OnUIPatientParameter_GotFocus"
+												LostFocus="OnUIPatientParameter_LostFocus" />
+								<Label Name="lblNIBP"
 								   Grid.Column="0"
 								   Grid.Row="1" />
-							<xctk:IntegerUpDown Name="numNSBP"
+								<xctk:IntegerUpDown Name="numNSBP"
 												Increment="5"
 												Minimum="0"
 												Maximum="300"
 												Grid.Column="1"
 												Grid.Row="1"
-												Style="{StaticResource intUpDown}" />
-							<Label Name="lblNDBP"
+												Style="{StaticResource intUpDown}"
+												KeyDown="OnUIPatientParameter_KeyDown"
+												GotFocus="OnUIPatientParameter_GotFocus"
+												LostFocus="OnUIPatientParameter_LostFocus" />
+								<Label Name="lblNDBP"
 								   Grid.Column="2"
 								   Grid.Row="1"
 								   Content="/" />
-							<xctk:IntegerUpDown Name="numNDBP"
+								<xctk:IntegerUpDown Name="numNDBP"
 												Increment="5"
 												Minimum="0"
 												Maximum="200"
 												Grid.Column="3"
 												Grid.Row="1"
-												Style="{StaticResource intUpDown}" />
-							<Label Name="lblRR"
+												Style="{StaticResource intUpDown}"
+												KeyDown="OnUIPatientParameter_KeyDown"
+												GotFocus="OnUIPatientParameter_GotFocus"
+												LostFocus="OnUIPatientParameter_LostFocus" />
+								<Label Name="lblRR"
 								   Grid.Column="0"
 								   Grid.Row="2" />
-							<xctk:IntegerUpDown Name="numRR"
+								<xctk:IntegerUpDown Name="numRR"
 												Increment="2"
 												Minimum="0"
 												Maximum="100"
 												Grid.Column="1"
 												Grid.Row="2"
-												Style="{StaticResource intUpDown}" />
-							<Label Name="lblSPO2"
+												Style="{StaticResource intUpDown}"
+												KeyDown="OnUIPatientParameter_KeyDown"
+												GotFocus="OnUIPatientParameter_GotFocus"
+												LostFocus="OnUIPatientParameter_LostFocus" />
+								<Label Name="lblSPO2"
 								   Grid.Column="0"
 								   Grid.Row="3" />
-							<xctk:IntegerUpDown Name="numSPO2"
+								<xctk:IntegerUpDown Name="numSPO2"
 												Increment="2"
 												Minimum="0"
 												Maximum="100"
 												Grid.Column="1"
 												Grid.Row="3"
-												Style="{StaticResource intUpDown}" />
-							<Label Name="lblT"
+												Style="{StaticResource intUpDown}"
+												KeyDown="OnUIPatientParameter_KeyDown"
+												GotFocus="OnUIPatientParameter_GotFocus"
+												LostFocus="OnUIPatientParameter_LostFocus" />
+								<Label Name="lblT"
 								   Grid.Column="0"
 								   Grid.Row="4" />
-							<xctk:DecimalUpDown Name="numT"
+								<xctk:DecimalUpDown Name="numT"
 												Increment="0.2"
 												Minimum="0"
 												Maximum="100"
 												Grid.Column="1"
 												Grid.Row="4"
-												Style="{StaticResource decUpDown}" />
+												Style="{StaticResource decUpDown}"
+												KeyDown="OnUIPatientParameter_KeyDown"
+												GotFocus="OnUIPatientParameter_GotFocus"
+												LostFocus="OnUIPatientParameter_LostFocus" />
 
-							<!-- Cardiac Rhythms -->
-							<Label Name="lblCardiacRhythm"
+								<!-- Cardiac Rhythms -->
+								<Label Name="lblCardiacRhythm"
 								   Grid.Column="0"
 								   Grid.Row="5" />
-							<ComboBox Name="comboCardiacRhythm"
+								<ComboBox Name="comboCardiacRhythm"
 									  Grid.Column="0"
 									  Grid.Row="6"
 									  Grid.ColumnSpan="4"
 									  Style="{StaticResource cmb}"
-									  SelectionChanged="OnCardiacRhythmSelected" />
+									  SelectionChanged="OnCardiacRhythm_Selected" />
 
-							<!-- Respiratory Rhythms -->
-							<Label Name="lblRespiratoryRhythm"
+								<!-- Respiratory Rhythms -->
+								<Label Name="lblRespiratoryRhythm"
 								   Grid.Column="0"
 								   Grid.Row="7"
 								   Grid.ColumnSpan="4" />
-							<ComboBox Name="comboRespiratoryRhythm"
+								<ComboBox Name="comboRespiratoryRhythm"
 									  Grid.Column="0"
 									  Grid.Row="8"
 									  Grid.ColumnSpan="4"
 									  Style="{StaticResource cmb}"
-									  SelectionChanged="OnRespiratoryRhythmSelected" />
+									  SelectionChanged="OnRespiratoryRhythm_Selected" />
 
-							<CheckBox Name="checkDefaultVitals"
+								<CheckBox Name="checkDefaultVitals"
 									  Grid.Column="0"
 									  Grid.Row="9"
 									  Grid.ColumnSpan="4"
 									  IsChecked="True" />
-						</Grid>
-					</Expander>
-				</Border>
+							</Grid>
+						</Expander>
+					</Border>
 
-				<!-- Group for Advanced Hemodynamics -->
-				<Border Style="{StaticResource expBorder}">
-					<Expander Name="expHemodynamics"
+					<!-- Group for Advanced Hemodynamics -->
+					<Border Style="{StaticResource expBorder}">
+						<Expander Name="expHemodynamics"
 							  IsExpanded="False"
 							  Style="{StaticResource expParameters}">
-						<Expander.Header>
-							<Label Name="lblGroupHemodynamics"
+							<Expander.Header>
+								<Label Name="lblGroupHemodynamics"
 								   Style="{StaticResource expHeader}" />
-						</Expander.Header>
+							</Expander.Header>
 
-						<Grid Margin="3">
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-							</Grid.RowDefinitions>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="Auto" />
-							</Grid.ColumnDefinitions>
+							<Grid Margin="3">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
+								</Grid.ColumnDefinitions>
 
-							<Label Name="lblETCO2"
+								<Label Name="lblETCO2"
 								   Grid.Column="0"
 								   Grid.Row="0" />
-							<xctk:IntegerUpDown Name="numETCO2"
+								<xctk:IntegerUpDown Name="numETCO2"
 												Increment="2"
 												Minimum="0"
 												Maximum="100"
 												Grid.Column="1"
 												Grid.Row="0"
-												Style="{StaticResource intUpDown}" />
-							<Label Name="lblCVP"
+												Style="{StaticResource intUpDown}"
+												KeyDown="OnUIPatientParameter_KeyDown"
+												GotFocus="OnUIPatientParameter_GotFocus"
+												LostFocus="OnUIPatientParameter_LostFocus" />
+								<Label Name="lblCVP"
 								   Grid.Column="0"
 								   Grid.Row="1" />
-							<xctk:IntegerUpDown Name="numCVP"
+								<xctk:IntegerUpDown Name="numCVP"
 												Increment="1"
 												Minimum="-100"
 												Maximum="100"
 												Grid.Column="1"
 												Grid.Row="1"
-												Style="{StaticResource intUpDown}" />
-							<Label Name="lblASBP"
+												Style="{StaticResource intUpDown}"
+												KeyDown="OnUIPatientParameter_KeyDown"
+												GotFocus="OnUIPatientParameter_GotFocus"
+												LostFocus="OnUIPatientParameter_LostFocus" />
+								<Label Name="lblASBP"
 								   Grid.Column="0"
 								   Grid.Row="2" />
-							<xctk:IntegerUpDown Name="numASBP"
+								<xctk:IntegerUpDown Name="numASBP"
 												Increment="5"
 												Minimum="0"
 												Maximum="300"
 												Grid.Column="1"
 												Grid.Row="2"
-												Style="{StaticResource intUpDown}" />
-							<Label Name="lblADBP"
+												Style="{StaticResource intUpDown}"
+												KeyDown="OnUIPatientParameter_KeyDown"
+												GotFocus="OnUIPatientParameter_GotFocus"
+												LostFocus="OnUIPatientParameter_LostFocus" />
+								<Label Name="lblADBP"
 								   Grid.Column="2"
 								   Grid.Row="2"
 								   Content="/" />
-							<xctk:IntegerUpDown Name="numADBP"
+								<xctk:IntegerUpDown Name="numADBP"
 												Increment="5"
 												Minimum="0"
 												Maximum="200"
 												Grid.Column="3"
 												Grid.Row="2"
-												Style="{StaticResource intUpDown}" />
+												Style="{StaticResource intUpDown}"
+												KeyDown="OnUIPatientParameter_KeyDown"
+												GotFocus="OnUIPatientParameter_GotFocus"
+												LostFocus="OnUIPatientParameter_LostFocus" />
 
-							<!-- Pulmonary Artery Catheter Rhythms -->
-							<Label Name="lblPACatheterPlacement"
+								<!-- Pulmonary Artery Catheter Rhythms -->
+								<Label Name="lblPACatheterPlacement"
 								   Grid.Column="0"
 								   Grid.Row="3"
 								   Grid.ColumnSpan="4" />
-							<ComboBox Name="comboPACatheterPlacement"
+								<ComboBox Name="comboPACatheterPlacement"
 									  Grid.Column="0"
 									  Grid.Row="4"
 									  Grid.ColumnSpan="4"
 									  Style="{StaticResource cmb}"
-									  SelectionChanged="OnPulmonaryArteryRhythmSelected" />
+									  SelectionChanged="OnPulmonaryArteryRhythm_Selected" />
 
-							<Label Name="lblPSP"
+								<Label Name="lblPSP"
 								   Grid.Column="0"
 								   Grid.Row="5" />
-							<xctk:IntegerUpDown Name="numPSP"
+								<xctk:IntegerUpDown Name="numPSP"
 												Increment="2"
 												Minimum="0"
 												Maximum="200"
 												Grid.Column="1"
 												Grid.Row="5"
-												Style="{StaticResource intUpDown}" />
-							<Label Name="lblPDP"
+												Style="{StaticResource intUpDown}"
+												KeyDown="OnUIPatientParameter_KeyDown"
+												GotFocus="OnUIPatientParameter_GotFocus"
+												LostFocus="OnUIPatientParameter_LostFocus" />
+								<Label Name="lblPDP"
 								   Grid.Column="2"
 								   Grid.Row="5"
 								   Content="/" />
-							<xctk:IntegerUpDown Name="numPDP"
+								<xctk:IntegerUpDown Name="numPDP"
 												Increment="2"
 												Minimum="0"
 												Maximum="200"
 												Grid.Column="3"
 												Grid.Row="5"
-												Style="{StaticResource intUpDown}" />
-							<Label Name="lblICP"
+												Style="{StaticResource intUpDown}"
+												KeyDown="OnUIPatientParameter_KeyDown"
+												GotFocus="OnUIPatientParameter_GotFocus"
+												LostFocus="OnUIPatientParameter_LostFocus" />
+								<Label Name="lblICP"
 								   Grid.Column="0"
 								   Grid.Row="6" />
-							<xctk:IntegerUpDown Name="numICP"
+								<xctk:IntegerUpDown Name="numICP"
 												Increment="1"
 												Minimum="-50"
 												Maximum="50"
 												Grid.Column="1"
 												Grid.Row="6"
-												Style="{StaticResource intUpDown}" />
-							<Label Name="lblIAP"
+												Style="{StaticResource intUpDown}"
+												KeyDown="OnUIPatientParameter_KeyDown"
+												GotFocus="OnUIPatientParameter_GotFocus"
+												LostFocus="OnUIPatientParameter_LostFocus" />
+								<Label Name="lblIAP"
 								   Grid.Column="0"
 								   Grid.Row="7" />
-							<xctk:IntegerUpDown Name="numIAP"
+								<xctk:IntegerUpDown Name="numIAP"
 												Increment="1"
 												Minimum="-50"
 												Maximum="50"
 												Grid.Column="1"
 												Grid.Row="7"
-												Style="{StaticResource intUpDown}" />
-						</Grid>
-					</Expander>
-				</Border>
+												Style="{StaticResource intUpDown}"
+												KeyDown="OnUIPatientParameter_KeyDown"
+												GotFocus="OnUIPatientParameter_GotFocus"
+												LostFocus="OnUIPatientParameter_LostFocus" />
+							</Grid>
+						</Expander>
+					</Border>
 
-				<!-- Group for Respiratory Profile -->
-				<Border Style="{StaticResource expBorder}">
-					<Expander Name="expRespiratoryProfile"
+					<!-- Group for Respiratory Profile -->
+					<Border Style="{StaticResource expBorder}">
+						<Expander Name="expRespiratoryProfile"
 							  IsExpanded="False"
 							  Visibility="Visible"
 							  Style="{StaticResource expParameters}">
-						<Expander.Header>
-							<Label Name="lblGroupRespiratoryProfile"
+							<Expander.Header>
+								<Label Name="lblGroupRespiratoryProfile"
 								   Style="{StaticResource expHeader}" />
-						</Expander.Header>
+							</Expander.Header>
 
-						<Grid Margin="3">
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-							</Grid.RowDefinitions>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="Auto" />
-							</Grid.ColumnDefinitions>
+							<Grid Margin="3">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
+								</Grid.ColumnDefinitions>
 
-							<Label Name="lblMechanicallyVentilated"
+								<Label Name="lblMechanicallyVentilated"
 								   Grid.Column="0" />
-							<CheckBox Name="chkMechanicallyVentilated"
+								<CheckBox Name="chkMechanicallyVentilated"
 									  Grid.Column="1"
 									  VerticalAlignment="Center"
-									  IsChecked="False" />
+									  IsChecked="False"
+									  KeyDown="OnUIPatientParameter_KeyDown"
+									  GotFocus="OnUIPatientParameter_GotFocus"
+									  LostFocus="OnUIPatientParameter_LostFocus" />
 
-							<!-- I:E Ratio -->
-							<Label Name="lblInspiratoryRatio"
+								<!-- I:E Ratio -->
+								<Label Name="lblInspiratoryRatio"
 								   Grid.Column="0"
 								   Grid.Row="1" />
-							<xctk:DecimalUpDown Name="numInspiratoryRatio"
+								<xctk:DecimalUpDown Name="numInspiratoryRatio"
 												Increment="0.1"
 												Minimum="0.1"
 												Maximum="10"
 												Grid.Column="1"
 												Grid.Row="1"
-												Style="{StaticResource decUpDown}" />
-							<Label Name="lblExpiratoryRatio"
+												Style="{StaticResource decUpDown}"
+												KeyDown="OnUIPatientParameter_KeyDown"
+												GotFocus="OnUIPatientParameter_GotFocus"
+												LostFocus="OnUIPatientParameter_LostFocus" />
+								<Label Name="lblExpiratoryRatio"
 								   Grid.Column="2"
 								   Grid.Row="1"
 								   Content=":" />
-							<xctk:DecimalUpDown Name="numExpiratoryRatio"
+								<xctk:DecimalUpDown Name="numExpiratoryRatio"
 												Increment="0.1"
 												Minimum="0.1"
 												Maximum="10"
 												Grid.Column="3"
 												Grid.Row="1"
-												Style="{StaticResource decUpDown}" />
-						</Grid>
-					</Expander>
-				</Border>
+												Style="{StaticResource decUpDown}"
+												KeyDown="OnUIPatientParameter_KeyDown"
+												GotFocus="OnUIPatientParameter_GotFocus"
+												LostFocus="OnUIPatientParameter_LostFocus" />
+							</Grid>
+						</Expander>
+					</Border>
 
-				<!-- Group for Cardiac Profile -->
-				<Border Style="{StaticResource expBorder}">
-					<Expander Name="expCardiacProfile"
+					<!-- Group for Cardiac Profile -->
+					<Border Style="{StaticResource expBorder}">
+						<Expander Name="expCardiacProfile"
 							  IsExpanded="False"
 							  Style="{StaticResource expParameters}">
-						<Expander.Header>
-							<Label Name="lblGroupCardiacProfile"
+							<Expander.Header>
+								<Label Name="lblGroupCardiacProfile"
 								   Style="{StaticResource expHeader}" />
-						</Expander.Header>
+							</Expander.Header>
 
-						<Grid Margin="3">
-							<Grid.RowDefinitions>
-								<RowDefinition />
-								<RowDefinition />
-								<RowDefinition />
-								<RowDefinition />
-								<RowDefinition />
-								<RowDefinition />
-								<RowDefinition />
-							</Grid.RowDefinitions>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition />
-								<ColumnDefinition />
-							</Grid.ColumnDefinitions>
+							<Grid Margin="3">
+								<Grid.RowDefinitions>
+									<RowDefinition />
+									<RowDefinition />
+									<RowDefinition />
+									<RowDefinition />
+									<RowDefinition />
+									<RowDefinition />
+									<RowDefinition />
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition />
+									<ColumnDefinition />
+								</Grid.ColumnDefinitions>
 
-							<Label Name="lblPacemakerCaptureThreshold"
+								<Label Name="lblPacemakerCaptureThreshold"
 								   Grid.Column="0"
 								   Grid.Row="0" />
-							<xctk:IntegerUpDown Name="numPacemakerCaptureThreshold"
+								<xctk:IntegerUpDown Name="numPacemakerCaptureThreshold"
 												Increment="5"
 												Minimum="0"
 												Maximum="200"
 												Grid.Column="1"
 												Grid.Row="0"
-												Style="{StaticResource intUpDown}" />
+												Style="{StaticResource intUpDown}"
+												KeyDown="OnUIPatientParameter_KeyDown"
+												GotFocus="OnUIPatientParameter_GotFocus"
+												LostFocus="OnUIPatientParameter_LostFocus" />
 
-							<Label Name="lblPulsusParadoxus"
+								<Label Name="lblPulsusParadoxus"
 								   Grid.Column="0"
 								   Grid.Row="1" />
-							<CheckBox Name="chkPulsusParadoxus"
+								<CheckBox Name="chkPulsusParadoxus"
 									  Grid.Column="1"
 									  Grid.Row="1"
 									  VerticalAlignment="Center"
-									  IsChecked="False" />
+									  IsChecked="False"
+									  KeyDown="OnUIPatientParameter_KeyDown"
+									  GotFocus="OnUIPatientParameter_GotFocus"
+									  LostFocus="OnUIPatientParameter_LostFocus" />
 
-							<Label Name="lblPulsusAlternans"
+								<Label Name="lblPulsusAlternans"
 								   Grid.Column="0"
 								   Grid.Row="2" />
-							<CheckBox Name="chkPulsusAlternans"
+								<CheckBox Name="chkPulsusAlternans"
 									  Grid.Column="1"
 									  Grid.Row="2"
 									  VerticalAlignment="Center"
-									  IsChecked="False" />
+									  IsChecked="False"
+									  KeyDown="OnUIPatientParameter_KeyDown"
+									  GotFocus="OnUIPatientParameter_GotFocus"
+									  LostFocus="OnUIPatientParameter_LostFocus" />
 
-							<!-- Cardiac Axis Deviation -->
-							<Label Name="lblCardiacAxis"
+								<!-- Cardiac Axis Deviation -->
+								<Label Name="lblCardiacAxis"
 								   Grid.Column="0"
 								   Grid.Row="3" />
-							<ComboBox Name="comboCardiacAxis"
+								<ComboBox Name="comboCardiacAxis"
 									  Grid.Column="0"
 									  Grid.Row="4"
-									  Grid.ColumnSpan="2" />
+									  Grid.ColumnSpan="2"
+									  KeyDown="OnUIPatientParameter_KeyDown"
+									  GotFocus="OnUIPatientParameter_GotFocus"
+									  LostFocus="OnUIPatientParameter_LostFocus" />
 
-							<!-- ST Segment Elevation -->
-							<GroupBox Name="grpSTSegmentElevation"
+								<!-- ST Segment Elevation -->
+								<GroupBox Name="grpSTSegmentElevation"
 									  Style="{StaticResource grpParameters}"
 									  Grid.Column="0"
 									  Grid.Row="5"
 									  Grid.ColumnSpan="2">
-								<Grid Margin="3">
-									<Grid.RowDefinitions>
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="Auto" />
-									</Grid.RowDefinitions>
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-									</Grid.ColumnDefinitions>
+									<Grid Margin="3">
+										<Grid.RowDefinitions>
+											<RowDefinition Height="Auto" />
+											<RowDefinition Height="Auto" />
+											<RowDefinition Height="Auto" />
+										</Grid.RowDefinitions>
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="Auto" />
+										</Grid.ColumnDefinitions>
 
-									<Label Grid.Column="0"
+										<Label Grid.Column="0"
 										   Grid.Row="0"
 										   Content="I" />
-									<xctk:DecimalUpDown Name="numSTE_I"
+										<xctk:DecimalUpDown Name="numSTE_I"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="1"
 														Grid.Row="0"
-														Style="{StaticResource decUpDown}" />
-									<Label Grid.Column="0"
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
+										<Label Grid.Column="0"
 										   Grid.Row="1"
 										   Content="II" />
-									<xctk:DecimalUpDown Name="numSTE_II"
+										<xctk:DecimalUpDown Name="numSTE_II"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="1"
 														Grid.Row="1"
-														Style="{StaticResource decUpDown}" />
-									<Label Grid.Column="0"
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
+										<Label Grid.Column="0"
 										   Grid.Row="2"
 										   Content="III" />
-									<xctk:DecimalUpDown Name="numSTE_III"
+										<xctk:DecimalUpDown Name="numSTE_III"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="1"
 														Grid.Row="2"
-														Style="{StaticResource decUpDown}" />
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
 
-									<Label Grid.Column="2"
+										<Label Grid.Column="2"
 										   Grid.Row="0"
 										   Content="aVR" />
-									<xctk:DecimalUpDown Name="numSTE_aVR"
+										<xctk:DecimalUpDown Name="numSTE_aVR"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="3"
 														Grid.Row="0"
-														Style="{StaticResource decUpDown}" />
-									<Label Grid.Column="2"
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
+										<Label Grid.Column="2"
 										   Grid.Row="1"
 										   Content="aVL" />
-									<xctk:DecimalUpDown Name="numSTE_aVL"
+										<xctk:DecimalUpDown Name="numSTE_aVL"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="3"
 														Grid.Row="1"
-														Style="{StaticResource decUpDown}" />
-									<Label Grid.Column="2"
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
+										<Label Grid.Column="2"
 										   Grid.Row="2"
 										   Content="aVF" />
-									<xctk:DecimalUpDown Name="numSTE_aVF"
+										<xctk:DecimalUpDown Name="numSTE_aVF"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="3"
 														Grid.Row="2"
-														Style="{StaticResource decUpDown}" />
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
 
-									<Label Grid.Column="4"
+										<Label Grid.Column="4"
 										   Grid.Row="0"
 										   Content="V1" />
-									<xctk:DecimalUpDown Name="numSTE_V1"
+										<xctk:DecimalUpDown Name="numSTE_V1"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="5"
 														Grid.Row="0"
-														Style="{StaticResource decUpDown}" />
-									<Label Grid.Column="4"
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
+										<Label Grid.Column="4"
 										   Grid.Row="1"
 										   Content="V2" />
-									<xctk:DecimalUpDown Name="numSTE_V2"
+										<xctk:DecimalUpDown Name="numSTE_V2"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="5"
 														Grid.Row="1"
-														Style="{StaticResource decUpDown}" />
-									<Label Grid.Column="4"
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
+										<Label Grid.Column="4"
 										   Grid.Row="2"
 										   Content="V3" />
-									<xctk:DecimalUpDown Name="numSTE_V3"
+										<xctk:DecimalUpDown Name="numSTE_V3"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="5"
 														Grid.Row="2"
-														Style="{StaticResource decUpDown}" />
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
 
-									<Label Grid.Column="6"
+										<Label Grid.Column="6"
 										   Grid.Row="0"
 										   Content="V4" />
-									<xctk:DecimalUpDown Name="numSTE_V4"
+										<xctk:DecimalUpDown Name="numSTE_V4"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="7"
 														Grid.Row="0"
-														Style="{StaticResource decUpDown}" />
-									<Label Grid.Column="6"
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
+										<Label Grid.Column="6"
 										   Grid.Row="1"
 										   Content="V5" />
-									<xctk:DecimalUpDown Name="numSTE_V5"
+										<xctk:DecimalUpDown Name="numSTE_V5"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="7"
 														Grid.Row="1"
-														Style="{StaticResource decUpDown}" />
-									<Label Grid.Column="6"
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
+										<Label Grid.Column="6"
 										   Grid.Row="2"
 										   Content="V6" />
-									<xctk:DecimalUpDown Name="numSTE_V6"
+										<xctk:DecimalUpDown Name="numSTE_V6"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="7"
 														Grid.Row="2"
-														Style="{StaticResource decUpDown}" />
-								</Grid>
-							</GroupBox>
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
+									</Grid>
+								</GroupBox>
 
-							<!-- T Wave Elevation -->
-							<GroupBox Name="grpTWaveElevation"
+								<!-- T Wave Elevation -->
+								<GroupBox Name="grpTWaveElevation"
 									  Style="{StaticResource grpParameters}"
 									  Grid.Column="0"
 									  Grid.Row="6"
 									  Grid.ColumnSpan="2">
-								<Grid Margin="3">
-									<Grid.RowDefinitions>
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="Auto" />
-										<RowDefinition Height="Auto" />
-									</Grid.RowDefinitions>
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-										<ColumnDefinition Width="Auto" />
-									</Grid.ColumnDefinitions>
+									<Grid Margin="3">
+										<Grid.RowDefinitions>
+											<RowDefinition Height="Auto" />
+											<RowDefinition Height="Auto" />
+											<RowDefinition Height="Auto" />
+										</Grid.RowDefinitions>
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="Auto" />
+											<ColumnDefinition Width="Auto" />
+										</Grid.ColumnDefinitions>
 
-									<Label Grid.Column="0"
+										<Label Grid.Column="0"
 										   Grid.Row="0"
 										   Content="I" />
-									<xctk:DecimalUpDown Name="numTWE_I"
+										<xctk:DecimalUpDown Name="numTWE_I"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="1"
 														Grid.Row="0"
-														Style="{StaticResource decUpDown}" />
-									<Label Grid.Column="0"
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
+										<Label Grid.Column="0"
 										   Grid.Row="1"
 										   Content="II" />
-									<xctk:DecimalUpDown Name="numTWE_II"
+										<xctk:DecimalUpDown Name="numTWE_II"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="1"
 														Grid.Row="1"
-														Style="{StaticResource decUpDown}" />
-									<Label Grid.Column="0"
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
+										<Label Grid.Column="0"
 										   Grid.Row="2"
 										   Content="III" />
-									<xctk:DecimalUpDown Name="numTWE_III"
+										<xctk:DecimalUpDown Name="numTWE_III"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="1"
 														Grid.Row="2"
-														Style="{StaticResource decUpDown}" />
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
 
-									<Label Grid.Column="2"
+										<Label Grid.Column="2"
 										   Grid.Row="0"
 										   Content="aVR" />
-									<xctk:DecimalUpDown Name="numTWE_aVR"
+										<xctk:DecimalUpDown Name="numTWE_aVR"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="3"
 														Grid.Row="0"
-														Style="{StaticResource decUpDown}" />
-									<Label Grid.Column="2"
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
+										<Label Grid.Column="2"
 										   Grid.Row="1"
 										   Content="aVL" />
-									<xctk:DecimalUpDown Name="numTWE_aVL"
+										<xctk:DecimalUpDown Name="numTWE_aVL"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="3"
 														Grid.Row="1"
-														Style="{StaticResource decUpDown}" />
-									<Label Grid.Column="2"
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
+										<Label Grid.Column="2"
 										   Grid.Row="2"
 										   Content="aVF" />
-									<xctk:DecimalUpDown Name="numTWE_aVF"
+										<xctk:DecimalUpDown Name="numTWE_aVF"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="3"
 														Grid.Row="2"
-														Style="{StaticResource decUpDown}" />
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
 
-									<Label Grid.Column="4"
+										<Label Grid.Column="4"
 										   Grid.Row="0"
 										   Content="V1" />
-									<xctk:DecimalUpDown Name="numTWE_V1"
+										<xctk:DecimalUpDown Name="numTWE_V1"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="5"
 														Grid.Row="0"
-														Style="{StaticResource decUpDown}" />
-									<Label Grid.Column="4"
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
+										<Label Grid.Column="4"
 										   Grid.Row="1"
 										   Content="V2" />
-									<xctk:DecimalUpDown Name="numTWE_V2"
+										<xctk:DecimalUpDown Name="numTWE_V2"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="5"
 														Grid.Row="1"
-														Style="{StaticResource decUpDown}" />
-									<Label Grid.Column="4"
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
+										<Label Grid.Column="4"
 										   Grid.Row="2"
 										   Content="V3" />
-									<xctk:DecimalUpDown Name="numTWE_V3"
+										<xctk:DecimalUpDown Name="numTWE_V3"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="5"
 														Grid.Row="2"
-														Style="{StaticResource decUpDown}" />
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
 
-									<Label Grid.Column="6"
+										<Label Grid.Column="6"
 										   Grid.Row="0"
 										   Content="V4" />
-									<xctk:DecimalUpDown Name="numTWE_V4"
+										<xctk:DecimalUpDown Name="numTWE_V4"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="7"
 														Grid.Row="0"
-														Style="{StaticResource decUpDown}" />
-									<Label Grid.Column="6"
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
+										<Label Grid.Column="6"
 										   Grid.Row="1"
 										   Content="V5" />
-									<xctk:DecimalUpDown Name="numTWE_V5"
+										<xctk:DecimalUpDown Name="numTWE_V5"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="7"
 														Grid.Row="1"
-														Style="{StaticResource decUpDown}" />
-									<Label Grid.Column="6"
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
+										<Label Grid.Column="6"
 										   Grid.Row="2"
 										   Content="V6" />
-									<xctk:DecimalUpDown Name="numTWE_V6"
+										<xctk:DecimalUpDown Name="numTWE_V6"
 														Increment="0.1"
 														Minimum="-1.0"
 														Maximum="1.0"
 														Grid.Column="7"
 														Grid.Row="2"
-														Style="{StaticResource decUpDown}" />
-								</Grid>
-							</GroupBox>
-						</Grid>
-					</Expander>
-				</Border>
+														Style="{StaticResource decUpDown}"
+														KeyDown="OnUIPatientParameter_KeyDown"
+														GotFocus="OnUIPatientParameter_GotFocus"
+														LostFocus="OnUIPatientParameter_LostFocus" />
+									</Grid>
+								</GroupBox>
+							</Grid>
+						</Expander>
+					</Border>
 
-				<!-- Group for Obstetric Profile -->
-				<!-- <Border Style="{StaticResource expBorder}" IsEnabled="False"> -->
-				<Expander Name="expObstetricProfile"
+					<!-- Group for Obstetric Profile -->
+					<!-- <Border Style="{StaticResource expBorder}" IsEnabled="False"> -->
+					<Expander Name="expObstetricProfile"
 						  IsExpanded="False"
 						  Visibility="Hidden"
 						  Height="0"
 						  Style="{StaticResource expParameters}">
-					<Expander.Header>
-						<Label Name="lblGroupObstetricProfile"
+						<Expander.Header>
+							<Label Name="lblGroupObstetricProfile"
 							   Style="{StaticResource expHeader}" />
-					</Expander.Header>
-					<Grid Margin="3">
-						<Grid.RowDefinitions>
-							<RowDefinition Height="Auto" />
-							<RowDefinition Height="Auto" />
-							<RowDefinition Height="Auto" />
-							<RowDefinition Height="Auto" />
-							<RowDefinition Height="Auto" />
-							<RowDefinition Height="Auto" />
-							<RowDefinition Height="Auto" />
-							<RowDefinition Height="Auto" />
-							<RowDefinition Height="Auto" />
-						</Grid.RowDefinitions>
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="Auto" />
-							<ColumnDefinition Width="Auto" />
-						</Grid.ColumnDefinitions>
+						</Expander.Header>
+						<Grid Margin="3">
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+								<RowDefinition Height="Auto" />
+							</Grid.RowDefinitions>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto" />
+								<ColumnDefinition Width="Auto" />
+							</Grid.ColumnDefinitions>
 
-						<Label Name="lblFHR"
+							<Label Name="lblFHR"
 							   Grid.Column="0"
 							   Grid.Row="0" />
-						<xctk:IntegerUpDown Name="numFHR"
+							<xctk:IntegerUpDown Name="numFHR"
 											Increment="5"
 											Minimum="0"
 											Maximum="500"
 											Grid.Column="1"
 											Grid.Row="0"
-											Style="{StaticResource intUpDown}" />
-						<Label Name="lblFHRRhythms"
+											Style="{StaticResource intUpDown}"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											GotFocus="OnUIPatientParameter_GotFocus"
+											LostFocus="OnUIPatientParameter_LostFocus" />
+
+							<Label Name="lblFHRRhythms"
 							   Grid.Column="0"
 							   Grid.Row="1" />
-						<ListBox Name="listFHRRhythms"
+							<ListBox Name="listFHRRhythms"
 								 SelectionMode="Multiple"
 								 Grid.Column="0"
 								 Grid.Row="2"
-								 Grid.ColumnSpan="2" />
-						<Label Name="lblFHRVariability"
+								 Grid.ColumnSpan="2"
+								KeyDown="OnUIPatientParameter_KeyDown"
+								GotFocus="OnUIPatientParameter_GotFocus"
+								LostFocus="OnUIPatientParameter_LostFocus" />
+
+							<Label Name="lblFHRVariability"
 							   Grid.Column="0"
 							   Grid.Row="3" />
-						<ComboBox Name="comboFHRVariability"
+							<ComboBox Name="comboFHRVariability"
 								  Grid.Column="0"
 								  Grid.Row="4"
-								  Grid.ColumnSpan="2" />
+								  Grid.ColumnSpan="2"
+								KeyDown="OnUIPatientParameter_KeyDown"
+								GotFocus="OnUIPatientParameter_GotFocus"
+								LostFocus="OnUIPatientParameter_LostFocus" />
 
-						<Label Name="lblUCFrequency"
+							<Label Name="lblUCFrequency"
 							   Grid.Column="0"
 							   Grid.Row="5" />
-						<xctk:IntegerUpDown Name="numUCFrequency"
+							<xctk:IntegerUpDown Name="numUCFrequency"
 											Increment="5"
 											Minimum="0"
 											Maximum="3600"
 											Grid.Column="1"
 											Grid.Row="5"
-											Style="{StaticResource intUpDown}" />
-						<Label Name="lblUCDuration"
+											Style="{StaticResource intUpDown}"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											GotFocus="OnUIPatientParameter_GotFocus"
+											LostFocus="OnUIPatientParameter_LostFocus" />
+							<Label Name="lblUCDuration"
 							   Grid.Column="0"
 							   Grid.Row="6" />
-						<xctk:IntegerUpDown Name="numUCDuration"
+							<xctk:IntegerUpDown Name="numUCDuration"
 											Increment="5"
 											Minimum="0"
 											Maximum="300"
 											Grid.Column="1"
 											Grid.Row="6"
-											Style="{StaticResource intUpDown}" />
-						<Label Name="lblUCIntensity"
+											Style="{StaticResource intUpDown}"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											GotFocus="OnUIPatientParameter_GotFocus"
+											LostFocus="OnUIPatientParameter_LostFocus" />
+							<Label Name="lblUCIntensity"
 							   Grid.Column="0"
 							   Grid.Row="7" />
-						<ComboBox Name="comboUCIntensity"
+							<ComboBox Name="comboUCIntensity"
 								  Grid.Column="0"
 								  Grid.Row="8"
-								  Grid.ColumnSpan="2" />
-					</Grid>
-				</Expander>
-				<!-- </Border> -->
+								  Grid.ColumnSpan="2"
+								KeyDown="OnUIPatientParameter_KeyDown"
+								GotFocus="OnUIPatientParameter_GotFocus"
+								LostFocus="OnUIPatientParameter_LostFocus" />
+						</Grid>
+					</Expander>
+					<!-- </Border> -->
 
-				<!-- Apply and Reset Buttons -->
-				<StackPanel Orientation="Horizontal"
+					<!-- Apply and Reset Buttons -->
+					<CheckBox Name="chkAutoApplyChanges"
+					HorizontalAlignment="Center"
+						  Margin="8"
+						  Checked="OnAutoApplyChanges_Changed"
+						  Unchecked="OnAutoApplyChanges_Changed" />
+					<StackPanel Orientation="Horizontal"
 							HorizontalAlignment="Center">
-					<Button Name="btnParametersReset"
+						<Button Name="btnParametersReset"
 							Click="ButtonResetParameters_Click"
 							Style="{StaticResource btn}">
-						<StackPanel Orientation="Horizontal">
-							<Image Source="{StaticResource Icon_Cross_32}"
+							<StackPanel Orientation="Horizontal">
+								<Image Source="{StaticResource Icon_Cross_32}"
 								   Style="{StaticResource btnImage}" />
-							<Label Name="lblParametersReset"
+								<Label Name="lblParametersReset"
 								   Style="{StaticResource btnLabel}" />
-						</StackPanel>
-					</Button>
-					<Button Name="btnParametersApply"
+							</StackPanel>
+						</Button>
+						<Button Name="btnParametersApply"
 							Click="ButtonApplyParameters_Click"
 							Style="{StaticResource btn}">
-						<StackPanel Orientation="Horizontal">
-							<Label Name="lblParametersApply"
+							<StackPanel Orientation="Horizontal">
+								<Label Name="lblParametersApply"
 								   Style="{StaticResource btnLabel}" />
-							<Image Source="{StaticResource Icon_Check_32}"
+								<Image Source="{StaticResource Icon_Check_32}"
 								   Style="{StaticResource btnImage}" />
-						</StackPanel>
-					</Button>
+							</StackPanel>
+						</Button>
+					</StackPanel>
 				</StackPanel>
-			</StackPanel>
+			</Border>
 		</ScrollViewer>
 	</DockPanel>
 </Window>

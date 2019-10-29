@@ -88,5 +88,13 @@ namespace II.Localization {
                 }
             }
         }
+
+        public string Localize (string key) {
+            try {
+                return Dictionary [key];
+            } catch {
+                return "";
+            }
+        }
     }
 }
