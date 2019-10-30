@@ -97,12 +97,15 @@ namespace II_Windows {
         private Timer timerAncillary_Delay = new Timer ();
 
         // Define WPF UI commands for binding
-        private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram;
+        private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram,
+            icSaveScreen, icPrintScreen;
 
         public ICommand IC_ToggleFullscreen { get { return icToggleFullscreen; } }
         public ICommand IC_PauseDevice { get { return icPauseDevice; } }
         public ICommand IC_CloseDevice { get { return icCloseDevice; } }
         public ICommand IC_ExitProgram { get { return icExitProgram; } }
+        public ICommand IC_SaveScreen { get { return icSaveScreen; } }
+        public ICommand IC_PrintScreen { get { return icPrintScreen; } }
 
         public DeviceIABP () {
             InitializeComponent ();
@@ -134,12 +137,16 @@ namespace II_Windows {
             icPauseDevice = new ActionCommand (() => TogglePause ());
             icCloseDevice = new ActionCommand (() => this.Close ());
             icExitProgram = new ActionCommand (() => App.Patient_Editor.Exit ());
+            icSaveScreen = new ActionCommand (() => SaveScreen ());
+            icPrintScreen = new ActionCommand (() => PrintScreen ());
 
             // Populate UI strings per language selection
             wdwDeviceIABP.Title = App.Language.Localize ("IABP:WindowTitle");
             menuDevice.Header = App.Language.Localize ("MENU:MenuDeviceOptions");
             menuPauseDevice.Header = App.Language.Localize ("MENU:MenuPauseDevice");
             menuToggleFullscreen.Header = App.Language.Localize ("MENU:MenuToggleFullscreen");
+            menuSaveScreen.Header = App.Language.Localize ("MENU:MenuSaveScreen");
+            menuPrintScreen.Header = App.Language.Localize ("MENU:MenuPrintScreen");
             menuCloseDevice.Header = App.Language.Localize ("MENU:MenuCloseDevice");
             menuExitProgram.Header = App.Language.Localize ("MENU:MenuExitProgram");
 
@@ -268,6 +275,14 @@ namespace II_Windows {
 
             return sWrite.ToString ();
         }
+
+        private void SaveScreen ()
+            => ScreenshotPdf.SavePdf (Screenshot.GetBitmap (mainGrid, 1));
+
+        private void PrintScreen ()
+            => ScreenshotPdf.PrintPdf (ScreenshotPdf.AssemblePdf (
+                    Screenshot.GetBitmap (mainGrid, 1),
+                    App.Language.Localize ("IABP:WindowTitle")));
 
         private void ApplyFullScreen () {
             menuToggleFullscreen.IsChecked = isFullscreen;
@@ -458,6 +473,12 @@ namespace II_Windows {
         private void MenuTogglePause_Click (object s, RoutedEventArgs e) => TogglePause ();
 
         private void MenuFullscreen_Click (object sender, RoutedEventArgs e) => ToggleFullscreen ();
+
+        private void MenuSaveScreen_Click (object sender, RoutedEventArgs e)
+            => SaveScreen ();
+
+        private void MenuPrintScreen_Click (object sender, RoutedEventArgs e)
+            => PrintScreen ();
 
         private void OnTick_PrimingComplete (object sender, EventArgs e) {
             timerAncillary_Delay.Stop ();

@@ -30,12 +30,15 @@ namespace II_Windows {
         private ImageBrush gridBackground;
 
         // Define WPF UI commands for binding
-        private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram;
+        private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram,
+            icSaveScreen, icPrintScreen;
 
         public ICommand IC_ToggleFullscreen { get { return icToggleFullscreen; } }
         public ICommand IC_PauseDevice { get { return icPauseDevice; } }
         public ICommand IC_CloseDevice { get { return icCloseDevice; } }
         public ICommand IC_ExitProgram { get { return icExitProgram; } }
+        public ICommand IC_SaveScreen { get { return icSaveScreen; } }
+        public ICommand IC_PrintScreen { get { return icPrintScreen; } }
 
         public enum ColorSchemes {
             Dark,
@@ -62,8 +65,10 @@ namespace II_Windows {
             /* Initiate ICommands for KeyBindings */
             icToggleFullscreen = new ActionCommand (() => ToggleFullscreen ());
             icPauseDevice = new ActionCommand (() => TogglePause ());
-            icCloseDevice = new ActionCommand (() => this.Close ());
+            icCloseDevice = new ActionCommand (() => Close ());
             icExitProgram = new ActionCommand (() => App.Patient_Editor.Exit ());
+            icSaveScreen = new ActionCommand (() => SaveScreen ());
+            icPrintScreen = new ActionCommand (() => PrintScreen ());
 
             /* Populate UI strings per language selection */
             wdwDeviceECG.Title = App.Language.Localize ("ECG:WindowTitle");
@@ -71,6 +76,8 @@ namespace II_Windows {
             menuPauseDevice.Header = App.Language.Localize ("MENU:MenuPauseDevice");
             menuShowGrid.Header = App.Language.Localize ("MENU:MenuShowGrid");
             menuToggleFullscreen.Header = App.Language.Localize ("MENU:MenuToggleFullscreen");
+            menuSaveScreen.Header = App.Language.Localize ("MENU:MenuSaveScreen");
+            menuPrintScreen.Header = App.Language.Localize ("MENU:MenuPrintScreen");
             menuCloseDevice.Header = App.Language.Localize ("MENU:MenuCloseDevice");
             menuExitProgram.Header = App.Language.Localize ("MENU:MenuExitProgram");
             menuColor.Header = App.Language.Localize ("MENU:MenuColorScheme");
@@ -191,6 +198,14 @@ namespace II_Windows {
             UpdateInterface ();
         }
 
+        private void SaveScreen ()
+            => ScreenshotPdf.SavePdf (Screenshot.GetBitmap (layoutGrid, 1));
+
+        private void PrintScreen ()
+            => ScreenshotPdf.PrintPdf (ScreenshotPdf.AssemblePdf (
+                    Screenshot.GetBitmap (layoutGrid, 1),
+                    App.Language.Localize ("ECG:WindowTitle")));
+
         private void ApplyFullScreen () {
             menuToggleFullscreen.IsChecked = isFullscreen;
 
@@ -237,6 +252,12 @@ namespace II_Windows {
 
         private void MenuFullscreen_Click (object sender, RoutedEventArgs e)
             => ToggleFullscreen ();
+
+        private void MenuSaveScreen_Click (object sender, RoutedEventArgs e)
+            => SaveScreen ();
+
+        private void MenuPrintScreen_Click (object sender, RoutedEventArgs e)
+            => PrintScreen ();
 
         private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
             => SetColorScheme (ColorSchemes.Light);

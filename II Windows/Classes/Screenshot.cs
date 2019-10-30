@@ -13,7 +13,7 @@ namespace II_Windows {
 
     public static class Screenshot {
 
-        public static BitmapFrame GetBitmap (this UIElement source, double scale) {
+        public static BitmapSource GetBitmap (this UIElement source, double scale) {
             double actualHeight = source.RenderSize.Height;
             double actualWidth = source.RenderSize.Width;
 
@@ -32,13 +32,13 @@ namespace II_Windows {
             }
             renderTarget.Render (drawingVisual);
 
-            return BitmapFrame.Create (renderTarget);
+            return (BitmapSource)renderTarget;
         }
 
-        public static byte [] GetJPG (BitmapFrame bitmap, int quality) {
+        public static byte [] GetJPG (BitmapSource bitmap, int quality) {
             JpegBitmapEncoder encoder = new JpegBitmapEncoder ();
             encoder.QualityLevel = quality;
-            encoder.Frames.Add (bitmap);
+            encoder.Frames.Add (BitmapFrame.Create (bitmap));
 
             Byte [] array;
             using (MemoryStream ms = new MemoryStream ()) {
@@ -49,10 +49,10 @@ namespace II_Windows {
             return array;
         }
 
-        public static byte [] GetPNG (BitmapFrame bitmap) {
+        public static byte [] GetPNG (BitmapSource bitmap) {
             PngBitmapEncoder encoder = new PngBitmapEncoder ();
             encoder.Interlace = PngInterlaceOption.On;
-            encoder.Frames.Add (bitmap);
+            encoder.Frames.Add (BitmapFrame.Create (bitmap));
 
             Byte [] array;
             using (MemoryStream ms = new MemoryStream ()) {

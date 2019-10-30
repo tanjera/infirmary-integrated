@@ -61,7 +61,7 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>823EBD88CEAE6EAA858F57D1DD143751E36799D9</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>7181E848B1A4E26DEA27DEFB5874FF22C73CD914</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>
@@ -231,6 +231,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <Compile Include="Classes\Screenshot.Pdf.cs" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -262,6 +263,9 @@
     </PackageReference>
     <PackageReference Include="MySql.Data">
       <Version>8.0.17</Version>
+    </PackageReference>
+    <PackageReference Include="PDFsharp-wpf">
+      <Version>1.50.5147</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

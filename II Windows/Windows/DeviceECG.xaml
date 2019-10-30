@@ -17,6 +17,8 @@
 		<KeyBinding Key="U" Modifiers="Ctrl" Command="{Binding IC_PauseDevice}" />
 		<KeyBinding Key="F4" Modifiers="Ctrl" Command="{Binding IC_CloseDevice}" />
 		<KeyBinding Key="F4" Modifiers="Alt" Command="{Binding IC_ExitProgram}" />
+		<KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding IC_SaveScreen}" />
+		<KeyBinding Key="P" Modifiers="Ctrl" Command="{Binding IC_PrintScreen}" />
 	</Window.InputBindings>
 
 	<DockPanel LastChildFill="True">
@@ -30,6 +32,9 @@
 				<MenuItem Name="menuShowGrid" Click="MenuShowGrid_Click" IsCheckable="True" />
 				<Separator />
 				<MenuItem Name="menuToggleFullscreen" Click="MenuFullscreen_Click" InputGestureText="Ctrl+F" />
+				<Separator />
+				<MenuItem Name="menuSaveScreen" Click="MenuSaveScreen_Click" InputGestureText="Ctrl+S" />
+				<MenuItem Name="menuPrintScreen" Click="MenuPrintScreen_Click" InputGestureText="Ctrl+P" />
 				<Separator />
 				<MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGestureText="Ctrl-F4" />
 				<MenuItem Name="menuExitProgram" Click="MenuExit_Click" InputGestureText="Alt-F4" />
