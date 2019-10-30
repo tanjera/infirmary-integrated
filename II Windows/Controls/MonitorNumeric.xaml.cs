@@ -184,7 +184,7 @@ namespace II_Windows.Controls {
                     break;
 
                 case ControlType.Values.SPO2:
-                    lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.SPO2, 0.01f));
+                    lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (App.Patient.SPO2, 0.01f));
                     lblLine2.Text = String.Format ("@ {0:0}", App.Patient.MeasureHR_SPO2 (
                         Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
                     break;
@@ -195,7 +195,7 @@ namespace II_Windows.Controls {
                     break;
 
                 case ControlType.Values.ETCO2:
-                    lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.ETCO2, 0.02f));
+                    lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (App.Patient.ETCO2, 0.02f));
                     lblLine2.Text = String.Format ("@ {0:0}", App.Patient.MeasureRR (
                         Strip.DefaultLength * Strip.DefaultRespiratoryCoefficient, Strip.DefaultLength * Strip.DefaultBufferLength));
                     break;
@@ -208,10 +208,10 @@ namespace II_Windows.Controls {
 
                 case ControlType.Values.ABP:
                     if (App.Patient.TransducerZeroed_ABP) {
-                        lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.ASBP, 0.02f));
-                        lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (
+                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (App.Patient.ASBP, 0.02f));
+                        lblLine2.Text = String.Format ("/ {0:0}", II.Math.RandomPercentRange (
                             (App.Patient.IABP_Active ? App.Patient.IABP_DBP : App.Patient.ADBP), 0.02f));
-                        lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.AMAP, 0.02f));
+                        lblLine3.Text = String.Format ("({0:0})", II.Math.RandomPercentRange (App.Patient.AMAP, 0.02f));
                     } else {
                         lblLine1.Text = Utility.WrapString (App.Language.Localize ("NUMERIC:ZeroTransducer"));
                         lblLine2.Text = "";
@@ -221,16 +221,16 @@ namespace II_Windows.Controls {
 
                 case ControlType.Values.CVP:
                     if (App.Patient.TransducerZeroed_CVP)
-                        lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.CVP, 0.02f));
+                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (App.Patient.CVP, 0.02f));
                     else
                         lblLine1.Text = App.Language.Localize ("NUMERIC:ZeroTransducer");
                     break;
 
                 case ControlType.Values.PA:
                     if (App.Patient.TransducerZeroed_PA) {
-                        lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.PSP, 0.02f));
-                        lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (App.Patient.PDP, 0.02f));
-                        lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.PMP, 0.02f));
+                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (App.Patient.PSP, 0.02f));
+                        lblLine2.Text = String.Format ("/ {0:0}", II.Math.RandomPercentRange (App.Patient.PDP, 0.02f));
+                        lblLine3.Text = String.Format ("({0:0})", II.Math.RandomPercentRange (App.Patient.PMP, 0.02f));
                     } else {
                         lblLine1.Text = App.Language.Localize ("NUMERIC:ZeroTransducer");
                         lblLine2.Text = "";
@@ -240,7 +240,7 @@ namespace II_Windows.Controls {
 
                 case ControlType.Values.ICP:
                     if (App.Patient.TransducerZeroed_ICP) {
-                        lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.ICP, 0.02f));
+                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (App.Patient.ICP, 0.02f));
                         lblLine2.Text = String.Format ("({0:0})", Patient.CalculateCPP (App.Patient.ICP, App.Patient.AMAP));
                     } else {
                         lblLine1.Text = App.Language.Localize ("NUMERIC:ZeroTransducer");
@@ -250,7 +250,7 @@ namespace II_Windows.Controls {
 
                 case ControlType.Values.IAP:
                     if (App.Patient.TransducerZeroed_IAP)
-                        lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.IAP, 0.02f));
+                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (App.Patient.IAP, 0.02f));
                     else
                         lblLine1.Text = App.Language.Localize ("NUMERIC:ZeroTransducer");
                     break;

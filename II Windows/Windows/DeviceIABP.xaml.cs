@@ -166,7 +166,7 @@ namespace II_Windows {
             // Random helium tank remaining amount... it's for show!
             lblHelium.Text = String.Format ("{0}: {1:0}%",
                 Utility.WrapString (App.Language.Localize ("IABP:Helium")),
-                Utility.RandomDouble (20, 80));
+                II.Math.RandomDouble (20, 80));
 
             // Instantiate and add Tracings to UI
             listTracings.Add (new Controls.IABPTracing (new Strip (Lead.Values.ECG_II, 6d)));
@@ -398,24 +398,24 @@ namespace II_Windows {
             switch (SelectedSetting) {
                 default: return;
                 case Settings.Frequency:
-                    Frequency = Utility.Clamp (Frequency + 1, 1, 3);
+                    Frequency = II.Math.Clamp (Frequency + 1, 1, 3);
                     UpdateInterface ();
                     return;
 
                 case Settings.Trigger:
                     Array enumValues = Enum.GetValues (typeof (Triggering.Values));
-                    Trigger.Value = (Triggering.Values)enumValues.GetValue (Utility.Clamp ((int)Trigger.Value + 1, 0, enumValues.Length - 1));
+                    Trigger.Value = (Triggering.Values)enumValues.GetValue (II.Math.Clamp ((int)Trigger.Value + 1, 0, enumValues.Length - 1));
                     PauseDevice ();
                     UpdateInterface ();
                     return;
 
                 case Settings.AugmentationPressure:
-                    Augmentation = Utility.Clamp (Augmentation + 10, 0, 100);
+                    Augmentation = II.Math.Clamp (Augmentation + 10, 0, 100);
                     listNumerics.Find (o => o.controlType.Value == Controls.IABPNumeric.ControlType.Values.IABP_AP).UpdateVitals ();
                     return;
 
                 case Settings.AugmentationAlarm:
-                    AugmentationAlarm = Utility.Clamp (AugmentationAlarm + 5, 0, 300);
+                    AugmentationAlarm = II.Math.Clamp (AugmentationAlarm + 5, 0, 300);
                     listNumerics.Find (o => o.controlType.Value == Controls.IABPNumeric.ControlType.Values.IABP_AP).UpdateVitals ();
                     return;
             }
@@ -425,24 +425,24 @@ namespace II_Windows {
             switch (SelectedSetting) {
                 default: return;
                 case Settings.Frequency:
-                    Frequency = Utility.Clamp (Frequency - 1, 1, 3);
+                    Frequency = II.Math.Clamp (Frequency - 1, 1, 3);
                     UpdateInterface ();
                     return;
 
                 case Settings.Trigger:
                     Array enumValues = Enum.GetValues (typeof (Triggering.Values));
-                    Trigger.Value = (Triggering.Values)enumValues.GetValue (Utility.Clamp ((int)Trigger.Value - 1, 0, enumValues.Length - 1));
+                    Trigger.Value = (Triggering.Values)enumValues.GetValue (II.Math.Clamp ((int)Trigger.Value - 1, 0, enumValues.Length - 1));
                     PauseDevice ();
                     UpdateInterface ();
                     return;
 
                 case Settings.AugmentationPressure:
-                    Augmentation = Utility.Clamp (Augmentation - 10, 0, 100);
+                    Augmentation = II.Math.Clamp (Augmentation - 10, 0, 100);
                     listNumerics.Find (o => o.controlType.Value == Controls.IABPNumeric.ControlType.Values.IABP_AP).UpdateVitals ();
                     return;
 
                 case Settings.AugmentationAlarm:
-                    AugmentationAlarm = Utility.Clamp (AugmentationAlarm - 5, 0, 300);
+                    AugmentationAlarm = II.Math.Clamp (AugmentationAlarm - 5, 0, 300);
                     listNumerics.Find (o => o.controlType.Value == Controls.IABPNumeric.ControlType.Values.IABP_AP).UpdateVitals ();
                     return;
             }
@@ -512,7 +512,7 @@ namespace II_Windows {
 
             // Re-calculate IABP-specific vital signs (augmentation pressure and augmentation-assisted MAP)
             if (Running) {
-                App.Patient.IABP_DBP = Utility.Clamp (App.Patient.ADBP - 7, 0, 1000);
+                App.Patient.IABP_DBP = II.Math.Clamp (App.Patient.ADBP - 7, 0, 1000);
                 App.Patient.IABP_AP = (int)(App.Patient.ASBP + (App.Patient.ASBP * 0.3f * (Augmentation * 0.01f)));
                 App.Patient.IABP_MAP = App.Patient.IABP_DBP + ((App.Patient.IABP_AP - App.Patient.IABP_DBP) / 2);
             } else {    // Use arterial line pressures if the balloon isn't actively pumping

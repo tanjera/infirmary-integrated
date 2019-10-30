@@ -116,11 +116,11 @@ namespace II.Scenario_Editor {
                     // Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
                     // Line 3 is savefile data encrypted by AES encoding
                     string hash = sr.ReadLine ().Trim ();
-                    string file = Utility.DecryptAES (sr.ReadToEnd ().Trim ());
+                    string file = Encryption.DecryptAES (sr.ReadToEnd ().Trim ());
                     sr.Close ();
                     s.Close ();
 
-                    if (hash != Utility.HashSHA256 (file)) {
+                    if (hash != Encryption.HashSHA256 (file)) {
                         loadFail ();
                         return;
                     }
@@ -155,6 +155,7 @@ namespace II.Scenario_Editor {
                     canvasDesigner.Children.Clear ();
 
                     for (int i = 0; i < sc.Steps.Count; i++) {
+
                         // Add to the main Steps stack
                         ItemStep ist = new ItemStep ();
                         ist.Init ();
@@ -199,6 +200,7 @@ namespace II.Scenario_Editor {
         }
 
         private void saveScenario () {
+
             // Prepare Scenario for saving
             Scenario sc = new Scenario (false);
 
@@ -208,6 +210,7 @@ namespace II.Scenario_Editor {
             sc.Description = ScenarioDescription;
 
             for (int i = 0; i < Steps.Count; i++) {
+
                 // Set metadata for saving
                 Steps [i].Step.IPositionX = Steps [i].Left;
                 Steps [i].Step.IPositionY = Steps [i].Top;
@@ -226,6 +229,7 @@ namespace II.Scenario_Editor {
 
             if (dlgSave.ShowDialog () == true) {
                 if ((s = dlgSave.OpenFile ()) != null) {
+
                     // Save in II:T1 format
                     StringBuilder sb = new StringBuilder ();
 
@@ -235,8 +239,8 @@ namespace II.Scenario_Editor {
 
                     StreamWriter sw = new StreamWriter (s);
                     sw.WriteLine (".ii:t1");                                        // Metadata (type 1 savefile)
-                    sw.WriteLine (Utility.HashSHA256 (sb.ToString ().Trim ()));     // Hash for validation
-                    sw.Write (Utility.EncryptAES (sb.ToString ().Trim ()));         // Savefile data encrypted with AES
+                    sw.WriteLine (Encryption.HashSHA256 (sb.ToString ().Trim ()));     // Hash for validation
+                    sw.Write (Encryption.EncryptAES (sb.ToString ().Trim ()));         // Savefile data encrypted with AES
                     sw.Close ();
                     s.Close ();
                 }
@@ -244,6 +248,7 @@ namespace II.Scenario_Editor {
         }
 
         private void initScenarioProperty () {
+
             // Initiate controls for editing Scenario properties
             pstrScenarioAuthor.Init (PropertyString.Keys.ScenarioAuthor);
             pstrScenarioAuthor.PropertyChanged += updateProperty;
@@ -262,6 +267,7 @@ namespace II.Scenario_Editor {
         }
 
         private void initPropertyView () {
+
             // Populate enum string lists for readable display
             List<string> cardiacRhythms = new List<string> (),
                 respiratoryRhythms = new List<string> (),
@@ -555,16 +561,16 @@ namespace II.Scenario_Editor {
             Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
                 (Cardiac_Rhythms.Values)Enum.Parse (typeof (Cardiac_Rhythms.Values), e.Value));
 
-            p.HR = (int)Utility.Clamp ((double)p.VS_Settings.HR, v.HRMin, v.HRMax);
-            p.RR = (int)Utility.Clamp ((double)p.VS_Settings.RR, v.RRMin, v.RRMax);
-            p.SPO2 = (int)Utility.Clamp ((double)p.VS_Settings.SPO2, v.SPO2Min, v.SPO2Max);
-            p.ETCO2 = (int)Utility.Clamp ((double)p.VS_Settings.ETCO2, v.ETCO2Min, v.ETCO2Max);
-            p.NSBP = (int)Utility.Clamp ((double)p.VS_Settings.NSBP, v.SBPMin, v.SBPMax);
-            p.NDBP = (int)Utility.Clamp ((double)p.VS_Settings.NDBP, v.DBPMin, v.DBPMax);
-            p.ASBP = (int)Utility.Clamp ((double)p.VS_Settings.ASBP, v.SBPMin, v.SBPMax);
-            p.ADBP = (int)Utility.Clamp ((double)p.VS_Settings.ADBP, v.DBPMin, v.DBPMax);
-            p.PSP = (int)Utility.Clamp ((double)p.VS_Settings.PSP, v.PSPMin, v.PSPMax);
-            p.PDP = (int)Utility.Clamp ((double)p.VS_Settings.PDP, v.PDPMin, v.PDPMax);
+            p.HR = (int)II.Math.Clamp ((double)p.VS_Settings.HR, v.HRMin, v.HRMax);
+            p.RR = (int)II.Math.Clamp ((double)p.VS_Settings.RR, v.RRMin, v.RRMax);
+            p.SPO2 = (int)II.Math.Clamp ((double)p.VS_Settings.SPO2, v.SPO2Min, v.SPO2Max);
+            p.ETCO2 = (int)II.Math.Clamp ((double)p.VS_Settings.ETCO2, v.ETCO2Min, v.ETCO2Max);
+            p.NSBP = (int)II.Math.Clamp ((double)p.VS_Settings.NSBP, v.SBPMin, v.SBPMax);
+            p.NDBP = (int)II.Math.Clamp ((double)p.VS_Settings.NDBP, v.DBPMin, v.DBPMax);
+            p.ASBP = (int)II.Math.Clamp ((double)p.VS_Settings.ASBP, v.SBPMin, v.SBPMax);
+            p.ADBP = (int)II.Math.Clamp ((double)p.VS_Settings.ADBP, v.DBPMin, v.DBPMax);
+            p.PSP = (int)II.Math.Clamp ((double)p.VS_Settings.PSP, v.PSPMin, v.PSPMax);
+            p.PDP = (int)II.Math.Clamp ((double)p.VS_Settings.PDP, v.PDPMin, v.PDPMax);
 
             updatePropertyView ();
         }
@@ -578,9 +584,9 @@ namespace II.Scenario_Editor {
             Respiratory_Rhythms.Default_Vitals v = Respiratory_Rhythms.DefaultVitals (
                 (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), e.Value));
 
-            p.RR = (int)Utility.Clamp ((double)p.RR, v.RRMin, v.RRMax);
-            p.RR_IE_I = (int)Utility.Clamp ((double)p.RR_IE_I, v.RR_IE_I_Min, v.RR_IE_I_Max);
-            p.RR_IE_E = (int)Utility.Clamp ((double)p.RR_IE_E, v.RR_IE_E_Min, v.RR_IE_E_Max);
+            p.RR = (int)II.Math.Clamp ((double)p.RR, v.RRMin, v.RRMax);
+            p.RR_IE_I = (int)II.Math.Clamp ((double)p.RR_IE_I, v.RR_IE_I_Min, v.RR_IE_I_Max);
+            p.RR_IE_E = (int)II.Math.Clamp ((double)p.RR_IE_E, v.RR_IE_E_Min, v.RR_IE_E_Max);
 
             updatePropertyView ();
         }
@@ -594,8 +600,8 @@ namespace II.Scenario_Editor {
             PulmonaryArtery_Rhythms.Default_Vitals v = PulmonaryArtery_Rhythms.DefaultVitals (
                 (PulmonaryArtery_Rhythms.Values)Enum.Parse (typeof (PulmonaryArtery_Rhythms.Values), e.Value));
 
-            p.PSP = (int)Utility.Clamp ((double)p.PSP, v.PSPMin, v.PSPMax);
-            p.PDP = (int)Utility.Clamp ((double)p.PDP, v.PDPMin, v.PDPMax);
+            p.PSP = (int)II.Math.Clamp ((double)p.PSP, v.PSPMin, v.PSPMax);
+            p.PDP = (int)II.Math.Clamp ((double)p.PDP, v.PDPMin, v.PDPMax);
 
             updatePropertyView ();
         }
@@ -659,6 +665,7 @@ namespace II.Scenario_Editor {
                 canvasDesigner.Children.Remove (uiep);
 
             foreach (ItemStep s in Steps) {
+
                 // Adjust all references past the index -= 1
                 if (s.Step.ProgressTo > iStep)
                     s.Step.ProgressTo -= 1;
@@ -683,6 +690,7 @@ namespace II.Scenario_Editor {
             // Set all Steps' indices for their Labels
             for (int i = 0; i < Steps.Count; i++)
                 Steps [i].SetNumber (i);
+
             // Refresh all IProgressions (visual lines)
             drawIProgressions ();
         }
@@ -725,6 +733,7 @@ namespace II.Scenario_Editor {
         }
 
         private void drawIProgressions () {
+
             // Completely recreate and add all progression lines to list and canvas
             foreach (ItemStep iStep in Steps) {
                 foreach (ItemStep.UIEProgression uiep in iStep.IProgressions)
@@ -733,6 +742,7 @@ namespace II.Scenario_Editor {
                 iStep.IProgressions.Clear ();
 
                 if (iStep.Step.ProgressTo > -1 && iStep.Step.ProgressTo < Steps.Count) {
+
                     // Draw default progress
                     ItemStep iTo = Steps [iStep.Step.ProgressTo];
                     ItemStep.UIEProgression uiep = new ItemStep.UIEProgression (iStep, iTo, canvasDesigner);
@@ -765,6 +775,7 @@ namespace II.Scenario_Editor {
         }
 
         private void updateIProgressions () {
+
             // Redraw progressions between sources to destinations
             foreach (ItemStep iStep in Steps) {
                 foreach (ItemStep.UIEProgression uiep in iStep.IProgressions)
@@ -861,8 +872,8 @@ namespace II.Scenario_Editor {
                 yCanvas = y;
 
                 ItemStep istep = ((ItemStep.UIEStep)sender).ItemStep;
-                Canvas.SetLeft (selStep, Utility.Clamp (xShape, 0, canvasDesigner.ActualWidth - istep.ActualWidth));
-                Canvas.SetTop (selStep, Utility.Clamp (yShape, 0, canvasDesigner.ActualHeight - istep.ActualHeight));
+                Canvas.SetLeft (selStep, II.Math.Clamp (xShape, 0, canvasDesigner.ActualWidth - istep.ActualWidth));
+                Canvas.SetTop (selStep, II.Math.Clamp (yShape, 0, canvasDesigner.ActualHeight - istep.ActualHeight));
                 updateIProgressions ();
             }
         }

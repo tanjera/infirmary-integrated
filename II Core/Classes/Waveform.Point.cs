@@ -10,7 +10,7 @@ namespace II.Waveform {
         public Point (double x, double y) { X = x; Y = y; }
 
         public static Point Lerp (Point a, Point b, double t) {
-            return new Point (Utility.Lerp (a.X, b.X, t), Utility.Lerp (a.Y, b.Y, t));
+            return new Point (II.Math.Lerp (a.X, b.X, t), II.Math.Lerp (a.Y, b.Y, t));
         }
 
         public static Point operator * (double f, Point p) {

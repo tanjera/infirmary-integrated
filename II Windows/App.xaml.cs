@@ -39,6 +39,8 @@ namespace II_Windows {
 
             Timer_Main.Interval = new TimeSpan (100000); // q 10 milliseconds
             Timer_Main.Start ();
+
+            II.File.InitTempDir ();
         }
     }
 }

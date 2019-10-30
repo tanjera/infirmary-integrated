@@ -84,8 +84,8 @@ namespace II_Windows {
             timerVitals_Respiratory.Tick += OnTick_Vitals_Respiratory;
 
             timerTracing.Set (Draw.RefreshTime);
-            timerVitals_Cardiac.Set (Utility.Clamp ((int)(App.Patient.GetHR_Seconds * 1000 / 2), 2000, 6000));
-            timerVitals_Respiratory.Set (Utility.Clamp ((int)(App.Patient.GetRR_Seconds * 1000 / 2), 2000, 8000));
+            timerVitals_Cardiac.Set (II.Math.Clamp ((int)(App.Patient.GetHR_Seconds * 1000 / 2), 2000, 6000));
+            timerVitals_Respiratory.Set (II.Math.Clamp ((int)(App.Patient.GetRR_Seconds * 1000 / 2), 2000, 8000));
 
             timerTracing.Start ();
             timerVitals_Cardiac.Start ();
@@ -274,7 +274,7 @@ namespace II_Windows {
             if (Mode != Modes.DEFIB && Mode != Modes.SYNC)
                 return;
 
-            Energy = Utility.Clamp (Energy - 20, 0, 200);
+            Energy = II.Math.Clamp (Energy - 20, 0, 200);
             UpdateInterface ();
         }
 
@@ -282,7 +282,7 @@ namespace II_Windows {
             if (Mode != Modes.DEFIB && Mode != Modes.SYNC)
                 return;
 
-            Energy = Utility.Clamp (Energy + 20, 0, 200);
+            Energy = II.Math.Clamp (Energy + 20, 0, 200);
             UpdateInterface ();
         }
 
@@ -349,7 +349,7 @@ namespace II_Windows {
             if (Mode != Modes.PACER)
                 return;
 
-            PacerRate = Utility.Clamp (PacerRate - 5, 0, 200);
+            PacerRate = II.Math.Clamp (PacerRate - 5, 0, 200);
             UpdatePacemaker ();
             UpdateInterface ();
         }
@@ -358,7 +358,7 @@ namespace II_Windows {
             if (Mode != Modes.PACER)
                 return;
 
-            PacerRate = Utility.Clamp (PacerRate + 5, 0, 200);
+            PacerRate = II.Math.Clamp (PacerRate + 5, 0, 200);
             UpdatePacemaker ();
             UpdateInterface ();
         }
@@ -367,7 +367,7 @@ namespace II_Windows {
             if (Mode != Modes.PACER)
                 return;
 
-            PacerEnergy = Utility.Clamp (PacerEnergy - 5, 0, 200);
+            PacerEnergy = II.Math.Clamp (PacerEnergy - 5, 0, 200);
             UpdatePacemaker ();
             UpdateInterface ();
         }
@@ -376,7 +376,7 @@ namespace II_Windows {
             if (Mode != Modes.PACER)
                 return;
 
-            PacerEnergy = Utility.Clamp (PacerEnergy + 5, 0, 200);
+            PacerEnergy = II.Math.Clamp (PacerEnergy + 5, 0, 200);
             UpdatePacemaker ();
             UpdateInterface ();
         }

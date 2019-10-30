@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using II.Waveform;
 
 namespace II.Rhythm {
+
     public class Strip {
         /* Default variables for easy modification of multiple measurement/tracing functions */
         public static double DefaultLength = 6.0d;
@@ -239,18 +240,18 @@ namespace II.Rhythm {
         private void SetForwardBuffer (Patient patient, bool onClear = false) {
             /* Set the forward edge buffer (a coefficient of lengthSeconds!) to be the length of 2 beats/breaths */
             if (IsCardiac)
-                forwardBuffer = Math.Max (1 + (2 * (patient.GetHR_Seconds / Length)),
+                forwardBuffer = System.Math.Max (1 + (2 * (patient.GetHR_Seconds / Length)),
                     (onClear ? 1.1d : forwardBuffer));
             else if (IsRespiratory)
-                forwardBuffer = Math.Max (1 + (2 * (patient.GetRR_Seconds / Length)),
+                forwardBuffer = System.Math.Max (1 + (2 * (patient.GetRR_Seconds / Length)),
                     (onClear ? 1.1d : forwardBuffer));
         }
 
         public void DecreaseAmplitude ()
-            => Amplitude = Math.Max (Amplitude - 0.2, 0.2);
+            => Amplitude = System.Math.Max (Amplitude - 0.2, 0.2);
 
         public void IncreaseAmplitude ()
-            => Amplitude = Math.Min (Amplitude + 0.2, 2.0);
+            => Amplitude = System.Math.Min (Amplitude + 0.2, 2.0);
 
         public void Reset () {
             Points.Clear ();
@@ -370,8 +371,8 @@ namespace II.Rhythm {
             max = (min != max) ? max : 1;           // Scaled waveforms should be 0.0 to 1.0
 
             // Get new min and max vaules for the desired tracing
-            double newMin = Utility.InverseLerp (ScaleMin, ScaleMax, diastolic);
-            double newMax = Utility.InverseLerp (ScaleMin, ScaleMax, systolic);
+            double newMin = II.Math.InverseLerp (ScaleMin, ScaleMax, diastolic);
+            double newMax = II.Math.InverseLerp (ScaleMin, ScaleMax, systolic);
 
             // Run the List<Point> through the normalization equation
             for (int i = 0; i < addition.Count; i++)

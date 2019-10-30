@@ -403,7 +403,7 @@ namespace II_Windows {
         }
 
         private void LoadOpen (string fileName) {
-            if (File.Exists (fileName)) {
+            if (System.IO.File.Exists (fileName)) {
                 Stream s = new FileStream (fileName, FileMode.Open);
                 LoadInit (s);
             } else {
@@ -434,10 +434,10 @@ namespace II_Windows {
                 */
 
             string hash = sr.ReadLine ().Trim ();
-            string file = Utility.DecryptAES (sr.ReadToEnd ().Trim ());
+            string file = Encryption.DecryptAES (sr.ReadToEnd ().Trim ());
             sr.Close ();
 
-            if (hash == Utility.HashSHA256 (file))
+            if (hash == Encryption.HashSHA256 (file))
                 LoadProcess (file);
             else
                 LoadFail ();
@@ -630,8 +630,8 @@ namespace II_Windows {
 
             StreamWriter sw = new StreamWriter (s);
             sw.WriteLine (".ii:t1");                                        // Metadata (type 1 savefile)
-            sw.WriteLine (Utility.HashSHA256 (sb.ToString ().Trim ()));     // Hash for validation
-            sw.Write (Utility.EncryptAES (sb.ToString ().Trim ()));         // Savefile data encrypted with AES
+            sw.WriteLine (Encryption.HashSHA256 (sb.ToString ().Trim ()));     // Hash for validation
+            sw.Write (Encryption.EncryptAES (sb.ToString ().Trim ()));         // Savefile data encrypted with AES
             sw.Close ();
             s.Close ();
         }
@@ -1012,16 +1012,16 @@ namespace II_Windows {
             Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
                 (Cardiac_Rhythms.Values)ev.GetValue (si));
 
-            numHR.Value = (int)Utility.Clamp ((double)(numHR.Value ?? 0), v.HRMin, v.HRMax);
-            numNSBP.Value = (int)Utility.Clamp ((double)(numNSBP.Value ?? 0), v.SBPMin, v.SBPMax);
-            numNDBP.Value = (int)Utility.Clamp ((double)(numNDBP.Value ?? 0), v.DBPMin, v.DBPMax);
-            numRR.Value = (int)Utility.Clamp ((double)(numRR.Value ?? 0), v.RRMin, v.RRMax);
-            numSPO2.Value = (int)Utility.Clamp ((double)(numSPO2.Value ?? 0), v.SPO2Min, v.SPO2Max);
-            numETCO2.Value = (int)Utility.Clamp ((double)(numETCO2.Value ?? 0), v.ETCO2Min, v.ETCO2Max);
-            numASBP.Value = (int)Utility.Clamp ((double)(numASBP.Value ?? 0), v.SBPMin, v.SBPMax);
-            numADBP.Value = (int)Utility.Clamp ((double)(numADBP.Value ?? 0), v.DBPMin, v.DBPMax);
-            numPSP.Value = (int)Utility.Clamp ((double)(numPSP.Value ?? 0), v.PSPMin, v.PSPMax);
-            numPDP.Value = (int)Utility.Clamp ((double)(numPDP.Value ?? 0), v.PDPMin, v.PDPMax);
+            numHR.Value = (int)II.Math.Clamp ((double)(numHR.Value ?? 0), v.HRMin, v.HRMax);
+            numNSBP.Value = (int)II.Math.Clamp ((double)(numNSBP.Value ?? 0), v.SBPMin, v.SBPMax);
+            numNDBP.Value = (int)II.Math.Clamp ((double)(numNDBP.Value ?? 0), v.DBPMin, v.DBPMax);
+            numRR.Value = (int)II.Math.Clamp ((double)(numRR.Value ?? 0), v.RRMin, v.RRMax);
+            numSPO2.Value = (int)II.Math.Clamp ((double)(numSPO2.Value ?? 0), v.SPO2Min, v.SPO2Max);
+            numETCO2.Value = (int)II.Math.Clamp ((double)(numETCO2.Value ?? 0), v.ETCO2Min, v.ETCO2Max);
+            numASBP.Value = (int)II.Math.Clamp ((double)(numASBP.Value ?? 0), v.SBPMin, v.SBPMax);
+            numADBP.Value = (int)II.Math.Clamp ((double)(numADBP.Value ?? 0), v.DBPMin, v.DBPMax);
+            numPSP.Value = (int)II.Math.Clamp ((double)(numPSP.Value ?? 0), v.PSPMin, v.PSPMax);
+            numPDP.Value = (int)II.Math.Clamp ((double)(numPDP.Value ?? 0), v.PDPMin, v.PDPMax);
 
             OnUIPatientParameter_Changed (sender, e);
         }
@@ -1038,9 +1038,9 @@ namespace II_Windows {
             Respiratory_Rhythms.Default_Vitals v = Respiratory_Rhythms.DefaultVitals (
                 (Respiratory_Rhythms.Values)ev.GetValue (si));
 
-            numRR.Value = (int)Utility.Clamp ((double)(numRR.Value ?? 0), v.RRMin, v.RRMax);
-            numInspiratoryRatio.Value = (int)Utility.Clamp ((double)(numInspiratoryRatio.Value ?? 0), v.RR_IE_I_Min, v.RR_IE_I_Max);
-            numExpiratoryRatio.Value = (int)Utility.Clamp ((double)(numExpiratoryRatio.Value ?? 0), v.RR_IE_E_Min, v.RR_IE_E_Max);
+            numRR.Value = (int)II.Math.Clamp ((double)(numRR.Value ?? 0), v.RRMin, v.RRMax);
+            numInspiratoryRatio.Value = (int)II.Math.Clamp ((double)(numInspiratoryRatio.Value ?? 0), v.RR_IE_I_Min, v.RR_IE_I_Max);
+            numExpiratoryRatio.Value = (int)II.Math.Clamp ((double)(numExpiratoryRatio.Value ?? 0), v.RR_IE_E_Min, v.RR_IE_E_Max);
 
             OnUIPatientParameter_Changed (sender, e);
         }
@@ -1057,8 +1057,8 @@ namespace II_Windows {
             PulmonaryArtery_Rhythms.Default_Vitals v = PulmonaryArtery_Rhythms.DefaultVitals (
                 (PulmonaryArtery_Rhythms.Values)ev.GetValue (si));
 
-            numPSP.Value = (int)Utility.Clamp ((double)(numPSP.Value ?? 0), v.PSPMin, v.PSPMax);
-            numPDP.Value = (int)Utility.Clamp ((double)(numPDP.Value ?? 0), v.PDPMin, v.PDPMax);
+            numPSP.Value = (int)II.Math.Clamp ((double)(numPSP.Value ?? 0), v.PSPMin, v.PSPMax);
+            numPDP.Value = (int)II.Math.Clamp ((double)(numPDP.Value ?? 0), v.PDPMin, v.PDPMax);
 
             OnUIPatientParameter_Changed (sender, e);
         }

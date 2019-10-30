@@ -28,7 +28,7 @@ namespace II.Waveform {
 
             for (int i = 0; i < _Plot1.Vertices.Length || i < _Plot2.Vertices.Length; i++) {
                 if (i < _Plot1.Vertices.Length && i < _Plot2.Vertices.Length)
-                    vertices.Add (Utility.Lerp (_Plot1.Vertices [i], _Plot2.Vertices [i], _Percent));
+                    vertices.Add (II.Math.Lerp (_Plot1.Vertices [i], _Plot2.Vertices [i], _Percent));
                 else if (i < _Plot1.Vertices.Length)
                     vertices.Add (_Plot1.Vertices [i]);
                 else if (i < _Plot2.Vertices.Length)

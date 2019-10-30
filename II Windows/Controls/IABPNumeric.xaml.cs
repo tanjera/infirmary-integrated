@@ -94,12 +94,12 @@ namespace II_Windows.Controls {
 
                 case ControlType.Values.ABP:
                     if (App.Patient.TransducerZeroed_ABP) {
-                        lblLine1.Text = String.Format ("{0:0}", Utility.RandomPercentRange (App.Patient.ASBP, 0.02f));
-                        lblLine2.Text = String.Format ("/ {0:0}", Utility.RandomPercentRange (
+                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (App.Patient.ASBP, 0.02f));
+                        lblLine2.Text = String.Format ("/ {0:0}", II.Math.RandomPercentRange (
                             (!App.Device_IABP.Running ? App.Patient.ADBP : App.Patient.IABP_DBP), 0.02f));
 
                         // IABP shows MAP calculated by IABP!! Different from how monitors calculate MAP...
-                        lblLine3.Text = String.Format ("({0:0})", Utility.RandomPercentRange (App.Patient.IABP_MAP, 0.02f));
+                        lblLine3.Text = String.Format ("({0:0})", II.Math.RandomPercentRange (App.Patient.IABP_MAP, 0.02f));
                     } else {
                         lblLine1.Text = Utility.WrapString (App.Language.Localize ("NUMERIC:ZeroTransducer"));
                         lblLine2.Text = "";

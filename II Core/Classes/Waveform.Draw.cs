@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 
 namespace II.Waveform {
+
     public static class Draw {
         public const int ResolutionTime = 10;           // Tracing resolution milliseconds per drawing point
         public const int RefreshTime = 17;              // Tracing draw refresh time in milliseconds (60 fps = ~17ms)
@@ -77,7 +78,7 @@ namespace II.Waveform {
             return Plotting.Concatenate (new List<Point> (),
                 Plotting.Stretch (  // Lerp to change waveform based on intracranial compliance due to ICP
                     Dictionary.Lerp (Dictionary.ICP_HighCompliance, Dictionary.ICP_LowCompliance,
-                        Utility.Clamp (Utility.InverseLerp (15, 25, _P.ICP), 0, 1)),    // ICP compliance coefficient
+                        Math.Clamp (II.Math.InverseLerp (15, 25, _P.ICP), 0, 1)),    // ICP compliance coefficient
                     _P.GetHR_Seconds),
                 _Amplitude);
         }
@@ -164,7 +165,7 @@ namespace II.Waveform {
         }
 
         public static List<Point> ECG_Isoelectric__Atrial_Fibrillation (Patient _P, Lead _L) {
-            int Fibrillations = (int)Math.Ceiling (_P.GetHR_Seconds / 0.06);
+            int Fibrillations = (int)System.Math.Ceiling (_P.GetHR_Seconds / 0.06);
 
             List<Point> thisBeat = new List<Point> ();
             for (int i = 1; i < Fibrillations; i++)
@@ -173,7 +174,7 @@ namespace II.Waveform {
         }
 
         public static List<Point> ECG_Isoelectric__Atrial_Flutter (Patient _P, Lead _L) {
-            int Flutters = (int)Math.Ceiling (_P.GetHR_Seconds / 0.16f);
+            int Flutters = (int)System.Math.Ceiling (_P.GetHR_Seconds / 0.16f);
 
             List<Point> thisBeat = new List<Point> ();
             for (int i = 1; i < Flutters; i++)
@@ -182,14 +183,14 @@ namespace II.Waveform {
         }
 
         public static List<Point> ECG_Complex__P_Normal (Patient _P, Lead _L) {
-            double PR = Utility.Lerp (0.16f, 0.2f, Utility.Clamp (Utility.InverseLerp (60, 160, _P.HR)));
+            double PR = II.Math.Lerp (0.16f, 0.2f, II.Math.Clamp (II.Math.InverseLerp (60, 160, _P.HR)));
             return ECG_P (_P, _L, (PR * 2) / 3, .1f, 0f, new Point (0, 0f));
         }
 
         public static List<Point> ECG_Complex__QRST_Normal (Patient _P, Lead _L) {
-            double lerpCoeff = Utility.Clamp (Utility.InverseLerp (60, 160, _P.HR)),
-                QRS = Utility.Lerp (0.08f, 0.12f, 1 - lerpCoeff),
-                QT = Utility.Lerp (0.235f, 0.4f, 1 - lerpCoeff);
+            double lerpCoeff = II.Math.Clamp (II.Math.InverseLerp (60, 160, _P.HR)),
+                QRS = II.Math.Lerp (0.08f, 0.12f, 1 - lerpCoeff),
+                QT = II.Math.Lerp (0.235f, 0.4f, 1 - lerpCoeff);
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (_P, _L, QRS / 4, -0.05f, Plotting.Last (thisBeat)));
@@ -202,9 +203,9 @@ namespace II.Waveform {
         }
 
         public static List<Point> ECG_Complex__QRST_Aberrant_1 (Patient _P, Lead _L) {
-            double lerpCoeff = Utility.Clamp (Utility.InverseLerp (60, 160, _P.HR)),
-                QRS = Utility.Lerp (0.12f, 0.26f, 1 - lerpCoeff),
-                QT = Utility.Lerp (0.25f, 0.6f, 1 - lerpCoeff);
+            double lerpCoeff = II.Math.Clamp (II.Math.InverseLerp (60, 160, _P.HR)),
+                QRS = II.Math.Lerp (0.12f, 0.26f, 1 - lerpCoeff),
+                QT = II.Math.Lerp (0.25f, 0.6f, 1 - lerpCoeff);
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (_P, _L, QRS / 6, 0.1f, Plotting.Last (thisBeat)));
@@ -217,9 +218,9 @@ namespace II.Waveform {
         }
 
         public static List<Point> ECG_Complex__QRST_Aberrant_2 (Patient _P, Lead _L) {
-            double lerpCoeff = Utility.Clamp (Utility.InverseLerp (60, 160, _P.HR)),
-                QRS = Utility.Lerp (0.12f, 0.26f, 1 - lerpCoeff),
-                QT = Utility.Lerp (0.25f, 0.6f, 1 - lerpCoeff);
+            double lerpCoeff = II.Math.Clamp (II.Math.InverseLerp (60, 160, _P.HR)),
+                QRS = II.Math.Lerp (0.12f, 0.26f, 1 - lerpCoeff),
+                QT = II.Math.Lerp (0.25f, 0.6f, 1 - lerpCoeff);
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (_P, _L, QRS / 3, -0.8f, Plotting.Last (thisBeat)));
@@ -231,9 +232,9 @@ namespace II.Waveform {
         }
 
         public static List<Point> ECG_Complex__QRST_Aberrant_3 (Patient _P, Lead _L) {
-            double lerpCoeff = Utility.Clamp (Utility.InverseLerp (30, 160, _P.HR)),
-                QRS = Utility.Lerp (0.12f, 0.26f, 1 - lerpCoeff),
-                QT = Utility.Lerp (0.25f, 0.6f, 1 - lerpCoeff);
+            double lerpCoeff = II.Math.Clamp (II.Math.InverseLerp (30, 160, _P.HR)),
+                QRS = II.Math.Lerp (0.12f, 0.26f, 1 - lerpCoeff),
+                QT = II.Math.Lerp (0.25f, 0.6f, 1 - lerpCoeff);
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (_P, _L, QRS / 3, 0.1f, Plotting.Last (thisBeat)));
@@ -245,9 +246,9 @@ namespace II.Waveform {
         }
 
         public static List<Point> ECG_Complex__QRST_BBB (Patient _P, Lead _L) {
-            double lerpCoeff = Utility.Clamp (Utility.InverseLerp (60, 160, _P.HR)),
-                QRS = Utility.Lerp (0.12f, 0.22f, 1 - lerpCoeff),
-                QT = Utility.Lerp (0.235f, 0.4f, 1 - lerpCoeff);
+            double lerpCoeff = II.Math.Clamp (II.Math.InverseLerp (60, 160, _P.HR)),
+                QRS = II.Math.Lerp (0.12f, 0.22f, 1 - lerpCoeff),
+                QT = II.Math.Lerp (0.235f, 0.4f, 1 - lerpCoeff);
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (_P, _L, QRS / 6, -0.1f, Plotting.Last (thisBeat)));
@@ -265,9 +266,9 @@ namespace II.Waveform {
 
         public static List<Point> ECG_Complex__QRST_SVT (Patient _P, Lead _L) {
             double _Length = _P.GetHR_Seconds;
-            double lerpCoeff = Utility.Clamp (Utility.InverseLerp (160, 240, _P.HR)),
-                        QRS = Utility.Lerp (0.05f, 0.12f, 1 - lerpCoeff),
-                        QT = Utility.Lerp (0.22f, 0.36f, 1 - lerpCoeff);
+            double lerpCoeff = II.Math.Clamp (II.Math.InverseLerp (160, 240, _P.HR)),
+                        QRS = II.Math.Lerp (0.05f, 0.12f, 1 - lerpCoeff),
+                        QT = II.Math.Lerp (0.22f, 0.36f, 1 - lerpCoeff);
 
             List<Point> thisBeat = new List<Point> ();
             thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (_P, _L, QRS / 4, -0.1f, Plotting.Last (thisBeat)));
@@ -290,7 +291,7 @@ namespace II.Waveform {
         public static List<Point> ECG_Complex__QRST_VF (Patient _P, Lead _L, float _Amp) {
             double _Length = _P.GetHR_Seconds,
                     _Wave = _P.GetHR_Seconds / 2f,
-                    _Amplitude = Utility.RandomDouble (0.3f, 0.6f) * _Amp;
+                    _Amplitude = II.Math.RandomDouble (0.3f, 0.6f) * _Amp;
 
             List<Point> thisBeat = new List<Point> ();
             while (_Length > 0f) {
@@ -298,7 +299,7 @@ namespace II.Waveform {
 
                 // Flip the sign of amplitude and randomly crawl larger/smaller, models the
                 // flippant waves in v-fib.
-                _Amplitude = 0 - Utility.Clamp (Utility.RandomDouble (_Amplitude - 0.1f, _Amplitude + 0.1f), -1f, 1f);
+                _Amplitude = 0 - Math.Clamp (II.Math.RandomDouble (_Amplitude - 0.1f, _Amplitude + 0.1f), -1f, 1f);
                 _Length -= _Wave;
             }
             return thisBeat;
@@ -341,51 +342,78 @@ namespace II.Waveform {
          * _mV_End == end deflection height
 	     */
 
-        static List<Point> ECG_P (Patient p, Lead l, Point _S) { return ECG_P (p, l, .08f, .15f, 0f, _S); }
-        static List<Point> ECG_P (Patient p, Lead l, double _L, double _mV, double _mV_End, Point _S) {
+        private static List<Point> ECG_P (Patient p, Lead l, Point _S) {
+            return ECG_P (p, l, .08f, .15f, 0f, _S);
+        }
+
+        private static List<Point> ECG_P (Patient p, Lead l, double _L, double _mV, double _mV_End, Point _S) {
             return Plotting.Peak (ResolutionTime, _L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.P], _mV_End, _S);
         }
 
-        static List<Point> ECG_Q (Patient p, Lead l, Point _S) { return ECG_Q (p, l, 1f, -.1f, _S); }
-        static List<Point> ECG_Q (Patient p, Lead l, double _L, double _mV, Point _S) {
+        private static List<Point> ECG_Q (Patient p, Lead l, Point _S) {
+            return ECG_Q (p, l, 1f, -.1f, _S);
+        }
+
+        private static List<Point> ECG_Q (Patient p, Lead l, double _L, double _mV, Point _S) {
             return Plotting.Line (ResolutionTime, _L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.Q]
                 * axisLeadCoeff [(int)p.Cardiac_Axis.Value, (int)l.Value, (int)AxisPart.Q], _S);
         }
 
-        static List<Point> ECG_R (Patient p, Lead l, Point _S) { return ECG_R (p, l, 1f, .9f, _S); }
-        static List<Point> ECG_R (Patient p, Lead l, double _L, double _mV, Point _S) {
+        private static List<Point> ECG_R (Patient p, Lead l, Point _S) {
+            return ECG_R (p, l, 1f, .9f, _S);
+        }
+
+        private static List<Point> ECG_R (Patient p, Lead l, double _L, double _mV, Point _S) {
             return Plotting.Line (ResolutionTime, _L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.R]
                 * axisLeadCoeff [(int)p.Cardiac_Axis.Value, (int)l.Value, (int)AxisPart.R], _S);
         }
 
-        static List<Point> ECG_S (Patient p, Lead l, Point _S) { return ECG_S (p, l, 1f, -.3f, _S); }
-        static List<Point> ECG_S (Patient p, Lead l, double _L, double _mV, Point _S) {
+        private static List<Point> ECG_S (Patient p, Lead l, Point _S) {
+            return ECG_S (p, l, 1f, -.3f, _S);
+        }
+
+        private static List<Point> ECG_S (Patient p, Lead l, double _L, double _mV, Point _S) {
             return Plotting.Line (ResolutionTime, _L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.S]
                 * axisLeadCoeff [(int)p.Cardiac_Axis.Value, (int)l.Value, (int)AxisPart.S], _S);
         }
 
-        static List<Point> ECG_J (Patient p, Lead l, Point _S) { return ECG_J (p, l, 1f, -.1f, _S); }
-        static List<Point> ECG_J (Patient p, Lead l, double _L, double _mV, Point _S) {
+        private static List<Point> ECG_J (Patient p, Lead l, Point _S) {
+            return ECG_J (p, l, 1f, -.1f, _S);
+        }
+
+        private static List<Point> ECG_J (Patient p, Lead l, double _L, double _mV, Point _S) {
             return Plotting.Line (ResolutionTime, _L, (_mV * baseLeadCoeff [(int)l.Value, (int)WavePart.J]) + p.ST_Elevation [(int)l.Value], _S);
         }
 
-        static List<Point> ECG_T (Patient p, Lead l, Point _S) { return ECG_T (p, l, .16f, .3f, 0f, _S); }
-        static List<Point> ECG_T (Patient p, Lead l, double _L, double _mV, double _mV_End, Point _S) {
+        private static List<Point> ECG_T (Patient p, Lead l, Point _S) {
+            return ECG_T (p, l, .16f, .3f, 0f, _S);
+        }
+
+        private static List<Point> ECG_T (Patient p, Lead l, double _L, double _mV, double _mV_End, Point _S) {
             return Plotting.Peak (ResolutionTime, _L, (_mV * baseLeadCoeff [(int)l.Value, (int)WavePart.T]) + p.T_Elevation [(int)l.Value], _mV_End, _S);
         }
 
-        static List<Point> ECG_PR (Patient p, Lead l, Point _S) { return ECG_PR (p, l, .08f, 0f, _S); }
-        static List<Point> ECG_PR (Patient p, Lead l, double _L, double _mV, Point _S) {
+        private static List<Point> ECG_PR (Patient p, Lead l, Point _S) {
+            return ECG_PR (p, l, .08f, 0f, _S);
+        }
+
+        private static List<Point> ECG_PR (Patient p, Lead l, double _L, double _mV, Point _S) {
             return Plotting.Line (ResolutionTime, _L, _mV + baseLeadCoeff [(int)l.Value, (int)WavePart.PR], _S);
         }
 
-        static List<Point> ECG_ST (Patient p, Lead l, Point _S) { return ECG_ST (p, l, .1f, 0f, _S); }
-        static List<Point> ECG_ST (Patient p, Lead l, double _L, double _mV, Point _S) {
+        private static List<Point> ECG_ST (Patient p, Lead l, Point _S) {
+            return ECG_ST (p, l, .1f, 0f, _S);
+        }
+
+        private static List<Point> ECG_ST (Patient p, Lead l, double _L, double _mV, Point _S) {
             return Plotting.Line (ResolutionTime, _L, _mV + baseLeadCoeff [(int)l.Value, (int)WavePart.ST] + p.ST_Elevation [(int)l.Value], _S);
         }
 
-        static List<Point> ECG_TP (Patient p, Lead l, Point _S) { return ECG_TP (p, l, .48f, .0f, _S); }
-        static List<Point> ECG_TP (Patient p, Lead l, double _L, double _mV, Point _S) {
+        private static List<Point> ECG_TP (Patient p, Lead l, Point _S) {
+            return ECG_TP (p, l, .48f, .0f, _S);
+        }
+
+        private static List<Point> ECG_TP (Patient p, Lead l, double _L, double _mV, Point _S) {
             return Plotting.Line (ResolutionTime, _L, _mV + baseLeadCoeff [(int)l.Value, (int)WavePart.TP], _S);
         }
 
@@ -393,12 +421,12 @@ namespace II.Waveform {
          * Coefficients for waveform portions for each lead
          */
 
-        enum WavePart {
+        private enum WavePart {
             QRST, P, Q, R, S, J, T, PR, ST, TP
         }
 
         // Coefficients to transform base lead (Lead 2) into 12 lead ECG
-        static double [,] baseLeadCoeff = new double [,] {
+        private static double [,] baseLeadCoeff = new double [,] {
 
             // P through T are multipliers; segments are additions
             { 0.7f,     0.7f,     0.7f,   0.7f,   0.7f,   0.7f,   0.8f,       0f,     0f,     0f },     // L1
@@ -415,12 +443,12 @@ namespace II.Waveform {
             { -0.1f,    1f,       -9.0f,  -0.1f,  0f,     0f,     0.8f,       0f,     0f,     0f }      // V6
         };
 
-        enum AxisPart {
+        private enum AxisPart {
             Q, R, S
         }
 
         // Coefficients to modify 12 lead ECG per cardiac axis deviation
-        static double [,,] axisLeadCoeff = new double [,,] {
+        private static double [,,] axisLeadCoeff = new double [,,] {
 
             // P through T are multipliers; segments are additions
             {   // Normal axis

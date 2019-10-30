@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 
 namespace II {
+
     public class Scenario {
         public string Name, Description, Author;
         public DateTime Updated;
@@ -20,6 +21,7 @@ namespace II {
         public Timer ProgressTimer = new Timer ();
 
         public event EventHandler<EventArgs> StepChangeRequest;
+
         public event EventHandler<EventArgs> StepChanged;
 
         public Scenario (bool toInit) {
@@ -140,7 +142,7 @@ namespace II {
             if (optProg < 0 || optProg >= Current.Progressions.Count)       // Default Progression
                 CurrentIndex = Current.ProgressTo >= 0
                     ? Current.ProgressTo
-                    : Math.Min (CurrentIndex + 1, Steps.Count - 1);
+                    : System.Math.Min (CurrentIndex + 1, Steps.Count - 1);
             else                                                            // Optional Progression
                 CurrentIndex = Current.Progressions [optProg].DestinationIndex;
 
@@ -183,7 +185,7 @@ namespace II {
             StepChangeRequest?.Invoke (this, new EventArgs ());
 
             int pFrom = CurrentIndex;
-            CurrentIndex = Utility.Clamp (incIndex, 0, Steps.Count - 1);
+            CurrentIndex = II.Math.Clamp (incIndex, 0, Steps.Count - 1);
 
             if (pFrom != CurrentIndex) {                                    // If the actual step Index changed
                 CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
@@ -298,8 +300,8 @@ namespace II {
                 sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressTo", ProgressTo));
                 sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressFrom", ProgressFrom));
                 sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressTime", ProgressTimer));
-                sWrite.AppendLine (String.Format ("{0}:{1}", "IPositionX", Math.Round (IPositionX, 2)));
-                sWrite.AppendLine (String.Format ("{0}:{1}", "IPositionY", Math.Round (IPositionY, 2)));
+                sWrite.AppendLine (String.Format ("{0}:{1}", "IPositionX", System.Math.Round (IPositionX, 2)));
+                sWrite.AppendLine (String.Format ("{0}:{1}", "IPositionY", System.Math.Round (IPositionY, 2)));
 
                 sWrite.AppendLine ("> Begin: Patient");
                 sWrite.Append (Patient.Save ());
@@ -315,11 +317,14 @@ namespace II {
             }
 
             /* Possible progressions/routes to the next step of the scenario */
+
             public class Progression {
                 public int DestinationIndex;
                 public string Description;
 
-                public Progression () { }
+                public Progression () {
+                }
+
                 public Progression (int dest, string desc = "") {
                     DestinationIndex = dest;
                     Description = desc;

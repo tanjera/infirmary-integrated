@@ -25,7 +25,9 @@ using System.Text;
 using II.Localization;
 
 namespace II.Server {
+
     public partial class Server {
+
         private string FormatForPHP (string inc)
             => inc.Replace ("#", "_").Replace ("$", "_");
 
@@ -89,9 +91,9 @@ namespace II.Server {
                     ci.ThreeLetterWindowsLanguageName,
                     appLanguage.Value.ToString (),
                     GetCountryCode (ipAddress),
-                    Utility.HashSHA256 (ipAddress),
-                    Utility.HashSHA256 (macAddress),
-                    Utility.HashSHA256 (Environment.UserName)
+                    Encryption.HashSHA256 (ipAddress),
+                    Encryption.HashSHA256 (macAddress),
+                    Encryption.HashSHA256 (Environment.UserName)
                     )));
 
                 req.GetResponse ();
@@ -149,7 +151,7 @@ namespace II.Server {
                 WebRequest req = WebRequest.Create (FormatForPHP (String.Format (
                     "http://server.infirmary-integrated.com/mirror_get.php?accession={0}&accesshash={1}",
                     m.Accession,
-                    Utility.HashSHA256 (m.PasswordAccess))));
+                    Encryption.HashSHA256 (m.PasswordAccess))));
                 WebResponse resp = req.GetResponse ();
                 Stream str = resp.GetResponseStream ();
 
@@ -170,7 +172,7 @@ namespace II.Server {
                 m.ServerQueried = DateTime.UtcNow;
                 m.PatientUpdated = serverUpdated;
                 Patient p = new Patient ();
-                p.Load_Process (Utility.DecryptAES (patient));
+                p.Load_Process (Encryption.DecryptAES (patient));
 
                 return p;
             } catch {
@@ -186,12 +188,12 @@ namespace II.Server {
                     "http://server.infirmary-integrated.com/mirror_post.php" +
                     "?accession={0}&key_access={1}&key_edit={2}&patient={3}&updated={4}&client_ip={5}&client_user={6}",
                     m.Accession,
-                    Utility.HashSHA256 (m.PasswordAccess),
-                    Utility.HashSHA256 (m.PasswordEdit),
-                    Utility.EncryptAES (pStr),
+                    Encryption.HashSHA256 (m.PasswordAccess),
+                    Encryption.HashSHA256 (m.PasswordEdit),
+                    Encryption.EncryptAES (pStr),
                     Utility.DateTime_ToString (pUp),
-                    Utility.HashSHA256 (ipAddress),
-                    Utility.HashSHA256 (Environment.UserName))));
+                    Encryption.HashSHA256 (ipAddress),
+                    Encryption.HashSHA256 (Environment.UserName))));
 
                 req.GetResponse ();
             } catch {

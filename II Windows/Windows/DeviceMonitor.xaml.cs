@@ -168,8 +168,7 @@ namespace II_Windows {
         private void PrintScreen ()
             => ScreenshotPdf.PrintPdf (ScreenshotPdf.AssemblePdf (
                     Screenshot.GetBitmap (layoutGrid, 1),
-                    App.Language.Localize ("CM:WindowTitle"),
-                    false));
+                    App.Language.Localize ("CM:WindowTitle")));
 
         private void TogglePause () {
             isPaused = !isPaused;
@@ -276,7 +275,7 @@ namespace II_Windows {
             }
 
             // Cap available amount of numerics
-            rowsNumerics = Utility.Clamp (rowsNumerics, 1, numericTypes.Count);
+            rowsNumerics = II.Math.Clamp (rowsNumerics, 1, numericTypes.Count);
             for (int i = listNumerics.Count; i < rowsNumerics && i < numericTypes.Count; i++) {
                 Controls.MonitorNumeric newNum;
                 newNum = new Controls.MonitorNumeric ((Controls.MonitorNumeric.ControlType.Values)Enum.Parse (typeof (Controls.MonitorNumeric.ControlType.Values), numericTypes [i]));
@@ -293,7 +292,7 @@ namespace II_Windows {
             }
 
             // Cap available amount of tracings
-            rowsTracings = Utility.Clamp (rowsTracings, 1, tracingTypes.Count);
+            rowsTracings = II.Math.Clamp (rowsTracings, 1, tracingTypes.Count);
             for (int i = listTracings.Count; i < rowsTracings && i < tracingTypes.Count; i++) {
                 Strip newStrip = new Strip ((Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]), 6d);
                 Controls.MonitorTracing newTracing = new Controls.MonitorTracing (newStrip);

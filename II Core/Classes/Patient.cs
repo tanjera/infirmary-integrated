@@ -14,11 +14,13 @@ using System.Linq;
 using System.Text;
 
 namespace II {
+
     public class Patient {
         /* Mirroring variables */
         public DateTime Updated;                    // DateTime this Patient was last updated
 
         /* Parameters for patient simulation, e.g. vital signs */
+
         public Vital_Signs VS_Settings = new Vital_Signs (),
                             VS_Actual = new Vital_Signs ();
 
@@ -33,18 +35,23 @@ namespace II {
 
         /* Cardiac profile */
         public int Pacemaker_Threshold;            // Patient's threshold for electrical capture to pacemaker spike
+
         public bool Pulsus_Paradoxus = false,
                     Pulsus_Alternans = false;
+
         public Cardiac_Axes Cardiac_Axis = new Cardiac_Axes ();
         public double [] ST_Elevation, T_Elevation;
 
         /* Obstetric profile */
+
         public Scales.Intensity UC_Intensity = new Scales.Intensity (),
                          FHR_Variability = new Scales.Intensity ();
+
         public int UC_Frequency, UC_Duration, FHR;
         public FetalHeartDecelerations FHR_Decelerations = new FetalHeartDecelerations ();
 
         /* General Device Settings */
+
         public bool TransducerZeroed_CVP = false,
                     TransducerZeroed_ABP = false,
                     TransducerZeroed_PA = false,
@@ -52,6 +59,7 @@ namespace II {
                     TransducerZeroed_IAP = false;
 
         /* Defibrillator parameters */
+
         public int Pacemaker_Rate,                  // DeviceDefib's transcutaneous pacemaker rate
                     Pacemaker_Energy;               // DeviceDefib's pacemaker energy delivery amount
 
@@ -61,6 +69,7 @@ namespace II {
         public string IABP_Trigger;                 // Device_IABP's trigger; data backflow for strip processing
 
         /* Timers for modeling */
+
         private Timer timerCardiac_Baseline = new Timer (),
                         timerCardiac_Atrial_Electric = new Timer (),
                         timerCardiac_Ventricular_Electric = new Timer (),
@@ -81,32 +90,42 @@ namespace II {
         private static int Default_Electromechanical_Delay = 180;   // Delay in electrical to mechanical capture in milliseconds
 
         /* Internal counters and buffers for propogating aberrancies */
+
         private int counterCardiac_Aberrancy = 0,
                     counterCardiac_Arrhythmia = 0,
                     counterRespiratory_Arrhythmia = 0;
+
         private bool switchParadoxus = false,
                      switchCardiac_Arrhythmia = false,
                      switchRespiratory_Arrhythmia = false;
 
         /* Definitions for Vital_Signs class */
+
         public class Vital_Signs {
             /* Basic vital signs */
+
             public int HR,                      // Heart rate
                 NSBP, NDBP, NMAP,               // Non-invasive blood pressures
                 RR, SPO2;                       // Respiratory rate, pulse oximetry
+
             public double T;                    // Temperature
 
             /* Advanced hemodynamics */
+
             public int ETCO2, CVP,              // End-tidal capnography, central venous pressure,
                 ASBP, ADBP, AMAP;               // Arterial line blood pressures
+
             public int PSP, PDP, PMP,           // Pulmonary artery pressures
                         ICP, IAP;               // Intracranial pressure, intra-abdominal pressure
 
             /* Respiratory profile */
+
             public float RR_IE_I,               // Inspiratory to expiratory ratio
                          RR_IE_E;
 
-            public Vital_Signs () { }
+            public Vital_Signs () {
+            }
+
             public Vital_Signs (Vital_Signs v)
                 => Set (v);
 
@@ -137,74 +156,92 @@ namespace II {
             get { return VS_Actual.HR; }
             set { VS_Settings.HR = value; }
         }
+
         public int RR {
             get { return VS_Actual.RR; }
             set { VS_Settings.RR = value; }
         }
+
         public int ETCO2 {
             get { return VS_Actual.ETCO2; }
             set { VS_Settings.ETCO2 = value; }
         }
+
         public int SPO2 {
             get { return VS_Actual.SPO2; }
             set { VS_Settings.SPO2 = value; }
         }
+
         public int CVP {
             get { return VS_Actual.CVP; }
             set { VS_Settings.CVP = value; }
         }
+
         public int NSBP {
             get { return VS_Actual.NSBP; }
             set { VS_Settings.NSBP = value; }
         }
+
         public int NDBP {
             get { return VS_Actual.NDBP; }
             set { VS_Settings.NDBP = value; }
         }
+
         public int NMAP {
             get { return VS_Actual.NMAP; }
             set { VS_Settings.NMAP = value; }
         }
+
         public int ASBP {
             get { return VS_Actual.ASBP; }
             set { VS_Settings.ASBP = value; }
         }
+
         public int ADBP {
             get { return VS_Actual.ADBP; }
             set { VS_Settings.ADBP = value; }
         }
+
         public int AMAP {
             get { return VS_Actual.AMAP; }
             set { VS_Settings.AMAP = value; }
         }
+
         public int PSP {
             get { return VS_Actual.PSP; }
             set { VS_Settings.PSP = value; }
         }
+
         public int PDP {
             get { return VS_Actual.PDP; }
             set { VS_Settings.PDP = value; }
         }
+
         public int PMP {
             get { return VS_Actual.PMP; }
             set { VS_Settings.PMP = value; }
         }
+
         public int ICP {
             get { return VS_Actual.ICP; }
             set { VS_Settings.ICP = value; }
         }
+
         public int IAP {
             get { return VS_Actual.IAP; }
             set { VS_Settings.IAP = value; }
         }
+
         public double T {
             get { return VS_Actual.T; }
             set { VS_Settings.T = value; }
         }
+
         public float RR_IE_I {
             get { return VS_Actual.RR_IE_I; }
             set { VS_Settings.RR_IE_I = value; }
         }
+
         public float RR_IE_E {
             get { return VS_Actual.RR_IE_E; }
             set { VS_Settings.RR_IE_E = value; }
@@ -295,7 +332,9 @@ namespace II {
 
         /* PatientEvent event, handler, and caller */
         public List<PatientEventArgs> ListPatientEvents = new List<PatientEventArgs> ();
+
         public event EventHandler<PatientEventArgs> PatientEvent;
+
         public class PatientEventArgs : EventArgs {
             public Patient Patient;                         // Remains as a pointer
             public Vital_Signs Vitals;                      // Copies over as a clone, not a pointer
@@ -344,16 +383,24 @@ namespace II {
         }
 
         /* Methods for counting, calculating, and measuring vital signs, timing re: vital signs, etc. */
-        public static int CalculateMAP (int sbp, int dbp) { return dbp + ((sbp - dbp) / 3); }
-        public static int CalculateCPP (int icp, int map) { return map - icp; }
-        public double GetHR_Seconds { get { return 60d / Math.Max (1, VS_Actual.HR); } }
-        public double GetRR_Seconds { get { return 60d / Math.Max (1, VS_Actual.RR); } }
+
+        public static int CalculateMAP (int sbp, int dbp) {
+            return dbp + ((sbp - dbp) / 3);
+        }
+
+        public static int CalculateCPP (int icp, int map) {
+            return map - icp;
+        }
+
+        public double GetHR_Seconds { get { return 60d / System.Math.Max (1, VS_Actual.HR); } }
+        public double GetRR_Seconds { get { return 60d / System.Math.Max (1, VS_Actual.RR); } }
         public double GetRR_Seconds_I { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_I; } }
         public double GetRR_Seconds_E { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_E; } }
-        public double GetPulsatility_Seconds { get { return Math.Min (GetHR_Seconds * 0.75, 0.75); } }
+        public double GetPulsatility_Seconds { get { return System.Math.Min (GetHR_Seconds * 0.75, 0.75); } }
 
         public int MeasureHR_ECG (double lengthSeconds, double offsetSeconds)
             => MeasureHR (lengthSeconds, offsetSeconds, false);
+
         public int MeasureHR_SPO2 (double lengthSeconds, double offsetSeconds)
             => MeasureHR (lengthSeconds, offsetSeconds, true);
 
@@ -387,6 +434,7 @@ namespace II {
         }
 
         /* Process all timers for patient modeling */
+
         public void ProcessTimers (object sender, EventArgs e) {
             /* For cross-platform compatibility with different timers ...
              * When creating a Patient object, create a native thread-safe Timer object,
@@ -412,6 +460,7 @@ namespace II {
         }
 
         /* Process for loading Patient{} information from simulation file */
+
         public void Load_Process (string inc) {
             StringReader sRead = new StringReader (inc);
 
@@ -515,6 +564,7 @@ namespace II {
         }
 
         /* Process for saving Patient{} information to simulation file  */
+
         public string Save () {
             StringBuilder sWrite = new StringBuilder ();
 
@@ -535,7 +585,7 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "NMAP", VS_Settings.NMAP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "RR", VS_Settings.RR));
             sWrite.AppendLine (String.Format ("{0}:{1}", "SPO2", VS_Settings.SPO2));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "T", Math.Round (VS_Settings.T, 1)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "T", System.Math.Round (VS_Settings.T, 1)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Rhythm", Cardiac_Rhythm.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_Rhythm", Respiratory_Rhythm.Value));
 
@@ -554,8 +604,8 @@ namespace II {
 
             // Respiratory profile
             sWrite.AppendLine (String.Format ("{0}:{1}", "Mechanically_Ventilated", Mechanically_Ventilated));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_I", Math.Round (VS_Settings.RR_IE_I, 1)));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_E", Math.Round (VS_Settings.RR_IE_E, 1)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_I", System.Math.Round (VS_Settings.RR_IE_I, 1)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_E", System.Math.Round (VS_Settings.RR_IE_E, 1)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiration_Inflated", Respiration_Inflated));
 
             // Cardiac profile
@@ -695,17 +745,17 @@ namespace II {
                     int etco2Min, int etco2Max,
                     int sbpMin, int sbpMax, int dbpMin, int dbpMax,
                     int pspMin, int pspMax, int pdpMin, int pdpMax) {
-            VS_Settings.HR = Utility.Clamp (VS_Settings.HR, hrMin, hrMax);
-            VS_Settings.SPO2 = Utility.Clamp (VS_Settings.SPO2, spo2Min, spo2Max);
-            VS_Settings.ETCO2 = Utility.Clamp (VS_Settings.ETCO2, etco2Min, etco2Max);
-            VS_Settings.NSBP = Utility.Clamp (VS_Settings.NSBP, sbpMin, sbpMax);
-            VS_Settings.NDBP = Utility.Clamp (VS_Settings.NDBP, dbpMin, dbpMax);
+            VS_Settings.HR = II.Math.Clamp (VS_Settings.HR, hrMin, hrMax);
+            VS_Settings.SPO2 = II.Math.Clamp (VS_Settings.SPO2, spo2Min, spo2Max);
+            VS_Settings.ETCO2 = II.Math.Clamp (VS_Settings.ETCO2, etco2Min, etco2Max);
+            VS_Settings.NSBP = II.Math.Clamp (VS_Settings.NSBP, sbpMin, sbpMax);
+            VS_Settings.NDBP = II.Math.Clamp (VS_Settings.NDBP, dbpMin, dbpMax);
             VS_Settings.NMAP = Patient.CalculateMAP (VS_Settings.NSBP, VS_Settings.NDBP);
-            VS_Settings.ASBP = Utility.Clamp (VS_Settings.ASBP, sbpMin, sbpMax);
-            VS_Settings.ADBP = Utility.Clamp (VS_Settings.ADBP, sbpMin, sbpMax);
+            VS_Settings.ASBP = II.Math.Clamp (VS_Settings.ASBP, sbpMin, sbpMax);
+            VS_Settings.ADBP = II.Math.Clamp (VS_Settings.ADBP, sbpMin, sbpMax);
             VS_Settings.AMAP = Patient.CalculateMAP (VS_Settings.ASBP, VS_Settings.ADBP);
-            VS_Settings.PSP = Utility.Clamp (VS_Settings.PSP, pspMin, pspMax);
-            VS_Settings.PDP = Utility.Clamp (VS_Settings.PDP, pdpMin, pdpMax);
+            VS_Settings.PSP = II.Math.Clamp (VS_Settings.PSP, pspMin, pspMax);
+            VS_Settings.PDP = II.Math.Clamp (VS_Settings.PDP, pdpMin, pdpMax);
             VS_Settings.PMP = Patient.CalculateMAP (VS_Settings.PSP, VS_Settings.PDP);
 
             VS_Actual.Set (VS_Settings);
@@ -905,7 +955,7 @@ namespace II {
 
                 // Traced as "irregular V" rhythms
                 case Cardiac_Rhythms.Values.Atrial_Fibrillation:
-                    VS_Actual.HR = (int)(VS_Settings.HR * Utility.RandomDouble (0.6, 1.4));
+                    VS_Actual.HR = (int)(VS_Settings.HR * II.Math.RandomDouble (0.6, 1.4));
                     timerCardiac_Ventricular_Electric.ResetAuto (1);
                     break;
 
@@ -962,7 +1012,7 @@ namespace II {
                     VS_Actual.HR = VS_Settings.HR;
                     if (counterCardiac_Aberrancy <= 0) {
                         counterCardiac_Aberrancy = new Random ().Next (4, 8);
-                        VS_Actual.HR = (int)(VS_Settings.HR * Utility.RandomDouble (0.6, 0.8));
+                        VS_Actual.HR = (int)(VS_Settings.HR * II.Math.RandomDouble (0.6, 0.8));
                     } else {
                         VS_Actual.HR = VS_Settings.HR;
                     }
@@ -977,7 +1027,7 @@ namespace II {
                         timerCardiac_Ventricular_Electric.ResetAuto (1);
                     } else {
                         if (counterCardiac_Aberrancy == 1)
-                            VS_Actual.HR = (int)(VS_Settings.HR * Utility.RandomDouble (0.7, 0.9));
+                            VS_Actual.HR = (int)(VS_Settings.HR * II.Math.RandomDouble (0.7, 0.9));
                         timerCardiac_Atrial_Electric.ResetAuto (1);
                     }
                     break;
@@ -1134,19 +1184,19 @@ namespace II {
                     return;
 
                 case Respiratory_Rhythms.Values.Agonal:
-                    c = Utility.RandomDouble (0.8, 1.2);
+                    c = II.Math.RandomDouble (0.8, 1.2);
                     VS_Actual.RR = (int)(c * VS_Settings.RR);
                     break;
 
                 case Respiratory_Rhythms.Values.Apneustic:
-                    VS_Actual.RR = (Utility.RandomDouble (0, 1) < 0.1) ? 6 : VS_Settings.RR;
+                    VS_Actual.RR = (II.Math.RandomDouble (0, 1) < 0.1) ? 6 : VS_Settings.RR;
                     break;
 
                 case Respiratory_Rhythms.Values.Ataxic:
-                    if (Utility.RandomDouble (0, 1) < 0.1)
+                    if (II.Math.RandomDouble (0, 1) < 0.1)
                         VS_Actual.RR = 4;
                     else {
-                        c = Utility.RandomDouble (0.8, 1.2);
+                        c = II.Math.RandomDouble (0.8, 1.2);
                         VS_Actual.RR = (int)(c * VS_Settings.RR);
                         VS_Actual.RR_IE_E = (int)(c * VS_Settings.RR_IE_E);
                     }

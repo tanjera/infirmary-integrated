@@ -13,8 +13,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Encryption.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\File.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Leads.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Localization.Dictionary.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Math.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Server.Mirror.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Tracing.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Waveform.Point.cs" />

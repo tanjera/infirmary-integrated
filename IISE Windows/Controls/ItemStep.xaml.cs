@@ -154,9 +154,9 @@ namespace II.Scenario_Editor.Controls {
             protected override Geometry DefiningGeometry {
                 get {
                     return new RectangleGeometry (new Rect (0, 0,
-                        Math.Max ((double.IsNaN (this.Width) ? 0 : this.Width),
+                        System.Math.Max ((double.IsNaN (this.Width) ? 0 : this.Width),
                             double.IsNaN (this.MinWidth) ? 0 : this.MinWidth),
-                        Math.Max ((double.IsNaN (this.Height) ? 0 : this.Height),
+                        System.Math.Max ((double.IsNaN (this.Height) ? 0 : this.Height),
                             double.IsNaN (this.MinHeight) ? 0 : this.MinHeight)),
                             RadiusX, RadiusY);
                 }
@@ -181,9 +181,9 @@ namespace II.Scenario_Editor.Controls {
             protected override Geometry DefiningGeometry {
                 get {
                     return new EllipseGeometry (new Rect (0, 0,
-                            Math.Max ((double.IsNaN (this.Width) ? 0 : this.Width),
+                            System.Math.Max ((double.IsNaN (this.Width) ? 0 : this.Width),
                                 double.IsNaN (this.MinWidth) ? 0 : this.MinWidth),
-                            Math.Max ((double.IsNaN (this.Height) ? 0 : this.Height),
+                            System.Math.Max ((double.IsNaN (this.Height) ? 0 : this.Height),
                                 double.IsNaN (this.MinHeight) ? 0 : this.MinHeight)));
                 }
             }
