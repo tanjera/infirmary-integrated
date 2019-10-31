@@ -60,18 +60,25 @@ namespace II.Scenario_Editor {
 
             // Initiate ICommands for KeyBindings
             icNewFile = new ActionCommand (() => newScenario ());
-            icLoadFile = new ActionCommand (() => loadScenario ());
+            icLoadFile = new ActionCommand (() => loadSequence ());
             icSaveFile = new ActionCommand (() => saveScenario ());
 
             initScenarioProperty ();
             initPropertyView ();
         }
 
+        private MessageBoxResult promptUnsavedWork () {
+            if (Steps.Count > 0)
+                return MessageBox.Show (
+                        "Are you sure you want to continue? All unsaved work will be lost!",
+                        "Lose Unsaved Work?",
+                        MessageBoxButton.OKCancel, MessageBoxImage.Warning);
+            else
+                return MessageBoxResult.OK;
+        }
+
         private void newScenario () {
-            if (MessageBox.Show (
-                    "Are you sure you want to create a new scenario? All unsaved work will be lost!",
-                    "Create New Scenario?",
-                    MessageBoxButton.OKCancel, MessageBoxImage.Warning) != MessageBoxResult.OK)
+            if (promptUnsavedWork () != MessageBoxResult.OK)
                 return;
 
             // Reset buffer parameters
@@ -91,7 +98,18 @@ namespace II.Scenario_Editor {
             updateScenarioProperty ();
         }
 
-        private void loadScenario () {
+        private void loadSequence () {
+            if (promptUnsavedWork () != MessageBoxResult.OK)
+                return;
+
+            string filepath = loadDialog ();
+            if (String.IsNullOrEmpty (filepath))
+                return;
+
+            loadFile (filepath);
+        }
+
+        private string loadDialog () {
             Stream s;
             Microsoft.Win32.OpenFileDialog dlgLoad = new Microsoft.Win32.OpenFileDialog ();
 
@@ -99,98 +117,99 @@ namespace II.Scenario_Editor {
             dlgLoad.FilterIndex = 1;
             dlgLoad.RestoreDirectory = true;
 
-            if (dlgLoad.ShowDialog () == true) {
-                if ((s = dlgLoad.OpenFile ()) != null) {
-                    StreamReader sr = new StreamReader (s);
+            if (dlgLoad.ShowDialog () == true)
+                return dlgLoad.FileName;
+            else
+                return null;
+        }
 
-                    // Read savefile metadata indicating data formatting
-                    // Supports II:T1 file structure
-                    string metadata = sr.ReadLine ();
-                    if (!metadata.StartsWith (".ii:t1")) {
-                        loadFail ();
-                        return;
-                    }
+        private void loadFile (string filepath) {
+            StreamReader sr = new StreamReader (filepath);
 
-                    // Savefile type 1: validated and encrypted
-                    // Line 1 is metadata (.ii:t1)
-                    // Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
-                    // Line 3 is savefile data encrypted by AES encoding
-                    string hash = sr.ReadLine ().Trim ();
-                    string file = Encryption.DecryptAES (sr.ReadToEnd ().Trim ());
-                    sr.Close ();
-                    s.Close ();
-
-                    if (hash != Encryption.HashSHA256 (file)) {
-                        loadFail ();
-                        return;
-                    }
-
-                    StringReader sRead = new StringReader (file);
-                    string line, pline;
-                    StringBuilder pbuffer;
-
-                    Scenario sc = new Scenario (false);
-
-                    try {
-                        while ((line = sRead.ReadLine ()) != null) {
-                            if (line == "> Begin: Scenario") {
-                                pbuffer = new StringBuilder ();
-                                while ((pline = sRead.ReadLine ()) != null && pline != "> End: Scenario")
-                                    pbuffer.AppendLine (pline);
-                                sc.Load_Process (pbuffer.ToString ());
-                            }
-                        }
-                    } catch {
-                        loadFail ();
-                    } finally {
-                        sRead.Close ();
-                    }
-
-                    // Convert loaded scenario to Scenario Editor data structures
-                    ScenarioAuthor = sc.Author;
-                    ScenarioName = sc.Name;
-                    ScenarioDescription = sc.Description;
-
-                    Steps.Clear ();
-                    canvasDesigner.Children.Clear ();
-
-                    for (int i = 0; i < sc.Steps.Count; i++) {
-
-                        // Add to the main Steps stack
-                        ItemStep ist = new ItemStep ();
-                        ist.Init ();
-                        ist.Step = sc.Steps [i];
-                        ist.SetNumber (i);
-                        ist.SetName (ist.Step.Name);
-
-                        // After all UIElements are initialized, will need to "refresh" the line positions via loadIProgressions
-                        isLoading = true;
-                        ist.LayoutUpdated += loadIProgressions;
-
-                        ist.IStep.MouseLeftButtonDown += IStep_MouseLeftButtonDown;
-                        ist.IStep.MouseLeftButtonUp += IStep_MouseLeftButtonUp;
-                        ist.IStep.MouseMove += IStep_MouseMove;
-
-                        ist.IStepEnd.MouseLeftButtonDown += IStepEnd_MouseLeftButtonDown;
-
-                        // Add to lists and display elements
-                        Steps.Add (ist);
-                        canvasDesigner.Children.Add (ist);
-
-                        Canvas.SetZIndex (ist, 1);
-                        Canvas.SetLeft (ist, ist.Step.IPositionX);
-                        Canvas.SetTop (ist, ist.Step.IPositionY);
-                    }
-
-                    // Refresh the Properties View with the newly selected step
-                    selectStep (Steps.Count > 0 ? Steps [0] : null);
-                    updatePropertyView ();
-                    updateScenarioProperty ();
-                    drawIProgressions ();
-                    expStepProperty.IsExpanded = true;
-                    expProgressionProperty.IsExpanded = true;
-                }
+            // Read savefile metadata indicating data formatting
+            // Supports II:T1 file structure
+            string metadata = sr.ReadLine ();
+            if (!metadata.StartsWith (".ii:t1")) {
+                loadFail ();
+                return;
             }
+
+            // Savefile type 1: validated and encrypted
+            // Line 1 is metadata (.ii:t1)
+            // Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
+            // Line 3 is savefile data encrypted by AES encoding
+            string hash = sr.ReadLine ().Trim ();
+            string file = Encryption.DecryptAES (sr.ReadToEnd ().Trim ());
+
+            if (hash != Encryption.HashSHA256 (file)) {
+                loadFail ();
+                return;
+            }
+
+            StringReader sRead = new StringReader (file);
+            string line, pline;
+            StringBuilder pbuffer;
+
+            Scenario sc = new Scenario (false);
+
+            try {
+                while ((line = sRead.ReadLine ()) != null) {
+                    if (line == "> Begin: Scenario") {
+                        pbuffer = new StringBuilder ();
+                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Scenario")
+                            pbuffer.AppendLine (pline);
+                        sc.Load_Process (pbuffer.ToString ());
+                    }
+                }
+            } catch {
+                loadFail ();
+            } finally {
+                sRead.Close ();
+            }
+
+            // Convert loaded scenario to Scenario Editor data structures
+            ScenarioAuthor = sc.Author;
+            ScenarioName = sc.Name;
+            ScenarioDescription = sc.Description;
+
+            Steps.Clear ();
+            canvasDesigner.Children.Clear ();
+
+            for (int i = 0; i < sc.Steps.Count; i++) {
+
+                // Add to the main Steps stack
+                ItemStep ist = new ItemStep ();
+                ist.Init ();
+                ist.Step = sc.Steps [i];
+                ist.SetNumber (i);
+                ist.SetName (ist.Step.Name);
+
+                // After all UIElements are initialized, will need to "refresh" the line positions via loadIProgressions
+                isLoading = true;
+                ist.LayoutUpdated += loadIProgressions;
+
+                ist.IStep.MouseLeftButtonDown += IStep_MouseLeftButtonDown;
+                ist.IStep.MouseLeftButtonUp += IStep_MouseLeftButtonUp;
+                ist.IStep.MouseMove += IStep_MouseMove;
+
+                ist.IStepEnd.MouseLeftButtonDown += IStepEnd_MouseLeftButtonDown;
+
+                // Add to lists and display elements
+                Steps.Add (ist);
+                canvasDesigner.Children.Add (ist);
+
+                Canvas.SetZIndex (ist, 1);
+                Canvas.SetLeft (ist, ist.Step.IPositionX);
+                Canvas.SetTop (ist, ist.Step.IPositionY);
+            }
+
+            // Refresh the Properties View with the newly selected step
+            selectStep (Steps.Count > 0 ? Steps [0] : null);
+            updatePropertyView ();
+            updateScenarioProperty ();
+            drawIProgressions ();
+            expStepProperty.IsExpanded = true;
+            expProgressionProperty.IsExpanded = true;
         }
 
         private void loadFail () {
@@ -826,7 +845,7 @@ namespace II.Scenario_Editor {
             => newScenario ();
 
         private void MenuItemLoad_Click (object sender, RoutedEventArgs e)
-            => loadScenario ();
+            => loadSequence ();
 
         private void MenuSave_Click (object sender, RoutedEventArgs e)
             => saveScenario ();
@@ -837,6 +856,14 @@ namespace II.Scenario_Editor {
         private void MenuItemAbout_Click (object sender, RoutedEventArgs e) {
             About dlgAbout = new About ();
             dlgAbout.ShowDialog ();
+        }
+
+        private void CanvasDesigner_DragDropped (object sender, DragEventArgs e) {
+            if (e.Data.GetDataPresent (DataFormats.FileDrop)) {
+                string [] files = (string [])e.Data.GetData (DataFormats.FileDrop);
+                if (files.Length > 0)
+                    loadFile (files [0]);
+            }
         }
 
         private void IStep_MouseLeftButtonDown (object sender, MouseButtonEventArgs e) {

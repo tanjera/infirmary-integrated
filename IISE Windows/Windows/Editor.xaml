@@ -250,7 +250,10 @@
 						Grid.Row="1"
 						HorizontalAlignment="Stretch"
 						VerticalAlignment="Stretch">
-					<Canvas Name="cnvsDesigner" />
+					<Canvas Name="cnvsDesigner"
+							Background="Transparent"
+							AllowDrop="True"
+							Drop="CanvasDesigner_DragDropped" />
 				</Border>
 			</Grid>
 

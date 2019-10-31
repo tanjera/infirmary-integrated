@@ -277,7 +277,9 @@ namespace II_Windows {
         }
 
         private void SaveScreen ()
-            => ScreenshotPdf.SavePdf (Screenshot.GetBitmap (mainGrid, 1));
+            => ScreenshotPdf.SavePdf (
+                Screenshot.GetBitmap (mainGrid, 1),
+                App.Language.Localize ("IABP:WindowTitle"));
 
         private void PrintScreen ()
             => ScreenshotPdf.PrintPdf (ScreenshotPdf.AssemblePdf (

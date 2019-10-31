@@ -22,7 +22,8 @@ using PdfSharp.Pdf.IO;
 namespace II_Windows {
 
     public static class ScreenshotPdf {
-        private static Thickness pageMargin = new Thickness (50, 50, 50, 50);
+        private static int headerMargin = 30;
+        private static Thickness pageMargin = new Thickness (50, 80, 50, 50);
 
         public static PdfDocument AssemblePdf (BitmapSource bitmap, string title) {
             PdfDocument doc = new PdfDocument ();
@@ -61,13 +62,26 @@ namespace II_Windows {
                 desiredWidth,
                 desiredHeight);
 
+            // Draw the title to the top right
+            gfx.DrawString (title,
+                new XFont ("Verdana", 10, XFontStyle.Bold),
+                XBrushes.Black,
+                new XRect (pageMargin.Left, pageMargin.Top - headerMargin, maxWidth, 30),
+                XStringFormats.TopRight);
+
+            gfx.DrawString (Utility.DateTime_ToString (DateTime.Now),
+                new XFont ("Verdana", 8, XFontStyle.Regular),
+                XBrushes.Black,
+                new XRect (pageMargin.Left, pageMargin.Top - headerMargin, maxWidth, 30),
+                XStringFormats.BottomRight);
+
             return doc;
         }
 
         public static void SavePdf (PdfDocument doc, string filepath)
             => doc.Save (filepath);
 
-        public static void SavePdf (BitmapSource bitsource) {
+        public static void SavePdf (BitmapSource bitsource, string title) {
             /* Initiate IO stream, show Save File dialog to select file destination */
             Stream s;
             Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
@@ -77,8 +91,8 @@ namespace II_Windows {
             dlgSave.RestoreDirectory = true;
 
             if (dlgSave.ShowDialog () == true) {
-                ScreenshotPdf.SavePdf (ScreenshotPdf.AssemblePdf (
-                    bitsource, "Infirmary Integrated, 12 Lead ECG"),
+                ScreenshotPdf.SavePdf (
+                    ScreenshotPdf.AssemblePdf (bitsource, title),
                     dlgSave.FileName);
             }
         }
@@ -88,7 +102,7 @@ namespace II_Windows {
                 + Utility.DateTime_ToString_FilePath (DateTime.Now) + ".pdf";
             SavePdf (doc, filepath);
 
-            Process.Start (filepath, "--print");
+            Process.Start (filepath);
         }
     }
 }

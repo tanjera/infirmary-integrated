@@ -31,10 +31,10 @@ namespace II_Windows {
         public ICommand IC_SaveFile { get { return icSaveFile; } }
 
         private object uiBufferValue;
-        private ParameterStatuses ParameterStatus = ParameterStatuses.Null;
+        private ParameterStatuses ParameterStatus = ParameterStatuses.Loading;
 
         private enum ParameterStatuses {
-            Null,
+            Loading,
             AutoApply,
             ChangesPending,
             ChangesApplied
@@ -349,9 +349,7 @@ namespace II_Windows {
 
         private void AdvanceParameterStatus (ParameterStatuses status) {
             /* Toggles between pending changes or changes applied; bypasses if auto-applying or null */
-            if (status == ParameterStatuses.AutoApply || ParameterStatus == ParameterStatuses.AutoApply)
-                ParameterStatus = ParameterStatuses.AutoApply;
-            else if (status == ParameterStatuses.ChangesApplied && ParameterStatus == ParameterStatuses.ChangesPending)
+            if (status == ParameterStatuses.ChangesApplied && ParameterStatus == ParameterStatuses.ChangesPending)
                 ParameterStatus = ParameterStatuses.ChangesApplied;
             else if (status == ParameterStatuses.ChangesPending && ParameterStatus == ParameterStatuses.ChangesApplied)
                 ParameterStatus = ParameterStatuses.ChangesPending;
@@ -362,7 +360,7 @@ namespace II_Windows {
         private void UpdateParameterIndicators () {
             switch (ParameterStatus) {
                 default:
-                case ParameterStatuses.Null:
+                case ParameterStatuses.Loading:
                     brdPendingChangesIndicator.BorderBrush = Brushes.Transparent;
                     break;
 
@@ -946,6 +944,9 @@ namespace II_Windows {
             => System.Diagnostics.Process.Start (e.Uri.ToString ());
 
         private void OnAutoApplyChanges_Changed (object sender, RoutedEventArgs e) {
+            if (ParameterStatus == ParameterStatuses.Loading)
+                return;
+
             Properties.Settings.Default.AutoApplyChanges = chkAutoApplyChanges.IsChecked ?? true;
             Properties.Settings.Default.Save ();
 
@@ -985,7 +986,7 @@ namespace II_Windows {
         private void OnUIPatientParameter_Changed (object sender, RoutedEventArgs e) {
             switch (ParameterStatus) {
                 default:
-                case ParameterStatuses.Null:            // For loading state
+                case ParameterStatuses.Loading:            // For loading state
                     break;
 
                 case ParameterStatuses.ChangesApplied:
