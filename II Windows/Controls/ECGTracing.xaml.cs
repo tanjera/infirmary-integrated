@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -19,13 +20,14 @@ namespace II_Windows.Controls {
         /* Drawing variables, offsets and multipliers */
         private DeviceECG.ColorSchemes colorScheme;
         private bool showGrid = false;
-        private Brush tracingBrush = Brushes.Green;
-        private Brush referenceBrush = Brushes.DarkGray;
 
-        private StreamGeometry drawGeometry;
-        private StreamGeometryContext drawContext;
-        private int drawXOffset, drawYOffset;
-        private double drawXMultiplier, drawYMultiplier;
+        private System.Drawing.Color bgColor = System.Drawing.Color.Black;
+        private System.Drawing.Brush tracingPen = System.Drawing.Brushes.Green;
+        private System.Windows.Media.Brush tracingBrush = System.Windows.Media.Brushes.Green;
+        private System.Drawing.Brush referencePen = System.Drawing.Brushes.DarkGray;
+
+        private System.Drawing.Point drawOffset;
+        private System.Drawing.PointF drawMultiplier;
 
         public ECGTracing (Strip strip) {
             InitializeComponent ();
@@ -42,18 +44,22 @@ namespace II_Windows.Controls {
         }
 
         public void CalculateOffsets ()
-            => Tracing.CalculateOffsets (Strip, canvasTracing.ActualWidth, canvasTracing.ActualHeight,
-                ref drawXOffset, ref drawYOffset, ref drawXMultiplier, ref drawYMultiplier);
+            => Tracing.CalculateOffsets (Strip,
+                cnvTracing.ActualWidth, cnvTracing.ActualHeight,
+                ref drawOffset, ref drawMultiplier);
 
         public void DrawTracing ()
-            => DrawPath (drawPath, Strip.Points, tracingBrush, 1);
+            => DrawPath (Strip.Points, tracingPen, 1);
 
         public void DrawReference ()
-            => DrawPath (drawReference, Strip.Reference, referenceBrush, 1);
+            => DrawPath (Strip.Reference, referencePen, 1);
 
-        public void DrawPath (Path _Path, List<II.Waveform.Point> _Points, Brush _Brush, double _Thickness)
-            => Tracings.DrawPath (_Path, _Points, _Brush, _Thickness,
-                drawGeometry, drawContext, drawXOffset, drawYOffset, drawXMultiplier, drawYMultiplier);
+        public void DrawPath (List<PointF> _Points, System.Drawing.Brush _Brush, float _Thickness) {
+            Tracing.Init (ref Strip.Tracing, (int)cnvTracing.ActualWidth, (int)cnvTracing.ActualHeight);
+
+            Tracing.DrawPath (_Points, Strip.Tracing, new System.Drawing.Pen (_Brush, _Thickness),
+                bgColor, drawOffset, drawMultiplier);
+        }
 
         public void SetColors (DeviceECG.ColorSchemes scheme, bool grid) {
             colorScheme = scheme;
@@ -62,26 +68,34 @@ namespace II_Windows.Controls {
             switch (scheme) {
                 default:
                 case DeviceECG.ColorSchemes.Light:
-                    tracingBrush = Brushes.Black;
-                    referenceBrush = Brushes.DarkGray;
-                    canvasTracing.Background = showGrid
-                        ? Brushes.Transparent
-                        : Brushes.White;
+                    tracingPen = System.Drawing.Brushes.Black;
+                    referencePen = System.Drawing.Brushes.DarkGray;
+
+                    tracingBrush = System.Windows.Media.Brushes.Black;
+
+                    bgColor = showGrid
+                        ? System.Drawing.Color.Transparent
+                        : System.Drawing.Color.White;
+
                     break;
 
                 case DeviceECG.ColorSchemes.Dark:
-                    tracingBrush = Brushes.Green;
-                    referenceBrush = Brushes.DarkGray;
-                    canvasTracing.Background = showGrid
-                        ? Brushes.Transparent
-                        : Brushes.Black;
+                    tracingPen = System.Drawing.Brushes.Green;
+                    referencePen = System.Drawing.Brushes.DarkGray;
+
+                    tracingBrush = System.Windows.Media.Brushes.Green;
+
+                    bgColor = showGrid
+                        ? System.Drawing.Color.Transparent
+                        : System.Drawing.Color.Black;
+
                     break;
             }
 
             UpdateInterface (null, null);
         }
 
-        private void canvasTracing_SizeChanged (object sender, SizeChangedEventArgs e) {
+        private void cnvTracing_SizeChanged (object sender, SizeChangedEventArgs e) {
             CalculateOffsets ();
 
             //DrawReference ();

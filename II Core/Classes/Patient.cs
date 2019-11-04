@@ -14,7 +14,6 @@ using System.Linq;
 using System.Text;
 
 namespace II {
-
     public class Patient {
         /* Mirroring variables */
         public DateTime Updated;                    // DateTime this Patient was last updated
@@ -40,7 +39,7 @@ namespace II {
                     Pulsus_Alternans = false;
 
         public Cardiac_Axes Cardiac_Axis = new Cardiac_Axes ();
-        public double [] ST_Elevation, T_Elevation;
+        public float [] ST_Elevation, T_Elevation;
 
         /* Obstetric profile */
 
@@ -276,8 +275,8 @@ namespace II {
                             50,
                             false, false,
                             Cardiac_Axes.Values.Normal,
-                            new double [] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
-                            new double [] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
+                            new float [] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
+                            new float [] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
 
                             // Obstetric profile
                             150,
@@ -392,19 +391,19 @@ namespace II {
             return map - icp;
         }
 
-        public double GetHR_Seconds { get { return 60d / System.Math.Max (1, VS_Actual.HR); } }
-        public double GetRR_Seconds { get { return 60d / System.Math.Max (1, VS_Actual.RR); } }
-        public double GetRR_Seconds_I { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_I; } }
-        public double GetRR_Seconds_E { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_E; } }
-        public double GetPulsatility_Seconds { get { return System.Math.Min (GetHR_Seconds * 0.75, 0.75); } }
+        public float GetHR_Seconds { get { return 60f / System.Math.Max (1, VS_Actual.HR); } }
+        public float GetRR_Seconds { get { return 60f / System.Math.Max (1, VS_Actual.RR); } }
+        public float GetRR_Seconds_I { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_I; } }
+        public float GetRR_Seconds_E { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_E; } }
+        public float GetPulsatility_Seconds { get { return System.Math.Min (GetHR_Seconds * 0.75f, 0.75f); } }
 
-        public int MeasureHR_ECG (double lengthSeconds, double offsetSeconds)
+        public int MeasureHR_ECG (float lengthSeconds, float offsetSeconds)
             => MeasureHR (lengthSeconds, offsetSeconds, false);
 
-        public int MeasureHR_SPO2 (double lengthSeconds, double offsetSeconds)
+        public int MeasureHR_SPO2 (float lengthSeconds, float offsetSeconds)
             => MeasureHR (lengthSeconds, offsetSeconds, true);
 
-        public int MeasureHR (double lengthSeconds, double offsetSeconds, bool isPulse = false) {
+        public int MeasureHR (float lengthSeconds, float offsetSeconds, bool isPulse = false) {
             CleanListPatientEvents ();
 
             if (isPulse && !Cardiac_Rhythm.HasPulse_Ventricular)
@@ -524,13 +523,13 @@ namespace II {
                             case "ST_Elevation":
                                 string [] e_st = pValue.Split (',').Where ((o) => o != "").ToArray ();
                                 for (int i = 0; i < e_st.Length && i < ST_Elevation.Length; i++)
-                                    ST_Elevation [i] = double.Parse (e_st [i]);
+                                    ST_Elevation [i] = float.Parse (e_st [i]);
                                 break;
 
                             case "T_Elevation":
                                 string [] e_t = pValue.Split (',').Where ((o) => o != "").ToArray ();
                                 for (int i = 0; i < e_t.Length && i < T_Elevation.Length; i++)
-                                    T_Elevation [i] = double.Parse (e_t [i]);
+                                    T_Elevation [i] = float.Parse (e_t [i]);
                                 break;
 
                             // Obstetric profile
@@ -656,7 +655,7 @@ namespace II {
                     int pacer_threshold,
                     bool puls_paradoxus, bool puls_alternans,
                     Cardiac_Axes.Values card_axis,
-                    double [] st_elev, double [] t_elev,
+                    float [] st_elev, float [] t_elev,
 
                     // Obstetric profile
                     int fhr, Scales.Intensity.Values fhr_var, List<FetalHeartDecelerations.Values> fhr_rhythms,

@@ -843,17 +843,17 @@ namespace II_Windows {
                 (Cardiac_Axes.Values)Enum.GetValues (typeof (Cardiac_Axes.Values)).GetValue (
                     comboCardiacAxis.SelectedIndex < 0 ? 0 : comboCardiacAxis.SelectedIndex),
 
-                new double [] {
-                (double)(numSTE_I?.Value ?? 0), (double)(numSTE_II?.Value ?? 0), (double)(numSTE_III?.Value ?? 0),
-                (double)(numSTE_aVR?.Value ?? 0), (double)(numSTE_aVL?.Value ?? 0), (double)(numSTE_aVF?.Value ?? 0),
-                (double)(numSTE_V1?.Value ?? 0), (double)(numSTE_V2?.Value ?? 0), (double)(numSTE_V3?.Value ?? 0),
-                (double)(numSTE_V4?.Value ?? 0), (double)(numSTE_V5?.Value ?? 0), (double)(numSTE_V6.Value ?? 0)
+                new float [] {
+                (float)(numSTE_I?.Value ?? 0), (float)(numSTE_II?.Value ?? 0), (float)(numSTE_III?.Value ?? 0),
+                (float)(numSTE_aVR?.Value ?? 0), (float)(numSTE_aVL?.Value ?? 0), (float)(numSTE_aVF?.Value ?? 0),
+                (float)(numSTE_V1?.Value ?? 0), (float)(numSTE_V2?.Value ?? 0), (float)(numSTE_V3?.Value ?? 0),
+                (float)(numSTE_V4?.Value ?? 0), (float)(numSTE_V5?.Value ?? 0), (float)(numSTE_V6.Value ?? 0)
                 },
-                new double [] {
-                (double)(numTWE_I?.Value ?? 0), (double)(numTWE_II?.Value ?? 0), (double)(numTWE_III?.Value ?? 0),
-                (double)(numTWE_aVR?.Value ?? 0), (double)(numTWE_aVL?.Value ?? 0), (double)(numTWE_aVF?.Value ?? 0),
-                (double)(numTWE_V1?.Value ?? 0), (double)(numTWE_V2?.Value ?? 0), (double)(numTWE_V3?.Value ?? 0),
-                (double)(numTWE_V4?.Value ?? 0), (double)(numTWE_V5?.Value ?? 0), (double)(numTWE_V6.Value ?? 0)
+                new float [] {
+                (float)(numTWE_I?.Value ?? 0), (float)(numTWE_II?.Value ?? 0), (float)(numTWE_III?.Value ?? 0),
+                (float)(numTWE_aVR?.Value ?? 0), (float)(numTWE_aVL?.Value ?? 0), (float)(numTWE_aVF?.Value ?? 0),
+                (float)(numTWE_V1?.Value ?? 0), (float)(numTWE_V2?.Value ?? 0), (float)(numTWE_V3?.Value ?? 0),
+                (float)(numTWE_V4?.Value ?? 0), (float)(numTWE_V5?.Value ?? 0), (float)(numTWE_V6.Value ?? 0)
                 },
 
                 // Obstetric profile

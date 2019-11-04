@@ -110,7 +110,6 @@ namespace II.Scenario_Editor {
         }
 
         private string loadDialog () {
-            Stream s;
             Microsoft.Win32.OpenFileDialog dlgLoad = new Microsoft.Win32.OpenFileDialog ();
 
             dlgLoad.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";

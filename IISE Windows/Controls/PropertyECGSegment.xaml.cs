@@ -27,7 +27,7 @@ namespace II.Scenario_Editor.Controls {
 
         public class PropertyECGEventArgs : EventArgs {
             public Keys Key;
-            public double [] Values;
+            public float [] Values;
         }
 
         public PropertyECGSegment () {
@@ -69,7 +69,7 @@ namespace II.Scenario_Editor.Controls {
             dblV6.LostFocus += sendPropertyChange;
         }
 
-        public void Set (double [] values) {
+        public void Set (float [] values) {
             dblI.ValueChanged -= sendPropertyChange;
             dblII.ValueChanged -= sendPropertyChange;
             dblIII.ValueChanged -= sendPropertyChange;
@@ -113,11 +113,11 @@ namespace II.Scenario_Editor.Controls {
         private void sendPropertyChange (object sender, EventArgs e) {
             PropertyECGEventArgs ea = new PropertyECGEventArgs ();
             ea.Key = Key;
-            ea.Values = new double [] {
-                (double)dblI.Value, (double)dblII.Value, (double)dblIII.Value,
-                (double)dblaVR.Value, (double)dblaVL.Value, (double)dblaVF.Value,
-                (double)dblV1.Value, (double)dblV2.Value, (double)dblV3.Value,
-                (double)dblV4.Value, (double)dblV5.Value, (double)dblV6.Value
+            ea.Values = new float [] {
+                (float)dblI.Value, (float)dblII.Value, (float)dblIII.Value,
+                (float)dblaVR.Value, (float)dblaVL.Value, (float)dblaVF.Value,
+                (float)dblV1.Value, (float)dblV2.Value, (float)dblV3.Value,
+                (float)dblV4.Value, (float)dblV5.Value, (float)dblV6.Value
                 };
             PropertyChanged (this, ea);
         }

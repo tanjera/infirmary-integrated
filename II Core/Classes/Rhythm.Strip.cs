@@ -10,38 +10,38 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 
 using II.Waveform;
 
 namespace II.Rhythm {
-
     public class Strip {
         /* Default variables for easy modification of multiple measurement/tracing functions */
-        public static double DefaultLength = 6.0d;
-        public static double DefaultBufferLength = .2d;
-        public static double DefaultRespiratoryCoefficient = 3d;
+        public static float DefaultLength = 6.0f;
+        public static float DefaultBufferLength = .2f;
+        public static float DefaultRespiratoryCoefficient = 3f;
 
         /* Default offsets and amplitudes */
-        public static double DefaultOffset_ReferenceZero = -0.015;      // Accounts for line thickness, for clarity
+        public static float DefaultOffset_ReferenceZero = -0.015f;      // Accounts for line thickness, for clarity
 
         /* Reference pressures for scaling transduced waveforms based on systolic/diastolic */
         public const int DefaultAutoScale_Iterations = 10;
-        public const double ScaleMargin = 0.2d;
+        public const float ScaleMargin = 0.2f;
         public const int DefaultScaleMin_ABP = 0;
         public const int DefaultScaleMin_PA = -10;
         public const int DefaultScaleMax_ABP = 200;
         public const int DefaultScaleMax_PA = 50;
 
         /* Variables for real-time strip tracing processing */
-        public double Length = 6.0d;                      // Strip length in seconds
-        public double DisplayLength = 6.0d;
+        public float Length = 6.0f;                      // Strip length in seconds
+        public float DisplayLength = 6.0f;
 
-        private double forwardBuffer = 1.0d;              // Coefficient of Length to draw into future as "now" for buffer
+        private float forwardBuffer = 1.0f;              // Coefficient of Length to draw into future as "now" for buffer
         private DateTime scrolledLast = DateTime.UtcNow;
         private bool scrollingUnpausing = false;
 
         public Offsets Offset = Offsets.Center;
-        public double Amplitude = 1d;
+        public float Amplitude = 1f;
 
         public bool ScaleAuto;
         public int ScaleMin;                              // For scaling waveforms to pressure limits
@@ -49,8 +49,9 @@ namespace II.Rhythm {
 
         /* Data structures for tracing information */
         public Lead Lead;
-        public List<Point> Points;                        // Clinical waveform tracing points
-        public List<Point> Reference;                     // Reference line tracing points
+        public Bitmap Tracing;                             // Waveform tracing in image format
+        public List<PointF> Points;                        // Clinical waveform tracing points
+        public List<PointF> Reference;                     // Reference line tracing points
 
         public enum Offsets {
             Center,
@@ -59,24 +60,24 @@ namespace II.Rhythm {
         }
 
         public Strip (Lead.Values lead) {
-            double length = IsRespiratory ? DefaultLength * DefaultRespiratoryCoefficient : DefaultLength;
+            float length = IsRespiratory ? DefaultLength * DefaultRespiratoryCoefficient : DefaultLength;
             Initialize (lead, length, length);
         }
 
-        public Strip (Lead.Values lead, double length)
+        public Strip (Lead.Values lead, float length)
             => Initialize (lead, length, length);
 
-        public Strip (Lead.Values lead, double length, double displayLength)
+        public Strip (Lead.Values lead, float length, float displayLength)
             => Initialize (lead, length, displayLength);
 
-        public void Initialize (Lead.Values lead, double length, double displayLength) {
+        public void Initialize (Lead.Values lead, float length, float displayLength) {
             Lead = new Lead (lead);
 
             Length = length;
             DisplayLength = displayLength;
 
-            Points = new List<Point> ();
-            Reference = new List<Point> ();
+            Points = new List<PointF> ();
+            Reference = new List<PointF> ();
 
             SetScale ();
             SetOffset ();
@@ -194,7 +195,7 @@ namespace II.Rhythm {
             switch (Lead.Value) {
                 default:
                     Offset = Offsets.Center;
-                    Amplitude = 1d;
+                    Amplitude = 1f;
                     break;
 
                 case Lead.Values.ETCO2:
@@ -223,9 +224,9 @@ namespace II.Rhythm {
 
                 case Lead.Values.ETCO2:
                 case Lead.Values.SPO2:
-                    Reference = new List<Point> () {
-                        new Point(0, DefaultOffset_ReferenceZero),
-                        new Point(Length, DefaultOffset_ReferenceZero)};
+                    Reference = new List<PointF> () {
+                        new PointF(0, (float)DefaultOffset_ReferenceZero),
+                        new PointF((float)Length, (float)DefaultOffset_ReferenceZero)};
                     break;
 
                 case Lead.Values.ABP:
@@ -241,17 +242,17 @@ namespace II.Rhythm {
             /* Set the forward edge buffer (a coefficient of lengthSeconds!) to be the length of 2 beats/breaths */
             if (IsCardiac)
                 forwardBuffer = System.Math.Max (1 + (2 * (patient.GetHR_Seconds / Length)),
-                    (onClear ? 1.1d : forwardBuffer));
+                    (onClear ? 1.1f : forwardBuffer));
             else if (IsRespiratory)
                 forwardBuffer = System.Math.Max (1 + (2 * (patient.GetRR_Seconds / Length)),
-                    (onClear ? 1.1d : forwardBuffer));
+                    (onClear ? 1.1f : forwardBuffer));
         }
 
         public void DecreaseAmplitude ()
-            => Amplitude = System.Math.Max (Amplitude - 0.2, 0.2);
+            => Amplitude = System.Math.Max (Amplitude - 0.2f, 0.2f);
 
         public void IncreaseAmplitude ()
-            => Amplitude = System.Math.Min (Amplitude + 0.2, 2.0);
+            => Amplitude = System.Math.Min (Amplitude + 0.2f, 2.0f);
 
         public void Reset () {
             Points.Clear ();
@@ -267,32 +268,32 @@ namespace II.Rhythm {
             }
         }
 
-        public Point Last (List<Point> _In) {
+        public PointF Last (List<PointF> _In) {
             if (_In.Count < 1)
 
                 // New vectors are added to Points beginning at 5 seconds to marquee backwards to 0
-                return new Point (Length, 0);
+                return new PointF ((float)Length, 0);
             else
                 return _In [_In.Count - 1];
         }
 
-        public void Concatenate (List<Point> addition) {
+        public void Concatenate (List<PointF> addition) {
             if (addition.Count == 0)
                 return;
 
-            double offsetX = Last (Points).X;
+            float offsetX = Last (Points).X;
 
             for (int i = 0; i < addition.Count; i++)
-                Points.Add (new Point (addition [i].X + offsetX, addition [i].Y));
+                Points.Add (new PointF (addition [i].X + offsetX, addition [i].Y));
         }
 
-        public void Overwrite (List<Point> replacement) {
+        public void Overwrite (List<PointF> replacement) {
             if (replacement.Count == 0)
                 return;
 
             // Inserts into future of strip, which is X offset by Length
             for (int i = 0; i < replacement.Count; i++)
-                replacement [i].X += Length * forwardBuffer;
+                replacement [i] = new PointF (replacement [i].X + (Length * forwardBuffer), replacement [i].Y);
 
             double minX = replacement [0].X,
                 maxX = replacement [replacement.Count - 1].X;
@@ -301,13 +302,13 @@ namespace II.Rhythm {
             Points.AddRange (replacement);
         }
 
-        public void Underwrite (List<Point> replacement) {
+        public void Underwrite (List<PointF> replacement) {
             if (replacement.Count == 0)
                 return;
 
             // Inserts into future of strip, which is X offset by Length
             for (int i = 0; i < replacement.Count; i++)
-                replacement [i].X += Length * forwardBuffer;
+                replacement [i] = new PointF (replacement [i].X + (Length * forwardBuffer), replacement [i].Y);
 
             double minX = replacement [0].X,
                 maxX = replacement [replacement.Count - 1].X;
@@ -320,7 +321,7 @@ namespace II.Rhythm {
             => Points.RemoveAll (p => { return p == null || p.X < -Length; });
 
         public void SortPoints ()
-            => Points.Sort (delegate (Point p1, Point p2) {
+            => Points.Sort (delegate (PointF p1, PointF p2) {
                 if (p1 == null && p2 == null) return 0;
                 else if (p1 == null) return -1;
                 else if (p2 == null) return 1;
@@ -334,18 +335,18 @@ namespace II.Rhythm {
                 return;
             }
 
-            double scrollBy = (DateTime.UtcNow - scrolledLast).TotalMilliseconds / 1000;
+            float scrollBy = (float)((DateTime.UtcNow - scrolledLast).TotalMilliseconds / 1000);
             scrolledLast = DateTime.UtcNow;
 
             for (int i = Points.Count - 1; i >= 0; i--)
-                Points [i].X -= scrollBy;
+                Points [i] = new PointF (Points [i].X - scrollBy, Points [i].Y);
         }
 
         public void Unpause () {
             scrollingUnpausing = true;
         }
 
-        public List<Point> Scale (Patient p, List<Point> addition) {
+        public List<PointF> Scale (Patient p, List<PointF> addition) {
             if (!CanScale || addition.Count == 0)
                 return addition;
 
@@ -365,18 +366,18 @@ namespace II.Rhythm {
             }
 
             // Get the existing max values; minimum for scaling should be 0
-            double min = 0, max = 0;
+            float min = 0, max = 0;
             for (int i = 1; i < addition.Count; i++)
                 max = (max > addition [i].Y) ? max : addition [i].Y;
             max = (min != max) ? max : 1;           // Scaled waveforms should be 0.0 to 1.0
 
             // Get new min and max vaules for the desired tracing
-            double newMin = II.Math.InverseLerp (ScaleMin, ScaleMax, diastolic);
-            double newMax = II.Math.InverseLerp (ScaleMin, ScaleMax, systolic);
+            float newMin = II.Math.InverseLerp (ScaleMin, ScaleMax, diastolic);
+            float newMax = II.Math.InverseLerp (ScaleMin, ScaleMax, systolic);
 
-            // Run the List<Point> through the normalization equation
+            // Run the List<PointF> through the normalization equation
             for (int i = 0; i < addition.Count; i++)
-                addition [i].Y = ((addition [i].Y - min) * ((newMax - newMin) / (max - min))) + newMin;
+                addition [i] = new PointF (addition [i].X, (((addition [i].Y - min) * ((newMax - newMin) / (max - min))) + newMin));
 
             return addition;
         }
@@ -388,11 +389,11 @@ namespace II.Rhythm {
             if (IsECG) {
                 p.Cardiac_Rhythm.ECG_Isoelectric (p, this);
             } else if (CanScale) {
-                double fill = (Length * forwardBuffer) - Last (Points).X;
+                float fill = (Length * forwardBuffer) - Last (Points).X;
                 Concatenate (Scale (p, Draw.Flat_Line (fill > p.GetHR_Seconds ? fill : p.GetHR_Seconds, 0f)));
             } else {
                 /* Fill waveform through to future buffer with flatline */
-                double fill = (Length * forwardBuffer) - Last (Points).X;
+                float fill = (Length * forwardBuffer) - Last (Points).X;
                 Concatenate (Draw.Flat_Line (fill > p.GetHR_Seconds ? fill : p.GetHR_Seconds, 0f));
             }
 
@@ -504,7 +505,7 @@ namespace II.Rhythm {
                 return;
 
             /* Fill waveform through to future buffer with flatline */
-            double fill = (Length * forwardBuffer) - Last (Points).X;
+            float fill = (Length * forwardBuffer) - Last (Points).X;
             Concatenate (Draw.Flat_Line (fill > p.GetRR_Seconds ? fill : p.GetRR_Seconds, 0f));
 
             SortPoints ();

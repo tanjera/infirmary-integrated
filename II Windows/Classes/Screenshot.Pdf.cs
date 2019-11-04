@@ -82,8 +82,6 @@ namespace II_Windows {
             => doc.Save (filepath);
 
         public static void SavePdf (BitmapSource bitsource, string title) {
-            /* Initiate IO stream, show Save File dialog to select file destination */
-            Stream s;
             Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
 
             dlgSave.Filter = "Portable Document Format (*.pdf)|*.pdf|All files (*.*)|*.*";

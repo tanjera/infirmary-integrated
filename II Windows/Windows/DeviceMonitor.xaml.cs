@@ -296,7 +296,7 @@ namespace II_Windows {
             // Cap available amount of tracings
             rowsTracings = II.Math.Clamp (rowsTracings, 1, tracingTypes.Count);
             for (int i = listTracings.Count; i < rowsTracings && i < tracingTypes.Count; i++) {
-                Strip newStrip = new Strip ((Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]), 6d);
+                Strip newStrip = new Strip ((Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]), 6f);
                 Controls.MonitorTracing newTracing = new Controls.MonitorTracing (newStrip);
                 listTracings.Add (newTracing);
             }

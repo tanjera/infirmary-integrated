@@ -168,7 +168,7 @@
     </Compile>
     <Compile Include="Classes\ActionCommand.cs" />
     <Compile Include="Classes\Screenshot.cs" />
-    <Compile Include="Classes\Tracings.cs" />
+    <Compile Include="Classes\Trace.cs" />
     <Compile Include="Controls\IABPTracing.xaml.cs">
       <DependentUpon>IABPTracing.xaml</DependentUpon>
     </Compile>

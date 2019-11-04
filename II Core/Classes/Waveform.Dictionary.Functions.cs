@@ -6,7 +6,7 @@ namespace II.Waveform {
         public class Plot {
             public int DrawResolution;
             public int IndexOffset;
-            public double [] Vertices;
+            public float [] Vertices;
 
             public Plot () { }
             public Plot (int drawResolution, int indexOffset) {
@@ -15,7 +15,7 @@ namespace II.Waveform {
             }
         }
 
-        public static Plot Lerp (Plot _Plot1, Plot _Plot2, double _Percent) {
+        public static Plot Lerp (Plot _Plot1, Plot _Plot2, float _Percent) {
             /* Creates a Plot with a lerp of all Y axis points
              * Note: IndexOffset and DrawResolution are only averaged; loss of accuracy possible
              */
@@ -24,7 +24,7 @@ namespace II.Waveform {
                 (_Plot1.DrawResolution + _Plot2.DrawResolution) / 2,
                 (_Plot1.IndexOffset + _Plot2.IndexOffset) / 2);
 
-            List<double> vertices = new List<double> ();
+            List<float> vertices = new List<float> ();
 
             for (int i = 0; i < _Plot1.Vertices.Length || i < _Plot2.Vertices.Length; i++) {
                 if (i < _Plot1.Vertices.Length && i < _Plot2.Vertices.Length)

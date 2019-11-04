@@ -108,7 +108,7 @@ namespace II_Windows {
             // Populate the grid with tracings for each lead
             for (int iColumns = 0; iColumns < amtColumns; iColumns++) {
                 for (int iRows = 0; iRows < amtRows && indexLeads < listLeads.Count; iRows++) {
-                    listTracings.Add (new Controls.ECGTracing (new Strip (listLeads [indexLeads], (4 - iColumns) * 2.5d, 2.5d)));
+                    listTracings.Add (new Controls.ECGTracing (new Strip (listLeads [indexLeads], (4 - iColumns) * 2.5f, 2.5f)));
                     listTracings [indexLeads].SetValue (Grid.ColumnProperty, iColumns);
                     listTracings [indexLeads].SetValue (Grid.RowProperty, iRows);
                     layoutGrid.Children.Add (listTracings [indexLeads]);
@@ -117,7 +117,7 @@ namespace II_Windows {
             }
 
             // Add Lead II running along bottom spanning all columns
-            Controls.ECGTracing leadII = new Controls.ECGTracing (new Strip (Lead.Values.ECG_II, 10d));
+            Controls.ECGTracing leadII = new Controls.ECGTracing (new Strip (Lead.Values.ECG_II, 10f));
             leadII.SetValue (Grid.ColumnProperty, 0);
             leadII.SetValue (Grid.RowProperty, 4);
             leadII.SetValue (Grid.ColumnSpanProperty, 4);

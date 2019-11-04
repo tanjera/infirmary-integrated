@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -19,13 +20,12 @@ namespace II_Windows.Controls {
         public Lead Lead { get { return Strip.Lead; } }
 
         /* Drawing variables, offsets and multipliers */
-        private Brush tracingBrush = Brushes.Black;
-        private Brush referenceBrush = Brushes.DarkGray;
+        private System.Drawing.Brush tracingPen = System.Drawing.Brushes.Black;
+        private System.Windows.Media.Brush tracingBrush = System.Windows.Media.Brushes.Black;
+        private System.Drawing.Brush referencePen = System.Drawing.Brushes.DarkGray;
 
-        private StreamGeometry drawGeometry;
-        private StreamGeometryContext drawContext;
-        private int drawXOffset, drawYOffset;
-        private double drawXMultiplier, drawYMultiplier;
+        private System.Drawing.Point drawOffset;
+        private System.Drawing.PointF drawMultiplier;
 
         private MenuItem menuZeroTransducer;
         private MenuItem menuToggleAutoScale;
@@ -47,7 +47,7 @@ namespace II_Windows.Controls {
 
             // Context Menu (right-click menu!)
             ContextMenu contextMenu = new ContextMenu ();
-            canvasTracing.ContextMenu = contextMenu;
+            imgTracing.ContextMenu = contextMenu;
             lblLead.ContextMenu = contextMenu;
 
             menuZeroTransducer = new MenuItem ();
@@ -116,14 +116,45 @@ namespace II_Windows.Controls {
 
         private void UpdateInterface (object sender, SizeChangedEventArgs e) {
             switch (Lead.Value) {
-                default: tracingBrush = Brushes.Green; break;
-                case Lead.Values.ABP: tracingBrush = Brushes.Red; break;
-                case Lead.Values.CVP: tracingBrush = Brushes.Blue; break;
-                case Lead.Values.PA: tracingBrush = Brushes.Yellow; break;
-                case Lead.Values.IABP: tracingBrush = Brushes.SkyBlue; break;
-                case Lead.Values.RR: tracingBrush = Brushes.Salmon; break;
-                case Lead.Values.ETCO2: tracingBrush = Brushes.Aqua; break;
-                case Lead.Values.SPO2: tracingBrush = Brushes.Orange; break;
+                default:
+                    tracingPen = System.Drawing.Brushes.Green;
+                    tracingBrush = System.Windows.Media.Brushes.Green;
+                    break;
+
+                case Lead.Values.ABP:
+                    tracingPen = System.Drawing.Brushes.Red;
+                    tracingBrush = System.Windows.Media.Brushes.Red;
+                    break;
+
+                case Lead.Values.CVP:
+                    tracingPen = System.Drawing.Brushes.Blue;
+                    tracingBrush = System.Windows.Media.Brushes.Blue;
+                    break;
+
+                case Lead.Values.PA:
+                    tracingPen = System.Drawing.Brushes.Yellow;
+                    tracingBrush = System.Windows.Media.Brushes.Yellow;
+                    break;
+
+                case Lead.Values.IABP:
+                    tracingPen = System.Drawing.Brushes.SkyBlue;
+                    tracingBrush = System.Windows.Media.Brushes.SkyBlue;
+                    break;
+
+                case Lead.Values.RR:
+                    tracingPen = System.Drawing.Brushes.Salmon;
+                    tracingBrush = System.Windows.Media.Brushes.Salmon;
+                    break;
+
+                case Lead.Values.ETCO2:
+                    tracingPen = System.Drawing.Brushes.Aqua;
+                    tracingBrush = System.Windows.Media.Brushes.Aqua;
+                    break;
+
+                case Lead.Values.SPO2:
+                    tracingPen = System.Drawing.Brushes.Orange;
+                    tracingBrush = System.Windows.Media.Brushes.Orange;
+                    break;
             }
 
             borderTracing.BorderBrush = tracingBrush;
@@ -160,18 +191,22 @@ namespace II_Windows.Controls {
         }
 
         public void CalculateOffsets ()
-            => Tracing.CalculateOffsets (Strip, canvasTracing.ActualWidth, canvasTracing.ActualHeight,
-                ref drawXOffset, ref drawYOffset, ref drawXMultiplier, ref drawYMultiplier);
+            => Tracing.CalculateOffsets (Strip,
+                cnvTracing.ActualWidth, cnvTracing.ActualHeight,
+                ref drawOffset, ref drawMultiplier);
 
         public void DrawTracing ()
-            => DrawPath (drawPath, Strip.Points, tracingBrush, 1);
+            => DrawPath (Strip.Points, tracingPen, 1);
 
         public void DrawReference ()
-            => DrawPath (drawReference, Strip.Reference, referenceBrush, 1);
+            => DrawPath (Strip.Reference, referencePen, 1);
 
-        public void DrawPath (Path _Path, List<II.Waveform.Point> _Points, Brush _Brush, double _Thickness)
-            => Tracings.DrawPath (_Path, _Points, _Brush, _Thickness,
-                drawGeometry, drawContext, drawXOffset, drawYOffset, drawXMultiplier, drawYMultiplier);
+        public void DrawPath (List<PointF> _Points, System.Drawing.Brush _Brush, float _Thickness) {
+            Tracing.Init (ref Strip.Tracing, (int)cnvTracing.ActualWidth, (int)cnvTracing.ActualHeight);
+
+            Tracing.DrawPath (_Points, Strip.Tracing, new System.Drawing.Pen (_Brush, _Thickness),
+                System.Drawing.Color.Black, drawOffset, drawMultiplier);
+        }
 
         private void MenuZeroTransducer_Click (object sender, RoutedEventArgs e) {
             switch (Lead.Value) {
@@ -216,7 +251,7 @@ namespace II_Windows.Controls {
             UpdateInterface (null, null);
         }
 
-        private void canvasTracing_SizeChanged (object sender, SizeChangedEventArgs e) {
+        private void cnvTracing_SizeChanged (object sender, SizeChangedEventArgs e) {
             CalculateOffsets ();
 
             //DrawReference ();
