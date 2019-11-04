@@ -10,7 +10,8 @@
         Icon="{StaticResource Icon_Infirmary}"
         WindowStartupLocation="CenterScreen"
         Width="1200" Height="800"
-        Background="Black">
+        Background="Black"
+		Closed="OnClosed">
 
 	<Window.InputBindings>
 		<KeyBinding Key="F" Modifiers="Ctrl" Command="{Binding IC_ToggleFullscreen}" />

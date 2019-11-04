@@ -24,7 +24,6 @@
 			<Canvas Name="cnvTracing" Panel.ZIndex="0" ClipToBounds="True"
                     Grid.Column="0" Grid.Row="0" Grid.RowSpan="4"
                     VerticalAlignment="Stretch"
-					Background="Black"
                     SizeChanged="cnvTracing_SizeChanged" />
 
 			<Image Name="imgTracing" Panel.ZIndex="1" ClipToBounds="True"

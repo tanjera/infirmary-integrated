@@ -53,6 +53,23 @@ namespace II_Windows {
             OnLayoutChange ();
         }
 
+        ~DeviceMonitor () => Dispose ();
+
+        public void Dispose () {
+            /* Clean subscriptions from the Main Timer */
+            App.Timer_Main.Tick -= timerTracing.Process;
+            App.Timer_Main.Tick -= timerVitals_Cardiac.Process;
+            App.Timer_Main.Tick -= timerVitals_Respiratory.Process;
+
+            /* Dispose of local Timers */
+            timerTracing.Dispose ();
+            timerVitals_Cardiac.Dispose ();
+            timerVitals_Respiratory.Dispose ();
+
+            /* Unsubscribe from the main Patient event listing */
+            App.Patient.PatientEvent -= OnPatientEvent;
+        }
+
         private void InitTimers () {
             timerTracing.Set (Draw.RefreshTime);
             App.Timer_Main.Tick += timerTracing.Process;
@@ -224,6 +241,9 @@ namespace II_Windows {
 
         private void MenuPrintScreen_Click (object sender, RoutedEventArgs e)
             => PrintScreen ();
+
+        private void OnClosed (object sender, EventArgs e)
+            => this.Dispose ();
 
         private void OnTick_Tracing (object sender, EventArgs e) {
             if (isPaused)

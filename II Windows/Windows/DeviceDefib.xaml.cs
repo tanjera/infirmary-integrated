@@ -73,6 +73,25 @@ namespace II_Windows {
             OnLayoutChange ();
         }
 
+        ~DeviceDefib () => Dispose ();
+
+        public void Dispose () {
+            /* Clean subscriptions from the Main Timer */
+            App.Timer_Main.Tick -= timerTracing.Process;
+            App.Timer_Main.Tick -= timerVitals_Cardiac.Process;
+            App.Timer_Main.Tick -= timerVitals_Respiratory.Process;
+            App.Timer_Main.Tick -= timerAncillary_Delay.Process;
+
+            /* Dispose of local Timers */
+            timerTracing.Dispose ();
+            timerVitals_Cardiac.Dispose ();
+            timerVitals_Respiratory.Dispose ();
+            timerAncillary_Delay.Dispose ();
+
+            /* Unsubscribe from the main Patient event listing */
+            App.Patient.PatientEvent -= OnPatientEvent;
+        }
+
         private void InitTimers () {
             App.Timer_Main.Tick += timerTracing.Process;
             App.Timer_Main.Tick += timerVitals_Cardiac.Process;
@@ -416,6 +435,9 @@ namespace II_Windows {
 
             UpdateInterface ();
         }
+
+        private void OnClosed (object sender, EventArgs e)
+            => this.Dispose ();
 
         private void OnTick_Tracing (object sender, EventArgs e) {
             if (isPaused)

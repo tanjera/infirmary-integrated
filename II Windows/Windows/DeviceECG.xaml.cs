@@ -54,6 +54,19 @@ namespace II_Windows {
             SetColorScheme (colorScheme);
         }
 
+        ~DeviceECG () => Dispose ();
+
+        public void Dispose () {
+            /* Clean subscriptions from the Main Timer */
+            App.Timer_Main.Tick -= timerTracing.Process;
+
+            /* Dispose of local Timers */
+            timerTracing.Dispose ();
+
+            /* Unsubscribe from the main Patient event listing */
+            App.Patient.PatientEvent -= OnPatientEvent;
+        }
+
         private void InitTimers () {
             timerTracing.Set (Draw.RefreshTime);
             App.Timer_Main.Tick += timerTracing.Process;
@@ -266,6 +279,9 @@ namespace II_Windows {
 
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (ColorSchemes.Dark);
+
+        private void OnClosed (object sender, EventArgs e)
+            => this.Dispose ();
 
         private void OnTick_Tracing (object sender, EventArgs e) {
             if (isPaused)

@@ -14,9 +14,7 @@ namespace II {
 
         ~Timer () => Dispose ();
 
-        public void Dispose () => UnsubscribeTick ();
-
-        public void UnsubscribeTick () {
+        public void Dispose () {
             if (Tick == null)
                 return;
 

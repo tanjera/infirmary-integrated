@@ -115,6 +115,23 @@ namespace II_Windows {
             InitInterface ();
         }
 
+        ~DeviceIABP () => Dispose ();
+
+        public void Dispose () {
+            /* Clean subscriptions from the Main Timer */
+            App.Timer_Main.Tick -= timerTracing.Process;
+            App.Timer_Main.Tick -= timerVitals.Process;
+            App.Timer_Main.Tick -= timerAncillary_Delay.Process;
+
+            /* Dispose of local Timers */
+            timerTracing.Dispose ();
+            timerVitals.Dispose ();
+            timerAncillary_Delay.Dispose ();
+
+            /* Unsubscribe from the main Patient event listing */
+            App.Patient.PatientEvent -= OnPatientEvent;
+        }
+
         private void InitTimers () {
             App.Timer_Main.Tick += timerVitals.Process;
             App.Timer_Main.Tick += timerTracing.Process;
@@ -481,6 +498,9 @@ namespace II_Windows {
 
         private void MenuPrintScreen_Click (object sender, RoutedEventArgs e)
             => PrintScreen ();
+
+        private void OnClosed (object sender, EventArgs e)
+            => this.Dispose ();
 
         private void OnTick_PrimingComplete (object sender, EventArgs e) {
             timerAncillary_Delay.Stop ();

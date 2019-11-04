@@ -68,8 +68,8 @@ namespace II {
             return (current - min) / (max - min);
         }
 
-        public static int InverseLerp (int min, int max, float current) {
-            return (int)((current - min) / (max - min));
+        public static float InverseLerp (int min, int max, float current) {
+            return ((current - min) / (max - min));
         }
 
         public static double RandomDouble (double min, double max) {

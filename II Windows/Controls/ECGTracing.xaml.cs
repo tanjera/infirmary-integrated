@@ -59,6 +59,8 @@ namespace II_Windows.Controls {
 
             Tracing.DrawPath (_Points, Strip.Tracing, new System.Drawing.Pen (_Brush, _Thickness),
                 bgColor, drawOffset, drawMultiplier);
+
+            imgTracing.Source = Trace.BitmapToImageSource (Strip.Tracing);
         }
 
         public void SetColors (DeviceECG.ColorSchemes scheme, bool grid) {

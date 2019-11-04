@@ -42,7 +42,7 @@ namespace II.Rhythm {
             if (points.Count < 2)
                 return;
 
-            if (bitmap == null)
+            if (bitmap == null)     // Can't initiate Bitmap here; don't have width/height
                 return;
 
             using (Graphics g = Graphics.FromImage (bitmap)) {
@@ -53,7 +53,6 @@ namespace II.Rhythm {
 
                 GraphicsPath gp = new GraphicsPath ();
 
-                gp.AddLines (points.ToArray ());
                 for (int i = 1; i < points.Count; i++) {
                     gp.AddLine (
                         new PointF (

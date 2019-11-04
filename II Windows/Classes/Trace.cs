@@ -13,28 +13,19 @@ namespace II_Windows {
 
     public static class Trace {
 
-        public static void BitmapToImage (Bitmap bitmap, System.Windows.Controls.Image image) {
-            if (bitmap == null || image == null)
-                return;
+        public static BitmapImage BitmapToImageSource (Bitmap bitmap) {
+            using (MemoryStream ms = new MemoryStream ()) {
+                bitmap.Save (ms, System.Drawing.Imaging.ImageFormat.Png);   // PNG supports transparency!
+                ms.Position = 0;
 
-            // DEBUG: saves every bitmap render to temp folder
-            //bitmap.Save (Path.Combine (II.File.GetTempDirPath (), Guid.NewGuid () + ".bmp"));
+                BitmapImage bi = new BitmapImage ();
+                bi.BeginInit ();
+                bi.StreamSource = ms;
+                bi.CacheOption = BitmapCacheOption.OnLoad;
+                bi.EndInit ();
 
-            BitmapImage bmpi = new BitmapImage ();
-            bmpi.BeginInit ();
-
-            MemoryStream ms = new MemoryStream ();
-            bitmap.Save (ms, System.Drawing.Imaging.ImageFormat.Bmp);
-            MemoryStream msbs = new MemoryStream (ms.ToArray ());
-            bmpi.StreamSource = msbs;
-
-            bmpi.EndInit ();
-            image.Source = bmpi;
-
-            ms.Close ();
-            ms.Dispose ();
-            msbs.Close ();
-            msbs.Dispose ();
+                return bi;
+            }
         }
     }
 }

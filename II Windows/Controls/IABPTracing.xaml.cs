@@ -98,6 +98,8 @@ namespace II_Windows.Controls {
 
             Tracing.DrawPath (_Points, Strip.Tracing, new System.Drawing.Pen (_Brush, _Thickness),
                 System.Drawing.Color.Black, drawOffset, drawMultiplier);
+
+            imgTracing.Source = Trace.BitmapToImageSource (Strip.Tracing);
         }
 
         private void cnvTracing_SizeChanged (object sender, SizeChangedEventArgs e) {
