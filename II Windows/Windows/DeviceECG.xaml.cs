@@ -212,14 +212,14 @@ namespace II_Windows {
         }
 
         private void SaveScreen ()
-            => ScreenshotPdf.SavePdf (
-                Screenshot.GetBitmap (layoutGrid, 1),
-                App.Language.Localize ("ECG:WindowTitle"));
+            => Screenshot.SavePdf (
+                Screenshot.SavePng (Screenshot.GetBitmap (layoutGrid, 1), II.File.GetTempFilePath ("png")),
+                App.Language.Localize ("ECG:WindowTitle"), "25 mm/sec    10mm/mV");
 
         private void PrintScreen ()
-            => ScreenshotPdf.PrintPdf (ScreenshotPdf.AssemblePdf (
-                    Screenshot.GetBitmap (layoutGrid, 1),
-                    App.Language.Localize ("ECG:WindowTitle")));
+            => II.Screenshot.PrintPdf (II.Screenshot.AssemblePdf (
+                Screenshot.SavePng (Screenshot.GetBitmap (layoutGrid, 1), II.File.GetTempFilePath ("png")),
+                    App.Language.Localize ("ECG:WindowTitle"), "25 mm/sec    10mm/mV"));
 
         private void ApplyFullScreen () {
             menuToggleFullscreen.IsChecked = isFullscreen;

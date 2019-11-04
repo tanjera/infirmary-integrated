@@ -35,7 +35,7 @@ namespace II_Windows {
             return (BitmapSource)renderTarget;
         }
 
-        public static byte [] GetJPG (BitmapSource bitmap, int quality) {
+        public static byte [] GetJpg (BitmapSource bitmap, int quality) {
             JpegBitmapEncoder encoder = new JpegBitmapEncoder ();
             encoder.QualityLevel = quality;
             encoder.Frames.Add (BitmapFrame.Create (bitmap));
@@ -49,7 +49,7 @@ namespace II_Windows {
             return array;
         }
 
-        public static byte [] GetPNG (BitmapSource bitmap) {
+        public static byte [] GetPng (BitmapSource bitmap) {
             PngBitmapEncoder encoder = new PngBitmapEncoder ();
             encoder.Interlace = PngInterlaceOption.On;
             encoder.Frames.Add (BitmapFrame.Create (bitmap));
@@ -61,6 +61,30 @@ namespace II_Windows {
             }
 
             return array;
+        }
+
+        public static string SavePng (BitmapSource bitsource, string filepath) {
+            using (var fs = new FileStream (filepath, FileMode.Create)) {
+                BitmapEncoder enc = new PngBitmapEncoder ();
+                enc.Frames.Add (BitmapFrame.Create (bitsource));
+                enc.Save (fs);
+            }
+
+            return filepath;
+        }
+
+        public static void SavePdf (string bitpath, string title, string header) {
+            Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
+
+            dlgSave.Filter = "Portable Document Format (*.pdf)|*.pdf|All files (*.*)|*.*";
+            dlgSave.FilterIndex = 1;
+            dlgSave.RestoreDirectory = true;
+
+            if (dlgSave.ShowDialog () == true) {
+                II.Screenshot.SavePdf (
+                    II.Screenshot.AssemblePdf (bitpath, title, header),
+                    dlgSave.FileName);
+            }
         }
     }
 }
