@@ -204,22 +204,18 @@ namespace II_Windows {
 
         private async void InitUpgrade () {
             /* Newer version available? Check Server, populate status bar, prompt user for upgrade */
-            string upgradeVersion = "";
-            string upgradePage = "";
-            string upgradeExec = "";
-            string upgradeHash = "";
 
-            await Task.Run (() => App.Server.Get_LatestVersion_Windows (ref upgradeVersion, ref upgradePage, ref upgradeExec, ref upgradeHash));
+            await Task.Run (() => App.Server.Get_LatestVersion_Windows ());
 
-            if (Utility.IsNewerVersion (Utility.Version, upgradeVersion)) {
-                txtUpdateAvailable.Text = String.Format (App.Language.Localize ("STATUS:UpdateAvailable"), upgradeVersion).Trim ();
+            if (Utility.IsNewerVersion (Utility.Version, App.Server.UpgradeVersion)) {
+                txtUpdateAvailable.Text = String.Format (App.Language.Localize ("STATUS:UpdateAvailable"), App.Server.UpgradeVersion).Trim ();
             } else {            // If no update available, no status update
                 statusUpdateAvailable.Visibility = Visibility.Collapsed;
                 return;
             }
 
             if (Properties.Settings.Default.MuteUpgrade) {
-                if (Utility.IsNewerVersion (Properties.Settings.Default.MuteUpgradeVersion, upgradeVersion)) {
+                if (Utility.IsNewerVersion (Properties.Settings.Default.MuteUpgradeVersion, App.Server.UpgradeVersion)) {
                     Properties.Settings.Default.MuteUpgrade = false;
                     Properties.Settings.Default.Save ();
                 } else {        // Mutes update popup notification
@@ -227,7 +223,7 @@ namespace II_Windows {
                 }
             }
 
-            PromptUpgrade (upgradeVersion, upgradePage, upgradeExec, upgradeHash);
+            DialogUpgrade ();
         }
 
         private void InitMirroring () {
@@ -356,36 +352,39 @@ namespace II_Windows {
             App.Dialog_About.ShowDialog ();
         }
 
-        private void PromptUpgrade (string version, string page, string exec, string hash) {
-            DialogUpgrade.Decisions decision = II_Windows.DialogUpgrade.Decisions.NULL;
+        private async void DialogUpgrade () {
+            Bootstrap.UpgradeRoute decision = Bootstrap.UpgradeRoute.NULL;
 
             App.Dialog_Upgrade = new DialogUpgrade ();
             App.Dialog_Upgrade.Activate ();
 
-            App.Dialog_Upgrade.OnDecision += (s, ea) => decision = ea.Decision;
+            App.Dialog_Upgrade.OnUpgradeRoute += (s, ea) => decision = ea.Route;
             App.Dialog_Upgrade.ShowDialog ();
-            App.Dialog_Upgrade.OnDecision -= (s, ea) => decision = ea.Decision;
+            App.Dialog_Upgrade.OnUpgradeRoute -= (s, ea) => decision = ea.Route;
 
             switch (decision) {
                 default:
-                case II_Windows.DialogUpgrade.Decisions.NULL:
-                case II_Windows.DialogUpgrade.Decisions.DELAY:
+                case Bootstrap.UpgradeRoute.NULL:
+                case Bootstrap.UpgradeRoute.DELAY:
                     return;
 
-                case II_Windows.DialogUpgrade.Decisions.MUTE:
+                case Bootstrap.UpgradeRoute.MUTE:
                     Properties.Settings.Default.MuteUpgrade = true;
-                    Properties.Settings.Default.MuteUpgradeVersion = version;
+                    Properties.Settings.Default.MuteUpgradeVersion = App.Server.UpgradeVersion;
                     Properties.Settings.Default.Save ();
                     return;
 
-                case II_Windows.DialogUpgrade.Decisions.WEBSITE:
-                    if (!String.IsNullOrEmpty (page))
-                        System.Diagnostics.Process.Start (page);
+                case Bootstrap.UpgradeRoute.WEBSITE:
+                    if (!String.IsNullOrEmpty (App.Server.UpgradeWebpage))
+                        System.Diagnostics.Process.Start (App.Server.UpgradeWebpage);
                     return;
 
-                case II_Windows.DialogUpgrade.Decisions.INSTALL:
-                    if (!String.IsNullOrEmpty (exec) && !String.IsNullOrEmpty (hash))
-                        UpgradeInstallation (exec, hash);
+                case Bootstrap.UpgradeRoute.INSTALL:
+                    if (!String.IsNullOrEmpty (App.Server.BootstrapExeUri) && !String.IsNullOrEmpty (App.Server.BootstrapHashMd5)) {
+                        _ = Task.Run (() => System.Windows.MessageBox.Show (App.Language.Localize ("UPGRADE:Downloading")));
+                        await Bootstrap.BootstrapInstall_Windows (App.Server);
+                        this.Close ();
+                    }
                     return;
             }
         }
@@ -921,27 +920,6 @@ namespace II_Windows {
             txtAccessionKey.Text = App.Mirror.Accession;
 
             AdvanceParameterStatus (ParameterStatuses.ChangesApplied);
-        }
-
-        private async void UpgradeInstallation (string updateExec, string updateHash) {
-            _ = Task.Run (() => System.Windows.MessageBox.Show (App.Language.Localize ("UPGRADE:Downloading")));
-
-            string installer = II.File.GetTempFilePath ("msi");
-
-            using (HttpClient client = new HttpClient ()) {
-                using (HttpResponseMessage httpResponse = await client.GetAsync (updateExec, HttpCompletionOption.ResponseHeadersRead))
-                using (Stream httpStream = await httpResponse.Content.ReadAsStreamAsync ()) {
-                    using (Stream outStream = System.IO.File.Open (installer, FileMode.Create)) {
-                        await httpStream.CopyToAsync (outStream);
-                    }
-                }
-            }
-
-            if (II.File.MD5Hash (installer) != updateHash)
-                return;
-
-            Process.Start (installer);
-            this.Close ();
         }
 
         private void MenuNewSimulation_Click (object s, RoutedEventArgs e) => RefreshScenario (true);

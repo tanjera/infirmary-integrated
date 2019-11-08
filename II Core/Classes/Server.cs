@@ -26,6 +26,12 @@ using II.Localization;
 
 namespace II.Server {
     public partial class Server {
+        /* Variables for checking for updates, running bootstrapper */
+        public string UpgradeVersion = String.Empty;
+        public string UpgradeWebpage = String.Empty;
+        public string BootstrapExeUri = String.Empty;
+        public string BootstrapHashMd5 = String.Empty;
+
         private string FormatForPHP (string inc)
             => inc.Replace ("#", "_").Replace ("$", "_");
 
@@ -126,18 +132,17 @@ namespace II.Server {
             }
         }
 
-        public void Get_LatestVersion_Windows (ref string version, ref string webpage, ref string executableUri, ref string executableHash) {
+        public void Get_LatestVersion_Windows () {
             try {
                 WebRequest req = WebRequest.Create ("http://server.infirmary-integrated.com/version.php");
                 WebResponse resp = req.GetResponse ();
                 Stream str = resp.GetResponseStream ();
-                string versionLine = String.Empty;
 
                 using (StreamReader sr = new StreamReader (str)) {
-                    versionLine = sr.ReadLine ().Trim ();
-                    webpage = sr.ReadLine ().Trim ();
-                    executableUri = sr.ReadLine ().Trim ();
-                    executableHash = sr.ReadLine ().Trim ();
+                    UpgradeVersion = sr.ReadLine ().Trim ();
+                    UpgradeWebpage = sr.ReadLine ().Trim ();
+                    BootstrapExeUri = sr.ReadLine ().Trim ();
+                    BootstrapHashMd5 = sr.ReadLine ().Trim ();
                 }
 
                 resp.Close ();
@@ -146,10 +151,10 @@ namespace II.Server {
                 resp.Dispose ();
                 str.Dispose ();
 
-                version = String.IsNullOrEmpty (versionLine) ? "0.0" : versionLine;
-                webpage = String.IsNullOrEmpty (webpage) ? "" : webpage;
-                executableUri = String.IsNullOrEmpty (executableUri) ? "" : executableUri;
-                executableHash = String.IsNullOrEmpty (executableHash) ? "" : executableHash;
+                UpgradeVersion = String.IsNullOrEmpty (UpgradeVersion) ? "0.0" : UpgradeVersion;
+                UpgradeWebpage = String.IsNullOrEmpty (UpgradeWebpage) ? "" : UpgradeWebpage;
+                BootstrapExeUri = String.IsNullOrEmpty (BootstrapExeUri) ? "" : BootstrapExeUri;
+                BootstrapHashMd5 = String.IsNullOrEmpty (BootstrapHashMd5) ? "" : BootstrapHashMd5;
             } catch {
             }
         }

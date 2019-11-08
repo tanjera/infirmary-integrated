@@ -1,6 +1,7 @@
-﻿using II.Localization;
-using System;
+﻿using System;
 using System.Windows;
+
+using II;
 
 namespace II_Windows {
 
@@ -9,21 +10,13 @@ namespace II_Windows {
     /// </summary>
     public partial class DialogUpgrade : Window {
 
-        public event EventHandler<DecisionEventArgs> OnDecision;
+        public event EventHandler<UpgradeEventArgs> OnUpgradeRoute;
 
-        public enum Decisions {
-            NULL,
-            INSTALL,
-            WEBSITE,
-            DELAY,
-            MUTE
-        }
+        public class UpgradeEventArgs : EventArgs {
+            public Bootstrap.UpgradeRoute Route;
 
-        public class DecisionEventArgs : EventArgs {
-            public Decisions Decision;
-
-            public DecisionEventArgs (Decisions d)
-                => Decision = d;
+            public UpgradeEventArgs (Bootstrap.UpgradeRoute d)
+                => Route = d;
         }
 
         public DialogUpgrade () {
@@ -41,22 +34,22 @@ namespace II_Windows {
         }
 
         private void btnInstall_Click (object sender, RoutedEventArgs e) {
-            OnDecision (this, new DecisionEventArgs (Decisions.INSTALL));
+            OnUpgradeRoute (this, new UpgradeEventArgs (Bootstrap.UpgradeRoute.INSTALL));
             Close ();
         }
 
         private void btnWebsite_Click (object sender, RoutedEventArgs e) {
-            OnDecision (this, new DecisionEventArgs (Decisions.WEBSITE));
+            OnUpgradeRoute (this, new UpgradeEventArgs (Bootstrap.UpgradeRoute.WEBSITE));
             Close ();
         }
 
         private void btnDelay_Click (object sender, RoutedEventArgs e) {
-            OnDecision (this, new DecisionEventArgs (Decisions.DELAY));
+            OnUpgradeRoute (this, new UpgradeEventArgs (Bootstrap.UpgradeRoute.DELAY));
             Close ();
         }
 
         private void btnMute_Click (object sender, RoutedEventArgs e) {
-            OnDecision (this, new DecisionEventArgs (Decisions.MUTE));
+            OnUpgradeRoute (this, new UpgradeEventArgs (Bootstrap.UpgradeRoute.MUTE));
             Close ();
         }
     }
