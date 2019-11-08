@@ -154,6 +154,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Windows\DialogUpgrade.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Windows\DialogInitial.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -204,6 +208,9 @@
     </Compile>
     <Compile Include="Windows\DialogAbout.xaml.cs">
       <DependentUpon>DialogAbout.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\DialogUpgrade.xaml.cs">
+      <DependentUpon>DialogUpgrade.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\DialogInitial.xaml.cs">
       <DependentUpon>DialogInitial.xaml</DependentUpon>

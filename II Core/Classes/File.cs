@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace II {
@@ -27,6 +28,15 @@ namespace II {
 
             foreach (string f in files)
                 System.IO.File.Delete (f);
+        }
+
+        public static string MD5Hash (string filepath) {
+            using (MD5 md5 = MD5.Create ()) {
+                using (FileStream stream = System.IO.File.OpenRead (filepath)) {
+                    byte [] hash = md5.ComputeHash (stream);
+                    return BitConverter.ToString (hash).Replace ("-", "").ToLowerInvariant ();
+                }
+            }
         }
     }
 }

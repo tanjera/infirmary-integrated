@@ -46,5 +46,65 @@ namespace II_Windows.Properties {
                 this["AutoApplyChanges"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int WindowState {
+            get {
+                return ((int)(this["WindowState"]));
+            }
+            set {
+                this["WindowState"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("560, 700")]
+        public global::System.Drawing.Point WindowSize {
+            get {
+                return ((global::System.Drawing.Point)(this["WindowSize"]));
+            }
+            set {
+                this["WindowSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point WindowPosition {
+            get {
+                return ((global::System.Drawing.Point)(this["WindowPosition"]));
+            }
+            set {
+                this["WindowPosition"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MuteUpgrade {
+            get {
+                return ((bool)(this["MuteUpgrade"]));
+            }
+            set {
+                this["MuteUpgrade"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public string MuteUpgradeVersion {
+            get {
+                return ((string)(this["MuteUpgradeVersion"]));
+            }
+            set {
+                this["MuteUpgradeVersion"] = value;
+            }
+        }
     }
 }

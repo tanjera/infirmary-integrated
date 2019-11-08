@@ -279,6 +279,13 @@ namespace II.Localization {
 			{"INITIAL:LanguageAndTerms",                                  "Language Selection and Terms of Use"},
 			{"INITIAL:ChooseLanguage",                                    "Please choose your language:"},
 			{"INITIAL:AgreeToTerms",                                      "By choosing to continue, you accept to the terms of use at located at"},
+			{"UPGRADE:Upgrade",                                           "Upgrade Infirmary Integrated"},
+			{"UPGRADE:UpdateAvailable",                                   "A new version of Infirmary Integrated is available. Would you like to upgrade now?"},
+			{"UPGRADE:DownloadInstall",                                   "Download and Install Now"},
+			{"UPGRADE:OpenDownloadPage",                                  "Open Download Website"},
+			{"UPGRADE:Later",                                             "Remind Me Later"},
+			{"UPGRADE:Mute",                                              "Don't Remind Me"},
+			{"UPGRADE:Downloading",                                       "Download in process. The installer will run when it is finished downloading."},
 		};
 
 		static Dictionary<string, string> AMH = new Dictionary<string, string> () {
@@ -553,6 +560,13 @@ namespace II.Localization {
 			{"INITIAL:LanguageAndTerms",                                  "የቋንቋ ምርጫ እና የአጠቃቀም ውሎች"},
 			{"INITIAL:ChooseLanguage",                                    "የእርስዎን ቋንቋ ይምረጡ:"},
 			{"INITIAL:AgreeToTerms",                                      "ከቀጠሉ በአጠቃቀም ውል ተስማምተዋል"},
+			{"UPGRADE:Upgrade",                                           "አሻሽል"},
+			{"UPGRADE:UpdateAvailable",                                   "የመተግበሪያው አዲስ ስሪት ይገኛል። አሁን ማዘመን ይፈልጋሉ?"},
+			{"UPGRADE:DownloadInstall",                                   "አሁን ያውርዱ እና ይጫኑ"},
+			{"UPGRADE:OpenDownloadPage",                                  "ድር ጣቢያ ይክፈቱ"},
+			{"UPGRADE:Later",                                             "መጨረሻ ላይ አስታውሰኝ"},
+			{"UPGRADE:Mute",                                              "ድጋሜ አትነግረኝ"},
+			{"UPGRADE:Downloading",                                       "ማውረዱ በሂደት ላይ ነው። ጫኝው መጫኑን ሲያጠናቅቅ ይሠራል።"},
 		};
 
 		static Dictionary<string, string> ARA = new Dictionary<string, string> () {
@@ -827,6 +841,13 @@ namespace II.Localization {
 			{"INITIAL:LanguageAndTerms",                                  "اختيار اللغة وشروط الاستخدام"},
 			{"INITIAL:ChooseLanguage",                                    "الرجاء اختيار لغتك"},
 			{"INITIAL:AgreeToTerms",                                      "إذا تابعت ، فأنت توافق على شروط الاستخدام"},
+			{"UPGRADE:Upgrade",                                           "تطوير"},
+			{"UPGRADE:UpdateAvailable",                                   "يتوفر إصدار جديد من البرنامج. هل ترغب في تحديث الآن؟"},
+			{"UPGRADE:DownloadInstall",                                   "تحميل وتثبيت الآن"},
+			{"UPGRADE:OpenDownloadPage",                                  "افتح الموقع"},
+			{"UPGRADE:Later",                                             "ذكرني لاحقا"},
+			{"UPGRADE:Mute",                                              "لا تقل لي مرة أخرى"},
+			{"UPGRADE:Downloading",                                       "التنزيل قيد التنفيذ. سيتم تشغيل المثبت عند الانتهاء من التنزيل."},
 		};
 
 		static Dictionary<string, string> CHS = new Dictionary<string, string> () {
@@ -1101,6 +1122,13 @@ namespace II.Localization {
 			{"INITIAL:LanguageAndTerms",                                  "语言选择和使用条款"},
 			{"INITIAL:ChooseLanguage",                                    "请选择您的语言"},
 			{"INITIAL:AgreeToTerms",                                      "如果继续，即表示您同意使用条款"},
+			{"UPGRADE:Upgrade",                                           "升级"},
+			{"UPGRADE:UpdateAvailable",                                   "该程序有新版本。 您要现在更新吗？"},
+			{"UPGRADE:DownloadInstall",                                   "立即下载并安装"},
+			{"UPGRADE:OpenDownloadPage",                                  "开启网站"},
+			{"UPGRADE:Later",                                             "稍后提醒我"},
+			{"UPGRADE:Mute",                                              "不要再告诉我"},
+			{"UPGRADE:Downloading",                                       "正在下载。 下载完成后，安装程序将运行。"},
 		};
 
 		static Dictionary<string, string> DEU = new Dictionary<string, string> () {
@@ -1375,6 +1403,13 @@ namespace II.Localization {
 			{"INITIAL:LanguageAndTerms",                                  "Sprachauswahl und Nutzungsbedingungen"},
 			{"INITIAL:ChooseLanguage",                                    "Bitte wähle deine Sprache:"},
 			{"INITIAL:AgreeToTerms",                                      "Wenn Sie fortfahren, stimmen Sie den Nutzungsbedingungen zu"},
+			{"UPGRADE:Upgrade",                                           "Aktualisierung"},
+			{"UPGRADE:UpdateAvailable",                                   "Eine neue Version des Programms ist verfügbar. Möchten Sie jetzt ein Upgrade durchführen?"},
+			{"UPGRADE:DownloadInstall",                                   "Jetzt herunterladen und installieren"},
+			{"UPGRADE:OpenDownloadPage",                                  "Webseite öffnen"},
+			{"UPGRADE:Later",                                             "Erinnere mich später"},
+			{"UPGRADE:Mute",                                              "Sag es mir nicht noch einmal"},
+			{"UPGRADE:Downloading",                                       "Der herunterladen wird ausgeführt. Das Installationsprogramm wird ausgeführt, wenn der herunterladen abgeschlossen ist."},
 		};
 
 		static Dictionary<string, string> FAR = new Dictionary<string, string> () {
@@ -1649,6 +1684,13 @@ namespace II.Localization {
 			{"INITIAL:LanguageAndTerms",                                  "انتخاب زبان و شرایط استفاده"},
 			{"INITIAL:ChooseLanguage",                                    "لطفا زبان خود را انتخاب کنید"},
 			{"INITIAL:AgreeToTerms",                                      "اگر ادامه دهید، با شرایط استفاده موافقت میکنید"},
+			{"UPGRADE:Upgrade",                                           "ارتقا"},
+			{"UPGRADE:UpdateAvailable",                                   "نسخه جدیدی از برنامه موجود است. آیا اکنون می خواهید بروزرسانی کنید؟"},
+			{"UPGRADE:DownloadInstall",                                   "اکنون بارگیری و نصب کنید"},
+			{"UPGRADE:OpenDownloadPage",                                  "باز کردن وب سایت"},
+			{"UPGRADE:Later",                                             "بعدا به من یادآوری کن"},
+			{"UPGRADE:Mute",                                              "دیگر به من نگو"},
+			{"UPGRADE:Downloading",                                       "بارگیری در حال انجام است. پس از اتمام بارگیری ، نصب خواهد شد."},
 		};
 
 		static Dictionary<string, string> ESP = new Dictionary<string, string> () {
@@ -1923,6 +1965,13 @@ namespace II.Localization {
 			{"INITIAL:LanguageAndTerms",                                  "Seleccione idioma y términos de uso"},
 			{"INITIAL:ChooseLanguage",                                    "Por favor elija su idioma:"},
 			{"INITIAL:AgreeToTerms",                                      "Si continúas, aceptas los términos de uso."},
+			{"UPGRADE:Upgrade",                                           "Mejorar"},
+			{"UPGRADE:UpdateAvailable",                                   "Una nueva versión del programa está disponible. ¿Desea actualizar ahora?"},
+			{"UPGRADE:DownloadInstall",                                   "Descargue e instale ahora"},
+			{"UPGRADE:OpenDownloadPage",                                  "Abrir sitio web"},
+			{"UPGRADE:Later",                                             "Recuérdame más tarde"},
+			{"UPGRADE:Mute",                                              "No me digas mas"},
+			{"UPGRADE:Downloading",                                       "La descarga está en progreso. El instalador se ejecutará una vez que se complete la descarga."},
 		};
 
 		static Dictionary<string, string> FRA = new Dictionary<string, string> () {
@@ -2197,6 +2246,13 @@ namespace II.Localization {
 			{"INITIAL:LanguageAndTerms",                                  "Sélectionnez la langue et les conditions d'utilisation"},
 			{"INITIAL:ChooseLanguage",                                    "S'il vous plaît Choisissez votre langue:"},
 			{"INITIAL:AgreeToTerms",                                      "Si vous continuez, vous acceptez les conditions d'utilisation"},
+			{"UPGRADE:Upgrade",                                           "Améliorer"},
+			{"UPGRADE:UpdateAvailable",                                   "Une nouvelle version du programme est disponible. Voulez-vous mettre à jour maintenant?"},
+			{"UPGRADE:DownloadInstall",                                   "Téléchargez et installez maintenant"},
+			{"UPGRADE:OpenDownloadPage",                                  "Site ouvert"},
+			{"UPGRADE:Later",                                             "Rappelle-moi plus tard"},
+			{"UPGRADE:Mute",                                              "Ne me dis plus"},
+			{"UPGRADE:Downloading",                                       "Le téléchargement est en cours. Le programme d'installation s'exécutera une fois le téléchargement terminé."},
 		};
 
 		static Dictionary<string, string> HEB = new Dictionary<string, string> () {
@@ -2471,6 +2527,13 @@ namespace II.Localization {
 			{"INITIAL:LanguageAndTerms",                                  "בחירת שפה ותנאי שימוש"},
 			{"INITIAL:ChooseLanguage",                                    "בחר את השפה שלך"},
 			{"INITIAL:AgreeToTerms",                                      "אם תמשיך, אתה מסכים לתנאי השימוש"},
+			{"UPGRADE:Upgrade",                                           "שדרג"},
+			{"UPGRADE:UpdateAvailable",                                   "גרסה חדשה של האפליקציה זמינה. האם ברצונך לעדכן עכשיו?"},
+			{"UPGRADE:DownloadInstall",                                   "הורד והתקן כעת"},
+			{"UPGRADE:OpenDownloadPage",                                  "אתר פתוח"},
+			{"UPGRADE:Later",                                             "תזכרו לי אחר כך"},
+			{"UPGRADE:Mute",                                              "אל תגיד לי שוב"},
+			{"UPGRADE:Downloading",                                       "ההורדה מתבצעת. המתקין יפעל לאחר סיום ההורדה."},
 		};
 
 		static Dictionary<string, string> HIN = new Dictionary<string, string> () {
@@ -2745,6 +2808,13 @@ namespace II.Localization {
 			{"INITIAL:LanguageAndTerms",                                  "भाषा चयन और उपयोग की स्थिति"},
 			{"INITIAL:ChooseLanguage",                                    "कृपया अपनी भाषा चुनें"},
 			{"INITIAL:AgreeToTerms",                                      "यदि आप जारी रखते हैं, तो आप उपयोग की शर्तों से सहमत हैं"},
+			{"UPGRADE:Upgrade",                                           "अपग्रेड"},
+			{"UPGRADE:UpdateAvailable",                                   "कार्यक्रम का एक नया संस्करण उपलब्ध है। क्या आप अभी अपग्रेड करना चाहते हैं?"},
+			{"UPGRADE:DownloadInstall",                                   "अभी डाउनलोड करें और इंस्टॉल करें"},
+			{"UPGRADE:OpenDownloadPage",                                  "वेबसाइट खोलें"},
+			{"UPGRADE:Later",                                             "मुझे बाद में याद दिलाना"},
+			{"UPGRADE:Mute",                                              "मुझे फिर से मत बताना"},
+			{"UPGRADE:Downloading",                                       "डाउनलोड प्रगति पर है। डाउनलोड पूरा होने के बाद इंस्टॉलर चलेगा।"},
 		};
 
 		static Dictionary<string, string> ITA = new Dictionary<string, string> () {
@@ -3019,6 +3089,13 @@ namespace II.Localization {
 			{"INITIAL:LanguageAndTerms",                                  "Selezione della lingua e condizioni d'uso"},
 			{"INITIAL:ChooseLanguage",                                    "Per favore scegli la tua lingua:"},
 			{"INITIAL:AgreeToTerms",                                      "Se continui, accetti i Termini d'uso"},
+			{"UPGRADE:Upgrade",                                           "Aggiornamento"},
+			{"UPGRADE:UpdateAvailable",                                   "È disponibile una nuova versione del programma. Vuoi aggiornare ora?"},
+			{"UPGRADE:DownloadInstall",                                   "Scarica e installa ora"},
+			{"UPGRADE:OpenDownloadPage",                                  "Apri il sito web"},
+			{"UPGRADE:Later",                                             "Ricordamelo più tardi"},
+			{"UPGRADE:Mute",                                              "Non dirmelo più"},
+			{"UPGRADE:Downloading",                                       "Il trasferimento è in corso. Il programma di installazione verrà eseguito al termine del trasferimento."},
 		};
 
 		static Dictionary<string, string> KOR = new Dictionary<string, string> () {
@@ -3293,6 +3370,13 @@ namespace II.Localization {
 			{"INITIAL:LanguageAndTerms",                                  "언어 선택 및 사용 조건"},
 			{"INITIAL:ChooseLanguage",                                    "귀하의 언어를 선택하십시오."},
 			{"INITIAL:AgreeToTerms",                                      "계속하면 사용 약관에 동의하게됩니다"},
+			{"UPGRADE:Upgrade",                                           "업그레이드"},
+			{"UPGRADE:UpdateAvailable",                                   "새로운 버전의 프로그램을 사용할 수 있습니다. 지금 업그레이드 하시겠습니까?"},
+			{"UPGRADE:DownloadInstall",                                   "지금 다운로드하여 설치"},
+			{"UPGRADE:OpenDownloadPage",                                  "웹 사이트 열기"},
+			{"UPGRADE:Later",                                             "나중에 상기시켜 줘"},
+			{"UPGRADE:Mute",                                              "다시 말 하지마"},
+			{"UPGRADE:Downloading",                                       "다운로드가 진행 중입니다. 다운로드가 완료되면 설치 관리자가 실행됩니다."},
 		};
 
 		static Dictionary<string, string> PTB = new Dictionary<string, string> () {
@@ -3567,6 +3651,13 @@ namespace II.Localization {
 			{"INITIAL:LanguageAndTerms",                                  "Seleção de idioma e termos de uso"},
 			{"INITIAL:ChooseLanguage",                                    "Escolha o seu idioma:"},
 			{"INITIAL:AgreeToTerms",                                      "Se você continuar, então você concorda com os Termos de Uso"},
+			{"UPGRADE:Upgrade",                                           "Melhorar"},
+			{"UPGRADE:UpdateAvailable",                                   "Uma nova versão do programa está disponível. Deseja atualizar agora?"},
+			{"UPGRADE:DownloadInstall",                                   "Baixe e instale agora"},
+			{"UPGRADE:OpenDownloadPage",                                  "Abrir site"},
+			{"UPGRADE:Later",                                             "Lembre-me mais tarde"},
+			{"UPGRADE:Mute",                                              "Não me diga de novo"},
+			{"UPGRADE:Downloading",                                       "A transferência está em processo. O instalador será executado quando terminar a transferência."},
 		};
 
 		static Dictionary<string, string> RUS = new Dictionary<string, string> () {
@@ -3841,6 +3932,13 @@ namespace II.Localization {
 			{"INITIAL:LanguageAndTerms",                                  "Выбор языка и условия использования"},
 			{"INITIAL:ChooseLanguage",                                    "Выберите язык:"},
 			{"INITIAL:AgreeToTerms",                                      "Если вы продолжите, вы соглашаетесь с Условиями использования"},
+			{"UPGRADE:Upgrade",                                           "Обновить"},
+			{"UPGRADE:UpdateAvailable",                                   "Доступна новая версия программы. Хотите обновить сейчас?"},
+			{"UPGRADE:DownloadInstall",                                   "Скачать и установить сейчас"},
+			{"UPGRADE:OpenDownloadPage",                                  "Открытый сайт"},
+			{"UPGRADE:Later",                                             "Напомни мне позже"},
+			{"UPGRADE:Mute",                                              "Не говори мне снова"},
+			{"UPGRADE:Downloading",                                       "Загрузка продолжается. Когда загрузка будет завершена, установщик запустится."},
 		};
 
 		static Dictionary<string, string> SWK = new Dictionary<string, string> () {
@@ -4115,6 +4213,13 @@ namespace II.Localization {
 			{"INITIAL:LanguageAndTerms",                                  "Uchaguzi wa lugha na Masharti ya Matumizi"},
 			{"INITIAL:ChooseLanguage",                                    "Tafadhali chagua lugha yako"},
 			{"INITIAL:AgreeToTerms",                                      "Ikiwa utaendelea, basi unakubali Sheria na Matumizi"},
+			{"UPGRADE:Upgrade",                                           "Boresha"},
+			{"UPGRADE:UpdateAvailable",                                   "Toleo jipya la programu hiyo linapatikana. Je! Ungependa kusasisha sasa?"},
+			{"UPGRADE:DownloadInstall",                                   "Pakua na usanikishe sasa"},
+			{"UPGRADE:OpenDownloadPage",                                  "Fungua tovuti"},
+			{"UPGRADE:Later",                                             "Nikumbushe baadaye"},
+			{"UPGRADE:Mute",                                              "Usiniambie tena"},
+			{"UPGRADE:Downloading",                                       "Upakuaji unaendelea. Kisakinishi kitaendesha wakati imekamilika kupakua."},
 		};
 
 	}

@@ -25,9 +25,7 @@ using System.Text;
 using II.Localization;
 
 namespace II.Server {
-
     public partial class Server {
-
         private string FormatForPHP (string inc)
             => inc.Replace ("#", "_").Replace ("$", "_");
 
@@ -54,6 +52,9 @@ namespace II.Server {
 
                 resp.Close ();
                 str.Close ();
+
+                resp.Dispose ();
+                str.Dispose ();
 
                 int start = body.IndexOf (": \"") + 3;
                 int length = body.IndexOf ("\",") - start;
@@ -125,24 +126,31 @@ namespace II.Server {
             }
         }
 
-        public string Get_LatestVersion () {
-            string version = "0.0";
-
+        public void Get_LatestVersion_Windows (ref string version, ref string webpage, ref string executableUri, ref string executableHash) {
             try {
                 WebRequest req = WebRequest.Create ("http://server.infirmary-integrated.com/version.php");
                 WebResponse resp = req.GetResponse ();
                 Stream str = resp.GetResponseStream ();
-                string body = String.Empty;
+                string versionLine = String.Empty;
 
-                using (StreamReader sr = new StreamReader (str))
-                    body = sr.ReadLine ().Trim ();
+                using (StreamReader sr = new StreamReader (str)) {
+                    versionLine = sr.ReadLine ().Trim ();
+                    webpage = sr.ReadLine ().Trim ();
+                    executableUri = sr.ReadLine ().Trim ();
+                    executableHash = sr.ReadLine ().Trim ();
+                }
 
                 resp.Close ();
                 str.Close ();
 
-                return String.IsNullOrEmpty (body) ? version : body;
+                resp.Dispose ();
+                str.Dispose ();
+
+                version = String.IsNullOrEmpty (versionLine) ? "0.0" : versionLine;
+                webpage = String.IsNullOrEmpty (webpage) ? "" : webpage;
+                executableUri = String.IsNullOrEmpty (executableUri) ? "" : executableUri;
+                executableHash = String.IsNullOrEmpty (executableHash) ? "" : executableHash;
             } catch {
-                return version;
             }
         }
 
@@ -164,6 +172,9 @@ namespace II.Server {
 
                 resp.Close ();
                 str.Close ();
+
+                resp.Dispose ();
+                str.Dispose ();
 
                 DateTime serverUpdated = Utility.DateTime_FromString (updated);
                 if (DateTime.Compare (serverUpdated, m.PatientUpdated) <= 0)

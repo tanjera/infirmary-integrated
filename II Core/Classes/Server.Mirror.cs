@@ -52,12 +52,11 @@ namespace II.Server {
         }
 
         public void GetPatient (Patient p, Server s) {
-
-            // Mirroring not active; neither client or host
+            /* Mirroring not active; neither client or host */
             if (Status != Statuses.CLIENT)
                 return;
 
-            // Mirroring as client, check server q RefreshSeconds
+            /* Mirroring as client, check server q RefreshSeconds */
             if (DateTime.Compare (ServerQueried, DateTime.UtcNow.Subtract (new TimeSpan (0, 0, RefreshSeconds))) < 0) {
 
                 // Must use intermediary Patient(), if App.Patient is thread-locked, Waveforms stop populating!!

@@ -30,6 +30,7 @@ namespace II_Windows {
 
         public static DialogAbout Dialog_About;
         public static DialogInitial Dialog_Language;
+        public static DialogUpgrade Dialog_Upgrade;
 
         // Windows' thread-safe timer; if ported, will need OS equivalent
         public static DispatcherTimer Timer_Main = new DispatcherTimer ();

@@ -1,6 +1,4 @@
-﻿* Commit message:
-
-
+﻿
 
 * Steps for Version Publishing:
 	- Update version # in:
@@ -15,8 +13,11 @@
 	- Create .zip of .exe folder in Releases
 	- GIT COMMIT; GIT PUSH
 
-	- Then update version # in:
-		- MySQL database
+	- Then update II Server MySQL database
+	  - Version #
+	  - Installer URL
+	  - Installer MD5 hash: https://emn178.github.io/online-tools/md5_checksum.html
+
 	- Create a Github Release
 	- Update infirmary-integrated.com's “Downloads” page
 	  - Update latest version #

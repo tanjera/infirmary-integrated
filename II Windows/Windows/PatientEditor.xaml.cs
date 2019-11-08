@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 using II;
 using II.Localization;
@@ -22,14 +25,17 @@ namespace II_Windows {
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class PatientEditor : Window {
-
-        // Define WPF UI commands for binding
+        /* Define WPF UI commands for binding */
         private ICommand icNewFile, icLoadFile, icSaveFile;
 
         public ICommand IC_NewFile { get { return icNewFile; } }
         public ICommand IC_LoadFile { get { return icLoadFile; } }
         public ICommand IC_SaveFile { get { return icSaveFile; } }
 
+        /* Variables for WPF UI loading */
+        private bool uiLoadCompleted = false;
+
+        /* Variables for Auto-Apply functionality */
         private object uiBufferValue;
         private ParameterStatuses ParameterStatus = ParameterStatuses.Loading;
 
@@ -48,6 +54,7 @@ namespace II_Windows {
             InitInitialRun ();
             InitUsageStatistics ();
             InitInterface ();
+            InitUpgrade ();
             InitMirroring ();
             InitScenario (true);
 
@@ -69,21 +76,17 @@ namespace II_Windows {
         }
 
         private void InitUsageStatistics () {
-
-            // Send usage statistics to server in background
-            BackgroundWorker bgw = new BackgroundWorker ();
-            bgw.DoWork += delegate { App.Server.Post_UsageStatistics (App.Language); };
-            bgw.RunWorkerAsync ();
+            /* Send usage statistics to server in background */
+            _ = Task.Run (() => App.Server.Post_UsageStatistics (App.Language));
         }
 
         private void InitInterface () {
-
-            // Initiate ICommands for KeyBindings
+            /* Initiate ICommands for KeyBindings */
             icNewFile = new ActionCommand (() => RefreshScenario (true));
             icLoadFile = new ActionCommand (() => LoadFile ());
             icSaveFile = new ActionCommand (() => SaveFile ());
 
-            // Populate UI strings per language selection
+            /* Populate UI strings per language selection */
             wdwPatientEditor.Title = App.Language.Localize ("PE:WindowTitle");
             menuNew.Header = App.Language.Localize ("PE:MenuNewFile");
             menuFile.Header = App.Language.Localize ("PE:MenuFile");
@@ -197,20 +200,34 @@ namespace II_Windows {
             foreach (FetalHeartDecelerations.Values v in Enum.GetValues (typeof (FetalHeartDecelerations.Values)))
                 fetalHeartRhythms.Add (App.Language.Localize (FetalHeartDecelerations.LookupString (v)));
             listFHRRhythms.ItemsSource = fetalHeartRhythms;
+        }
 
-            // Populate status bar with updated version information and make visible
-            using (BackgroundWorker bgw = new BackgroundWorker ()) {
-                string latestVersion = "";
-                bgw.DoWork += delegate { latestVersion = App.Server.Get_LatestVersion (); };
-                bgw.RunWorkerCompleted += delegate {
-                    if (Utility.IsNewerVersion (Utility.Version, latestVersion)) {
-                        txtUpdateAvailable.Text = String.Format (App.Language.Localize ("STATUS:UpdateAvailable"), latestVersion).Trim ();
-                    } else {
-                        statusUpdateAvailable.Visibility = Visibility.Collapsed;
-                    }
-                };
-                bgw.RunWorkerAsync ();
+        private async void InitUpgrade () {
+            /* Newer version available? Check Server, populate status bar, prompt user for upgrade */
+            string upgradeVersion = "";
+            string upgradePage = "";
+            string upgradeExec = "";
+            string upgradeHash = "";
+
+            await Task.Run (() => App.Server.Get_LatestVersion_Windows (ref upgradeVersion, ref upgradePage, ref upgradeExec, ref upgradeHash));
+
+            if (Utility.IsNewerVersion (Utility.Version, upgradeVersion)) {
+                txtUpdateAvailable.Text = String.Format (App.Language.Localize ("STATUS:UpdateAvailable"), upgradeVersion).Trim ();
+            } else {            // If no update available, no status update
+                statusUpdateAvailable.Visibility = Visibility.Collapsed;
+                return;
             }
+
+            if (Properties.Settings.Default.MuteUpgrade) {
+                if (Utility.IsNewerVersion (Properties.Settings.Default.MuteUpgradeVersion, upgradeVersion)) {
+                    Properties.Settings.Default.MuteUpgrade = false;
+                    Properties.Settings.Default.Save ();
+                } else {        // Mutes update popup notification
+                    return;
+                }
+            }
+
+            PromptUpgrade (upgradeVersion, upgradePage, upgradeExec, upgradeHash);
         }
 
         private void InitMirroring () {
@@ -333,10 +350,44 @@ namespace II_Windows {
                 InitInterface ();
         }
 
-        private void DialogAbout (bool reloadUI = false) {
+        private void DialogAbout () {
             App.Dialog_About = new DialogAbout ();
             App.Dialog_About.Activate ();
             App.Dialog_About.ShowDialog ();
+        }
+
+        private void PromptUpgrade (string version, string page, string exec, string hash) {
+            DialogUpgrade.Decisions decision = II_Windows.DialogUpgrade.Decisions.NULL;
+
+            App.Dialog_Upgrade = new DialogUpgrade ();
+            App.Dialog_Upgrade.Activate ();
+
+            App.Dialog_Upgrade.OnDecision += (s, ea) => decision = ea.Decision;
+            App.Dialog_Upgrade.ShowDialog ();
+            App.Dialog_Upgrade.OnDecision -= (s, ea) => decision = ea.Decision;
+
+            switch (decision) {
+                default:
+                case II_Windows.DialogUpgrade.Decisions.NULL:
+                case II_Windows.DialogUpgrade.Decisions.DELAY:
+                    return;
+
+                case II_Windows.DialogUpgrade.Decisions.MUTE:
+                    Properties.Settings.Default.MuteUpgrade = true;
+                    Properties.Settings.Default.MuteUpgradeVersion = version;
+                    Properties.Settings.Default.Save ();
+                    return;
+
+                case II_Windows.DialogUpgrade.Decisions.WEBSITE:
+                    if (!String.IsNullOrEmpty (page))
+                        System.Diagnostics.Process.Start (page);
+                    return;
+
+                case II_Windows.DialogUpgrade.Decisions.INSTALL:
+                    if (!String.IsNullOrEmpty (exec) && !String.IsNullOrEmpty (hash))
+                        UpgradeInstallation (exec, hash);
+                    return;
+            }
         }
 
         private void SetParameterStatus (bool autoApplyChanges) {
@@ -627,7 +678,7 @@ namespace II_Windows {
             }
 
             StreamWriter sw = new StreamWriter (s);
-            sw.WriteLine (".ii:t1");                                        // Metadata (type 1 savefile)
+            sw.WriteLine (".ii:t1");                                           // Metadata (type 1 savefile)
             sw.WriteLine (Encryption.HashSHA256 (sb.ToString ().Trim ()));     // Hash for validation
             sw.Write (Encryption.EncryptAES (sb.ToString ().Trim ()));         // Savefile data encrypted with AES
             sw.Close ();
@@ -758,14 +809,13 @@ namespace II_Windows {
                 App.Mirror.Status = Mirror.Statuses.INACTIVE;
                 lblStatusText.Content = App.Language.Localize ("PE:StatusMirroringDisabled");
             } else if (radioClient.IsChecked ?? true) {
-
-                // Set client mirroring status
+                /* Set client mirroring status */
                 App.Mirror.Status = Mirror.Statuses.CLIENT;
                 App.Mirror.Accession = txtAccessionKey.Text;
                 App.Mirror.PasswordAccess = txtAccessPassword.Password;
                 lblStatusText.Content = App.Language.Localize ("PE:StatusMirroringActivated");
 
-                // When mirroring another patient, disable scenario player and Scenario timer
+                /* When mirroring another patient, disable scenario player and Scenario timer */
                 expScenarioPlayer.IsExpanded = false;   // Can be re-enabled by loading a scenario
                 expScenarioPlayer.IsEnabled = false;
                 App.Scenario.StopTimer ();
@@ -873,6 +923,27 @@ namespace II_Windows {
             AdvanceParameterStatus (ParameterStatuses.ChangesApplied);
         }
 
+        private async void UpgradeInstallation (string updateExec, string updateHash) {
+            _ = Task.Run (() => System.Windows.MessageBox.Show (App.Language.Localize ("UPGRADE:Downloading")));
+
+            string installer = II.File.GetTempFilePath ("msi");
+
+            using (HttpClient client = new HttpClient ()) {
+                using (HttpResponseMessage httpResponse = await client.GetAsync (updateExec, HttpCompletionOption.ResponseHeadersRead))
+                using (Stream httpStream = await httpResponse.Content.ReadAsStreamAsync ()) {
+                    using (Stream outStream = System.IO.File.Open (installer, FileMode.Create)) {
+                        await httpStream.CopyToAsync (outStream);
+                    }
+                }
+            }
+
+            if (II.File.MD5Hash (installer) != updateHash)
+                return;
+
+            Process.Start (installer);
+            this.Close ();
+        }
+
         private void MenuNewSimulation_Click (object s, RoutedEventArgs e) => RefreshScenario (true);
 
         private void MenuLoadFile_Click (object s, RoutedEventArgs e) => LoadFile ();
@@ -912,6 +983,60 @@ namespace II_Windows {
 
         private void ButtonApplyParameters_Click (object sender, RoutedEventArgs e)
             => ApplyPatientParameters ();
+
+        private void Window_Loaded (object sender, RoutedEventArgs e) {
+            Application.Current.Dispatcher.BeginInvoke (DispatcherPriority.Background,
+                    new Action (delegate () {
+                        /* Set the window state, width, and height to saved settings */
+                        this.WindowState = (System.Windows.WindowState)(Properties.Settings.Default.WindowState);
+
+                        this.Width = Properties.Settings.Default.WindowSize.X;
+                        this.Height = Properties.Settings.Default.WindowSize.Y;
+
+                        /* Get the current screen; check that the desired window position is visible on the screen! */
+                        System.Windows.Forms.Screen screen = System.Windows.Forms.Screen.FromPoint
+                            (new System.Drawing.Point ((int)this.Left, (int)this.Top));
+
+                        if (Properties.Settings.Default.WindowPosition.X < screen.WorkingArea.Width
+                               && Properties.Settings.Default.WindowPosition.Y < screen.WorkingArea.Height) {
+                            this.Left = Properties.Settings.Default.WindowPosition.X;
+                            this.Top = Properties.Settings.Default.WindowPosition.Y;
+                        }
+
+                        this.uiLoadCompleted = true;
+                    }));
+        }
+
+        private void Window_SizeChanged (object sender, SizeChangedEventArgs e) {
+            if (!uiLoadCompleted)
+                return;
+
+            Properties.Settings.Default.WindowSize = new System.Drawing.Point (
+                (int)(sender as Window).ActualWidth,
+                (int)(sender as Window).ActualHeight);
+            Properties.Settings.Default.Save ();
+        }
+
+        private void Window_LocationChanged (object sender, EventArgs e) {
+            if (!uiLoadCompleted)
+                return;
+
+            Properties.Settings.Default.WindowPosition = new System.Drawing.Point (
+                (int)(sender as Window).Left,
+                (int)(sender as Window).Top);
+            Properties.Settings.Default.Save ();
+        }
+
+        private void Window_StateChanged (object sender, EventArgs e) {
+            if (!uiLoadCompleted)
+                return;
+
+            Properties.Settings.Default.WindowState = (int)(sender as Window).WindowState;
+            Properties.Settings.Default.Save ();
+        }
+
+        private void Window_Closed (object sender, EventArgs e)
+            => Exit ();
 
         private void TextBoxAccessionKey_PreviewTextInput (object sender, TextCompositionEventArgs e) {
             Regex regex = new Regex ("^[a-zA-Z0-9]*$");
@@ -1137,7 +1262,5 @@ namespace II_Windows {
                     listFHRRhythms.SelectedItems.Add (listFHRRhythms.Items.GetItemAt ((int)fhr_rhythm));
             }
         }
-
-        private void OnClosed (object sender, EventArgs e) => Exit ();
     }
 }

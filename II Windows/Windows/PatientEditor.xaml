@@ -9,11 +9,14 @@
 		Name="wdwPatientEditor"
 		Title="PatientEditor"
 		Icon="{StaticResource Icon_Infirmary}"
-		WindowState="Maximized"
+		WindowState="Minimized"
 		MinHeight="560"
 		MinWidth="700"
-		SizeToContent="Width"
-		Closed="OnClosed">
+		Loaded="Window_Loaded"
+		SizeChanged="Window_SizeChanged"
+		LocationChanged="Window_LocationChanged"
+		StateChanged="Window_StateChanged"
+		Closed="Window_Closed">
 
 	<Window.InputBindings>
 		<KeyBinding Key="N"
