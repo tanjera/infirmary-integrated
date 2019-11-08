@@ -18,6 +18,7 @@ Main features in Infirmary Integrated include:
   - Aberrant/ectopic beats and resulting decreased pulsatility
   - Intrathoracic pressure, depending on mechanical or spontaneous ventilation
 - Able to pause devices to better analyze waveforms or create screenshots
+- Able to compile printouts including realistic 12 lead ECGs
 - Able to create and play scenarios where the patient's condition changes and progresses
   - Students can react to changing patient conditions with pre-made scenario options
   - Instructors can guide students through simple or complex patient presentations and disease progressions

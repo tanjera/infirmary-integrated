@@ -1,11 +1,11 @@
 ﻿
 
-* Steps for Version Publishing:
+* Steps for publishing a Windows Release:
 	- Update version # in:
 		- II Core.Utility.Version
 		- II Windows properties: 1) assembly information and 2) publish tab
         - II Scenario_Editor properties: 1) assembly information and 2) publish tab
-		- Installer_Windows properties
+		- Installer_Windows properties (and new product key)
 
 	- Comment any testing/debugging shortcuts
 	- Clean and compile solution and installer
@@ -13,16 +13,18 @@
 	- Create .zip of .exe folder in Releases
 	- GIT COMMIT; GIT PUSH
 
-	- Then update II Server MySQL database
+	- Create a Github Release
+
+	- Update II Server MySQL database
 	  - Version #
-	  - Installer URL
+	  - Installer URL (use Github release link)
 	  - Installer MD5 hash: https://emn178.github.io/online-tools/md5_checksum.html
 
-	- Create a Github Release
 	- Update infirmary-integrated.com's “Downloads” page
 	  - Update latest version #
 	  - Change link destination for Windows OS icon!
 	  - Change link destination for text "click here to download"
+	  - Update MD5 hash
 	- Copy Github Release into a Wordpress post on infirmary-integrated.com
 
 
