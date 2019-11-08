@@ -17,6 +17,17 @@
 			<Setter Property="BorderBrush" Value="Black" />
 			<Setter Property="BorderThickness" Value="0, 0, 0, 1" />
 		</Style>
+
+		<Style x:Key="btnImage" TargetType="{x:Type Image}">
+			<Setter Property="Width" Value="48" />
+			<Setter Property="Height" Value="48" />
+			<Setter Property="Margin" Value="5,2" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+		</Style>
+
+		<Style x:Key="btnLabel" TargetType="{x:Type Label}">
+			<Setter Property="VerticalAlignment" Value="Center" />
+		</Style>
 	</Window.Resources>
 
 	<Grid HorizontalAlignment="Center" Margin="15, 10">
@@ -39,27 +50,77 @@
 		<Button Name="btnInstall"
                 Grid.Column="0" Grid.Row="1"
                 Padding="5,2" Margin="5" Background="White"
-				BorderBrush="Green" BorderThickness="1.5"
                 HorizontalAlignment="Stretch"
-                Click="btnInstall_Click" />
+                Click="btnInstall_Click">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<Image Grid.Column="0"
+					   Source="{StaticResource Icon_UpgradeBootstrap}"
+					   Style="{StaticResource btnImage}" />
+				<Label Name="lblInstall"
+					   Grid.Column="1"
+					   Style="{StaticResource btnLabel}" />
+			</Grid>
+		</Button>
 
 		<Button Name="btnWebsite"
                 Grid.Column="0" Grid.Row="2"
                 Padding="5,2" Margin="5" Background="White"
                 HorizontalAlignment="Stretch"
-                Click="btnWebsite_Click" />
+                Click="btnWebsite_Click">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<Image Grid.Column="0"
+					   Source="{StaticResource Icon_UpgradeWebsite}"
+					   Style="{StaticResource btnImage}" />
+				<Label Name="lblWebsite"
+					   Grid.Column="1"
+					   Style="{StaticResource btnLabel}" />
+			</Grid>
+		</Button>
 
 		<Button Name="btnDelay"
                 Grid.Column="1" Grid.Row="1"
                 Padding="5,2" Margin="5" Background="White"
                 HorizontalAlignment="Stretch"
-                Click="btnDelay_Click" />
+                Click="btnDelay_Click">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<Image Grid.Column="0"
+					   Source="{StaticResource Icon_UpgradeLater}"
+					   Style="{StaticResource btnImage}" />
+				<Label Name="lblDelay"
+					   Grid.Column="1"
+					   Style="{StaticResource btnLabel}" />
+			</Grid>
+		</Button>
 
 		<Button Name="btnMute"
                 Grid.Column="1" Grid.Row="2"
                 Padding="5,2" Margin="5" Background="White"
-				BorderBrush="Yellow" BorderThickness="1.5"
                 HorizontalAlignment="Stretch"
-                Click="btnMute_Click" />
+                Click="btnMute_Click">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+				<Image Grid.Column="0"
+					   Source="{StaticResource Icon_UpgradeMute}"
+					   Style="{StaticResource btnImage}" />
+				<Label Name="lblMute"
+					   Grid.Column="1"
+					   Style="{StaticResource btnLabel}" />
+			</Grid>
+		</Button>
 	</Grid>
 </Window>

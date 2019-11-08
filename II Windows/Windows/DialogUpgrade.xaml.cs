@@ -25,10 +25,10 @@ namespace II_Windows {
             // Populate UI strings per language selection
             dlgUpgrade.Title = App.Language.Localize ("UPGRADE:Upgrade");
             lblUpdateAvailable.Content = App.Language.Localize ("UPGRADE:UpdateAvailable");
-            btnInstall.Content = App.Language.Localize ("UPGRADE:DownloadInstall");
-            btnWebsite.Content = App.Language.Localize ("UPGRADE:OpenDownloadPage");
-            btnDelay.Content = App.Language.Localize ("UPGRADE:Later");
-            btnMute.Content = App.Language.Localize ("UPGRADE:Mute");
+            lblInstall.Content = App.Language.Localize ("UPGRADE:DownloadInstall");
+            lblWebsite.Content = App.Language.Localize ("UPGRADE:OpenDownloadPage");
+            lblDelay.Content = App.Language.Localize ("UPGRADE:Later");
+            lblMute.Content = App.Language.Localize ("UPGRADE:Mute");
 
             this.Focus ();
         }

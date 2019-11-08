@@ -381,7 +381,10 @@ namespace II_Windows {
 
                 case Bootstrap.UpgradeRoute.INSTALL:
                     if (!String.IsNullOrEmpty (App.Server.BootstrapExeUri) && !String.IsNullOrEmpty (App.Server.BootstrapHashMd5)) {
-                        _ = Task.Run (() => System.Windows.MessageBox.Show (App.Language.Localize ("UPGRADE:Downloading")));
+                        _ = Task.Run (() => System.Windows.MessageBox.Show (
+                            App.Language.Localize ("UPGRADE:Downloading"),
+                            "", MessageBoxButton.OK, MessageBoxImage.Information));
+
                         await Bootstrap.BootstrapInstall_Windows (App.Server);
                         this.Close ();
                     }

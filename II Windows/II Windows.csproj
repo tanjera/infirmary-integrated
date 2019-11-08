@@ -317,6 +317,12 @@
   <ItemGroup>
     <Resource Include="Resources\12L ECG Grid.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Third Party\Icon_UpgradeBootstrap_48.png" />
+    <Resource Include="Third Party\Icon_UpgradeLater_48.png" />
+    <Resource Include="Third Party\Icon_UpgradeMute_48.png" />
+    <Resource Include="Third Party\Icon_UpgradeWebsite_48.png" />
+  </ItemGroup>
   <Import Project="..\II Core\II_Core.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
