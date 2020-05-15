@@ -14,6 +14,9 @@ namespace II_Windows {
     public static class Trace {
 
         public static BitmapImage BitmapToImageSource (Bitmap bitmap) {
+            if (bitmap == null)
+                return new BitmapImage ();
+
             using (MemoryStream ms = new MemoryStream ()) {
                 bitmap.Save (ms, System.Drawing.Imaging.ImageFormat.Png);   // PNG supports transparency!
                 ms.Position = 0;

@@ -488,7 +488,8 @@ namespace II_Windows {
             string file = Encryption.DecryptAES (sr.ReadToEnd ().Trim ());
             sr.Close ();
 
-            if (hash == Encryption.HashSHA256 (file))
+            // Original save files used MD5, later changed to SHA256
+            if (hash == Encryption.HashSHA256 (file) || hash == Encryption.HashMD5 (file))
                 LoadProcess (file);
             else
                 LoadFail ();

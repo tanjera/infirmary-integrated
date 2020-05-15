@@ -140,7 +140,8 @@ namespace II.Scenario_Editor {
             string hash = sr.ReadLine ().Trim ();
             string file = Encryption.DecryptAES (sr.ReadToEnd ().Trim ());
 
-            if (hash != Encryption.HashSHA256 (file)) {
+            // Original save files used MD5, later changed to SHA256
+            if (hash != Encryption.HashSHA256 (file) && hash != Encryption.HashMD5 (file)) {
                 loadFail ();
                 return;
             }

@@ -23,6 +23,18 @@ namespace II {
             return sb.ToString ();
         }
 
+        public static string HashMD5 (string str) {
+            MD5 md5 = MD5.Create ();
+            byte [] bytes = Encoding.ASCII.GetBytes (str);
+            byte [] hash = md5.ComputeHash (bytes);
+
+            StringBuilder sb = new StringBuilder ();
+            foreach (byte b in hash)
+                sb.Append (b.ToString ("X2"));
+
+            return sb.ToString ();
+        }
+
         public static string EncryptAES (string str) {
             byte [] output;
             using (AesManaged aes = new AesManaged ()) {
