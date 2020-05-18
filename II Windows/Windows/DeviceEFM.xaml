@@ -1,0 +1,53 @@
+﻿<Window x:Class="II_Windows.DeviceEFM"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:II_Windows"
+        mc:Ignorable="d"
+        Name="wdwDeviceEFM"
+        Title="DeviceEFM"
+        Icon="{StaticResource Icon_Infirmary}"
+        WindowStartupLocation="CenterScreen"
+        Width="1200" Height="800"
+        Background="Black"
+		Closed="OnClosed">
+
+	<Window.InputBindings>
+		<KeyBinding Key="F" Modifiers="Ctrl" Command="{Binding IC_ToggleFullscreen}" />
+		<KeyBinding Key="U" Modifiers="Ctrl" Command="{Binding IC_PauseDevice}" />
+		<KeyBinding Key="F4" Modifiers="Ctrl" Command="{Binding IC_CloseDevice}" />
+		<KeyBinding Key="F4" Modifiers="Alt" Command="{Binding IC_ExitProgram}" />
+		<KeyBinding Key="S" Modifiers="Ctrl" Command="{Binding IC_SaveScreen}" />
+		<KeyBinding Key="P" Modifiers="Ctrl" Command="{Binding IC_PrintScreen}" />
+	</Window.InputBindings>
+
+	<DockPanel LastChildFill="True">
+
+		<!-- Main Menu -->
+		<Menu DockPanel.Dock="Top" Width="Auto" Background="White">
+
+			<MenuItem Name="menuDevice">
+				<MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" InputGestureText="Ctrl+U" />
+				<Separator />
+				<MenuItem Name="menuToggleFullscreen" Click="MenuFullscreen_Click" InputGestureText="Ctrl+F" />
+				<Separator />
+				<MenuItem Name="menuSaveScreen" Click="MenuSaveScreen_Click" InputGestureText="Ctrl+S" />
+				<MenuItem Name="menuPrintScreen" Click="MenuPrintScreen_Click" InputGestureText="Ctrl+P" />
+				<Separator />
+				<MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGestureText="Ctrl-F4" />
+				<MenuItem Name="menuExitProgram" Click="MenuExit_Click" InputGestureText="Alt-F4" />
+			</MenuItem>
+		</Menu>
+
+		<Grid Name="displayGrid">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*" />
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
+		</Grid>
+	</DockPanel>
+</Window>

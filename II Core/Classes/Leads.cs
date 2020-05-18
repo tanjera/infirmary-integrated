@@ -21,7 +21,10 @@ namespace II {
             ICP,
             IAP,
 
-            IABP
+            IABP,
+
+            FHR,
+            TOCO
         }
 
         public static string LookupString (Values value, bool shortName = false) {

@@ -32,6 +32,12 @@ namespace II.Rhythm {
         public const int DefaultScaleMax_ABP = 200;
         public const int DefaultScaleMax_PA = 50;
 
+        /* Treat FHR and TOCO similarly to transduced waveforms to prevent auto-scaling */
+        public const int DefaultScaleMin_FHR = 30;
+        public const int DefaultScaleMax_FHR = 240;
+        public const int DefaultScaleMin_TOCO = 0;
+        public const int DefaultScaleMax_TOCO = 100;
+
         /* Variables for real-time strip tracing processing */
         public float Length = 6.0f;                      // Strip length in seconds
         public float DisplayLength = 6.0f;
@@ -149,6 +155,18 @@ namespace II.Rhythm {
                     ScaleAuto = false;
                     ScaleMin = DefaultScaleMin_PA;
                     ScaleMax = DefaultScaleMax_PA;
+                    break;
+
+                case Lead.Values.FHR:
+                    ScaleAuto = false;
+                    ScaleMin = DefaultScaleMin_FHR;
+                    ScaleMax = DefaultScaleMax_FHR;
+                    break;
+
+                case Lead.Values.TOCO:
+                    ScaleAuto = false;
+                    ScaleMin = DefaultScaleMin_TOCO;
+                    ScaleMax = DefaultScaleMax_TOCO;
                     break;
             }
         }
