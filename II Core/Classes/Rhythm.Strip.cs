@@ -548,5 +548,38 @@ namespace II.Rhythm {
 
             SortPoints ();
         }
+
+        public void Add_Beat__Obstetric_Baseline (Patient p) {
+            switch (Lead.Value) {
+                default:
+
+                    //throw new NotImplementedException ();
+                    break;
+            }
+
+            SortPoints ();
+        }
+
+        public void Add_Beat__Obstetric_Contraction (Patient p) {
+            switch (Lead.Value) {
+                default:
+
+                    //throw new NotImplementedException ();
+                    break;
+            }
+
+            SortPoints ();
+        }
+
+        public void Add_Beat__Obstetric_Fetal_Variability (Patient p) {
+            switch (Lead.Value) {
+                default:
+
+                    //throw new NotImplementedException ();
+                    break;
+            }
+
+            SortPoints ();
+        }
     }
 }

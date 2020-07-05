@@ -105,9 +105,9 @@ namespace II_Windows {
             lblDevice12LeadECG.Content = App.Language.Localize ("PE:12LeadECG");
             lblDeviceDefibrillator.Content = App.Language.Localize ("PE:Defibrillator");
             lblDeviceIABP.Content = App.Language.Localize ("PE:IABP");
+            lblDeviceEFM.Content = App.Language.Dictionary ["PE:EFM"];
 
             //lblDeviceVentilator.Content = App.Language.Dictionary["PE:Ventilator"];
-            //lblDeviceEFM.Content = App.Language.Dictionary["PE:EFM"];
             //lblDeviceIVPump.Content = App.Language.Dictionary["PE:IVPump"];
             //lblDeviceLabResults.Content = App.Language.Dictionary["PE:LabResults"];
 
@@ -335,6 +335,16 @@ namespace II_Windows {
             App.Device_IABP.Show ();
 
             App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
+        }
+
+        private void InitDeviceEFM () {
+            if (App.Device_EFM == null || !App.Device_EFM.IsLoaded)
+                App.Device_EFM = new DeviceEFM ();
+
+            App.Device_EFM.Activate ();
+            App.Device_EFM.Show ();
+
+            App.Patient.PatientEvent += App.Device_EFM.OnPatientEvent;
         }
 
         private void DialogInitial (bool reloadUI = false) {
@@ -940,11 +950,13 @@ namespace II_Windows {
 
         private void ButtonDeviceMonitor_Click (object s, RoutedEventArgs e) => InitDeviceMonitor ();
 
+        private void ButtonDeviceDefib_Click (object s, RoutedEventArgs e) => InitDeviceDefib ();
+
         private void ButtonDeviceECG_Click (object s, RoutedEventArgs e) => InitDeviceECG ();
 
         private void ButtonDeviceIABP_Click (object s, RoutedEventArgs e) => InitDeviceIABP ();
 
-        private void ButtonDeviceDefib_Click (object s, RoutedEventArgs e) => InitDeviceDefib ();
+        private void ButtonDeviceEFM_Click (object s, RoutedEventArgs e) => InitDeviceEFM ();
 
         private void ButtonGenerateAccessionKey_Click (object sender, RoutedEventArgs e)
             => txtAccessionKey.Text = Utility.RandomString (8);

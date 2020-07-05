@@ -27,6 +27,7 @@ namespace II_Windows {
         public static DeviceECG Device_ECG;
         public static DeviceDefib Device_Defib;
         public static DeviceIABP Device_IABP;
+        public static DeviceEFM Device_EFM;
 
         public static DialogAbout Dialog_About;
         public static DialogInitial Dialog_Language;

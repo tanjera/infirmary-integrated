@@ -82,9 +82,8 @@ namespace II {
                         timerRespiratory_Inspiration = new Timer (),
                         timerRespiratory_Expiration = new Timer (),
                         timerObstetric_Baseline = new Timer (),
-                        timerObstetric_ContractionFrequency = new Timer (),
-                        timerObstetric_ContractionDuration = new Timer (),
-                        timerObstetric_FHRVariationFrequency = new Timer ();
+                        timerObstetric_Contraction = new Timer (),
+                        timerObstetric_FHRVariation = new Timer ();
 
         private static int Default_Electromechanical_Delay = 180;   // Delay in electrical to mechanical capture in milliseconds
 
@@ -308,9 +307,8 @@ namespace II {
             timerRespiratory_Inspiration.Dispose ();
             timerRespiratory_Expiration.Dispose ();
             timerObstetric_Baseline.Dispose ();
-            timerObstetric_ContractionDuration.Dispose ();
-            timerObstetric_ContractionFrequency.Dispose ();
-            timerObstetric_FHRVariationFrequency.Dispose ();
+            timerObstetric_Contraction.Dispose ();
+            timerObstetric_FHRVariation.Dispose ();
         }
 
         public void Activate () {
@@ -362,9 +360,8 @@ namespace II {
             Respiratory_Inspiration,
             Respiratory_Expiration,
             Obstetric_Baseline,
-            Obstetric_ContractionStart,
-            Obstetric_ContractionEnd,
-            Obstetric_FetalHeartVariation
+            Obstetric_Contraction,
+            Obstetric_FetalVariation
         }
 
         public void OnPatientEvent (PatientEventTypes e) {
@@ -453,9 +450,8 @@ namespace II {
             timerRespiratory_Inspiration.Process ();
             timerRespiratory_Expiration.Process ();
             timerObstetric_Baseline.Process ();
-            timerObstetric_ContractionDuration.Process ();
-            timerObstetric_ContractionFrequency.Process ();
-            timerObstetric_FHRVariationFrequency.Process ();
+            timerObstetric_Contraction.Process ();
+            timerObstetric_FHRVariation.Process ();
         }
 
         /* Process for loading Patient{} information from simulation file */
@@ -783,9 +779,8 @@ namespace II {
             timerRespiratory_Expiration.Tick += delegate { OnRespiratory_Expiration (); };
 
             timerObstetric_Baseline.Tick += delegate { OnObstetric_Baseline (); };
-            timerObstetric_ContractionFrequency.Tick += delegate { OnObstetric_ContractionStart (); };
-            timerObstetric_ContractionDuration.Tick += delegate { OnObstetric_ContractionEnd (); };
-            timerObstetric_FHRVariationFrequency.Tick += delegate { OnObstetric_FetalHeartVariationStart (); };
+            timerObstetric_Contraction.Tick += delegate { OnObstetric_Contraction (); };
+            timerObstetric_FHRVariation.Tick += delegate { OnObstetric_FetalHeartVariation (); };
         }
 
         private void SetTimers () {
@@ -808,9 +803,8 @@ namespace II {
             timerRespiratory_Expiration.Stop ();
 
             timerObstetric_Baseline.ResetAuto (1000);
-            timerObstetric_ContractionDuration.Stop ();
-            timerObstetric_ContractionFrequency.Stop ();
-            timerObstetric_FHRVariationFrequency.Stop ();
+            timerObstetric_Contraction.Stop ();
+            timerObstetric_FHRVariation.Stop ();
         }
 
         private void StopTimers () {
@@ -829,9 +823,8 @@ namespace II {
             timerRespiratory_Expiration.Stop ();
 
             timerObstetric_Baseline.Stop ();
-            timerObstetric_ContractionFrequency.Stop ();
-            timerObstetric_ContractionDuration.Stop ();
-            timerObstetric_FHRVariationFrequency.Stop ();
+            timerObstetric_Contraction.Stop ();
+            timerObstetric_FHRVariation.Stop ();
         }
 
         public void Defibrillate ()
@@ -1294,31 +1287,28 @@ namespace II {
         private void OnObstetric_Baseline () {
             OnPatientEvent (PatientEventTypes.Obstetric_Baseline);
 
-            if (UC_Frequency > 0 && !timerObstetric_ContractionDuration.IsRunning) {
-                timerObstetric_ContractionFrequency.Continue (UC_Frequency * 1000);
+            if (UC_Frequency > 0 && !timerObstetric_Contraction.IsRunning) {
+                timerObstetric_Contraction.Continue (UC_Frequency * 1000);
             } else if (UC_Frequency <= 0) {
-                timerObstetric_ContractionDuration.Stop ();
-                timerObstetric_ContractionFrequency.Stop ();
+                timerObstetric_Contraction.Stop ();
             }
 
             if (FHR_Variability.Value == Scales.Intensity.Values.Absent)
-                timerObstetric_FHRVariationFrequency.Stop ();
+                timerObstetric_FHRVariation.Stop ();
             else
-                timerObstetric_FHRVariationFrequency.Continue (20000);
+                timerObstetric_FHRVariation.Continue (20000);
         }
 
-        private void OnObstetric_ContractionStart () {
-            OnPatientEvent (PatientEventTypes.Obstetric_ContractionStart);
-            timerObstetric_ContractionDuration.ResetAuto (UC_Duration * 1000);
+        private void OnObstetric_Contraction () {
+            Console.WriteLine ("OnObstetric_Contraction");
+
+            //throw new NotImplementedException ();
         }
 
-        private void OnObstetric_ContractionEnd () {
-            OnPatientEvent (PatientEventTypes.Obstetric_ContractionEnd);
-            timerObstetric_ContractionDuration.Stop ();
-        }
+        private void OnObstetric_FetalHeartVariation () {
+            Console.WriteLine ("OnObstetric_FetalHeartVariation");
 
-        private void OnObstetric_FetalHeartVariationStart () {
-            OnPatientEvent (PatientEventTypes.Obstetric_FetalHeartVariation);
+            //throw new NotImplementedException ();
         }
     }
 }

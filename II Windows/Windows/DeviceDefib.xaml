@@ -8,6 +8,7 @@
         Name="wdwDeviceDefib"
         Title="DeviceDefib"
         Icon="{StaticResource Icon_Infirmary}"
+		WindowState="Maximized"
         WindowStartupLocation="CenterScreen"
         Width="1200" Height="800"
         Background="Black"

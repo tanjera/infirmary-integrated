@@ -25,7 +25,6 @@ namespace II_Windows {
         private List<Controls.EFMTracing> listTracings = new List<Controls.EFMTracing> ();
 
         private Timer timerTracing = new Timer ();
-        private ImageBrush gridBackground;
 
         // Define WPF UI commands for binding
         private ICommand icToggleFullscreen, icPauseDevice, icCloseDevice, icExitProgram,
@@ -85,18 +84,22 @@ namespace II_Windows {
             menuCloseDevice.Header = App.Language.Localize ("MENU:MenuCloseDevice");
             menuExitProgram.Header = App.Language.Localize ("MENU:MenuExitProgram");
 
-            /* Set background image for grid lines */
-            displayGrid.Background = new ImageBrush (new BitmapImage (
-                new Uri ("pack://application:,,,/Resources/EFM Grid.png")));
-
             // Instantiate and add Tracings to UI
-            listTracings.Add (new Controls.EFMTracing (new Strip (Lead.Values.FHR, 360f)));
-            listTracings.Add (new Controls.EFMTracing (new Strip (Lead.Values.TOCO, 360f)));
-            for (int i = 0; i < listTracings.Count; i++) {
-                listTracings [i].SetValue (Grid.RowProperty, i);
-                listTracings [i].SetValue (Grid.ColumnProperty, 0);
-                displayGrid.Children.Add (listTracings [i]);
-            }
+            Controls.EFMTracing fhrTracing = new Controls.EFMTracing (new Strip (Lead.Values.FHR, 600f));
+            fhrTracing.SetValue (Grid.RowProperty, 0);
+            fhrTracing.SetValue (Grid.ColumnProperty, 0);
+            fhrTracing.Background = new ImageBrush (new BitmapImage (
+                new Uri ("pack://application:,,,/Resources/FHR Grid.png")));
+            listTracings.Add (fhrTracing);
+            displayGrid.Children.Add (fhrTracing);
+
+            Controls.EFMTracing tocoTracing = new Controls.EFMTracing (new Strip (Lead.Values.TOCO, 600f));
+            tocoTracing.SetValue (Grid.RowProperty, 2);
+            tocoTracing.SetValue (Grid.ColumnProperty, 0);
+            tocoTracing.Background = new ImageBrush (new BitmapImage (
+                new Uri ("pack://application:,,,/Resources/Toco Grid.png")));
+            listTracings.Add (tocoTracing);
+            displayGrid.Children.Add (tocoTracing);
         }
 
         public void Load_Process (string inc) {
@@ -222,8 +225,8 @@ namespace II_Windows {
                     listTracings.ForEach (c => c.Strip.Add_Beat__Obstetric_Contraction (App.Patient));
                     break;
 
-                case Patient.PatientEventTypes.Obstetric_Fetal_Variability:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Obstetric_Contraction (App.Patient));
+                case Patient.PatientEventTypes.Obstetric_FetalVariation:
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Obstetric_Fetal_Variability (App.Patient));
                     break;
             }
         }

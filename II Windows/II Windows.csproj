@@ -337,6 +337,13 @@
     <Resource Include="Third Party\Icon_UpgradeMute_48.png" />
     <Resource Include="Third Party\Icon_UpgradeWebsite_48.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\EFM Grid.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\FHR Grid.png" />
+    <Resource Include="Resources\Toco Grid.png" />
+  </ItemGroup>
   <Import Project="..\II Core\II_Core.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

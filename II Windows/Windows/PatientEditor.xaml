@@ -277,14 +277,20 @@
                         </StackPanel>
                     </Button>
                     -->
+
+					<Button Name="btnDeviceEFM"
+							Click="ButtonDeviceEFM_Click"
+							Style="{StaticResource deviceButton}">
+						<StackPanel Orientation="Horizontal">
+							<Image Source="{StaticResource Icon_DeviceEFM}"
+								   Style="{StaticResource deviceImage}" />
+							<Label Name="lblDeviceEFM"
+								   Style="{StaticResource deviceLabel}" />
+						</StackPanel>
+					</Button>
+
 					<!--
-                    <Button Name="btnDeviceEFM" Style="{StaticResource deviceButton}" IsEnabled="False">
-                        <StackPanel Orientation="Horizontal">
-                            <Image Source="{StaticResource Icon_DeviceEFM}" Style="{StaticResource deviceImage}" />
-                            <Label Name="lblDeviceEFM" Style="{StaticResource deviceLabel}" />
-                        </StackPanel>
-                    </Button>
-                    <Button Name="btnDeviceIVPump" Style="{StaticResource deviceButton}" IsEnabled="False">
+					<Button Name="btnDeviceIVPump" Style="{StaticResource deviceButton}" IsEnabled="False">
                         <StackPanel Orientation="Horizontal">
                             <Image Source="{StaticResource Icon_DeviceIVPump}" Style="{StaticResource deviceImage}" />
                             <Label Name="lblDeviceIVPump" Style="{StaticResource deviceLabel}" />
@@ -1315,37 +1321,36 @@
 					</Border>
 
 					<!-- Group for Obstetric Profile -->
-					<!-- <Border Style="{StaticResource expBorder}" IsEnabled="False"> -->
-					<Expander Name="expObstetricProfile"
+					<Border Style="{StaticResource expBorder}">
+						<Expander Name="expObstetricProfile"
+						  Visibility="Visible"
 						  IsExpanded="False"
-						  Visibility="Hidden"
-						  Height="0"
 						  Style="{StaticResource expParameters}">
-						<Expander.Header>
-							<Label Name="lblGroupObstetricProfile"
+							<Expander.Header>
+								<Label Name="lblGroupObstetricProfile"
 							   Style="{StaticResource expHeader}" />
-						</Expander.Header>
-						<Grid Margin="3">
-							<Grid.RowDefinitions>
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-								<RowDefinition Height="Auto" />
-							</Grid.RowDefinitions>
-							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="Auto" />
-								<ColumnDefinition Width="Auto" />
-							</Grid.ColumnDefinitions>
+							</Expander.Header>
+							<Grid Margin="3">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="Auto" />
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="Auto" />
+									<ColumnDefinition Width="Auto" />
+								</Grid.ColumnDefinitions>
 
-							<Label Name="lblFHR"
+								<Label Name="lblFHR"
 							   Grid.Column="0"
 							   Grid.Row="0" />
-							<xctk:IntegerUpDown Name="numFHR"
+								<xctk:IntegerUpDown Name="numFHR"
 											Increment="5"
 											Minimum="0"
 											Maximum="500"
@@ -1356,22 +1361,22 @@
 											GotFocus="OnUIPatientParameter_GotFocus"
 											LostFocus="OnUIPatientParameter_LostFocus" />
 
-							<Label Name="lblFHRRhythms"
-							   Grid.Column="0"
-							   Grid.Row="1" />
-							<ListBox Name="listFHRRhythms"
-								 SelectionMode="Multiple"
-								 Grid.Column="0"
-								 Grid.Row="2"
-								 Grid.ColumnSpan="2"
-								KeyDown="OnUIPatientParameter_KeyDown"
-								GotFocus="OnUIPatientParameter_GotFocus"
-								LostFocus="OnUIPatientParameter_LostFocus" />
+								<Label Name="lblFHRRhythms"
+								   Grid.Column="0"
+								   Grid.Row="1" />
+								<ListBox Name="listFHRRhythms"
+									 SelectionMode="Multiple"
+									 Grid.Column="0"
+									 Grid.Row="2"
+									 Grid.ColumnSpan="2"
+									KeyDown="OnUIPatientParameter_KeyDown"
+									GotFocus="OnUIPatientParameter_GotFocus"
+									LostFocus="OnUIPatientParameter_LostFocus" />
 
-							<Label Name="lblFHRVariability"
-							   Grid.Column="0"
-							   Grid.Row="3" />
-							<ComboBox Name="comboFHRVariability"
+								<Label Name="lblFHRVariability"
+								   Grid.Column="0"
+								   Grid.Row="3" />
+								<ComboBox Name="comboFHRVariability"
 								  Grid.Column="0"
 								  Grid.Row="4"
 								  Grid.ColumnSpan="2"
@@ -1379,10 +1384,10 @@
 								GotFocus="OnUIPatientParameter_GotFocus"
 								LostFocus="OnUIPatientParameter_LostFocus" />
 
-							<Label Name="lblUCFrequency"
+								<Label Name="lblUCFrequency"
 							   Grid.Column="0"
 							   Grid.Row="5" />
-							<xctk:IntegerUpDown Name="numUCFrequency"
+								<xctk:IntegerUpDown Name="numUCFrequency"
 											Increment="5"
 											Minimum="0"
 											Maximum="3600"
@@ -1392,10 +1397,10 @@
 											KeyDown="OnUIPatientParameter_KeyDown"
 											GotFocus="OnUIPatientParameter_GotFocus"
 											LostFocus="OnUIPatientParameter_LostFocus" />
-							<Label Name="lblUCDuration"
+								<Label Name="lblUCDuration"
 							   Grid.Column="0"
 							   Grid.Row="6" />
-							<xctk:IntegerUpDown Name="numUCDuration"
+								<xctk:IntegerUpDown Name="numUCDuration"
 											Increment="5"
 											Minimum="0"
 											Maximum="300"
@@ -1405,19 +1410,19 @@
 											KeyDown="OnUIPatientParameter_KeyDown"
 											GotFocus="OnUIPatientParameter_GotFocus"
 											LostFocus="OnUIPatientParameter_LostFocus" />
-							<Label Name="lblUCIntensity"
+								<Label Name="lblUCIntensity"
 							   Grid.Column="0"
 							   Grid.Row="7" />
-							<ComboBox Name="comboUCIntensity"
+								<ComboBox Name="comboUCIntensity"
 								  Grid.Column="0"
 								  Grid.Row="8"
 								  Grid.ColumnSpan="2"
 								KeyDown="OnUIPatientParameter_KeyDown"
 								GotFocus="OnUIPatientParameter_GotFocus"
 								LostFocus="OnUIPatientParameter_LostFocus" />
-						</Grid>
-					</Expander>
-					<!-- </Border> -->
+							</Grid>
+						</Expander>
+					</Border>
 
 					<!-- Apply and Reset Buttons -->
 					<CheckBox Name="chkAutoApplyChanges"

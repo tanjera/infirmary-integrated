@@ -9,6 +9,7 @@
         Name="wdwDeviceIABP"
         Title="DeviceIABP"
         Icon="{StaticResource Icon_Infirmary}"
+		WindowState="Maximized"
         WindowStartupLocation="CenterScreen"
         Width="800" Height="1000"
 		Closed="OnClosed">
