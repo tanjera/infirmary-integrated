@@ -70,14 +70,24 @@
 						  Click="MenuItemTrimOffset_Click" />
 			</MenuItem>
 
-			<MenuItem Name="menuView"
-					  Header="_View">
+			<MenuItem Name="menuBackground"
+					  Header="_Background">
 				<MenuItem Name="menuSetBackground"
 						  Header="Set Background Image"
 						  Click="MenuItemSetBackground_Click" />
 				<MenuItem Name="menuRemoveBackground"
 						  Header="Remove Background Image"
 						  Click="MenuItemRemoveBackground_Click" />
+			</MenuItem>
+
+			<MenuItem Name="menuFilter"
+					  Header="Filter">
+				<MenuItem Name="menuFilterNormalize"
+						  Header="Normalize"
+						  Click="menuFilterNormalize_Click" />
+				<MenuItem Name="menuFilterNormalizePositive"
+						  Header="Normalize to Positive"
+						  Click="menuFilterNormalizePositive_Click" />
 			</MenuItem>
 		</Menu>
 

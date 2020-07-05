@@ -8,6 +8,7 @@
  * based on transformations of lead II).
  */
 
+using II.Rhythm;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -163,6 +164,52 @@ namespace II.Waveform {
                     Plotting.Stretch (Dictionary.IABP_ABP_Default, _P.GetHR_Seconds),
                     _Amplitude);
         }
+
+        public static List<PointF> FHR_Rhythm (Patient _P, bool isContraction) {
+
+            //if (!isContraction) {               // Baseline FHR tracing
+            float fhrAmplitude;
+            switch (_P.FHR_Variability.Value) {
+                default:
+                case Scales.Intensity.Values.Absent: fhrAmplitude = 0.005f; break;
+                case Scales.Intensity.Values.Mild: fhrAmplitude = 0.02f; break;
+                case Scales.Intensity.Values.Moderate: fhrAmplitude = 0.04f; break;
+                case Scales.Intensity.Values.Severe: fhrAmplitude = 0.075f; break;
+            }
+
+            float iLerp = Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMin_FHR, Strip.DefaultScaleMax_FHR, _P.FHR));
+
+            return Plotting.Normalize (
+                Plotting.Stretch (Dictionary.EFM_Variability, 10f),
+                iLerp - fhrAmplitude, iLerp + fhrAmplitude);
+
+            //}
+        }
+
+        public static List<PointF> TOCO_Rhythm (Patient _P, bool isContraction) {
+            if (!isContraction) {               // Baseline TOCO tracing
+                return Flat_Line (60, 0f);
+            } else {
+                float tocoAmplitude;
+                switch (_P.Contraction_Intensity.Value) {
+                    default:
+                    case Scales.Intensity.Values.Absent: tocoAmplitude = 0f; break;
+                    case Scales.Intensity.Values.Mild: tocoAmplitude = 0.33f; break;
+                    case Scales.Intensity.Values.Moderate: tocoAmplitude = 0.66f; break;
+                    case Scales.Intensity.Values.Severe: tocoAmplitude = 1f; break;
+                }
+
+                return Plotting.Concatenate (new List<PointF> (),
+                    Plotting.Stretch (Dictionary.EFM_Contraction, _P.Contraction_Duration),
+                    tocoAmplitude);
+            }
+        }
+
+        /* ********************************************************************
+         *
+         * ECG Rhythms
+         *
+         */
 
         public static List<PointF> ECG_Isoelectric__Atrial_Fibrillation (Patient _P, Lead _L) {
             int Fibrillations = (int)System.Math.Ceiling (_P.GetHR_Seconds / 0.06);

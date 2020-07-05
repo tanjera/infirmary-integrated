@@ -26,12 +26,12 @@ namespace II.Rhythm {
                     break;
 
                 case Strip.Offsets.Stretch:
-                    drawOffset.Y = (int)(height * 0.9f);
-                    drawMultiplier.Y = -(int)height * 0.8f * strip.Amplitude;
+                    drawOffset.Y = (int)(height * (1 - (strip.ScaleMargin / 2)));
+                    drawMultiplier.Y = -(int)height * (1 - strip.ScaleMargin) * strip.Amplitude;
                     break;
 
                 case Strip.Offsets.Scaled:
-                    drawOffset.Y = (int)(height * 0.9f);
+                    drawOffset.Y = (int)(height * (1 - strip.ScaleMargin));
                     drawMultiplier.Y = -(int)height;
                     break;
             }

@@ -63,6 +63,9 @@ namespace II {
             Start ();
         }
 
+        public void ResetAuto (float interval)
+            => ResetAuto ((int)interval);
+
         public void Process () {
             if (!Running)
                 return;

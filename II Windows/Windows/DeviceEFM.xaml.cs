@@ -212,21 +212,14 @@ namespace II_Windows {
                 case Patient.PatientEventTypes.Vitals_Change:
                     listTracings.ForEach (c => {
                         c.Strip.ClearFuture (App.Patient);
-                        c.Strip.Add_Beat__Cardiac_Baseline (App.Patient);
+                        c.Strip.Add_Beat__Obstetric (App.Patient);
                     });
 
                     break;
 
                 case Patient.PatientEventTypes.Obstetric_Baseline:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Obstetric_Baseline (App.Patient));
-                    break;
-
                 case Patient.PatientEventTypes.Obstetric_Contraction:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Obstetric_Contraction (App.Patient));
-                    break;
-
-                case Patient.PatientEventTypes.Obstetric_FetalVariation:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Obstetric_Fetal_Variability (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Obstetric (App.Patient));
                     break;
             }
         }

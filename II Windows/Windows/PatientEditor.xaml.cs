@@ -197,8 +197,8 @@ namespace II_Windows {
             comboFHRVariability.ItemsSource = intensityScale;
             comboUCIntensity.ItemsSource = intensityScale;
 
-            foreach (FetalHeartDecelerations.Values v in Enum.GetValues (typeof (FetalHeartDecelerations.Values)))
-                fetalHeartRhythms.Add (App.Language.Localize (FetalHeartDecelerations.LookupString (v)));
+            foreach (FHRAccelDecels.Values v in Enum.GetValues (typeof (FHRAccelDecels.Values)))
+                fetalHeartRhythms.Add (App.Language.Localize (FHRAccelDecels.LookupString (v)));
             listFHRRhythms.ItemsSource = fetalHeartRhythms;
         }
 
@@ -852,9 +852,9 @@ namespace II_Windows {
         private void ApplyPatientParameters () {
             ApplyMirroring ();
 
-            List<FetalHeartDecelerations.Values> FHRRhythms = new List<FetalHeartDecelerations.Values> ();
+            List<FHRAccelDecels.Values> FHRRhythms = new List<FHRAccelDecels.Values> ();
             foreach (object o in listFHRRhythms.SelectedItems)
-                FHRRhythms.Add ((FetalHeartDecelerations.Values)Enum.GetValues (typeof (FetalHeartDecelerations.Values)).GetValue (listFHRRhythms.Items.IndexOf (o)));
+                FHRRhythms.Add ((FHRAccelDecels.Values)Enum.GetValues (typeof (FHRAccelDecels.Values)).GetValue (listFHRRhythms.Items.IndexOf (o)));
 
             App.Patient.UpdateParameters (
 
@@ -1246,13 +1246,13 @@ namespace II_Windows {
 
                 // Obstetric profile
                 numFHR.Value = e.Patient.FHR;
-                numUCFrequency.Value = e.Patient.UC_Frequency;
-                numUCDuration.Value = e.Patient.UC_Duration;
+                numUCFrequency.Value = e.Patient.Contraction_Frequency;
+                numUCDuration.Value = e.Patient.Contraction_Duration;
                 comboFHRVariability.SelectedIndex = (int)e.Patient.FHR_Variability.Value;
-                comboUCIntensity.SelectedIndex = (int)e.Patient.UC_Intensity.Value;
+                comboUCIntensity.SelectedIndex = (int)e.Patient.Contraction_Intensity.Value;
 
                 listFHRRhythms.SelectedItems.Clear ();
-                foreach (FetalHeartDecelerations.Values fhr_rhythm in e.Patient.FHR_Decelerations.ValueList)
+                foreach (FHRAccelDecels.Values fhr_rhythm in e.Patient.FHR_AccelDecels.ValueList)
                     listFHRRhythms.SelectedItems.Add (listFHRRhythms.Items.GetItemAt ((int)fhr_rhythm));
             }
         }

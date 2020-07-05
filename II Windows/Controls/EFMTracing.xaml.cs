@@ -38,7 +38,6 @@ namespace II_Windows.Controls {
         private void InitInterface (object sender, SizeChangedEventArgs e) {
             tracingPen = System.Drawing.Brushes.Black;
             referencePen = System.Drawing.Brushes.DarkGray;
-
             tracingBrush = System.Windows.Media.Brushes.Black;
             bgColor = System.Drawing.Color.Transparent;
 
@@ -52,7 +51,7 @@ namespace II_Windows.Controls {
                 ref drawOffset, ref drawMultiplier);
 
         public void DrawTracing ()
-            => DrawPath (Strip.Points, tracingPen, 1);
+            => DrawPath (Strip.Points, tracingPen, 2);
 
         public void DrawReference ()
             => DrawPath (Strip.Reference, referencePen, 1);

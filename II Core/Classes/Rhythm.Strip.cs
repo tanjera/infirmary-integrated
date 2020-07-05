@@ -26,7 +26,7 @@ namespace II.Rhythm {
 
         /* Reference pressures for scaling transduced waveforms based on systolic/diastolic */
         public const int DefaultAutoScale_Iterations = 10;
-        public const float ScaleMargin = 0.2f;
+        public const float DefaultScaleMargin = 0.2f;
         public const int DefaultScaleMin_ABP = 0;
         public const int DefaultScaleMin_PA = -10;
         public const int DefaultScaleMax_ABP = 200;
@@ -50,6 +50,7 @@ namespace II.Rhythm {
         public float Amplitude = 1f;
 
         public bool ScaleAuto;
+        public float ScaleMargin = DefaultScaleMargin;
         public int ScaleMin;                              // For scaling waveforms to pressure limits
         public int ScaleMax;
 
@@ -156,18 +157,6 @@ namespace II.Rhythm {
                     ScaleMin = DefaultScaleMin_PA;
                     ScaleMax = DefaultScaleMax_PA;
                     break;
-
-                case Lead.Values.FHR:
-                    ScaleAuto = false;
-                    ScaleMin = DefaultScaleMin_FHR;
-                    ScaleMax = DefaultScaleMax_FHR;
-                    break;
-
-                case Lead.Values.TOCO:
-                    ScaleAuto = false;
-                    ScaleMin = DefaultScaleMin_TOCO;
-                    ScaleMax = DefaultScaleMax_TOCO;
-                    break;
             }
         }
 
@@ -175,8 +164,8 @@ namespace II.Rhythm {
             if (!CanScale || !ScaleAuto)
                 return;
 
-            int systolic = 0;
-            int diastolic = 0;
+            int peak = 0;
+            int trough = 0;
 
             int j = 0;
             for (int i = _P.ListPatientEvents.Count; i > 0 && j < DefaultAutoScale_Iterations;) {
@@ -190,22 +179,22 @@ namespace II.Rhythm {
                 switch (Lead.Value) {
                     default: return;
                     case Lead.Values.ABP:
-                        systolic += _P.ListPatientEvents [i].Vitals.ASBP;
-                        diastolic += _P.ListPatientEvents [i].Vitals.ADBP;
+                        peak += _P.ListPatientEvents [i].Vitals.ASBP;
+                        trough += _P.ListPatientEvents [i].Vitals.ADBP;
                         break;
 
                     case Lead.Values.PA:
-                        systolic += _P.ListPatientEvents [i].Vitals.PSP;
-                        diastolic += _P.ListPatientEvents [i].Vitals.PDP;
+                        peak += _P.ListPatientEvents [i].Vitals.PSP;
+                        trough += _P.ListPatientEvents [i].Vitals.PDP;
                         break;
                 }
             }
 
-            diastolic = (diastolic / DefaultAutoScale_Iterations);
-            systolic = (systolic / DefaultAutoScale_Iterations);
+            trough = (trough / DefaultAutoScale_Iterations);
+            peak = (peak / DefaultAutoScale_Iterations);
 
-            ScaleMin = diastolic - (int)(diastolic * ScaleMargin);
-            ScaleMax = systolic + (int)(systolic * ScaleMargin);
+            ScaleMin = trough - (int)(trough * DefaultScaleMargin);
+            ScaleMax = peak + (int)(peak * DefaultScaleMargin);
         }
 
         private void SetOffset () {
@@ -220,6 +209,12 @@ namespace II.Rhythm {
                 case Lead.Values.SPO2:
                 case Lead.Values.IABP:
                     Offset = Offsets.Stretch;
+                    break;
+
+                case Lead.Values.FHR:
+                case Lead.Values.TOCO:
+                    Offset = Offsets.Stretch;
+                    ScaleMargin = 0.05f;
                     break;
 
                 case Lead.Values.ABP:
@@ -328,10 +323,11 @@ namespace II.Rhythm {
             for (int i = 0; i < replacement.Count; i++)
                 replacement [i] = new PointF (replacement [i].X + (Length * forwardBuffer), replacement [i].Y);
 
-            double minX = replacement [0].X,
-                maxX = replacement [replacement.Count - 1].X;
+            double minX = Points.Count > 0 ? Points [0].X : 0,
+                maxX = Points.Count > 1 ? Points [Points.Count - 1].X : 0;
 
-            Points.RemoveAll (p => { return p.X > minX && p.X < maxX && p.Y == 0d; });
+            replacement.RemoveAll (p => { return p.X > minX && p.X < maxX; });
+
             Points.AddRange (replacement);
         }
 
@@ -368,18 +364,18 @@ namespace II.Rhythm {
             if (!CanScale || addition.Count == 0)
                 return addition;
 
-            int systolic, diastolic;
+            int peak, trough;
             switch (Lead.Value) {
                 default: return addition;
 
                 case Lead.Values.ABP:
-                    systolic = p.ASBP;
-                    diastolic = p.ADBP;
+                    peak = p.ASBP;
+                    trough = p.ADBP;
                     break;
 
                 case Lead.Values.PA:
-                    systolic = p.PSP;
-                    diastolic = p.PDP;
+                    peak = p.PSP;
+                    trough = p.PDP;
                     break;
             }
 
@@ -390,8 +386,8 @@ namespace II.Rhythm {
             max = (min != max) ? max : 1;           // Scaled waveforms should be 0.0 to 1.0
 
             // Get new min and max vaules for the desired tracing
-            float newMin = II.Math.InverseLerp (ScaleMin, ScaleMax, diastolic);
-            float newMax = II.Math.InverseLerp (ScaleMin, ScaleMax, systolic);
+            float newMin = II.Math.InverseLerp (ScaleMin, ScaleMax, trough);
+            float newMax = II.Math.InverseLerp (ScaleMin, ScaleMax, peak);
 
             // Run the List<PointF> through the normalization equation
             for (int i = 0; i < addition.Count; i++)
@@ -549,34 +545,11 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__Obstetric_Baseline (Patient p) {
+        public void Add_Beat__Obstetric (Patient p) {
             switch (Lead.Value) {
-                default:
-
-                    //throw new NotImplementedException ();
-                    break;
-            }
-
-            SortPoints ();
-        }
-
-        public void Add_Beat__Obstetric_Contraction (Patient p) {
-            switch (Lead.Value) {
-                default:
-
-                    //throw new NotImplementedException ();
-                    break;
-            }
-
-            SortPoints ();
-        }
-
-        public void Add_Beat__Obstetric_Fetal_Variability (Patient p) {
-            switch (Lead.Value) {
-                default:
-
-                    //throw new NotImplementedException ();
-                    break;
+                default: break;
+                case Lead.Values.FHR: Underwrite (Draw.FHR_Rhythm (p, p.Uterus_Contracted)); break;
+                case Lead.Values.TOCO: Underwrite (Draw.TOCO_Rhythm (p, p.Uterus_Contracted)); break;
             }
 
             SortPoints ();

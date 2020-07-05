@@ -61,6 +61,30 @@ namespace II.Waveform {
             return _Output;
         }
 
+        public static List<PointF> Normalize (List<PointF> _Addition, float _Min, float _Max) {
+            if (_Addition.Count == 0)
+                return new List<PointF> ();
+
+            float oldMin = _Addition [0].Y,
+                  oldMax = _Addition [0].Y;
+
+            // Obtain existing minimum and maximum
+            for (int i = 0; i < _Addition.Count; i++) {
+                oldMin = (_Addition [i].Y < oldMin) ? _Addition [i].Y : oldMin;
+                oldMax = (_Addition [i].Y > oldMax) ? _Addition [i].Y : oldMax;
+            }
+
+            // Rescale (min-max normalization) of vertex set
+            List<PointF> _Output = new List<PointF> ();
+            for (int i = 0; i < _Addition.Count; i++) {
+                _Output.Add (new PointF (
+                    _Addition [i].X,
+                    (_Min + (((_Addition [i].Y - oldMin) * (_Max - _Min)) / (oldMax - oldMin)))));
+            }
+
+            return _Output;
+        }
+
         public static List<PointF> Convert (Dictionary.Plot _Addition) {
             List<PointF> _Output = new List<PointF> ();
             for (int i = 0; i < _Addition.Vertices.Length; i++)

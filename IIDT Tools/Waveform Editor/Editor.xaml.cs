@@ -485,6 +485,26 @@ namespace Waveform_Editor {
             Canvas.SetZIndex (pathWave, 4);
         }
 
+        private void Filter_Normalize (double newMin = -1, double newMax = 1) {
+            if (Vertices.Count == 0)
+                return;
+
+            double oldMin = Vertices [0].Y,
+                oldMax = Vertices [0].Y;
+
+            // Obtain existing minimum and maximum
+            for (int i = 0; i < Vertices.Count; i++) {
+                oldMin = (Vertices [i].Y < oldMin) ? Vertices [i].Y : oldMin;
+                oldMax = (Vertices [i].Y > oldMax) ? Vertices [i].Y : oldMax;
+            }
+
+            // Rescale (min-max normalization) of vertex set
+            for (int i = 0; i < Vertices.Count; i++)
+                Vertices [i].Y = (newMin + (((Vertices [i].Y - oldMin) * (newMax - newMin)) / (oldMax - oldMin)));
+
+            UpdateWave ();
+        }
+
         private void MenuItemNew_Click (object sender, RoutedEventArgs e)
             => NewFile ();
 
@@ -531,6 +551,12 @@ namespace Waveform_Editor {
 
             UpdateWave ();
         }
+
+        private void menuFilterNormalize_Click (object sender, RoutedEventArgs e)
+            => Filter_Normalize ();
+
+        private void menuFilterNormalizePositive_Click (object sender, RoutedEventArgs e)
+            => Filter_Normalize (0, 1);
 
         private void cnvDrawing_KeyDown (object sender, KeyEventArgs e) {
             if (Keyboard.IsKeyDown (Key.LeftCtrl) || Keyboard.IsKeyDown (Key.RightCtrl))

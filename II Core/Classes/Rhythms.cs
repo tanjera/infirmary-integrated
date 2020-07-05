@@ -481,10 +481,10 @@ namespace II {
         }
     }
 
-    public class FetalHeartDecelerations {
+    public class FHRAccelDecels {
         public List<Values> ValueList;
-        public FetalHeartDecelerations (List<Values> v) { ValueList = v; }
-        public FetalHeartDecelerations () { ValueList = new List<Values> (); }
+        public FHRAccelDecels (List<Values> v) { ValueList = v; }
+        public FHRAccelDecels () { ValueList = new List<Values> (); }
 
         public static string LookupString (Values v) {
             return String.Format ("FETAL_RHYTHMS:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v).ToString ());
