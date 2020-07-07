@@ -209,17 +209,18 @@ namespace II_Windows {
         public void OnPatientEvent (object sender, Patient.PatientEventArgs e) {
             switch (e.EventType) {
                 default: break;
-                case Patient.PatientEventTypes.Vitals_Change:
-                    listTracings.ForEach (c => {
-                        c.Strip.ClearFuture (App.Patient);
-                        c.Strip.Add_Beat__Obstetric (App.Patient);
-                    });
-
+                case Patient.PatientEventTypes.Obstetric_Baseline:
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Obstetric_Baseline (App.Patient));
                     break;
 
-                case Patient.PatientEventTypes.Obstetric_Baseline:
-                case Patient.PatientEventTypes.Obstetric_Contraction:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Obstetric (App.Patient));
+                case Patient.PatientEventTypes.Obstetric_Contraction_Start:
+                    listTracings.ForEach (c => c.Strip.ClearFuture (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Obstetric_Contraction_Start (App.Patient));
+                    break;
+
+                case Patient.PatientEventTypes.Obstetric_Contraction_End:
+                    listTracings.ForEach (c => c.Strip.ClearFuture (App.Patient));
+                    listTracings.ForEach (c => c.Strip.Add_Beat__Obstetric_Baseline (App.Patient));
                     break;
             }
         }

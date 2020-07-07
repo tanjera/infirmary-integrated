@@ -924,7 +924,7 @@ namespace II_Windows {
                 (Scales.Intensity.Values)Enum.GetValues (typeof (Scales.Intensity.Values)).GetValue (
                     comboFHRVariability.SelectedIndex < 0 ? 0 : comboFHRVariability.SelectedIndex),
                 FHRRhythms,
-                (int)(numUCFrequency?.Value ?? 0),
+                (float)(numUCFrequency?.Value ?? 0),
                 (int)(numUCDuration?.Value ?? 0),
                 (Scales.Intensity.Values)Enum.GetValues (typeof (Scales.Intensity.Values)).GetValue (
                     comboUCIntensity.SelectedIndex < 0 ? 0 : comboUCIntensity.SelectedIndex)
@@ -1246,7 +1246,7 @@ namespace II_Windows {
 
                 // Obstetric profile
                 numFHR.Value = e.Patient.FHR;
-                numUCFrequency.Value = e.Patient.Contraction_Frequency;
+                numUCFrequency.Value = (decimal)e.Patient.Contraction_Frequency;
                 numUCDuration.Value = e.Patient.Contraction_Duration;
                 comboFHRVariability.SelectedIndex = (int)e.Patient.FHR_Variability.Value;
                 comboUCIntensity.SelectedIndex = (int)e.Patient.Contraction_Intensity.Value;

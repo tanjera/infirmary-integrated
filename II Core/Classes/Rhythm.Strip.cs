@@ -545,11 +545,20 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__Obstetric (Patient p) {
+        public void Add_Beat__Obstetric_Baseline (Patient p) {
             switch (Lead.Value) {
                 default: break;
                 case Lead.Values.FHR: Underwrite (Draw.FHR_Rhythm (p, p.Uterus_Contracted)); break;
                 case Lead.Values.TOCO: Underwrite (Draw.TOCO_Rhythm (p, p.Uterus_Contracted)); break;
+            }
+
+            SortPoints ();
+        }
+
+        public void Add_Beat__Obstetric_Contraction_Start (Patient p) {
+            switch (Lead.Value) {
+                default: break;
+                case Lead.Values.TOCO: Overwrite (Draw.TOCO_Rhythm (p, p.Uterus_Contracted)); break;
             }
 
             SortPoints ();

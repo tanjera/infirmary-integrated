@@ -25,6 +25,7 @@ namespace II {
         public bool IsLocked { get => _Locked; }
         public int Interval { get => _Interval; }
         public int Elapsed { get => (int)((DateTime.Now - Last).TotalSeconds * 1000); }
+        public int Remainder { get => _Interval - (int)((DateTime.Now - Last).TotalSeconds * 1000); }
 
         public void Lock () => _Locked = true;
         public void Unlock () => _Locked = false;

@@ -46,8 +46,8 @@ namespace II {
         public Scales.Intensity Contraction_Intensity = new Scales.Intensity (),
                          FHR_Variability = new Scales.Intensity ();
 
-        public int Contraction_Frequency,       // Frequency in minutes
-                    Contraction_Duration,       // Duration in seconds
+        public float Contraction_Frequency;     // Frequency in minutes
+        public int Contraction_Duration,        // Duration in seconds
                     FHR;                        // Baseline fetal heart rate
         public FHRAccelDecels FHR_AccelDecels = new FHRAccelDecels ();
         public bool Uterus_Contracted = true;
@@ -361,7 +361,8 @@ namespace II {
             Respiratory_Inspiration,
             Respiratory_Expiration,
             Obstetric_Baseline,
-            Obstetric_Contraction
+            Obstetric_Contraction_Start,
+            Obstetric_Contraction_End
         }
 
         public void OnPatientEvent (PatientEventTypes e) {
@@ -535,7 +536,7 @@ namespace II {
                                     FHR_AccelDecels.ValueList.Add ((FHRAccelDecels.Values)Enum.Parse (typeof (FHRAccelDecels.Values), fhr_rhythm));
                                 break;
 
-                            case "UterineContraction_Frequency": Contraction_Frequency = int.Parse (pValue); break;
+                            case "UterineContraction_Frequency": Contraction_Frequency = float.Parse (pValue); break;
                             case "UterineContraction_Duration": Contraction_Duration = int.Parse (pValue); break;
                             case "UterineContraction_Intensity": Contraction_Intensity.Value = (Scales.Intensity.Values)Enum.Parse (typeof (Scales.Intensity.Values), pValue); break;
                         }
@@ -654,7 +655,7 @@ namespace II {
 
                     // Obstetric profile
                     int fhr, Scales.Intensity.Values fhr_var, List<FHRAccelDecels.Values> fhr_rhythms,
-                    int uc_freq, int uc_duration, Scales.Intensity.Values uc_intensity) {
+                    float uc_freq, int uc_duration, Scales.Intensity.Values uc_intensity) {
             Updated = DateTime.UtcNow;
 
             // Basic vital signs
@@ -723,17 +724,12 @@ namespace II {
             Contraction_Duration = uc_duration;
             Contraction_Intensity.Value = uc_intensity;
 
-            // Reset switches for obstetric profile
-            Uterus_Contracted = true;
-
             // Reset actual vital signs to set parameters
             VS_Actual.Set (VS_Settings);
 
             SetTimers ();
-
             OnCardiac_Baseline ();
             OnRespiratory_Baseline ();
-            OnObstetric_Baseline ();
 
             OnPatientEvent (PatientEventTypes.Vitals_Change);
         }
@@ -764,6 +760,8 @@ namespace II {
             SetTimers ();
             OnCardiac_Baseline ();
             OnRespiratory_Baseline ();
+            OnObstetric_Baseline ();
+
             OnPatientEvent (PatientEventTypes.Vitals_Change);
         }
 
@@ -1289,11 +1287,18 @@ namespace II {
             OnPatientEvent (PatientEventTypes.Obstetric_Baseline);
             timerObstetric_Baseline.ResetAuto (10000);
 
-            if (Contraction_Frequency <= 0 && timerObstetric_Contraction.IsRunning) {
-                Uterus_Contracted = false;
+            OnObstetric_RunTimers ();
+        }
+
+        private void OnObstetric_RunTimers () {
+            if (Contraction_Frequency <= 0) {
                 timerObstetric_Contraction.Stop ();
-            } else if (Contraction_Frequency > 0 && !timerObstetric_Contraction.IsRunning) {
-                timerObstetric_Contraction.ResetAuto (1);
+                Uterus_Contracted = false;
+            } else if (Contraction_Frequency > 0) {
+                if (!Uterus_Contracted)
+                    timerObstetric_Contraction.Continue ((int)(Contraction_Frequency * 60 * 1000));
+                else if (Uterus_Contracted)
+                    timerObstetric_Contraction.Continue (Contraction_Duration * 1000);
             }
         }
 
@@ -1302,11 +1307,12 @@ namespace II {
                 Uterus_Contracted = true;
                 timerObstetric_Contraction.ResetAuto (Contraction_Duration * 1000f);
 
-                // Signal onset of contraction only
-                OnPatientEvent (PatientEventTypes.Obstetric_Contraction);
-            } else {                    // Contraction ending
+                OnPatientEvent (PatientEventTypes.Obstetric_Contraction_Start);
+            } else {                        // Contraction ending
                 Uterus_Contracted = false;
                 timerObstetric_Contraction.ResetAuto (Contraction_Frequency * 60 * 1000f);
+
+                OnPatientEvent (PatientEventTypes.Obstetric_Contraction_End);
             }
         }
     }
