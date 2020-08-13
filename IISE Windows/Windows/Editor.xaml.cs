@@ -352,6 +352,9 @@ namespace II.Scenario_Editor {
                 5, 0, 200);
             pbpABP.PropertyChanged += updateProperty;
 
+            pdblCO.Init (PropertyDouble.Keys.CO, 0.1, 0, 20);
+            pdblCO.PropertyChanged += updateProperty;
+
             penmPACatheterRhythm.Init (PropertyEnum.Keys.PACatheter_Rhythms,
                 Enum.GetNames (typeof (PulmonaryArtery_Rhythms.Values)), pulmonaryRhythms);
             penmPACatheterRhythm.PropertyChanged += updateProperty;
@@ -423,6 +426,7 @@ namespace II.Scenario_Editor {
             pintETCO2.Set (selStep.Patient.VS_Settings.ETCO2);
             pintCVP.Set (selStep.Patient.VS_Settings.CVP);
             pbpABP.Set (selStep.Patient.VS_Settings.ASBP, selStep.Patient.VS_Settings.ADBP);
+            pdblCO.Set (selStep.Patient.VS_Settings.CO);
             penmPACatheterRhythm.Set ((int)selStep.Patient.PulmonaryArtery_Placement.Value);
             pbpPBP.Set (selStep.Patient.VS_Settings.PSP, selStep.Patient.VS_Settings.PDP);
             pintICP.Set (selStep.Patient.VS_Settings.ICP);
@@ -506,6 +510,7 @@ namespace II.Scenario_Editor {
             switch (e.Key) {
                 default: break;
                 case PropertyDouble.Keys.T: selStep.Patient.T = e.Value; break;
+                case PropertyDouble.Keys.CO: selStep.Patient.CO = e.Value; break;
             }
         }
 

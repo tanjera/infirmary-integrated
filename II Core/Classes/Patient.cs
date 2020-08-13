@@ -118,6 +118,8 @@ namespace II {
             public int PSP, PDP, PMP,           // Pulmonary artery pressures
                         ICP, IAP;               // Intracranial pressure, intra-abdominal pressure
 
+            public double CO;                    // Cardiac output
+
             /* Respiratory profile */
 
             public float RR_IE_I,               // Inspiratory to expiratory ratio
@@ -141,6 +143,7 @@ namespace II {
                 ASBP = v.ASBP;
                 ADBP = v.ADBP;
                 AMAP = v.AMAP;
+                CO = v.CO;
                 PSP = v.PSP;
                 PDP = v.PDP;
                 PMP = v.PMP;
@@ -207,6 +210,11 @@ namespace II {
             set { VS_Settings.AMAP = value; }
         }
 
+        public double CO {
+            get { return VS_Actual.CO; }
+            set { VS_Settings.CO = value; }
+        }
+
         public int PSP {
             get { return VS_Actual.PSP; }
             set { VS_Settings.PSP = value; }
@@ -263,6 +271,7 @@ namespace II {
                             40,
                             6,
                             120, 80, 95,
+                            6f,
                             PulmonaryArtery_Rhythms.Values.Pulmonary_Artery,
                             22, 12, 16,
                             8,
@@ -495,6 +504,7 @@ namespace II {
                             case "ASBP": VS_Settings.ASBP = int.Parse (pValue); break;
                             case "ADBP": VS_Settings.ADBP = int.Parse (pValue); break;
                             case "AMAP": VS_Settings.AMAP = int.Parse (pValue); break;
+                            case "CO": VS_Settings.CO = double.Parse (pValue); break;
                             case "PulmonaryArtery_Rhythm": PulmonaryArtery_Placement.Value = (PulmonaryArtery_Rhythms.Values)Enum.Parse (typeof (PulmonaryArtery_Rhythms.Values), pValue); break;
                             case "PSP": VS_Settings.PSP = int.Parse (pValue); break;
                             case "PDP": VS_Settings.PDP = int.Parse (pValue); break;
@@ -590,6 +600,7 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "ASBP", VS_Settings.ASBP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "ADBP", VS_Settings.ADBP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "AMAP", VS_Settings.AMAP));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "CO", VS_Settings.CO));
             sWrite.AppendLine (String.Format ("{0}:{1}", "PulmonaryArtery_Rhythm", PulmonaryArtery_Placement.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "PSP", VS_Settings.PSP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "PDP", VS_Settings.PDP));
@@ -639,6 +650,7 @@ namespace II {
                     int etco2,
                     int cvp,
                     int asbp, int adbp, int amap,
+                    double co,
                     PulmonaryArtery_Rhythms.Values pa_placement,
                     int psp, int pdp, int pmp,
                     int icp, int iap,
@@ -690,6 +702,8 @@ namespace II {
             VS_Settings.ASBP = asbp;
             VS_Settings.ADBP = adbp;
             VS_Settings.AMAP = amap;
+
+            VS_Settings.CO = co;
 
             PulmonaryArtery_Placement.Value = pa_placement;
 

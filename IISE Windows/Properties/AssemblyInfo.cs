@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration ("")]
 [assembly: AssemblyCompany ("Ibi Keller (Tanjera)")]
 [assembly: AssemblyProduct ("Infirmary Integrated: Scenario Editor")]
-[assembly: AssemblyCopyright ("Copyright © Ibi Keller 2019")]
+[assembly: AssemblyCopyright ("Copyright © Ibi Keller 2020")]
 [assembly: AssemblyTrademark ("")]
 [assembly: AssemblyCulture ("")]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // You can specify all the values or you can default the Build and Revision Numbers
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion ("0.6.4.0")]
-[assembly: AssemblyFileVersion ("0.6.4.0")]
+[assembly: AssemblyVersion ("0.6.5.0")]
+[assembly: AssemblyFileVersion ("0.6.5.0")]

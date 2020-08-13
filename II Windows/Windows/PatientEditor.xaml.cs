@@ -138,6 +138,7 @@ namespace II_Windows {
             lblCVP.Content = String.Format ("{0}:", App.Language.Localize ("PE:CentralVenousPressure"));
             lblASBP.Content = String.Format ("{0}:", App.Language.Localize ("PE:ArterialBloodPressure"));
             lblPACatheterPlacement.Content = String.Format ("{0}:", App.Language.Localize ("PE:PulmonaryArteryCatheterPlacement"));
+            lblCO.Content = String.Format ("{0}:", App.Language.Localize ("PE:CardiacOutput"));
             lblPSP.Content = String.Format ("{0}:", App.Language.Localize ("PE:PulmonaryArteryPressure"));
             lblICP.Content = String.Format ("{0}:", App.Language.Localize ("PE:IntracranialPressure"));
             lblIAP.Content = String.Format ("{0}:", App.Language.Localize ("PE:IntraabdominalPressure"));
@@ -882,6 +883,8 @@ namespace II_Windows {
                 (int)(numADBP?.Value ?? 0),
                 Patient.CalculateMAP ((int)(numASBP?.Value ?? 0), (int)(numADBP.Value ?? 0)),
 
+                (float)(numCO?.Value ?? 0),
+
                 (PulmonaryArtery_Rhythms.Values)Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)).GetValue (
                     comboPACatheterPlacement.SelectedIndex < 0 ? 0 : comboPACatheterPlacement.SelectedIndex),
 
@@ -1079,11 +1082,11 @@ namespace II_Windows {
 
         private void OnUIPatientParameter_GotFocus (object sender, RoutedEventArgs e) {
             if (sender is IntegerUpDown)
-                uiBufferValue = (sender as IntegerUpDown).Value;
+                uiBufferValue = (sender as IntegerUpDown).Value ?? 0;
             else if (sender is DecimalUpDown)
-                uiBufferValue = (sender as DecimalUpDown).Value;
+                uiBufferValue = (sender as DecimalUpDown).Value ?? 0;
             else if (sender is CheckBox)
-                uiBufferValue = (sender as CheckBox).IsChecked;
+                uiBufferValue = (sender as CheckBox).IsChecked ?? false;
             else if (sender is ComboBox)
                 uiBufferValue = (sender as ComboBox).SelectedIndex;
         }
@@ -1201,6 +1204,7 @@ namespace II_Windows {
                 numCVP.Value = e.Patient.VS_Settings.CVP;
                 numASBP.Value = e.Patient.VS_Settings.ASBP;
                 numADBP.Value = e.Patient.VS_Settings.ADBP;
+                numCO.Value = (decimal)e.Patient.VS_Settings.CO;
                 comboPACatheterPlacement.SelectedIndex = (int)e.Patient.PulmonaryArtery_Placement.Value;
                 numPSP.Value = e.Patient.VS_Settings.PSP;
                 numPDP.Value = e.Patient.VS_Settings.PDP;

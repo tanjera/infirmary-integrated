@@ -346,6 +346,7 @@
 													Orientation="Vertical">
 											<ii:PropertyInt x:Name="pintETCO2" />
 											<ii:PropertyInt x:Name="pintCVP" />
+											<ii:PropertyDouble x:Name="pdblCO" />
 											<ii:PropertyBP x:Name="pbpABP" />
 											<ii:PropertyEnum x:Name="penmPACatheterRhythm" />
 											<ii:PropertyBP x:Name="pbpPBP" />

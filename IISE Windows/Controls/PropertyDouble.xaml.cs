@@ -20,6 +20,7 @@ namespace II.Scenario_Editor.Controls {
 
         public enum Keys {
             T,
+            CO,
             RRInspiratoryRatio, RRExpiratoryRatio
         }
 

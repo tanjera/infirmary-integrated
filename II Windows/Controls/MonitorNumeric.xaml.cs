@@ -26,7 +26,7 @@ namespace II_Windows.Controls {
             public enum Values {
                 ECG, T, RR, ETCO2,
                 SPO2, NIBP, ABP, CVP,
-                PA, ICP, IAP
+                CO, PA, ICP, IAP
             }
 
             public static string LookupString (Values value) {
@@ -53,6 +53,7 @@ namespace II_Windows.Controls {
                 Brushes.White,
                 Brushes.Red,
                 Brushes.Blue,
+                Brushes.Brown,
                 Brushes.Yellow,
                 Brushes.Khaki,
                 Brushes.Aquamarine
@@ -136,18 +137,19 @@ namespace II_Windows.Controls {
                 case ControlType.Values.PA:
                     break;
 
+                case ControlType.Values.SPO2:
+                case ControlType.Values.ETCO2:
+                case ControlType.Values.ICP:
+                    lblLine3.Visibility = Visibility.Hidden;
+                    break;
+
                 case ControlType.Values.ECG:
                 case ControlType.Values.T:
                 case ControlType.Values.RR:
                 case ControlType.Values.CVP:
+                case ControlType.Values.CO:
                 case ControlType.Values.IAP:
                     lblLine2.Visibility = Visibility.Hidden;
-                    lblLine3.Visibility = Visibility.Hidden;
-                    break;
-
-                case ControlType.Values.SPO2:
-                case ControlType.Values.ETCO2:
-                case ControlType.Values.ICP:
                     lblLine3.Visibility = Visibility.Hidden;
                     break;
             }
@@ -224,6 +226,10 @@ namespace II_Windows.Controls {
                         lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (App.Patient.CVP, 0.02f));
                     else
                         lblLine1.Text = App.Language.Localize ("NUMERIC:ZeroTransducer");
+                    break;
+
+                case ControlType.Values.CO:
+                    lblLine1.Text = String.Format ("{0:0.0}", App.Patient.CO);
                     break;
 
                 case ControlType.Values.PA:
