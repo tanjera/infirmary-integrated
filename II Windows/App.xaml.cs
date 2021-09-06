@@ -14,6 +14,7 @@ namespace II_Windows {
     public partial class App : Application {
         public static string [] Start_Args;
 
+        public static Settings Settings = new Settings ();
         public static Server Server = new Server ();
         public static Mirror Mirror = new Mirror ();
         public static Language Language = new Language ();
@@ -42,7 +43,7 @@ namespace II_Windows {
             Timer_Main.Interval = new TimeSpan (100000); // q 10 milliseconds
             Timer_Main.Start ();
 
-            II.File.InitTempDir ();
+            II.File.Init ();
         }
     }
 }

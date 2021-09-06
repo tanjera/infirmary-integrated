@@ -51,6 +51,7 @@ namespace II_Windows {
             DataContext = this;
             App.Patient_Editor = this;
 
+            App.Settings.Load ();
             InitInitialRun ();
             InitUsageStatistics ();
             InitInterface ();
@@ -61,13 +62,13 @@ namespace II_Windows {
             if (App.Start_Args.Length > 0)
                 LoadOpen (App.Start_Args [0]);
 
-            SetParameterStatus (Properties.Settings.Default.AutoApplyChanges);
+            SetParameterStatus (App.Settings.AutoApplyChanges);
 
             /* Debugging and testing code below */
         }
 
         private void InitInitialRun () {
-            string setLang = Properties.Settings.Default.Language;
+            string setLang = App.Settings.Language;
             if (setLang == null || setLang == ""
                 || !Enum.TryParse<Language.Values> (setLang, out App.Language.Value)) {
                 App.Language = new Language ();
@@ -77,7 +78,7 @@ namespace II_Windows {
 
         private void InitUsageStatistics () {
             /* Send usage statistics to server in background */
-            _ = Task.Run (() => App.Server.Post_UsageStatistics (App.Language));
+            _ = Task.Run (() => App.Server.Run_UsageStats (new Server.UsageStat (App.Language)));
         }
 
         private void InitInterface () {
@@ -168,7 +169,7 @@ namespace II_Windows {
             lblParametersApply.Content = App.Language.Localize ("BUTTON:ApplyChanges");
             lblParametersReset.Content = App.Language.Localize ("BUTTON:ResetParameters");
 
-            chkAutoApplyChanges.IsChecked = Properties.Settings.Default.AutoApplyChanges;
+            chkAutoApplyChanges.IsChecked = App.Settings.AutoApplyChanges;
 
             List<string> cardiacRhythms = new List<string> (),
                 respiratoryRhythms = new List<string> (),
@@ -215,10 +216,10 @@ namespace II_Windows {
                 return;
             }
 
-            if (Properties.Settings.Default.MuteUpgrade) {
-                if (Utility.IsNewerVersion (Properties.Settings.Default.MuteUpgradeVersion, App.Server.UpgradeVersion)) {
-                    Properties.Settings.Default.MuteUpgrade = false;
-                    Properties.Settings.Default.Save ();
+            if (App.Settings.MuteUpgrade) {
+                if (Utility.IsNewerVersion (App.Settings.MuteUpgradeVersion, App.Server.UpgradeVersion)) {
+                    App.Settings.MuteUpgrade = false;
+                    App.Settings.Save ();
                 } else {        // Mutes update popup notification
                     return;
                 }
@@ -380,9 +381,9 @@ namespace II_Windows {
                     return;
 
                 case Bootstrap.UpgradeRoute.MUTE:
-                    Properties.Settings.Default.MuteUpgrade = true;
-                    Properties.Settings.Default.MuteUpgradeVersion = App.Server.UpgradeVersion;
-                    Properties.Settings.Default.Save ();
+                    App.Settings.MuteUpgrade = true;
+                    App.Settings.MuteUpgradeVersion = App.Server.UpgradeVersion;
+                    App.Settings.Save ();
                     return;
 
                 case Bootstrap.UpgradeRoute.WEBSITE:
@@ -627,7 +628,6 @@ namespace II_Windows {
         }
 
         private void SaveFile () {
-
             // Only save single Patient files in base Infirmary Integrated!
             // Scenario files should be created/edited/saved via II Scenario Editor!
             if (App.Scenario.IsScenario) {
@@ -653,7 +653,6 @@ namespace II_Windows {
         }
 
         private void SaveT1 (Stream s) {
-
             // Ensure only saving Patient file, not Scenario file; is screened in SaveFile()
             if (App.Scenario.IsScenario) {
                 s.Close ();
@@ -708,6 +707,8 @@ namespace II_Windows {
         }
 
         public bool Exit () {
+            App.Settings.Save ();
+
             Application.Current.Shutdown ();
             return true;
         }
@@ -909,17 +910,17 @@ namespace II_Windows {
                 (Cardiac_Axes.Values)Enum.GetValues (typeof (Cardiac_Axes.Values)).GetValue (
                     comboCardiacAxis.SelectedIndex < 0 ? 0 : comboCardiacAxis.SelectedIndex),
 
-                new float [] {
-                (float)(numSTE_I?.Value ?? 0), (float)(numSTE_II?.Value ?? 0), (float)(numSTE_III?.Value ?? 0),
-                (float)(numSTE_aVR?.Value ?? 0), (float)(numSTE_aVL?.Value ?? 0), (float)(numSTE_aVF?.Value ?? 0),
-                (float)(numSTE_V1?.Value ?? 0), (float)(numSTE_V2?.Value ?? 0), (float)(numSTE_V3?.Value ?? 0),
-                (float)(numSTE_V4?.Value ?? 0), (float)(numSTE_V5?.Value ?? 0), (float)(numSTE_V6.Value ?? 0)
+                new double [] {
+                (double)(numSTE_I?.Value ?? 0), (double)(numSTE_II?.Value ?? 0), (double)(numSTE_III?.Value ?? 0),
+                (double)(numSTE_aVR?.Value ?? 0), (double)(numSTE_aVL?.Value ?? 0), (double)(numSTE_aVF?.Value ?? 0),
+                (double)(numSTE_V1?.Value ?? 0), (double)(numSTE_V2?.Value ?? 0), (double)(numSTE_V3?.Value ?? 0),
+                (double)(numSTE_V4?.Value ?? 0), (double)(numSTE_V5?.Value ?? 0), (double)(numSTE_V6.Value ?? 0)
                 },
-                new float [] {
-                (float)(numTWE_I?.Value ?? 0), (float)(numTWE_II?.Value ?? 0), (float)(numTWE_III?.Value ?? 0),
-                (float)(numTWE_aVR?.Value ?? 0), (float)(numTWE_aVL?.Value ?? 0), (float)(numTWE_aVF?.Value ?? 0),
-                (float)(numTWE_V1?.Value ?? 0), (float)(numTWE_V2?.Value ?? 0), (float)(numTWE_V3?.Value ?? 0),
-                (float)(numTWE_V4?.Value ?? 0), (float)(numTWE_V5?.Value ?? 0), (float)(numTWE_V6.Value ?? 0)
+                new double [] {
+                (double)(numTWE_I?.Value ?? 0), (double)(numTWE_II?.Value ?? 0), (double)(numTWE_III?.Value ?? 0),
+                (double)(numTWE_aVR?.Value ?? 0), (double)(numTWE_aVL?.Value ?? 0), (double)(numTWE_aVF?.Value ?? 0),
+                (double)(numTWE_V1?.Value ?? 0), (double)(numTWE_V2?.Value ?? 0), (double)(numTWE_V3?.Value ?? 0),
+                (double)(numTWE_V4?.Value ?? 0), (double)(numTWE_V5?.Value ?? 0), (double)(numTWE_V6.Value ?? 0)
                 },
 
                 // Obstetric profile
@@ -985,19 +986,19 @@ namespace II_Windows {
             Application.Current.Dispatcher.BeginInvoke (DispatcherPriority.Background,
                     new Action (delegate () {
                         /* Set the window state, width, and height to saved settings */
-                        this.WindowState = (System.Windows.WindowState)(Properties.Settings.Default.WindowState);
+                        this.WindowState = (System.Windows.WindowState)(App.Settings.WindowState);
 
-                        this.Width = Properties.Settings.Default.WindowSize.X;
-                        this.Height = Properties.Settings.Default.WindowSize.Y;
+                        this.Width = App.Settings.WindowSize.X;
+                        this.Height = App.Settings.WindowSize.Y;
 
                         /* Get the current screen; check that the desired window position is visible on the screen! */
                         System.Windows.Forms.Screen screen = System.Windows.Forms.Screen.FromPoint
                             (new System.Drawing.Point ((int)this.Left, (int)this.Top));
 
-                        if (Properties.Settings.Default.WindowPosition.X < screen.WorkingArea.Width
-                               && Properties.Settings.Default.WindowPosition.Y < screen.WorkingArea.Height) {
-                            this.Left = Properties.Settings.Default.WindowPosition.X;
-                            this.Top = Properties.Settings.Default.WindowPosition.Y;
+                        if (App.Settings.WindowPosition.X < screen.WorkingArea.Width
+                               && App.Settings.WindowPosition.Y < screen.WorkingArea.Height) {
+                            this.Left = App.Settings.WindowPosition.X;
+                            this.Top = App.Settings.WindowPosition.Y;
                         }
 
                         this.uiLoadCompleted = true;
@@ -1008,28 +1009,25 @@ namespace II_Windows {
             if (!uiLoadCompleted)
                 return;
 
-            Properties.Settings.Default.WindowSize = new System.Drawing.Point (
+            App.Settings.WindowSize = new System.Drawing.Point (
                 (int)(sender as Window).ActualWidth,
                 (int)(sender as Window).ActualHeight);
-            Properties.Settings.Default.Save ();
         }
 
         private void Window_LocationChanged (object sender, EventArgs e) {
             if (!uiLoadCompleted)
                 return;
 
-            Properties.Settings.Default.WindowPosition = new System.Drawing.Point (
+            App.Settings.WindowPosition = new System.Drawing.Point (
                 (int)(sender as Window).Left,
                 (int)(sender as Window).Top);
-            Properties.Settings.Default.Save ();
         }
 
         private void Window_StateChanged (object sender, EventArgs e) {
             if (!uiLoadCompleted)
                 return;
 
-            Properties.Settings.Default.WindowState = (int)(sender as Window).WindowState;
-            Properties.Settings.Default.Save ();
+            App.Settings.WindowState = (int)(sender as Window).WindowState;
         }
 
         private void Window_Closed (object sender, EventArgs e)
@@ -1069,10 +1067,10 @@ namespace II_Windows {
             if (ParameterStatus == ParameterStatuses.Loading)
                 return;
 
-            Properties.Settings.Default.AutoApplyChanges = chkAutoApplyChanges.IsChecked ?? true;
-            Properties.Settings.Default.Save ();
+            App.Settings.AutoApplyChanges = chkAutoApplyChanges.IsChecked ?? true;
+            App.Settings.Save ();
 
-            SetParameterStatus (Properties.Settings.Default.AutoApplyChanges);
+            SetParameterStatus (App.Settings.AutoApplyChanges);
         }
 
         private void OnUIPatientParameter_KeyDown (object sender, KeyEventArgs e) {
@@ -1188,7 +1186,6 @@ namespace II_Windows {
 
         private void FormUpdateFields (object sender, Patient.PatientEventArgs e) {
             if (e.EventType == Patient.PatientEventTypes.Vitals_Change) {
-
                 // Basic vital signs
                 numHR.Value = e.Patient.VS_Settings.HR;
                 numNSBP.Value = e.Patient.VS_Settings.NSBP;

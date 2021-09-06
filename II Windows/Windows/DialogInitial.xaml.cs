@@ -25,8 +25,8 @@ namespace II_Windows {
         private void OnClick_Continue (object sender, RoutedEventArgs e) {
             App.Language.Value = (Language.Values)Enum.GetValues (typeof (Language.Values)).GetValue (cmbLanguages.SelectedIndex);
 
-            Properties.Settings.Default.Language = App.Language.Value.ToString ();
-            Properties.Settings.Default.Save ();
+            App.Settings.Language = App.Language.Value.ToString ();
+            App.Settings.Save ();
             this.Close ();
         }
 

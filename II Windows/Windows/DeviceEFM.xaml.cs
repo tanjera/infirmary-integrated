@@ -135,12 +135,12 @@ namespace II_Windows {
 
         private void SaveScreen ()
             => Screenshot.SavePdf (
-                Screenshot.SavePng (Screenshot.GetBitmap (displayGrid, 1), II.File.GetTempFilePath ("png")),
+                Screenshot.SavePng (Screenshot.GetBitmap (displayGrid, 1), II.File.GetCachePath ("png")),
                 App.Language.Localize ("EFM:WindowTitle"), "");
 
         private void PrintScreen ()
             => II.Screenshot.PrintPdf (II.Screenshot.AssemblePdf (
-                Screenshot.SavePng (Screenshot.GetBitmap (displayGrid, 1), II.File.GetTempFilePath ("png")),
+                Screenshot.SavePng (Screenshot.GetBitmap (displayGrid, 1), II.File.GetCachePath ("png")),
                     App.Language.Localize ("EFM:WindowTitle"), ""));
 
         private void ApplyFullScreen () {

@@ -254,10 +254,10 @@ namespace II.Rhythm {
         private void SetForwardBuffer (Patient patient, bool onClear = false) {
             /* Set the forward edge buffer (a coefficient of lengthSeconds!) to be the length of 2 beats/breaths */
             if (IsCardiac)
-                forwardBuffer = System.Math.Max (1 + (2 * (patient.GetHR_Seconds / Length)),
+                forwardBuffer = System.Math.Max (1 + (2 * ((float)patient.GetHR_Seconds / Length)),
                     (onClear ? 1.1f : forwardBuffer));
             else if (IsRespiratory)
-                forwardBuffer = System.Math.Max (1 + (2 * (patient.GetRR_Seconds / Length)),
+                forwardBuffer = System.Math.Max (1 + (2 * ((float)patient.GetRR_Seconds / Length)),
                     (onClear ? 1.1f : forwardBuffer));
         }
 
@@ -404,11 +404,11 @@ namespace II.Rhythm {
                 p.Cardiac_Rhythm.ECG_Isoelectric (p, this);
             } else if (CanScale) {
                 float fill = (Length * forwardBuffer) - Last (Points).X;
-                Concatenate (Scale (p, Draw.Flat_Line (fill > p.GetHR_Seconds ? fill : p.GetHR_Seconds, 0f)));
+                Concatenate (Scale (p, Draw.Flat_Line (fill > (float)p.GetHR_Seconds ? fill : (float)p.GetHR_Seconds, 0f)));
             } else {
                 /* Fill waveform through to future buffer with flatline */
                 float fill = (Length * forwardBuffer) - Last (Points).X;
-                Concatenate (Draw.Flat_Line (fill > p.GetHR_Seconds ? fill : p.GetHR_Seconds, 0f));
+                Concatenate (Draw.Flat_Line (fill > (float)p.GetHR_Seconds ? fill : (float)p.GetHR_Seconds, 0f));
             }
 
             SortPoints ();
@@ -520,7 +520,7 @@ namespace II.Rhythm {
 
             /* Fill waveform through to future buffer with flatline */
             float fill = (Length * forwardBuffer) - Last (Points).X;
-            Concatenate (Draw.Flat_Line (fill > p.GetRR_Seconds ? fill : p.GetRR_Seconds, 0f));
+            Concatenate (Draw.Flat_Line (fill > (float)p.GetRR_Seconds ? fill : (float)p.GetRR_Seconds, 0f));
 
             SortPoints ();
         }

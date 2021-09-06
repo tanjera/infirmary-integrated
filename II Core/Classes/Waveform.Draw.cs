@@ -54,7 +54,7 @@ namespace II.Waveform {
             DampenAmplitude_PulsusParadoxus (_P, ref _Amplitude);
 
             return Plotting.Concatenate (new List<PointF> (),
-                Plotting.Stretch (Dictionary.SPO2_Rhythm, _P.GetHR_Seconds),
+                Plotting.Stretch (Dictionary.SPO2_Rhythm, (float)_P.GetHR_Seconds),
                 _Amplitude);
         }
 
@@ -69,7 +69,7 @@ namespace II.Waveform {
 
         public static List<PointF> ETCO2_Rhythm (Patient _P) {
             return Plotting.Concatenate (new List<PointF> (),
-                Plotting.Stretch (Dictionary.ETCO2_Default, _P.GetRR_Seconds_E));
+                Plotting.Stretch (Dictionary.ETCO2_Default, (float)_P.GetRR_Seconds_E));
         }
 
         public static List<PointF> ICP_Rhythm (Patient _P, float _Amplitude) {
@@ -80,7 +80,7 @@ namespace II.Waveform {
                 Plotting.Stretch (  // Lerp to change waveform based on intracranial compliance due to ICP
                     Dictionary.Lerp (Dictionary.ICP_HighCompliance, Dictionary.ICP_LowCompliance,
                         Math.Clamp (Math.InverseLerp (15, 25, _P.ICP), 0, 1)),    // ICP compliance coefficient
-                    _P.GetHR_Seconds),
+                    (float)_P.GetHR_Seconds),
                 _Amplitude);
         }
 
@@ -90,7 +90,7 @@ namespace II.Waveform {
             VaryAmplitude_Random (0.1f, ref _Amplitude);
 
             return Plotting.Concatenate (new List<PointF> (),
-                Plotting.Stretch (Dictionary.IAP_Default, _P.GetHR_Seconds),
+                Plotting.Stretch (Dictionary.IAP_Default, (float)_P.GetHR_Seconds),
                 _Amplitude);
         }
 
@@ -98,7 +98,7 @@ namespace II.Waveform {
             VaryAmplitude_Random (0.1f, ref _Amplitude);
 
             return Plotting.Concatenate (new List<PointF> (),
-                Plotting.Stretch (Dictionary.ABP_Default, _P.GetPulsatility_Seconds),
+                Plotting.Stretch (Dictionary.ABP_Default, (float)_P.GetPulsatility_Seconds),
                 _Amplitude);
         }
 
@@ -109,11 +109,11 @@ namespace II.Waveform {
 
             if (_P.Cardiac_Rhythm.HasPulse_Atrial && !_P.Cardiac_Rhythm.AberrantBeat)
                 return Plotting.Concatenate (new List<PointF> (),
-                    Plotting.Stretch (Dictionary.CVP_Atrioventricular, _P.GetHR_Seconds),
+                    Plotting.Stretch (Dictionary.CVP_Atrioventricular, (float)_P.GetHR_Seconds),
                     _Amplitude);
             else
                 return Plotting.Concatenate (new List<PointF> (),
-                    Plotting.Stretch (Dictionary.CVP_Ventricular, _P.GetHR_Seconds),
+                    Plotting.Stretch (Dictionary.CVP_Ventricular, (float)_P.GetHR_Seconds),
                     _Amplitude);
         }
 
@@ -122,7 +122,7 @@ namespace II.Waveform {
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
 
             return Plotting.Concatenate (new List<PointF> (),
-                Plotting.Stretch (Dictionary.RV_Default, _P.GetPulsatility_Seconds),
+                Plotting.Stretch (Dictionary.RV_Default, (float)_P.GetPulsatility_Seconds),
                 _Amplitude);
         }
 
@@ -131,7 +131,7 @@ namespace II.Waveform {
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
 
             return Plotting.Concatenate (new List<PointF> (),
-                Plotting.Stretch (Dictionary.PA_Default, _P.GetPulsatility_Seconds),
+                Plotting.Stretch (Dictionary.PA_Default, (float)_P.GetPulsatility_Seconds),
                 _Amplitude);
         }
 
@@ -140,33 +140,32 @@ namespace II.Waveform {
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
 
             return Plotting.Concatenate (new List<PointF> (),
-                Plotting.Stretch (Dictionary.PCW_Default, _P.GetHR_Seconds),
+                Plotting.Stretch (Dictionary.PCW_Default, (float)_P.GetHR_Seconds),
                 _Amplitude);
         }
 
         public static List<PointF> IABP_Balloon_Rhythm (Patient _P, float _Amplitude) {
             return Plotting.Concatenate (new List<PointF> (),
-                Plotting.Stretch (Dictionary.IABP_Balloon_Default, _P.GetHR_Seconds * 0.6f),
+                Plotting.Stretch (Dictionary.IABP_Balloon_Default, (float)_P.GetHR_Seconds * 0.6f),
                 _Amplitude);
         }
 
         public static List<PointF> IABP_ABP_Rhythm (Patient _P, float _Amplitude) {
             if (!_P.Cardiac_Rhythm.HasPulse_Ventricular)
                 return Plotting.Concatenate (new List<PointF> (),
-                    Plotting.Stretch (Dictionary.IABP_ABP_Nonpulsatile, _P.GetHR_Seconds),
+                    Plotting.Stretch (Dictionary.IABP_ABP_Nonpulsatile, (float)_P.GetHR_Seconds),
                     _Amplitude);
             else if (_P.Cardiac_Rhythm.AberrantBeat)
                 return Plotting.Concatenate (new List<PointF> (),
-                    Plotting.Stretch (Dictionary.IABP_ABP_Ectopic, _P.GetHR_Seconds),
+                    Plotting.Stretch (Dictionary.IABP_ABP_Ectopic, (float)_P.GetHR_Seconds),
                     _Amplitude);
             else
                 return Plotting.Concatenate (new List<PointF> (),
-                    Plotting.Stretch (Dictionary.IABP_ABP_Default, _P.GetHR_Seconds),
+                    Plotting.Stretch (Dictionary.IABP_ABP_Default, (float)_P.GetHR_Seconds),
                     _Amplitude);
         }
 
         public static List<PointF> FHR_Rhythm (Patient _P, bool isContraction) {
-
             //if (!isContraction) {               // Baseline FHR tracing
             float fhrAmplitude;
             switch (_P.FHR_Variability.Value) {
@@ -312,7 +311,6 @@ namespace II.Waveform {
         }
 
         public static List<PointF> ECG_Complex__QRST_SVT (Patient _P, Lead _L) {
-            float _Length = _P.GetHR_Seconds;
             float lerpCoeff = Math.Clamp (Math.InverseLerp (160, 240, _P.HR)),
                         QRS = Math.Lerp (0.05f, 0.12f, 1 - lerpCoeff),
                         QT = Math.Lerp (0.22f, 0.36f, 1 - lerpCoeff);
@@ -331,13 +329,13 @@ namespace II.Waveform {
         public static List<PointF> ECG_Complex__QRST_VT (Patient _P, Lead _L) {
             return Plotting.Concatenate (new List<PointF> (),
                 Plotting.Multiply (
-                    Plotting.Stretch (Dictionary.ECG_Complex_VT, _P.GetHR_Seconds),
+                    Plotting.Stretch (Dictionary.ECG_Complex_VT, (float)_P.GetHR_Seconds),
                 baseLeadCoeff [(int)_L.Value, (int)WavePart.QRST]));
         }
 
         public static List<PointF> ECG_Complex__QRST_VF (Patient _P, Lead _L, float _Amp) {
-            float _Length = _P.GetHR_Seconds,
-                    _Wave = _P.GetHR_Seconds / 2f,
+            float _Length = (float)_P.GetHR_Seconds,
+                    _Wave = (float)_P.GetHR_Seconds / 2f,
                     _Amplitude = (float)(Math.RandomDouble (0.3f, 0.6f) * _Amp);
 
             List<PointF> thisBeat = new List<PointF> ();
@@ -355,14 +353,14 @@ namespace II.Waveform {
         public static List<PointF> ECG_Complex__Idioventricular (Patient _P, Lead _L) {
             return Plotting.Concatenate (new List<PointF> (),
                 Plotting.Multiply (
-                    Plotting.Stretch (Dictionary.ECG_Complex_Idioventricular, _P.GetHR_Seconds),
+                    Plotting.Stretch (Dictionary.ECG_Complex_Idioventricular, (float)_P.GetHR_Seconds),
                 baseLeadCoeff [(int)_L.Value, (int)WavePart.QRST]));
         }
 
         public static List<PointF> ECG_CPR_Artifact (Patient _P, Lead _L) {
             return Plotting.Concatenate (new List<PointF> (),
                 Plotting.Multiply (
-                    Plotting.Stretch (Dictionary.ECG_CPR_Artifact, _P.GetHR_Seconds),
+                    Plotting.Stretch (Dictionary.ECG_CPR_Artifact, (float)_P.GetHR_Seconds),
                 baseLeadCoeff [(int)_L.Value, (int)WavePart.QRST]));
         }
 
@@ -429,7 +427,7 @@ namespace II.Waveform {
         }
 
         private static List<PointF> ECG_J (Patient p, Lead l, float _L, float _mV, PointF _S) {
-            return Plotting.Line (ResolutionTime, _L, (_mV * baseLeadCoeff [(int)l.Value, (int)WavePart.J]) + p.ST_Elevation [(int)l.Value], _S);
+            return Plotting.Line (ResolutionTime, _L, (_mV * baseLeadCoeff [(int)l.Value, (int)WavePart.J]) + (float)p.ST_Elevation [(int)l.Value], _S);
         }
 
         private static List<PointF> ECG_T (Patient p, Lead l, PointF _S) {
@@ -437,7 +435,7 @@ namespace II.Waveform {
         }
 
         private static List<PointF> ECG_T (Patient p, Lead l, float _L, float _mV, float _mV_End, PointF _S) {
-            return Plotting.Peak (ResolutionTime, _L, (_mV * baseLeadCoeff [(int)l.Value, (int)WavePart.T]) + p.T_Elevation [(int)l.Value], _mV_End, _S);
+            return Plotting.Peak (ResolutionTime, _L, (_mV * baseLeadCoeff [(int)l.Value, (int)WavePart.T]) + (float)p.T_Elevation [(int)l.Value], _mV_End, _S);
         }
 
         private static List<PointF> ECG_PR (Patient p, Lead l, PointF _S) {
@@ -453,7 +451,7 @@ namespace II.Waveform {
         }
 
         private static List<PointF> ECG_ST (Patient p, Lead l, float _L, float _mV, PointF _S) {
-            return Plotting.Line (ResolutionTime, _L, _mV + baseLeadCoeff [(int)l.Value, (int)WavePart.ST] + p.ST_Elevation [(int)l.Value], _S);
+            return Plotting.Line (ResolutionTime, _L, _mV + baseLeadCoeff [(int)l.Value, (int)WavePart.ST] + (float)p.ST_Elevation [(int)l.Value], _S);
         }
 
         private static List<PointF> ECG_TP (Patient p, Lead l, PointF _S) {
@@ -474,7 +472,6 @@ namespace II.Waveform {
 
         // Coefficients to transform base lead (Lead 2) into 12 lead ECG
         private static float [,] baseLeadCoeff = new float [,] {
-
             // P through T are multipliers; segments are additions
             { 0.7f,     0.7f,     0.7f,   0.7f,   0.7f,   0.7f,   0.8f,       0f,     0f,     0f },     // L1
             { 1f,       1f,       1f,     1f,     1f,     1f,     1f,         0f,     0f,     0f },     // L2
@@ -496,7 +493,6 @@ namespace II.Waveform {
 
         // Coefficients to modify 12 lead ECG per cardiac axis deviation
         private static float [,,] axisLeadCoeff = new float [,,] {
-
             // P through T are multipliers; segments are additions
             {   // Normal axis
                 {   1f,     1f,     1f  },              // L1

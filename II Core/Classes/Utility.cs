@@ -5,7 +5,7 @@ using System.Text;
 
 namespace II {
     public static class Utility {
-        public const string Version = "1.3.0";
+        public const string Version = "1.3.1.5";
 
         public static bool IsNewerVersion (string current, string comparison) {
             string [] curSplit = current.Split ('.'),
@@ -13,11 +13,13 @@ namespace II {
             int buffer;
 
             for (int i = 0; i < compSplit.Length; i++) {
-                if (!int.TryParse (curSplit [i], out buffer))           // Error in parsing current version?
-                    return true;                                            // Then send for newer version!
-                else if (!int.TryParse (compSplit [i], out buffer))     // Error in parsing comparison version?
-                    return false;                                           // Then dodge the newer version!
-                else if ((i < curSplit.Length ? int.Parse (curSplit [i]) : 0) < int.Parse (compSplit [i]))
+                // Sanitize inputs
+                if (!int.TryParse (curSplit [i], out buffer))
+                    curSplit [i] = "-1";
+                if (!int.TryParse (compSplit [i], out buffer))
+                    compSplit [i] = "-1";
+
+                if ((i < curSplit.Length ? int.Parse (curSplit [i]) : 0) < int.Parse (compSplit [i]))
                     return true;
                 else if ((i < curSplit.Length ? int.Parse (curSplit [i]) : 0) > int.Parse (compSplit [i]))
                     return false;

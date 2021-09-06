@@ -39,16 +39,18 @@ namespace II {
                     Pulsus_Alternans = false;
 
         public Cardiac_Axes Cardiac_Axis = new Cardiac_Axes ();
-        public float [] ST_Elevation, T_Elevation;
+        public double [] ST_Elevation, T_Elevation;
 
         /* Obstetric profile */
 
         public Scales.Intensity Contraction_Intensity = new Scales.Intensity (),
                          FHR_Variability = new Scales.Intensity ();
 
-        public float Contraction_Frequency;     // Frequency in minutes
-        public int Contraction_Duration,        // Duration in seconds
-                    FHR;                        // Baseline fetal heart rate
+        public double Contraction_Frequency;     // Frequency in minutes
+
+        public int Contraction_Duration,         // Duration in seconds
+                    FHR;                         // Baseline fetal heart rate
+
         public FHRAccelDecels FHR_AccelDecels = new FHRAccelDecels ();
         public bool Uterus_Contracted = true;
 
@@ -68,7 +70,7 @@ namespace II {
         /* Intra-aortic balloon pump parameters */
         public int IABP_AP, IABP_DBP, IABP_MAP;     // Intra-aortic balloon pump blood pressures
         public bool IABP_Active = false;            // Is the Device_IABP currently augmenting?
-        public string IABP_Trigger;                 // Device_IABP's trigger; data backflow for strip processing
+        public string IABP_Trigger = "";            // Device_IABP's trigger; data backflow for strip processing
 
         /* Timers for modeling */
 
@@ -122,7 +124,7 @@ namespace II {
 
             /* Respiratory profile */
 
-            public float RR_IE_I,               // Inspiratory to expiratory ratio
+            public double RR_IE_I,               // Inspiratory to expiratory ratio
                          RR_IE_E;
 
             public Vital_Signs () {
@@ -245,12 +247,12 @@ namespace II {
             set { VS_Settings.T = value; }
         }
 
-        public float RR_IE_I {
+        public double RR_IE_I {
             get { return VS_Actual.RR_IE_I; }
             set { VS_Settings.RR_IE_I = value; }
         }
 
-        public float RR_IE_E {
+        public double RR_IE_E {
             get { return VS_Actual.RR_IE_E; }
             set { VS_Settings.RR_IE_E = value; }
         }
@@ -285,8 +287,8 @@ namespace II {
                             50,
                             false, false,
                             Cardiac_Axes.Values.Normal,
-                            new float [] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
-                            new float [] { 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f },
+                            new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                            new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d },
 
                             // Obstetric profile
                             150,
@@ -381,7 +383,6 @@ namespace II {
         }
 
         public void CleanListPatientEvents () {
-
             // Remove all listings older than 1 minute... prevent cluttering memory
             for (int i = ListPatientEvents.Count - 1; i >= 0; i--)
                 if (ListPatientEvents [i].Occurred.CompareTo (DateTime.Now.AddMinutes (-1)) < 0)
@@ -398,11 +399,11 @@ namespace II {
             return map - icp;
         }
 
-        public float GetHR_Seconds { get { return 60f / System.Math.Max (1, VS_Actual.HR); } }
-        public float GetRR_Seconds { get { return 60f / System.Math.Max (1, VS_Actual.RR); } }
-        public float GetRR_Seconds_I { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_I; } }
-        public float GetRR_Seconds_E { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_E; } }
-        public float GetPulsatility_Seconds { get { return System.Math.Min (GetHR_Seconds * 0.75f, 0.75f); } }
+        public double GetHR_Seconds { get { return 60f / System.Math.Max (1, VS_Actual.HR); } }
+        public double GetRR_Seconds { get { return 60f / System.Math.Max (1, VS_Actual.RR); } }
+        public double GetRR_Seconds_I { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_I; } }
+        public double GetRR_Seconds_E { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_E; } }
+        public double GetPulsatility_Seconds { get { return System.Math.Min (GetHR_Seconds * 0.75f, 0.75f); } }
 
         public int MeasureHR_ECG (float lengthSeconds, float offsetSeconds)
             => MeasureHR (lengthSeconds, offsetSeconds, false);
@@ -480,13 +481,6 @@ namespace II {
                             // Patient/scenario information
                             case "Updated": Updated = Utility.DateTime_FromString (pValue); break;
 
-                            // Device information
-                            case "TransducerZeroed_ABP": TransducerZeroed_ABP = bool.Parse (pValue); break;
-                            case "TransducerZeroed_CVP": TransducerZeroed_CVP = bool.Parse (pValue); break;
-                            case "TransducerZeroed_PA": TransducerZeroed_PA = bool.Parse (pValue); break;
-                            case "TransducerZeroed_ICP": TransducerZeroed_ICP = bool.Parse (pValue); break;
-                            case "TransducerZeroed_IAP": TransducerZeroed_IAP = bool.Parse (pValue); break;
-
                             // Basic vital signs
                             case "HR": VS_Settings.HR = int.Parse (pValue); break;
                             case "NSBP": VS_Settings.NSBP = int.Parse (pValue); break;
@@ -495,8 +489,11 @@ namespace II {
                             case "RR": VS_Settings.RR = int.Parse (pValue); break;
                             case "SPO2": VS_Settings.SPO2 = int.Parse (pValue); break;
                             case "T": VS_Settings.T = double.Parse (pValue); break;
+
+                            // Rhythms
                             case "Cardiac_Rhythm": Cardiac_Rhythm.Value = (Cardiac_Rhythms.Values)Enum.Parse (typeof (Cardiac_Rhythms.Values), pValue); break;
                             case "Respiratory_Rhythm": Respiratory_Rhythm.Value = (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), pValue); break;
+                            case "PulmonaryArtery_Rhythm": PulmonaryArtery_Placement.Value = (PulmonaryArtery_Rhythms.Values)Enum.Parse (typeof (PulmonaryArtery_Rhythms.Values), pValue); break;
 
                             // Advanced hemodynamics
                             case "ETCO2": VS_Settings.ETCO2 = int.Parse (pValue); break;
@@ -505,7 +502,6 @@ namespace II {
                             case "ADBP": VS_Settings.ADBP = int.Parse (pValue); break;
                             case "AMAP": VS_Settings.AMAP = int.Parse (pValue); break;
                             case "CO": VS_Settings.CO = double.Parse (pValue); break;
-                            case "PulmonaryArtery_Rhythm": PulmonaryArtery_Placement.Value = (PulmonaryArtery_Rhythms.Values)Enum.Parse (typeof (PulmonaryArtery_Rhythms.Values), pValue); break;
                             case "PSP": VS_Settings.PSP = int.Parse (pValue); break;
                             case "PDP": VS_Settings.PDP = int.Parse (pValue); break;
                             case "PMP": VS_Settings.PMP = int.Parse (pValue); break;
@@ -514,14 +510,12 @@ namespace II {
 
                             // Respiratory profile
                             case "Mechanically_Ventilated": Mechanically_Ventilated = bool.Parse (pValue); break;
-                            case "Respiratory_IERatio_I": VS_Settings.RR_IE_I = int.Parse (pValue); break;
-                            case "Respiratory_IERatio_E": VS_Settings.RR_IE_E = int.Parse (pValue); break;
+                            case "Respiratory_IERatio_I": VS_Settings.RR_IE_I = double.Parse (pValue); break;
+                            case "Respiratory_IERatio_E": VS_Settings.RR_IE_E = double.Parse (pValue); break;
                             case "Respiration_Inflated": Respiration_Inflated = bool.Parse (pValue); break;
 
                             // Cardiac profile
                             case "Pacemaker_Threshold": Pacemaker_Threshold = int.Parse (pValue); break;
-                            case "Pacemaker_Rate": Pacemaker_Rate = int.Parse (pValue); break;
-                            case "Pacemaker_Energy": Pacemaker_Energy = int.Parse (pValue); break;
                             case "PulsusParadoxus": Pulsus_Paradoxus = bool.Parse (pValue); break;
                             case "PulsusAlternans": Pulsus_Alternans = bool.Parse (pValue); break;
                             case "Cardiac_Axis": Cardiac_Axis.Value = (Cardiac_Axes.Values)Enum.Parse (typeof (Cardiac_Axes.Values), pValue); break;
@@ -529,13 +523,13 @@ namespace II {
                             case "ST_Elevation":
                                 string [] e_st = pValue.Split (',').Where ((o) => o != "").ToArray ();
                                 for (int i = 0; i < e_st.Length && i < ST_Elevation.Length; i++)
-                                    ST_Elevation [i] = float.Parse (e_st [i]);
+                                    ST_Elevation [i] = double.Parse (e_st [i]);
                                 break;
 
                             case "T_Elevation":
                                 string [] e_t = pValue.Split (',').Where ((o) => o != "").ToArray ();
                                 for (int i = 0; i < e_t.Length && i < T_Elevation.Length; i++)
-                                    T_Elevation [i] = float.Parse (e_t [i]);
+                                    T_Elevation [i] = double.Parse (e_t [i]);
                                 break;
 
                             // Obstetric profile
@@ -546,9 +540,26 @@ namespace II {
                                     FHR_AccelDecels.ValueList.Add ((FHRAccelDecels.Values)Enum.Parse (typeof (FHRAccelDecels.Values), fhr_rhythm));
                                 break;
 
-                            case "UterineContraction_Frequency": Contraction_Frequency = float.Parse (pValue); break;
+                            case "UterineContraction_Frequency": Contraction_Frequency = double.Parse (pValue); break;
                             case "UterineContraction_Duration": Contraction_Duration = int.Parse (pValue); break;
                             case "UterineContraction_Intensity": Contraction_Intensity.Value = (Scales.Intensity.Values)Enum.Parse (typeof (Scales.Intensity.Values), pValue); break;
+                            case "Uterus_Contracted": Uterus_Contracted = bool.Parse (pValue); break;
+
+                            // Device settings
+                            case "TransducerZeroed_ABP": TransducerZeroed_ABP = bool.Parse (pValue); break;
+                            case "TransducerZeroed_CVP": TransducerZeroed_CVP = bool.Parse (pValue); break;
+                            case "TransducerZeroed_PA": TransducerZeroed_PA = bool.Parse (pValue); break;
+                            case "TransducerZeroed_ICP": TransducerZeroed_ICP = bool.Parse (pValue); break;
+                            case "TransducerZeroed_IAP": TransducerZeroed_IAP = bool.Parse (pValue); break;
+
+                            case "Pacemaker_Rate": Pacemaker_Rate = int.Parse (pValue); break;
+                            case "Pacemaker_Energy": Pacemaker_Energy = int.Parse (pValue); break;
+
+                            case "IABP_AP": IABP_AP = int.Parse (pValue); break;
+                            case "IABP_DBP": IABP_DBP = int.Parse (pValue); break;
+                            case "IABP_MAP": IABP_MAP = int.Parse (pValue); break;
+                            case "IABP_Active": IABP_Active = bool.Parse (pValue); break;
+                            case "IABP_Trigger": IABP_Trigger = pValue; break;
                         }
                     }
                 }
@@ -576,13 +587,6 @@ namespace II {
             // File/scenario information
             sWrite.AppendLine (String.Format ("{0}:{1}", "Updated", Utility.DateTime_ToString (Updated)));
 
-            // Device information;
-            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_ABP", TransducerZeroed_ABP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_CVP", TransducerZeroed_CVP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_PA", TransducerZeroed_PA));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_ICP", TransducerZeroed_ICP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_IAP", TransducerZeroed_IAP));
-
             // Basic vital signs
             sWrite.AppendLine (String.Format ("{0}:{1}", "HR", VS_Settings.HR));
             sWrite.AppendLine (String.Format ("{0}:{1}", "NSBP", VS_Settings.NSBP));
@@ -590,9 +594,12 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "NMAP", VS_Settings.NMAP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "RR", VS_Settings.RR));
             sWrite.AppendLine (String.Format ("{0}:{1}", "SPO2", VS_Settings.SPO2));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "T", System.Math.Round (VS_Settings.T, 1)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "T", VS_Settings.T));
+
+            // Rhythms
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Rhythm", Cardiac_Rhythm.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_Rhythm", Respiratory_Rhythm.Value));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "PulmonaryArtery_Rhythm", PulmonaryArtery_Placement.Value));
 
             // Advanced hemodynamics
             sWrite.AppendLine (String.Format ("{0}:{1}", "ETCO2", VS_Settings.ETCO2));
@@ -601,7 +608,6 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "ADBP", VS_Settings.ADBP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "AMAP", VS_Settings.AMAP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "CO", VS_Settings.CO));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "PulmonaryArtery_Rhythm", PulmonaryArtery_Placement.Value));
             sWrite.AppendLine (String.Format ("{0}:{1}", "PSP", VS_Settings.PSP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "PDP", VS_Settings.PDP));
             sWrite.AppendLine (String.Format ("{0}:{1}", "PMP", VS_Settings.PMP));
@@ -610,14 +616,12 @@ namespace II {
 
             // Respiratory profile
             sWrite.AppendLine (String.Format ("{0}:{1}", "Mechanically_Ventilated", Mechanically_Ventilated));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_I", System.Math.Round (VS_Settings.RR_IE_I, 1)));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_E", System.Math.Round (VS_Settings.RR_IE_E, 1)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_I", VS_Settings.RR_IE_I));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_E", VS_Settings.RR_IE_E));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Respiration_Inflated", Respiration_Inflated));
 
             // Cardiac profile
             sWrite.AppendLine (String.Format ("{0}:{1}", "Pacemaker_Threshold", Pacemaker_Threshold));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Pacemaker_Rate", Pacemaker_Rate));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Pacemaker_Energy", Pacemaker_Energy));
             sWrite.AppendLine (String.Format ("{0}:{1}", "PulsusParadoxus", Pulsus_Paradoxus));
             sWrite.AppendLine (String.Format ("{0}:{1}", "PulsusAlternans", Pulsus_Alternans));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Axis", Cardiac_Axis.Value));
@@ -627,10 +631,27 @@ namespace II {
             // Obstetric profile
             sWrite.AppendLine (String.Format ("{0}:{1}", "FHR", FHR));
             sWrite.AppendLine (String.Format ("{0}:{1}", "FHR_Variability", FHR_Variability.Value));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "FHR_Rhythms", string.Join (",", FHR_AccelDecels.ValueList)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "UterineContraction_Frequency", Contraction_Frequency));
             sWrite.AppendLine (String.Format ("{0}:{1}", "UterineContraction_Duration", Contraction_Duration));
             sWrite.AppendLine (String.Format ("{0}:{1}", "UterineContraction_Intensity", Contraction_Intensity.Value));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "FHR_Rhythms", string.Join (",", FHR_AccelDecels.ValueList)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Uterus_Contracted", Uterus_Contracted));
+
+            // Device settings
+            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_ABP", TransducerZeroed_ABP));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_CVP", TransducerZeroed_CVP));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_PA", TransducerZeroed_PA));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_ICP", TransducerZeroed_ICP));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_IAP", TransducerZeroed_IAP));
+
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Pacemaker_Rate", Pacemaker_Rate));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Pacemaker_Energy", Pacemaker_Energy));
+
+            sWrite.AppendLine (String.Format ("{0}:{1}", "IABP_AP", IABP_AP));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "IABP_DBP", IABP_DBP));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "IABP_MAP", IABP_MAP));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "IABP_Active", IABP_Active));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "IABP_Trigger", IABP_Trigger));
 
             return sWrite.ToString ();
         }
@@ -657,17 +678,17 @@ namespace II {
 
                     // Respiratory profile
                     bool mech_vent,
-                    float resp_ier_i, float resp_ier_e,
+                    double resp_ier_i, double resp_ier_e,
 
                     // Cardiac profile
                     int pacer_threshold,
                     bool puls_paradoxus, bool puls_alternans,
                     Cardiac_Axes.Values card_axis,
-                    float [] st_elev, float [] t_elev,
+                    double [] st_elev, double [] t_elev,
 
                     // Obstetric profile
                     int fhr, Scales.Intensity.Values fhr_var, List<FHRAccelDecels.Values> fhr_rhythms,
-                    float uc_freq, int uc_duration, Scales.Intensity.Values uc_intensity) {
+                    double uc_freq, int uc_duration, Scales.Intensity.Values uc_intensity) {
             Updated = DateTime.UtcNow;
 
             // Basic vital signs
@@ -1273,7 +1294,7 @@ namespace II {
                 case Respiratory_Rhythms.Values.Biot:
                 case Respiratory_Rhythms.Values.Cheyne_Stokes:
                 case Respiratory_Rhythms.Values.Regular:
-                    timerRespiratory_Expiration.ResetAuto (GetRR_Seconds_I * 1000f);     // Expiration.Interval marks end inspiration
+                    timerRespiratory_Expiration.ResetAuto ((int)(GetRR_Seconds_I * 1000));     // Expiration.Interval marks end inspiration
                     break;
             }
         }
@@ -1324,7 +1345,7 @@ namespace II {
                 OnPatientEvent (PatientEventTypes.Obstetric_Contraction_Start);
             } else {                        // Contraction ending
                 Uterus_Contracted = false;
-                timerObstetric_Contraction.ResetAuto (Contraction_Frequency * 60 * 1000f);
+                timerObstetric_Contraction.ResetAuto ((int)(Contraction_Frequency * 60 * 1000));
 
                 OnPatientEvent (PatientEventTypes.Obstetric_Contraction_End);
             }

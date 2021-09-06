@@ -32,79 +32,214 @@ namespace II.Server {
         public string BootstrapExeUri = String.Empty;
         public string BootstrapHashMd5 = String.Empty;
 
-        private string FormatForPHP (string inc)
+        private static string FormatForPHP (string inc)
             => inc.Replace ("#", "_").Replace ("$", "_");
 
-        private string GetCountryCode (string ipAddress) {
-            try {
-                WebRequest req = WebRequest.Create (FormatForPHP (String.Format (
-                    "http://server.infirmary-integrated.com/ipdata_provider.php?ip_address={0}",
-                    ipAddress)));
-                WebResponse resp = req.GetResponse ();
-                Stream str = resp.GetResponseStream ();
-                string body = String.Empty;
+        public class UsageStat {
+            public DateTime Timestamp;
+            public string Version;
+            public string Environment_OS;
+            public string Environment_Language;
+            public string Client_Language;
+            public string Client_Country;
+            public string Hash_IPAddress;
+            public string Hash_MACAddress;
+            public string Hash_Username;
 
-                using (StreamReader sr = new StreamReader (str)) {
-                    while (!sr.EndOfStream) {
-                        body = sr.ReadLine ();
+            public UsageStat () { }
 
-                        if (body.Contains ("country_code"))
-                            break;
-                    }
-                }
-
-                if (!body.Contains ("country_code"))
-                    return "--";
-
-                resp.Close ();
-                str.Close ();
-
-                resp.Dispose ();
-                str.Dispose ();
-
-                int start = body.IndexOf (": \"") + 3;
-                int length = body.IndexOf ("\",") - start;
-
-                return body.Substring (start, length);
-            } catch {
-                return "--";
+            public UsageStat (UsageStat copy) {
+                Timestamp = copy.Timestamp;
+                Version = copy.Version;
+                Environment_OS = copy.Environment_OS;
+                Environment_Language = copy.Environment_Language;
+                Client_Language = copy.Client_Language;
+                Client_Country = copy.Client_Country;
+                Hash_IPAddress = copy.Hash_IPAddress;
+                Hash_MACAddress = copy.Hash_MACAddress;
+                Hash_Username = copy.Hash_Username;
             }
-        }
 
-        public void Post_UsageStatistics (Language appLanguage) {
-            try {
-                string macAddress = "",
-                        ipAddress = "";
+            public UsageStat (Language appLanguage) {
+                Timestamp = DateTime.UtcNow;
+                Client_Language = appLanguage.Value.ToString ();
+
+                GatherInfo_Offline ();
+                GatherInfo_Online ();
+            }
+
+            private void GatherInfo_Offline () {
+                Version = Utility.Version;
+                Environment_OS = Environment.OSVersion.VersionString;
+
+                CultureInfo ci = CultureInfo.CurrentUICulture;
+                Environment_Language = ci.ThreeLetterWindowsLanguageName;
+
+                Hash_Username = Encryption.HashSHA256 (Environment.UserName);
 
                 NetworkInterface nInterface = NetworkInterface.GetAllNetworkInterfaces ().Where (
                     (o) => (o.NetworkInterfaceType == NetworkInterfaceType.Ethernet || o.NetworkInterfaceType == NetworkInterfaceType.Wireless80211)
                         && o.OperationalStatus == OperationalStatus.Up)
                     .First ();
                 if (nInterface != null) {
-                    macAddress = nInterface.GetPhysicalAddress ().ToString ();
-                    ipAddress = new WebClient ().DownloadString ("http://ipv4.icanhazip.com/").Trim ();
+                    string macAddress = nInterface.GetPhysicalAddress ().ToString ();
+                    Hash_MACAddress = Encryption.HashSHA256 (macAddress);
+                } else {
+                    Hash_MACAddress = "No Network Interface";
                 }
+            }
 
-                CultureInfo ci = CultureInfo.CurrentUICulture;
+            private void GatherInfo_Online () {
+                try {
+                    // Get the user's IP address using icanhazip.com; only store a hashed version for end-user security
+                    string ipAddress = new WebClient ().DownloadString ("http://ipv4.icanhazip.com/").Trim ();
+                    Hash_IPAddress = Encryption.HashSHA256 (ipAddress);
 
+                    // Get the user's country code via geolocation service via PHP script
+                    WebRequest req = WebRequest.Create (FormatForPHP (String.Format (
+                        "http://server.infirmary-integrated.com/ipdata_provider.php?ip_address={0}",
+                        ipAddress)));
+                    WebResponse resp = req.GetResponse ();
+                    Stream str = resp.GetResponseStream ();
+                    string body = String.Empty;
+
+                    using (StreamReader sr = new StreamReader (str)) {
+                        while (!sr.EndOfStream) {
+                            body = sr.ReadLine ();
+
+                            if (body.Contains ("country_code"))
+                                break;
+                        }
+                    }
+
+                    if (!body.Contains ("country_code")) {
+                        return;
+                    }
+
+                    resp.Close ();
+                    str.Close ();
+
+                    resp.Dispose ();
+                    str.Dispose ();
+
+                    int start = body.IndexOf (": \"") + 3;
+                    int length = body.IndexOf ("\",") - start;
+
+                    Client_Country = body.Substring (start, length);
+                } catch {
+                    Hash_IPAddress = "Offline";
+                    Client_Country = "Offline";
+                    return;
+                }
+            }
+        }
+
+        public void Run_UsageStats (UsageStat stat) {
+            List<UsageStat> stats = new List<UsageStat> () { stat };
+
+            stats.AddRange (Retrieve_UsageStats ());                    // Retrieve stored offline usage statistics
+            System.IO.File.Delete (File.GetUsageStatsPath ());          // Delete offline cached usage statistics
+
+            for (int i = stats.Count - 1; i > -1; i--) {
+                if (Post_UsageStats (stats [i])) {                      // If stats post to server successfully
+                    stats.RemoveAt (i);                                 // Remove posted stat from running list
+                }
+            }
+
+            if (stats.Count > 0)                                        // If any stats are not successfully posted
+                Store_UsageStats (stats);                               // Store them to offline usage statistics
+        }
+
+        private List<UsageStat> Retrieve_UsageStats () {
+            List<UsageStat> listStats = new List<UsageStat> ();
+
+            if (!System.IO.File.Exists (File.GetUsageStatsPath ()))
+                return listStats;
+
+            StreamReader sr = new StreamReader (File.GetUsageStatsPath ());
+
+            string line;
+            UsageStat bufferStat = new UsageStat ();
+
+            while ((line = sr.ReadLine ()) != null) {
+                if (line == "# USAGESTAT BEGIN") {
+                    bufferStat = new UsageStat ();
+                } else if (line == "# USAGESTAT END") {
+                    listStats.Add (new UsageStat (bufferStat));
+                } else if (line.Contains (":")) {
+                    string pName = line.Substring (0, line.IndexOf (':')),
+                            pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
+                    switch (pName) {
+                        default: break;
+
+                        case "Timestamp": bufferStat.Timestamp = Utility.DateTime_FromString (pValue); break;
+                        case "Version": bufferStat.Version = pValue; break;
+                        case "Environment_OS": bufferStat.Environment_OS = pValue; break;
+                        case "Environment_Language": bufferStat.Environment_Language = pValue; break;
+                        case "Client_Language": bufferStat.Client_Language = pValue; break;
+                        case "Client_Country": bufferStat.Client_Country = pValue; break;
+                        case "Hash_IPAddress": bufferStat.Hash_IPAddress = pValue; break;
+                        case "Hash_MACAddress": bufferStat.Hash_MACAddress = pValue; break;
+                        case "Hash_Username": bufferStat.Hash_Username = pValue; break;
+                    }
+                }
+            }
+
+            sr.Close ();
+            sr.Dispose ();
+
+            return listStats;
+        }
+
+        private void Store_UsageStats (List<UsageStat> listStats) {
+            StreamWriter sw = new StreamWriter (File.GetUsageStatsPath (), false);
+
+            foreach (UsageStat stat in listStats) {
+                sw.WriteLine ("# USAGESTAT BEGIN");
+
+                sw.WriteLine ($"Timestamp:{Utility.DateTime_ToString (stat.Timestamp)}");
+                sw.WriteLine ($"Version:{stat.Version}");
+                sw.WriteLine ($"Environment_OS:{stat.Environment_OS}");
+                sw.WriteLine ($"Environment_Language:{stat.Environment_Language}");
+                sw.WriteLine ($"Client_Language:{stat.Client_Language}");
+                sw.WriteLine ($"Client_Country:{stat.Client_Country}");
+                sw.WriteLine ($"Hash_IPAddress:{stat.Hash_IPAddress}");
+                sw.WriteLine ($"Hash_MACAddress:{stat.Hash_MACAddress}");
+                sw.WriteLine ($"Hash_Username:{stat.Hash_Username}");
+
+                sw.WriteLine ("# USAGESTAT END");
+                sw.WriteLine ("");
+                sw.Flush ();
+            }
+
+            sw.Close ();
+            sw.Dispose ();
+        }
+
+        private bool Post_UsageStats (UsageStat stat) {
+            try {
                 WebRequest req = WebRequest.Create (FormatForPHP (String.Format (
                     "http://server.infirmary-integrated.com/usage_post.php" +
                         "?timestamp={0}&ii_version={1}&env_os={2}&env_lang={3}&client_lang={4}&client_country={5}"
                         + "&client_ip={6}&client_mac={7}&client_user={8}",
 
-                    Utility.DateTime_ToString (DateTime.UtcNow),
-                    Utility.Version,
-                    Environment.OSVersion.VersionString,
-                    ci.ThreeLetterWindowsLanguageName,
-                    appLanguage.Value.ToString (),
-                    GetCountryCode (ipAddress),
-                    Encryption.HashSHA256 (ipAddress),
-                    Encryption.HashSHA256 (macAddress),
-                    Encryption.HashSHA256 (Environment.UserName)
+                    Utility.DateTime_ToString (stat.Timestamp),
+                    stat.Version,
+                    stat.Environment_OS,
+                    stat.Environment_Language,
+                    stat.Client_Language,
+                    stat.Client_Country,
+                    stat.Hash_IPAddress,
+                    stat.Hash_MACAddress,
+                    stat.Hash_Username
+
                     )));
 
                 req.GetResponse ();
+
+                return true;
             } catch {
+                return false;
             }
         }
 
@@ -165,6 +300,7 @@ namespace II.Server {
                     "http://server.infirmary-integrated.com/mirror_get.php?accession={0}&accesshash={1}",
                     m.Accession,
                     Encryption.HashSHA256 (m.PasswordAccess))));
+
                 WebResponse resp = req.GetResponse ();
                 Stream str = resp.GetResponseStream ();
 

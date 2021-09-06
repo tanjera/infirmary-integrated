@@ -17,7 +17,7 @@ namespace II {
         }
 
         public static async Task BootstrapInstall_Windows (II.Server.Server server) {
-            string installer = II.File.GetTempFilePath ("msi");
+            string installer = II.File.GetCachePath ("msi");
 
             using (HttpClient client = new HttpClient ()) {
                 using (HttpResponseMessage httpResponse = await client.GetAsync (

@@ -88,7 +88,7 @@ namespace II {
             => doc.Save (filepath);
 
         public static void PrintPdf (PdfDocument doc) {
-            string filepath = II.File.GetTempDirPath ()
+            string filepath = II.File.GetCacheDir ()
                 + Utility.DateTime_ToString_FilePath (DateTime.Now) + ".pdf";
             SavePdf (doc, filepath);
 
