@@ -1,0 +1,132 @@
+<Window
+	x:Class="II_Avalonia.PatientEditor"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+	Name="wdwPatientEditor"
+	Title="Patient Editor"
+	d:DesignHeight="560"
+	d:DesignWidth="700"
+	Icon="/Resources/Icon_II.ico"
+	mc:Ignorable="d">
+
+  <Window.Styles>
+    <Style Selector="Button.device">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="Background" Value="White" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="Padding" Value="10,2" />
+    </Style>
+
+    <Style Selector="Image.device">
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="Width" Value="48" />
+      <Setter Property="Height" Value="48" />
+    </Style>
+
+    <Style Selector="Label.device">
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="FontSize" Value="16" />
+    </Style>
+
+    <Style Selector="HeaderedContentControl.groupbox">
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate>
+            <Grid Margin="5">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+              </Grid.RowDefinitions>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <Border
+								Margin="5,0,0,0"
+								Padding="5,0,5,0"
+								Background="White"
+								ZIndex="1">
+                <TextBlock Text="{TemplateBinding Header}" TextBlock.FontWeight="Bold" />
+              </Border>
+              <Border
+								Grid.RowSpan="2"
+								Grid.ColumnSpan="2"
+								Margin="0,10,0,0"
+								BorderBrush="{TemplateBinding Background}"
+								BorderThickness="1">
+                <ContentPresenter Content="{TemplateBinding Content}" />
+              </Border>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+  </Window.Styles>
+
+  <DockPanel>
+    <!--  Main Menu  -->
+    <Menu DockPanel.Dock="Top">
+      <MenuItem Name="menuFile">
+        <MenuItem Name="menuNew" />
+        <Separator />
+        <MenuItem Name="menuLoad" />
+        <MenuItem Name="menuSave" />
+        <Separator />
+        <MenuItem Name="menuExit" />
+      </MenuItem>
+
+      <MenuItem Name="menuSettings">
+        <MenuItem Name="menuSetLanguage" />
+      </MenuItem>
+
+      <MenuItem Name="menuHelp">
+        <MenuItem Name="menuAbout" />
+      </MenuItem>
+    </Menu>
+
+    <!--  Column for Devices (opening Cardiac Monitor, Ventilator, etc.  -->
+    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+
+      <HeaderedContentControl
+				Name="lblGroupDevices"
+				Background="Black"
+				Classes="groupbox"
+				Header="Header">
+        <StackPanel Margin="3">
+          <Button Name="btnDeviceMonitor" Classes="device">
+            <StackPanel Orientation="Horizontal">
+              <Image Classes="device" Source="/Third_Party/Icon_DeviceMonitor_48.png" />
+              <Label Name="lblDeviceMonitor" Classes="device" />
+            </StackPanel>
+          </Button>
+
+          <Button Name="btnDeviceDefibrillator" Classes="device">
+            <StackPanel Orientation="Horizontal">
+              <Image Classes="device" Source="/Third_Party/Icon_DeviceDefibrillator_48.png" />
+              <Label Name="lblDeviceDefibrillator" Classes="device" />
+            </StackPanel>
+          </Button>
+
+          <Button Name="btnDevice12LeadECG" Classes="device">
+            <StackPanel Orientation="Horizontal">
+              <Image Classes="device" Source="/Third_Party/Icon_Device12LeadECG_48.png" />
+              <Label Name="lblDevice12LeadECG" Classes="device" />
+            </StackPanel>
+          </Button>
+
+          <Button Name="btnDeviceIABP" Classes="device">
+            <StackPanel Orientation="Horizontal">
+              <Image Classes="device" Source="/Third_Party/Icon_DeviceIABP_48.png" />
+              <Label Name="lblDeviceIABP" Classes="device" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </HeaderedContentControl>
+    </ScrollViewer>
+  </DockPanel>
+</Window>
