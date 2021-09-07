@@ -18,7 +18,6 @@ using II.Server;
 using Xceed.Wpf.Toolkit;
 
 namespace II_Avalonia {
-
     public partial class PatientEditor : Window {
         /* Variables for WPF UI loading */
         private bool uiLoadCompleted = false;
@@ -34,73 +33,73 @@ namespace II_Avalonia {
             ChangesApplied
         }
 
-        public PatientEditor () {
-            InitializeComponent ();
+        public PatientEditor() {
+            InitializeComponent();
 #if DEBUG
             this.AttachDevTools ();
 #endif
-            Init ();
+            Init();
         }
 
-        private void InitializeComponent () {
-            AvaloniaXamlLoader.Load (this);
+        private void InitializeComponent() {
+            AvaloniaXamlLoader.Load(this);
         }
 
-        private void Init () {
+        private void Init() {
             DataContext = this;
             App.Patient_Editor = this;
 
-            App.Settings.Load ();
-            InitInitialRun ();
-            InitUsageStatistics ();
-            InitInterface ();
-            InitUpgrade ();
-            InitMirroring ();
-            InitScenario (true);
+            App.Settings.Load();
+            InitInitialRun();
+            InitUsageStatistics();
+            InitInterface();
+            InitUpgrade();
+            InitMirroring();
+            InitScenario(true);
 
             if (App.Start_Args?.Length > 0)
-                LoadOpen (App.Start_Args [0]);
+                LoadOpen(App.Start_Args[0]);
 
-            SetParameterStatus (App.Settings.AutoApplyChanges);
+            SetParameterStatus(App.Settings.AutoApplyChanges);
 
             /* Debugging and testing code below */
         }
 
-        private void InitInitialRun () {
+        private void InitInitialRun() {
             string setLang = App.Settings.Language;
             if (setLang == null || setLang == ""
                 || !Enum.TryParse<Language.Values> (setLang, out App.Language.Value)) {
                 App.Language = new Language ();
-                //TODO DialogInitial ();
+                DialogInitial ();
             }
         }
 
-        private void InitUsageStatistics () {
+        private void InitUsageStatistics() {
             /* Send usage statistics to server in background */
-            _ = Task.Run (() => App.Server.Run_UsageStats (new Server.UsageStat (App.Language)));
+            _ = Task.Run(() => App.Server.Run_UsageStats(new Server.UsageStat(App.Language)));
         }
 
-        private void InitInterface () {
+        private void InitInterface() {
             /* Populate UI strings per language selection */
-            this.FindControl<Window> ("wdwPatientEditor").Title = App.Language.Localize ("PE:WindowTitle");
-            this.FindControl<MenuItem> ("menuNew").Header = App.Language.Localize ("PE:MenuNewFile");
-            this.FindControl<MenuItem> ("menuFile").Header = App.Language.Localize ("PE:MenuFile");
-            this.FindControl<MenuItem> ("menuLoad").Header = App.Language.Localize ("PE:MenuLoadSimulation");
-            this.FindControl<MenuItem> ("menuSave").Header = App.Language.Localize ("PE:MenuSaveSimulation");
-            this.FindControl<MenuItem> ("menuExit").Header = App.Language.Localize ("PE:MenuExitProgram");
+            this.FindControl<Window>("wdwPatientEditor").Title = App.Language.Localize("PE:WindowTitle");
+            this.FindControl<MenuItem>("menuNew").Header = App.Language.Localize("PE:MenuNewFile");
+            this.FindControl<MenuItem>("menuFile").Header = App.Language.Localize("PE:MenuFile");
+            this.FindControl<MenuItem>("menuLoad").Header = App.Language.Localize("PE:MenuLoadSimulation");
+            this.FindControl<MenuItem>("menuSave").Header = App.Language.Localize("PE:MenuSaveSimulation");
+            this.FindControl<MenuItem>("menuExit").Header = App.Language.Localize("PE:MenuExitProgram");
 
-            this.FindControl<MenuItem> ("menuSettings").Header = App.Language.Localize ("PE:MenuSettings");
-            this.FindControl<MenuItem> ("menuSetLanguage").Header = App.Language.Localize ("PE:MenuSetLanguage");
+            this.FindControl<MenuItem>("menuSettings").Header = App.Language.Localize("PE:MenuSettings");
+            this.FindControl<MenuItem>("menuSetLanguage").Header = App.Language.Localize("PE:MenuSetLanguage");
 
-            this.FindControl<MenuItem> ("menuHelp").Header = App.Language.Localize ("PE:MenuHelp");
-            this.FindControl<MenuItem> ("menuAbout").Header = App.Language.Localize ("PE:MenuAboutProgram");
+            this.FindControl<MenuItem>("menuHelp").Header = App.Language.Localize("PE:MenuHelp");
+            this.FindControl<MenuItem>("menuAbout").Header = App.Language.Localize("PE:MenuAboutProgram");
 
-            this.FindControl<HeaderedContentControl> ("lblGroupDevices").Header = App.Language.Localize ("PE:Devices");
-            this.FindControl<Label> ("lblDeviceMonitor").Content = App.Language.Localize ("PE:CardiacMonitor");
-            this.FindControl<Label> ("lblDevice12LeadECG").Content = App.Language.Localize ("PE:12LeadECG");
-            this.FindControl<Label> ("lblDeviceDefibrillator").Content = App.Language.Localize ("PE:Defibrillator");
-            this.FindControl<Label> ("lblDeviceIABP").Content = App.Language.Localize ("PE:IABP");
-            this.FindControl<Label> ("lblDeviceEFM").Content = App.Language.Localize ("PE:EFM");
+            this.FindControl<HeaderedContentControl>("lblGroupDevices").Header = App.Language.Localize("PE:Devices");
+            this.FindControl<Label>("lblDeviceMonitor").Content = App.Language.Localize("PE:CardiacMonitor");
+            this.FindControl<Label>("lblDevice12LeadECG").Content = App.Language.Localize("PE:12LeadECG");
+            this.FindControl<Label>("lblDeviceDefibrillator").Content = App.Language.Localize("PE:Defibrillator");
+            this.FindControl<Label>("lblDeviceIABP").Content = App.Language.Localize("PE:IABP");
+            this.FindControl<Label>("lblDeviceEFM").Content = App.Language.Localize("PE:EFM");
 
             //lblDeviceVentilator.Content = App.Language.Dictionary["PE:Ventilator"];
             //lblDeviceIVPump.Content = App.Language.Dictionary["PE:IVPump"];
@@ -200,75 +199,77 @@ namespace II_Avalonia {
             */
         }
 
-        private async void InitUpgrade () {
+        private async void InitUpgrade() {
             /* Newer version available? Check Server, populate status bar, prompt user for upgrade */
 
-            await Task.Run (() => App.Server.Get_LatestVersion_Windows ());
+            await Task.Run(() => App.Server.Get_LatestVersion_Windows());
 
-            /* TODO
             if (Utility.IsNewerVersion (Utility.Version, App.Server.UpgradeVersion)) {
-                txtUpdateAvailable.Text = String.Format (App.Language.Localize ("STATUS:UpdateAvailable"), App.Server.UpgradeVersion).Trim ();
+                //TODO txtUpdateAvailable.Text = String.Format (App.Language.Localize ("STATUS:UpdateAvailable"), App.Server.UpgradeVersion).Trim ();
             } else {            // If no update available, no status update
-                statusUpdateAvailable.Visibility = Visibility.Collapsed;
+                //TODO statusUpdateAvailable.Visibility = Visibility.Collapsed;
                 return;
             }
-            */
 
             if (App.Settings.MuteUpgrade) {
-                if (Utility.IsNewerVersion (App.Settings.MuteUpgradeVersion, App.Server.UpgradeVersion)) {
+                if (Utility.IsNewerVersion(App.Settings.MuteUpgradeVersion, App.Server.UpgradeVersion)) {
                     App.Settings.MuteUpgrade = false;
-                    App.Settings.Save ();
+                    App.Settings.Save();
                 } else {        // Mutes update popup notification
                     return;
                 }
             }
 
-            //TODO DialogUpgrade ();
+            DialogUpgrade ();
         }
 
-        private void InitMirroring () {
+        private void InitMirroring() {
             App.Timer_Main.Elapsed += App.Mirror.ProcessTimer;
             App.Mirror.timerUpdate.Tick += OnMirrorTick;
-            App.Mirror.timerUpdate.ResetAuto (5000);
+            App.Mirror.timerUpdate.ResetAuto(5000);
         }
 
-        private void InitScenario (bool toInit) {
-            App.Scenario = new Scenario (toInit);
+        private void InitScenario(bool toInit) {
+            App.Scenario = new Scenario(toInit);
             App.Scenario.StepChangeRequest += OnStepChangeRequest;    // Allows unlinking of Timers immediately prior to Step change
             App.Scenario.StepChanged += OnStepChanged;                  // Updates App.Patient, allows PatientEditor UI to update
             App.Timer_Main.Elapsed += App.Scenario.ProcessTimer;
 
             if (toInit)         // If toInit is false, Patient is null- InitPatient() will need to be called manually
-                InitPatient ();
+                InitPatient();
         }
 
         private void UnloadScenario () {
-            App.Timer_Main.Elapsed -= App.Scenario.ProcessTimer;   // Unlink Scenario from App/Main Timer
-            App.Scenario.Dispose ();        // Disposes Scenario's events and timer, and all Patients' events and timers
+            if (App.Scenario != null) {
+                App.Timer_Main.Elapsed -= App.Scenario.ProcessTimer;   // Unlink Scenario from App/Main Timer
+                App.Scenario.Dispose ();        // Disposes Scenario's events and timer, and all Patients' events and timers
+            }
         }
 
-        private void RefreshScenario (bool toInit) {
-            UnloadScenario ();
-            InitScenario (toInit);
+        private void RefreshScenario(bool toInit) {
+            UnloadScenario();
+            InitScenario(toInit);
         }
 
         private void InitPatient () {
-            App.Patient = App.Scenario.Patient;
+            if (App.Scenario != null)
+                App.Patient = App.Scenario.Patient;
 
-            InitPatientEvents ();
-            InitStep ();
+            InitPatientEvents();
+            InitStep();
         }
 
-        private void RefreshPatient () {
-            UnloadPatientEvents ();
+        private void RefreshPatient() {
+            UnloadPatientEvents();
 
-            App.Patient.Dispose ();
+            if (App.Patient != null)
+                App.Patient.Dispose ();
             App.Patient = new Patient ();
 
-            InitPatient ();
+            InitPatient();
         }
 
-        private void InitPatientEvents () {
+        private void InitPatientEvents() {
             /* Tie the Patient's Timer to the Main Timer */
             App.Timer_Main.Elapsed += App.Patient.ProcessTimers;
 
@@ -289,92 +290,95 @@ namespace II_Avalonia {
             */
         }
 
-        private void UnloadPatientEvents () {
+        private void UnloadPatientEvents() {
             /* Unloading the Patient from the Main Timer also stops all the Patient's Timers
             /* and results in that Patient not triggering PatientEvent's */
             App.Timer_Main.Elapsed -= App.Patient.ProcessTimers;
 
             /* But it's still important to clear PatientEvent subscriptions so they're not adding
             /* as duplicates when InitPatientEvents() is called!! */
-            App.Patient.UnsubscribePatientEvent ();
+            App.Patient.UnsubscribePatientEvent();
         }
 
-        private void InitDeviceMonitor () {
+        private void InitDeviceMonitor() {
             if (App.Device_Monitor == null || !App.Device_Monitor.IsActive)
-                App.Device_Monitor = new DeviceMonitor ();
+                App.Device_Monitor = new DeviceMonitor();
 
-            App.Device_Monitor.Activate ();
-            App.Device_Monitor.Show ();
+            App.Device_Monitor.Activate();
+            App.Device_Monitor.Show();
 
-            App.Patient.PatientEvent += App.Device_Monitor.OnPatientEvent;
+            if (App.Patient != null)
+                App.Patient.PatientEvent += App.Device_Monitor.OnPatientEvent;
         }
 
-        private void InitDeviceECG () {
+        private void InitDeviceECG() {
             if (App.Device_ECG == null || !App.Device_ECG.IsActive)
-                App.Device_ECG = new DeviceECG ();
+                App.Device_ECG = new DeviceECG();
 
-            App.Device_ECG.Activate ();
-            App.Device_ECG.Show ();
+            App.Device_ECG.Activate();
+            App.Device_ECG.Show();
 
-            App.Patient.PatientEvent += App.Device_ECG.OnPatientEvent;
+            if (App.Patient != null)
+                App.Patient.PatientEvent += App.Device_ECG.OnPatientEvent;
         }
 
-        private void InitDeviceDefib () {
+        private void InitDeviceDefib() {
             if (App.Device_Defib == null || !App.Device_Defib.IsActive)
-                App.Device_Defib = new DeviceDefib ();
+                App.Device_Defib = new DeviceDefib();
 
-            App.Device_Defib.Activate ();
-            App.Device_Defib.Show ();
+            App.Device_Defib.Activate();
+            App.Device_Defib.Show();
 
-            App.Patient.PatientEvent += App.Device_Defib.OnPatientEvent;
+            if (App.Patient != null)
+                App.Patient.PatientEvent += App.Device_Defib.OnPatientEvent;
         }
 
-        private void InitDeviceIABP () {
+        private void InitDeviceIABP() {
             if (App.Device_IABP == null || !App.Device_IABP.IsActive)
-                App.Device_IABP = new DeviceIABP ();
+                App.Device_IABP = new DeviceIABP();
 
-            App.Device_IABP.Activate ();
-            App.Device_IABP.Show ();
+            App.Device_IABP.Activate();
+            App.Device_IABP.Show();
 
-            App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
+            if (App.Patient != null)
+                App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
         }
 
-        private void InitDeviceEFM () {
+        private void InitDeviceEFM() {
             if (App.Device_EFM == null || !App.Device_EFM.IsActive)
-                App.Device_EFM = new DeviceEFM ();
+                App.Device_EFM = new DeviceEFM();
 
-            App.Device_EFM.Activate ();
-            App.Device_EFM.Show ();
+            App.Device_EFM.Activate();
+            App.Device_EFM.Show();
 
-            App.Patient.PatientEvent += App.Device_EFM.OnPatientEvent;
+            if (App.Patient != null)
+                App.Patient.PatientEvent += App.Device_EFM.OnPatientEvent;
         }
 
-        private void DialogInitial (bool reloadUI = false) {
-            App.Dialog_Language = new DialogInitial ();
-            App.Dialog_Language.Activate ();
-            App.Dialog_Language.ShowDialog (this);
+        private void DialogInitial(bool reloadUI = false) {
+            App.Dialog_Language = new DialogInitial();
+            App.Dialog_Language.Activate();
+            App.Dialog_Language.ShowDialog(this);
 
             if (reloadUI)
-                InitInterface ();
+                InitInterface();
         }
 
-        private void DialogAbout () {
-            App.Dialog_About = new DialogAbout ();
-            App.Dialog_About.Activate ();
-            App.Dialog_About.ShowDialog (this);
+        private void DialogAbout() {
+            App.Dialog_About = new DialogAbout();
+            App.Dialog_About.Activate();
+            App.Dialog_About.ShowDialog(this);
         }
 
-        private async void DialogUpgrade () {
+        private async void DialogUpgrade() {
             Bootstrap.UpgradeRoute decision = Bootstrap.UpgradeRoute.NULL;
 
-            App.Dialog_Upgrade = new DialogUpgrade ();
-            App.Dialog_Upgrade.Activate ();
+            App.Dialog_Upgrade = new DialogUpgrade();
+            App.Dialog_Upgrade.Activate();
 
-            /* TODO
             App.Dialog_Upgrade.OnUpgradeRoute += (s, ea) => decision = ea.Route;
-            App.Dialog_Upgrade.ShowDialog ();
+            await App.Dialog_Upgrade.ShowDialog (this);
             App.Dialog_Upgrade.OnUpgradeRoute -= (s, ea) => decision = ea.Route;
-            */
 
             switch (decision) {
                 default:
@@ -385,50 +389,37 @@ namespace II_Avalonia {
                 case Bootstrap.UpgradeRoute.MUTE:
                     App.Settings.MuteUpgrade = true;
                     App.Settings.MuteUpgradeVersion = App.Server.UpgradeVersion;
-                    App.Settings.Save ();
+                    App.Settings.Save();
                     return;
 
                 case Bootstrap.UpgradeRoute.WEBSITE:
+                case Bootstrap.UpgradeRoute.INSTALL:
                     if (!String.IsNullOrEmpty (App.Server.UpgradeWebpage))
-                        System.Diagnostics.Process.Start (App.Server.UpgradeWebpage);
+                        InterOp.OpenBrowser (App.Server.UpgradeWebpage);
                     return;
-
-                    /* TODO
-                    case Bootstrap.UpgradeRoute.INSTALL:
-                        if (!String.IsNullOrEmpty (App.Server.BootstrapExeUri) && !String.IsNullOrEmpty (App.Server.BootstrapHashMd5)) {
-                            _ = Task.Run (() => System.Windows.MessageBox.Show (
-                                App.Language.Localize ("UPGRADE:Downloading"),
-                                "", MessageBoxButton.OK, MessageBoxImage.Information));
-
-                            await Bootstrap.BootstrapInstall_Windows (App.Server);
-                            this.Close ();
-                        }
-                        return;
-                    */
             }
         }
 
-        private void SetParameterStatus (bool autoApplyChanges) {
+        private void SetParameterStatus(bool autoApplyChanges) {
             ParameterStatus = autoApplyChanges
                ? ParameterStatuses.AutoApply
                : ParameterStatuses.ChangesApplied;
 
-            UpdateParameterIndicators ();
+            UpdateParameterIndicators();
         }
 
-        private void AdvanceParameterStatus (ParameterStatuses status) {
+        private void AdvanceParameterStatus(ParameterStatuses status) {
             /* Toggles between pending changes or changes applied; bypasses if auto-applying or null */
-            /* TODO
+
             if (status == ParameterStatuses.ChangesApplied && ParameterStatus == ParameterStatuses.ChangesPending)
                 ParameterStatus = ParameterStatuses.ChangesApplied;
             else if (status == ParameterStatuses.ChangesPending && ParameterStatus == ParameterStatuses.ChangesApplied)
                 ParameterStatus = ParameterStatuses.ChangesPending;
-            */
 
-            UpdateParameterIndicators ();
+            UpdateParameterIndicators();
         }
 
-        private void UpdateParameterIndicators () {
+        private void UpdateParameterIndicators() {
             /* TODO
             switch (ParameterStatus) {
                 default:
@@ -457,138 +448,138 @@ namespace II_Avalonia {
             */
         }
 
-        private async void LoadFile () {
-            OpenFileDialog dlgLoad = new OpenFileDialog ();
+        private async void LoadFile() {
+            OpenFileDialog dlgLoad = new OpenFileDialog();
 
-            dlgLoad.Filters.Add (new FileDialogFilter () { Name = "Infirmary Integrated simulation files", Extensions = { ".ii" } });
-            dlgLoad.Filters.Add (new FileDialogFilter () { Name = "All files", Extensions = { "*.*" } });
+            dlgLoad.Filters.Add(new FileDialogFilter() { Name = "Infirmary Integrated simulation files", Extensions = { ".ii" } });
+            dlgLoad.Filters.Add(new FileDialogFilter() { Name = "All files", Extensions = { "*.*" } });
             dlgLoad.AllowMultiple = false;
 
-            string [] loadFile = await dlgLoad.ShowAsync (this);
+            string[] loadFile = await dlgLoad.ShowAsync(this);
             if (loadFile.Length > 0) {
-                LoadInit (loadFile [0]);
+                LoadInit(loadFile[0]);
             }
         }
 
-        private void LoadOpen (string fileName) {
-            if (System.IO.File.Exists (fileName)) {
-                LoadInit (fileName);
+        private void LoadOpen(string fileName) {
+            if (System.IO.File.Exists(fileName)) {
+                LoadInit(fileName);
             } else {
-                LoadFail ();
+                LoadFail();
             }
 
             //TODO FormUpdateFields (this, new Patient.PatientEventArgs (App.Patient, Patient.PatientEventTypes.Vitals_Change));
         }
 
-        private void LoadInit (string incFile) {
-            StreamReader sr = new StreamReader (incFile);
+        private void LoadInit(string incFile) {
+            StreamReader sr = new StreamReader(incFile);
 
             /* Read savefile metadata indicating data formatting
                 * Multiple data formats for forward compatibility
                 */
-            string metadata = sr.ReadLine ();
-            if (metadata.StartsWith (".ii:t1"))
-                LoadValidateT1 (sr);
+            string metadata = sr.ReadLine();
+            if (metadata.StartsWith(".ii:t1"))
+                LoadValidateT1(sr);
             else
-                LoadFail ();
+                LoadFail();
         }
 
-        private void LoadValidateT1 (StreamReader sr) {
+        private void LoadValidateT1(StreamReader sr) {
             /* Savefile type 1: validated and encrypted
                 * Line 1 is metadata (.ii:t1)
                 * Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
                 * Line 3 is savefile data encrypted by AES encoding
                 */
 
-            string hash = sr.ReadLine ().Trim ();
-            string file = Encryption.DecryptAES (sr.ReadToEnd ().Trim ());
-            sr.Close ();
+            string hash = sr.ReadLine().Trim();
+            string file = Encryption.DecryptAES(sr.ReadToEnd().Trim());
+            sr.Close();
 
             // Original save files used MD5, later changed to SHA256
-            if (hash == Encryption.HashSHA256 (file) || hash == Encryption.HashMD5 (file))
-                LoadProcess (file);
+            if (hash == Encryption.HashSHA256(file) || hash == Encryption.HashMD5(file))
+                LoadProcess(file);
             else
-                LoadFail ();
+                LoadFail();
         }
 
-        private void LoadProcess (string incFile) {
-            StringReader sRead = new StringReader (incFile);
+        private void LoadProcess(string incFile) {
+            StringReader sRead = new StringReader(incFile);
             string line, pline;
             StringBuilder pbuffer;
 
             try {
-                while ((line = sRead.ReadLine ()) != null) {
+                while ((line = sRead.ReadLine()) != null) {
                     if (line == "> Begin: Patient") {           // Load files saved by Infirmary Integrated (base)
-                        pbuffer = new StringBuilder ();
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
-                            pbuffer.AppendLine (pline);
+                        pbuffer = new StringBuilder();
+                        while ((pline = sRead.ReadLine()) != null && pline != "> End: Patient")
+                            pbuffer.AppendLine(pline);
 
-                        RefreshScenario (true);
-                        App.Patient.Load_Process (pbuffer.ToString ());
+                        RefreshScenario(true);
+                        App.Patient.Load_Process(pbuffer.ToString());
                     } else if (line == "> Begin: Scenario") {   // Load files saved by Infirmary Integrated Scenario Editor
-                        pbuffer = new StringBuilder ();
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Scenario")
-                            pbuffer.AppendLine (pline);
+                        pbuffer = new StringBuilder();
+                        while ((pline = sRead.ReadLine()) != null && pline != "> End: Scenario")
+                            pbuffer.AppendLine(pline);
 
-                        RefreshScenario (false);
-                        App.Scenario.Load_Process (pbuffer.ToString ());
-                        InitPatient ();     // Needs to be called manually since InitScenario(false) doesn't init a Patient
+                        RefreshScenario(false);
+                        App.Scenario.Load_Process(pbuffer.ToString());
+                        InitPatient();     // Needs to be called manually since InitScenario(false) doesn't init a Patient
                     } else if (line == "> Begin: Editor") {
-                        pbuffer = new StringBuilder ();
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Editor")
-                            pbuffer.AppendLine (pline);
+                        pbuffer = new StringBuilder();
+                        while ((pline = sRead.ReadLine()) != null && pline != "> End: Editor")
+                            pbuffer.AppendLine(pline);
 
-                        this.LoadOptions (pbuffer.ToString ());
+                        this.LoadOptions(pbuffer.ToString());
                     } else if (line == "> Begin: Cardiac Monitor") {
-                        pbuffer = new StringBuilder ();
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Cardiac Monitor")
-                            pbuffer.AppendLine (pline);
+                        pbuffer = new StringBuilder();
+                        while ((pline = sRead.ReadLine()) != null && pline != "> End: Cardiac Monitor")
+                            pbuffer.AppendLine(pline);
 
-                        App.Device_Monitor = new DeviceMonitor ();
-                        InitDeviceMonitor ();
+                        App.Device_Monitor = new DeviceMonitor();
+                        InitDeviceMonitor();
                         //TODO App.Device_Monitor.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: 12 Lead ECG") {
-                        pbuffer = new StringBuilder ();
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: 12 Lead ECG")
-                            pbuffer.AppendLine (pline);
+                        pbuffer = new StringBuilder();
+                        while ((pline = sRead.ReadLine()) != null && pline != "> End: 12 Lead ECG")
+                            pbuffer.AppendLine(pline);
 
-                        App.Device_ECG = new DeviceECG ();
-                        InitDeviceECG ();
+                        App.Device_ECG = new DeviceECG();
+                        InitDeviceECG();
                         //TODO App.Device_ECG.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Defibrillator") {
-                        pbuffer = new StringBuilder ();
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Defibrillator")
-                            pbuffer.AppendLine (pline);
+                        pbuffer = new StringBuilder();
+                        while ((pline = sRead.ReadLine()) != null && pline != "> End: Defibrillator")
+                            pbuffer.AppendLine(pline);
 
-                        App.Device_Defib = new DeviceDefib ();
-                        InitDeviceDefib ();
+                        App.Device_Defib = new DeviceDefib();
+                        InitDeviceDefib();
                         //TODO App.Device_Defib.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Intra-aortic Balloon Pump") {
-                        pbuffer = new StringBuilder ();
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Intra-aortic Balloon Pump")
-                            pbuffer.AppendLine (pline);
+                        pbuffer = new StringBuilder();
+                        while ((pline = sRead.ReadLine()) != null && pline != "> End: Intra-aortic Balloon Pump")
+                            pbuffer.AppendLine(pline);
 
-                        App.Device_IABP = new DeviceIABP ();
-                        InitDeviceIABP ();
+                        App.Device_IABP = new DeviceIABP();
+                        InitDeviceIABP();
                         //TODO App.Device_IABP.Load_Process (pbuffer.ToString ());
                     }
                 }
             } catch {
-                LoadFail ();
+                LoadFail();
             } finally {
-                sRead.Close ();
+                sRead.Close();
             }
 
             // On loading a file, ensure Mirroring is not in Client mode! Will conflict...
             if (App.Mirror.Status == Mirror.Statuses.CLIENT) {
                 App.Mirror.Status = Mirror.Statuses.INACTIVE;
-                App.Mirror.CancelOperation ();      // Attempt to cancel any possible Mirror downloads
+                App.Mirror.CancelOperation();      // Attempt to cancel any possible Mirror downloads
                 //TODO lblStatusText.Content = App.Language.Localize ("PE:StatusMirroringDisabled");
             }
 
             // Initialize the first step of the scenario
             if (App.Scenario.IsScenario)
-                InitStep ();
+                InitStep();
 
             // Set Expanders IsExpanded and IsEnabled on whether is a Scenario
             bool isScene = App.Scenario.IsScenario;
@@ -604,169 +595,169 @@ namespace II_Avalonia {
             */
         }
 
-        private void LoadOptions (string inc) {
+        private void LoadOptions(string inc) {
             //TODO Repopulate Code
         }
 
-        private void LoadFail () {
+        private void LoadFail() {
             //TODO Repopulate Code
         }
 
-        private void SaveFile () {
+        private void SaveFile() {
             //TODO Repopulate Code
         }
 
-        private void SaveT1 (Stream s) {
+        private void SaveT1(Stream s) {
             // Ensure only saving Patient file, not Scenario file; is screened in SaveFile()
             if (App.Scenario.IsScenario) {
-                s.Close ();
+                s.Close();
                 return;
             }
 
-            StringBuilder sb = new StringBuilder ();
+            StringBuilder sb = new StringBuilder();
 
-            sb.AppendLine ("> Begin: Patient");
-            sb.Append (App.Patient.Save ());
-            sb.AppendLine ("> End: Patient");
+            sb.AppendLine("> Begin: Patient");
+            sb.Append(App.Patient.Save());
+            sb.AppendLine("> End: Patient");
 
-            sb.AppendLine ("> Begin: Editor");
-            sb.Append (this.SaveOptions ());
-            sb.AppendLine ("> End: Editor");
+            sb.AppendLine("> Begin: Editor");
+            sb.Append(this.SaveOptions());
+            sb.AppendLine("> End: Editor");
 
             if (App.Device_Monitor != null && App.Device_Monitor.IsInitialized) {
-                sb.AppendLine ("> Begin: Cardiac Monitor");
+                sb.AppendLine("> Begin: Cardiac Monitor");
                 //TODO sb.Append (App.Device_Monitor.Save ());
-                sb.AppendLine ("> End: Cardiac Monitor");
+                sb.AppendLine("> End: Cardiac Monitor");
             }
             if (App.Device_ECG != null && App.Device_ECG.IsInitialized) {
-                sb.AppendLine ("> Begin: 12 Lead ECG");
+                sb.AppendLine("> Begin: 12 Lead ECG");
                 //TODO sb.Append (App.Device_ECG.Save ());
-                sb.AppendLine ("> End: 12 Lead ECG");
+                sb.AppendLine("> End: 12 Lead ECG");
             }
             if (App.Device_Defib != null && App.Device_Defib.IsInitialized) {
-                sb.AppendLine ("> Begin: Defibrillator");
+                sb.AppendLine("> Begin: Defibrillator");
                 //TODO sb.Append (App.Device_Defib.Save ());
-                sb.AppendLine ("> End: Defibrillator");
+                sb.AppendLine("> End: Defibrillator");
             }
             if (App.Device_IABP != null && App.Device_IABP.IsInitialized) {
-                sb.AppendLine ("> Begin: Intra-aortic Balloon Pump");
+                sb.AppendLine("> Begin: Intra-aortic Balloon Pump");
                 //TODO sb.Append (App.Device_IABP.Save ());
-                sb.AppendLine ("> End: Intra-aortic Balloon Pump");
+                sb.AppendLine("> End: Intra-aortic Balloon Pump");
             }
 
-            StreamWriter sw = new StreamWriter (s);
-            sw.WriteLine (".ii:t1");                                           // Metadata (type 1 savefile)
-            sw.WriteLine (Encryption.HashSHA256 (sb.ToString ().Trim ()));     // Hash for validation
-            sw.Write (Encryption.EncryptAES (sb.ToString ().Trim ()));         // Savefile data encrypted with AES
-            sw.Close ();
-            s.Close ();
+            StreamWriter sw = new StreamWriter(s);
+            sw.WriteLine(".ii:t1");                                           // Metadata (type 1 savefile)
+            sw.WriteLine(Encryption.HashSHA256(sb.ToString().Trim()));     // Hash for validation
+            sw.Write(Encryption.EncryptAES(sb.ToString().Trim()));         // Savefile data encrypted with AES
+            sw.Close();
+            s.Close();
         }
 
-        private string SaveOptions () {
-            StringBuilder sWrite = new StringBuilder ();
+        private string SaveOptions() {
+            StringBuilder sWrite = new StringBuilder();
 
             //TODO sWrite.AppendLine (String.Format ("{0}:{1}", "checkDefaultVitals", checkDefaultVitals.IsChecked));
 
-            return sWrite.ToString ();
+            return sWrite.ToString();
         }
 
-        public bool Exit () {
-            App.Settings.Save ();
+        public bool Exit() {
+            App.Settings.Save();
 
-            this.Close ();
+            this.Close();
             return true;
         }
 
-        private void OnMirrorTick (object sender, EventArgs e)
-            => App.Mirror.TimerTick (App.Patient, App.Server);
+        private void OnMirrorTick(object sender, EventArgs e)
+            => App.Mirror.TimerTick(App.Patient, App.Server);
 
-        private void OnStepChangeRequest (object sender, EventArgs e)
-            => UnloadPatientEvents ();
+        private void OnStepChangeRequest(object sender, EventArgs e)
+            => UnloadPatientEvents();
 
-        private void OnStepChanged (object sender, EventArgs e) {
+        private void OnStepChanged(object sender, EventArgs e) {
             App.Patient = App.Scenario.Patient;
 
-            InitPatientEvents ();
-            InitStep ();
+            InitPatientEvents();
+            InitStep();
         }
 
-        private void InitStep () {
+        private void InitStep() {
             //TODO Repopulate Code
         }
 
-        private void NextStep () {
+        private void NextStep() {
             //TODO Repopulate Code
         }
 
-        private void PreviousStep () {
-            App.Scenario.LastStep ();
+        private void PreviousStep() {
+            App.Scenario.LastStep();
         }
 
-        private void PauseStep () {
+        private void PauseStep() {
             //TODO Repopulate Code
         }
 
-        private void PlayStep () {
+        private void PlayStep() {
             //TODO Repopulate Code
         }
 
-        private void ApplyMirroring () {
+        private void ApplyMirroring() {
             //TODO Repopulate Code
         }
 
-        private void ResetPatientParameters () {
+        private void ResetPatientParameters() {
             //TODO Repopulate Code
         }
 
-        private void ApplyPatientParameters () {
+        private void ApplyPatientParameters() {
             //TODO Repopulate Code
         }
 
-        private void MenuNewSimulation_Click (object sender, RoutedEventArgs e) => RefreshScenario (true);
+        private void MenuNewSimulation_Click(object sender, RoutedEventArgs e) => RefreshScenario(true);
 
-        private void MenuLoadFile_Click (object s, RoutedEventArgs e) => LoadFile ();
+        private void MenuLoadFile_Click(object s, RoutedEventArgs e) => LoadFile();
 
-        private void MenuSaveFile_Click (object s, RoutedEventArgs e) => SaveFile ();
+        private void MenuSaveFile_Click(object s, RoutedEventArgs e) => SaveFile();
 
-        private void MenuExit_Click (object s, RoutedEventArgs e) => Exit ();
+        private void MenuExit_Click(object s, RoutedEventArgs e) => Exit();
 
-        private void MenuSetLanguage_Click (object s, RoutedEventArgs e) => DialogInitial (true);
+        private void MenuSetLanguage_Click(object s, RoutedEventArgs e) => DialogInitial(true);
 
-        private void MenuAbout_Click (object s, RoutedEventArgs e) => DialogAbout ();
+        private void MenuAbout_Click(object s, RoutedEventArgs e) => DialogAbout();
 
-        private void ButtonDeviceMonitor_Click (object s, RoutedEventArgs e) => InitDeviceMonitor ();
+        private void ButtonDeviceMonitor_Click(object s, RoutedEventArgs e) => InitDeviceMonitor();
 
-        private void ButtonDeviceDefib_Click (object s, RoutedEventArgs e) => InitDeviceDefib ();
+        private void ButtonDeviceDefib_Click(object s, RoutedEventArgs e) => InitDeviceDefib();
 
-        private void ButtonDeviceECG_Click (object s, RoutedEventArgs e) => InitDeviceECG ();
+        private void ButtonDeviceECG_Click(object s, RoutedEventArgs e) => InitDeviceECG();
 
-        private void ButtonDeviceIABP_Click (object s, RoutedEventArgs e) => InitDeviceIABP ();
+        private void ButtonDeviceIABP_Click(object s, RoutedEventArgs e) => InitDeviceIABP();
 
-        private void ButtonDeviceEFM_Click (object s, RoutedEventArgs e) => InitDeviceEFM ();
+        private void ButtonDeviceEFM_Click(object s, RoutedEventArgs e) => InitDeviceEFM();
 
         /* TODO
         private void ButtonGenerateAccessionKey_Click (object sender, RoutedEventArgs e)
             => txtAccessionKey.Text = Utility.RandomString (8);
         */
 
-        private void ButtonApplyMirroring_Click (object s, RoutedEventArgs e)
-            => ApplyMirroring ();
+        private void ButtonApplyMirroring_Click(object s, RoutedEventArgs e)
+            => ApplyMirroring();
 
-        private void ButtonPreviousStep_Click (object s, RoutedEventArgs e) => PreviousStep ();
+        private void ButtonPreviousStep_Click(object s, RoutedEventArgs e) => PreviousStep();
 
-        private void ButtonNextStep_Click (object s, RoutedEventArgs e) => NextStep ();
+        private void ButtonNextStep_Click(object s, RoutedEventArgs e) => NextStep();
 
-        private void ButtonPauseStep_Click (object s, RoutedEventArgs e) => PauseStep ();
+        private void ButtonPauseStep_Click(object s, RoutedEventArgs e) => PauseStep();
 
-        private void ButtonPlayStep_Click (object s, RoutedEventArgs e) => PlayStep ();
+        private void ButtonPlayStep_Click(object s, RoutedEventArgs e) => PlayStep();
 
-        private void ButtonResetParameters_Click (object s, RoutedEventArgs e)
-            => ResetPatientParameters ();
+        private void ButtonResetParameters_Click(object s, RoutedEventArgs e)
+            => ResetPatientParameters();
 
-        private void ButtonApplyParameters_Click (object sender, RoutedEventArgs e)
-            => ApplyPatientParameters ();
+        private void ButtonApplyParameters_Click(object sender, RoutedEventArgs e)
+            => ApplyPatientParameters();
 
-        private void Window_LayoutUpdated (object sender, EventArgs e) {
+        private void Window_LayoutUpdated(object sender, EventArgs e) {
             if (!uiLoadCompleted) {
                 this.Width = App.Settings.WindowSize.X;
                 this.Height = App.Settings.WindowSize.Y;
@@ -776,41 +767,36 @@ namespace II_Avalonia {
             }
         }
 
-        private void Window_Activated (object sender, EventArgs e) {
-            this.Position = new PixelPoint (App.Settings.WindowPosition.X, App.Settings.WindowPosition.Y);
+        private void Window_Activated(object sender, EventArgs e) {
+            this.Position = new PixelPoint(App.Settings.WindowPosition.X, App.Settings.WindowPosition.Y);
             this.uiLoadCompleted = true;
         }
 
-        private void Window_LocationChanged (object sender, PixelPointEventArgs e) {
+        private void Window_LocationChanged(object sender, PixelPointEventArgs e) {
             if (uiLoadCompleted)
-                App.Settings.WindowPosition = new System.Drawing.Point (e.Point.X, e.Point.Y);
+                App.Settings.WindowPosition = new System.Drawing.Point(e.Point.X, e.Point.Y);
         }
 
-        private void Window_Closed (object sender, EventArgs e)
-            => Exit ();
+        private void Window_Closed(object sender, EventArgs e)
+            => Exit();
 
-        private void TextBoxAccessionKey_PreviewTextInput (object sender, EventArgs e) {
+        private void TextBoxAccessionKey_PreviewTextInput(object sender, EventArgs e) {
             //TODO Repopulate Code
         }
 
-        private void RadioMirrorSelected_Click (object sender, RoutedEventArgs e) {
+        private void RadioMirrorSelected_Click(object sender, RoutedEventArgs e) {
             //TODO Repopulate Code
         }
-
-        /* TODO
-        private void Hyperlink_RequestNavigate (object sender, System.Windows.Navigation.RequestNavigateEventArgs e)
-            => System.Diagnostics.Process.Start (e.Uri.ToString ());
-        */
 
         private void OnAutoApplyChanges_Changed (object sender, RoutedEventArgs e) {
             //TODO Repopulate Code
         }
 
-        private void OnUIPatientParameter_KeyDown (object sender, EventArgs e) {
+        private void OnUIPatientParameter_KeyDown(object sender, EventArgs e) {
             //TODO Repopulate Code
         }
 
-        private void OnUIPatientParameter_GotFocus (object sender, RoutedEventArgs e) {
+        private void OnUIPatientParameter_GotFocus(object sender, RoutedEventArgs e) {
             if (sender is IntegerUpDown)
                 uiBufferValue = (sender as IntegerUpDown).Value ?? 0;
             else if (sender is DecimalUpDown)
@@ -821,21 +807,21 @@ namespace II_Avalonia {
                 uiBufferValue = (sender as ComboBox).SelectedIndex;
         }
 
-        private void OnUIPatientParameter_LostFocus (object sender, RoutedEventArgs e)
-            => OnUIPatientParameter_ProcessChanged (sender, e);
+        private void OnUIPatientParameter_LostFocus(object sender, RoutedEventArgs e)
+            => OnUIPatientParameter_ProcessChanged(sender, e);
 
-        private void OnUIPatientParameter_ProcessChanged (object sender, RoutedEventArgs e) {
+        private void OnUIPatientParameter_ProcessChanged(object sender, RoutedEventArgs e) {
             if (sender is IntegerUpDown && (sender as IntegerUpDown).Value != (int)uiBufferValue)
-                OnUIPatientParameter_Changed (sender, e);
+                OnUIPatientParameter_Changed(sender, e);
             else if (sender is DecimalUpDown && (sender as DecimalUpDown).Value != (decimal)uiBufferValue)
-                OnUIPatientParameter_Changed (sender, e);
+                OnUIPatientParameter_Changed(sender, e);
             else if (sender is CheckBox && (sender as CheckBox).IsChecked != (bool)uiBufferValue)
-                OnUIPatientParameter_Changed (sender, e);
+                OnUIPatientParameter_Changed(sender, e);
             else if (sender is ComboBox && (sender as ComboBox).SelectedIndex != (int)uiBufferValue)
-                OnUIPatientParameter_Changed (sender, e);
+                OnUIPatientParameter_Changed(sender, e);
         }
 
-        private void OnUIPatientParameter_Changed (object sender, RoutedEventArgs e) {
+        private void OnUIPatientParameter_Changed(object sender, RoutedEventArgs e) {
             switch (ParameterStatus) {
                 default:
                 case ParameterStatuses.Loading:            // For loading state
@@ -843,29 +829,29 @@ namespace II_Avalonia {
 
                 case ParameterStatuses.ChangesApplied:
                 case ParameterStatuses.ChangesPending:
-                    AdvanceParameterStatus (ParameterStatuses.ChangesPending);
+                    AdvanceParameterStatus(ParameterStatuses.ChangesPending);
                     break;
 
                 case ParameterStatuses.AutoApply:
-                    ApplyPatientParameters ();
-                    UpdateParameterIndicators ();
+                    ApplyPatientParameters();
+                    UpdateParameterIndicators();
                     break;
             }
         }
 
-        private void OnCardiacRhythm_Selected (object sender, SelectionChangedEventArgs e) {
+        private void OnCardiacRhythm_Selected(object sender, SelectionChangedEventArgs e) {
             //TODO Repopulate Code
         }
 
-        private void OnRespiratoryRhythm_Selected (object sender, SelectionChangedEventArgs e) {
+        private void OnRespiratoryRhythm_Selected(object sender, SelectionChangedEventArgs e) {
             //TODO Repopulate Code
         }
 
-        private void OnPulmonaryArteryRhythm_Selected (object sender, SelectionChangedEventArgs e) {
+        private void OnPulmonaryArteryRhythm_Selected(object sender, SelectionChangedEventArgs e) {
             //TODO Repopulate Code
         }
 
-        private void FormUpdateFields (object sender, Patient.PatientEventArgs e) {
+        private void FormUpdateFields(object sender, Patient.PatientEventArgs e) {
             //TODO Repopulate Code
         }
     }

@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Bootstrap.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Encryption.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\File.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\InterOp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Leads.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Localization.Dictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Math.cs" />

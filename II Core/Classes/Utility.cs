@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace II {
     public static class Utility {
-        public const string Version = "iiava 0.0.1";
+        public const string Version = "iiava 0.0.3";
 
         public static bool IsNewerVersion (string current, string comparison) {
             string [] curSplit = current.Split ('.'),
@@ -14,9 +16,9 @@ namespace II {
 
             for (int i = 0; i < compSplit.Length; i++) {
                 // Sanitize inputs
-                if (!int.TryParse (curSplit [i], out buffer))
+                if (!int.TryParse (curSplit [i], out _))
                     curSplit [i] = "-1";
-                if (!int.TryParse (compSplit [i], out buffer))
+                if (!int.TryParse (compSplit [i], out _))
                     compSplit [i] = "-1";
 
                 if ((i < curSplit.Length ? int.Parse (curSplit [i]) : 0) < int.Parse (compSplit [i]))

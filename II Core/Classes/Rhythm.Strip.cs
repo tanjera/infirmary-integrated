@@ -15,6 +15,7 @@ using System.Drawing;
 using II.Waveform;
 
 namespace II.Rhythm {
+
     public class Strip {
         /* Default variables for easy modification of multiple measurement/tracing functions */
         public static float DefaultLength = 6.0f;
@@ -190,8 +191,8 @@ namespace II.Rhythm {
                 }
             }
 
-            trough = (trough / DefaultAutoScale_Iterations);
-            peak = (peak / DefaultAutoScale_Iterations);
+            trough /= DefaultAutoScale_Iterations;
+            peak /= DefaultAutoScale_Iterations;
 
             ScaleMin = trough - (int)(trough * DefaultScaleMargin);
             ScaleMax = peak + (int)(peak * DefaultScaleMargin);

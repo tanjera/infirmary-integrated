@@ -13,7 +13,7 @@
 	d:DesignWidth="700"
 	Activated="Window_Activated"
 	Closed="Window_Closed"
-	Icon="/Resources/Icon_II.ico"
+	Icon="avares://II Avalonia/Resources/Icon_II.ico"
 	LayoutUpdated="Window_LayoutUpdated"
 	PositionChanged="Window_LocationChanged"
 	mc:Ignorable="d">
@@ -111,7 +111,7 @@
 						Classes="device"
 						Click="ButtonDeviceMonitor_Click">
             <StackPanel Orientation="Horizontal">
-              <Image Classes="device" Source="/Third_Party/Icon_DeviceMonitor_48.png" />
+              <Image Classes="device" Source="avares://II Avalonia/Third_Party/Icon_DeviceMonitor_48.png" />
               <Label Name="lblDeviceMonitor" Classes="device" />
             </StackPanel>
           </Button>
@@ -121,7 +121,7 @@
 						Classes="device"
 						Click="ButtonDeviceDefib_Click">
             <StackPanel Orientation="Horizontal">
-              <Image Classes="device" Source="/Third_Party/Icon_DeviceDefibrillator_48.png" />
+              <Image Classes="device" Source="avares://II Avalonia/Third_Party/Icon_DeviceDefibrillator_48.png" />
               <Label Name="lblDeviceDefibrillator" Classes="device" />
             </StackPanel>
           </Button>
@@ -131,7 +131,7 @@
 						Classes="device"
 						Click="ButtonDeviceECG_Click">
             <StackPanel Orientation="Horizontal">
-              <Image Classes="device" Source="/Third_Party/Icon_Device12LeadECG_48.png" />
+              <Image Classes="device" Source="avares://II Avalonia/Third_Party/Icon_Device12LeadECG_48.png" />
               <Label Name="lblDevice12LeadECG" Classes="device" />
             </StackPanel>
           </Button>
@@ -141,7 +141,7 @@
 						Classes="device"
 						Click="ButtonDeviceIABP_Click">
             <StackPanel Orientation="Horizontal">
-              <Image Classes="device" Source="/Third_Party/Icon_DeviceIABP_48.png" />
+              <Image Classes="device" Source="avares://II Avalonia/Third_Party/Icon_DeviceIABP_48.png" />
               <Label Name="lblDeviceIABP" Classes="device" />
             </StackPanel>
           </Button>
@@ -151,7 +151,7 @@
 						Classes="device"
 						Click="ButtonDeviceEFM_Click">
             <StackPanel Orientation="Horizontal">
-              <Image Classes="device" Source="/Third_Party/Icon_DeviceEFM_48.png" />
+              <Image Classes="device" Source="avares://II Avalonia/Third_Party/Icon_DeviceEFM_48.png" />
               <Label Name="lblDeviceEFM" Classes="device" />
             </StackPanel>
           </Button>
