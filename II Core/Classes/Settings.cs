@@ -15,7 +15,6 @@ namespace II {
     public class Settings {
         public string Language;
         public bool AutoApplyChanges;
-        public int WindowState;
         public Point WindowSize;
         public Point WindowPosition;
         public bool MuteUpgrade;
@@ -46,11 +45,6 @@ namespace II {
                             break;
 
                         // Settings for the size of the Patient Editor
-                        case "WindowState":
-                            if (int.TryParse (pValue, out parseInt))
-                                WindowState = parseInt;
-                            break;
-
                         case "WindowSizeX":
                             if (int.TryParse (pValue, out parseInt))
                                 WindowSize.X = parseInt;
@@ -93,7 +87,6 @@ namespace II {
 
             sw.WriteLine ($"Language:{Language}");
             sw.WriteLine ($"AutoApplyChanges:{AutoApplyChanges}");
-            sw.WriteLine ($"WindowState:{WindowState}");
             sw.WriteLine ($"WindowSizeX:{WindowSize.X}");
             sw.WriteLine ($"WindowSizeY:{WindowSize.Y}");
             sw.WriteLine ($"WindowPositionX:{WindowPosition.X}");

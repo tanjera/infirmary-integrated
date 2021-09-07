@@ -7,10 +7,18 @@
 	xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
 	Name="wdwPatientEditor"
 	Title="Patient Editor"
+	Width="700"
+	Height="560"
 	d:DesignHeight="560"
 	d:DesignWidth="700"
+	Activated="Window_Activated"
+	Closed="Window_Closed"
 	Icon="/Resources/Icon_II.ico"
+	LayoutUpdated="Window_LayoutUpdated"
+	PositionChanged="Window_LocationChanged"
 	mc:Ignorable="d">
+
+  <!--  In "Window": Repopulate code and port to AvaloniaUI for triggers: LocationChanged, SizeChanged, StateChanged?  -->
 
   <Window.Styles>
     <Style Selector="Button.device">
@@ -72,20 +80,20 @@
     <!--  Main Menu  -->
     <Menu DockPanel.Dock="Top">
       <MenuItem Name="menuFile">
-        <MenuItem Name="menuNew" />
+        <MenuItem Name="menuNew" Click="MenuNewSimulation_Click" />
         <Separator />
-        <MenuItem Name="menuLoad" />
-        <MenuItem Name="menuSave" />
+        <MenuItem Name="menuLoad" Click="MenuLoadFile_Click" />
+        <MenuItem Name="menuSave" Click="MenuSaveFile_Click" />
         <Separator />
-        <MenuItem Name="menuExit" />
+        <MenuItem Name="menuExit" Click="MenuExit_Click" />
       </MenuItem>
 
       <MenuItem Name="menuSettings">
-        <MenuItem Name="menuSetLanguage" />
+        <MenuItem Name="menuSetLanguage" Click="MenuSetLanguage_Click" />
       </MenuItem>
 
       <MenuItem Name="menuHelp">
-        <MenuItem Name="menuAbout" />
+        <MenuItem Name="menuAbout" Click="MenuAbout_Click" />
       </MenuItem>
     </Menu>
 
@@ -98,33 +106,59 @@
 				Classes="groupbox"
 				Header="Header">
         <StackPanel Margin="3">
-          <Button Name="btnDeviceMonitor" Classes="device">
+          <Button
+						Name="btnDeviceMonitor"
+						Classes="device"
+						Click="ButtonDeviceMonitor_Click">
             <StackPanel Orientation="Horizontal">
               <Image Classes="device" Source="/Third_Party/Icon_DeviceMonitor_48.png" />
               <Label Name="lblDeviceMonitor" Classes="device" />
             </StackPanel>
           </Button>
 
-          <Button Name="btnDeviceDefibrillator" Classes="device">
+          <Button
+						Name="btnDeviceDefibrillator"
+						Classes="device"
+						Click="ButtonDeviceDefib_Click">
             <StackPanel Orientation="Horizontal">
               <Image Classes="device" Source="/Third_Party/Icon_DeviceDefibrillator_48.png" />
               <Label Name="lblDeviceDefibrillator" Classes="device" />
             </StackPanel>
           </Button>
 
-          <Button Name="btnDevice12LeadECG" Classes="device">
+          <Button
+						Name="btnDevice12LeadECG"
+						Classes="device"
+						Click="ButtonDeviceECG_Click">
             <StackPanel Orientation="Horizontal">
               <Image Classes="device" Source="/Third_Party/Icon_Device12LeadECG_48.png" />
               <Label Name="lblDevice12LeadECG" Classes="device" />
             </StackPanel>
           </Button>
 
-          <Button Name="btnDeviceIABP" Classes="device">
+          <Button
+						Name="btnDeviceIABP"
+						Classes="device"
+						Click="ButtonDeviceIABP_Click">
             <StackPanel Orientation="Horizontal">
               <Image Classes="device" Source="/Third_Party/Icon_DeviceIABP_48.png" />
               <Label Name="lblDeviceIABP" Classes="device" />
             </StackPanel>
           </Button>
+
+          <Button
+						Name="btnDeviceEFM"
+						Classes="device"
+						Click="ButtonDeviceEFM_Click">
+            <StackPanel Orientation="Horizontal">
+              <Image Classes="device" Source="/Third_Party/Icon_DeviceEFM_48.png" />
+              <Label Name="lblDeviceEFM" Classes="device" />
+            </StackPanel>
+          </Button>
+
+          <!-- <Button Name="btnDeviceVentilator" /> -->
+          <!-- <Button Name="btnDeviceIVPump" /> -->
+          <!-- <Button Name="btnDeviceLabResults" /> -->
         </StackPanel>
       </HeaderedContentControl>
     </ScrollViewer>
