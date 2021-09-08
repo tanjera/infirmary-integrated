@@ -4,7 +4,6 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
 	Name="wdwPatientEditor"
 	Title="Patient Editor"
 	Width="700"
@@ -13,20 +12,35 @@
 	d:DesignWidth="700"
 	Activated="Window_Activated"
 	Closed="Window_Closed"
-	Icon="avares://II Avalonia/Resources/Icon_II.ico"
+	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
 	LayoutUpdated="Window_LayoutUpdated"
 	PositionChanged="Window_LocationChanged"
 	mc:Ignorable="d">
 
-  <!--  In "Window": Repopulate code and port to AvaloniaUI for triggers: LocationChanged, SizeChanged, StateChanged?  -->
-
   <Window.Styles>
+    <Style Selector="MenuItem.item">
+      <Setter Property="FontSize" Value="{Binding Path=FontScale}" />
+    </Style>
+
     <Style Selector="Button.device">
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="Background" Value="White" />
       <Setter Property="HorizontalContentAlignment" Value="Left" />
       <Setter Property="Margin" Value="2" />
       <Setter Property="Padding" Value="10,2" />
+    </Style>
+
+    <Style Selector="Button.scenario">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="Background" Value="White" />
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="Padding" Value="10,2" />
+    </Style>
+
+    <Style Selector="Image.scenario">
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="Width" Value="24" />
+      <Setter Property="Height" Value="24" />
     </Style>
 
     <Style Selector="Image.device">
@@ -39,6 +53,18 @@
       <Setter Property="Margin" Value="2" />
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="FontSize" Value="16" />
+    </Style>
+
+    <Style Selector="Border.expander">
+      <Setter Property="BorderBrush" Value="Black" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="3" />
+    </Style>
+
+    <Style Selector="Label.expander">
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="FontWeight" Value="Bold" />
     </Style>
 
     <Style Selector="HeaderedContentControl.groupbox">
@@ -66,7 +92,8 @@
 								Grid.ColumnSpan="2"
 								Margin="0,10,0,0"
 								BorderBrush="{TemplateBinding Background}"
-								BorderThickness="1">
+								BorderThickness="1"
+								CornerRadius="3">
                 <ContentPresenter Content="{TemplateBinding Content}" />
               </Border>
             </Grid>
@@ -75,92 +102,343 @@
       </Setter>
     </Style>
   </Window.Styles>
+  <LayoutTransformControl Name="layoutControl">
+    <LayoutTransformControl.LayoutTransform>
+      <ScaleTransform ScaleX="{Binding Path=UIScale}" ScaleY="{Binding Path=UIScale}" />
+    </LayoutTransformControl.LayoutTransform>
 
-  <DockPanel>
-    <!--  Main Menu  -->
-    <Menu DockPanel.Dock="Top">
-      <MenuItem Name="menuFile">
-        <MenuItem Name="menuNew" Click="MenuNewSimulation_Click" />
-        <Separator />
-        <MenuItem Name="menuLoad" Click="MenuLoadFile_Click" />
-        <MenuItem Name="menuSave" Click="MenuSaveFile_Click" />
-        <Separator />
-        <MenuItem Name="menuExit" Click="MenuExit_Click" />
-      </MenuItem>
+    <DockPanel LastChildFill="True">
+      <!--  Main Menu  -->
+      <Menu DockPanel.Dock="Top">
+        <MenuItem Name="menuFile">
+          <MenuItem
+						Name="menuNew"
+						Classes="item"
+						Click="MenuNewSimulation_Click" />
+          <Separator />
+          <MenuItem
+						Name="menuLoad"
+						Classes="item"
+						Click="MenuLoadFile_Click" />
+          <MenuItem
+						Name="menuSave"
+						Classes="item"
+						Click="MenuSaveFile_Click" />
+          <Separator />
+          <MenuItem
+						Name="menuExit"
+						Classes="item"
+						Click="MenuExit_Click" />
+        </MenuItem>
 
-      <MenuItem Name="menuSettings">
-        <MenuItem Name="menuSetLanguage" Click="MenuSetLanguage_Click" />
-      </MenuItem>
+        <MenuItem Name="menuSettings">
+          <MenuItem
+						Name="menuSetLanguage"
+						Classes="item"
+						Click="MenuSetLanguage_Click" />
+        </MenuItem>
 
-      <MenuItem Name="menuHelp">
-        <MenuItem Name="menuAbout" Click="MenuAbout_Click" />
-      </MenuItem>
-    </Menu>
+        <MenuItem Name="menuHelp">
+          <MenuItem
+						Name="menuAbout"
+						Classes="item"
+						Click="MenuAbout_Click" />
+        </MenuItem>
+      </Menu>
 
-    <!--  Column for Devices (opening Cardiac Monitor, Ventilator, etc.  -->
-    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="350" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
 
-      <HeaderedContentControl
-				Name="lblGroupDevices"
-				Background="Black"
-				Classes="groupbox"
-				Header="Header">
-        <StackPanel Margin="3">
-          <Button
-						Name="btnDeviceMonitor"
-						Classes="device"
-						Click="ButtonDeviceMonitor_Click">
-            <StackPanel Orientation="Horizontal">
-              <Image Classes="device" Source="avares://II Avalonia/Third_Party/Icon_DeviceMonitor_48.png" />
-              <Label Name="lblDeviceMonitor" Classes="device" />
+        <!--  Column for Devices (opening Cardiac Monitor, Ventilator, etc.  -->
+        <ScrollViewer
+					Grid.Row="0"
+					Grid.Column="0"
+					Height="350"
+					VerticalAlignment="Top"
+					HorizontalScrollBarVisibility="Auto"
+					VerticalScrollBarVisibility="Auto">
+
+          <HeaderedContentControl
+						Name="lblGroupDevices"
+						Background="Black"
+						Classes="groupbox"
+						Header="Header">
+            <StackPanel Margin="3">
+              <Button
+								Name="btnDeviceMonitor"
+								Classes="device"
+								Click="ButtonDeviceMonitor_Click">
+                <StackPanel Orientation="Horizontal">
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceMonitor_48.png" />
+                  <Label Name="lblDeviceMonitor" Classes="device" />
+                </StackPanel>
+              </Button>
+
+              <Button
+								Name="btnDeviceDefibrillator"
+								Classes="device"
+								Click="ButtonDeviceDefib_Click">
+                <StackPanel Orientation="Horizontal">
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceDefibrillator_48.png" />
+                  <Label Name="lblDeviceDefibrillator" Classes="device" />
+                </StackPanel>
+              </Button>
+
+              <Button
+								Name="btnDevice12LeadECG"
+								Classes="device"
+								Click="ButtonDeviceECG_Click">
+                <StackPanel Orientation="Horizontal">
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_Device12LeadECG_48.png" />
+                  <Label Name="lblDevice12LeadECG" Classes="device" />
+                </StackPanel>
+              </Button>
+
+              <Button
+								Name="btnDeviceIABP"
+								Classes="device"
+								Click="ButtonDeviceIABP_Click">
+                <StackPanel Orientation="Horizontal">
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceIABP_48.png" />
+                  <Label Name="lblDeviceIABP" Classes="device" />
+                </StackPanel>
+              </Button>
+
+              <Button
+								Name="btnDeviceEFM"
+								Classes="device"
+								Click="ButtonDeviceEFM_Click"
+								IsEnabled="False">
+                <StackPanel Orientation="Horizontal">
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceEFM_48.png" />
+                  <Label Name="lblDeviceEFM" Classes="device" />
+                </StackPanel>
+              </Button>
+
+              <!-- <Button Name="btnDeviceVentilator" /> -->
+              <!-- <Button Name="btnDeviceIVPump" /> -->
+              <!-- <Button Name="btnDeviceLabResults" /> -->
             </StackPanel>
-          </Button>
+          </HeaderedContentControl>
+        </ScrollViewer>
 
-          <Button
-						Name="btnDeviceDefibrillator"
-						Classes="device"
-						Click="ButtonDeviceDefib_Click">
-            <StackPanel Orientation="Horizontal">
-              <Image Classes="device" Source="avares://II Avalonia/Third_Party/Icon_DeviceDefibrillator_48.png" />
-              <Label Name="lblDeviceDefibrillator" Classes="device" />
-            </StackPanel>
-          </Button>
+        <!--  Column for Patient Editor  -->
+        <ScrollViewer
+					Grid.Row="0"
+					Grid.Column="1"
+					HorizontalScrollBarVisibility="Auto"
+					VerticalScrollBarVisibility="Auto">
+          <StackPanel>
+            <!--  Group for Patient Mirroring  -->
+            <Border Margin="5,16,5,5" Classes="expander">
+              <Expander Name="expMirroring" IsExpanded="False">
+                <Expander.Header>
+                  <Label Name="lblGroupMirroring" Classes="expander" />
+                </Expander.Header>
+                <Grid Margin="3,0,3,3">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                  </Grid.ColumnDefinitions>
+                  <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                  </Grid.RowDefinitions>
 
-          <Button
-						Name="btnDevice12LeadECG"
-						Classes="device"
-						Click="ButtonDeviceECG_Click">
-            <StackPanel Orientation="Horizontal">
-              <Image Classes="device" Source="avares://II Avalonia/Third_Party/Icon_Device12LeadECG_48.png" />
-              <Label Name="lblDevice12LeadECG" Classes="device" />
-            </StackPanel>
-          </Button>
+                  <HeaderedContentControl
+										Name="lblMirrorStatus"
+										Grid.Row="0"
+										Grid.Column="0"
+										Grid.ColumnSpan="2"
+										Margin="3"
+										Background="Black"
+										Classes="groupbox">
+                    <Grid>
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                      </Grid.ColumnDefinitions>
+                      <RadioButton
+												Name="radioInactive"
+												Grid.Column="0"
+												Margin="5,3"
+												Checked="RadioMirrorSelected_Click"
+												GroupName="mirrorStatus"
+												IsChecked="True" />
+                      <RadioButton
+												Name="radioClient"
+												Grid.Column="1"
+												Margin="5,3"
+												Checked="RadioMirrorSelected_Click"
+												GroupName="mirrorStatus" />
+                      <RadioButton
+												Name="radioServer"
+												Grid.Column="2"
+												Margin="5,3"
+												Checked="RadioMirrorSelected_Click"
+												GroupName="mirrorStatus" />
+                    </Grid>
+                  </HeaderedContentControl>
 
-          <Button
-						Name="btnDeviceIABP"
-						Classes="device"
-						Click="ButtonDeviceIABP_Click">
-            <StackPanel Orientation="Horizontal">
-              <Image Classes="device" Source="avares://II Avalonia/Third_Party/Icon_DeviceIABP_48.png" />
-              <Label Name="lblDeviceIABP" Classes="device" />
-            </StackPanel>
-          </Button>
+                  <Label
+										Name="lblAccessionKey"
+										Grid.Row="1"
+										Grid.Column="0" />
+                  <Label
+										Name="lblAccessPassword"
+										Grid.Row="2"
+										Grid.Column="0" />
+                  <Label
+										Name="lblAdminPassword"
+										Grid.Row="3"
+										Grid.Column="0" />
+                  <Grid Grid.Row="1" Grid.Column="1">
+                    <Grid.RowDefinitions>
+                      <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="*" />
+                      <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox
+											Name="txtAccessionKey"
+											Grid.Column="0"
+											VerticalContentAlignment="Center"
+											AcceptsReturn="False"
+											IsEnabled="False"
+											MaxLength="8"
+											TextInput="TextBoxAccessionKey_PreviewTextInput" />
+                    <Button
+											Name="btnGenerateAccessionKey"
+											Grid.Column="1"
+											Width="25"
+											Click="ButtonGenerateAccessionKey_Click"
+											Content="+"
+											IsEnabled="False" />
+                  </Grid>
+                  <TextBox
+										Name="txtAccessPassword"
+										Grid.Row="2"
+										Grid.Column="1"
+										VerticalContentAlignment="Center"
+										IsEnabled="False"
+										PasswordChar="*" />
+                  <TextBox
+										Name="txtAdminPassword"
+										Grid.Row="3"
+										Grid.Column="1"
+										VerticalContentAlignment="Center"
+										IsEnabled="False"
+										PasswordChar="*" />
+                  <Button
+										Name="btnApplyMirroring"
+										Grid.Row="4"
+										Grid.Column="0"
+										Grid.ColumnSpan="2"
+										Click="ButtonApplyMirroring_Click" />
+                </Grid>
+              </Expander>
+            </Border>
 
-          <Button
-						Name="btnDeviceEFM"
-						Classes="device"
-						Click="ButtonDeviceEFM_Click">
-            <StackPanel Orientation="Horizontal">
-              <Image Classes="device" Source="avares://II Avalonia/Third_Party/Icon_DeviceEFM_48.png" />
-              <Label Name="lblDeviceEFM" Classes="device" />
-            </StackPanel>
-          </Button>
+            <!--  Group for Scenario Player  -->
+            <Border Margin="5,16,5,5" Classes="expander">
+              <Expander
+								Name="expScenarioPlayer"
+								IsEnabled="False"
+								IsExpanded="False">
+                <Expander.Header>
+                  <Label Name="lblGroupScenarioPlayer" Classes="expander" />
+                </Expander.Header>
+                <Grid Margin="3">
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                  </Grid.RowDefinitions>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
 
-          <!-- <Button Name="btnDeviceVentilator" /> -->
-          <!-- <Button Name="btnDeviceIVPump" /> -->
-          <!-- <Button Name="btnDeviceLabResults" /> -->
-        </StackPanel>
-      </HeaderedContentControl>
-    </ScrollViewer>
-  </DockPanel>
+                  <Button
+										Name="btnPreviousStep"
+										Grid.Row="0"
+										Grid.Column="0"
+										Classes="scenario"
+										Click="ButtonPreviousStep_Click">
+                    <Image Classes="scenario" Source="avares://Infirmary Integrated/Third_Party/Icon_PlayerArrowBack_48.png" />
+                  </Button>
+                  <Button
+										Name="btnPauseStep"
+										Grid.Row="0"
+										Grid.Column="1"
+										Classes="scenario"
+										Click="ButtonPauseStep_Click"
+										IsEnabled="False">
+                    <Image Classes="scenario" Source="avares://Infirmary Integrated/Third_Party/Icon_PlayerPause_48.png" />
+                  </Button>
+                  <Button
+										Name="btnPlayStep"
+										Grid.Row="0"
+										Grid.Column="2"
+										Classes="scenario"
+										Click="ButtonPlayStep_Click"
+										IsEnabled="False">
+                    <Image Classes="scenario" Source="avares://Infirmary Integrated/Third_Party/Icon_PlayerArrowPlay_48.png" />
+                  </Button>
+                  <Button
+										Name="btnNextStep"
+										Grid.Row="0"
+										Grid.Column="3"
+										Classes="scenario"
+										Click="ButtonNextStep_Click">
+                    <Image Classes="scenario" Source="avares://Infirmary Integrated/Third_Party/Icon_PlayerArrowNext_48.png" />
+                  </Button>
+
+                  <Label
+										Name="lblScenarioStep"
+										Grid.Row="1"
+										Grid.Column="0"
+										Grid.ColumnSpan="4"
+										HorizontalAlignment="Center" />
+
+                  <Label
+										Name="lblTimerStep"
+										Grid.Row="2"
+										Grid.Column="0"
+										Grid.ColumnSpan="4"
+										HorizontalAlignment="Center" />
+
+                  <HeaderedContentControl
+										Name="lblProgressionOptions"
+										Grid.Row="3"
+										Grid.Column="0"
+										Grid.ColumnSpan="4"
+										Margin="5,2"
+										Background="Black"
+										Classes="groupbox">
+
+                    <StackPanel Name="stackProgressions" Orientation="Vertical" />
+                  </HeaderedContentControl>
+                </Grid>
+              </Expander>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
+    </DockPanel>
+  </LayoutTransformControl>
 </Window>

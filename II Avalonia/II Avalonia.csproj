@@ -5,12 +5,22 @@
     <Nullable>enable</Nullable>
     <StartupObject>II_Avalonia.Program</StartupObject>
     <SignAssembly>false</SignAssembly>
+    <AssemblyName>Infirmary Integrated</AssemblyName>
+    <Copyright>© 2017-2021, Ibi Keller</Copyright>
+    <Authors>Ibi Keller</Authors>
+    <Version>0.0.4</Version>
+    <Company>Infirmary Integrated</Company>
+    <PackageLicenseFile>License.md</PackageLicenseFile>
+    <PackageProjectUrl>https://www.infirmary-integrated.com/</PackageProjectUrl>
+    <PackageIcon>Icon_Infirmary_64.png</PackageIcon>
+    <PackageIconUrl />
+    <RepositoryUrl>https://github.com/tanjera/infirmary-integrated</RepositoryUrl>
+    <Description>Medical device simulator for training healthcare professionals.</Description>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.3" />
     <PackageReference Include="Avalonia.Desktop" Version="0.10.3" />
     <PackageReference Include="Avalonia.Diagnostics" Version="0.10.3" />
-    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.1.0" />
     <PackageReference Include="PdfSharp" Version="1.50.5147" />
   </ItemGroup>
   <ItemGroup>
@@ -33,5 +43,15 @@
   <ItemGroup>
     <AvaloniaResource Include="Resources\**" />
     <AvaloniaResource Include="Third_Party\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Assets\Icon_Infirmary_64.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\License.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 </Project>

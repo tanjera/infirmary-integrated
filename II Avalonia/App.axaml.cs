@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using System.Timers;
 
 using Avalonia;
@@ -21,6 +22,7 @@ namespace II_Avalonia {
         public static Scenario? Scenario;
         public static Patient? Patient;
 
+        public static SplashScreen? Splash_Screen;
         public static PatientEditor? Patient_Editor;
 
         public static DeviceMonitor? Device_Monitor;
@@ -42,11 +44,23 @@ namespace II_Avalonia {
             Timer_Main.Start ();
 
             II.File.Init ();
+            App.Settings.Load ();
         }
 
-        public override void OnFrameworkInitializationCompleted () {
+        public async override void OnFrameworkInitializationCompleted () {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
-                desktop.MainWindow = new PatientEditor ();
+                Splash_Screen = new SplashScreen ();
+                Patient_Editor = new PatientEditor ();
+
+                // Show the splash screen for 2 seconds, then swap out to the main window
+                desktop.MainWindow = Splash_Screen;
+                await Task.Delay (2000);
+
+                desktop.MainWindow = Patient_Editor;
+                Splash_Screen.Hide ();
+                Patient_Editor.Show ();
+                Splash_Screen.Close ();
+
                 Start_Args = desktop.Args;
             }
 

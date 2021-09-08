@@ -9,7 +9,9 @@ using II;
 using II.Localization;
 
 namespace II_Avalonia {
+
     public partial class DialogUpgrade : Window {
+
         public DialogUpgrade () {
             InitializeComponent ();
 #if DEBUG
@@ -19,9 +21,8 @@ namespace II_Avalonia {
             Init ();
         }
 
-        private void InitializeComponent () {
-            AvaloniaXamlLoader.Load (this);
-        }
+        /* Properties for applying DPI scaling options */
+        public double UIScale { get { return App.Settings.UIScale; } }
 
         public event EventHandler<UpgradeEventArgs> OnUpgradeRoute;
 
@@ -32,7 +33,16 @@ namespace II_Avalonia {
                 => Route = d;
         }
 
+        private void InitializeComponent () {
+            AvaloniaXamlLoader.Load (this);
+        }
+
         public void Init () {
+            DataContext = this;
+
+            this.Width *= UIScale;
+            this.Height *= UIScale;
+
             // Populate UI strings per language selection
             this.FindControl<Window> ("dlgUpgrade").Title = App.Language.Localize ("UPGRADE:Upgrade");
             this.FindControl<Label> ("lblUpdateAvailable").Content = App.Language.Localize ("UPGRADE:UpdateAvailable");

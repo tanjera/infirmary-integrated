@@ -8,7 +8,7 @@
 	Title="Select Language and Agree to Terms"
 	Width="500"
 	Height="200"
-	Icon="avares://II Avalonia/Resources/Icon_II.ico"
+	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
 	WindowStartupLocation="CenterScreen"
 	mc:Ignorable="d">
 
@@ -24,77 +24,81 @@
       <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
     </Style>
   </Window.Styles>
+  <LayoutTransformControl Name="layoutControl">
+    <LayoutTransformControl.LayoutTransform>
+      <ScaleTransform ScaleX="{Binding Path=UIScale}" ScaleY="{Binding Path=UIScale}" />
+    </LayoutTransformControl.LayoutTransform>
+    <Grid Margin="15,10" HorizontalAlignment="Center">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="10" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
 
-  <Grid Margin="15,10" HorizontalAlignment="Center">
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="10" />
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="Auto" />
-    </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
 
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="*" />
-    </Grid.ColumnDefinitions>
+      <Label
+				Name="lblChooseLanguage"
+				Grid.Row="0"
+				Grid.Column="0"
+				Margin="5"
+				Padding="5,2"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center" />
 
-    <Label
-			Name="lblChooseLanguage"
-			Grid.Row="0"
-			Grid.Column="0"
-			Margin="5"
-			Padding="5,2"
-			HorizontalAlignment="Center"
-			VerticalAlignment="Center" />
+      <ComboBox
+				Name="cmbLanguages"
+				Grid.Row="1"
+				Grid.Column="0"
+				Margin="5"
+				Padding="5,2,5,5"
+				HorizontalAlignment="Stretch" />
 
-    <ComboBox
-			Name="cmbLanguages"
-			Grid.Row="1"
-			Grid.Column="0"
-			Margin="5"
-			Padding="5,2,5,5"
-			HorizontalAlignment="Stretch" />
+      <Border
+				Grid.Row="2"
+				Grid.Column="0"
+				Classes="grp" />
 
-    <Border
-			Grid.Row="2"
-			Grid.Column="0"
-			Classes="grp" />
+      <Label
+				Name="lblAgreeTerms"
+				Grid.Row="3"
+				Grid.Column="0"
+				Padding="5,5,5,2"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center">
 
-    <Label
-			Name="lblAgreeTerms"
-			Grid.Row="3"
-			Grid.Column="0"
-			Padding="5,5,5,2"
-			HorizontalAlignment="Center"
-			VerticalAlignment="Center">
+        <TextBlock Name="txtAgreeTerms" TextWrapping="Wrap" />
+      </Label>
 
-      <TextBlock Name="txtAgreeTerms" TextWrapping="Wrap" />
-    </Label>
+      <Label
+				Name="lblTermsUri"
+				Grid.Row="4"
+				Grid.Column="0"
+				Padding="5,2"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Classes="url"
+				Tapped="Hyperlink_Terms">
+        http://www.infirmary-integrated.com/license-and-data-collection/
+      </Label>
 
-    <Label
-			Name="lblTermsUri"
-			Grid.Row="4"
-			Grid.Column="0"
-			Padding="5,2"
-			HorizontalAlignment="Center"
-			VerticalAlignment="Center"
-			Classes="url"
-			Tapped="Hyperlink_Terms">
-      http://www.infirmary-integrated.com/license-and-data-collection/
-    </Label>
-
-    <Button
-			Name="btnContinue"
-			Grid.Row="5"
-			Grid.Column="0"
-			Margin="5"
-			Padding="5,2"
-			HorizontalAlignment="Stretch"
-			HorizontalContentAlignment="Center"
-			Background="White"
-			BorderBrush="Black"
-			BorderThickness="1"
-			Click="OnClick_Continue" />
-  </Grid>
+      <Button
+				Name="btnContinue"
+				Grid.Row="5"
+				Grid.Column="0"
+				Margin="5"
+				Padding="5,2"
+				HorizontalAlignment="Stretch"
+				HorizontalContentAlignment="Center"
+				Background="White"
+				BorderBrush="Black"
+				BorderThickness="1"
+				Click="OnClick_Continue" />
+    </Grid>
+  </LayoutTransformControl>
 </Window>

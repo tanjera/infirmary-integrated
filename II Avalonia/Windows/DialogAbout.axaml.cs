@@ -21,11 +21,19 @@ namespace II_Avalonia {
             Init ();
         }
 
+        /* Properties for applying DPI scaling options */
+        public double UIScale { get { return App.Settings.UIScale; } }
+
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
         }
 
         public void Init () {
+            DataContext = this;
+
+            this.Width *= UIScale;
+            this.Height *= UIScale;
+
             // Populate UI strings per language selection
             Language.Values l = App.Language.Value;
 
