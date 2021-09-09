@@ -128,53 +128,51 @@ namespace II_Avalonia {
             this.FindControl<Label> ("lblGroupScenarioPlayer").Content = App.Language.Localize ("PE:ScenarioPlayer");
             this.FindControl<HeaderedContentControl> ("lblProgressionOptions").Header = App.Language.Localize ("PE:ProgressionOptions");
 
-            /* TODO
+            this.FindControl<Label> ("lblGroupVitalSigns").Content = App.Language.Localize ("PE:VitalSigns");
+            this.FindControl<Label> ("lblHR").Content = $"{App.Language.Localize ("PE:HeartRate")}:";
+            this.FindControl<Label> ("lblNIBP").Content = $"{App.Language.Localize ("PE:BloodPressure")}:";
+            this.FindControl<Label> ("lblRR").Content = $"{App.Language.Localize ("PE:RespiratoryRate")}:";
+            this.FindControl<Label> ("lblSPO2").Content = $"{App.Language.Localize ("PE:PulseOximetry")}:";
+            this.FindControl<Label> ("lblT").Content = $"{App.Language.Localize ("PE:Temperature")}:";
+            this.FindControl<Label> ("lblCardiacRhythm").Content = $"{App.Language.Localize ("PE:CardiacRhythm")}:";
+            this.FindControl<CheckBox> ("checkDefaultVitals").Content = App.Language.Localize ("PE:UseDefaultVitalSignRanges");
 
-            lblGroupVitalSigns.Content = App.Language.Localize ("PE:VitalSigns");
-            lblHR.Content = String.Format ("{0}:", App.Language.Localize ("PE:HeartRate"));
-            lblNIBP.Content = String.Format ("{0}:", App.Language.Localize ("PE:BloodPressure"));
-            lblRR.Content = String.Format ("{0}:", App.Language.Localize ("PE:RespiratoryRate"));
-            lblSPO2.Content = String.Format ("{0}:", App.Language.Localize ("PE:PulseOximetry"));
-            lblT.Content = String.Format ("{0}:", App.Language.Localize ("PE:Temperature"));
-            lblCardiacRhythm.Content = String.Format ("{0}:", App.Language.Localize ("PE:CardiacRhythm"));
-            checkDefaultVitals.Content = App.Language.Localize ("PE:UseDefaultVitalSignRanges");
+            this.FindControl<Label> ("lblGroupHemodynamics").Content = App.Language.Localize ("PE:AdvancedHemodynamics");
+            this.FindControl<Label> ("lblETCO2").Content = $"{ App.Language.Localize ("PE:EndTidalCO2")}:";
+            this.FindControl<Label> ("lblCVP").Content = $"{ App.Language.Localize ("PE:CentralVenousPressure")}:";
+            this.FindControl<Label> ("lblASBP").Content = $"{ App.Language.Localize ("PE:ArterialBloodPressure")}:";
+            this.FindControl<Label> ("lblPACatheterPlacement").Content = $"{ App.Language.Localize ("PE:PulmonaryArteryCatheterPlacement")}:";
+            this.FindControl<Label> ("lblCO").Content = $"{ App.Language.Localize ("PE:CardiacOutput")}:";
+            this.FindControl<Label> ("lblPSP").Content = $"{ App.Language.Localize ("PE:PulmonaryArteryPressure")}:";
+            this.FindControl<Label> ("lblICP").Content = $"{ App.Language.Localize ("PE:IntracranialPressure")}:";
+            this.FindControl<Label> ("lblIAP").Content = $"{ App.Language.Localize ("PE:IntraabdominalPressure")}:";
 
-            lblGroupHemodynamics.Content = App.Language.Localize ("PE:AdvancedHemodynamics");
-            lblETCO2.Content = String.Format ("{0}:", App.Language.Localize ("PE:EndTidalCO2"));
-            lblCVP.Content = String.Format ("{0}:", App.Language.Localize ("PE:CentralVenousPressure"));
-            lblASBP.Content = String.Format ("{0}:", App.Language.Localize ("PE:ArterialBloodPressure"));
-            lblPACatheterPlacement.Content = String.Format ("{0}:", App.Language.Localize ("PE:PulmonaryArteryCatheterPlacement"));
-            lblCO.Content = String.Format ("{0}:", App.Language.Localize ("PE:CardiacOutput"));
-            lblPSP.Content = String.Format ("{0}:", App.Language.Localize ("PE:PulmonaryArteryPressure"));
-            lblICP.Content = String.Format ("{0}:", App.Language.Localize ("PE:IntracranialPressure"));
-            lblIAP.Content = String.Format ("{0}:", App.Language.Localize ("PE:IntraabdominalPressure"));
+            this.FindControl<Label> ("lblGroupRespiratoryProfile").Content = App.Language.Localize ("PE:RespiratoryProfile");
+            this.FindControl<Label> ("lblRespiratoryRhythm").Content = $"{App.Language.Localize ("PE:RespiratoryRhythm")}:";
+            this.FindControl<Label> ("lblMechanicallyVentilated").Content = $"{App.Language.Localize ("PE:MechanicallyVentilated")}:";
+            this.FindControl<Label> ("lblInspiratoryRatio").Content = $"{App.Language.Localize ("PE:InspiratoryExpiratoryRatio")}:";
 
-            lblGroupRespiratoryProfile.Content = App.Language.Localize ("PE:RespiratoryProfile");
-            lblRespiratoryRhythm.Content = String.Format ("{0}:", App.Language.Localize ("PE:RespiratoryRhythm"));
-            lblMechanicallyVentilated.Content = String.Format ("{0}:", App.Language.Localize ("PE:MechanicallyVentilated"));
-            lblInspiratoryRatio.Content = String.Format ("{0}:", App.Language.Localize ("PE:InspiratoryExpiratoryRatio"));
+            this.FindControl<Label> ("lblGroupCardiacProfile").Content = App.Language.Localize ("PE:CardiacProfile");
+            this.FindControl<Label> ("lblPacemakerCaptureThreshold").Content = $"{ App.Language.Localize ("PE:PacemakerCaptureThreshold")}:";
+            this.FindControl<Label> ("lblPulsusParadoxus").Content = $"{ App.Language.Localize ("PE:PulsusParadoxus")}:";
+            this.FindControl<Label> ("lblPulsusAlternans").Content = $"{ App.Language.Localize ("PE:PulsusAlternans")}:";
+            this.FindControl<Label> ("lblCardiacAxis").Content = $"{App.Language.Localize ("PE:CardiacAxis")}:";
+            this.FindControl<HeaderedContentControl> ("grpSTSegmentElevation").Header = App.Language.Localize ("PE:STSegmentElevation");
+            this.FindControl<HeaderedContentControl> ("grpTWaveElevation").Header = App.Language.Localize ("PE:TWaveElevation");
 
-            lblGroupCardiacProfile.Content = App.Language.Localize ("PE:CardiacProfile");
-            lblPacemakerCaptureThreshold.Content = String.Format ("{0}:", App.Language.Localize ("PE:PacemakerCaptureThreshold"));
-            lblPulsusParadoxus.Content = String.Format ("{0}:", App.Language.Localize ("PE:PulsusParadoxus"));
-            lblPulsusAlternans.Content = String.Format ("{0}:", App.Language.Localize ("PE:PulsusAlternans"));
-            lblCardiacAxis.Content = String.Format ("{0}:", App.Language.Localize ("PE:CardiacAxis"));
-            grpSTSegmentElevation.Header = App.Language.Localize ("PE:STSegmentElevation");
-            grpTWaveElevation.Header = App.Language.Localize ("PE:TWaveElevation");
+            this.FindControl<Label> ("lblGroupObstetricProfile").Content = App.Language.Localize ("PE:ObstetricProfile");
+            this.FindControl<Label> ("lblFHR").Content = $"{ App.Language.Localize ("PE:FetalHeartRate")}:";
+            this.FindControl<Label> ("lblFHRRhythms").Content = $"{ App.Language.Localize ("PE:FetalHeartRhythms")}:";
+            this.FindControl<Label> ("lblFHRVariability").Content = $"{ App.Language.Localize ("PE:FetalHeartVariability")}:";
+            this.FindControl<Label> ("lblUCFrequency").Content = $"{ App.Language.Localize ("PE:UterineContractionFrequency")}:";
+            this.FindControl<Label> ("lblUCDuration").Content = $"{ App.Language.Localize ("PE:UterineContractionDuration")}:";
+            this.FindControl<Label> ("lblUCIntensity").Content = $"{ App.Language.Localize ("PE:UterineContractionIntensity")}:";
 
-            lblGroupObstetricProfile.Content = App.Language.Localize ("PE:ObstetricProfile");
-            lblFHR.Content = String.Format ("{0}:", App.Language.Localize ("PE:FetalHeartRate"));
-            lblFHRRhythms.Content = String.Format ("{0}:", App.Language.Localize ("PE:FetalHeartRhythms"));
-            lblFHRVariability.Content = String.Format ("{0}:", App.Language.Localize ("PE:FetalHeartVariability"));
-            lblUCFrequency.Content = String.Format ("{0}:", App.Language.Localize ("PE:UterineContractionFrequency"));
-            lblUCDuration.Content = String.Format ("{0}:", App.Language.Localize ("PE:UterineContractionDuration"));
-            lblUCIntensity.Content = String.Format ("{0}:", App.Language.Localize ("PE:UterineContractionIntensity"));
+            this.FindControl<CheckBox> ("chkAutoApplyChanges").Content = App.Language.Localize ("BUTTON:AutoApplyChanges");
+            this.FindControl<Label> ("lblParametersApply").Content = App.Language.Localize ("BUTTON:ApplyChanges");
+            this.FindControl<Label> ("lblParametersReset").Content = App.Language.Localize ("BUTTON:ResetParameters");
 
-            chkAutoApplyChanges.Content = App.Language.Localize ("BUTTON:AutoApplyChanges");
-            lblParametersApply.Content = App.Language.Localize ("BUTTON:ApplyChanges");
-            lblParametersReset.Content = App.Language.Localize ("BUTTON:ResetParameters");
-
-            chkAutoApplyChanges.IsChecked = App.Settings.AutoApplyChanges;
+            this.FindControl<CheckBox> ("chkAutoApplyChanges").IsChecked = App.Settings.AutoApplyChanges;
 
             List<string> cardiacRhythms = new List<string> (),
                 respiratoryRhythms = new List<string> (),
@@ -185,29 +183,28 @@ namespace II_Avalonia {
 
             foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
                 cardiacRhythms.Add (App.Language.Localize (Cardiac_Rhythms.LookupString (v)));
-            comboCardiacRhythm.ItemsSource = cardiacRhythms;
+            this.FindControl<ComboBox> ("comboCardiacRhythm").Items = cardiacRhythms;
 
             foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
                 respiratoryRhythms.Add (App.Language.Localize (Respiratory_Rhythms.LookupString (v)));
-            comboRespiratoryRhythm.ItemsSource = respiratoryRhythms;
+            this.FindControl<ComboBox> ("comboRespiratoryRhythm").Items = respiratoryRhythms;
 
             foreach (PulmonaryArtery_Rhythms.Values v in Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)))
                 pulmonaryArteryRhythms.Add (App.Language.Localize (PulmonaryArtery_Rhythms.LookupString (v)));
-            comboPACatheterPlacement.ItemsSource = pulmonaryArteryRhythms;
+            this.FindControl<ComboBox> ("comboPACatheterPlacement").Items = pulmonaryArteryRhythms;
 
             foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
                 cardiacAxes.Add (App.Language.Localize (Cardiac_Axes.LookupString (v)));
-            comboCardiacAxis.ItemsSource = cardiacAxes;
+            this.FindControl<ComboBox> ("comboCardiacAxis").Items = cardiacAxes;
 
             foreach (Scales.Intensity.Values v in Enum.GetValues (typeof (Scales.Intensity.Values)))
                 intensityScale.Add (App.Language.Localize (Scales.Intensity.LookupString (v)));
-            comboFHRVariability.ItemsSource = intensityScale;
-            comboUCIntensity.ItemsSource = intensityScale;
+            this.FindControl<ComboBox> ("comboFHRVariability").Items = intensityScale;
+            this.FindControl<ComboBox> ("comboUCIntensity").Items = intensityScale;
 
             foreach (FHRAccelDecels.Values v in Enum.GetValues (typeof (FHRAccelDecels.Values)))
                 fetalHeartRhythms.Add (App.Language.Localize (FHRAccelDecels.LookupString (v)));
-            listFHRRhythms.ItemsSource = fetalHeartRhythms;
-            */
+            this.FindControl<ListBox> ("listFHRRhythms").Items = fetalHeartRhythms;
         }
 
         private async void InitUpgrade () {
@@ -767,6 +764,16 @@ namespace II_Avalonia {
         private void ButtonApplyParameters_Click (object sender, RoutedEventArgs e)
             => ApplyPatientParameters ();
 
+        private void Window_Activated (object sender, EventArgs e) {
+            if (!uiLoadCompleted) {
+                this.Position = new PixelPoint (App.Settings.WindowPosition.X, App.Settings.WindowPosition.Y);
+                this.uiLoadCompleted = true;
+            }
+        }
+
+        private void Window_Closed (object sender, EventArgs e)
+            => Exit ();
+
         private void Window_LayoutUpdated (object sender, EventArgs e) {
             if (!uiLoadCompleted) {
                 this.Width = App.Settings.WindowSize.X;
@@ -777,20 +784,10 @@ namespace II_Avalonia {
             }
         }
 
-        private void Window_Activated (object sender, EventArgs e) {
-            if (!uiLoadCompleted) {
-                this.Position = new PixelPoint (App.Settings.WindowPosition.X, App.Settings.WindowPosition.Y);
-                this.uiLoadCompleted = true;
-            }
-        }
-
-        private void Window_LocationChanged (object sender, PixelPointEventArgs e) {
+        private void Window_PositionChanged (object sender, PixelPointEventArgs e) {
             if (uiLoadCompleted)
                 App.Settings.WindowPosition = new System.Drawing.Point (e.Point.X, e.Point.Y);
         }
-
-        private void Window_Closed (object sender, EventArgs e)
-            => Exit ();
 
         private void TextBoxAccessionKey_PreviewTextInput (object sender, TextInputEventArgs e) {
             //TODO Repopulate Code
@@ -825,11 +822,11 @@ namespace II_Avalonia {
             //TODO Repopulate Code
         }
 
-        private void OnUIPatientParameter_KeyDown (object sender, EventArgs e) {
+        private void OnUIPatientParameter_KeyDown (object sender, KeyEventArgs e) {
             //TODO Repopulate Code
         }
 
-        private void OnUIPatientParameter_GotFocus (object sender, RoutedEventArgs e) {
+        private void OnUIPatientParameter_GotFocus (object sender, GotFocusEventArgs e) {
             /* TODO
             if (sender is IntegerUpDown)
                 uiBufferValue = (sender as IntegerUpDown).Value ?? 0;

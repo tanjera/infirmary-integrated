@@ -54,7 +54,10 @@ namespace II_Avalonia {
 
                 // Show the splash screen for 2 seconds, then swap out to the main window
                 desktop.MainWindow = Splash_Screen;
+
+#if !DEBUG
                 await Task.Delay (2000);
+#endif
 
                 desktop.MainWindow = Patient_Editor;
                 Splash_Screen.Hide ();
