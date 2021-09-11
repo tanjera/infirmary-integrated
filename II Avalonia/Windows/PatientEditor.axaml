@@ -14,7 +14,6 @@
 	Closed="Window_Closed"
 	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
 	LayoutUpdated="Window_LayoutUpdated"
-	PositionChanged="Window_PositionChanged"
 	mc:Ignorable="d">
 
   <Window.Styles>

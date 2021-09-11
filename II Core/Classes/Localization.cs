@@ -90,11 +90,7 @@ namespace II.Localization {
         }
 
         public string Localize (string key) {
-            try {
-                return Dictionary [key];
-            } catch {
-                return "";
-            }
+            return Dictionary.ContainsKey (key) ? Dictionary [key] : "";
         }
     }
 }

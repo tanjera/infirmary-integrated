@@ -12,7 +12,6 @@ using System.IO;
 using System.Text;
 
 namespace II {
-
     public class Settings {
         public string Language;
         public bool AutoApplyChanges;
@@ -27,7 +26,6 @@ namespace II {
             AutoApplyChanges = false;
             UIScale = 0.9d;
             WindowSize = new Point (700, 560);
-            WindowPosition = new Point (0, 0);
             MuteUpgrade = false;
             MuteUpgradeVersion = "";
         }
@@ -38,7 +36,7 @@ namespace II {
 
             StreamReader sr = new StreamReader (File.GetConfigPath ());
 
-            string line;
+            string? line;
             bool parseBool;
             double parseDbl;
             int parseInt;
@@ -71,16 +69,6 @@ namespace II {
                         case "WindowSizeY":
                             if (int.TryParse (pValue, out parseInt))
                                 WindowSize.Y = parseInt;
-                            break;
-
-                        case "WindowPositionX":
-                            if (int.TryParse (pValue, out parseInt))
-                                WindowPosition.X = parseInt;
-                            break;
-
-                        case "WindowPositionY":
-                            if (int.TryParse (pValue, out parseInt))
-                                WindowPosition.Y = parseInt;
                             break;
 
                         // Settings for muting whether new program upgrades are available for download

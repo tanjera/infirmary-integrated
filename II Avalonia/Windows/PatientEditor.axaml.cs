@@ -27,7 +27,7 @@ namespace II_Avalonia {
         private bool uiLoadCompleted = false;
 
         /* Variables for Auto-Apply functionality */
-        private object uiBufferValue;
+        private object? uiBufferValue;
         private ParameterStatuses ParameterStatus = ParameterStatuses.Loading;
 
         private enum ParameterStatuses {
@@ -282,8 +282,8 @@ namespace II_Avalonia {
             App.Timer_Main.Elapsed += App.Patient.ProcessTimers;
 
             /* Tie PatientEvents to the PatientEditor UI! And trigger. */
-            //TODO App.Patient.PatientEvent += FormUpdateFields;
-            //TODO FormUpdateFields (this, new Patient.PatientEventArgs (App.Patient, Patient.PatientEventTypes.Vitals_Change));
+            App.Patient.PatientEvent += FormUpdateFields;
+            FormUpdateFields (this, new Patient.PatientEventArgs (App.Patient, Patient.PatientEventTypes.Vitals_Change));
 
             /* Tie PatientEvents to Devices! */
             /* TODO
@@ -476,7 +476,7 @@ namespace II_Avalonia {
                 LoadFail ();
             }
 
-            //TODO FormUpdateFields (this, new Patient.PatientEventArgs (App.Patient, Patient.PatientEventTypes.Vitals_Change));
+            FormUpdateFields (this, new Patient.PatientEventArgs (App.Patient, Patient.PatientEventTypes.Vitals_Change));
         }
 
         private void LoadInit (string incFile) {
@@ -594,26 +594,66 @@ namespace II_Avalonia {
 
             this.FindControl<Expander> ("expScenarioPlayer").IsEnabled = isScene;
             this.FindControl<Expander> ("expScenarioPlayer").IsExpanded = isScene;
-
-            /* TODO
-            expVitalSigns.IsExpanded = !isScene;
-            expHemodynamics.IsExpanded = !isScene;
-            expRespiratoryProfile.IsExpanded = !isScene;
-            expCardiacProfile.IsExpanded = !isScene;
-            expObstetricProfile.IsExpanded = !isScene;
-            */
+            this.FindControl<Expander> ("expVitalSigns").IsExpanded = !isScene;
+            this.FindControl<Expander> ("expHemodynamics").IsExpanded = !isScene;
+            this.FindControl<Expander> ("expRespiratoryProfile").IsExpanded = !isScene;
+            this.FindControl<Expander> ("expCardiacProfile").IsExpanded = !isScene;
+            this.FindControl<Expander> ("expObstetricProfile").IsExpanded = !isScene;
         }
 
         private void LoadOptions (string inc) {
-            //TODO Repopulate Code
+            StringReader sRead = new StringReader (inc);
+
+            try {
+                string line;
+                while ((line = sRead.ReadLine ()) != null) {
+                    if (line.Contains (":")) {
+                        string pName = line.Substring (0, line.IndexOf (':')),
+                                pValue = line.Substring (line.IndexOf (':') + 1);
+                        switch (pName) {
+                            default: break;
+                            case "checkDefaultVitals": this.FindControl<CheckBox> ("checkDefaultVitals").IsChecked = bool.Parse (pValue); break;
+                        }
+                    }
+                }
+            } catch {
+                sRead.Close ();
+                return;
+            }
+
+            sRead.Close ();
         }
 
         private void LoadFail () {
-            //TODO Repopulate Code
+            System.Windows.MessageBox.Show (
+                    App.Language.Localize ("PE:LoadFailMessage"),
+                    App.Language.Localize ("PE:LoadFailTitle"),
+                    MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void SaveFile () {
-            //TODO Repopulate Code
+            // Only save single Patient files in base Infirmary Integrated!
+            // Scenario files should be created/edited/saved via II Scenario Editor!
+            if (App.Scenario.IsScenario) {
+                System.Windows.MessageBox.Show (
+                    App.Language.Localize ("PE:SaveFailScenarioMessage"),
+                    App.Language.Localize ("PE:SaveFailScenarioTitle"),
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            Stream s;
+            Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
+
+            dlgSave.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
+            dlgSave.FilterIndex = 1;
+            dlgSave.RestoreDirectory = true;
+
+            if (dlgSave.ShowDialog () == true) {
+                if ((s = dlgSave.OpenFile ()) != null) {
+                    SaveT1 (s);
+                }
+            }
         }
 
         private void SaveT1 (Stream s) {
@@ -665,7 +705,7 @@ namespace II_Avalonia {
         private string SaveOptions () {
             StringBuilder sWrite = new StringBuilder ();
 
-            //TODO sWrite.AppendLine (String.Format ("{0}:{1}", "checkDefaultVitals", checkDefaultVitals.IsChecked));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "checkDefaultVitals", this.FindControl<CheckBox> ("checkDefaultVitals").IsChecked));
 
             return sWrite.ToString ();
         }
@@ -684,42 +724,261 @@ namespace II_Avalonia {
             => UnloadPatientEvents ();
 
         private void OnStepChanged (object sender, EventArgs e) {
-            App.Patient = App.Scenario.Patient;
+            App.Patient = App.Scenario?.Patient;
 
             InitPatientEvents ();
             InitStep ();
         }
 
         private void InitStep () {
-            //TODO Repopulate Code
+            Scenario.Step s = App.Scenario.Current;
+
+            Label lblScenarioStep = this.FindControl<Label> ("lblScenarioStep");
+            Label lblTimerStep = this.FindControl<Label> ("lblTimerStep");
+            StackPanel stackProgressions = this.FindControl<StackPanel> ("stackProgressions");
+
+            // Set Previous, Next, Pause, and Play buttons .IsEnabled based on Step properties
+            this.FindControl<Button> ("btnPreviousStep").IsEnabled = (s.ProgressFrom >= 0);
+            this.FindControl<Button> ("btnNextStep").IsEnabled = (s.ProgressTo >= 0 || s.Progressions.Count > 0);
+            this.FindControl<Button> ("btnPauseStep").IsEnabled = (s.ProgressTimer > 0);
+            this.FindControl<Button> ("btnPlayStep").IsEnabled = false;
+
+            // Display Scenario's Step count
+            lblScenarioStep.Content = String.Format ("{0} {1} / {2}",
+                App.Language.Localize ("PE:ProgressionStep"),
+                App.Scenario.CurrentIndex,          // Retaining zero-based index to confuse end-user
+                App.Scenario.Steps.Count - 1);      // But also for consistency with Scenario Editor and program development
+
+            // Display Progress Timer if applicable, otherwise instruct that the Step requires manual progression
+            if (s.ProgressTimer == -1)
+                lblTimerStep.Content = App.Language.Localize ("PE:ProgressionManual");
+            else
+                lblTimerStep.Content = String.Format ("{0} {1} {2}",
+                    App.Language.Localize ("PE:ProgressionAutomatic"),
+                    s.ProgressTimer,
+                    App.Language.Localize ("PE:ProgressionSeconds"));
+
+            // Re-populate a StackPanel with RadioButtons for Progression options, including "Default Option"
+            stackProgressions.Children.Clear ();
+
+            stackProgressions.Children.Add (new RadioButton () {
+                IsChecked = true,
+                Name = "radioProgression_Default",
+                Content = App.Language.Localize ("PE:ProgressionDefault"),
+                GroupName = "ProgressionOptions"
+            });
+
+            for (int i = 0; i < s.Progressions.Count; i++) {
+                Scenario.Step.Progression p = s.Progressions [i];
+
+                stackProgressions.Children.Add (new RadioButton () {
+                    IsChecked = false,
+                    Content = p.Description,
+                    Name = String.Format ("radioProgression_{0}", i),
+                    GroupName = "ProgressionOptions"
+                });
+            }
         }
 
         private void NextStep () {
-            //TODO Repopulate Code
+            StackPanel stackProgressions = this.FindControl<StackPanel> ("stackProgressions");
+
+            if (App.Scenario.Current.Progressions.Count == 0)
+                App.Scenario.NextStep ();
+            else {
+                foreach (RadioButton rb in stackProgressions.Children)
+                    if (rb.IsChecked ?? false && rb.Name.Contains ("_")) {
+                        string prog = rb.Name.Substring (rb.Name.IndexOf ("_") + 1);
+                        int optProg = -1;
+                        App.Scenario.NextStep (
+                            prog == "Default" ? -1
+                                : (int.TryParse (prog, out optProg) ? optProg : -1));
+                        break;
+                    }
+            }
         }
 
         private void PreviousStep () {
-            App.Scenario.LastStep ();
+            App.Scenario?.LastStep ();
         }
 
         private void PauseStep () {
-            //TODO Repopulate Code
+            this.FindControl<Button> ("btnPauseStep").IsEnabled = false;
+            this.FindControl<Button> ("btnPlayStep").IsEnabled = true;
+
+            App.Scenario.PauseStep ();
+
+            this.FindControl<Label> ("lblTimerStep").Content = App.Language.Localize ("PE:ProgressionPaused");
         }
 
         private void PlayStep () {
-            //TODO Repopulate Code
+            this.FindControl<Button> ("btnPauseStep").IsEnabled = true;
+            this.FindControl<Button> ("btnPlayStep").IsEnabled = false;
+
+            App.Scenario.PlayStep ();
+
+            Label lblTimerStep = this.FindControl<Label> ("lblTimerStep");
+
+            if (App.Scenario.Current.ProgressTimer == -1)
+                lblTimerStep.Content = App.Language.Localize ("PE:ProgressionManual");
+            else
+                lblTimerStep.Content = String.Format ("{0} {1} {2}",
+                    App.Language.Localize ("PE:ProgressionAutomatic"),
+                    App.Scenario.Current.ProgressTimer - (App.Scenario.ProgressTimer.Elapsed / 1000),
+                    App.Language.Localize ("PE:ProgressionSeconds"));
         }
 
         private void ApplyMirroring () {
-            //TODO Repopulate Code
+            App.Mirror.PatientUpdated = new DateTime ();
+            App.Mirror.ServerQueried = new DateTime ();
+
+            TextBox txtAccessionKey = this.FindControl<TextBox> ("txtAccessionKey");
+            TextBox txtAccessPassword = this.FindControl<TextBox> ("txtAccessPassword");
+            TextBox txtAdminPassword = this.FindControl<TextBox> ("txtAdminPassword");
+            Expander expScenarioPlayer = this.FindControl<Expander> ("expScenarioPlayer");
+
+            if (this.FindControl<RadioButton> ("radioInactive").IsChecked ?? true) {
+                App.Mirror.Status = Mirror.Statuses.INACTIVE;
+                //this.FindControl<Label> ("lblStatusText").Content = App.Language.Localize ("PE:StatusMirroringDisabled");
+            } else if (this.FindControl<RadioButton> ("radioClient").IsChecked ?? true) {
+                /* Set client mirroring status */
+                App.Mirror.Status = Mirror.Statuses.CLIENT;
+                App.Mirror.Accession = txtAccessionKey.Text;
+                App.Mirror.PasswordAccess = txtAccessPassword.Text;
+                //this.FindControl<Label> ("lblStatusText").Content = App.Language.Localize ("PE:StatusMirroringActivated");
+
+                /* When mirroring another patient, disable scenario player and Scenario timer */
+                expScenarioPlayer.IsExpanded = false;   // Can be re-enabled by loading a scenario
+                expScenarioPlayer.IsEnabled = false;
+                App.Scenario.StopTimer ();
+            } else if (this.FindControl<RadioButton> ("radioServer").IsChecked ?? true) {
+                if (txtAccessionKey.Text == "")
+                    txtAccessionKey.Text = Utility.RandomString (8);
+
+                App.Mirror.Status = Mirror.Statuses.HOST;
+                App.Mirror.Accession = txtAccessionKey.Text;
+                App.Mirror.PasswordAccess = txtAccessPassword.Text;
+                App.Mirror.PasswordEdit = txtAdminPassword.Text;
+                //this.FindControl<Label> ("lblStatusText").Content = App.Language.Localize ("PE:StatusMirroringActivated");
+            }
         }
 
         private void ResetPatientParameters () {
-            //TODO Repopulate Code
+            RefreshPatient ();
+            //this.FindControl<Label> ("lblStatusText").Content = App.Language.Localize ("PE:StatusPatientReset");
         }
 
         private void ApplyPatientParameters () {
-            //TODO Repopulate Code
+            ApplyMirroring ();
+
+            ComboBox comboCardiacRhythm = this.FindControl<ComboBox> ("comboCardiacRhythm");
+            ComboBox comboRespiratoryRhythm = this.FindControl<ComboBox> ("comboRespiratoryRhythm");
+            ComboBox comboPACatheterPlacement = this.FindControl<ComboBox> ("comboPACatheterPlacement");
+            ComboBox comboCardiacAxis = this.FindControl<ComboBox> ("comboCardiacAxis");
+            ComboBox comboFHRVariability = this.FindControl<ComboBox> ("comboFHRVariability");
+            ComboBox comboUCIntensity = this.FindControl<ComboBox> ("comboUCIntensity");
+            ListBox listFHRRhythms = this.FindControl<ListBox> ("listFHRRhythms");
+
+            List<FHRAccelDecels.Values> FHRRhythms = new List<FHRAccelDecels.Values> ();
+
+            //TODO Reimplement pulling FHRRhythms from UI
+
+            App.Patient.UpdateParameters (
+
+                // Basic vital signs
+                (int)(this.FindControl<NumericUpDown> ("numHR")?.Value ?? 0),
+
+                (int)(this.FindControl<NumericUpDown> ("numNSBP")?.Value ?? 0),
+                (int)(this.FindControl<NumericUpDown> ("numNDBP")?.Value ?? 0),
+                Patient.CalculateMAP ((int)(this.FindControl<NumericUpDown> ("numNSBP")?.Value ?? 0), (int)(this.FindControl<NumericUpDown> ("numNDBP")?.Value ?? 0)),
+
+                (int)(this.FindControl<NumericUpDown> ("numRR")?.Value ?? 0),
+                (int)(this.FindControl<NumericUpDown> ("numSPO2")?.Value ?? 0),
+                (double)(this.FindControl<NumericUpDown> ("numT")?.Value ?? 0),
+
+                (Cardiac_Rhythms.Values)Enum.GetValues (typeof (Cardiac_Rhythms.Values)).GetValue (
+                    comboCardiacRhythm.SelectedIndex < 0 ? 0 : comboCardiacRhythm.SelectedIndex),
+                (Respiratory_Rhythms.Values)Enum.GetValues (typeof (Respiratory_Rhythms.Values)).GetValue (
+                    comboRespiratoryRhythm.SelectedIndex < 0 ? 0 : comboRespiratoryRhythm.SelectedIndex),
+
+                // Advanced hemodynamics
+                (int)(this.FindControl<NumericUpDown> ("numETCO2")?.Value ?? 0),
+                (int)(this.FindControl<NumericUpDown> ("numCVP")?.Value ?? 0),
+
+                (int)(this.FindControl<NumericUpDown> ("numASBP")?.Value ?? 0),
+                (int)(this.FindControl<NumericUpDown> ("numADBP")?.Value ?? 0),
+                Patient.CalculateMAP ((int)(this.FindControl<NumericUpDown> ("numASBP")?.Value ?? 0), (int)(this.FindControl<NumericUpDown> ("numADBP")?.Value ?? 0)),
+
+                (float)(this.FindControl<NumericUpDown> ("numCO")?.Value ?? 0),
+
+                (PulmonaryArtery_Rhythms.Values)Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)).GetValue (
+                    comboPACatheterPlacement.SelectedIndex < 0 ? 0 : comboPACatheterPlacement.SelectedIndex),
+
+                (int)(this.FindControl<NumericUpDown> ("numPSP")?.Value ?? 0),
+                (int)(this.FindControl<NumericUpDown> ("numPDP")?.Value ?? 0),
+                Patient.CalculateMAP ((int)(this.FindControl<NumericUpDown> ("numPSP")?.Value ?? 0), (int)(this.FindControl<NumericUpDown> ("numPDP")?.Value ?? 0)),
+
+                (int)(this.FindControl<NumericUpDown> ("numICP")?.Value ?? 0),
+                (int)(this.FindControl<NumericUpDown> ("numIAP")?.Value ?? 0),
+
+                // Respiratory profile
+                this.FindControl<CheckBox> ("chkMechanicallyVentilated").IsChecked ?? false,
+
+                (float)(this.FindControl<NumericUpDown> ("numInspiratoryRatio")?.Value ?? 0),
+                (float)(this.FindControl<NumericUpDown> ("numExpiratoryRatio")?.Value ?? 0),
+
+                // Cardiac Profile
+                (int)(this.FindControl<NumericUpDown> ("numPacemakerCaptureThreshold")?.Value ?? 0),
+                this.FindControl<CheckBox> ("chkPulsusParadoxus").IsChecked ?? false,
+                this.FindControl<CheckBox> ("chkPulsusAlternans").IsChecked ?? false,
+
+                (Cardiac_Axes.Values)Enum.GetValues (typeof (Cardiac_Axes.Values)).GetValue (
+                    comboCardiacAxis.SelectedIndex < 0 ? 0 : comboCardiacAxis.SelectedIndex),
+
+                new double [] {
+                    (double)(this.FindControl<NumericUpDown>("numSTE_I")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numSTE_II")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numSTE_III")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numSTE_aVR")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numSTE_aVL")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numSTE_aVF")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numSTE_V1")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numSTE_V2")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numSTE_V3")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numSTE_V4")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numSTE_V5")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numSTE_V6")?.Value?? 0)
+                },
+                new double [] {
+                    (double)(this.FindControl<NumericUpDown>("numTWE_I")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numTWE_II")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numTWE_III")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numTWE_aVR")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numTWE_aVL")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numTWE_aVF")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numTWE_V1")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numTWE_V2")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numTWE_V3")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numTWE_V4")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numTWE_V5")?.Value ?? 0),
+                    (double)(this.FindControl<NumericUpDown>("numTWE_V6")?.Value ?? 0)
+                },
+
+                // Obstetric profile
+                (int)(this.FindControl<NumericUpDown> ("numFHR")?.Value ?? 0),
+                (Scales.Intensity.Values)Enum.GetValues (typeof (Scales.Intensity.Values)).GetValue (
+                    comboFHRVariability.SelectedIndex < 0 ? 0 : comboFHRVariability.SelectedIndex),
+                FHRRhythms,
+                (float)(this.FindControl<NumericUpDown> ("numUCFrequency")?.Value ?? 0),
+                (int)(this.FindControl<NumericUpDown> ("numUCDuration")?.Value ?? 0),
+                (Scales.Intensity.Values)Enum.GetValues (typeof (Scales.Intensity.Values)).GetValue (
+                    comboUCIntensity.SelectedIndex < 0 ? 0 : comboUCIntensity.SelectedIndex)
+            );
+
+            App.Mirror.PostPatient (App.Patient, App.Server);
+            this.FindControl<TextBox> ("txtAccessionKey").Text = App.Mirror.Accession;
+
+            AdvanceParameterStatus (ParameterStatuses.ChangesApplied);
         }
 
         private void MenuNewSimulation_Click (object sender, RoutedEventArgs e) => RefreshScenario (true);
@@ -784,13 +1043,9 @@ namespace II_Avalonia {
             }
         }
 
-        private void Window_PositionChanged (object sender, PixelPointEventArgs e) {
-            if (uiLoadCompleted)
-                App.Settings.WindowPosition = new System.Drawing.Point (e.Point.X, e.Point.Y);
-        }
-
         private void TextBoxAccessionKey_PreviewTextInput (object sender, TextInputEventArgs e) {
-            //TODO Repopulate Code
+            Regex regex = new Regex ("^[a-zA-Z0-9]*$");
+            e.Handled = !regex.IsMatch (e.Text);
         }
 
         private void RadioMirrorSelected_Click (object sender, RoutedEventArgs e) {
@@ -819,40 +1074,39 @@ namespace II_Avalonia {
         }
 
         private void OnAutoApplyChanges_Changed (object sender, RoutedEventArgs e) {
-            //TODO Repopulate Code
+            if (ParameterStatus == ParameterStatuses.Loading)
+                return;
+
+            App.Settings.AutoApplyChanges = this.FindControl<CheckBox> ("chkAutoApplyChanges").IsChecked ?? true;
+            App.Settings.Save ();
+
+            SetParameterStatus (App.Settings.AutoApplyChanges);
         }
 
         private void OnUIPatientParameter_KeyDown (object sender, KeyEventArgs e) {
-            //TODO Repopulate Code
+            if (e.Key == Key.Enter)
+                OnUIPatientParameter_ProcessChanged (sender, e);
         }
 
         private void OnUIPatientParameter_GotFocus (object sender, GotFocusEventArgs e) {
-            /* TODO
-            if (sender is IntegerUpDown)
-                uiBufferValue = (sender as IntegerUpDown).Value ?? 0;
-            else if (sender is DecimalUpDown)
-                uiBufferValue = (sender as DecimalUpDown).Value ?? 0;
+            if (sender is NumericUpDown)
+                uiBufferValue = (sender as NumericUpDown).Value;
             else if (sender is CheckBox)
                 uiBufferValue = (sender as CheckBox).IsChecked ?? false;
             else if (sender is ComboBox)
                 uiBufferValue = (sender as ComboBox).SelectedIndex;
-            */
         }
 
         private void OnUIPatientParameter_LostFocus (object sender, RoutedEventArgs e)
             => OnUIPatientParameter_ProcessChanged (sender, e);
 
         private void OnUIPatientParameter_ProcessChanged (object sender, RoutedEventArgs e) {
-            /* TODO
-            if (sender is IntegerUpDown && (sender as IntegerUpDown).Value != (int)uiBufferValue)
-                OnUIPatientParameter_Changed (sender, e);
-            else if (sender is DecimalUpDown && (sender as DecimalUpDown).Value != (decimal)uiBufferValue)
+            if (sender is NumericUpDown && (sender as NumericUpDown).Value != (double)uiBufferValue)
                 OnUIPatientParameter_Changed (sender, e);
             else if (sender is CheckBox && (sender as CheckBox).IsChecked != (bool)uiBufferValue)
                 OnUIPatientParameter_Changed (sender, e);
             else if (sender is ComboBox && (sender as ComboBox).SelectedIndex != (int)uiBufferValue)
                 OnUIPatientParameter_Changed (sender, e);
-            */
         }
 
         private void OnUIPatientParameter_Changed (object sender, RoutedEventArgs e) {
@@ -874,19 +1128,145 @@ namespace II_Avalonia {
         }
 
         private void OnCardiacRhythm_Selected (object sender, SelectionChangedEventArgs e) {
-            //TODO Repopulate Code
+            if (!this.FindControl<CheckBox> ("checkDefaultVitals").IsChecked ?? false || App.Patient == null)
+                return;
+
+            int si = this.FindControl<ComboBox> ("comboCardiacRhythm").SelectedIndex;
+            Array ev = Enum.GetValues (typeof (Cardiac_Rhythms.Values));
+            if (si < 0 || si > ev.Length - 1)
+                return;
+
+            Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
+                (Cardiac_Rhythms.Values)ev.GetValue (si));
+
+            this.FindControl<NumericUpDown> ("numHR").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numHR")?.Value ?? 0), v.HRMin, v.HRMax);
+            this.FindControl<NumericUpDown> ("numNSBP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numNSBP")?.Value ?? 0), v.SBPMin, v.SBPMax);
+            this.FindControl<NumericUpDown> ("numNDBP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numNDBP")?.Value ?? 0), v.DBPMin, v.DBPMax);
+            this.FindControl<NumericUpDown> ("numRR").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numRR")?.Value ?? 0), v.RRMin, v.RRMax);
+            this.FindControl<NumericUpDown> ("numSPO2").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numSPO2")?.Value ?? 0), v.SPO2Min, v.SPO2Max);
+            this.FindControl<NumericUpDown> ("numETCO2").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numETCO2")?.Value ?? 0), v.ETCO2Min, v.ETCO2Max);
+            this.FindControl<NumericUpDown> ("numASBP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numASBP")?.Value ?? 0), v.SBPMin, v.SBPMax);
+            this.FindControl<NumericUpDown> ("numADBP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numADBP")?.Value ?? 0), v.DBPMin, v.DBPMax);
+            this.FindControl<NumericUpDown> ("numPSP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numPSP")?.Value ?? 0), v.PSPMin, v.PSPMax);
+            this.FindControl<NumericUpDown> ("numPDP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numPDP")?.Value ?? 0), v.PDPMin, v.PDPMax);
+
+            OnUIPatientParameter_Changed (sender, e);
         }
 
         private void OnRespiratoryRhythm_Selected (object sender, SelectionChangedEventArgs e) {
-            //TODO Repopulate Code
+            if (!this.FindControl<CheckBox> ("checkDefaultVitals")?.IsChecked ?? false || App.Patient == null)
+                return;
+
+            int si = this.FindControl<ComboBox> ("comboRespiratoryRhythm").SelectedIndex;
+            Array ev = Enum.GetValues (typeof (Respiratory_Rhythms.Values));
+            if (si < 0 || si > ev.Length - 1)
+                return;
+
+            Respiratory_Rhythms.Default_Vitals v = Respiratory_Rhythms.DefaultVitals (
+                (Respiratory_Rhythms.Values)ev.GetValue (si));
+
+            NumericUpDown numRR = this.FindControl<NumericUpDown> ("numRR");
+            NumericUpDown numInspiratoryRatio = this.FindControl<NumericUpDown> ("numInspiratoryRatio");
+            NumericUpDown numExpiratoryRatio = this.FindControl<NumericUpDown> ("numExpiratoryRatio");
+
+            numRR.Value = (int)II.Math.Clamp ((double)(numRR?.Value ?? 0), v.RRMin, v.RRMax);
+            numInspiratoryRatio.Value = (int)II.Math.Clamp ((double)(numInspiratoryRatio?.Value ?? 0), v.RR_IE_I_Min, v.RR_IE_I_Max);
+            numExpiratoryRatio.Value = (int)II.Math.Clamp ((double)(numExpiratoryRatio?.Value ?? 0), v.RR_IE_E_Min, v.RR_IE_E_Max);
+
+            OnUIPatientParameter_Changed (sender, e);
         }
 
         private void OnPulmonaryArteryRhythm_Selected (object sender, SelectionChangedEventArgs e) {
-            //TODO Repopulate Code
+            if (App.Patient == null)
+                return;
+
+            int si = this.FindControl<ComboBox> ("comboPACatheterPlacement").SelectedIndex;
+            Array ev = Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values));
+            if (si < 0 || si > ev.Length - 1)
+                return;
+
+            PulmonaryArtery_Rhythms.Default_Vitals v = PulmonaryArtery_Rhythms.DefaultVitals (
+                (PulmonaryArtery_Rhythms.Values)ev.GetValue (si));
+
+            NumericUpDown numPSP = this.FindControl<NumericUpDown> ("numPSP");
+            NumericUpDown numPDP = this.FindControl<NumericUpDown> ("numPDP");
+
+            numPSP.Value = (int)II.Math.Clamp ((double)(numPSP?.Value ?? 0), v.PSPMin, v.PSPMax);
+            numPDP.Value = (int)II.Math.Clamp ((double)(numPDP?.Value ?? 0), v.PDPMin, v.PDPMax);
+
+            OnUIPatientParameter_Changed (sender, e);
         }
 
         private void FormUpdateFields (object sender, Patient.PatientEventArgs e) {
-            //TODO Repopulate Code
+            if (e.EventType == Patient.PatientEventTypes.Vitals_Change) {
+                // Basic vital signs
+                this.FindControl<NumericUpDown> ("numHR").Value = e.Patient.VS_Settings.HR;
+                this.FindControl<NumericUpDown> ("numNSBP").Value = e.Patient.VS_Settings.NSBP;
+                this.FindControl<NumericUpDown> ("numNDBP").Value = e.Patient.VS_Settings.NDBP;
+                this.FindControl<NumericUpDown> ("numRR").Value = e.Patient.VS_Settings.RR;
+                this.FindControl<NumericUpDown> ("numSPO2").Value = e.Patient.VS_Settings.SPO2;
+                this.FindControl<NumericUpDown> ("numT").Value = (double)e.Patient.VS_Settings.T;
+                this.FindControl<ComboBox> ("comboCardiacRhythm").SelectedIndex = (int)e.Patient.Cardiac_Rhythm.Value;
+                this.FindControl<ComboBox> ("comboRespiratoryRhythm").SelectedIndex = (int)e.Patient.Respiratory_Rhythm.Value;
+
+                // Advanced hemodynamics
+                this.FindControl<NumericUpDown> ("numETCO2").Value = e.Patient.VS_Settings.ETCO2;
+                this.FindControl<NumericUpDown> ("numCVP").Value = e.Patient.VS_Settings.CVP;
+                this.FindControl<NumericUpDown> ("numASBP").Value = e.Patient.VS_Settings.ASBP;
+                this.FindControl<NumericUpDown> ("numADBP").Value = e.Patient.VS_Settings.ADBP;
+                this.FindControl<NumericUpDown> ("numCO").Value = (double)e.Patient.VS_Settings.CO;
+                this.FindControl<ComboBox> ("comboPACatheterPlacement").SelectedIndex = (int)e.Patient.PulmonaryArtery_Placement.Value;
+                this.FindControl<NumericUpDown> ("numPSP").Value = e.Patient.VS_Settings.PSP;
+                this.FindControl<NumericUpDown> ("numPDP").Value = e.Patient.VS_Settings.PDP;
+                this.FindControl<NumericUpDown> ("numICP").Value = e.Patient.VS_Settings.ICP;
+                this.FindControl<NumericUpDown> ("numIAP").Value = e.Patient.VS_Settings.IAP;
+
+                // Respiratory profile
+                this.FindControl<CheckBox> ("chkMechanicallyVentilated").IsChecked = e.Patient.Mechanically_Ventilated;
+                this.FindControl<NumericUpDown> ("numInspiratoryRatio").Value = (double)e.Patient.VS_Settings.RR_IE_I;
+                this.FindControl<NumericUpDown> ("numExpiratoryRatio").Value = (double)e.Patient.VS_Settings.RR_IE_E;
+
+                // Cardiac profile
+                this.FindControl<NumericUpDown> ("numPacemakerCaptureThreshold").Value = e.Patient.Pacemaker_Threshold;
+                this.FindControl<CheckBox> ("chkPulsusParadoxus").IsChecked = e.Patient.Pulsus_Paradoxus;
+                this.FindControl<CheckBox> ("chkPulsusAlternans").IsChecked = e.Patient.Pulsus_Alternans;
+                this.FindControl<ComboBox> ("comboCardiacAxis").SelectedIndex = (int)e.Patient.Cardiac_Axis.Value;
+
+                this.FindControl<NumericUpDown> ("numSTE_I").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_I];
+                this.FindControl<NumericUpDown> ("numSTE_II").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_II];
+                this.FindControl<NumericUpDown> ("numSTE_III").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_III];
+                this.FindControl<NumericUpDown> ("numSTE_aVR").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_AVR];
+                this.FindControl<NumericUpDown> ("numSTE_aVL").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_AVL];
+                this.FindControl<NumericUpDown> ("numSTE_aVF").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_AVF];
+                this.FindControl<NumericUpDown> ("numSTE_V1").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V1];
+                this.FindControl<NumericUpDown> ("numSTE_V2").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V2];
+                this.FindControl<NumericUpDown> ("numSTE_V3").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V3];
+                this.FindControl<NumericUpDown> ("numSTE_V4").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V4];
+                this.FindControl<NumericUpDown> ("numSTE_V5").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V5];
+                this.FindControl<NumericUpDown> ("numSTE_V6").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V6];
+
+                this.FindControl<NumericUpDown> ("numTWE_I").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_I];
+                this.FindControl<NumericUpDown> ("numTWE_II").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_II];
+                this.FindControl<NumericUpDown> ("numTWE_III").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_III];
+                this.FindControl<NumericUpDown> ("numTWE_aVR").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_AVR];
+                this.FindControl<NumericUpDown> ("numTWE_aVL").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_AVL];
+                this.FindControl<NumericUpDown> ("numTWE_aVF").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_AVF];
+                this.FindControl<NumericUpDown> ("numTWE_V1").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_V1];
+                this.FindControl<NumericUpDown> ("numTWE_V2").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_V2];
+                this.FindControl<NumericUpDown> ("numTWE_V3").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_V3];
+                this.FindControl<NumericUpDown> ("numTWE_V4").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_V4];
+                this.FindControl<NumericUpDown> ("numTWE_V5").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_V5];
+                this.FindControl<NumericUpDown> ("numTWE_V6").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_V6];
+
+                // Obstetric profile
+                this.FindControl<NumericUpDown> ("numFHR").Value = e.Patient.FHR;
+                this.FindControl<NumericUpDown> ("numUCFrequency").Value = (double)e.Patient.Contraction_Frequency;
+                this.FindControl<NumericUpDown> ("numUCDuration").Value = e.Patient.Contraction_Duration;
+                this.FindControl<ComboBox> ("comboFHRVariability").SelectedIndex = (int)e.Patient.FHR_Variability.Value;
+                this.FindControl<ComboBox> ("comboUCIntensity").SelectedIndex = (int)e.Patient.Contraction_Intensity.Value;
+
+                //TODO Reimplement applying FHRRhythms to UI
+            }
         }
     }
 }
