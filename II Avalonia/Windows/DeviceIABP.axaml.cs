@@ -24,5 +24,14 @@ namespace II_Avalonia {
         public void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
             //TODO Repopulate Code
         }
+
+        public void Load_Process (string inc) {
+            //TODO Repopulate Code
+        }
+
+        public string Save () {
+            return "";
+            //TODO Repopulate Code
+        }
     }
 }

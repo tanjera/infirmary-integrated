@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 
 using II;
 using II.Localization;
@@ -27,7 +29,6 @@ namespace II_Avalonia {
         private bool uiLoadCompleted = false;
 
         /* Variables for Auto-Apply functionality */
-        private object? uiBufferValue;
         private ParameterStatuses ParameterStatus = ParameterStatuses.Loading;
 
         private enum ParameterStatuses {
@@ -174,36 +175,53 @@ namespace II_Avalonia {
 
             this.FindControl<CheckBox> ("chkAutoApplyChanges").IsChecked = App.Settings.AutoApplyChanges;
 
-            List<string> cardiacRhythms = new List<string> (),
-                respiratoryRhythms = new List<string> (),
-                pulmonaryArteryRhythms = new List<string> (),
-                cardiacAxes = new List<string> (),
-                intensityScale = new List<string> (),
-                fetalHeartRhythms = new List<string> ();
+            List<ComboBoxItem> cardiacRhythms = new List<ComboBoxItem> (),
+                respiratoryRhythms = new List<ComboBoxItem> (),
+                pulmonaryArteryRhythms = new List<ComboBoxItem> (),
+                cardiacAxes = new List<ComboBoxItem> (),
+                intensityScale = new List<ComboBoxItem> ();
+            List<ListBoxItem> fetalHeartRhythms = new List<ListBoxItem> ();
 
             foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
-                cardiacRhythms.Add (App.Language.Localize (Cardiac_Rhythms.LookupString (v)));
+                cardiacRhythms.Add (new ComboBoxItem () {
+                    Content = App.Language.Localize (Cardiac_Rhythms.LookupString (v))
+                });
             this.FindControl<ComboBox> ("comboCardiacRhythm").Items = cardiacRhythms;
 
             foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
-                respiratoryRhythms.Add (App.Language.Localize (Respiratory_Rhythms.LookupString (v)));
+                respiratoryRhythms.Add (new ComboBoxItem () {
+                    Tag = v.ToString (),
+                    Content = App.Language.Localize (Respiratory_Rhythms.LookupString (v))
+                }); ;
             this.FindControl<ComboBox> ("comboRespiratoryRhythm").Items = respiratoryRhythms;
 
             foreach (PulmonaryArtery_Rhythms.Values v in Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)))
-                pulmonaryArteryRhythms.Add (App.Language.Localize (PulmonaryArtery_Rhythms.LookupString (v)));
+                pulmonaryArteryRhythms.Add (new ComboBoxItem () {
+                    Tag = v.ToString (),
+                    Content = App.Language.Localize (PulmonaryArtery_Rhythms.LookupString (v))
+                });
             this.FindControl<ComboBox> ("comboPACatheterPlacement").Items = pulmonaryArteryRhythms;
 
             foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
-                cardiacAxes.Add (App.Language.Localize (Cardiac_Axes.LookupString (v)));
+                cardiacAxes.Add (new ComboBoxItem () {
+                    Tag = v.ToString (),
+                    Content = App.Language.Localize (Cardiac_Axes.LookupString (v))
+                });
             this.FindControl<ComboBox> ("comboCardiacAxis").Items = cardiacAxes;
 
             foreach (Scales.Intensity.Values v in Enum.GetValues (typeof (Scales.Intensity.Values)))
-                intensityScale.Add (App.Language.Localize (Scales.Intensity.LookupString (v)));
+                intensityScale.Add (new ComboBoxItem () {
+                    Tag = v.ToString (),
+                    Content = App.Language.Localize (Scales.Intensity.LookupString (v))
+                });
             this.FindControl<ComboBox> ("comboFHRVariability").Items = intensityScale;
             this.FindControl<ComboBox> ("comboUCIntensity").Items = intensityScale;
 
             foreach (FHRAccelDecels.Values v in Enum.GetValues (typeof (FHRAccelDecels.Values)))
-                fetalHeartRhythms.Add (App.Language.Localize (FHRAccelDecels.LookupString (v)));
+                fetalHeartRhythms.Add (new ListBoxItem () {
+                    Tag = v.ToString (),
+                    Content = App.Language.Localize (FHRAccelDecels.LookupString (v))
+                });
             this.FindControl<ListBox> ("listFHRRhythms").Items = fetalHeartRhythms;
         }
 
@@ -285,17 +303,14 @@ namespace II_Avalonia {
             App.Patient.PatientEvent += FormUpdateFields;
             FormUpdateFields (this, new Patient.PatientEventArgs (App.Patient, Patient.PatientEventTypes.Vitals_Change));
 
-            /* Tie PatientEvents to Devices! */
-            /* TODO
-            if (App.Device_Monitor != null && App.Device_Monitor.IsLoaded)
+            if (App.Device_Monitor != null && App.Device_Monitor.IsActive)
                 App.Patient.PatientEvent += App.Device_Monitor.OnPatientEvent;
-            if (App.Device_ECG != null && App.Device_ECG.IsLoaded)
+            if (App.Device_ECG != null && App.Device_ECG.IsActive)
                 App.Patient.PatientEvent += App.Device_ECG.OnPatientEvent;
-            if (App.Device_Defib != null && App.Device_Defib.IsLoaded)
+            if (App.Device_Defib != null && App.Device_Defib.IsActive)
                 App.Patient.PatientEvent += App.Device_Defib.OnPatientEvent;
-            if (App.Device_IABP != null && App.Device_IABP.IsLoaded)
+            if (App.Device_IABP != null && App.Device_IABP.IsActive)
                 App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
-            */
         }
 
         private void UnloadPatientEvents () {
@@ -428,7 +443,8 @@ namespace II_Avalonia {
         }
 
         private void UpdateParameterIndicators () {
-            /* TODO
+            Border brdPendingChangesIndicator = this.FindControl<Border> ("brdPendingChangesIndicator");
+
             switch (ParameterStatus) {
                 default:
                 case ParameterStatuses.Loading:
@@ -437,23 +453,24 @@ namespace II_Avalonia {
 
                 case ParameterStatuses.ChangesPending:
                     brdPendingChangesIndicator.BorderBrush = Brushes.Red;
-                    lblStatusText.Content = App.Language.Localize ("PE:StatusPatientChangesPending");
+                    //lblStatusText.Content = App.Language.Localize ("PE:StatusPatientChangesPending");
                     break;
 
                 case ParameterStatuses.ChangesApplied:
                     brdPendingChangesIndicator.BorderBrush = Brushes.Green;
 
+                    /*
                     if (App.Mirror.Status == Mirror.Statuses.INACTIVE)
                         lblStatusText.Content = App.Language.Localize ("PE:StatusPatientUpdated");
                     else if (App.Mirror.Status == Mirror.Statuses.HOST)
                         lblStatusText.Content = App.Language.Localize ("PE:StatusMirroredPatientUpdated");
+                    */
                     break;
 
                 case ParameterStatuses.AutoApply:
                     brdPendingChangesIndicator.BorderBrush = Brushes.Orange;
                     break;
             }
-            */
         }
 
         private async void LoadFile () {
@@ -545,7 +562,7 @@ namespace II_Avalonia {
 
                         App.Device_Monitor = new DeviceMonitor ();
                         InitDeviceMonitor ();
-                        //TODO App.Device_Monitor.Load_Process (pbuffer.ToString ());
+                        App.Device_Monitor.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: 12 Lead ECG") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: 12 Lead ECG")
@@ -553,7 +570,7 @@ namespace II_Avalonia {
 
                         App.Device_ECG = new DeviceECG ();
                         InitDeviceECG ();
-                        //TODO App.Device_ECG.Load_Process (pbuffer.ToString ());
+                        App.Device_ECG.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Defibrillator") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Defibrillator")
@@ -561,7 +578,7 @@ namespace II_Avalonia {
 
                         App.Device_Defib = new DeviceDefib ();
                         InitDeviceDefib ();
-                        //TODO App.Device_Defib.Load_Process (pbuffer.ToString ());
+                        App.Device_Defib.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Intra-aortic Balloon Pump") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Intra-aortic Balloon Pump")
@@ -569,7 +586,7 @@ namespace II_Avalonia {
 
                         App.Device_IABP = new DeviceIABP ();
                         InitDeviceIABP ();
-                        //TODO App.Device_IABP.Load_Process (pbuffer.ToString ());
+                        App.Device_IABP.Load_Process (pbuffer.ToString ());
                     }
                 }
             } catch {
@@ -625,15 +642,18 @@ namespace II_Avalonia {
         }
 
         private void LoadFail () {
+            /* TODO
             System.Windows.MessageBox.Show (
                     App.Language.Localize ("PE:LoadFailMessage"),
                     App.Language.Localize ("PE:LoadFailTitle"),
                     MessageBoxButton.OK, MessageBoxImage.Error);
+            */
         }
 
         private void SaveFile () {
             // Only save single Patient files in base Infirmary Integrated!
             // Scenario files should be created/edited/saved via II Scenario Editor!
+            /* TODO
             if (App.Scenario.IsScenario) {
                 System.Windows.MessageBox.Show (
                     App.Language.Localize ("PE:SaveFailScenarioMessage"),
@@ -654,6 +674,7 @@ namespace II_Avalonia {
                     SaveT1 (s);
                 }
             }
+            */
         }
 
         private void SaveT1 (Stream s) {
@@ -675,22 +696,22 @@ namespace II_Avalonia {
 
             if (App.Device_Monitor != null && App.Device_Monitor.IsInitialized) {
                 sb.AppendLine ("> Begin: Cardiac Monitor");
-                //TODO sb.Append (App.Device_Monitor.Save ());
+                sb.Append (App.Device_Monitor.Save ());
                 sb.AppendLine ("> End: Cardiac Monitor");
             }
             if (App.Device_ECG != null && App.Device_ECG.IsInitialized) {
                 sb.AppendLine ("> Begin: 12 Lead ECG");
-                //TODO sb.Append (App.Device_ECG.Save ());
+                sb.Append (App.Device_ECG.Save ());
                 sb.AppendLine ("> End: 12 Lead ECG");
             }
             if (App.Device_Defib != null && App.Device_Defib.IsInitialized) {
                 sb.AppendLine ("> Begin: Defibrillator");
-                //TODO sb.Append (App.Device_Defib.Save ());
+                sb.Append (App.Device_Defib.Save ());
                 sb.AppendLine ("> End: Defibrillator");
             }
             if (App.Device_IABP != null && App.Device_IABP.IsInitialized) {
                 sb.AppendLine ("> Begin: Intra-aortic Balloon Pump");
-                //TODO sb.Append (App.Device_IABP.Save ());
+                sb.Append (App.Device_IABP.Save ());
                 sb.AppendLine ("> End: Intra-aortic Balloon Pump");
             }
 
@@ -881,7 +902,9 @@ namespace II_Avalonia {
 
             List<FHRAccelDecels.Values> FHRRhythms = new List<FHRAccelDecels.Values> ();
 
-            //TODO Reimplement pulling FHRRhythms from UI
+            foreach (ListBoxItem lbi in listFHRRhythms.SelectedItems) {
+                FHRRhythms.Add ((FHRAccelDecels.Values)Enum.Parse (typeof (FHRAccelDecels.Values), (string)lbi.Tag));
+            }
 
             App.Patient.UpdateParameters (
 
@@ -1085,31 +1108,22 @@ namespace II_Avalonia {
 
         private void OnUIPatientParameter_KeyDown (object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter)
-                OnUIPatientParameter_ProcessChanged (sender, e);
+                OnUIPatientParameter_Process (sender, e);
         }
 
-        private void OnUIPatientParameter_GotFocus (object sender, GotFocusEventArgs e) {
-            if (sender is NumericUpDown)
-                uiBufferValue = (sender as NumericUpDown).Value;
-            else if (sender is CheckBox)
-                uiBufferValue = (sender as CheckBox).IsChecked ?? false;
-            else if (sender is ComboBox)
-                uiBufferValue = (sender as ComboBox).SelectedIndex;
-        }
+        private void OnUIPatientParameter_Changed (object sender, NumericUpDownValueChangedEventArgs e)
+            => OnUIPatientParameter_Process (sender, e);
+
+        private void OnUIPatientParameter_Changed (object sender, SelectionChangedEventArgs e)
+            => OnUIPatientParameter_Process (sender, e);
+
+        private void OnUIPatientParameter_Changed (object sender, RoutedEventArgs e)
+            => OnUIPatientParameter_Process (sender, e);
 
         private void OnUIPatientParameter_LostFocus (object sender, RoutedEventArgs e)
-            => OnUIPatientParameter_ProcessChanged (sender, e);
+            => OnUIPatientParameter_Process (sender, e);
 
-        private void OnUIPatientParameter_ProcessChanged (object sender, RoutedEventArgs e) {
-            if (sender is NumericUpDown && (sender as NumericUpDown).Value != (double)uiBufferValue)
-                OnUIPatientParameter_Changed (sender, e);
-            else if (sender is CheckBox && (sender as CheckBox).IsChecked != (bool)uiBufferValue)
-                OnUIPatientParameter_Changed (sender, e);
-            else if (sender is ComboBox && (sender as ComboBox).SelectedIndex != (int)uiBufferValue)
-                OnUIPatientParameter_Changed (sender, e);
-        }
-
-        private void OnUIPatientParameter_Changed (object sender, RoutedEventArgs e) {
+        private void OnUIPatientParameter_Process (object sender, RoutedEventArgs e) {
             switch (ParameterStatus) {
                 default:
                 case ParameterStatuses.Loading:            // For loading state
@@ -1150,7 +1164,7 @@ namespace II_Avalonia {
             this.FindControl<NumericUpDown> ("numPSP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numPSP")?.Value ?? 0), v.PSPMin, v.PSPMax);
             this.FindControl<NumericUpDown> ("numPDP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numPDP")?.Value ?? 0), v.PDPMin, v.PDPMax);
 
-            OnUIPatientParameter_Changed (sender, e);
+            OnUIPatientParameter_Process (sender, e);
         }
 
         private void OnRespiratoryRhythm_Selected (object sender, SelectionChangedEventArgs e) {
@@ -1173,7 +1187,7 @@ namespace II_Avalonia {
             numInspiratoryRatio.Value = (int)II.Math.Clamp ((double)(numInspiratoryRatio?.Value ?? 0), v.RR_IE_I_Min, v.RR_IE_I_Max);
             numExpiratoryRatio.Value = (int)II.Math.Clamp ((double)(numExpiratoryRatio?.Value ?? 0), v.RR_IE_E_Min, v.RR_IE_E_Max);
 
-            OnUIPatientParameter_Changed (sender, e);
+            OnUIPatientParameter_Process (sender, e);
         }
 
         private void OnPulmonaryArteryRhythm_Selected (object sender, SelectionChangedEventArgs e) {
@@ -1194,7 +1208,7 @@ namespace II_Avalonia {
             numPSP.Value = (int)II.Math.Clamp ((double)(numPSP?.Value ?? 0), v.PSPMin, v.PSPMax);
             numPDP.Value = (int)II.Math.Clamp ((double)(numPDP?.Value ?? 0), v.PDPMin, v.PDPMax);
 
-            OnUIPatientParameter_Changed (sender, e);
+            OnUIPatientParameter_Process (sender, e);
         }
 
         private void FormUpdateFields (object sender, Patient.PatientEventArgs e) {
@@ -1265,7 +1279,14 @@ namespace II_Avalonia {
                 this.FindControl<ComboBox> ("comboFHRVariability").SelectedIndex = (int)e.Patient.FHR_Variability.Value;
                 this.FindControl<ComboBox> ("comboUCIntensity").SelectedIndex = (int)e.Patient.Contraction_Intensity.Value;
 
-                //TODO Reimplement applying FHRRhythms to UI
+                ListBox listFHRRhythms = this.FindControl<ListBox> ("listFHRRhythms");
+                listFHRRhythms.SelectedItems.Clear ();
+                foreach (FHRAccelDecels.Values fhr_rhythm in e.Patient.FHR_AccelDecels.ValueList) {
+                    foreach (ListBoxItem lbi in listFHRRhythms.Items) {
+                        if ((string)lbi.Tag == fhr_rhythm.ToString ())
+                            listFHRRhythms.SelectedItems.Add (lbi);
+                    }
+                }
             }
         }
     }
