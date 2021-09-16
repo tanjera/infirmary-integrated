@@ -53,7 +53,9 @@ namespace II_Windows {
 
             App.Settings.Load ();
             InitInitialRun ();
+#if !DEBUG
             InitUsageStatistics ();
+#endif
             InitInterface ();
             InitUpgrade ();
             InitMirroring ();

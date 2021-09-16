@@ -176,7 +176,6 @@ namespace II.Scenario_Editor {
             canvasDesigner.Children.Clear ();
 
             for (int i = 0; i < sc.Steps.Count; i++) {
-
                 // Add to the main Steps stack
                 ItemStep ist = new ItemStep ();
                 ist.Init ();
@@ -219,7 +218,6 @@ namespace II.Scenario_Editor {
         }
 
         private void saveScenario () {
-
             // Prepare Scenario for saving
             Scenario sc = new Scenario (false);
 
@@ -229,7 +227,6 @@ namespace II.Scenario_Editor {
             sc.Description = ScenarioDescription;
 
             for (int i = 0; i < Steps.Count; i++) {
-
                 // Set metadata for saving
                 Steps [i].Step.IPositionX = Steps [i].Left;
                 Steps [i].Step.IPositionY = Steps [i].Top;
@@ -248,7 +245,6 @@ namespace II.Scenario_Editor {
 
             if (dlgSave.ShowDialog () == true) {
                 if ((s = dlgSave.OpenFile ()) != null) {
-
                     // Save in II:T1 format
                     StringBuilder sb = new StringBuilder ();
 
@@ -267,7 +263,6 @@ namespace II.Scenario_Editor {
         }
 
         private void initScenarioProperty () {
-
             // Initiate controls for editing Scenario properties
             pstrScenarioAuthor.Init (PropertyString.Keys.ScenarioAuthor);
             pstrScenarioAuthor.PropertyChanged += updateProperty;
@@ -286,7 +281,6 @@ namespace II.Scenario_Editor {
         }
 
         private void initPropertyView () {
-
             // Populate enum string lists for readable display
             List<string> cardiacRhythms = new List<string> (),
                 respiratoryRhythms = new List<string> (),
@@ -374,10 +368,10 @@ namespace II.Scenario_Editor {
             pchkMechanicallyVentilated.Init (PropertyCheck.Keys.MechanicallyVentilated);
             pchkMechanicallyVentilated.PropertyChanged += updateProperty;
 
-            pdblInspiratoryRatio.Init (PropertyFloat.Keys.RRInspiratoryRatio, 0.1, 0.1, 10);
+            pdblInspiratoryRatio.Init (PropertyDouble.Keys.RRInspiratoryRatio, 0.1, 0.1, 10);
             pdblInspiratoryRatio.PropertyChanged += updateProperty;
 
-            pdblExpiratoryRatio.Init (PropertyFloat.Keys.RRExpiratoryRatio, 0.1, 0.1, 10);
+            pdblExpiratoryRatio.Init (PropertyDouble.Keys.RRExpiratoryRatio, 0.1, 0.1, 10);
             pdblExpiratoryRatio.PropertyChanged += updateProperty;
 
             pintPacemakerThreshold.Init (PropertyInt.Keys.PacemakerThreshold, 5, 0, 200);
@@ -689,7 +683,6 @@ namespace II.Scenario_Editor {
                 canvasDesigner.Children.Remove (uiep);
 
             foreach (ItemStep s in Steps) {
-
                 // Adjust all references past the index -= 1
                 if (s.Step.ProgressTo > iStep)
                     s.Step.ProgressTo -= 1;
@@ -757,7 +750,6 @@ namespace II.Scenario_Editor {
         }
 
         private void drawIProgressions () {
-
             // Completely recreate and add all progression lines to list and canvas
             foreach (ItemStep iStep in Steps) {
                 foreach (ItemStep.UIEProgression uiep in iStep.IProgressions)
@@ -766,7 +758,6 @@ namespace II.Scenario_Editor {
                 iStep.IProgressions.Clear ();
 
                 if (iStep.Step.ProgressTo > -1 && iStep.Step.ProgressTo < Steps.Count) {
-
                     // Draw default progress
                     ItemStep iTo = Steps [iStep.Step.ProgressTo];
                     ItemStep.UIEProgression uiep = new ItemStep.UIEProgression (iStep, iTo, canvasDesigner);
@@ -799,7 +790,6 @@ namespace II.Scenario_Editor {
         }
 
         private void updateIProgressions () {
-
             // Redraw progressions between sources to destinations
             foreach (ItemStep iStep in Steps) {
                 foreach (ItemStep.UIEProgression uiep in iStep.IProgressions)

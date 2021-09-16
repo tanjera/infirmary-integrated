@@ -1,139 +1,117 @@
-﻿<Window x:Class="II.Scenario_Editor.Editor"
-		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-		xmlns:local="clr-namespace:II.Scenario_Editor"
-		xmlns:ii="clr-namespace:II.Scenario_Editor.Controls"
-		mc:Ignorable="d"
-		Title="Infirmary Integrated: Scenario Editor"
-		WindowState="Maximized"
-		Height="800"
-		Width="1200">
+﻿<Window
+	x:Class="II.Scenario_Editor.Editor"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:ii="clr-namespace:II.Scenario_Editor.Controls"
+	xmlns:local="clr-namespace:II.Scenario_Editor"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+	Title="Infirmary Integrated: Scenario Editor"
+	Width="1200"
+	Height="800"
+	WindowState="Maximized"
+	mc:Ignorable="d">
 
 	<Window.Resources>
-		<Style x:Key="expParameters"
-			   TargetType="{x:Type Expander}">
+		<Style x:Key="expParameters" TargetType="{x:Type Expander}" />
+
+		<Style x:Key="expBorder" TargetType="{x:Type Border}">
+			<Setter Property="BorderBrush" Value="Black" />
+			<Setter Property="BorderThickness" Value=".25" />
+			<Setter Property="CornerRadius" Value="2" />
+			<Setter Property="Margin" Value="5" />
+			<Setter Property="Padding" Value="5,2" />
 		</Style>
 
-		<Style x:Key="expBorder"
-			   TargetType="{x:Type Border}">
-			<Setter Property="BorderBrush"
-					Value="Black" />
-			<Setter Property="BorderThickness"
-					Value=".25" />
-			<Setter Property="CornerRadius"
-					Value="2" />
-			<Setter Property="Margin"
-					Value="5" />
-			<Setter Property="Padding"
-					Value="5,2" />
+		<Style x:Key="expHeader" TargetType="{x:Type Label}">
+			<Setter Property="Margin" Value="2" />
+			<Setter Property="FontSize" Value="13" />
+			<Setter Property="FontWeight" Value="Bold" />
 		</Style>
 
-		<Style x:Key="expHeader"
-			   TargetType="{x:Type Label}">
-			<Setter Property="Margin"
-					Value="2" />
-			<Setter Property="FontSize"
-					Value="13" />
-			<Setter Property="FontWeight"
-					Value="Bold" />
+		<Style x:Key="defGrid" TargetType="{x:Type Grid}">
+			<Setter Property="Margin" Value="5" />
+			<Setter Property="Background" Value="White" />
 		</Style>
 
-		<Style x:Key="defGrid"
-			   TargetType="{x:Type Grid}">
-			<Setter Property="Margin"
-					Value="5" />
-			<Setter Property="Background"
-					Value="White" />
+		<Style x:Key="toolboxButton" TargetType="{x:Type Button}">
+			<Setter Property="HorizontalAlignment" Value="Stretch" />
+			<Setter Property="Background" Value="White" />
+			<Setter Property="HorizontalContentAlignment" Value="Left" />
+			<Setter Property="Margin" Value="2" />
+			<Setter Property="Padding" Value="10,2" />
 		</Style>
 
-		<Style x:Key="toolboxButton"
-			   TargetType="{x:Type Button}">
-			<Setter Property="HorizontalAlignment"
-					Value="Stretch" />
-			<Setter Property="Background"
-					Value="White" />
-			<Setter Property="HorizontalContentAlignment"
-					Value="Left" />
-			<Setter Property="Margin"
-					Value="2" />
-			<Setter Property="Padding"
-					Value="10,2" />
+		<Style x:Key="toolboxImage" TargetType="{x:Type Image}">
+			<Setter Property="Margin" Value="2" />
+			<Setter Property="Width" Value="48" />
+			<Setter Property="Height" Value="48" />
 		</Style>
 
-		<Style x:Key="toolboxImage"
-			   TargetType="{x:Type Image}">
-			<Setter Property="Margin"
-					Value="2" />
-			<Setter Property="Width"
-					Value="48" />
-			<Setter Property="Height"
-					Value="48" />
-		</Style>
-
-		<Style x:Key="toolboxLabel"
-			   TargetType="{x:Type Label}">
-			<Setter Property="Margin"
-					Value="2" />
-			<Setter Property="VerticalAlignment"
-					Value="Center" />
-			<Setter Property="FontSize"
-					Value="16" />
+		<Style x:Key="toolboxLabel" TargetType="{x:Type Label}">
+			<Setter Property="Margin" Value="2" />
+			<Setter Property="VerticalAlignment" Value="Center" />
+			<Setter Property="FontSize" Value="16" />
 		</Style>
 	</Window.Resources>
 
 	<Window.InputBindings>
-		<KeyBinding Key="N"
-					Modifiers="Ctrl"
-					Command="{Binding IC_NewFile}" />
-		<KeyBinding Key="L"
-					Modifiers="Ctrl"
-					Command="{Binding IC_LoadFile}" />
-		<KeyBinding Key="S"
-					Modifiers="Ctrl"
-					Command="{Binding IC_SaveFile}" />
+		<KeyBinding
+			Key="N"
+			Command="{Binding IC_NewFile}"
+			Modifiers="Ctrl" />
+		<KeyBinding
+			Key="L"
+			Command="{Binding IC_LoadFile}"
+			Modifiers="Ctrl" />
+		<KeyBinding
+			Key="S"
+			Command="{Binding IC_SaveFile}"
+			Modifiers="Ctrl" />
 	</Window.InputBindings>
 
-	<DockPanel LastChildFill="True"
-			   x:Name="LayoutRoot">
+	<DockPanel x:Name="LayoutRoot" LastChildFill="True">
 
-		<!-- Main Menu -->
-		<Menu DockPanel.Dock="Top"
-			  Width="Auto"
-			  Background="White">
-			<MenuItem Name="menuFile"
-					  Header="_File">
-				<MenuItem Name="menuNew"
-						  Header="_New Scenario"
-						  Click="MenuItemNew_Click"
-						  InputGestureText="Ctrl+N" />
+		<!--  Main Menu  -->
+		<Menu
+			Width="Auto"
+			Background="White"
+			DockPanel.Dock="Top">
+			<MenuItem Name="menuFile" Header="_File">
+				<MenuItem
+					Name="menuNew"
+					Click="MenuItemNew_Click"
+					Header="_New Scenario"
+					InputGestureText="Ctrl+N" />
 				<Separator />
-				<MenuItem Name="menuLoad"
-						  Header="_Load Scenario"
-						  Click="MenuItemLoad_Click"
-						  InputGestureText="Ctrl+L" />
-				<MenuItem Name="menuSave"
-						  Header="_Save Scenario"
-						  Click="MenuSave_Click"
-						  InputGestureText="Ctrl+S" />
+				<MenuItem
+					Name="menuLoad"
+					Click="MenuItemLoad_Click"
+					Header="_Load Scenario"
+					InputGestureText="Ctrl+L" />
+				<MenuItem
+					Name="menuSave"
+					Click="MenuSave_Click"
+					Header="_Save Scenario"
+					InputGestureText="Ctrl+S" />
 				<Separator />
-				<MenuItem Name="menuExit"
-						  Header="E_xit Program"
-						  Click="MenuItemExit_Click"
-						  InputGestureText="Alt-F4" />
+				<MenuItem
+					Name="menuExit"
+					Click="MenuItemExit_Click"
+					Header="E_xit Program"
+					InputGestureText="Alt-F4" />
 			</MenuItem>
 
-			<MenuItem Name="menuHelp"
-					  Header="_Help">
-				<MenuItem Name="menuAbout"
-						  Header="_About"
-						  Click="MenuItemAbout_Click" />
+			<MenuItem Name="menuHelp" Header="_Help">
+				<MenuItem
+					Name="menuAbout"
+					Click="MenuItemAbout_Click"
+					Header="_About" />
 			</MenuItem>
 		</Menu>
 
-		<!-- Main Grid -->
+		<!--  Main Grid  -->
 		<Grid Style="{StaticResource defGrid}">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="1 *" />
@@ -143,27 +121,28 @@
 				<ColumnDefinition Width="1 *" />
 			</Grid.ColumnDefinitions>
 
-			<ScrollViewer Name="scrollToolbox"
-						  Grid.Column="0"
-						  VerticalScrollBarVisibility="Auto"
-						  HorizontalScrollBarVisibility="Auto"
-						  Background="White">
-				<StackPanel  Margin="3"
-							 Height="Auto">
+			<ScrollViewer
+				Name="scrollToolbox"
+				Grid.Column="0"
+				Background="White"
+				HorizontalScrollBarVisibility="Auto"
+				VerticalScrollBarVisibility="Auto">
+				<StackPanel Height="Auto" Margin="3">
 
-					<!-- Scenario properties -->
+					<!--  Scenario properties  -->
 					<Border Style="{StaticResource expBorder}">
-						<Expander Name="expScenarioProperty"
-								  IsExpanded="True">
+						<Expander Name="expScenarioProperty" IsExpanded="True">
 							<Expander.Header>
-								<Label Name="lblScenarioProperty"
-									   Content="Edit Scenario Properties"
-									   Style="{StaticResource expHeader}" />
+								<Label
+									Name="lblScenarioProperty"
+									Content="Edit Scenario Properties"
+									Style="{StaticResource expHeader}" />
 							</Expander.Header>
 
-							<StackPanel Margin="3"
-										Height="Auto"
-										Orientation="Vertical">
+							<StackPanel
+								Height="Auto"
+								Margin="3"
+								Orientation="Vertical">
 								<ii:PropertyString x:Name="pstrScenarioAuthor" />
 								<ii:PropertyString x:Name="pstrScenarioName" />
 								<ii:PropertyString x:Name="pstrScenarioDescription" />
@@ -171,151 +150,163 @@
 						</Expander>
 					</Border>
 
-					<!-- Toolbox -->
-					<Button Name="btnAddStep"
-							Click="ButtonAddStep_Click"
-							Style="{StaticResource toolboxButton}">
+					<!--  Toolbox  -->
+					<Button
+						Name="btnAddStep"
+						Click="ButtonAddStep_Click"
+						Style="{StaticResource toolboxButton}">
 						<StackPanel Orientation="Horizontal">
-							<Image Source="{StaticResource Icon_PlayerAdd}"
-								   Style="{StaticResource toolboxImage}" />
-							<Label Name="lblAddStep"
-								   Content="Add Step"
-								   Style="{StaticResource toolboxLabel}" />
+							<Image Source="{StaticResource Icon_PlayerAdd}" Style="{StaticResource toolboxImage}" />
+							<Label
+								Name="lblAddStep"
+								Content="Add Step"
+								Style="{StaticResource toolboxLabel}" />
 						</StackPanel>
 					</Button>
-					<Button Name="btnDuplicateStep"
-							Click="ButtonDuplicateStep_Click"
-							Style="{StaticResource toolboxButton}">
+					<Button
+						Name="btnDuplicateStep"
+						Click="ButtonDuplicateStep_Click"
+						Style="{StaticResource toolboxButton}">
 						<StackPanel Orientation="Horizontal">
-							<Image Source="{StaticResource Icon_Stack}"
-								   Style="{StaticResource toolboxImage}" />
-							<Label Name="lblDuplicateStep"
-								   Content="Duplicate Step"
-								   Style="{StaticResource toolboxLabel}" />
-						</StackPanel>
-					</Button>
-
-					<Button Name="btnDeleteStep"
-							Click="BtnDeleteStep_Click"
-							Style="{StaticResource toolboxButton}">
-						<StackPanel Orientation="Horizontal">
-							<Image Source="{StaticResource Icon_Delete}"
-								   Style="{StaticResource toolboxImage}" />
-							<Label Name="lblDeleteStep"
-								   Content="Delete Step"
-								   Style="{StaticResource toolboxLabel}" />
+							<Image Source="{StaticResource Icon_Stack}" Style="{StaticResource toolboxImage}" />
+							<Label
+								Name="lblDuplicateStep"
+								Content="Duplicate Step"
+								Style="{StaticResource toolboxLabel}" />
 						</StackPanel>
 					</Button>
 
-					<Separator Margin="3, 10" />
-
-					<Button Name="btnCopyPatient"
-							Click="BtnCopyPatient_Click"
-							Style="{StaticResource toolboxButton}">
+					<Button
+						Name="btnDeleteStep"
+						Click="BtnDeleteStep_Click"
+						Style="{StaticResource toolboxButton}">
 						<StackPanel Orientation="Horizontal">
-							<Image Source="{StaticResource Icon_CopyData}"
-								   Style="{StaticResource toolboxImage}" />
-							<Label Name="lblCopyPatient"
-								   Content="Copy Patient Properties"
-								   Style="{StaticResource toolboxLabel}" />
+							<Image Source="{StaticResource Icon_Delete}" Style="{StaticResource toolboxImage}" />
+							<Label
+								Name="lblDeleteStep"
+								Content="Delete Step"
+								Style="{StaticResource toolboxLabel}" />
 						</StackPanel>
 					</Button>
-					<Button Name="btnPastePatient"
-							Click="BtnPastePatient_Click"
-							Style="{StaticResource toolboxButton}">
+
+					<Separator Margin="3,10" />
+
+					<Button
+						Name="btnCopyPatient"
+						Click="BtnCopyPatient_Click"
+						Style="{StaticResource toolboxButton}">
 						<StackPanel Orientation="Horizontal">
-							<Image Source="{StaticResource Icon_PasteData}"
-								   Style="{StaticResource toolboxImage}" />
-							<Label Name="lblPastePatient"
-								   Content="Paste Patient Properties"
-								   Style="{StaticResource toolboxLabel}" />
+							<Image Source="{StaticResource Icon_CopyData}" Style="{StaticResource toolboxImage}" />
+							<Label
+								Name="lblCopyPatient"
+								Content="Copy Patient Properties"
+								Style="{StaticResource toolboxLabel}" />
+						</StackPanel>
+					</Button>
+					<Button
+						Name="btnPastePatient"
+						Click="BtnPastePatient_Click"
+						Style="{StaticResource toolboxButton}">
+						<StackPanel Orientation="Horizontal">
+							<Image Source="{StaticResource Icon_PasteData}" Style="{StaticResource toolboxImage}" />
+							<Label
+								Name="lblPastePatient"
+								Content="Paste Patient Properties"
+								Style="{StaticResource toolboxLabel}" />
 						</StackPanel>
 					</Button>
 				</StackPanel>
 			</ScrollViewer>
 
-			<GridSplitter Grid.Column="1"
-						  Width="3"
-						  HorizontalAlignment="Stretch"
-						  Background="LightGray"
-						  BorderThickness="0" />
+			<GridSplitter
+				Grid.Column="1"
+				Width="3"
+				HorizontalAlignment="Stretch"
+				Background="LightGray"
+				BorderThickness="0" />
 
-			<!-- Designer Canvas -->
-			<Grid Grid.Column="2"
-				  Style="{StaticResource defGrid}">
+			<!--  Designer Canvas  -->
+			<Grid Grid.Column="2" Style="{StaticResource defGrid}">
 
-				<Border BorderBrush="LightGray"
-						BorderThickness="0, 2"
-						HorizontalAlignment="Stretch"
-						VerticalAlignment="Stretch"
-						Margin="0">
+				<Border
+					Margin="0"
+					HorizontalAlignment="Stretch"
+					VerticalAlignment="Stretch"
+					BorderBrush="LightGray"
+					BorderThickness="0,2">
 
-					<Canvas Name="cnvsDesigner"
-							Background="Transparent"
-							AllowDrop="True"
-							Drop="CanvasDesigner_DragDropped" />
+					<Canvas
+						Name="cnvsDesigner"
+						AllowDrop="True"
+						Background="Transparent"
+						Drop="CanvasDesigner_DragDropped" />
 				</Border>
 			</Grid>
 
-			<GridSplitter Grid.Column="3"
-						  Width="3"
-						  HorizontalAlignment="Stretch"
-						  Background="LightGray"
-						  BorderThickness="0" />
+			<GridSplitter
+				Grid.Column="3"
+				Width="3"
+				HorizontalAlignment="Stretch"
+				Background="LightGray"
+				BorderThickness="0" />
 
-			<!-- Property Editor -->
+			<!--  Property Editor  -->
 
-			<ScrollViewer Name="scrlProperties"
-						  Grid.Column="4"
-						  VerticalScrollBarVisibility="Auto"
-						  HorizontalScrollBarVisibility="Auto"
-						  Background="White">
+			<ScrollViewer
+				Name="scrlProperties"
+				Grid.Column="4"
+				Background="White"
+				HorizontalScrollBarVisibility="Auto"
+				VerticalScrollBarVisibility="Auto">
 				<StackPanel Orientation="Vertical">
 					<Border Style="{StaticResource expBorder}">
-						<Expander Name="expStepProperty"
-								  IsExpanded="False">
+						<Expander Name="expStepProperty" IsExpanded="False">
 							<Expander.Header>
-								<Label Name="lblStepProperty"
-									   Content="Edit Step and Patient Properties"
-									   Style="{StaticResource expHeader}" />
+								<Label
+									Name="lblStepProperty"
+									Content="Edit Step and Patient Properties"
+									Style="{StaticResource expHeader}" />
 							</Expander.Header>
 
-							<StackPanel Margin="3"
-										Height="Auto"
-										Orientation="Vertical">
+							<StackPanel
+								Height="Auto"
+								Margin="3"
+								Orientation="Vertical">
 
-								<!-- Step Information -->
+								<!--  Step Information  -->
 								<Border Style="{StaticResource expBorder}">
-									<Expander IsExpanded="True"
-											  Style="{StaticResource expParameters}">
+									<Expander IsExpanded="True" Style="{StaticResource expParameters}">
 										<Expander.Header>
-											<Label Name="lblStepInformation"
-												   Content="Step Information"
-												   Style="{StaticResource expHeader}" />
+											<Label
+												Name="lblStepInformation"
+												Content="Step Information"
+												Style="{StaticResource expHeader}" />
 										</Expander.Header>
 
-										<StackPanel Margin="3"
-													Height="Auto"
-													Orientation="Vertical">
+										<StackPanel
+											Height="Auto"
+											Margin="3"
+											Orientation="Vertical">
 											<ii:PropertyString x:Name="pstrStepName" />
 											<ii:PropertyString x:Name="pstrStepDescription" />
 										</StackPanel>
 									</Expander>
 								</Border>
 
-								<!-- Basic Vital Signs -->
+								<!--  Basic Vital Signs  -->
 								<Border Style="{StaticResource expBorder}">
-									<Expander IsExpanded="True"
-											  Style="{StaticResource expParameters}">
+									<Expander IsExpanded="True" Style="{StaticResource expParameters}">
 										<Expander.Header>
-											<Label Name="lblBasicVitalSigns"
-												   Content="Basic Vital Signs"
-												   Style="{StaticResource expHeader}" />
+											<Label
+												Name="lblBasicVitalSigns"
+												Content="Basic Vital Signs"
+												Style="{StaticResource expHeader}" />
 										</Expander.Header>
 
-										<StackPanel Margin="3"
-													Height="Auto"
-													Orientation="Vertical">
+										<StackPanel
+											Height="Auto"
+											Margin="3"
+											Orientation="Vertical">
 											<ii:PropertyInt x:Name="pintHR" />
 											<ii:PropertyBP x:Name="pbpNBP" />
 											<ii:PropertyInt x:Name="pintRR" />
@@ -323,27 +314,29 @@
 											<ii:PropertyDouble x:Name="pdblT" />
 											<ii:PropertyEnum x:Name="penmCardiacRhythms" />
 											<ii:PropertyEnum x:Name="penmRespiratoryRhythms" />
-											<CheckBox x:Name="chkClampVitals"
-													  IsChecked="False"
-													  Margin="5,10"
-													  Content="Use default vital signs per cardiac rhythm?" />
+											<CheckBox
+												x:Name="chkClampVitals"
+												Margin="5,10"
+												Content="Use default vital signs per cardiac rhythm?"
+												IsChecked="False" />
 										</StackPanel>
 									</Expander>
 								</Border>
 
-								<!-- Advanced Hemodynamics -->
+								<!--  Advanced Hemodynamics  -->
 								<Border Style="{StaticResource expBorder}">
-									<Expander IsExpanded="True"
-											  Style="{StaticResource expParameters}">
+									<Expander IsExpanded="True" Style="{StaticResource expParameters}">
 										<Expander.Header>
-											<Label Name="lblAdvancedHemodynamics"
-												   Content="Advanced Hemodynamics"
-												   Style="{StaticResource expHeader}" />
+											<Label
+												Name="lblAdvancedHemodynamics"
+												Content="Advanced Hemodynamics"
+												Style="{StaticResource expHeader}" />
 										</Expander.Header>
 
-										<StackPanel Margin="3"
-													Height="Auto"
-													Orientation="Vertical">
+										<StackPanel
+											Height="Auto"
+											Margin="3"
+											Orientation="Vertical">
 											<ii:PropertyInt x:Name="pintETCO2" />
 											<ii:PropertyInt x:Name="pintCVP" />
 											<ii:PropertyDouble x:Name="pdblCO" />
@@ -356,39 +349,41 @@
 									</Expander>
 								</Border>
 
-								<!-- Respiratory Profile -->
+								<!--  Respiratory Profile  -->
 								<Border Style="{StaticResource expBorder}">
-									<Expander IsExpanded="True"
-											  Style="{StaticResource expParameters}">
+									<Expander IsExpanded="True" Style="{StaticResource expParameters}">
 										<Expander.Header>
-											<Label Name="lblRespiratoryProfile"
-												   Content="Respiratory Profile"
-												   Style="{StaticResource expHeader}" />
+											<Label
+												Name="lblRespiratoryProfile"
+												Content="Respiratory Profile"
+												Style="{StaticResource expHeader}" />
 										</Expander.Header>
 
-										<StackPanel Margin="3"
-													Height="Auto"
-													Orientation="Vertical">
+										<StackPanel
+											Height="Auto"
+											Margin="3"
+											Orientation="Vertical">
 											<ii:PropertyCheck x:Name="pchkMechanicallyVentilated" />
-											<ii:PropertyFloat x:Name="pdblInspiratoryRatio" />
-											<ii:PropertyFloat x:Name="pdblExpiratoryRatio" />
+											<ii:PropertyDouble x:Name="pdblInspiratoryRatio" />
+											<ii:PropertyDouble x:Name="pdblExpiratoryRatio" />
 										</StackPanel>
 									</Expander>
 								</Border>
 
-								<!-- Cardiac Profile -->
+								<!--  Cardiac Profile  -->
 								<Border Style="{StaticResource expBorder}">
-									<Expander IsExpanded="True"
-											  Style="{StaticResource expParameters}">
+									<Expander IsExpanded="True" Style="{StaticResource expParameters}">
 										<Expander.Header>
-											<Label Name="lblCardiacProfile"
-												   Content="Cardiac Profile"
-												   Style="{StaticResource expHeader}" />
+											<Label
+												Name="lblCardiacProfile"
+												Content="Cardiac Profile"
+												Style="{StaticResource expHeader}" />
 										</Expander.Header>
 
-										<StackPanel Margin="3"
-													Height="Auto"
-													Orientation="Vertical">
+										<StackPanel
+											Height="Auto"
+											Margin="3"
+											Orientation="Vertical">
 
 											<ii:PropertyInt x:Name="pintPacemakerThreshold" />
 											<ii:PropertyCheck x:Name="pchkPulsusParadoxus" />
@@ -403,36 +398,39 @@
 						</Expander>
 					</Border>
 
-					<Separator Margin="5, 2" />
+					<Separator Margin="5,2" />
 
 					<Border Style="{StaticResource expBorder}">
-						<Expander Name="expProgressionProperty"
-								  IsExpanded="False">
+						<Expander Name="expProgressionProperty" IsExpanded="False">
 							<Expander.Header>
-								<Label Name="lblProgressionProperty"
-									   Content="Edit Progressions"
-									   Style="{StaticResource expHeader}" />
+								<Label
+									Name="lblProgressionProperty"
+									Content="Edit Progressions"
+									Style="{StaticResource expHeader}" />
 							</Expander.Header>
 							<StackPanel>
-								<StackPanel Margin="3"
-											Height="Auto"
-											Orientation="Vertical">
+								<StackPanel
+									Height="Auto"
+									Margin="3"
+									Orientation="Vertical">
 
 									<ii:PropertyInt x:Name="pintProgressFrom" />
 									<ii:PropertyInt x:Name="pintProgressTo" />
 									<ii:PropertyInt x:Name="pintProgressTimer" />
 									<Label Content="Note: Entering a value of -1 disables the timer or progress target." />
-									<Button Name="btnDeleteProgression"
-											Height="22"
-											Content="Delete Default Progression"
-											Click="BtnDeleteDefaultProgression_Click"
-											Margin="5, 2" />
+									<Button
+										Name="btnDeleteProgression"
+										Height="22"
+										Margin="5,2"
+										Click="BtnDeleteDefaultProgression_Click"
+										Content="Delete Default Progression" />
 								</StackPanel>
 
-								<StackPanel Name="stackOptionalProgressions"
-											Margin="3"
-											Height="Auto"
-											Orientation="Vertical" />
+								<StackPanel
+									Name="stackOptionalProgressions"
+									Height="Auto"
+									Margin="3"
+									Orientation="Vertical" />
 							</StackPanel>
 						</Expander>
 					</Border>
