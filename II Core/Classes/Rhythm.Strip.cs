@@ -47,6 +47,8 @@ namespace II.Rhythm {
         private DateTime scrolledLast = DateTime.UtcNow;
         private bool scrollingUnpausing = false;
 
+        private bool threadLocked = false;
+
         public Offsets Offset = Offsets.Center;
         public float Amplitude = 1f;
 
@@ -57,7 +59,6 @@ namespace II.Rhythm {
 
         /* Data structures for tracing information */
         public Lead Lead;
-        public Bitmap Tracing;                             // Waveform tracing in image format
         public List<PointF> Points;                        // Clinical waveform tracing points
         public List<PointF> Reference;                     // Reference line tracing points
 
@@ -332,16 +333,30 @@ namespace II.Rhythm {
             Points.AddRange (replacement);
         }
 
-        public void TrimPoints ()
-            => Points.RemoveAll (p => { return p == null || p.X < -Length; });
+        public void TrimPoints () {
+            if (!threadLocked) {
+                threadLocked = true;
 
-        public void SortPoints ()
-            => Points.Sort (delegate (PointF p1, PointF p2) {
-                if (p1 == null && p2 == null) return 0;
-                else if (p1 == null) return -1;
-                else if (p2 == null) return 1;
-                else return p1.X.CompareTo (p2.X);
-            });
+                Points.RemoveAll (p => { return p == null || p.X < -Length; });
+
+                threadLocked = false;
+            }
+        }
+
+        public void SortPoints () {
+            if (!threadLocked) {
+                threadLocked = true;
+
+                Points.Sort (delegate (PointF p1, PointF p2) {
+                    if (p1 == null && p2 == null) return 0;
+                    else if (p1 == null) return -1;
+                    else if (p2 == null) return 1;
+                    else return p1.X.CompareTo (p2.X);
+                });
+
+                threadLocked = false;
+            }
+        }
 
         public void Scroll () {
             if (scrollingUnpausing) {

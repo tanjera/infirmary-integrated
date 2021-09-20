@@ -13,6 +13,8 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 
 using II;
 using II.Localization;
@@ -642,42 +644,78 @@ namespace II_Avalonia {
         }
 
         private void LoadFail () {
-            /* TODO
-            System.Windows.MessageBox.Show (
-                    App.Language.Localize ("PE:LoadFailMessage"),
-                    App.Language.Localize ("PE:LoadFailTitle"),
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            */
+            var assets = AvaloniaLocator.Current.GetService<Avalonia.Platform.IAssetLoader> ();
+            var icon = new Bitmap (assets.Open (new Uri ("avares://Infirmary Integrated/Third_Party/Icon_DeviceMonitor_48.png")));
+
+            var msBoxStandardWindow = MessageBox.Avalonia.MessageBoxManager
+            .GetMessageBoxCustomWindow (new MessageBox.Avalonia.DTO.MessageBoxCustomParamsWithImage {
+                ButtonDefinitions = new [] {
+                    new MessageBox.Avalonia.Models.ButtonDefinition {
+                        Name = "OK",
+                        Type = MessageBox.Avalonia.Enums.ButtonType.Default,
+                        IsCancel=true}
+                },
+                ContentTitle = App.Language.Localize ("PE:LoadFailTitle"),
+                ContentMessage = App.Language.Localize ("PE:LoadFailMessage"),
+                Icon = icon,
+                Style = MessageBox.Avalonia.Enums.Style.None,
+                WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                WindowIcon = this.Icon,
+                Topmost = true,
+                CanResize = false,
+            });
+            msBoxStandardWindow.Show ();
         }
 
-        private void SaveFile () {
+        private async void SaveFile () {
             // Only save single Patient files in base Infirmary Integrated!
             // Scenario files should be created/edited/saved via II Scenario Editor!
-            /* TODO
+
             if (App.Scenario.IsScenario) {
-                System.Windows.MessageBox.Show (
-                    App.Language.Localize ("PE:SaveFailScenarioMessage"),
-                    App.Language.Localize ("PE:SaveFailScenarioTitle"),
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                var assets = AvaloniaLocator.Current.GetService<Avalonia.Platform.IAssetLoader> ();
+                var icon = new Bitmap (assets.Open (new Uri ("avares://Infirmary Integrated/Third_Party/Icon_DeviceMonitor_48.png")));
+
+                var msBoxStandardWindow = MessageBox.Avalonia.MessageBoxManager
+                .GetMessageBoxCustomWindow (new MessageBox.Avalonia.DTO.MessageBoxCustomParamsWithImage {
+                    ButtonDefinitions = new [] {
+                    new MessageBox.Avalonia.Models.ButtonDefinition {
+                        Name = "OK",
+                        Type = MessageBox.Avalonia.Enums.ButtonType.Default,
+                        IsCancel=true}
+                    },
+                    ContentTitle = ("PE:SaveFailScenarioTitle"),
+                    ContentMessage = App.Language.Localize ("PE:SaveFailScenarioMessage"),
+                    Icon = icon,
+                    Style = MessageBox.Avalonia.Enums.Style.None,
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                    WindowIcon = this.Icon,
+                    Topmost = true,
+                    CanResize = false,
+                });
+                msBoxStandardWindow.Show ();
+
                 return;
             }
 
-            Stream s;
-            Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
+            SaveFileDialog dlgSave = new SaveFileDialog ();
 
-            dlgSave.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
-            dlgSave.FilterIndex = 1;
-            dlgSave.RestoreDirectory = true;
+            dlgSave.DefaultExtension = "ii";
+            dlgSave.Filters.Add (new FileDialogFilter () { Name = "Infirmary Integrated Simulations", Extensions = { "ii" } });
+            dlgSave.Filters.Add (new FileDialogFilter () { Name = "All files", Extensions = { "*" } });
 
-            if (dlgSave.ShowDialog () == true) {
-                if ((s = dlgSave.OpenFile ()) != null) {
-                    SaveT1 (s);
-                }
+            string file = await dlgSave.ShowAsync (this);
+
+            if (!String.IsNullOrEmpty (file)) {
+                SaveT1 (file);
             }
-            */
         }
 
-        private void SaveT1 (Stream s) {
+        private void SaveT1 (string filename) {
+            if (System.IO.File.Exists (filename))
+                System.IO.File.Delete (filename);
+
+            FileStream s = new FileStream (filename, FileMode.OpenOrCreate, FileAccess.Write);
+
             // Ensure only saving Patient file, not Scenario file; is screened in SaveFile()
             if (App.Scenario.IsScenario) {
                 s.Close ();

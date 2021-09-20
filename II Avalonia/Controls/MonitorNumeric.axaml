@@ -8,6 +8,11 @@
 	d:DesignWidth="800"
 	mc:Ignorable="d">
   <UserControl.Styles>
+
+    <Style Selector="MenuItem.item">
+      <Setter Property="FontSize" Value="{Binding Path=FontScale}" />
+    </Style>
+
     <Style Selector="Viewbox.stretch">
       <Setter Property="Stretch" Value="Uniform" />
       <Setter Property="HorizontalAlignment" Value="Center" />

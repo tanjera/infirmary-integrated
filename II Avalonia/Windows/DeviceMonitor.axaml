@@ -47,28 +47,11 @@
 						Name="menuAddTracing"
 						Classes="item"
 						Click="MenuAddTracing_Click" />
-          <MenuItem
-						Name="menuToggleFullscreen"
-						Classes="item"
-						Click="MenuFullscreen_Click" />
-          <Separator />
-          <MenuItem
-						Name="menuSaveScreen"
-						Classes="item"
-						Click="MenuSaveScreen_Click" />
-          <MenuItem
-						Name="menuPrintScreen"
-						Classes="item"
-						Click="MenuPrintScreen_Click" />
           <Separator />
           <MenuItem
 						Name="menuCloseDevice"
 						Classes="item"
 						Click="MenuClose_Click" />
-          <MenuItem
-						Name="menuExitProgram"
-						Classes="item"
-						Click="MenuExit_Click" />
         </MenuItem>
       </Menu>
 

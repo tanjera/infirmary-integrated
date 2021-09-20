@@ -1,15 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 
 using II;
 using II.Localization;
@@ -18,13 +20,19 @@ using II.Rhythm;
 namespace II_Avalonia.Controls {
 
     public partial class MonitorTracing : UserControl {
+        /* Properties for applying DPI scaling options */
+        public double UIScale { get { return App.Settings.UIScale; } }
+        public int FontScale { get { return (int)(14 * App.Settings.UIScale); } }
+
         public Strip Strip;
         public Lead Lead { get { return Strip.Lead; } }
+        public RenderTargetBitmap Tracing;
 
         /* Drawing variables, offsets and multipliers */
-        private System.Drawing.Brush tracingPen = System.Drawing.Brushes.Black;
-        private Avalonia.Media.Brush tracingBrush = (Avalonia.Media.Brush)Avalonia.Media.Brushes.Black;
-        private System.Drawing.Brush referencePen = System.Drawing.Brushes.DarkGray;
+        private Pen tracingPen = new Pen ();
+        private IBrush tracingBrush = Brushes.Black;
+        private IBrush referenceBrush = Brushes.DarkGray;
+        private IBrush backgroundBrush = Brushes.Black;
 
         private System.Drawing.Point drawOffset;
         private System.Drawing.PointF drawMultiplier;
@@ -57,11 +65,12 @@ namespace II_Avalonia.Controls {
             // Context Menu (right-click menu!)
             ContextMenu menuContext = new ContextMenu ();
             List<object> menuitemsContext = new List<object> ();
-            this.FindControl<Avalonia.Controls.Image> ("imgTracing").ContextMenu = menuContext;
+            this.FindControl<Image> ("imgTracing").ContextMenu = menuContext;
             this.FindControl<Label> ("lblLead").ContextMenu = menuContext;
 
             menuZeroTransducer = new MenuItem ();
             menuZeroTransducer.Header = App.Language.Localize ("MENU:MenuZeroTransducer");
+            menuZeroTransducer.Classes.Add ("item");
             menuZeroTransducer.Click += MenuZeroTransducer_Click;
             menuitemsContext.Add (menuZeroTransducer);
 
@@ -69,11 +78,13 @@ namespace II_Avalonia.Controls {
 
             MenuItem menuAddTracing = new MenuItem ();
             menuAddTracing.Header = App.Language.Localize ("MENU:MenuAddTracing");
+            menuAddTracing.Classes.Add ("item");
             menuAddTracing.Click += MenuAddTracing_Click;
             menuitemsContext.Add (menuAddTracing);
 
             MenuItem menuRemoveTracing = new MenuItem ();
             menuRemoveTracing.Header = App.Language.Localize ("MENU:MenuRemoveTracing");
+            menuRemoveTracing.Classes.Add ("item");
             menuRemoveTracing.Click += MenuRemoveTracing_Click;
             menuitemsContext.Add (menuRemoveTracing);
 
@@ -81,11 +92,13 @@ namespace II_Avalonia.Controls {
 
             MenuItem menuIncreaseAmplitude = new MenuItem ();
             menuIncreaseAmplitude.Header = App.Language.Localize ("MENU:IncreaseAmplitude");
+            menuIncreaseAmplitude.Classes.Add ("item");
             menuIncreaseAmplitude.Click += MenuIncreaseAmplitude_Click;
             menuitemsContext.Add (menuIncreaseAmplitude);
 
             MenuItem menuDecreaseAmplitude = new MenuItem ();
             menuDecreaseAmplitude.Header = App.Language.Localize ("MENU:DecreaseAmplitude");
+            menuDecreaseAmplitude.Classes.Add ("item");
             menuDecreaseAmplitude.Click += MenuDecreaseAmplitude_Click;
             menuitemsContext.Add (menuDecreaseAmplitude);
 
@@ -93,6 +106,7 @@ namespace II_Avalonia.Controls {
 
             menuToggleAutoScale = new MenuItem ();
             menuToggleAutoScale.Header = App.Language.Localize ("MENU:ToggleAutoScaling");
+            menuToggleAutoScale.Classes.Add ("item");
             menuToggleAutoScale.Click += MenuToggleAutoScale_Click;
             menuitemsContext.Add (menuToggleAutoScale);
 
@@ -102,8 +116,13 @@ namespace II_Avalonia.Controls {
                      menuECGLeads = new MenuItem ();
             List<object> menuitemsSelectInput = new List<object> (),
                 menuitemsECGLeads = new List<object> ();
+
             menuSelectInput.Header = App.Language.Localize ("MENU:MenuSelectInputSource");
+            menuSelectInput.Classes.Add ("item");
+
             menuECGLeads.Header = App.Language.Localize ("TRACING:ECG");
+            menuECGLeads.Classes.Add ("item");
+
             menuitemsSelectInput.Add (menuECGLeads);
 
             foreach (Lead.Values v in Enum.GetValues (typeof (Lead.Values))) {
@@ -116,6 +135,7 @@ namespace II_Avalonia.Controls {
 
                 MenuItem mi = new MenuItem ();
                 mi.Header = App.Language.Localize (Lead.LookupString (v));
+                mi.Classes.Add ("item");
                 mi.Name = v.ToString ();
                 mi.Click += MenuSelectInputSource;
                 if (mi.Name.StartsWith ("ECG"))
@@ -134,53 +154,43 @@ namespace II_Avalonia.Controls {
         private void UpdateInterface (object? sender, EventArgs e) {
             switch (Lead.Value) {
                 default:
-                    tracingPen = System.Drawing.Brushes.Green;
-                    tracingBrush = (Avalonia.Media.Brush)Avalonia.Media.Brushes.Green;
+                    tracingBrush = Brushes.Green;
                     break;
 
                 case Lead.Values.SPO2:
-                    tracingPen = System.Drawing.Brushes.Orange;
-                    tracingBrush = (Avalonia.Media.Brush)Avalonia.Media.Brushes.Orange;
+                    tracingBrush = Brushes.Orange;
                     break;
 
                 case Lead.Values.RR:
-                    tracingPen = System.Drawing.Brushes.Salmon;
-                    tracingBrush = (Avalonia.Media.Brush)Avalonia.Media.Brushes.Salmon;
+                    tracingBrush = Brushes.Salmon;
                     break;
 
                 case Lead.Values.ETCO2:
-                    tracingPen = System.Drawing.Brushes.Aqua;
-                    tracingBrush = (Avalonia.Media.Brush)Avalonia.Media.Brushes.Aqua;
+                    tracingBrush = Brushes.Aqua;
                     break;
 
                 case Lead.Values.ABP:
-                    tracingPen = System.Drawing.Brushes.Red;
-                    tracingBrush = (Avalonia.Media.Brush)Avalonia.Media.Brushes.Red;
+                    tracingBrush = Brushes.Red;
                     break;
 
                 case Lead.Values.CVP:
-                    tracingPen = System.Drawing.Brushes.Blue;
-                    tracingBrush = (Avalonia.Media.Brush)Avalonia.Media.Brushes.Blue;
+                    tracingBrush = Brushes.Blue;
                     break;
 
                 case Lead.Values.PA:
-                    tracingPen = System.Drawing.Brushes.Yellow;
-                    tracingBrush = (Avalonia.Media.Brush)Avalonia.Media.Brushes.Yellow;
+                    tracingBrush = Brushes.Yellow;
                     break;
 
                 case Lead.Values.ICP:
-                    tracingPen = System.Drawing.Brushes.Khaki;
-                    tracingBrush = (Avalonia.Media.Brush)Avalonia.Media.Brushes.Khaki;
+                    tracingBrush = Brushes.Khaki;
                     break;
 
                 case Lead.Values.IAP:
-                    tracingPen = System.Drawing.Brushes.Aquamarine;
-                    tracingBrush = (Avalonia.Media.Brush)Avalonia.Media.Brushes.Aquamarine;
+                    tracingBrush = Brushes.Aquamarine;
                     break;
 
                 case Lead.Values.IABP:
-                    tracingPen = System.Drawing.Brushes.SkyBlue;
-                    tracingBrush = (Avalonia.Media.Brush)Avalonia.Media.Brushes.SkyBlue;
+                    tracingBrush = Brushes.SkyBlue;
                     break;
             }
 
@@ -227,29 +237,34 @@ namespace II_Avalonia.Controls {
         }
 
         public void CalculateOffsets () {
-            Canvas cnvTracing = this.FindControl<Canvas> ("cnvTracing");
+            Image imgTracing = this.FindControl<Image> ("imgTracing");
 
-            Tracing.CalculateOffsets (Strip,
-               cnvTracing.Width, cnvTracing.Height,
+            II.Rhythm.Tracing.CalculateOffsets (Strip,
+               imgTracing.Bounds.Width, imgTracing.Bounds.Height,
                ref drawOffset, ref drawMultiplier);
         }
 
-        public void DrawTracing ()
-            => DrawPath (Strip.Points, tracingPen, 1);
+        public async void DrawTracing ()
+            => Draw (Strip.Points, tracingBrush, 1);
 
         public void DrawReference ()
-            => DrawPath (Strip.Reference, referencePen, 1);
+            => Draw (Strip.Reference, referenceBrush, 1);
 
-        public void DrawPath (List<PointF> _Points, System.Drawing.Brush _Brush, float _Thickness) {
-            Canvas cnvTracing = this.FindControl<Canvas> ("cnvTracing");
-            Avalonia.Controls.Image imgTracing = this.FindControl<Avalonia.Controls.Image> ("imgTracing");
+        public async void Draw (List<System.Drawing.PointF> _Points, IBrush _Brush, double _Thickness) {
+            Image imgTracing = this.FindControl<Image> ("imgTracing");
 
-            Tracing.Init (ref Strip.Tracing, (int)cnvTracing.Width, (int)cnvTracing.Height);
+            PixelSize size = new PixelSize (    // Must use a size > 0
+                imgTracing.Bounds.Width > 0 ? (int)imgTracing.Bounds.Width : 100,
+                imgTracing.Bounds.Height > 0 ? (int)imgTracing.Bounds.Height : 100);
 
-            Tracing.DrawPath (_Points, Strip.Tracing, new System.Drawing.Pen (_Brush, _Thickness),
-                System.Drawing.Color.Black, drawOffset, drawMultiplier);
+            Tracing = new RenderTargetBitmap (size);
 
-            imgTracing.Source = Trace.BitmapToImageSource (Strip.Tracing);
+            tracingPen.Brush = _Brush;
+            tracingPen.Thickness = _Thickness;
+
+            await Trace.DrawPath (_Points, Tracing, tracingPen, drawOffset, drawMultiplier);
+
+            imgTracing.Source = Tracing;
         }
 
         private void MenuZeroTransducer_Click (object? sender, RoutedEventArgs e) {

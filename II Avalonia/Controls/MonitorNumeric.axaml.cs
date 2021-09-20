@@ -17,6 +17,10 @@ using II.Rhythm;
 namespace II_Avalonia.Controls {
 
     public partial class MonitorNumeric : UserControl {
+        /* Properties for applying DPI scaling options */
+        public double UIScale { get { return App.Settings.UIScale; } }
+        public int FontScale { get { return (int)(14 * App.Settings.UIScale); } }
+
         public ControlType controlType;
 
         private MenuItem menuZeroTransducer;
@@ -38,7 +42,7 @@ namespace II_Avalonia.Controls {
                 return String.Format ("NUMERIC:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
             }
 
-            public Brush Color { get { return Coloring [(int)Value]; } }
+            public IBrush Color { get { return Coloring [(int)Value]; } }
 
             public static List<string> MenuItem_Formats {
                 get {
@@ -49,19 +53,19 @@ namespace II_Avalonia.Controls {
                 }
             }
 
-            public static Brush [] Coloring = new Brush [] {
-                (Brush)Brushes.Green,
-                (Brush)Brushes.LightGray,
-                (Brush)Brushes.Salmon,
-                (Brush)Brushes.Aqua,
-                (Brush)Brushes.Orange,
-                (Brush)Brushes.White,
-                (Brush)Brushes.Red,
-                (Brush)Brushes.Blue,
-                (Brush)Brushes.Brown,
-                (Brush)Brushes.Yellow,
-                (Brush)Brushes.Khaki,
-                (Brush)Brushes.Aquamarine
+            public static IBrush [] Coloring = new IBrush [] {
+                Brushes.Green,
+                Brushes.LightGray,
+                Brushes.Salmon,
+                Brushes.Aqua,
+                Brushes.Orange,
+                Brushes.White,
+                Brushes.Red,
+                Brushes.Blue,
+                Brushes.Brown,
+                Brushes.Yellow,
+                Brushes.Khaki,
+                Brushes.Aquamarine
             };
         }
 
@@ -98,6 +102,7 @@ namespace II_Avalonia.Controls {
 
             menuZeroTransducer = new MenuItem ();
             menuZeroTransducer.Header = App.Language.Localize ("MENU:MenuZeroTransducer");
+            menuZeroTransducer.Classes.Add ("item");
             menuZeroTransducer.Click += MenuZeroTransducer_Click;
             menuitemsContext.Add (menuZeroTransducer);
 
@@ -105,11 +110,13 @@ namespace II_Avalonia.Controls {
 
             MenuItem menuAddNumeric = new MenuItem ();
             menuAddNumeric.Header = App.Language.Localize ("MENU:MenuAddNumeric");
+            menuAddNumeric.Classes.Add ("item");
             menuAddNumeric.Click += MenuAddNumeric_Click;
             menuitemsContext.Add (menuAddNumeric);
 
             MenuItem menuRemoveNumeric = new MenuItem ();
             menuRemoveNumeric.Header = App.Language.Localize ("MENU:MenuRemoveNumeric");
+            menuRemoveNumeric.Classes.Add ("item");
             menuRemoveNumeric.Click += MenuRemoveNumeric_Click;
             menuitemsContext.Add (menuRemoveNumeric);
 
@@ -118,10 +125,12 @@ namespace II_Avalonia.Controls {
             MenuItem menuSelectInput = new MenuItem ();
             List<object> menuitemsSelectInput = new List<object> ();
             menuSelectInput.Header = App.Language.Localize ("MENU:MenuSelectInputSource");
+            menuSelectInput.Classes.Add ("item");
 
             foreach (ControlType.Values v in Enum.GetValues (typeof (ControlType.Values))) {
                 MenuItem mi = new MenuItem ();
                 mi.Header = App.Language.Localize (ControlType.LookupString (v));
+                mi.Classes.Add ("item");
                 mi.Name = v.ToString ();
                 mi.Click += MenuSelectInputSource;
                 menuitemsSelectInput.Add (mi);

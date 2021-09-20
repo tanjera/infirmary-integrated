@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 
 using II;
 using II.Rhythm;
@@ -26,7 +28,6 @@ namespace II_Avalonia {
 
         private int autoScale_iter = Strip.DefaultAutoScale_Iterations;
 
-        private bool isFullscreen = false;
         private bool isPaused = false;
 
         private List<Controls.MonitorTracing> listTracings = new List<Controls.MonitorTracing> ();
@@ -98,41 +99,64 @@ namespace II_Avalonia {
             this.FindControl<MenuItem> ("menuPauseDevice").Header = App.Language.Localize ("MENU:MenuPauseDevice");
             this.FindControl<MenuItem> ("menuAddNumeric").Header = App.Language.Localize ("MENU:MenuAddNumeric");
             this.FindControl<MenuItem> ("menuAddTracing").Header = App.Language.Localize ("MENU:MenuAddTracing");
-            this.FindControl<MenuItem> ("menuToggleFullscreen").Header = App.Language.Localize ("MENU:MenuToggleFullscreen");
-            this.FindControl<MenuItem> ("menuSaveScreen").Header = App.Language.Localize ("MENU:MenuSaveScreen");
-            this.FindControl<MenuItem> ("menuPrintScreen").Header = App.Language.Localize ("MENU:MenuPrintScreen");
+            //this.FindControl<MenuItem> ("menuToggleFullscreen").Header = App.Language.Localize ("MENU:MenuToggleFullscreen");
+            //this.FindControl<MenuItem> ("menuSaveScreen").Header = App.Language.Localize ("MENU:MenuSaveScreen");
+            //this.FindControl<MenuItem> ("menuPrintScreen").Header = App.Language.Localize ("MENU:MenuPrintScreen");
             this.FindControl<MenuItem> ("menuCloseDevice").Header = App.Language.Localize ("MENU:MenuCloseDevice");
-            this.FindControl<MenuItem> ("menuExitProgram").Header = App.Language.Localize ("MENU:MenuExitProgram");
+            //this.FindControl<MenuItem> ("menuExitProgram").Header = App.Language.Localize ("MENU:MenuExitProgram");
         }
 
         public void Load_Process (string inc) {
-            //TODO Repopulate Code
+            StringReader sRead = new StringReader (inc);
+            List<string> numericTypes = new List<string> (),
+                         tracingTypes = new List<string> ();
+
+            try {
+                string line;
+                while ((line = sRead.ReadLine ()) != null) {
+                    if (line.Contains (":")) {
+                        string pName = line.Substring (0, line.IndexOf (':')),
+                                pValue = line.Substring (line.IndexOf (':') + 1);
+                        switch (pName) {
+                            default: break;
+                            case "rowsTracings": rowsTracings = int.Parse (pValue); break;
+                            case "rowsNumerics": rowsNumerics = int.Parse (pValue); break;
+                            case "isPaused": isPaused = bool.Parse (pValue); break;
+                            case "numericTypes": numericTypes.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
+                            case "tracingTypes": tracingTypes.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
+                        }
+                    }
+                }
+            } catch {
+            } finally {
+                sRead.Close ();
+                OnLayoutChange (numericTypes, tracingTypes);
+            }
         }
 
         public string Save () {
-            return "";
-            //TODO Repopulate Code
-        }
+            StringBuilder sWrite = new StringBuilder ();
 
-        private void ApplyFullScreen () {
-            //TODO Repopulate Code
-        }
+            sWrite.AppendLine (String.Format ("{0}:{1}", "rowsTracings", rowsTracings));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "rowsNumerics", rowsNumerics));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", isPaused));
 
-        private void SaveScreen () {
-            //TODO Repopulate Code
-        }
+            List<string> numericTypes = new List<string> (),
+                         tracingTypes = new List<string> ();
 
-        private void PrintScreen () {
-            //TODO Repopulate Code
+            listNumerics.ForEach (o => { numericTypes.Add (o.controlType.Value.ToString ()); });
+            listTracings.ForEach (o => { tracingTypes.Add (o.Strip.Lead.Value.ToString ()); });
+            sWrite.AppendLine (String.Format ("{0}:{1}", "numericTypes", string.Join (",", numericTypes)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "tracingTypes", string.Join (",", tracingTypes)));
+
+            return sWrite.ToString ();
         }
 
         private void TogglePause () {
-            //TODO Repopulate Code
-        }
+            isPaused = !isPaused;
 
-        public void ToggleFullscreen () {
-            isFullscreen = !isFullscreen;
-            ApplyFullScreen ();
+            if (!isPaused)
+                listTracings.ForEach (c => c.Strip.Unpause ());
         }
 
         public void AddTracing () {
@@ -159,21 +183,11 @@ namespace II_Avalonia {
 
         private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
 
-        private void MenuExit_Click (object s, RoutedEventArgs e) => App.Patient_Editor.Exit ();
-
         private void MenuAddNumeric_Click (object s, RoutedEventArgs e) => AddNumeric ();
 
         private void MenuAddTracing_Click (object s, RoutedEventArgs e) => AddTracing ();
 
         private void MenuTogglePause_Click (object s, RoutedEventArgs e) => TogglePause ();
-
-        private void MenuFullscreen_Click (object sender, RoutedEventArgs e) => ToggleFullscreen ();
-
-        private void MenuSaveScreen_Click (object sender, RoutedEventArgs e)
-            => SaveScreen ();
-
-        private void MenuPrintScreen_Click (object sender, RoutedEventArgs e)
-            => PrintScreen ();
 
         private void OnClosed (object sender, EventArgs e)
             => this.Dispose ();
@@ -182,40 +196,34 @@ namespace II_Avalonia {
             if (isPaused)
                 return;
 
-            /* TODO
             for (int i = 0; i < listTracings.Count; i++) {
                 listTracings [i].Strip.Scroll ();
-                listTracings [i].DrawTracing ();
+                Dispatcher.UIThread.InvokeAsync (listTracings [i].DrawTracing);
             }
-            */
         }
 
         private void OnTick_Vitals_Cardiac (object sender, EventArgs e) {
             if (isPaused)
                 return;
 
-            /* TODO
             listNumerics
                 .Where (n
                     => n.controlType.Value != Controls.MonitorNumeric.ControlType.Values.ETCO2
                     && n.controlType.Value != Controls.MonitorNumeric.ControlType.Values.RR)
                 .ToList ()
-                .ForEach (n => n.UpdateVitals ());
-            */
+                .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }
 
         private void OnTick_Vitals_Respiratory (object sender, EventArgs e) {
             if (isPaused)
                 return;
 
-            /* TODO
             listNumerics
                 .Where (n
                     => n.controlType.Value == Controls.MonitorNumeric.ControlType.Values.ETCO2
                     || n.controlType.Value == Controls.MonitorNumeric.ControlType.Values.RR)
                 .ToList ()
-                .ForEach (n => n.UpdateVitals ());
-            */
+                .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }
 
         private void OnLayoutChange (List<string> numericTypes = null, List<string> tracingTypes = null) {
@@ -233,7 +241,7 @@ namespace II_Avalonia {
                 buffer.RemoveRange (0, numericTypes.Count);
                 numericTypes.AddRange (buffer);
             }
-            /* TODO
+
             // Cap available amount of numerics
             rowsNumerics = II.Math.Clamp (rowsNumerics, 1, numericTypes.Count);
             for (int i = listNumerics.Count; i < rowsNumerics && i < numericTypes.Count; i++) {
@@ -260,6 +268,9 @@ namespace II_Avalonia {
             }
 
             // Reset the UI container and repopulate with the UI elements
+            Grid gridNumerics = this.FindControl<Grid> ("gridNumerics");
+            Grid gridTracings = this.FindControl<Grid> ("gridTracings");
+
             gridNumerics.Children.Clear ();
             gridNumerics.RowDefinitions.Clear ();
             for (int i = 0; i < rowsNumerics && i < listNumerics.Count; i++) {
@@ -275,11 +286,9 @@ namespace II_Avalonia {
                 listTracings [i].SetValue (Grid.RowProperty, i);
                 gridTracings.Children.Add (listTracings [i]);
             }
-            */
         }
 
         public void OnPatientEvent (object sender, Patient.PatientEventArgs e) {
-            /* TODO
             switch (e.EventType) {
                 default: break;
                 case Patient.PatientEventTypes.Vitals_Change:
@@ -318,11 +327,9 @@ namespace II_Avalonia {
                 case Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical:
                     listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Mechanical (App.Patient));
 
-            */
+                    /* Iterations and trigger for auto-scaling pressure waveform strips */
 
-            /* Iterations and trigger for auto-scaling pressure waveform strips */
-            /* TODO
-            autoScale_iter -= 1;
+                    autoScale_iter -= 1;
                     if (autoScale_iter <= 0) {
                         for (int i = 0; i < listTracings.Count; i++) {
                             listTracings [i].Strip.SetAutoScale (App.Patient);
@@ -345,7 +352,6 @@ namespace II_Avalonia {
                     listTracings.ForEach (c => c.Strip.Add_Breath__Respiratory_Expiration (App.Patient));
                     break;
             }
-        */
         }
 
         private void OnFormResize (object sender, RoutedEventArgs e) => OnLayoutChange ();

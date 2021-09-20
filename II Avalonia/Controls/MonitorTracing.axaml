@@ -4,10 +4,17 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	HorizontalAlignment="Stretch"
 	d:DesignHeight="450"
 	d:DesignWidth="800"
 	LayoutUpdated="UpdateInterface"
 	mc:Ignorable="d">
+
+  <UserControl.Styles>
+    <Style Selector="MenuItem.item">
+      <Setter Property="FontSize" Value="{Binding Path=FontScale}" />
+    </Style>
+  </UserControl.Styles>
 
   <Border
 		Name="borderTracing"
@@ -27,22 +34,13 @@
         <ColumnDefinition />
       </Grid.ColumnDefinitions>
 
-      <Canvas
-				Name="cnvTracing"
-				Grid.Row="0"
-				Grid.RowSpan="4"
-				Grid.Column="0"
-				VerticalAlignment="Stretch"
-				ClipToBounds="True"
-				LayoutUpdated="cnvTracing_SizeChanged"
-				ZIndex="0" />
-
       <Image
 				Name="imgTracing"
 				Grid.Row="0"
 				Grid.RowSpan="4"
 				Grid.Column="0"
-				ClipToBounds="True"
+				Stretch="Fill"
+				StretchDirection="Both"
 				ZIndex="1" />
 
       <Label
