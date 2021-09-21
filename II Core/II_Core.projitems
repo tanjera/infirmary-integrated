@@ -36,7 +36,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Waveform.Dictionary.Plots.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Waveform.Dictionary.Functions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Waveform.Plotting.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\Screenshot.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Waveforms\" />

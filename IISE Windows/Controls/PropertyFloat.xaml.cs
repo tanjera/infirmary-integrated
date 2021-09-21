@@ -48,7 +48,7 @@ namespace II.Scenario_Editor.Controls {
             numValue.LostFocus += sendPropertyChange;
         }
 
-        public void Set (float value) {
+        public void Set (double value) {
             numValue.ValueChanged -= sendPropertyChange;
             numValue.Value = (decimal)value;
             numValue.ValueChanged += sendPropertyChange;

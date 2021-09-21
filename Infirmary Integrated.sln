@@ -22,9 +22,7 @@ Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer, Windows", "Insta
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		II Core\II_Core.projitems*{23fdb2ce-6680-4280-a1d2-1693323d3578}*SharedItemsImports = 4
 		II Core\II_Core.projitems*{604ba4ae-4e02-4445-993c-1d3aed0ee610}*SharedItemsImports = 5
-		II Core\II_Core.projitems*{62368e1b-8ed2-4118-a5fc-c894c4994989}*SharedItemsImports = 5
 		II Core\II_Core.projitems*{d6a13684-612c-49d6-b8b3-b9720d585a71}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,16 +42,15 @@ Global
 		{23FDB2CE-6680-4280-A1D2-1693323D3578}.DefaultBuild|Any CPU.ActiveCfg = Debug|Any CPU
 		{23FDB2CE-6680-4280-A1D2-1693323D3578}.DefaultBuild|Any CPU.Build.0 = Debug|Any CPU
 		{23FDB2CE-6680-4280-A1D2-1693323D3578}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{23FDB2CE-6680-4280-A1D2-1693323D3578}.Release|Any CPU.Build.0 = Release|Any CPU
 		{62368E1B-8ED2-4118-A5FC-C894C4994989}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{62368E1B-8ED2-4118-A5FC-C894C4994989}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62368E1B-8ED2-4118-A5FC-C894C4994989}.DefaultBuild|Any CPU.ActiveCfg = Debug|Any CPU
 		{62368E1B-8ED2-4118-A5FC-C894C4994989}.DefaultBuild|Any CPU.Build.0 = Debug|Any CPU
 		{62368E1B-8ED2-4118-A5FC-C894C4994989}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{62368E1B-8ED2-4118-A5FC-C894C4994989}.Release|Any CPU.Build.0 = Release|Any CPU
 		{69DDA1E8-B837-47A3-AB0E-8D496166F208}.Debug|Any CPU.ActiveCfg = Debug
 		{69DDA1E8-B837-47A3-AB0E-8D496166F208}.DefaultBuild|Any CPU.ActiveCfg = Debug
 		{69DDA1E8-B837-47A3-AB0E-8D496166F208}.Release|Any CPU.ActiveCfg = Release
+		{69DDA1E8-B837-47A3-AB0E-8D496166F208}.Release|Any CPU.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

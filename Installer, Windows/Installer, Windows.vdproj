@@ -15,25 +15,19 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_56ADE7716EC64CE2A586520A3486BD06"
+        "MsmKey" = "8:_2CE360A08DAE42889F965FC46C6FC4AF"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_99434732507E413485CF9F6267F1C66C"
+        "MsmKey" = "8:_D629420EE1364BFDA615CD89F218E879"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_DFF62957960A4F5F887171630142C509"
-        "OwnerKey" = "8:_UNDEFINED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_F2F41FBD479548A4A760562994345E3E"
+        "MsmKey" = "8:_FD26B2F309284AF79DE5934E2213960D"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -120,22 +114,24 @@
         {
             "LaunchCondition"
             {
-                "{A06ECF26-33A3-4562-8140-9B0E340D4F24}:_9949D035C0A04CD186A0BD3AF7D7BDFC"
+                "{A06ECF26-33A3-4562-8140-9B0E340D4F24}:_C97B37F822B349C5BF15CFF0238072D9"
                 {
-                "Name" = "8:.NET Framework"
-                "Message" = "8:[VSDNETMSG]"
-                "FrameworkVersion" = "8:.NETFramework,Version=v4.6.1"
+                "Name" = "8:.NET Core"
+                "Message" = "8:[VSDNETCOREMSG]"
                 "AllowLaterVersions" = "11:FALSE"
-                "InstallUrl" = "8:http://go.microsoft.com/fwlink/?LinkId=671728"
+                "InstallUrl" = "8:https://dotnet.microsoft.com/download/dotnet-core/[NetCoreVerMajorDotMinor]"
+                "IsNETCore" = "11:TRUE"
+                "Architecture" = "2:0"
+                "Runtime" = "2:0"
                 }
             }
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_56ADE7716EC64CE2A586520A3486BD06"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D629420EE1364BFDA615CD89F218E879"
             {
-            "SourcePath" = "8:..\\II Windows\\Icon_II.ico"
-            "TargetName" = "8:Icon_II.ico"
+            "SourcePath" = "8:..\\II Avalonia\\Resources\\Icon_IISE.ico"
+            "TargetName" = "8:Icon_IISE.ico"
             "Tag" = "8:"
             "Folder" = "8:_B802499D66F54BE88679E32C87F3937D"
             "Condition" = "8:"
@@ -152,10 +148,10 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_F2F41FBD479548A4A760562994345E3E"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_FD26B2F309284AF79DE5934E2213960D"
             {
-            "SourcePath" = "8:..\\IISE Windows\\Icon_IISE.ico"
-            "TargetName" = "8:Icon_IISE.ico"
+            "SourcePath" = "8:..\\II Avalonia\\Resources\\Icon_II.ico"
+            "TargetName" = "8:Icon_II.ico"
             "Tag" = "8:"
             "Folder" = "8:_B802499D66F54BE88679E32C87F3937D"
             "Condition" = "8:"
@@ -181,11 +177,11 @@
             "Description" = "8:Infirmary Integrated Simulation"
             "Extensions" = "8:.ii"
             "MIME" = "8:"
-            "Icon" = "8:_56ADE7716EC64CE2A586520A3486BD06"
+            "Icon" = "8:_FD26B2F309284AF79DE5934E2213960D"
             "IconIndex" = "3:0"
                 "Command"
                 {
-                "Command" = "8:_DFF62957960A4F5F887171630142C509"
+                "Command" = "8:_2CE360A08DAE42889F965FC46C6FC4AF"
                 }
                 "Verbs"
                 {
@@ -252,7 +248,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Infirmary Integrated"
         "ProductCode" = "8:{3AE2AA62-BA50-4BA4-83E0-CA50F4541C43}"
-        "PackageCode" = "8:{739A4C53-5FBF-4150-9D8B-65BAAEF6C1C4}"
+        "PackageCode" = "8:{7449F837-35D2-4F7C-9D52-24924FF2EA32}"
         "UpgradeCode" = "8:{313C57F9-7AA1-479F-825E-6CDC994FF165}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
@@ -269,7 +265,7 @@
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:Infirmary Integrated"
         "ARPURLINFOABOUT" = "8:http://www.infirmary-integrated.com/"
-        "ARPPRODUCTICON" = "8:_56ADE7716EC64CE2A586520A3486BD06"
+        "ARPPRODUCTICON" = "8:_FD26B2F309284AF79DE5934E2213960D"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
@@ -372,20 +368,6 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_45EDA1BE9F0D41AD9332017161261B85"
-            {
-            "Name" = "8:Infirmary Integrated Scenario Editor"
-            "Arguments" = "8:"
-            "Description" = "8:"
-            "ShowCmd" = "3:1"
-            "IconIndex" = "3:0"
-            "Transitive" = "11:FALSE"
-            "Target" = "8:_99434732507E413485CF9F6267F1C66C"
-            "Folder" = "8:_326DF3FE79344F61BDD23F4471A0884F"
-            "WorkingFolder" = "8:_B802499D66F54BE88679E32C87F3937D"
-            "Icon" = "8:_F2F41FBD479548A4A760562994345E3E"
-            "Feature" = "8:"
-            }
             "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_8F9AE116813F4A569784E8A97ACA3101"
             {
             "Name" = "8:Infirmary Integrated"
@@ -394,10 +376,10 @@
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_DFF62957960A4F5F887171630142C509"
+            "Target" = "8:_2CE360A08DAE42889F965FC46C6FC4AF"
             "Folder" = "8:_326DF3FE79344F61BDD23F4471A0884F"
             "WorkingFolder" = "8:_B802499D66F54BE88679E32C87F3937D"
-            "Icon" = "8:_56ADE7716EC64CE2A586520A3486BD06"
+            "Icon" = "8:_FD26B2F309284AF79DE5934E2213960D"
             "Feature" = "8:"
             }
         }
@@ -799,9 +781,9 @@
         }
         "ProjectOutput"
         {
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_99434732507E413485CF9F6267F1C66C"
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_2CE360A08DAE42889F965FC46C6FC4AF"
             {
-            "SourcePath" = "8:..\\IISE Windows\\obj\\Release\\II Scenario Editor.exe"
+            "SourcePath" = "8:..\\II Avalonia\\obj\\Release\\net5.0\\apphost.exe"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_B802499D66F54BE88679E32C87F3937D"
@@ -820,36 +802,8 @@
             "IsolateTo" = "8:"
             "ProjectOutputGroupRegister" = "3:1"
             "OutputConfiguration" = "8:Release|Any CPU"
-            "OutputGroupCanonicalName" = "8:Built"
-            "OutputProjectGuid" = "8:{23FDB2CE-6680-4280-A1D2-1693323D3578}"
-            "ShowKeyOutput" = "11:TRUE"
-                "ExcludeFilters"
-                {
-                }
-            }
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_DFF62957960A4F5F887171630142C509"
-            {
-            "SourcePath" = "8:..\\II Windows\\obj\\Release\\Infirmary Integrated.exe"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_B802499D66F54BE88679E32C87F3937D"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:FALSE"
-            "IsolateTo" = "8:"
-            "ProjectOutputGroupRegister" = "3:1"
-            "OutputConfiguration" = "8:Release|Any CPU"
-            "OutputGroupCanonicalName" = "8:Built"
-            "OutputProjectGuid" = "8:{F66C5A84-D2A2-48FD-9E4A-984AEB4730AF}"
+            "OutputGroupCanonicalName" = "8:PublishItems"
+            "OutputProjectGuid" = "8:{604BA4AE-4E02-4445-993C-1D3AED0EE610}"
             "ShowKeyOutput" = "11:TRUE"
                 "ExcludeFilters"
                 {
