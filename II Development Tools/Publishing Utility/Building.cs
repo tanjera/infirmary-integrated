@@ -4,42 +4,9 @@ using System.IO;
 
 namespace Publishing {
 
-    internal class Program {
-        // Parameters to be set for runtime environment
+    public class Building {
 
-        private const string pathDotnet = @"C:\Program Files\dotnet\dotnet.exe";
-        private const string pathTar = @"C:\Windows\System32\tar.exe";
-        private const string dirSolution = @"Y:\Infirmary Integrated, Avalonia";
-
-        private static void Main (string [] args) {
-            // Get base directory for solution and project
-
-            string dirRelease = Path.Combine (dirSolution, "Releasing");
-            string dirProject = Path.Combine (dirSolution, "II Avalonia");
-            string pathProject = Path.Combine (dirProject, "II Avalonia.csproj");
-            string dirBin = Path.Combine (dirProject, "bin");
-            string dirObj = Path.Combine (dirProject, "obj");
-
-            string [] listReleases = {
-                "win-x64",
-                "linux-x64",
-                "osx-x64"
-                };
-
-            Clean (dirProject, dirBin, dirObj);
-            Build (dirProject, listReleases);
-
-            foreach (string release in listReleases) {
-                Publish (dirProject, release);
-                Pack (dirBin, dirRelease, release);
-            }
-
-            MoveInstaller_Windows (dirSolution, dirRelease);
-
-            Console.WriteLine (Environment.NewLine);
-        }
-
-        private static void Clean (string dirProject, string dirBin, string dirObj) {
+        public static void Clean (string dirProject, string dirBin, string dirObj) {
             Process proc = new Process ();
             string arguments = "";
 
@@ -64,7 +31,7 @@ namespace Publishing {
             Console.WriteLine (Environment.NewLine);
             Console.ResetColor ();
 
-            proc.StartInfo.FileName = pathDotnet;
+            proc.StartInfo.FileName = Program.pathDotnet;
             proc.StartInfo.Arguments = arguments;
             proc.StartInfo.UseShellExecute = false;
             proc.StartInfo.WorkingDirectory = dirProject;
@@ -72,7 +39,7 @@ namespace Publishing {
             proc.WaitForExit ();
         }
 
-        private static void Build (string dirProject, string [] listReleases) {
+        public static void Build (string dirProject, string [] listReleases) {
             Process proc = new Process ();
             string arguments = "";
 
@@ -84,7 +51,7 @@ namespace Publishing {
             Console.WriteLine (Environment.NewLine);
             Console.ResetColor ();
 
-            proc.StartInfo.FileName = pathDotnet;
+            proc.StartInfo.FileName = Program.pathDotnet;
             proc.StartInfo.Arguments = arguments;
             proc.StartInfo.UseShellExecute = false;
             proc.StartInfo.WorkingDirectory = dirProject;
@@ -92,7 +59,7 @@ namespace Publishing {
             proc.WaitForExit ();
         }
 
-        private static void Publish (string dirProject, string release) {
+        public static void Publish (string dirProject, string release) {
             Process proc = new Process ();
             string arguments = "";
 
@@ -104,7 +71,7 @@ namespace Publishing {
             Console.WriteLine (Environment.NewLine);
             Console.ResetColor ();
 
-            proc.StartInfo.FileName = pathDotnet;
+            proc.StartInfo.FileName = Program.pathDotnet;
             proc.StartInfo.Arguments = arguments;
             proc.StartInfo.UseShellExecute = false;
             proc.StartInfo.WorkingDirectory = dirProject;
@@ -112,7 +79,7 @@ namespace Publishing {
             proc.WaitForExit ();
         }
 
-        private static void Pack (string dirBin, string dirRelease, string release) {
+        public static void Pack (string dirBin, string dirRelease, string release, string verNumber) {
             Process proc = new Process ();
             string arguments = "";
 
@@ -130,14 +97,14 @@ namespace Publishing {
             Console.ForegroundColor = ConsoleColor.Yellow;
 
             if (Directory.Exists (Path.Combine (dirII))) {
-                Console.WriteLine ($"Packing build: {release}");
-                string tarName = $"_{release}.zip";
+                Console.WriteLine ($"Packing build: {release}-{verNumber}");
+                string tarName = $"_{release}-{verNumber}.zip";
                 arguments = $"-c -f {tarName} \"Infirmary Integrated\"";
 
                 Console.WriteLine ($"- Executing tar {arguments}");
                 Console.WriteLine (Environment.NewLine);
 
-                proc.StartInfo.FileName = pathTar;
+                proc.StartInfo.FileName = Program.pathTar;
                 proc.StartInfo.Arguments = arguments;
                 proc.StartInfo.UseShellExecute = false;
                 proc.StartInfo.WorkingDirectory = dirBuild;
@@ -157,17 +124,9 @@ namespace Publishing {
                 Console.WriteLine ($"Error: Unable to locate {dirII}");
             }
 
+            Directory.Move (dirII, dirPublish);
+
             Console.ResetColor ();
-        }
-
-        private static void MoveInstaller_Windows (string dirSolution, string dirRelease) {
-            string insName = "infirmary-integrated-.msi";
-            string insFile = Path.Combine (dirSolution, @$"Installer, Windows\Release\{insName}");
-            string insTarget = Path.Combine (dirRelease, insName);
-
-            if (File.Exists (insFile)) {
-                File.Move (insFile, insTarget, true);
-            }
         }
     }
 }

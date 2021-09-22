@@ -1,1 +1,0 @@
-Windows: signtool sign /f sigfile.pfx /p password filename

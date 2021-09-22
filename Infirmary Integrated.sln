@@ -18,7 +18,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IISE Windows", "IISE Window
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Unit Testing", "Unit Testing\Unit Testing.csproj", "{62368E1B-8ED2-4118-A5FC-C894C4994989}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Installer, Windows", "Installer, Windows\Installer, Windows.vdproj", "{69DDA1E8-B837-47A3-AB0E-8D496166F208}"
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "Package, Windows", "Package, Windows\Package, Windows.vdproj", "{69DDA1E8-B837-47A3-AB0E-8D496166F208}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
