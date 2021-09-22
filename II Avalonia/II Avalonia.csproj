@@ -16,13 +16,12 @@
     <PackageIconUrl />
     <RepositoryUrl>https://github.com/tanjera/infirmary-integrated</RepositoryUrl>
     <Description>Medical device simulator for training healthcare professionals.</Description>
-    <ApplicationIcon>Icon_II.ico</ApplicationIcon>
+    <ApplicationIcon>Icon_II.ico</ApplicationIcon>  
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.7" />
     <PackageReference Include="Avalonia.Desktop" Version="0.10.7" />
     <PackageReference Include="Avalonia.Diagnostics" Version="0.10.7" />
-    <PackageReference Include="Dotnet.Bundle" Version="0.9.13" />
     <PackageReference Include="MessageBox.Avalonia" Version="1.5.1" />
   </ItemGroup>
   <ItemGroup>
@@ -54,6 +53,11 @@
     <None Include="..\License.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Icon_II.icns">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>

@@ -22,7 +22,10 @@ namespace Publishing {
             string dirBin = Path.Combine (dirProject, "bin");
             string dirObj = Path.Combine (dirProject, "obj");
 
-            string [] listReleases = { "win-x64", "linux-x64", "osx-x64" };
+            string [] listReleases = {
+                "win-x64",
+                "linux-x64",
+                "osx-x64" };
 
             Directory.CreateDirectory (dirRelease);
 
@@ -39,7 +42,7 @@ namespace Publishing {
 
             if (Console.ReadLine ().Trim ().ToLower () == "y") {
                 Building.Clean (dirProject, dirBin, dirObj);
-                Building.Build (dirProject, listReleases);
+                Building.Build (dirProject);
 
                 foreach (string release in listReleases) {
                     Building.Publish (dirProject, release);

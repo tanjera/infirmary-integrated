@@ -39,7 +39,7 @@ namespace Publishing {
             proc.WaitForExit ();
         }
 
-        public static void Build (string dirProject, string [] listReleases) {
+        public static void Build (string dirProject) {
             Process proc = new Process ();
             string arguments = "";
 
@@ -66,6 +66,10 @@ namespace Publishing {
             // "dotnet publish -c Release -r ..."
 
             arguments = $"publish -c Release -r {release}";
+
+            if (release.StartsWith ("osx"))
+                arguments += " -p:UseAppHost=true";
+
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine ($"- Executing dotnet {arguments}");
             Console.WriteLine (Environment.NewLine);
