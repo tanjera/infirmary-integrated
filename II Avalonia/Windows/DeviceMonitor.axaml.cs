@@ -99,11 +99,7 @@ namespace II_Avalonia {
             this.FindControl<MenuItem> ("menuPauseDevice").Header = App.Language.Localize ("MENU:MenuPauseDevice");
             this.FindControl<MenuItem> ("menuAddNumeric").Header = App.Language.Localize ("MENU:MenuAddNumeric");
             this.FindControl<MenuItem> ("menuAddTracing").Header = App.Language.Localize ("MENU:MenuAddTracing");
-            //this.FindControl<MenuItem> ("menuToggleFullscreen").Header = App.Language.Localize ("MENU:MenuToggleFullscreen");
-            //this.FindControl<MenuItem> ("menuSaveScreen").Header = App.Language.Localize ("MENU:MenuSaveScreen");
-            //this.FindControl<MenuItem> ("menuPrintScreen").Header = App.Language.Localize ("MENU:MenuPrintScreen");
             this.FindControl<MenuItem> ("menuCloseDevice").Header = App.Language.Localize ("MENU:MenuCloseDevice");
-            //this.FindControl<MenuItem> ("menuExitProgram").Header = App.Language.Localize ("MENU:MenuExitProgram");
         }
 
         public void Load_Process (string inc) {

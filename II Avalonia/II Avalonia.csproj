@@ -28,6 +28,12 @@
     <Compile Update="Controls\ECGTracing.axaml.cs">
       <DependentUpon>ECGTracing.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Controls\DefibNumeric.axaml.cs">
+      <DependentUpon>DefibNumeric.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\DefibTracing.axaml.cs">
+      <DependentUpon>DefibTracing.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>

@@ -30,7 +30,6 @@ namespace II_Avalonia.Controls {
 
         /* Drawing variables, offsets and multipliers */
         private DeviceECG.ColorSchemes colorScheme;
-        private bool showGrid = false;
 
         private Pen tracingPen = new Pen ();
         private IBrush tracingBrush = Brushes.Green;
@@ -101,12 +100,13 @@ namespace II_Avalonia.Controls {
             imgTracing.Source = Tracing;
         }
 
-        public void SetColors (DeviceECG.ColorSchemes scheme, bool grid) {
+        public void SetColors (DeviceECG.ColorSchemes scheme) {
             colorScheme = scheme;
-            showGrid = grid;
 
             switch (scheme) {
                 default:
+
+                case DeviceECG.ColorSchemes.Grid:
                 case DeviceECG.ColorSchemes.Light:
                     tracingBrush = Brushes.Black;
                     referenceBrush = Brushes.DarkGray;

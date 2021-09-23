@@ -19,7 +19,7 @@ using II.Rhythm;
 
 namespace II_Avalonia.Controls {
 
-    public partial class MonitorTracing : UserControl {
+    public partial class DefibTracing : UserControl {
         /* Properties for applying DPI scaling options */
         public double UIScale { get { return App.Settings.UIScale; } }
         public int FontScale { get { return (int)(14 * App.Settings.UIScale); } }
@@ -39,11 +39,11 @@ namespace II_Avalonia.Controls {
         private MenuItem menuZeroTransducer;
         private MenuItem menuToggleAutoScale;
 
-        public MonitorTracing () {
+        public DefibTracing () {
             InitializeComponent ();
         }
 
-        public MonitorTracing (Strip strip) {
+        public DefibTracing (Strip strip) {
             InitializeComponent ();
             DataContext = this;
 
@@ -127,9 +127,8 @@ namespace II_Avalonia.Controls {
             foreach (Lead.Values v in Enum.GetValues (typeof (Lead.Values))) {
                 // Only include certain leads- e.g. bedside monitors don't interface with IABP or EFM
                 string el = v.ToString ();
-                if (!el.StartsWith ("ECG") && el != "SPO2" && el != "RR" && el != "ETCO2"
-                    && el != "CVP" && el != "ABP" && el != "PA"
-                    && el != "ICP" && el != "IAP")
+                if (!el.StartsWith ("ECG") && el != "SPO2" && el != "CVP" && el != "ABP"
+                    && el != "PA" && el != "RR" && el != "ETCO2")
                     continue;
 
                 MenuItem mi = new MenuItem ();
@@ -156,18 +155,6 @@ namespace II_Avalonia.Controls {
                     tracingBrush = Brushes.Green;
                     break;
 
-                case Lead.Values.SPO2:
-                    tracingBrush = Brushes.Orange;
-                    break;
-
-                case Lead.Values.RR:
-                    tracingBrush = Brushes.Salmon;
-                    break;
-
-                case Lead.Values.ETCO2:
-                    tracingBrush = Brushes.Aqua;
-                    break;
-
                 case Lead.Values.ABP:
                     tracingBrush = Brushes.Red;
                     break;
@@ -180,16 +167,20 @@ namespace II_Avalonia.Controls {
                     tracingBrush = Brushes.Yellow;
                     break;
 
-                case Lead.Values.ICP:
-                    tracingBrush = Brushes.Khaki;
-                    break;
-
-                case Lead.Values.IAP:
-                    tracingBrush = Brushes.Aquamarine;
-                    break;
-
                 case Lead.Values.IABP:
                     tracingBrush = Brushes.SkyBlue;
+                    break;
+
+                case Lead.Values.RR:
+                    tracingBrush = Brushes.Salmon;
+                    break;
+
+                case Lead.Values.ETCO2:
+                    tracingBrush = Brushes.Aqua;
+                    break;
+
+                case Lead.Values.SPO2:
+                    tracingBrush = Brushes.Orange;
                     break;
             }
 
@@ -277,10 +268,10 @@ namespace II_Avalonia.Controls {
         }
 
         private void MenuAddTracing_Click (object? sender, RoutedEventArgs e)
-            => App.Device_Monitor.AddTracing ();
+            => App.Device_Defib.AddTracing ();
 
         private void MenuRemoveTracing_Click (object? sender, RoutedEventArgs e)
-            => App.Device_Monitor.RemoveTracing (this);
+            => App.Device_Defib.RemoveTracing (this);
 
         private void MenuIncreaseAmplitude_Click (object? sender, RoutedEventArgs e) {
             Strip.IncreaseAmplitude ();

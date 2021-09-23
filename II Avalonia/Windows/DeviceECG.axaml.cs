@@ -18,16 +18,20 @@ using II.Waveform;
 namespace II_Avalonia {
 
     public partial class DeviceECG : Window {
+        /* Properties for applying DPI scaling options */
+        public double UIScale { get { return App.Settings.UIScale; } }
+        public int FontScale { get { return (int)(14 * App.Settings.UIScale); } }
+
         private bool isPaused = false;
 
         private List<Controls.ECGTracing> listTracings = new List<Controls.ECGTracing> ();
 
         private Timer timerTracing = new Timer ();
-        private bool showGrid = false;
-        private ColorSchemes colorScheme = ColorSchemes.Light;
+        private ColorSchemes colorScheme = ColorSchemes.Dark;
         private ImageBrush gridBackground;
 
         public enum ColorSchemes {
+            Grid,
             Dark,
             Light
         }
@@ -127,12 +131,15 @@ namespace II_Avalonia {
 
         private void UpdateInterface () {
             for (int i = 0; i < listTracings.Count; i++)
-                listTracings [i].SetColors (colorScheme, showGrid);
+                listTracings [i].SetColors (colorScheme);
 
             Window wdwDeviceECG = this.FindControl<Window> ("wdwDeviceECG");
 
             switch (colorScheme) {
-                default: break;
+                default:
+                case ColorSchemes.Grid:
+                    wdwDeviceECG.Background = gridBackground;
+                    break;
 
                 case ColorSchemes.Light:
                     wdwDeviceECG.Background = Brushes.White;
@@ -142,9 +149,6 @@ namespace II_Avalonia {
                     wdwDeviceECG.Background = Brushes.Black;
                     break;
             }
-
-            if (showGrid)
-                wdwDeviceECG.Background = gridBackground;
         }
 
         public void Load_Process (string inc) {
@@ -160,7 +164,6 @@ namespace II_Avalonia {
                             default: break;
                             case "isPaused": isPaused = bool.Parse (pValue); break;
                             case "colorScheme": colorScheme = (ColorSchemes)Enum.Parse (typeof (ColorSchemes), pValue); break;
-                            case "showGrid": showGrid = bool.Parse (pValue); break;
                         }
                     }
                 }
@@ -175,22 +178,12 @@ namespace II_Avalonia {
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", isPaused));
             sWrite.AppendLine (String.Format ("{0}:{1}", "colorScheme", colorScheme));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "showGrid", showGrid));
 
             return sWrite.ToString ();
         }
 
         private void SetColorScheme (ColorSchemes scheme) {
             colorScheme = scheme;
-
-            UpdateInterface ();
-        }
-
-        private void ToggleGrid () {
-            showGrid = !showGrid;
-
-            if (showGrid)
-                colorScheme = ColorSchemes.Light;
 
             UpdateInterface ();
         }
@@ -209,7 +202,7 @@ namespace II_Avalonia {
             => TogglePause ();
 
         private void MenuShowGrid_Click (object sender, RoutedEventArgs e)
-            => ToggleGrid ();
+            => SetColorScheme (ColorSchemes.Grid);
 
         private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
             => SetColorScheme (ColorSchemes.Light);
