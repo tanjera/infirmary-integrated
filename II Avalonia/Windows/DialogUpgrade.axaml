@@ -1,0 +1,137 @@
+<Window
+	x:Class="II_Avalonia.DialogUpgrade"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	Name="dlgUpgrade"
+	Title="DialogUpgrade"
+	Width="600"
+	Height="200"
+	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
+	WindowStartupLocation="CenterScreen"
+	mc:Ignorable="d">
+
+  <Window.Styles>
+    <Style Selector="Border.grp">
+      <Setter Property="BorderBrush" Value="Black" />
+      <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
+    </Style>
+
+    <Style Selector="Image.btn">
+      <Setter Property="Width" Value="48" />
+      <Setter Property="Height" Value="48" />
+      <Setter Property="Margin" Value="5,2" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="Label.btn">
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+  </Window.Styles>
+  <LayoutTransformControl Name="layoutControl">
+    <LayoutTransformControl.LayoutTransform>
+      <ScaleTransform ScaleX="{Binding Path=UIScale}" ScaleY="{Binding Path=UIScale}" />
+    </LayoutTransformControl.LayoutTransform>
+
+    <Grid Margin="15,10" HorizontalAlignment="Center">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <Label
+				Name="lblUpdateAvailable"
+				Grid.Row="0"
+				Grid.Column="0"
+				Grid.ColumnSpan="2"
+				Margin="5"
+				Padding="5,2"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center" />
+
+      <Button
+				Name="btnWebsite"
+				Grid.Row="1"
+				Grid.Column="0"
+				Grid.ColumnSpan="2"
+				Margin="5"
+				Padding="5,2"
+				HorizontalAlignment="Stretch"
+				HorizontalContentAlignment="Center"
+				Background="White"
+				Click="btnWebsite_Click">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Image
+						Grid.Column="0"
+						Classes="btn"
+						Source="avares://Infirmary Integrated/Third_Party/Icon_UpgradeWebsite_48.png" />
+          <Label
+						Name="lblWebsite"
+						Grid.Column="1"
+						Classes="btn" />
+        </Grid>
+      </Button>
+
+      <Button
+				Name="btnDelay"
+				Grid.Row="2"
+				Grid.Column="0"
+				Margin="5"
+				Padding="5,2"
+				HorizontalAlignment="Stretch"
+				Background="White"
+				Click="btnDelay_Click">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Image
+						Grid.Column="0"
+						Classes="btn"
+						Source="avares://Infirmary Integrated/Third_Party/Icon_UpgradeLater_48.png" />
+          <Label
+						Name="lblDelay"
+						Grid.Column="1"
+						Classes="btn" />
+        </Grid>
+      </Button>
+
+      <Button
+				Name="btnMute"
+				Grid.Row="2"
+				Grid.Column="1"
+				Margin="5"
+				Padding="5,2"
+				HorizontalAlignment="Stretch"
+				Background="White"
+				Click="btnMute_Click">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Image
+						Grid.Column="0"
+						Classes="btn"
+						Source="avares://Infirmary Integrated/Third_Party/Icon_UpgradeMute_48.png" />
+          <Label
+						Name="lblMute"
+						Grid.Column="1"
+						Classes="btn" />
+        </Grid>
+      </Button>
+    </Grid>
+  </LayoutTransformControl>
+</Window>

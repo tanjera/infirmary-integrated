@@ -1,0 +1,104 @@
+<Window
+	x:Class="II_Avalonia.DialogInitial"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	Name="dlgLanguage"
+	Title="Select Language and Agree to Terms"
+	Width="500"
+	Height="200"
+	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
+	WindowStartupLocation="CenterScreen"
+	mc:Ignorable="d">
+
+  <Window.Styles>
+    <Style Selector="Border.grp">
+      <Setter Property="BorderBrush" Value="Black" />
+      <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
+    </Style>
+
+    <Style Selector="Label.url">
+      <Setter Property="Foreground" Value="Blue" />
+      <Setter Property="BorderBrush" Value="Blue" />
+      <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
+    </Style>
+  </Window.Styles>
+  <LayoutTransformControl Name="layoutControl">
+    <LayoutTransformControl.LayoutTransform>
+      <ScaleTransform ScaleX="{Binding Path=UIScale}" ScaleY="{Binding Path=UIScale}" />
+    </LayoutTransformControl.LayoutTransform>
+    <Grid Margin="15,10" HorizontalAlignment="Center">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="10" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <Label
+				Name="lblChooseLanguage"
+				Grid.Row="0"
+				Grid.Column="0"
+				Margin="5"
+				Padding="5,2"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center" />
+
+      <ComboBox
+				Name="cmbLanguages"
+				Grid.Row="1"
+				Grid.Column="0"
+				Margin="5"
+				Padding="5,2,5,5"
+				HorizontalAlignment="Stretch" />
+
+      <Border
+				Grid.Row="2"
+				Grid.Column="0"
+				Classes="grp" />
+
+      <Label
+				Name="lblAgreeTerms"
+				Grid.Row="3"
+				Grid.Column="0"
+				Padding="5,5,5,2"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center">
+
+        <TextBlock Name="txtAgreeTerms" TextWrapping="Wrap" />
+      </Label>
+
+      <Label
+				Name="lblTermsUri"
+				Grid.Row="4"
+				Grid.Column="0"
+				Padding="5,2"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center"
+				Classes="url"
+				Tapped="Hyperlink_Terms">
+        http://www.infirmary-integrated.com/license-and-data-collection/
+      </Label>
+
+      <Button
+				Name="btnContinue"
+				Grid.Row="5"
+				Grid.Column="0"
+				Margin="5"
+				Padding="5,2"
+				HorizontalAlignment="Stretch"
+				HorizontalContentAlignment="Center"
+				Background="White"
+				BorderBrush="Black"
+				BorderThickness="1"
+				Click="OnClick_Continue" />
+    </Grid>
+  </LayoutTransformControl>
+</Window>

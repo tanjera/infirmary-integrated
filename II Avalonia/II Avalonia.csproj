@@ -1,0 +1,67 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <StartupObject>II_Avalonia.Program</StartupObject>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyName>Infirmary Integrated</AssemblyName>
+    <Copyright>© 2017-2021, Ibi Keller</Copyright>
+    <Authors>Ibi Keller</Authors>
+    <Version>1.9.8.1</Version>
+    <Company>Infirmary Integrated</Company>
+    <PackageLicenseFile>License.md</PackageLicenseFile>
+    <PackageProjectUrl>https://www.infirmary-integrated.com/</PackageProjectUrl>
+    <PackageIcon>Icon_Infirmary_64.png</PackageIcon>
+    <PackageIconUrl />
+    <RepositoryUrl>https://github.com/tanjera/infirmary-integrated</RepositoryUrl>
+    <Description>Medical device simulator for training healthcare professionals.</Description>
+    <ApplicationIcon>Icon_II.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="0.10.7" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.7" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.7" />
+    <PackageReference Include="MessageBox.Avalonia" Version="1.5.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="Controls\ECGTracing.axaml.cs">
+      <DependentUpon>ECGTracing.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\DefibNumeric.axaml.cs">
+      <DependentUpon>DefibNumeric.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\DefibTracing.axaml.cs">
+      <DependentUpon>DefibTracing.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\DialogInitial.axaml.cs">
+      <DependentUpon>DialogInitial.axaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="..\II Core\II_Core.projitems" Label="Shared" />
+  <ItemGroup>
+    <AvaloniaResource Include="Resources\**" />
+    <AvaloniaResource Include="Third_Party\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Assets\Icon_Infirmary_64.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\License.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+</Project>

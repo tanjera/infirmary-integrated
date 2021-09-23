@@ -2,6 +2,7 @@
 using System.ComponentModel;
 
 namespace II.Server {
+
     public class Mirror {
         private bool ThreadLock = false;
         public Timer timerUpdate = new Timer ();
@@ -13,6 +14,7 @@ namespace II.Server {
         private BackgroundWorker _BackgroundWorker = new BackgroundWorker ();
 
         public Statuses Status = Statuses.INACTIVE;
+
         public string PasswordAccess = "",
                         PasswordEdit = "";
 
@@ -58,7 +60,6 @@ namespace II.Server {
 
             /* Mirroring as client, check server q RefreshSeconds */
             if (DateTime.Compare (ServerQueried, DateTime.UtcNow.Subtract (new TimeSpan (0, 0, RefreshSeconds))) < 0) {
-
                 // Must use intermediary Patient(), if App.Patient is thread-locked, Waveforms stop populating!!
                 Patient pBuffer = new Patient ();
 

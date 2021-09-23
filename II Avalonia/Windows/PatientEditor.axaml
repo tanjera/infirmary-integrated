@@ -1,0 +1,1559 @@
+<Window
+	x:Class="II_Avalonia.PatientEditor"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	Name="wdwPatientEditor"
+	Title="Patient Editor"
+	Width="700"
+	Height="560"
+	d:DesignHeight="560"
+	d:DesignWidth="700"
+	Activated="Window_Activated"
+	Closed="Window_Closed"
+	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
+	LayoutUpdated="Window_LayoutUpdated"
+	mc:Ignorable="d">
+
+  <Window.Styles>
+    <Style Selector="Label">
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="HeaderedContentControl.groupbox">
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate>
+            <Grid Margin="5">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+              </Grid.RowDefinitions>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <Border
+								Margin="5,0,0,0"
+								Padding="5,0,5,0"
+								Background="White"
+								ZIndex="1">
+                <TextBlock Text="{TemplateBinding Header}" TextBlock.FontWeight="Bold" />
+              </Border>
+              <Border
+								Grid.RowSpan="2"
+								Grid.ColumnSpan="2"
+								Margin="0,10,0,0"
+								BorderBrush="{TemplateBinding Background}"
+								BorderThickness="1"
+								CornerRadius="3">
+                <ContentPresenter Content="{TemplateBinding Content}" />
+              </Border>
+            </Grid>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <Style Selector="MenuItem.item">
+      <Setter Property="FontSize" Value="{Binding Path=FontScale}" />
+    </Style>
+
+    <Style Selector="Button.scenario">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="Background" Value="White" />
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="Padding" Value="10,2" />
+    </Style>
+
+    <Style Selector="Image.scenario">
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="Width" Value="24" />
+      <Setter Property="Height" Value="24" />
+    </Style>
+
+    <Style Selector="Button.device">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="Background" Value="White" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="Padding" Value="10,2" />
+    </Style>
+
+    <Style Selector="Image.device">
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="Width" Value="48" />
+      <Setter Property="Height" Value="48" />
+    </Style>
+
+    <Style Selector="Label.device">
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="FontSize" Value="16" />
+    </Style>
+
+    <Style Selector="Border.expander">
+      <Setter Property="BorderBrush" Value="Black" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="3" />
+    </Style>
+
+    <Style Selector="Label.expander">
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="FontWeight" Value="Bold" />
+    </Style>
+
+    <Style Selector="NumericUpDown.vitals">
+      <Setter Property="MinWidth" Value="60" />
+      <Setter Property="Height" Value="20" />
+      <Setter Property="ClipValueToMinMax" Value="True" />
+    </Style>
+
+    <Style Selector="Label.divider">
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="Label.wavepart">
+      <Setter Property="HorizontalContentAlignment" Value="Right" />
+    </Style>
+
+    <Style Selector="NumericUpDown.wavepart">
+      <Setter Property="Increment" Value="0.1" />
+      <Setter Property="Maximum" Value="1.0" />
+      <Setter Property="Minimum" Value="-1.0" />
+      <Setter Property="FormatString" Value="{}{0:0.0}" />
+      <Setter Property="ShowButtonSpinner" Value="True" />
+    </Style>
+
+    <Style Selector="ComboBox.vitals">
+      <Setter Property="Margin" Value="0,1,0,4" />
+      <Setter Property="MinWidth" Value="100" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="FontSize" Value="{Binding Path=FontScale}" />
+    </Style>
+
+    <Style Selector="Button.apply">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="Background" Value="White" />
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="Padding" Value="10,2" />
+      <Setter Property="BorderBrush" Value="Black" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+
+    <Style Selector="Image.apply">
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="Width" Value="24" />
+      <Setter Property="Height" Value="24" />
+    </Style>
+
+    <Style Selector="Label.apply">
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="FontSize" Value="14" />
+    </Style>
+  </Window.Styles>
+
+  <LayoutTransformControl Name="layoutControl">
+    <LayoutTransformControl.LayoutTransform>
+      <ScaleTransform ScaleX="{Binding Path=UIScale}" ScaleY="{Binding Path=UIScale}" />
+    </LayoutTransformControl.LayoutTransform>
+
+    <DockPanel LastChildFill="True">
+      <!--  Main Menu  -->
+      <Menu DockPanel.Dock="Top">
+        <MenuItem Name="menuFile">
+          <MenuItem
+						Name="menuNew"
+						Classes="item"
+						Click="MenuNewSimulation_Click" />
+          <Separator />
+          <MenuItem
+						Name="menuLoad"
+						Classes="item"
+						Click="MenuLoadFile_Click" />
+          <MenuItem
+						Name="menuSave"
+						Classes="item"
+						Click="MenuSaveFile_Click" />
+          <Separator />
+          <MenuItem
+						Name="menuExit"
+						Classes="item"
+						Click="MenuExit_Click" />
+        </MenuItem>
+
+        <MenuItem Name="menuSettings">
+          <MenuItem
+						Name="menuSetLanguage"
+						Classes="item"
+						Click="MenuSetLanguage_Click" />
+        </MenuItem>
+
+        <MenuItem Name="menuHelp">
+          <MenuItem
+						Name="menuAbout"
+						Classes="item"
+						Click="MenuAbout_Click" />
+        </MenuItem>
+      </Menu>
+
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="350" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!--  Column for Devices (opening Cardiac Monitor, Ventilator, etc.  -->
+        <ScrollViewer
+					Grid.Row="0"
+					Grid.Column="0"
+					Height="350"
+					VerticalAlignment="Top"
+					HorizontalScrollBarVisibility="Auto"
+					VerticalScrollBarVisibility="Auto">
+
+          <HeaderedContentControl
+						Name="lblGroupDevices"
+						Background="Black"
+						Classes="groupbox"
+						Header="Header">
+            <StackPanel Margin="3">
+              <Button
+								Name="btnDeviceMonitor"
+								Classes="device"
+								Click="ButtonDeviceMonitor_Click">
+                <StackPanel Orientation="Horizontal">
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceMonitor_48.png" />
+                  <Label Name="lblDeviceMonitor" Classes="device" />
+                </StackPanel>
+              </Button>
+
+              <Button
+								Name="btnDeviceDefibrillator"
+								Classes="device"
+								Click="ButtonDeviceDefib_Click">
+                <StackPanel Orientation="Horizontal">
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceDefibrillator_48.png" />
+                  <Label Name="lblDeviceDefibrillator" Classes="device" />
+                </StackPanel>
+              </Button>
+
+              <Button
+								Name="btnDevice12LeadECG"
+								Classes="device"
+								Click="ButtonDeviceECG_Click">
+                <StackPanel Orientation="Horizontal">
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_Device12LeadECG_48.png" />
+                  <Label Name="lblDevice12LeadECG" Classes="device" />
+                </StackPanel>
+              </Button>
+
+              <Button
+								Name="btnDeviceIABP"
+								Classes="device"
+								Click="ButtonDeviceIABP_Click"
+								IsEnabled="False">
+                <StackPanel Orientation="Horizontal">
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceIABP_48.png" />
+                  <Label Name="lblDeviceIABP" Classes="device" />
+                </StackPanel>
+              </Button>
+
+              <Button
+								Name="btnDeviceEFM"
+								Classes="device"
+								Click="ButtonDeviceEFM_Click"
+								IsEnabled="False">
+                <StackPanel Orientation="Horizontal">
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceEFM_48.png" />
+                  <Label Name="lblDeviceEFM" Classes="device" />
+                </StackPanel>
+              </Button>
+
+              <!-- <Button Name="btnDeviceVentilator" /> -->
+              <!-- <Button Name="btnDeviceIVPump" /> -->
+              <!-- <Button Name="btnDeviceLabResults" /> -->
+            </StackPanel>
+          </HeaderedContentControl>
+        </ScrollViewer>
+
+        <!--  Column for Patient Editor  -->
+        <ScrollViewer
+					Grid.Row="0"
+					Grid.Column="1"
+					HorizontalScrollBarVisibility="Auto"
+					VerticalScrollBarVisibility="Auto">
+
+          <Border
+						Name="brdPendingChangesIndicator"
+						Margin="5,0"
+						BorderBrush="Transparent"
+						BorderThickness="0,0,5,0">
+
+            <StackPanel>
+              <!--  Group for Patient Mirroring  -->
+              <Border Margin="5,16,5,5" Classes="expander">
+                <Expander Name="expMirroring" IsExpanded="False">
+                  <Expander.Header>
+                    <Label Name="lblGroupMirroring" Classes="expander" />
+                  </Expander.Header>
+                  <Grid Margin="3" HorizontalAlignment="Stretch">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition />
+                      <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                    </Grid.RowDefinitions>
+
+                    <HeaderedContentControl
+											Name="lblMirrorStatus"
+											Grid.Row="0"
+											Grid.Column="0"
+											Grid.ColumnSpan="2"
+											Margin="3"
+											Background="Black"
+											Classes="groupbox">
+                      <Grid>
+                        <Grid.ColumnDefinitions>
+                          <ColumnDefinition />
+                          <ColumnDefinition />
+                          <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <RadioButton
+													Name="radioInactive"
+													Grid.Column="0"
+													Margin="5,3"
+													Checked="RadioMirrorSelected_Click"
+													GroupName="mirrorStatus"
+													IsChecked="True" />
+                        <RadioButton
+													Name="radioClient"
+													Grid.Column="1"
+													Margin="5,3"
+													Checked="RadioMirrorSelected_Click"
+													GroupName="mirrorStatus" />
+                        <RadioButton
+													Name="radioServer"
+													Grid.Column="2"
+													Margin="5,3"
+													Checked="RadioMirrorSelected_Click"
+													GroupName="mirrorStatus" />
+                      </Grid>
+                    </HeaderedContentControl>
+
+                    <Label
+											Name="lblAccessionKey"
+											Grid.Row="1"
+											Grid.Column="0" />
+                    <Label
+											Name="lblAccessPassword"
+											Grid.Row="2"
+											Grid.Column="0" />
+                    <Label
+											Name="lblAdminPassword"
+											Grid.Row="3"
+											Grid.Column="0" />
+                    <Grid Grid.Row="1" Grid.Column="1">
+                      <Grid.RowDefinitions>
+                        <RowDefinition />
+                      </Grid.RowDefinitions>
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                      </Grid.ColumnDefinitions>
+                      <TextBox
+												Name="txtAccessionKey"
+												Grid.Column="0"
+												VerticalContentAlignment="Center"
+												AcceptsReturn="False"
+												IsEnabled="False"
+												MaxLength="8"
+												TextInput="TextBoxAccessionKey_PreviewTextInput" />
+                      <Button
+												Name="btnGenerateAccessionKey"
+												Grid.Column="1"
+												Width="25"
+												Click="ButtonGenerateAccessionKey_Click"
+												Content="+"
+												IsEnabled="False" />
+                    </Grid>
+                    <TextBox
+											Name="txtAccessPassword"
+											Grid.Row="2"
+											Grid.Column="1"
+											VerticalContentAlignment="Center"
+											IsEnabled="False"
+											PasswordChar="*" />
+                    <TextBox
+											Name="txtAdminPassword"
+											Grid.Row="3"
+											Grid.Column="1"
+											VerticalContentAlignment="Center"
+											IsEnabled="False"
+											PasswordChar="*" />
+                    <Button
+											Name="btnApplyMirroring"
+											Grid.Row="4"
+											Grid.Column="0"
+											Grid.ColumnSpan="2"
+											HorizontalAlignment="Stretch"
+											Click="ButtonApplyMirroring_Click" />
+                  </Grid>
+                </Expander>
+              </Border>
+
+              <!--  Group for Scenario Player  -->
+              <Border Margin="5,16,5,5" Classes="expander">
+                <Expander
+									Name="expScenarioPlayer"
+									IsEnabled="False"
+									IsExpanded="False">
+                  <Expander.Header>
+                    <Label Name="lblGroupScenarioPlayer" Classes="expander" />
+                  </Expander.Header>
+                  <Grid Margin="3" HorizontalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition />
+                      <ColumnDefinition />
+                      <ColumnDefinition />
+                      <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <Button
+											Name="btnPreviousStep"
+											Grid.Row="0"
+											Grid.Column="0"
+											Classes="scenario"
+											Click="ButtonPreviousStep_Click">
+                      <Image Classes="scenario" Source="avares://Infirmary Integrated/Third_Party/Icon_PlayerArrowBack_48.png" />
+                    </Button>
+                    <Button
+											Name="btnPauseStep"
+											Grid.Row="0"
+											Grid.Column="1"
+											Classes="scenario"
+											Click="ButtonPauseStep_Click"
+											IsEnabled="False">
+                      <Image Classes="scenario" Source="avares://Infirmary Integrated/Third_Party/Icon_PlayerPause_48.png" />
+                    </Button>
+                    <Button
+											Name="btnPlayStep"
+											Grid.Row="0"
+											Grid.Column="2"
+											Classes="scenario"
+											Click="ButtonPlayStep_Click"
+											IsEnabled="False">
+                      <Image Classes="scenario" Source="avares://Infirmary Integrated/Third_Party/Icon_PlayerArrowPlay_48.png" />
+                    </Button>
+                    <Button
+											Name="btnNextStep"
+											Grid.Row="0"
+											Grid.Column="3"
+											Classes="scenario"
+											Click="ButtonNextStep_Click">
+                      <Image Classes="scenario" Source="avares://Infirmary Integrated/Third_Party/Icon_PlayerArrowNext_48.png" />
+                    </Button>
+
+                    <Label
+											Name="lblScenarioStep"
+											Grid.Row="1"
+											Grid.Column="0"
+											Grid.ColumnSpan="4"
+											HorizontalAlignment="Center" />
+
+                    <Label
+											Name="lblTimerStep"
+											Grid.Row="2"
+											Grid.Column="0"
+											Grid.ColumnSpan="4"
+											HorizontalAlignment="Center" />
+
+                    <HeaderedContentControl
+											Name="lblProgressionOptions"
+											Grid.Row="3"
+											Grid.Column="0"
+											Grid.ColumnSpan="4"
+											Margin="5,2"
+											Background="Black"
+											Classes="groupbox">
+
+                      <StackPanel Name="stackProgressions" Orientation="Vertical" />
+                    </HeaderedContentControl>
+                  </Grid>
+                </Expander>
+              </Border>
+
+              <!--  Group for Basic Vital Signs  -->
+              <Border Margin="5,16,5,5" Classes="expander">
+                <Expander
+									Name="expVitalSigns"
+									IsEnabled="True"
+									IsExpanded="True">
+                  <Expander.Header>
+                    <Label Name="lblGroupVitalSigns" Classes="expander" />
+                  </Expander.Header>
+                  <Grid Margin="3" HorizontalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition />
+                      <ColumnDefinition />
+                      <ColumnDefinition Width="30" />
+                      <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Label
+											Name="lblHR"
+											Grid.Row="0"
+											Grid.Column="0" />
+                    <NumericUpDown
+											Name="numHR"
+											Grid.Row="0"
+											Grid.Column="1"
+											Classes="vitals"
+											FormatString="{}{0:#0}"
+											Increment="5"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="500"
+											Minimum="0"
+											ValueChanged="OnUIPatientParameter_Changed" />
+                    <Label
+											Name="lblNIBP"
+											Grid.Row="1"
+											Grid.Column="0" />
+                    <NumericUpDown
+											Name="numNSBP"
+											Grid.Row="1"
+											Grid.Column="1"
+											Classes="vitals"
+											FormatString="{}{0:#0}"
+											Increment="5"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="300"
+											Minimum="0"
+											ValueChanged="OnUIPatientParameter_Changed" />
+                    <Label
+											Name="lblNDBP"
+											Grid.Row="1"
+											Grid.Column="2"
+											Classes="divider"
+											Content="/" />
+                    <NumericUpDown
+											Name="numNDBP"
+											Grid.Row="1"
+											Grid.Column="3"
+											Classes="vitals"
+											FormatString="{}{0:#0}"
+											Increment="5"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="200"
+											Minimum="0"
+											ValueChanged="OnUIPatientParameter_Changed" />
+                    <Label
+											Name="lblRR"
+											Grid.Row="2"
+											Grid.Column="0" />
+                    <NumericUpDown
+											Name="numRR"
+											Grid.Row="2"
+											Grid.Column="1"
+											Classes="vitals"
+											FormatString="{}{0:#0}"
+											Increment="2"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="100"
+											Minimum="0"
+											ValueChanged="OnUIPatientParameter_Changed" />
+                    <Label
+											Name="lblSPO2"
+											Grid.Row="3"
+											Grid.Column="0" />
+                    <NumericUpDown
+											Name="numSPO2"
+											Grid.Row="3"
+											Grid.Column="1"
+											Classes="vitals"
+											FormatString="{}{0:#0}"
+											Increment="2"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="100"
+											Minimum="0"
+											ValueChanged="OnUIPatientParameter_Changed" />
+                    <Label
+											Name="lblT"
+											Grid.Row="4"
+											Grid.Column="0" />
+                    <NumericUpDown
+											Name="numT"
+											Grid.Row="4"
+											Grid.Column="1"
+											Classes="vitals"
+											FormatString="{}{0:#0.0}"
+											Increment="0.2"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="100"
+											Minimum="0"
+											ValueChanged="OnUIPatientParameter_Changed" />
+
+                    <!--  Cardiac Rhythms  -->
+                    <Label
+											Name="lblCardiacRhythm"
+											Grid.Row="5"
+											Grid.Column="0" />
+                    <ComboBox
+											Name="comboCardiacRhythm"
+											Grid.Row="6"
+											Grid.Column="0"
+											Grid.ColumnSpan="4"
+											Classes="vitals"
+											SelectionChanged="OnCardiacRhythm_Selected" />
+
+                    <!--  Respiratory Rhythms  -->
+                    <Label
+											Name="lblRespiratoryRhythm"
+											Grid.Row="7"
+											Grid.Column="0"
+											Grid.ColumnSpan="4" />
+                    <ComboBox
+											Name="comboRespiratoryRhythm"
+											Grid.Row="8"
+											Grid.Column="0"
+											Grid.ColumnSpan="4"
+											Classes="vitals"
+											SelectionChanged="OnRespiratoryRhythm_Selected" />
+
+                    <CheckBox
+											Name="checkDefaultVitals"
+											Grid.Row="9"
+											Grid.Column="0"
+											Grid.ColumnSpan="4"
+											IsChecked="True" />
+                  </Grid>
+                </Expander>
+              </Border>
+
+              <!--  Group for Advanced Hemodynamics  -->
+              <Border Margin="5,16,5,5" Classes="expander">
+                <Expander
+									Name="expHemodynamics"
+									IsEnabled="True"
+									IsExpanded="False">
+                  <Expander.Header>
+                    <Label Name="lblGroupHemodynamics" Classes="expander" />
+                  </Expander.Header>
+                  <Grid Margin="3" HorizontalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition />
+                      <ColumnDefinition />
+                      <ColumnDefinition Width="30" />
+                      <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <Label
+											Name="lblETCO2"
+											Grid.Row="0"
+											Grid.Column="0" />
+                    <NumericUpDown
+											Name="numETCO2"
+											Grid.Row="0"
+											Grid.Column="1"
+											Classes="vitals"
+											FormatString="{}{0:#0}"
+											Increment="2"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="100"
+											Minimum="0"
+											ValueChanged="OnUIPatientParameter_Changed" />
+                    <Label
+											Name="lblCVP"
+											Grid.Row="1"
+											Grid.Column="0" />
+                    <NumericUpDown
+											Name="numCVP"
+											Grid.Row="1"
+											Grid.Column="1"
+											Classes="vitals"
+											FormatString="{}{0:#0}"
+											Increment="1"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="100"
+											Minimum="-100"
+											ValueChanged="OnUIPatientParameter_Changed" />
+                    <Label
+											Name="lblASBP"
+											Grid.Row="2"
+											Grid.Column="0" />
+                    <NumericUpDown
+											Name="numASBP"
+											Grid.Row="2"
+											Grid.Column="1"
+											Classes="vitals"
+											FormatString="{}{0:#0}"
+											Increment="5"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="300"
+											Minimum="0"
+											ValueChanged="OnUIPatientParameter_Changed" />
+                    <Label
+											Name="lblADBP"
+											Grid.Row="2"
+											Grid.Column="2"
+											Classes="divider"
+											Content="/" />
+                    <NumericUpDown
+											Name="numADBP"
+											Grid.Row="2"
+											Grid.Column="3"
+											Classes="vitals"
+											FormatString="{}{0:#0}"
+											Increment="5"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="200"
+											Minimum="0"
+											ValueChanged="OnUIPatientParameter_Changed" />
+
+                    <Label
+											Name="lblCO"
+											Grid.Row="3"
+											Grid.Column="0" />
+                    <NumericUpDown
+											Name="numCO"
+											Grid.Row="3"
+											Grid.Column="1"
+											Classes="vitals"
+											FormatString="{}{0:#0.0}"
+											Increment="0.1 "
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="20"
+											Minimum="0"
+											ValueChanged="OnUIPatientParameter_Changed" />
+
+                    <!--  Pulmonary Artery Catheter Rhythms  -->
+                    <Label
+											Name="lblPACatheterPlacement"
+											Grid.Row="4"
+											Grid.Column="0"
+											Grid.ColumnSpan="4" />
+                    <ComboBox
+											Name="comboPACatheterPlacement"
+											Grid.Row="5"
+											Grid.Column="0"
+											Grid.ColumnSpan="4"
+											Classes="vitals"
+											SelectionChanged="OnPulmonaryArteryRhythm_Selected" />
+
+                    <Label
+											Name="lblPSP"
+											Grid.Row="6"
+											Grid.Column="0" />
+                    <NumericUpDown
+											Name="numPSP"
+											Grid.Row="6"
+											Grid.Column="1"
+											Classes="vitals"
+											FormatString="{}{0:#0}"
+											Increment="2"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="200"
+											Minimum="0"
+											ValueChanged="OnUIPatientParameter_Changed" />
+                    <Label
+											Name="lblPDP"
+											Grid.Row="6"
+											Grid.Column="2"
+											Classes="divider"
+											Content="/" />
+                    <NumericUpDown
+											Name="numPDP"
+											Grid.Row="6"
+											Grid.Column="3"
+											Classes="vitals"
+											FormatString="{}{0:#0}"
+											Increment="2"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="200"
+											Minimum="0"
+											ValueChanged="OnUIPatientParameter_Changed" />
+                    <Label
+											Name="lblICP"
+											Grid.Row="7"
+											Grid.Column="0" />
+                    <NumericUpDown
+											Name="numICP"
+											Grid.Row="7"
+											Grid.Column="1"
+											Classes="vitals"
+											FormatString="{}{0:#0}"
+											Increment="1"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="50"
+											Minimum="-50"
+											ValueChanged="OnUIPatientParameter_Changed" />
+                    <Label
+											Name="lblIAP"
+											Grid.Row="8"
+											Grid.Column="0" />
+                    <NumericUpDown
+											Name="numIAP"
+											Grid.Row="8"
+											Grid.Column="1"
+											Classes="vitals"
+											FormatString="{}{0:#0}"
+											Increment="1"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="50"
+											Minimum="-50"
+											ValueChanged="OnUIPatientParameter_Changed" />
+                  </Grid>
+                </Expander>
+              </Border>
+
+              <!--  Group for Respiratory Profile  -->
+              <Border Margin="5,16,5,5" Classes="expander">
+                <Expander
+									Name="expRespiratoryProfile"
+									IsEnabled="True"
+									IsExpanded="False">
+                  <Expander.Header>
+                    <Label Name="lblGroupRespiratoryProfile" Classes="expander" />
+                  </Expander.Header>
+                  <Grid Margin="3">
+                    <Grid.RowDefinitions>
+                      <RowDefinition />
+                      <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition />
+                      <ColumnDefinition />
+                      <ColumnDefinition Width="30" />
+                      <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Label Name="lblMechanicallyVentilated" Grid.Column="0" />
+                    <CheckBox
+											Name="chkMechanicallyVentilated"
+											Grid.Column="1"
+											VerticalAlignment="Center"
+											Checked="OnUIPatientParameter_Changed"
+											IsChecked="False"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Unchecked="OnUIPatientParameter_Changed" />
+
+                    <!--  I:E Ratio  -->
+                    <Label
+											Name="lblInspiratoryRatio"
+											Grid.Row="1"
+											Grid.Column="0" />
+                    <NumericUpDown
+											Name="numInspiratoryRatio"
+											Grid.Row="1"
+											Grid.Column="1"
+											Classes="vitals"
+											FormatString="{}{0:#0.0}"
+											Increment="0.1"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="10"
+											Minimum="0.1"
+											ValueChanged="OnUIPatientParameter_Changed" />
+                    <Label
+											Name="lblExpiratoryRatio"
+											Grid.Row="1"
+											Grid.Column="2"
+											Content=":" />
+                    <NumericUpDown
+											Name="numExpiratoryRatio"
+											Grid.Row="1"
+											Grid.Column="3"
+											Classes="vitals"
+											FormatString="{}{0:#0.0}"
+											Increment="0.1"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="10"
+											Minimum="0.1"
+											ValueChanged="OnUIPatientParameter_Changed" />
+                  </Grid>
+                </Expander>
+              </Border>
+
+              <!--  Group for Cardiac Profile  -->
+              <Border Margin="5,16,5,5" Classes="expander">
+                <Expander
+									Name="expCardiacProfile"
+									IsEnabled="True"
+									IsExpanded="False">
+                  <Expander.Header>
+                    <Label Name="lblGroupCardiacProfile" Classes="expander" />
+                  </Expander.Header>
+                  <Grid Margin="3" HorizontalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition />
+                      <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <Label
+											Name="lblPacemakerCaptureThreshold"
+											Grid.Row="0"
+											Grid.Column="0" />
+                    <NumericUpDown
+											Name="numPacemakerCaptureThreshold"
+											Grid.Row="0"
+											Grid.Column="1"
+											Classes="vitals"
+											Increment="5"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="200"
+											Minimum="0"
+											ValueChanged="OnUIPatientParameter_Changed" />
+
+                    <Label
+											Name="lblPulsusParadoxus"
+											Grid.Row="1"
+											Grid.Column="0" />
+                    <CheckBox
+											Name="chkPulsusParadoxus"
+											Grid.Row="1"
+											Grid.Column="1"
+											VerticalAlignment="Center"
+											Checked="OnUIPatientParameter_Changed"
+											IsChecked="False"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Unchecked="OnUIPatientParameter_Changed" />
+
+                    <Label
+											Name="lblPulsusAlternans"
+											Grid.Row="2"
+											Grid.Column="0" />
+                    <CheckBox
+											Name="chkPulsusAlternans"
+											Grid.Row="2"
+											Grid.Column="1"
+											VerticalAlignment="Center"
+											Checked="OnUIPatientParameter_Changed"
+											IsChecked="False"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Unchecked="OnUIPatientParameter_Changed" />
+
+                    <!--  Cardiac Axis Deviation  -->
+                    <Label
+											Name="lblCardiacAxis"
+											Grid.Row="3"
+											Grid.Column="0" />
+                    <ComboBox
+											Name="comboCardiacAxis"
+											Grid.Row="4"
+											Grid.Column="0"
+											Grid.ColumnSpan="2"
+											Classes="vitals"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											SelectionChanged="OnUIPatientParameter_Changed" />
+
+                    <!--  ST Segment Elevation  -->
+                    <HeaderedContentControl
+											Name="grpSTSegmentElevation"
+											Grid.Row="5"
+											Grid.Column="0"
+											Grid.ColumnSpan="2"
+											Background="Black"
+											Classes="groupbox"
+											Header="Header">
+                      <Grid Margin="3">
+                        <Grid.RowDefinitions>
+                          <RowDefinition />
+                          <RowDefinition />
+                          <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                          <ColumnDefinition />
+                          <ColumnDefinition />
+                          <ColumnDefinition />
+                          <ColumnDefinition />
+                          <ColumnDefinition />
+                          <ColumnDefinition />
+                          <ColumnDefinition />
+                          <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <Label
+													Grid.Row="0"
+													Grid.Column="0"
+													Classes="wavepart"
+													Content="I" />
+                        <NumericUpDown
+													Name="numSTE_I"
+													Grid.Row="0"
+													Grid.Column="1"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+                        <Label
+													Grid.Row="1"
+													Grid.Column="0"
+													Classes="wavepart"
+													Content="II" />
+                        <NumericUpDown
+													Name="numSTE_II"
+													Grid.Row="1"
+													Grid.Column="1"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+                        <Label
+													Grid.Row="2"
+													Grid.Column="0"
+													Classes="wavepart"
+													Content="III" />
+                        <NumericUpDown
+													Name="numSTE_III"
+													Grid.Row="2"
+													Grid.Column="1"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+
+                        <Label
+													Grid.Row="0"
+													Grid.Column="2"
+													Classes="wavepart"
+													Content="aVR" />
+                        <NumericUpDown
+													Name="numSTE_aVR"
+													Grid.Row="0"
+													Grid.Column="3"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+                        <Label
+													Grid.Row="1"
+													Grid.Column="2"
+													Classes="wavepart"
+													Content="aVL" />
+                        <NumericUpDown
+													Name="numSTE_aVL"
+													Grid.Row="1"
+													Grid.Column="3"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+                        <Label
+													Grid.Row="2"
+													Grid.Column="2"
+													Classes="wavepart"
+													Content="aVF" />
+                        <NumericUpDown
+													Name="numSTE_aVF"
+													Grid.Row="2"
+													Grid.Column="3"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+
+                        <Label
+													Grid.Row="0"
+													Grid.Column="4"
+													Classes="wavepart"
+													Content="V1" />
+                        <NumericUpDown
+													Name="numSTE_V1"
+													Grid.Row="0"
+													Grid.Column="5"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+                        <Label
+													Grid.Row="1"
+													Grid.Column="4"
+													Classes="wavepart"
+													Content="V2" />
+                        <NumericUpDown
+													Name="numSTE_V2"
+													Grid.Row="1"
+													Grid.Column="5"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+                        <Label
+													Grid.Row="2"
+													Grid.Column="4"
+													Classes="wavepart"
+													Content="V3" />
+                        <NumericUpDown
+													Name="numSTE_V3"
+													Grid.Row="2"
+													Grid.Column="5"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+
+                        <Label
+													Grid.Row="0"
+													Grid.Column="6"
+													Classes="wavepart"
+													Content="V4" />
+                        <NumericUpDown
+													Name="numSTE_V4"
+													Grid.Row="0"
+													Grid.Column="7"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+                        <Label
+													Grid.Row="1"
+													Grid.Column="6"
+													Classes="wavepart"
+													Content="V5" />
+                        <NumericUpDown
+													Name="numSTE_V5"
+													Grid.Row="1"
+													Grid.Column="7"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+                        <Label
+													Grid.Row="2"
+													Grid.Column="6"
+													Classes="wavepart"
+													Content="V6" />
+                        <NumericUpDown
+													Name="numSTE_V6"
+													Grid.Row="2"
+													Grid.Column="7"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+                      </Grid>
+                    </HeaderedContentControl>
+
+                    <!--  T Wave Elevation  -->
+                    <HeaderedContentControl
+											Name="grpTWaveElevation"
+											Grid.Row="6"
+											Grid.Column="0"
+											Grid.ColumnSpan="2"
+											Background="Black"
+											Classes="groupbox"
+											Header="Header">
+                      <Grid Margin="3">
+                        <Grid.RowDefinitions>
+                          <RowDefinition />
+                          <RowDefinition />
+                          <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                          <ColumnDefinition />
+                          <ColumnDefinition />
+                          <ColumnDefinition />
+                          <ColumnDefinition />
+                          <ColumnDefinition />
+                          <ColumnDefinition />
+                          <ColumnDefinition />
+                          <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+
+                        <Label
+													Grid.Row="0"
+													Grid.Column="0"
+													Classes="wavepart"
+													Content="I" />
+                        <NumericUpDown
+													Name="numTWE_I"
+													Grid.Row="0"
+													Grid.Column="1"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+                        <Label
+													Grid.Row="1"
+													Grid.Column="0"
+													Classes="wavepart"
+													Content="II" />
+                        <NumericUpDown
+													Name="numTWE_II"
+													Grid.Row="1"
+													Grid.Column="1"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+                        <Label
+													Grid.Row="2"
+													Grid.Column="0"
+													Classes="wavepart"
+													Content="III" />
+                        <NumericUpDown
+													Name="numTWE_III"
+													Grid.Row="2"
+													Grid.Column="1"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+
+                        <Label
+													Grid.Row="0"
+													Grid.Column="2"
+													Classes="wavepart"
+													Content="aVR" />
+                        <NumericUpDown
+													Name="numTWE_aVR"
+													Grid.Row="0"
+													Grid.Column="3"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+                        <Label
+													Grid.Row="1"
+													Grid.Column="2"
+													Classes="wavepart"
+													Content="aVL" />
+                        <NumericUpDown
+													Name="numTWE_aVL"
+													Grid.Row="1"
+													Grid.Column="3"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+                        <Label
+													Grid.Row="2"
+													Grid.Column="2"
+													Classes="wavepart"
+													Content="aVF" />
+                        <NumericUpDown
+													Name="numTWE_aVF"
+													Grid.Row="2"
+													Grid.Column="3"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+
+                        <Label
+													Grid.Row="0"
+													Grid.Column="4"
+													Classes="wavepart"
+													Content="V1" />
+                        <NumericUpDown
+													Name="numTWE_V1"
+													Grid.Row="0"
+													Grid.Column="5"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+                        <Label
+													Grid.Row="1"
+													Grid.Column="4"
+													Classes="wavepart"
+													Content="V2" />
+                        <NumericUpDown
+													Name="numTWE_V2"
+													Grid.Row="1"
+													Grid.Column="5"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+                        <Label
+													Grid.Row="2"
+													Grid.Column="4"
+													Classes="wavepart"
+													Content="V3" />
+                        <NumericUpDown
+													Name="numTWE_V3"
+													Grid.Row="2"
+													Grid.Column="5"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+
+                        <Label
+													Grid.Row="0"
+													Grid.Column="6"
+													Classes="wavepart"
+													Content="V4" />
+                        <NumericUpDown
+													Name="numTWE_V4"
+													Grid.Row="0"
+													Grid.Column="7"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+                        <Label
+													Grid.Row="1"
+													Grid.Column="6"
+													Classes="wavepart"
+													Content="V5" />
+                        <NumericUpDown
+													Name="numTWE_V5"
+													Grid.Row="1"
+													Grid.Column="7"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+                        <Label
+													Grid.Row="2"
+													Grid.Column="6"
+													Classes="wavepart"
+													Content="V6" />
+                        <NumericUpDown
+													Name="numTWE_V6"
+													Grid.Row="2"
+													Grid.Column="7"
+													Classes="vitals wavepart"
+													KeyDown="OnUIPatientParameter_KeyDown"
+													LostFocus="OnUIPatientParameter_LostFocus"
+													ValueChanged="OnUIPatientParameter_Changed" />
+                      </Grid>
+                    </HeaderedContentControl>
+                  </Grid>
+                </Expander>
+              </Border>
+
+              <!--  Group for Obstetric Profile  -->
+              <Border Margin="5,16,5,5" Classes="expander">
+                <Expander
+									Name="expObstetricProfile"
+									IsEnabled="True"
+									IsExpanded="False">
+                  <Expander.Header>
+                    <Label Name="lblGroupObstetricProfile" Classes="expander" />
+                  </Expander.Header>
+                  <Grid Margin="3" HorizontalAlignment="Stretch">
+                    <Grid.RowDefinitions>
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                      <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition />
+                      <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <Label
+											Name="lblFHR"
+											Grid.Row="0"
+											Grid.Column="0" />
+                    <NumericUpDown
+											Name="numFHR"
+											Grid.Row="0"
+											Grid.Column="1"
+											Classes="vitals"
+											FormatString="{}{0:#0}"
+											Increment="5"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="500"
+											Minimum="0"
+											ValueChanged="OnUIPatientParameter_Changed" />
+
+                    <Label
+											Name="lblFHRRhythms"
+											Grid.Row="1"
+											Grid.Column="0" />
+                    <ListBox
+											Name="listFHRRhythms"
+											Grid.Row="2"
+											Grid.Column="0"
+											Grid.ColumnSpan="2"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											SelectionChanged="OnUIPatientParameter_Changed"
+											SelectionMode="Multiple" />
+
+                    <Label
+											Name="lblFHRVariability"
+											Grid.Row="3"
+											Grid.Column="0" />
+                    <ComboBox
+											Name="comboFHRVariability"
+											Grid.Row="4"
+											Grid.Column="0"
+											Grid.ColumnSpan="2"
+											Classes="vitals"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											SelectionChanged="OnUIPatientParameter_Changed" />
+
+                    <Label
+											Name="lblUCFrequency"
+											Grid.Row="5"
+											Grid.Column="0" />
+                    <NumericUpDown
+											Name="numUCFrequency"
+											Grid.Row="5"
+											Grid.Column="1"
+											Classes="vitals"
+											FormatString="{}{0:#0.0}"
+											Increment="0.5"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="60"
+											Minimum="0"
+											ValueChanged="OnUIPatientParameter_Changed" />
+                    <Label
+											Name="lblUCDuration"
+											Grid.Row="6"
+											Grid.Column="0" />
+                    <NumericUpDown
+											Name="numUCDuration"
+											Grid.Row="6"
+											Grid.Column="1"
+											Classes="vitals"
+											FormatString="{}{0:#0}"
+											Increment="10"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											Maximum="600"
+											Minimum="0"
+											ValueChanged="OnUIPatientParameter_Changed" />
+                    <Label
+											Name="lblUCIntensity"
+											Grid.Row="7"
+											Grid.Column="0" />
+                    <ComboBox
+											Name="comboUCIntensity"
+											Grid.Row="8"
+											Grid.Column="0"
+											Grid.ColumnSpan="2"
+											Classes="vitals"
+											KeyDown="OnUIPatientParameter_KeyDown"
+											LostFocus="OnUIPatientParameter_LostFocus"
+											SelectionChanged="OnUIPatientParameter_Changed" />
+                  </Grid>
+                </Expander>
+              </Border>
+
+              <!--  Apply and Reset Buttons  -->
+
+              <Grid Margin="8" HorizontalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                  <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition />
+                  <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Button
+									Name="btnParametersReset"
+									Grid.Column="0"
+									Classes="apply"
+									Click="ButtonResetParameters_Click">
+                  <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                    <Image Classes="apply" Source="avares://Infirmary Integrated/Resources/Icon_Cross_32.png" />
+                    <Label Name="lblParametersReset" Classes="apply" />
+                  </StackPanel>
+                </Button>
+                <Button
+									Name="btnParametersApply"
+									Grid.Column="1"
+									Classes="apply"
+									Click="ButtonApplyParameters_Click">
+                  <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                    <Label Name="lblParametersApply" Classes="apply" />
+                    <Image Classes="apply" Source="avares://Infirmary Integrated/Resources/Icon_Check_32.png" />
+                  </StackPanel>
+                </Button>
+              </Grid>
+
+              <CheckBox
+								Name="chkAutoApplyChanges"
+								HorizontalAlignment="Center"
+								Checked="OnAutoApplyChanges_Changed"
+								Unchecked="OnAutoApplyChanges_Changed" />
+            </StackPanel>
+          </Border>
+        </ScrollViewer>
+      </Grid>
+    </DockPanel>
+  </LayoutTransformControl>
+</Window>

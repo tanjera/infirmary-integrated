@@ -5,6 +5,10 @@ using System.Text;
 
 namespace II {
     public static class Math {
+        public class PointD {
+            public double X, Y;
+        }
+
         public static double Clamp (double value, double min, double max) {
             return (value < min) ? min : (value > max) ? max : value;
         }

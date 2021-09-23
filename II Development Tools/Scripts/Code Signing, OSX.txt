@@ -1,0 +1,2 @@
+ xattr -cr infirmary
+ codesign -s "Ibi Keller" --deep infirmary
