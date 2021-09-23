@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -232,7 +233,8 @@ namespace II_Avalonia {
 
             await Task.Run (() => App.Server.Get_LatestVersion_Windows ());
 
-            if (Utility.IsNewerVersion (Utility.Version, App.Server.UpgradeVersion)) {
+            string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
+            if (Utility.IsNewerVersion (version, App.Server.UpgradeVersion)) {
                 //TODO txtUpdateAvailable.Text = String.Format (App.Language.Localize ("STATUS:UpdateAvailable"), App.Server.UpgradeVersion).Trim ();
             } else {            // If no update available, no status update
                 //TODO statusUpdateAvailable.Visibility = Visibility.Collapsed;
@@ -326,6 +328,9 @@ namespace II_Avalonia {
         }
 
         private void InitDeviceMonitor () {
+            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                this.Show ();
+
             if (App.Device_Monitor == null || !App.Device_Monitor.IsActive)
                 App.Device_Monitor = new DeviceMonitor ();
 
@@ -337,6 +342,9 @@ namespace II_Avalonia {
         }
 
         private void InitDeviceECG () {
+            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                this.Show ();
+
             if (App.Device_ECG == null || !App.Device_ECG.IsActive)
                 App.Device_ECG = new DeviceECG ();
 
@@ -348,6 +356,9 @@ namespace II_Avalonia {
         }
 
         private void InitDeviceDefib () {
+            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                this.Show ();
+
             if (App.Device_Defib == null || !App.Device_Defib.IsActive)
                 App.Device_Defib = new DeviceDefib ();
 
@@ -359,6 +370,9 @@ namespace II_Avalonia {
         }
 
         private void InitDeviceIABP () {
+            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                this.Show ();
+
             if (App.Device_IABP == null || !App.Device_IABP.IsActive)
                 App.Device_IABP = new DeviceIABP ();
 
@@ -370,6 +384,9 @@ namespace II_Avalonia {
         }
 
         private void InitDeviceEFM () {
+            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                this.Show ();
+
             if (App.Device_EFM == null || !App.Device_EFM.IsActive)
                 App.Device_EFM = new DeviceEFM ();
 
@@ -381,6 +398,9 @@ namespace II_Avalonia {
         }
 
         private void DialogInitial (bool reloadUI = false) {
+            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                this.Show ();
+
             App.Dialog_Language = new DialogInitial ();
             App.Dialog_Language.Activate ();
             App.Dialog_Language.ShowDialog (this);
@@ -390,6 +410,9 @@ namespace II_Avalonia {
         }
 
         private void DialogAbout () {
+            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                this.Show ();
+
             App.Dialog_About = new DialogAbout ();
             App.Dialog_About.Activate ();
             App.Dialog_About.ShowDialog (this);

@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 
 using Avalonia;
 using Avalonia.Controls;
@@ -39,7 +40,8 @@ namespace II_Avalonia {
 
             this.FindControl<Window> ("dlgAbout").Title = App.Language.Localize ("ABOUT:AboutProgram");
             this.FindControl<Label> ("lblInfirmaryIntegrated").Content = App.Language.Localize ("II:InfirmaryIntegrated");
-            this.FindControl<Label> ("lblVersion").Content = String.Format (App.Language.Localize ("ABOUT:Version"), II.Utility.Version);
+            this.FindControl<Label> ("lblVersion").Content = String.Format (App.Language.Localize ("ABOUT:Version"),
+                Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0");
             this.FindControl<TextBlock> ("tblDescription").Text = App.Language.Localize ("ABOUT:Description");
         }
 

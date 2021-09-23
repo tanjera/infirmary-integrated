@@ -57,37 +57,14 @@
 				VerticalAlignment="Center" />
 
       <Button
-				Name="btnInstall"
+				Name="btnWebsite"
 				Grid.Row="1"
 				Grid.Column="0"
+				Grid.ColumnSpan="2"
 				Margin="5"
 				Padding="5,2"
 				HorizontalAlignment="Stretch"
-				Background="White"
-				Click="btnInstall_Click">
-        <Grid>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-          </Grid.ColumnDefinitions>
-          <Image
-						Grid.Column="0"
-						Classes="btn"
-						Source="avares://Infirmary Integrated/Third_Party/Icon_UpgradeBootstrap_48.png" />
-          <Label
-						Name="lblInstall"
-						Grid.Column="1"
-						Classes="btn" />
-        </Grid>
-      </Button>
-
-      <Button
-				Name="btnWebsite"
-				Grid.Row="2"
-				Grid.Column="0"
-				Margin="5"
-				Padding="5,2"
-				HorizontalAlignment="Stretch"
+				HorizontalContentAlignment="Center"
 				Background="White"
 				Click="btnWebsite_Click">
         <Grid>
@@ -108,8 +85,8 @@
 
       <Button
 				Name="btnDelay"
-				Grid.Row="1"
-				Grid.Column="1"
+				Grid.Row="2"
+				Grid.Column="0"
 				Margin="5"
 				Padding="5,2"
 				HorizontalAlignment="Stretch"

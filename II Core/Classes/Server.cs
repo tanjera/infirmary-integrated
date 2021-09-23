@@ -20,11 +20,13 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Reflection;
 using System.Text;
 
 using II.Localization;
 
 namespace II.Server {
+
     public partial class Server {
         /* Variables for checking for updates, running bootstrapper */
         public string UpgradeVersion = String.Empty;
@@ -46,7 +48,8 @@ namespace II.Server {
             public string Hash_MACAddress;
             public string Hash_Username;
 
-            public UsageStat () { }
+            public UsageStat () {
+            }
 
             public UsageStat (UsageStat copy) {
                 Timestamp = copy.Timestamp;
@@ -69,11 +72,23 @@ namespace II.Server {
             }
 
             private void GatherInfo_Offline () {
-                Version = Utility.Version;
-                Environment_OS = Environment.OSVersion.VersionString;
+                string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
+
+                string os = "";
+
+                if (OperatingSystem.IsWindows ())
+                    os = "Windows";
+                else if (OperatingSystem.IsLinux ())
+                    os = "Linux";
+                else if (OperatingSystem.IsMacOS ())
+                    os = "MacOS";
+                else
+                    os = "Other";
+
+                Environment_OS = $"{os} {Environment.OSVersion.Version}";
 
                 CultureInfo ci = CultureInfo.CurrentUICulture;
-                Environment_Language = ci.ThreeLetterWindowsLanguageName;
+                Environment_Language = ci.ThreeLetterISOLanguageName.ToUpper ();
 
                 Hash_Username = Encryption.HashSHA256 (Environment.UserName);
 
@@ -254,7 +269,7 @@ namespace II.Server {
                         "?timestamp={0}&ii_version={1}&client_os={2}&exception_message={3}&exception_method={4}&exception_stacktrace={5}&exception_hresult={6}&exception_data={7}",
 
                     Utility.DateTime_ToString (DateTime.UtcNow),
-                    Utility.Version,
+                    Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0",
                     Environment.OSVersion.VersionString,
                     e.Message ?? "null",
                     e.TargetSite?.Name ?? "null",

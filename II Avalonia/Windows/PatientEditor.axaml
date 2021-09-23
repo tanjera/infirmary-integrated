@@ -248,8 +248,7 @@
               <Button
 								Name="btnDevice12LeadECG"
 								Classes="device"
-								Click="ButtonDeviceECG_Click"
-								IsEnabled="False">
+								Click="ButtonDeviceECG_Click">
                 <StackPanel Orientation="Horizontal">
                   <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_Device12LeadECG_48.png" />
                   <Label Name="lblDevice12LeadECG" Classes="device" />

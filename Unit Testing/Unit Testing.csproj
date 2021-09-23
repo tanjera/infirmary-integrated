@@ -11,7 +11,7 @@
 
     <StartupObject></StartupObject>
 
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

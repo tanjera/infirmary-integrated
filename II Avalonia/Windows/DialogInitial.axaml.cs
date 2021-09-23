@@ -41,7 +41,7 @@ namespace II_Avalonia {
             this.FindControl<Button> ("btnContinue").Content = App.Language.Localize ("BUTTON:Continue");
 
             this.FindControl<ComboBox> ("cmbLanguages").Items = II.Localization.Language.Descriptions;
-            this.FindControl<ComboBox> ("cmbLanguages").SelectedIndex = (int)II.Localization.Language.Values.ENU;
+            this.FindControl<ComboBox> ("cmbLanguages").SelectedIndex = (int)II.Localization.Language.Values.ENG;
         }
 
         private void OnClick_Continue (object sender, RoutedEventArgs e) {

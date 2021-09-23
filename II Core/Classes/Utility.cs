@@ -2,16 +2,15 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
 namespace II {
     public static class Utility {
-        public const string Version = "A.0.8";
-
         public static bool IsNewerVersion (string current, string comparison) {
             string [] curSplit = current.Split ('.'),
-                    compSplit = comparison.Split ('.');
+                compSplit = comparison.Split ('.');
             int buffer;
 
             for (int i = 0; i < compSplit.Length; i++) {
