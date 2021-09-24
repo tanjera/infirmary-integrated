@@ -1,39 +1,45 @@
 #!/bin/bash
+UUID=$(uuidgen)
+PROCESS_PATH="/tmp/$UUID"
+
 APP_NAME="Infirmary Integrated.app"
-PUBLISH_OUTPUT_DIRECTORY="/mnt/y/Infirmary Integrated, Avalonia/II Avalonia/bin/Release/net5.0/osx-x64/publish"
-INFO_PLIST="/mnt/y/Infirmary Integrated, Avalonia/Package, MacOS/Info.plist"
-ICON_PATH="/mnt/y/Infirmary Integrated, Avalonia/Package, MacOS/Icon_II.icns"
+SOLUTION_PATH="/mnt/c/Users/Ibi/Documents/Infirmary Integrated"
+PUBLISH_OUTPUT_DIRECTORY="$SOLUTION_PATH/II Avalonia/bin/Release/net5.0/osx-x64/publish"
+INFO_PLIST="$SOLUTION_PATH/Package, MacOS/Info.plist"
+ICON_PATH="$SOLUTION_PATH/Package, MacOS/Icon_II.icns"
+DESTINATION_PATH="$SOLUTION_PATH/Release"
 ICON_FILE="Icon_II.icns"
 EXE_FILE="Infirmary Integrated"
-DESTINATION_PATH="/mnt/y/Infirmary Integrated, Avalonia/Release"
 
-cd ..
+rm -rf "$PROCESS_PATH"
+mkdir "$PROCESS_PATH"
+cd "$PROCESS_PATH"
 
-if [ -d "$APP_NAME" ]
-then
-    echo "Old app structure detected- replacing"
-    rm -rf "$APP_NAME"
-fi
-
-echo "Creating app structure"
+echo -e ""
+echo -e "Creating app structure in $PROCESS_PATH\n"
 
 mkdir -p "$APP_NAME"
 mkdir -p "$APP_NAME/Contents"
 mkdir -p "$APP_NAME/Contents/MacOS"
 mkdir -p "$APP_NAME/Contents/Resources"
 
-echo "Copying package contents"
+echo -e "Copying package contents\n"
 
 cp "$INFO_PLIST" "$APP_NAME/Contents/Info.plist"
 cp "$ICON_PATH" "$APP_NAME/Contents/Resources/$ICON_FILE"
 cp -a "$PUBLISH_OUTPUT_DIRECTORY"/* "$APP_NAME/Contents/MacOS"
 
-echo "Settings permissions"
+echo -e "Settings permissions\n"
 
 chmod +x "$APP_NAME/Contents/MacOS/$EXE_FILE"
 
-echo "Moving package to destination"
+OUTFILE="_osx-64-app-package.tar.gz"
+echo -e "Packaging tarball $OUTFILE\n"
 
-cp -a "$APP_NAME" "$DESTINATION_PATH"
+tar -czf "$OUTFILE" "$APP_NAME"
 
-echo "Packaging complete!"
+echo -e "Moving package to $DESTINATION_PATH\n"
+
+cp -a "$OUTFILE" "$DESTINATION_PATH"
+
+echo -e "Packaging complete!\n"

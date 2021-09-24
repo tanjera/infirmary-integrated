@@ -12,7 +12,7 @@ namespace Publishing {
         public const string pathSigntool = @"C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe";
         public const string pathCert = @"C:\Users\Ibi\Documents\Code Signing Certificate, Sectigo.pfx";
 
-        public const string dirSolution = @"Y:\Infirmary Integrated, Avalonia";
+        public const string dirSolution = @"C:\Users\Ibi\Documents\Infirmary Integrated";
 
         private static void Main (string [] args) {
             // Get base directory for solution and project

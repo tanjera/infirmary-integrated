@@ -204,14 +204,31 @@ namespace II_Avalonia {
             TextBlock lblTubingStatus = this.FindControl<TextBlock> ("lblTubingStatus");
             TextBlock lblHelium = this.FindControl<TextBlock> ("lblHelium");
 
+            Border brdTriggerSource = this.FindControl<Border> ("brdTriggerSource");
+            Border brdOperationMode = this.FindControl<Border> ("brdOperationMode");
+            Border brdFrequency = this.FindControl<Border> ("brdFrequency");
+            Border brdMachineStatus = this.FindControl<Border> ("brdMachineStatus");
+            Border brdTubingStatus = this.FindControl<Border> ("brdTubingStatus");
+            Border brdHelium = this.FindControl<Border> ("brdHelium");
+
             lblHelium.Foreground = Brushes.MediumPurple;
+            brdHelium.BorderBrush = Brushes.MediumPurple;
+
             lblOperationMode.Foreground = Brushes.Aqua;
+            brdOperationMode.BorderBrush = Brushes.Aqua;
 
             lblTriggerSource.Text = App.Language.Localize (Trigger.LookupString ());
             switch (Trigger.Value) {
                 default:
-                case Triggering.Values.ECG: lblTriggerSource.Foreground = Brushes.Green; break;
-                case Triggering.Values.Pressure: lblTriggerSource.Foreground = Brushes.Red; break;
+                case Triggering.Values.ECG:
+                    lblTriggerSource.Foreground = Brushes.Green;
+                    brdTriggerSource.BorderBrush = Brushes.Green;
+                    break;
+
+                case Triggering.Values.Pressure:
+                    lblTriggerSource.Foreground = Brushes.Red;
+                    brdTriggerSource.BorderBrush = Brushes.Red;
+                    break;
             }
 
             lblOperationMode.Text = App.Language.Localize (Mode.LookupString ());
@@ -219,28 +236,44 @@ namespace II_Avalonia {
             lblFrequency.Text = String.Format ("1 : {0}", Frequency);
             switch (Frequency) {
                 default:
-                case 1: lblFrequency.Foreground = Brushes.LightGreen; break;
-                case 2: lblFrequency.Foreground = Brushes.Yellow; break;
-                case 3: lblFrequency.Foreground = Brushes.OrangeRed; break;
+                case 1:
+                    lblFrequency.Foreground = Brushes.LightGreen;
+                    brdFrequency.BorderBrush = Brushes.LightGreen;
+                    break;
+
+                case 2:
+                    lblFrequency.Foreground = Brushes.Yellow;
+                    brdFrequency.BorderBrush = Brushes.Yellow;
+                    break;
+
+                case 3:
+                    lblFrequency.Foreground = Brushes.OrangeRed;
+                    brdFrequency.BorderBrush = Brushes.OrangeRed;
+                    break;
             }
 
             if (Running) {
                 lblMachineStatus.Text = App.Language.Localize ("IABP:Running");
                 lblMachineStatus.Foreground = Brushes.LightGreen;
+                brdMachineStatus.BorderBrush = Brushes.LightGreen;
             } else {
                 lblMachineStatus.Text = App.Language.Localize ("IABP:Paused");
                 lblMachineStatus.Foreground = Brushes.Yellow;
+                brdMachineStatus.BorderBrush = Brushes.Yellow;
             }
 
             if (Priming) {
                 lblTubingStatus.Text = App.Language.Localize ("IABP:Priming");
                 lblTubingStatus.Foreground = Brushes.Yellow;
+                brdTubingStatus.BorderBrush = Brushes.Yellow;
             } else if (Primed) {
                 lblTubingStatus.Text = App.Language.Localize ("IABP:Primed");
                 lblTubingStatus.Foreground = Brushes.LightGreen;
+                brdTubingStatus.BorderBrush = Brushes.LightGreen;
             } else {
                 lblTubingStatus.Text = App.Language.Localize ("IABP:NotPrimed");
                 lblTubingStatus.Foreground = Brushes.OrangeRed;
+                brdTubingStatus.BorderBrush = Brushes.OrangeRed;
             }
         }
 

@@ -1,33 +1,45 @@
 #!/bin/bash
+UUID=$(uuidgen)
+PROCESS_PATH="/tmp/$UUID"
+SOLUTION_PATH="/mnt/c/Users/Ibi/Documents/Infirmary Integrated"
+RELEASE_PATH="$SOLUTION_PATH/Release"
+PUB_FOLDER="Infirmary Integrated"
+PUB_EXE="Infirmary Integrated/Infirmary Integrated"
 
-echo "Creating temp directory"
+echo -e ""
+echo -e "Creating temp directory $PROCESS_PATH\n"
 
-rm -rf ~/temp
-mkdir ~/temp
+rm -rf "$PROCESS_PATH"
+mkdir "$PROCESS_PATH"
 
-echo "Copying package"
+echo -e "Copying package from $RELEASE_PATH\n"
 
-cd /mnt/y/Infirmary\ Integrated\,\ Avalonia/Release/
+cd "$RELEASE_PATH"
 
-zipfile=$( ls _linux-x64* )
+ZIPFILE=$( ls _linux-x64* )
 
-cp $zipfile ~/temp
-rm $zipfile
+cp "$ZIPFILE" "$PROCESS_PATH"
+rm "$ZIPFILE"
 
-echo "Extracting package"
+echo -e "Extracting package and setting file permissions\n"
 
-cd ~/temp
-tar -xf $zipfile
-rm $zipfile
-chmod +x Infirmary\ Integrated/Infirmary\ Integrated
+cd "$PROCESS_PATH"
+tar -xf "$ZIPFILE"
+rm "$ZIPFILE"
+chmod +x "$PUB_EXE"
 
-echo "Rebuilding package"
-
-len1=`echo $zipfile | wc -c`
+len1=`echo $ZIPFILE | wc -c`
 len2=$(expr $len1 - 5)
-outfile=$(echo $zipfile | cut -c1-$len2)
+OUTNAME=$(echo $ZIPFILE | cut -c1-$len2)
+OUTFILE="$OUTNAME.tar.gz"
+echo -e "Rebuilding package to $OUTFILE\n"
 
-tar -czf $outfile.tar.gz Infirmary\ Integrated
+tar -czf "$OUTFILE" "$PUB_FOLDER"
 
-mv _linux-x64*.tar.gz /mnt/y/Infirmary\ Integrated\,\ Avalonia/Release/
-rm -rf ~/temp
+echo -e "Moving package to $RELEASE_PATH\n"
+
+mv "$OUTFILE" "$RELEASE_PATH"
+
+echo -e "Removing temp directory $PROCESS_PATH\n"
+
+rm -rf "$PROCESS_PATH"

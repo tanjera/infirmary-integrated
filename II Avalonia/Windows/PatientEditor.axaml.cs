@@ -847,7 +847,8 @@ namespace II_Avalonia {
                 IsChecked = true,
                 Name = "radioProgression_Default",
                 Content = App.Language.Localize ("PE:ProgressionDefault"),
-                GroupName = "ProgressionOptions"
+                GroupName = "ProgressionOptions",
+                Margin = new Thickness (10, 10, 10, 5)
             });
 
             for (int i = 0; i < s.Progressions.Count; i++) {
@@ -857,7 +858,8 @@ namespace II_Avalonia {
                     IsChecked = false,
                     Content = p.Description,
                     Name = String.Format ("radioProgression_{0}", i),
-                    GroupName = "ProgressionOptions"
+                    GroupName = "ProgressionOptions",
+                    Margin = (i == s.Progressions.Count - 1 ? new Thickness (10, 5, 10, 10) : new Thickness (10, 5))
                 });
             }
         }

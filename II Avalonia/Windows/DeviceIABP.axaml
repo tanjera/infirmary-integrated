@@ -136,30 +136,35 @@
               </Grid.ColumnDefinitions>
 
               <Border
+								Name="brdTriggerSource"
 								Grid.Row="0"
 								Grid.Column="0"
 								Classes="numeric">
                 <TextBlock Name="lblTriggerSource" Classes="numeric" />
               </Border>
               <Border
+								Name="brdOperationMode"
 								Grid.Row="1"
 								Grid.Column="0"
 								Classes="numeric">
                 <TextBlock Name="lblOperationMode" Classes="numeric" />
               </Border>
               <Border
+								Name="brdFrequency"
 								Grid.Row="2"
 								Grid.Column="0"
 								Classes="numeric">
                 <TextBlock Name="lblFrequency" Classes="numeric" />
               </Border>
               <Border
+								Name="brdMachineStatus"
 								Grid.Row="3"
 								Grid.Column="0"
 								Classes="numeric">
                 <TextBlock Name="lblMachineStatus" Classes="numeric" />
               </Border>
               <Border
+								Name="brdTubingStatus"
 								Grid.Row="4"
 								Grid.Column="0"
 								Classes="numeric">
@@ -169,6 +174,7 @@
 									FontSize="30" />
               </Border>
               <Border
+								Name="brdHelium"
 								Grid.Row="5"
 								Grid.Column="0"
 								Classes="numeric">
