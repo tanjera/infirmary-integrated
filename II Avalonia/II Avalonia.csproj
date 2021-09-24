@@ -8,7 +8,7 @@
     <AssemblyName>Infirmary Integrated</AssemblyName>
     <Copyright>© 2017-2021, Ibi Keller</Copyright>
     <Authors>Ibi Keller</Authors>
-    <Version>1.9.8.1</Version>
+    <Version>1.9.9.0</Version>
     <Company>Infirmary Integrated</Company>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageProjectUrl>https://www.infirmary-integrated.com/</PackageProjectUrl>
@@ -25,6 +25,12 @@
     <PackageReference Include="MessageBox.Avalonia" Version="1.5.1" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Controls\EFMTracing.axaml.cs">
+      <DependentUpon>EFMTracing.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\IABPNumeric.axaml.cs">
+      <DependentUpon>IABPNumeric.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Controls\ECGTracing.axaml.cs">
       <DependentUpon>ECGTracing.axaml</DependentUpon>
     </Compile>
@@ -33,6 +39,9 @@
     </Compile>
     <Compile Update="Controls\DefibTracing.axaml.cs">
       <DependentUpon>DefibTracing.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\IABPTracing.axaml.cs">
+      <DependentUpon>IABPTracing.axaml</DependentUpon>
     </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>

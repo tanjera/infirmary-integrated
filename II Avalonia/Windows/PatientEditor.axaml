@@ -257,8 +257,7 @@
               <Button
 								Name="btnDeviceIABP"
 								Classes="device"
-								Click="ButtonDeviceIABP_Click"
-								IsEnabled="False">
+								Click="ButtonDeviceIABP_Click">
                 <StackPanel Orientation="Horizontal">
                   <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceIABP_48.png" />
                   <Label Name="lblDeviceIABP" Classes="device" />

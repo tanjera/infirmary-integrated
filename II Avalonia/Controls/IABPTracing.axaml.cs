@@ -19,33 +19,24 @@ using II.Rhythm;
 
 namespace II_Avalonia.Controls {
 
-    public partial class ECGTracing : UserControl {
-        /* Properties for applying DPI scaling options */
-        public double UIScale { get { return App.Settings.UIScale; } }
-        public int FontScale { get { return (int)(14 * App.Settings.UIScale); } }
-
+    public partial class IABPTracing : UserControl {
         public Strip Strip;
         public Lead Lead { get { return Strip.Lead; } }
         public RenderTargetBitmap Tracing;
 
         /* Drawing variables, offsets and multipliers */
-        private DeviceECG.ColorSchemes colorScheme;
-
         private Pen tracingPen = new Pen ();
-        private IBrush tracingBrush = Brushes.Green;
+        private IBrush tracingBrush = Brushes.Black;
         private IBrush referenceBrush = Brushes.DarkGray;
 
         private System.Drawing.Point drawOffset;
         private System.Drawing.PointF drawMultiplier;
 
-        private MenuItem menuZeroTransducer;
-        private MenuItem menuToggleAutoScale;
-
-        public ECGTracing () {
+        public IABPTracing () {
             InitializeComponent ();
         }
 
-        public ECGTracing (Strip strip) {
+        public IABPTracing (Strip strip) {
             InitializeComponent ();
             DataContext = this;
 
@@ -59,12 +50,57 @@ namespace II_Avalonia.Controls {
         }
 
         private void UpdateInterface (object? sender, EventArgs e) {
+            switch (Lead.Value) {
+                default:
+                    tracingBrush = Brushes.Green;
+                    break;
+
+                case Lead.Values.ABP:
+                    tracingBrush = Brushes.Red;
+                    break;
+
+                case Lead.Values.IABP:
+                    tracingBrush = Brushes.SkyBlue;
+                    break;
+            }
+
+            Border borderTracing = this.FindControl<Border> ("borderTracing");
             Label lblLead = this.FindControl<Label> ("lblLead");
+            Label lblScaleAuto = this.FindControl<Label> ("lblScaleAuto");
+            Label lblScaleMin = this.FindControl<Label> ("lblScaleMin");
+            Label lblScaleMax = this.FindControl<Label> ("lblScaleMax");
+
+            borderTracing.BorderBrush = tracingBrush;
 
             lblLead.Foreground = tracingBrush;
-            lblLead.Content = App.Language.Localize (Lead.LookupString (Lead.Value, true));
+            lblLead.Content = App.Language.Localize (Lead.LookupString (Lead.Value));
+
+            if (Strip.CanScale) {
+                lblScaleAuto.Foreground = tracingBrush;
+                lblScaleMin.Foreground = tracingBrush;
+                lblScaleMax.Foreground = tracingBrush;
+
+                lblScaleAuto.Content = Strip.ScaleAuto
+                    ? App.Language.Localize ("TRACING:Auto")
+                    : App.Language.Localize ("TRACING:Fixed");
+                lblScaleMin.Content = Strip.ScaleMin.ToString ();
+                lblScaleMax.Content = Strip.ScaleMax.ToString ();
+            }
 
             CalculateOffsets ();
+        }
+
+        public void UpdateScale () {
+            if (Strip.CanScale) {
+                Label lblScaleMin = this.FindControl<Label> ("lblScaleMin");
+                Label lblScaleMax = this.FindControl<Label> ("lblScaleMax");
+
+                lblScaleMin.Foreground = tracingBrush;
+                lblScaleMax.Foreground = tracingBrush;
+
+                lblScaleMin.Content = Strip.ScaleMin.ToString ();
+                lblScaleMax.Content = Strip.ScaleMax.ToString ();
+            }
         }
 
         public void CalculateOffsets () {
@@ -96,27 +132,6 @@ namespace II_Avalonia.Controls {
             await Trace.DrawPath (_Points, Tracing, tracingPen, drawOffset, drawMultiplier);
 
             imgTracing.Source = Tracing;
-        }
-
-        public void SetColors (DeviceECG.ColorSchemes scheme) {
-            colorScheme = scheme;
-
-            switch (scheme) {
-                default:
-
-                case DeviceECG.ColorSchemes.Grid:
-                case DeviceECG.ColorSchemes.Light:
-                    tracingBrush = Brushes.Black;
-                    referenceBrush = Brushes.DarkGray;
-                    break;
-
-                case DeviceECG.ColorSchemes.Dark:
-                    tracingBrush = Brushes.Green;
-                    referenceBrush = Brushes.DarkGray;
-                    break;
-            }
-
-            UpdateInterface (null, null);
         }
     }
 }

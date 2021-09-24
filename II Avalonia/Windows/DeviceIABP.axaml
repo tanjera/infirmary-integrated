@@ -1,9 +1,385 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="II_Avalonia.DeviceIABP"
-        Title="DeviceIABP">
-  Welcome to Avalonia!
+<Window
+	x:Class="II_Avalonia.DeviceIABP"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	Name="wdwDeviceIABP"
+	Title="DeviceIABP"
+	Width="1200"
+	Height="800"
+	d:DesignHeight="450"
+	d:DesignWidth="800"
+	Background="Black"
+	Closed="OnClosed"
+	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
+	WindowStartupLocation="CenterScreen"
+	WindowState="Maximized"
+	mc:Ignorable="d">
+
+  <Window.Styles>
+    <Style Selector="MenuItem.item">
+      <Setter Property="FontSize" Value="{Binding Path=FontScale}" />
+    </Style>
+
+    <Style Selector="Border.control">
+      <Setter Property="CornerRadius" Value="5" />
+      <Setter Property="Margin" Value="3" />
+    </Style>
+
+    <Style Selector="Button.round">
+      <Setter Property="MinHeight" Value="80" />
+      <Setter Property="MinWidth" Value="80" />
+      <Setter Property="Margin" Value="10" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="VerticalAlignment" Value="Stretch" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="Foreground" Value="Black" />
+    </Style>
+
+    <Style Selector="TextBlock.button">
+      <Setter Property="FontSize" Value="26" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+      <Setter Property="TextAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="Border.numeric">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="VerticalAlignment" Value="Stretch" />
+      <Setter Property="BorderBrush" Value="White" />
+      <Setter Property="BorderThickness" Value="0.5" />
+      <Setter Property="Margin" Value="5" />
+    </Style>
+
+    <Style Selector="TextBlock.numeric">
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="TextAlignment" Value="Center" />
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="FontSize" Value="60" />
+      <Setter Property="Foreground" Value="Black" />
+    </Style>
+  </Window.Styles>
+
+  <LayoutTransformControl Name="layoutControl">
+    <LayoutTransformControl.LayoutTransform>
+      <ScaleTransform ScaleX="{Binding Path=UIScale}" ScaleY="{Binding Path=UIScale}" />
+    </LayoutTransformControl.LayoutTransform>
+
+    <DockPanel LastChildFill="True">
+      <!--  Main Menu  -->
+      <Menu Background="White" DockPanel.Dock="Top">
+        <MenuItem Name="menuDevice">
+          <MenuItem
+						Name="menuPauseDevice"
+						Classes="item"
+						Click="MenuTogglePause_Click" />
+          <Separator />
+          <MenuItem
+						Name="menuCloseDevice"
+						Classes="item"
+						Click="MenuClose_Click" />
+        </MenuItem>
+      </Menu>
+      <Grid Name="mainGrid">
+        <!--  Default layout: Horizontal (like actual IABP's), display on top, control panel on bottom  -->
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="6 *" />
+          <RowDefinition Height="4 *" />
+        </Grid.RowDefinitions>
+
+        <!--  Display screen for IABP output e.g. waveform tracings, pressures, etc.  -->
+        <Grid
+					Name="displayGrid"
+					Grid.Row="0"
+					Grid.Column="0"
+					Background="Black">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1 *" />
+            <ColumnDefinition Width="4 *" />
+            <ColumnDefinition Width="1 *" />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+
+          <!--  IABP Trigger Source, Operation Mode, Current Status, Helium Remaining  -->
+          <Border
+						Grid.Row="0"
+						Grid.RowSpan="3"
+						Grid.Column="0"
+						Margin="5"
+						BorderBrush="SkyBlue"
+						BorderThickness="0.5"
+						CornerRadius="5">
+
+            <Grid Name="layoutStatusInfo" Background="Black">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="1.5 *" />
+                <RowDefinition Height="1.5 *" />
+                <RowDefinition Height="1.5 *" />
+                <RowDefinition Height="1.5 *" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="*" />
+              </Grid.RowDefinitions>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+              </Grid.ColumnDefinitions>
+
+              <Border
+								Grid.Row="0"
+								Grid.Column="0"
+								Classes="numeric">
+                <TextBlock Name="lblTriggerSource" Classes="numeric" />
+              </Border>
+              <Border
+								Grid.Row="1"
+								Grid.Column="0"
+								Classes="numeric">
+                <TextBlock Name="lblOperationMode" Classes="numeric" />
+              </Border>
+              <Border
+								Grid.Row="2"
+								Grid.Column="0"
+								Classes="numeric">
+                <TextBlock Name="lblFrequency" Classes="numeric" />
+              </Border>
+              <Border
+								Grid.Row="3"
+								Grid.Column="0"
+								Classes="numeric">
+                <TextBlock Name="lblMachineStatus" Classes="numeric" />
+              </Border>
+              <Border
+								Grid.Row="4"
+								Grid.Column="0"
+								Classes="numeric">
+                <TextBlock
+									Name="lblTubingStatus"
+									Classes="numeric"
+									FontSize="30" />
+              </Border>
+              <Border
+								Grid.Row="5"
+								Grid.Column="0"
+								Classes="numeric">
+                <TextBlock
+									Name="lblHelium"
+									Classes="numeric"
+									FontSize="30" />
+              </Border>
+            </Grid>
+          </Border>
+
+          <!--  Populate tracings and numerics programatically at runtime!  -->
+          <!--  IABPTracing of ECG strip top center, IABPNumeric top right  -->
+          <!--  IABPTracing of ABP strip middle center, IABPNumeric middle right  -->
+          <!--  IABPTracing of IABP Balloon strip bottom center  -->
+        </Grid>
+
+        <!--  Control panel for IABP e.g. operation mode, trigger selection, etc.  -->
+        <Grid
+					Name="controlsGrid"
+					Grid.Row="1"
+					Grid.Column="0"
+					Background="LightGray">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+
+          <!--  1st Row: Operation Mode, Start, Standby  -->
+          <Border
+						Name="borderOperationMode"
+						Grid.Row="0"
+						Grid.Column="0"
+						Grid.ColumnSpan="2"
+						Background="CornflowerBlue"
+						Classes="control" />
+          <Border
+						Name="borderStartStandBy"
+						Grid.Row="0"
+						Grid.Column="4"
+						Grid.ColumnSpan="2"
+						Background="CornflowerBlue"
+						Classes="control" />
+
+          <Button
+						Grid.Row="0"
+						Grid.Column="0"
+						Background="LightGreen"
+						Classes="round"
+						Click="ButtonModeAuto_Click">
+            <TextBlock Name="buttonModeAuto" Classes="button" />
+          </Button>
+
+          <Button
+						Grid.Row="0"
+						Grid.Column="1"
+						Background="LightGray"
+						Classes="round"
+						Click="ButtonModeSemiAuto_Click">
+            <TextBlock Name="buttonModeSemiAuto" Classes="button" />
+          </Button>
+
+          <Button
+						Grid.Row="0"
+						Grid.Column="4"
+						Background="LightGreen"
+						Classes="round"
+						Click="ButtonStart_Click">
+            <TextBlock
+							Name="buttonStart"
+							Classes="button"
+							FontSize="34" />
+          </Button>
+
+          <Button
+						Grid.Row="0"
+						Grid.Column="5"
+						Background="Yellow"
+						Classes="round"
+						Click="ButtonPause_Click">
+            <TextBlock
+							Name="buttonPause"
+							Classes="button"
+							FontSize="34" />
+          </Button>
+
+          <!--  2nd Row  -->
+          <Border
+						Name="borderTrigger"
+						Grid.Row="1"
+						Grid.Column="0"
+						Grid.ColumnSpan="2"
+						Background="LightSkyBlue"
+						Classes="control" />
+          <Border
+						Name="borderAugmentation"
+						Grid.Row="1"
+						Grid.RowSpan="2"
+						Grid.Column="4"
+						Background="Gray"
+						Classes="control" />
+          <Border
+						Name="borderIncreaseDecrease"
+						Grid.Row="1"
+						Grid.RowSpan="2"
+						Grid.Column="5"
+						Background="LightSkyBlue"
+						Classes="control" />
+
+          <Button
+						Name="buttonTrigger"
+						Grid.Row="1"
+						Grid.Column="0"
+						Background="PowderBlue"
+						Classes="round"
+						Click="ButtonTrigger_Click">
+            <TextBlock Name="btntxtTrigger" Classes="button" />
+          </Button>
+
+          <Button
+						Name="buttonFrequency"
+						Grid.Row="1"
+						Grid.Column="1"
+						Background="PowderBlue"
+						Classes="round"
+						Click="ButtonFrequency_Click">
+            <TextBlock Name="btntxtFrequency" Classes="button" />
+          </Button>
+
+          <Button
+						Name="buttonAugmentationPressure"
+						Grid.Row="1"
+						Grid.Column="4"
+						Background="PowderBlue"
+						Classes="round"
+						Click="ButtonAugmentationPressure_Click">
+            <TextBlock Name="btntxtAugmentationPressure" Classes="button" />
+          </Button>
+
+          <Button
+						Name="buttonIncrease"
+						Grid.Row="1"
+						Grid.Column="5"
+						Background="AntiqueWhite"
+						Classes="round"
+						Click="ButtonIncrease_Click">
+            <TextBlock Name="btntxtIncrease" Classes="button" />
+          </Button>
+
+          <!--  3rd Row  -->
+          <Border
+						Name="borderSilenceFill"
+						Grid.Row="2"
+						Grid.Column="0"
+						Background="Gray"
+						Classes="control" />
+          <Border
+						Name="borderHelp"
+						Grid.Row="2"
+						Grid.Column="1"
+						Background="Gray"
+						Classes="control" />
+
+          <Button
+						Grid.Row="2"
+						Grid.Column="0"
+						Background="PowderBlue"
+						Classes="round"
+						Click="ButtonPrimeBalloon_Click">
+            <TextBlock Name="buttonPrimeBalloon" Classes="button" />
+          </Button>
+
+          <Button
+						Grid.Row="2"
+						Grid.Column="1"
+						Background="PowderBlue"
+						Classes="round"
+						Click="ButtonZeroABP_Click">
+            <TextBlock Name="buttonZero" Classes="button" />
+          </Button>
+
+          <Button
+						Name="buttonAugmentationAlarm"
+						Grid.Row="2"
+						Grid.Column="4"
+						Background="PowderBlue"
+						Classes="round"
+						Click="ButtonAugmentationAlarm_Click">
+            <TextBlock Name="btntxtAugmentationAlarm" Classes="button" />
+          </Button>
+
+          <Button
+						Name="buttonDecrease"
+						Grid.Row="2"
+						Grid.Column="5"
+						Background="AntiqueWhite"
+						Classes="round"
+						Click="ButtonDecrease_Click">
+            <TextBlock Name="btntxtDecrease" Classes="button" />
+          </Button>
+        </Grid>
+      </Grid>
+    </DockPanel>
+  </LayoutTransformControl>
 </Window>

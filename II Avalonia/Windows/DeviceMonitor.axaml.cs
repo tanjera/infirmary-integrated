@@ -329,7 +329,7 @@ namespace II_Avalonia {
                     if (autoScale_iter <= 0) {
                         for (int i = 0; i < listTracings.Count; i++) {
                             listTracings [i].Strip.SetAutoScale (App.Patient);
-                            listTracings [i].UpdateScale ();
+                            Dispatcher.UIThread.InvokeAsync (listTracings [i].UpdateScale);
                         }
 
                         autoScale_iter = Strip.DefaultAutoScale_Iterations;

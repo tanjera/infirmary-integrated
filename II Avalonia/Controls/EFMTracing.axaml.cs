@@ -19,7 +19,7 @@ using II.Rhythm;
 
 namespace II_Avalonia.Controls {
 
-    public partial class ECGTracing : UserControl {
+    public partial class EFMTracing : UserControl {
         /* Properties for applying DPI scaling options */
         public double UIScale { get { return App.Settings.UIScale; } }
         public int FontScale { get { return (int)(14 * App.Settings.UIScale); } }
@@ -29,7 +29,6 @@ namespace II_Avalonia.Controls {
         public RenderTargetBitmap Tracing;
 
         /* Drawing variables, offsets and multipliers */
-        private DeviceECG.ColorSchemes colorScheme;
 
         private Pen tracingPen = new Pen ();
         private IBrush tracingBrush = Brushes.Green;
@@ -38,14 +37,11 @@ namespace II_Avalonia.Controls {
         private System.Drawing.Point drawOffset;
         private System.Drawing.PointF drawMultiplier;
 
-        private MenuItem menuZeroTransducer;
-        private MenuItem menuToggleAutoScale;
-
-        public ECGTracing () {
+        public EFMTracing () {
             InitializeComponent ();
         }
 
-        public ECGTracing (Strip strip) {
+        public EFMTracing (Strip strip) {
             InitializeComponent ();
             DataContext = this;
 
@@ -96,27 +92,6 @@ namespace II_Avalonia.Controls {
             await Trace.DrawPath (_Points, Tracing, tracingPen, drawOffset, drawMultiplier);
 
             imgTracing.Source = Tracing;
-        }
-
-        public void SetColors (DeviceECG.ColorSchemes scheme) {
-            colorScheme = scheme;
-
-            switch (scheme) {
-                default:
-
-                case DeviceECG.ColorSchemes.Grid:
-                case DeviceECG.ColorSchemes.Light:
-                    tracingBrush = Brushes.Black;
-                    referenceBrush = Brushes.DarkGray;
-                    break;
-
-                case DeviceECG.ColorSchemes.Dark:
-                    tracingBrush = Brushes.Green;
-                    referenceBrush = Brushes.DarkGray;
-                    break;
-            }
-
-            UpdateInterface (null, null);
         }
     }
 }

@@ -1,9 +1,64 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="II_Avalonia.DeviceEFM"
-        Title="DeviceEFM">
-  Welcome to Avalonia!
+<Window
+	x:Class="II_Avalonia.DeviceEFM"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	Name="wdwDeviceEFM"
+	Title="DeviceECG"
+	Width="1200"
+	Height="800"
+	d:DesignHeight="450"
+	d:DesignWidth="800"
+	Background="White"
+	Closed="OnClosed"
+	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
+	WindowStartupLocation="CenterScreen"
+	WindowState="Maximized"
+	mc:Ignorable="d">
+
+  <Window.Styles>
+    <Style Selector="MenuItem.item">
+      <Setter Property="FontSize" Value="{Binding Path=FontScale}" />
+    </Style>
+  </Window.Styles>
+
+  <LayoutTransformControl Name="layoutControl">
+    <LayoutTransformControl.LayoutTransform>
+      <ScaleTransform ScaleX="{Binding Path=UIScale}" ScaleY="{Binding Path=UIScale}" />
+    </LayoutTransformControl.LayoutTransform>
+
+    <DockPanel LastChildFill="True">
+
+      <!--  Main Menu  -->
+      <Menu Background="White" DockPanel.Dock="Top">
+
+        <MenuItem Name="menuDevice">
+          <MenuItem
+						Name="menuPauseDevice"
+						Classes="item"
+						Click="MenuTogglePause_Click" />
+          <Separator />
+          <MenuItem
+						Name="menuCloseDevice"
+						Classes="item"
+						Click="MenuClose_Click" />
+        </MenuItem>
+      </Menu>
+
+      <Grid
+				Name="displayGrid"
+				HorizontalAlignment="Stretch"
+				VerticalAlignment="Stretch">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="5*" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="4*" />
+        </Grid.RowDefinitions>
+      </Grid>
+    </DockPanel>
+  </LayoutTransformControl>
 </Window>

@@ -310,11 +310,5 @@ namespace II_Avalonia.Controls {
             CalculateOffsets ();
             UpdateInterface (null, null);
         }
-
-        private void cnvTracing_SizeChanged (object? sender, EventArgs e) {
-            CalculateOffsets ();
-
-            //DrawReference ();
-        }
     }
 }
