@@ -14,6 +14,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Bootstrap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Drawing.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Encryption.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\File.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\InterOp.cs" />

@@ -13,7 +13,7 @@ namespace Waveform_Generator {
         private static int DrawResolution = 10;
 
         public static List<Point> Generate (int DrawResolution, out string WaveName) {
-            double _Amplitude = 1f;
+            double _Amplitude = 1d;
             WaveName = "";
 
             // Add code here for generating waveform!

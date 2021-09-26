@@ -59,9 +59,11 @@ namespace II_Avalonia {
                 await Task.Delay (2000);
 #endif
 
-                desktop.MainWindow = Patient_Editor;
                 Splash_Screen.Hide ();
                 Patient_Editor.Show ();
+
+                desktop.MainWindow = Patient_Editor;
+
                 Splash_Screen.Close ();
 
                 Start_Args = desktop.Args;

@@ -1,34 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Text;
 
+using II.Drawing;
+
 namespace II.Waveform {
+
     public static class Plotting {
         /*
 	     * Shaping and point plotting functions
 	     */
 
-        public static PointF Last (List<PointF> _Original) {
+        public static PointD Last (List<PointD> _Original) {
             if (_Original.Count < 1)
-                return new PointF (0, 0);
+                return new PointD (0, 0);
             else
                 return _Original [_Original.Count - 1];
         }
 
-        public static List<PointF> Multiply (List<PointF> _Original, float _Coeff) {
+        public static List<PointD> Multiply (List<PointD> _Original, double _Coeff) {
             for (int i = 0; i < _Original.Count; i++)
-                _Original [i] = new PointF (_Original [i].X, _Original [i].Y * _Coeff);
+                _Original [i] = new PointD (_Original [i].X, _Original [i].Y * _Coeff);
 
             return _Original;
         }
 
-        public static List<PointF> Concatenate (List<PointF> _Original, List<PointF> _Addition, float _Amplitude = 1f) {
+        public static List<PointD> Concatenate (List<PointD> _Original, List<PointD> _Addition, double _Amplitude = 1d) {
             Concatenate (ref _Original, _Addition, _Amplitude);
             return _Original;
         }
 
-        public static void Concatenate (ref List<PointF> _Original, List<PointF> _Addition, float _Amplitude = 1f) {
+        public static void Concatenate (ref List<PointD> _Original, List<PointD> _Addition, double _Amplitude = 1d) {
             /* Offsets the X value of a Point[] so that it can be placed at the end
              * of an existing Point[] and continue from that point on. */
 
@@ -36,36 +38,36 @@ namespace II.Waveform {
             if ((_Original.Count == 0 && _Addition.Count == 0) || (_Addition.Count == 0))
                 return;
 
-            float _Offset = 0f;
+            double _Offset = 0d;
             if (_Original.Count == 0)
                 _Offset = 0;
             else if (_Original.Count > 0)
                 _Offset = _Original [_Original.Count - 1].X;
 
-            foreach (PointF eachVector in _Addition)
-                _Original.Add (new PointF (
+            foreach (PointD eachVector in _Addition)
+                _Original.Add (new PointD (
                     eachVector.X + _Offset,
                     eachVector.Y * _Amplitude));
         }
 
-        public static List<PointF> Stretch (Dictionary.Plot _Addition, float _Length) {
+        public static List<PointD> Stretch (Dictionary.Plot _Addition, double _Length) {
             int lengthAddition = (_Addition.Vertices.Length - 1) * _Addition.DrawResolution;
-            float lengthCoeff = (_Length * 1000) / lengthAddition;
+            double lengthCoeff = (_Length * 1000) / lengthAddition;
 
-            List<PointF> _Output = new List<PointF> ();
+            List<PointD> _Output = new List<PointD> ();
             for (int i = 0; i < _Addition.Vertices.Length; i++)
-                _Output.Add (new PointF (
-                    (float)_Addition.DrawResolution / 1000 * i * lengthCoeff,
+                _Output.Add (new PointD (
+                    (double)_Addition.DrawResolution / 1000 * i * lengthCoeff,
                     _Addition.Vertices [i]));
 
             return _Output;
         }
 
-        public static List<PointF> Normalize (List<PointF> _Addition, float _Min, float _Max) {
+        public static List<PointD> Normalize (List<PointD> _Addition, double _Min, double _Max) {
             if (_Addition.Count == 0)
-                return new List<PointF> ();
+                return new List<PointD> ();
 
-            float oldMin = _Addition [0].Y,
+            double oldMin = _Addition [0].Y,
                   oldMax = _Addition [0].Y;
 
             // Obtain existing minimum and maximum
@@ -75,9 +77,9 @@ namespace II.Waveform {
             }
 
             // Rescale (min-max normalization) of vertex set
-            List<PointF> _Output = new List<PointF> ();
+            List<PointD> _Output = new List<PointD> ();
             for (int i = 0; i < _Addition.Count; i++) {
-                _Output.Add (new PointF (
+                _Output.Add (new PointD (
                     _Addition [i].X,
                     (_Min + (((_Addition [i].Y - oldMin) * (_Max - _Min)) / (oldMax - oldMin)))));
             }
@@ -85,75 +87,76 @@ namespace II.Waveform {
             return _Output;
         }
 
-        public static List<PointF> Convert (Dictionary.Plot _Addition) {
-            List<PointF> _Output = new List<PointF> ();
+        public static List<PointD> Convert (Dictionary.Plot _Addition) {
+            List<PointD> _Output = new List<PointD> ();
             for (int i = 0; i < _Addition.Vertices.Length; i++)
-                _Output.Add (new PointF (
-                    (float)_Addition.DrawResolution / 1000 * i,
+                _Output.Add (new PointD (
+                    (double)_Addition.DrawResolution / 1000 * i,
                     _Addition.Vertices [i]));
 
             return _Output;
         }
 
-        public static float Slope (PointF _P1, PointF _P2) {
+        public static double Slope (PointD _P1, PointD _P2) {
             return ((_P2.Y - _P1.Y) / (_P2.X - _P1.X));
         }
-        public static PointF Bezier (PointF _Start, PointF _Control, PointF _End, float _Percent) {
-            return Math.Add (Math.Add (Math.Multiply (_Start, ((1 - _Percent) * (1 - _Percent))),
-                 Math.Multiply (_Control, (2 * _Percent * (1 - _Percent)))),
-                 Math.Multiply (_End, (_Percent * _Percent)));
+
+        public static PointD Bezier (PointD _Start, PointD _Control, PointD _End, double _Percent) {
+            return (_Start * ((1 - _Percent) * (1 - _Percent)))
+                + (_Control * (2 * _Percent * (1 - _Percent)))
+                + (_End * (_Percent * _Percent));
         }
 
-        public static List<PointF> Curve (int DrawResolution, float _Length, float _mV_Middle, float _mV_End, PointF _Start) {
+        public static List<PointD> Curve (int DrawResolution, double _Length, double _mV_Middle, double _mV_End, PointD _Start) {
             if (_Length < 0)
-                return new List<PointF> ();
+                return new List<PointD> ();
 
             int i;
-            float x;
-            List<PointF> _Out = new List<PointF> ();
-            float Resolution = (2 * (DrawResolution / 1000f)) / _Length;
+            double x;
+            List<PointD> _Out = new List<PointD> ();
+            double Resolution = (2 * (DrawResolution / 1000d)) / _Length;
 
             for (i = 1; (x = i * Resolution) <= 1; i++)
-                _Out.Add (Bezier (new PointF (0, _Start.Y), new PointF (_Length / 4, _mV_Middle), new PointF (_Length / 2, _mV_Middle), x));
+                _Out.Add (Bezier (new PointD (0, _Start.Y), new PointD (_Length / 4, _mV_Middle), new PointD (_Length / 2, _mV_Middle), x));
 
             for (i = 1; (x = i * Resolution) <= 1; i++)
-                _Out.Add (Bezier (new PointF (_Length / 2, _mV_Middle), new PointF (_Length / 4 * 3, _mV_Middle), new PointF (_Length, _mV_End), x));
+                _Out.Add (Bezier (new PointD (_Length / 2, _mV_Middle), new PointD (_Length / 4 * 3, _mV_Middle), new PointD (_Length, _mV_End), x));
 
-            _Out.Add (new PointF (_Length, _mV_End));        // Finish the curve
+            _Out.Add (new PointD (_Length, _mV_End));        // Finish the curve
 
             return _Out;
         }
 
-        public static List<PointF> Peak (int DrawResolution, float _Length, float _mV, float _mV_End, PointF _Start) {
+        public static List<PointD> Peak (int DrawResolution, double _Length, double _mV, double _mV_End, PointD _Start) {
             if (_Length < 0)
-                return new List<PointF> ();
+                return new List<PointD> ();
 
             int i;
-            float x;
-            List<PointF> _Out = new List<PointF> ();
-            float Resolution = (2 * (DrawResolution / 1000f)) / _Length;
+            double x;
+            List<PointD> _Out = new List<PointD> ();
+            double Resolution = (2 * (DrawResolution / 1000d)) / _Length;
 
             for (i = 1; (x = i * Resolution) <= 1; i++)
-                _Out.Add (Bezier (new PointF (0, _Start.Y), new PointF (_Length / 3, (float)_mV / 1), new PointF (_Length / 2, _mV), x));
+                _Out.Add (Bezier (new PointD (0, _Start.Y), new PointD (_Length / 3, (double)_mV / 1), new PointD (_Length / 2, _mV), x));
 
             for (i = 1; (x = i * Resolution) <= 1; i++)
-                _Out.Add (Bezier (new PointF (_Length / 2, _mV), new PointF (_Length / 5 * 3, _mV / 1), new PointF (_Length, _mV_End), x));
+                _Out.Add (Bezier (new PointD (_Length / 2, _mV), new PointD (_Length / 5 * 3, _mV / 1), new PointD (_Length, _mV_End), x));
 
-            _Out.Add (new PointF (_Length, _mV_End));        // Finish the curve
+            _Out.Add (new PointD (_Length, _mV_End));        // Finish the curve
 
             return _Out;
         }
 
-        public static List<PointF> Line (int DrawResolution, float _Length, float _mV, PointF _Start) {
+        public static List<PointD> Line (int DrawResolution, double _Length, double _mV, PointD _Start) {
             if (_Length < 0)
-                return new List<PointF> ();
+                return new List<PointD> ();
 
-            List<PointF> Out = new List<PointF> ();
-            PointF Start = new PointF (0, _Start.Y);
-            PointF End = new PointF (_Length, _mV);
+            List<PointD> Out = new List<PointD> ();
+            PointD Start = new PointD (0, _Start.Y);
+            PointD End = new PointD (_Length, _mV);
 
-            for (float x = 0; x <= _Length; x += (DrawResolution / 1000f))
-                Out.Add (Math.Lerp (Start, End, x / _Length));
+            for (double x = 0; x <= _Length; x += (DrawResolution / 1000d))
+                Out.Add (PointD.Lerp (Start, End, x / _Length));
 
             return Out;
         }

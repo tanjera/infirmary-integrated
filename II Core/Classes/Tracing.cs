@@ -5,12 +5,22 @@ using System.Drawing.Drawing2D;
 using System.Text;
 using System.Threading.Tasks;
 
+using II.Drawing;
+
 namespace II.Rhythm {
 
     public class Tracing {
 
-        public static void CalculateOffsets (Strip strip, double width, double height,
-            ref Point drawOffset, ref PointF drawMultiplier) {
+        public static void CalculateOffsets (
+            Strip strip,
+            double width, double height,
+            ref PointD drawOffset,
+            ref PointD drawMultiplier) {
+            if (drawOffset == null)
+                drawOffset = new PointD ();
+            if (drawMultiplier == null)
+                drawMultiplier = new PointD ();
+
             drawOffset.X = 0;
             drawMultiplier.X = (int)width / strip.DisplayLength;
 

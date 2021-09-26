@@ -349,7 +349,5 @@ namespace II_Avalonia {
                     break;
             }
         }
-
-        private void OnFormResize (object sender, RoutedEventArgs e) => OnLayoutChange ();
     }
 }

@@ -135,10 +135,10 @@ namespace Waveform_Dictionary_Builder {
                     dictOut.AppendLine (String.Format ("\t\tpublic static Plot {0} = new Plot () {{", WaveName));
                     dictOut.AppendLine (String.Format ("\t\t\tDrawResolution = {0},", DrawResolution));
                     dictOut.AppendLine (String.Format ("\t\t\tIndexOffset = {0},", IndexOffset));
-                    dictOut.AppendLine (String.Format ("\t\t\tVertices = new float[] {{", IndexOffset));
+                    dictOut.AppendLine (String.Format ("\t\t\tVertices = new double[] {{", IndexOffset));
 
                     for (int v = 0; v < Vertices.Count; v++) {
-                        dictOut.Append (String.Format ("{0}{1}{2}f{3}",
+                        dictOut.Append (String.Format ("{0}{1}{2}d{3}",
                             (v > 0 && v % 15 == 0 ? "\n" : ""),
                             (v % 15 == 0 ? "\t\t\t\t" : ""),
                             Vertices [v].Y,

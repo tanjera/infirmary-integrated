@@ -331,13 +331,13 @@ namespace II_Avalonia {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_Monitor == null || !App.Device_Monitor.IsActive)
+            if (App.Device_Monitor is null || !App.Device_Monitor.IsVisible)
                 App.Device_Monitor = new DeviceMonitor ();
 
             App.Device_Monitor.Activate ();
             App.Device_Monitor.Show ();
 
-            if (App.Patient != null)
+            if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_Monitor.OnPatientEvent;
         }
 
@@ -345,13 +345,13 @@ namespace II_Avalonia {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_ECG == null || !App.Device_ECG.IsActive)
+            if (App.Device_ECG is null || !App.Device_ECG.IsVisible)
                 App.Device_ECG = new DeviceECG ();
 
             App.Device_ECG.Activate ();
             App.Device_ECG.Show ();
 
-            if (App.Patient != null)
+            if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_ECG.OnPatientEvent;
         }
 
@@ -359,13 +359,13 @@ namespace II_Avalonia {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_Defib == null || !App.Device_Defib.IsActive)
+            if (App.Device_Defib is null || !App.Device_Defib.IsVisible)
                 App.Device_Defib = new DeviceDefib ();
 
             App.Device_Defib.Activate ();
             App.Device_Defib.Show ();
 
-            if (App.Patient != null)
+            if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_Defib.OnPatientEvent;
         }
 
@@ -373,13 +373,13 @@ namespace II_Avalonia {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_IABP == null || !App.Device_IABP.IsActive)
+            if (App.Device_IABP is null || !App.Device_IABP.IsVisible)
                 App.Device_IABP = new DeviceIABP ();
 
             App.Device_IABP.Activate ();
             App.Device_IABP.Show ();
 
-            if (App.Patient != null)
+            if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
         }
 
@@ -387,13 +387,13 @@ namespace II_Avalonia {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_EFM == null || !App.Device_EFM.IsActive)
+            if (App.Device_EFM is null || !App.Device_EFM.IsVisible)
                 App.Device_EFM = new DeviceEFM ();
 
             App.Device_EFM.Activate ();
             App.Device_EFM.Show ();
 
-            if (App.Patient != null)
+            if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_EFM.OnPatientEvent;
         }
 

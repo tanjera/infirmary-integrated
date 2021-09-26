@@ -14,6 +14,7 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 
 using II;
+using II.Drawing;
 using II.Rhythm;
 using II.Waveform;
 
@@ -21,8 +22,8 @@ namespace II_Avalonia {
 
     public class Trace {
 
-        public static async Task DrawPath (List<System.Drawing.PointF> points, RenderTargetBitmap bitmap,
-                Pen pen, System.Drawing.PointF offset, System.Drawing.PointF multiplier) {
+        public static async Task DrawPath (List<PointD> points, RenderTargetBitmap bitmap,
+                Pen pen, PointD offset, PointD multiplier) {
             if (points.Count < 2)
                 return;
 

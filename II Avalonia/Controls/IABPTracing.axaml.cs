@@ -14,6 +14,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 
 using II;
+using II.Drawing;
 using II.Localization;
 using II.Rhythm;
 
@@ -29,8 +30,8 @@ namespace II_Avalonia.Controls {
         private IBrush tracingBrush = Brushes.Black;
         private IBrush referenceBrush = Brushes.DarkGray;
 
-        private System.Drawing.Point drawOffset;
-        private System.Drawing.PointF drawMultiplier;
+        private PointD drawOffset;
+        private PointD drawMultiplier;
 
         public IABPTracing () {
             InitializeComponent ();
@@ -117,7 +118,7 @@ namespace II_Avalonia.Controls {
         public void DrawReference ()
             => Draw (Strip.Reference, referenceBrush, 1);
 
-        public async void Draw (List<System.Drawing.PointF> _Points, IBrush _Brush, double _Thickness) {
+        public async void Draw (List<PointD> _Points, IBrush _Brush, double _Thickness) {
             Image imgTracing = this.FindControl<Image> ("imgTracing");
 
             PixelSize size = new PixelSize (    // Must use a size > 0
