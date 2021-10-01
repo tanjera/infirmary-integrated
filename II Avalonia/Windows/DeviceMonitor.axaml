@@ -17,57 +17,44 @@
 	WindowState="Maximized"
 	mc:Ignorable="d">
 
-  <Window.Styles>
+  <DockPanel LastChildFill="True">
 
-    <Style Selector="MenuItem.item">
-      <Setter Property="FontSize" Value="{Binding Path=FontScale}" />
-    </Style>
-  </Window.Styles>
+    <!--  Main Menu  -->
+    <Menu Background="White" DockPanel.Dock="Top">
+      <MenuItem Name="menuDevice">
+        <MenuItem
+          Name="menuPauseDevice"
 
-  <LayoutTransformControl Name="layoutControl">
-    <LayoutTransformControl.LayoutTransform>
-      <ScaleTransform ScaleX="{Binding Path=UIScale}" ScaleY="{Binding Path=UIScale}" />
-    </LayoutTransformControl.LayoutTransform>
+          Click="MenuTogglePause_Click" />
+        <Separator />
+        <MenuItem
+          Name="menuAddNumeric"
 
-    <DockPanel LastChildFill="True">
+          Click="MenuAddNumeric_Click" />
+        <MenuItem
+          Name="menuAddTracing"
 
-      <!--  Main Menu  -->
-      <Menu Background="White" DockPanel.Dock="Top">
-        <MenuItem Name="menuDevice">
-          <MenuItem
-						Name="menuPauseDevice"
-						Classes="item"
-						Click="MenuTogglePause_Click" />
-          <Separator />
-          <MenuItem
-						Name="menuAddNumeric"
-						Classes="item"
-						Click="MenuAddNumeric_Click" />
-          <MenuItem
-						Name="menuAddTracing"
-						Classes="item"
-						Click="MenuAddTracing_Click" />
-          <Separator />
-          <MenuItem
-						Name="menuCloseDevice"
-						Classes="item"
-						Click="MenuClose_Click" />
-        </MenuItem>
-      </Menu>
+          Click="MenuAddTracing_Click" />
+        <Separator />
+        <MenuItem
+          Name="menuCloseDevice"
 
-      <Grid Name="layoutGrid" Background="Black">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+          Click="MenuClose_Click" />
+      </MenuItem>
+    </Menu>
 
-        <Grid Name="gridNumerics" Grid.Column="0" />
+    <Grid Name="layoutGrid" Background="Black">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
 
-        <Grid Name="gridTracings" Grid.Column="1" />
-      </Grid>
-    </DockPanel>
-  </LayoutTransformControl>
+      <Grid Name="gridNumerics" Grid.Column="0" />
+
+      <Grid Name="gridTracings" Grid.Column="1" />
+    </Grid>
+  </DockPanel>
 </Window>

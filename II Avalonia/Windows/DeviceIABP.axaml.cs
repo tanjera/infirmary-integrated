@@ -19,9 +19,6 @@ using II.Waveform;
 namespace II_Avalonia {
 
     public partial class DeviceIABP : Window {
-        /* Properties for applying DPI scaling options */
-        public double UIScale { get { return App.Settings.UIScale; } }
-        public int FontScale { get { return (int)(14 * App.Settings.UIScale); } }
 
         // Device settings
         public int Frequency = 1,
@@ -537,7 +534,7 @@ namespace II_Avalonia {
             listNumerics.ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }
 
-        public void OnPatientEvent (object sender, Patient.PatientEventArgs e) {
+        public void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
             switch (e.EventType) {
                 default: break;
                 case Patient.PatientEventTypes.Vitals_Change:

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using System.Timers;
 
@@ -22,18 +23,14 @@ namespace II_Avalonia {
         public static Scenario? Scenario;
         public static Patient? Patient;
 
-        public static SplashScreen? Splash_Screen;
-        public static PatientEditor? Patient_Editor;
+        public static Splash? Window_Splash;
+        public static Main? Window_Main;
 
         public static DeviceMonitor? Device_Monitor;
         public static DeviceECG? Device_ECG;
         public static DeviceDefib? Device_Defib;
         public static DeviceIABP? Device_IABP;
         public static DeviceEFM? Device_EFM;
-
-        public static DialogAbout? Dialog_About;
-        public static DialogInitial? Dialog_Language;
-        public static DialogUpgrade? Dialog_Upgrade;
 
         public static System.Timers.Timer Timer_Main = new System.Timers.Timer ();
 
@@ -43,33 +40,46 @@ namespace II_Avalonia {
             Timer_Main.Interval = 10; // q 10 milliseconds
             Timer_Main.Start ();
 
-            II.File.Init ();
-            App.Settings.Load ();
+            II.File.Init ();                                        // Init file structure (for config file, temp files)
+            App.Settings.Load ();                                   // Load config file
+            App.Language = new Language (App.Settings.Language);    // Load localization dictionary based on settings
         }
 
-        public async override void OnFrameworkInitializationCompleted () {
+        public override void OnFrameworkInitializationCompleted () {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
-                Splash_Screen = new SplashScreen ();
-                Patient_Editor = new PatientEditor ();
+                Window_Splash = new Splash ();
+                Window_Main = new Main ();
 
                 // Show the splash screen for 2 seconds, then swap out to the main window
-                desktop.MainWindow = Splash_Screen;
+                desktop.MainWindow = Window_Splash;
 
 #if !DEBUG
                 await Task.Delay (2000);
 #endif
 
-                Splash_Screen.Hide ();
-                Patient_Editor.Show ();
+                Window_Splash.Hide ();
+                Window_Main.Show ();
 
-                desktop.MainWindow = Patient_Editor;
+                desktop.MainWindow = Window_Main;
 
-                Splash_Screen.Close ();
+                Window_Splash.Close ();
 
                 Start_Args = desktop.Args;
             }
 
             base.OnFrameworkInitializationCompleted ();
+        }
+
+        public static void Exit () {
+            Window_Splash?.Close ();
+
+            Device_Monitor?.Close ();
+            Device_Defib?.Close ();
+            Device_ECG?.Close ();
+            Device_IABP?.Close ();
+            Device_EFM?.Close ();
+
+            Window_Main?.Close ();
         }
     }
 }

@@ -17,10 +17,6 @@ using II.Rhythm;
 namespace II_Avalonia.Controls {
 
     public partial class MonitorNumeric : UserControl {
-        /* Properties for applying DPI scaling options */
-        public double UIScale { get { return App.Settings.UIScale; } }
-        public int FontScale { get { return (int)(14 * App.Settings.UIScale); } }
-
         public ControlType controlType;
 
         private MenuItem menuZeroTransducer;

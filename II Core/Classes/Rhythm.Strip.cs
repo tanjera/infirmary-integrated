@@ -17,7 +17,6 @@ using II.Drawing;
 using II.Waveform;
 
 namespace II.Rhythm {
-
     public class Strip {
         /* Default variables for easy modification of multiple measurement/tracing functions */
         public static double DefaultLength = 6.0d;
@@ -275,7 +274,7 @@ namespace II.Rhythm {
         public void IncreaseAmplitude ()
             => Amplitude = System.Math.Min (Amplitude + 0.2d, 2.0d);
 
-        public async void Reset () {
+        public async Task Reset () {
             lock (lockPoints)
                 Points.Clear ();
         }

@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace II {
 
@@ -31,18 +32,18 @@ namespace II {
             ProgressTimer.Tick += ProgressTimer_Tick;
         }
 
-        ~Scenario () => Dispose ();
+        ~Scenario () => _ = Dispose ();
 
-        public void Dispose () {
-            UnsubscribeEvents ();
+        public async Task Dispose () {
+            await UnsubscribeEvents ();
 
             foreach (Step s in Steps)
-                s.Patient.Dispose ();
+                await s.Patient.Dispose ();
 
             ProgressTimer.Dispose ();
         }
 
-        public void UnsubscribeEvents () {
+        public async Task UnsubscribeEvents () {
             if (StepChangeRequest != null) {
                 foreach (Delegate d in StepChangeRequest?.GetInvocationList ())
                     StepChangeRequest -= (EventHandler<EventArgs>)d;
@@ -109,11 +110,10 @@ namespace II {
                     }
                 }
             } catch {
-
                 // If the load fails... just bail on the actual value parsing and continue the load process
             }
 
-            SetStep (0);
+            _ = SetStep (0);
             sRead.Close ();
         }
 
@@ -134,7 +134,7 @@ namespace II {
             return sWrite.ToString ();
         }
 
-        public void NextStep (int optProg = -1) {
+        public async Task NextStep (int optProg = -1) {
             StepChangeRequest?.Invoke (this, new EventArgs ());
 
             int pFrom = CurrentIndex;
@@ -149,19 +149,19 @@ namespace II {
             if (pFrom != CurrentIndex) {                                    // If the actual step Index changed
                 Current.ProgressFrom = pFrom;
                 CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
-                Steps [pFrom].Patient.Deactivate ();                        // Additional unlinking of events and timers!
+                await Steps [pFrom].Patient.Deactivate ();                        // Additional unlinking of events and timers!
             }
 
             // Init step regardless of whether step Index changed; step may have been deactivated by StepChangeRequest()
             SetTimer ();
-            Current.Patient.Activate ();
+            await Current.Patient.Activate ();
 
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
-            Current.Patient.OnPatientEvent (Patient.PatientEventTypes.Vitals_Change);
+            await Current.Patient.OnPatientEvent (Patient.PatientEventTypes.Vitals_Change);
         }
 
-        public void LastStep () {
+        public async Task LastStep () {
             StepChangeRequest?.Invoke (this, new EventArgs ());
 
             int pFrom = CurrentIndex;
@@ -169,19 +169,19 @@ namespace II {
 
             if (pFrom != CurrentIndex) {                                    // If the actual step Index changed
                 CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
-                Steps [pFrom].Patient.Deactivate ();                        // Additional unlinking of events and timers!
+                await Steps [pFrom].Patient.Deactivate ();                        // Additional unlinking of events and timers!
             }
 
             // Init step regardless of whether step Index changed; step may have been deactivated by StepChangeRequest()
             SetTimer ();
-            Current.Patient.Activate ();
+            await Current.Patient.Activate ();
 
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
-            Current.Patient.OnPatientEvent (Patient.PatientEventTypes.Vitals_Change);
+            await Current.Patient.OnPatientEvent (Patient.PatientEventTypes.Vitals_Change);
         }
 
-        public void SetStep (int incIndex) {
+        public async Task SetStep (int incIndex) {
             StepChangeRequest?.Invoke (this, new EventArgs ());
 
             int pFrom = CurrentIndex;
@@ -189,16 +189,16 @@ namespace II {
 
             if (pFrom != CurrentIndex) {                                    // If the actual step Index changed
                 CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
-                Steps [pFrom].Patient.Deactivate ();                        // Additional unlinking of events and timers!
+                await Steps [pFrom].Patient.Deactivate ();                        // Additional unlinking of events and timers!
             }
 
             // Init step regardless of whether step Index changed; step may have been deactivated by StepChangeRequest()
             SetTimer ();
-            Current.Patient.Activate ();
+            await Current.Patient.Activate ();
 
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
-            Current.Patient.OnPatientEvent (Patient.PatientEventTypes.Vitals_Change);
+            await Current.Patient.OnPatientEvent (Patient.PatientEventTypes.Vitals_Change);
         }
 
         public void CopyDeviceStatus (Patient lastPatient, Patient thisPatient) {
@@ -228,7 +228,7 @@ namespace II {
             => ProgressTimer.Process ();
 
         private void ProgressTimer_Tick (object sender, EventArgs e)
-            => NextStep ();
+            => _ = NextStep ();
 
         public class Step {
             public Patient Patient;
@@ -259,7 +259,7 @@ namespace II {
                             while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
                                 pbuffer.AppendLine (pline);
 
-                            Patient.Load_Process (pbuffer.ToString ());
+                            _ = Patient.Load_Process (pbuffer.ToString ());
                         } else if (line == "> Begin: Progression") {
                             pbuffer = new StringBuilder ();
 

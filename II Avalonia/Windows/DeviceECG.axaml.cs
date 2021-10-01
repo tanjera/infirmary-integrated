@@ -18,10 +18,6 @@ using II.Waveform;
 namespace II_Avalonia {
 
     public partial class DeviceECG : Window {
-        /* Properties for applying DPI scaling options */
-        public double UIScale { get { return App.Settings.UIScale; } }
-        public int FontScale { get { return (int)(14 * App.Settings.UIScale); } }
-
         private bool isPaused = false;
 
         private List<Controls.ECGTracing> listTracings = new List<Controls.ECGTracing> ();

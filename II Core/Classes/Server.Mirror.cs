@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace II.Server {
 
@@ -71,7 +73,7 @@ namespace II.Server {
                     ResetBackgroundWorker ();
 
                     if (pBuffer != null)
-                        p.Load_Process (pBuffer.Save ());
+                        _ = p.Load_Process (pBuffer.Save ());
                 };
                 if (!ThreadLock) {
                     ThreadLock = true;
@@ -80,7 +82,7 @@ namespace II.Server {
             }
         }
 
-        public void PostPatient (Patient p, Server s) {
+        public async Task PostPatient (Patient p, Server s) {
             if (Status != Statuses.HOST)
                 return;
 
@@ -88,19 +90,11 @@ namespace II.Server {
             string pStr = p.Save ();
             DateTime pUp = p.Updated;
 
-            if (Accession == "")
-                Accession = Utility.RandomString (8);
+            Regex regex = new Regex ("^[a-zA-Z0-9]*$");
+            if (Accession.Length <= 0 || !regex.IsMatch (Accession))
+                return;
 
-            _BackgroundWorker.DoWork += delegate { s.Post_PatientMirror (this, pStr, pUp); };
-            _BackgroundWorker.RunWorkerCompleted += delegate {
-                ThreadLock = false;
-                ResetBackgroundWorker ();
-            };
-
-            if (!ThreadLock) {
-                ThreadLock = true;
-                _BackgroundWorker.RunWorkerAsync ();
-            }
+            _ = s.Post_PatientMirror (this, pStr, pUp);
         }
     }
 }

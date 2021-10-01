@@ -22,6 +22,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Text;
+using System.Threading.Tasks;
 
 using II.Localization;
 
@@ -339,7 +340,7 @@ namespace II.Server {
                 m.ServerQueried = DateTime.UtcNow;
                 m.PatientUpdated = serverUpdated;
                 Patient p = new Patient ();
-                p.Load_Process (Encryption.DecryptAES (patient));
+                _ = p.Load_Process (Encryption.DecryptAES (patient.Replace (' ', '+')));
 
                 return p;
             } catch {
@@ -347,7 +348,7 @@ namespace II.Server {
             }
         }
 
-        public void Post_PatientMirror (Mirror m, string pStr, DateTime pUp) {
+        public async Task Post_PatientMirror (Mirror m, string pStr, DateTime pUp) {
             try {
                 string ipAddress = new WebClient ().DownloadString ("http://icanhazip.com").Trim ();
 

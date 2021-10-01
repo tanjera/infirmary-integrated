@@ -17,48 +17,36 @@
 	WindowState="Maximized"
 	mc:Ignorable="d">
 
-  <Window.Styles>
-    <Style Selector="MenuItem.item">
-      <Setter Property="FontSize" Value="{Binding Path=FontScale}" />
-    </Style>
-  </Window.Styles>
+  <DockPanel LastChildFill="True">
 
-  <LayoutTransformControl Name="layoutControl">
-    <LayoutTransformControl.LayoutTransform>
-      <ScaleTransform ScaleX="{Binding Path=UIScale}" ScaleY="{Binding Path=UIScale}" />
-    </LayoutTransformControl.LayoutTransform>
+    <!--  Main Menu  -->
+    <Menu Background="White" DockPanel.Dock="Top">
 
-    <DockPanel LastChildFill="True">
+      <MenuItem Name="menuDevice">
+        <MenuItem
+          Name="menuPauseDevice"
 
-      <!--  Main Menu  -->
-      <Menu Background="White" DockPanel.Dock="Top">
+          Click="MenuTogglePause_Click" />
+        <Separator />
+        <MenuItem
+          Name="menuCloseDevice"
 
-        <MenuItem Name="menuDevice">
-          <MenuItem
-						Name="menuPauseDevice"
-						Classes="item"
-						Click="MenuTogglePause_Click" />
-          <Separator />
-          <MenuItem
-						Name="menuCloseDevice"
-						Classes="item"
-						Click="MenuClose_Click" />
-        </MenuItem>
-      </Menu>
+          Click="MenuClose_Click" />
+      </MenuItem>
+    </Menu>
 
-      <Grid
-				Name="displayGrid"
-				HorizontalAlignment="Stretch"
-				VerticalAlignment="Stretch">
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="5*" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="4*" />
-        </Grid.RowDefinitions>
-      </Grid>
-    </DockPanel>
-  </LayoutTransformControl>
+    <Grid
+      Name="displayGrid"
+      HorizontalAlignment="Stretch"
+      VerticalAlignment="Stretch">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="5*" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="4*" />
+      </Grid.RowDefinitions>
+    </Grid>
+  </DockPanel>
 </Window>

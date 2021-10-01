@@ -3,9 +3,22 @@ using System.Collections.Generic;
 using System.Globalization;
 
 namespace II.Localization {
+
     public partial class Language {
         public Values Value;
-        public Language (Values v) { Value = v; }
+
+        public Language (string s) {
+            object? lang = new object ();
+            if (Enum.TryParse (typeof (Values), s, out lang))
+                Value = lang is not null ? (Values)lang : Values.ENG;
+            else
+                Value = Values.ENG;
+        }
+
+        public Language (Values v) {
+            Value = v;
+        }
+
         public Language () {
             if (Enum.TryParse<Values> (CultureInfo.InstalledUICulture.ThreeLetterISOLanguageName.ToUpper (), out Values tryParse))
                 Value = tryParse;
@@ -36,6 +49,7 @@ namespace II.Localization {
         public static List<string> MenuItem_Formats {
             get { return Descriptions; }
         }
+
         public static Values Parse_MenuItem (string inc) {
             try {
                 int i = Descriptions.FindIndex (o => { return o == inc; });

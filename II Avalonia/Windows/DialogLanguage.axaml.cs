@@ -10,9 +10,9 @@ using II.Localization;
 
 namespace II_Avalonia {
 
-    public partial class DialogInitial : Window {
+    public partial class DialogLanguage : Window {
 
-        public DialogInitial () {
+        public DialogLanguage () {
             InitializeComponent ();
 #if DEBUG
             this.AttachDevTools ();
@@ -21,9 +21,6 @@ namespace II_Avalonia {
             Init ();
         }
 
-        /* Properties for applying DPI scaling options */
-        public double UIScale { get { return App.Settings.UIScale; } }
-
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
         }
@@ -31,13 +28,9 @@ namespace II_Avalonia {
         private void Init () {
             DataContext = this;
 
-            this.Width *= UIScale;
-            this.Height *= UIScale;
-
             // Populate UI strings per language selection
-            this.FindControl<Window> ("dlgLanguage").Title = App.Language.Localize ("INITIAL:LanguageAndTerms");
-            this.FindControl<Label> ("lblChooseLanguage").Content = App.Language.Localize ("INITIAL:ChooseLanguage");
-            this.FindControl<TextBlock> ("txtAgreeTerms").Text = App.Language.Localize ("INITIAL:AgreeToTerms");
+            this.FindControl<Window> ("dlgLanguage").Title = App.Language.Localize ("LANGUAGE:Title");
+            this.FindControl<Label> ("lblChooseLanguage").Content = App.Language.Localize ("LANGUAGE:Select");
             this.FindControl<Button> ("btnContinue").Content = App.Language.Localize ("BUTTON:Continue");
 
             this.FindControl<ComboBox> ("cmbLanguages").Items = II.Localization.Language.Descriptions;
@@ -51,8 +44,5 @@ namespace II_Avalonia {
             App.Settings.Save ();
             this.Close ();
         }
-
-        private void Hyperlink_Terms (object sender, RoutedEventArgs e)
-            => II.InterOp.OpenBrowser ("http://www.infirmary-integrated.com/license-and-data-collection/");
     }
 }

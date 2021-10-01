@@ -22,21 +22,12 @@ namespace II_Avalonia {
             Init ();
         }
 
-        /* Properties for applying DPI scaling options */
-        public double UIScale { get { return App.Settings.UIScale; } }
-
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
         }
 
         public void Init () {
             DataContext = this;
-
-            this.Width *= UIScale;
-            this.Height *= UIScale;
-
-            // Populate UI strings per language selection
-            Language.Values l = App.Language.Value;
 
             this.FindControl<Window> ("dlgAbout").Title = App.Language.Localize ("ABOUT:AboutProgram");
             this.FindControl<Label> ("lblInfirmaryIntegrated").Content = App.Language.Localize ("II:InfirmaryIntegrated");

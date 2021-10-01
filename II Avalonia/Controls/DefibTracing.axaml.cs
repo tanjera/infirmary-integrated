@@ -21,10 +21,6 @@ using II.Rhythm;
 namespace II_Avalonia.Controls {
 
     public partial class DefibTracing : UserControl {
-        /* Properties for applying DPI scaling options */
-        public double UIScale { get { return App.Settings.UIScale; } }
-        public int FontScale { get { return (int)(14 * App.Settings.UIScale); } }
-
         public Strip Strip;
         public Lead Lead { get { return Strip.Lead; } }
         public RenderTargetBitmap Tracing;
@@ -59,9 +55,6 @@ namespace II_Avalonia.Controls {
         }
 
         private void InitInterface () {
-            // Populate UI strings per language selection
-            Language.Values l = App.Language.Value;
-
             // Context Menu (right-click menu!)
             ContextMenu menuContext = new ContextMenu ();
             List<object> menuitemsContext = new List<object> ();
@@ -235,13 +228,13 @@ namespace II_Avalonia.Controls {
                ref drawOffset, ref drawMultiplier);
         }
 
-        public async void DrawTracing ()
+        public async Task DrawTracing ()
             => Draw (Strip.Points, tracingBrush, 1);
 
         public void DrawReference ()
             => Draw (Strip.Reference, referenceBrush, 1);
 
-        public async void Draw (List<PointD> _Points, IBrush _Brush, double _Thickness) {
+        public async Task Draw (List<PointD> _Points, IBrush _Brush, double _Thickness) {
             Image imgTracing = this.FindControl<Image> ("imgTracing");
 
             PixelSize size = new PixelSize (    // Must use a size > 0

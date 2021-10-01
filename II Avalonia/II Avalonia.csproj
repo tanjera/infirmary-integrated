@@ -48,8 +48,23 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Update="Windows\DialogInitial.axaml.cs">
-      <DependentUpon>DialogInitial.axaml</DependentUpon>
+    <Compile Update="Windows\DialogMirrorReceive.axaml.cs">
+      <DependentUpon>DialogMirrorReceive.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\DialogMirrorBroadcast.axaml.cs">
+      <DependentUpon>DialogMirrorBroadcast.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\DialogLanguage.axaml.cs">
+      <DependentUpon>DialogLanguage.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\DialogEULA.axaml.cs">
+      <DependentUpon>DialogEULA.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\Main.axaml.cs">
+      <DependentUpon>Main.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\Splash.axaml.cs">
+      <DependentUpon>Splash.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

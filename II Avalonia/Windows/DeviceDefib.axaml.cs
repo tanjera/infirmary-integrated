@@ -18,9 +18,6 @@ using II.Waveform;
 namespace II_Avalonia {
 
     public partial class DeviceDefib : Window {
-        /* Properties for applying DPI scaling options */
-        public double UIScale { get { return App.Settings.UIScale; } }
-        public int FontScale { get { return (int)(14 * App.Settings.UIScale); } }
 
         // Device settings
         public Modes Mode = Modes.DEFIB;
@@ -474,7 +471,7 @@ namespace II_Avalonia {
             }
         }
 
-        public void OnPatientEvent (object sender, Patient.PatientEventArgs e) {
+        public void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
             switch (e.EventType) {
                 default: break;
 

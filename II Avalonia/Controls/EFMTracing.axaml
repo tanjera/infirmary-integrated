@@ -11,12 +11,6 @@
 	LayoutUpdated="UpdateInterface"
 	mc:Ignorable="d">
 
-  <UserControl.Styles>
-    <Style Selector="MenuItem.item">
-      <Setter Property="FontSize" Value="{Binding Path=FontScale}" />
-    </Style>
-  </UserControl.Styles>
-
   <Grid>
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />

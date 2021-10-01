@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace II {
 
@@ -134,7 +135,7 @@ namespace II {
             public Vital_Signs (Vital_Signs v)
                 => Set (v);
 
-            public void Set (Vital_Signs v) {
+            public async Task Set (Vital_Signs v) {
                 HR = v.HR;
                 RR = v.RR;
                 ETCO2 = v.ETCO2;
@@ -259,7 +260,7 @@ namespace II {
         }
 
         public Patient () {
-            UpdateParameters (
+            Task.Run (async () => await UpdateParameters (
 
                             // Basic vital signs
                             80,
@@ -297,16 +298,16 @@ namespace II {
                             new List<FHRAccelDecels.Values> (),
                             5,
                             60,
-                            Scales.Intensity.Values.Moderate);
+                            Scales.Intensity.Values.Moderate));
 
-            InitTimers ();
-            SetTimers ();
+            Task.Run (async () => await InitTimers ());
+            Task.Run (async () => await SetTimers ());
         }
 
-        ~Patient () => Dispose ();
+        ~Patient () => Task.Run (async () => await Dispose ());
 
-        public void Dispose () {
-            UnsubscribePatientEvent ();
+        public async Task Dispose () {
+            await UnsubscribePatientEvent ();
 
             timerCardiac_Baseline.Dispose ();
             timerCardiac_Atrial_Electric.Dispose ();
@@ -324,16 +325,16 @@ namespace II {
             timerObstetric_Contraction.Dispose ();
         }
 
-        public void Activate () {
-            SetTimers ();
+        public async Task Activate () {
+            await SetTimers ();
         }
 
-        public void Deactivate () {
-            UnsubscribePatientEvent ();
-            StopTimers ();
+        public async Task Deactivate () {
+            await UnsubscribePatientEvent ();
+            await StopTimers ();
         }
 
-        public void UnsubscribePatientEvent () {
+        public async Task UnsubscribePatientEvent () {
             if (PatientEvent != null) {
                 foreach (Delegate d in PatientEvent?.GetInvocationList ())
                     PatientEvent -= (EventHandler<PatientEventArgs>)d;
@@ -378,7 +379,7 @@ namespace II {
             Obstetric_Contraction_End
         }
 
-        public void OnPatientEvent (PatientEventTypes e) {
+        public async Task OnPatientEvent (PatientEventTypes e) {
             PatientEventArgs ea = new PatientEventArgs (this, e);
 
             lock (lockListPatientEvents) {
@@ -388,7 +389,7 @@ namespace II {
             PatientEvent?.Invoke (this, ea);
         }
 
-        public void CleanListPatientEvents () {
+        public async Task CleanListPatientEvents () {
             // Remove all listings older than 1 minute... prevent cluttering memory
             lock (lockListPatientEvents) {
                 for (int i = ListPatientEvents.Count - 1; i >= 0; i--)
@@ -420,7 +421,7 @@ namespace II {
             => MeasureHR (lengthSeconds, offsetSeconds, true);
 
         public int MeasureHR (double lengthSeconds, double offsetSeconds, bool isPulse = false) {
-            CleanListPatientEvents ();
+            _ = Task.Run (async () => { await CleanListPatientEvents (); });
 
             if (isPulse && !Cardiac_Rhythm.HasPulse_Ventricular)
                 return 0;
@@ -439,7 +440,7 @@ namespace II {
         }
 
         public int MeasureRR (double lengthSeconds, double offsetSeconds) {
-            CleanListPatientEvents ();
+            _ = Task.Run (async () => { await CleanListPatientEvents (); });
 
             int counter = 0;
 
@@ -480,7 +481,7 @@ namespace II {
 
         /* Process for loading Patient{} information from simulation file */
 
-        public void Load_Process (string inc) {
+        public async Task Load_Process (string inc) {
             StringReader sRead = new StringReader (inc);
 
             try {
@@ -584,13 +585,13 @@ namespace II {
             sRead.Close ();
 
             // Reset measurements to set parameters
-            VS_Actual.Set (VS_Settings);
+            await VS_Actual.Set (VS_Settings);
 
-            SetTimers ();
-            OnCardiac_Baseline ();
-            OnRespiratory_Baseline ();
+            await SetTimers ();
+            await OnCardiac_Baseline ();
+            await OnRespiratory_Baseline ();
 
-            OnPatientEvent (PatientEventTypes.Vitals_Change);
+            await OnPatientEvent (PatientEventTypes.Vitals_Change);
         }
 
         /* Process for saving Patient{} information to simulation file  */
@@ -670,7 +671,7 @@ namespace II {
             return sWrite.ToString ();
         }
 
-        public void UpdateParameters (
+        public async Task UpdateParameters (
 
                     // Basic vital signs
                     int hr,
@@ -774,16 +775,16 @@ namespace II {
             Contraction_Intensity.Value = uc_intensity;
 
             // Reset actual vital signs to set parameters
-            VS_Actual.Set (VS_Settings);
+            await VS_Actual.Set (VS_Settings);
 
-            SetTimers ();
-            OnCardiac_Baseline ();
-            OnRespiratory_Baseline ();
+            await SetTimers ();
+            await OnCardiac_Baseline ();
+            await OnRespiratory_Baseline ();
 
-            OnPatientEvent (PatientEventTypes.Vitals_Change);
+            await OnPatientEvent (PatientEventTypes.Vitals_Change);
         }
 
-        public void ClampVitals (
+        public async Task ClampVitals (
                     int hrMin, int hrMax,
                     int spo2Min, int spo2Max,
                     int etco2Min, int etco2Max,
@@ -802,38 +803,38 @@ namespace II {
             VS_Settings.PDP = II.Math.Clamp (VS_Settings.PDP, pdpMin, pdpMax);
             VS_Settings.PMP = Patient.CalculateMAP (VS_Settings.PSP, VS_Settings.PDP);
 
-            VS_Actual.Set (VS_Settings);
+            await VS_Actual.Set (VS_Settings);
 
             switchParadoxus = false;
 
-            SetTimers ();
-            OnCardiac_Baseline ();
-            OnRespiratory_Baseline ();
-            OnObstetric_Baseline ();
+            await SetTimers ();
+            await OnCardiac_Baseline ();
+            await OnRespiratory_Baseline ();
+            await OnObstetric_Baseline ();
 
-            OnPatientEvent (PatientEventTypes.Vitals_Change);
+            await OnPatientEvent (PatientEventTypes.Vitals_Change);
         }
 
-        private void InitTimers () {
-            timerCardiac_Baseline.Tick += delegate { OnCardiac_Baseline (); };
-            timerCardiac_Atrial_Electric.Tick += delegate { OnCardiac_Atrial_Electric (); };
-            timerCardiac_Ventricular_Electric.Tick += delegate { OnCardiac_Ventricular_Electric (); };
-            timerCardiac_Atrial_Mechanical.Tick += delegate { OnCardiac_Atrial_Mechanical (); };
-            timerCardiac_Ventricular_Mechanical.Tick += delegate { OnCardiac_Ventricular_Mechanical (); };
-            timerIABP_Balloon_Trigger.Tick += delegate { OnIABP_Balloon_Inflate (); };
-            timerDefibrillation.Tick += delegate { OnDefibrillation_End (); };
-            timerPacemaker_Baseline.Tick += delegate { OnPacemaker_Baseline (); };
-            timerPacemaker_Spike.Tick += delegate { OnPacemaker_Spike (); };
+        private async Task InitTimers () {
+            timerCardiac_Baseline.Tick += async delegate { await OnCardiac_Baseline (); };
+            timerCardiac_Atrial_Electric.Tick += async delegate { await OnCardiac_Atrial_Electric (); };
+            timerCardiac_Ventricular_Electric.Tick += async delegate { await OnCardiac_Ventricular_Electric (); };
+            timerCardiac_Atrial_Mechanical.Tick += async delegate { await OnCardiac_Atrial_Mechanical (); };
+            timerCardiac_Ventricular_Mechanical.Tick += async delegate { await OnCardiac_Ventricular_Mechanical (); };
+            timerIABP_Balloon_Trigger.Tick += async delegate { await OnIABP_Balloon_Inflate (); };
+            timerDefibrillation.Tick += async delegate { await OnDefibrillation_End (); };
+            timerPacemaker_Baseline.Tick += async delegate { await OnPacemaker_Baseline (); };
+            timerPacemaker_Spike.Tick += async delegate { await OnPacemaker_Spike (); };
 
-            timerRespiratory_Baseline.Tick += delegate { OnRespiratory_Baseline (); };
-            timerRespiratory_Inspiration.Tick += delegate { OnRespiratory_Inspiration (); };
-            timerRespiratory_Expiration.Tick += delegate { OnRespiratory_Expiration (); };
+            timerRespiratory_Baseline.Tick += async delegate { await OnRespiratory_Baseline (); };
+            timerRespiratory_Inspiration.Tick += async delegate { await OnRespiratory_Inspiration (); };
+            timerRespiratory_Expiration.Tick += async delegate { await OnRespiratory_Expiration (); };
 
-            timerObstetric_Baseline.Tick += delegate { OnObstetric_Baseline (); };
-            timerObstetric_Contraction.Tick += delegate { OnObstetric_Contraction (); };
+            timerObstetric_Baseline.Tick += async delegate { await OnObstetric_Baseline (); };
+            timerObstetric_Contraction.Tick += async delegate { await OnObstetric_Contraction (); };
         }
 
-        private void SetTimers () {
+        private async Task SetTimers () {
             timerCardiac_Baseline.ResetAuto ((int)(GetHR_Seconds * 1000d));
             timerCardiac_Atrial_Electric.Stop ();
             timerCardiac_Ventricular_Electric.Stop ();
@@ -856,7 +857,7 @@ namespace II {
             timerObstetric_Contraction.Stop ();
         }
 
-        private void StopTimers () {
+        private async Task StopTimers () {
             timerCardiac_Baseline.Stop ();
             timerCardiac_Atrial_Electric.Stop ();
             timerCardiac_Ventricular_Electric.Stop ();
@@ -875,30 +876,30 @@ namespace II {
             timerObstetric_Contraction.Stop ();
         }
 
-        public void Defibrillate ()
-            => InitDefibrillation (false);
+        public async Task Defibrillate ()
+            => await InitDefibrillation (false);
 
-        public void Cardiovert ()
-            => InitDefibrillation (true);
+        public async Task Cardiovert ()
+            => await InitDefibrillation (true);
 
-        public void Pacemaker (bool active, int rate, int energy) {
+        public async Task Pacemaker (bool active, int rate, int energy) {
             Pacemaker_Rate = rate;
             Pacemaker_Energy = energy;
 
             // If rate == 0, must stop timer! Otherwise timer.Interval is set to 0!
             if (!active || rate == 0 || energy == 0)
-                StopPacemaker ();
+                await StopPacemaker ();
             else if (active)
-                StartPacemaker ();
+                await StartPacemaker ();
         }
 
-        public void PacemakerPause () => timerPacemaker_Baseline.Set (4000);
+        public async Task PacemakerPause () => timerPacemaker_Baseline.Set (4000);
 
-        private void InitDefibrillation (bool toSynchronize) {
+        private async Task InitDefibrillation (bool toSynchronize) {
             if (toSynchronize)
                 timerCardiac_Ventricular_Electric.Tick += OnCardioversion;
             else
-                OnDefibrillation ();
+                await OnDefibrillation ();
         }
 
         public bool Pacemaker_HasCapture {
@@ -909,15 +910,15 @@ namespace II {
             }
         }
 
-        private void StartPacemaker ()
+        private async Task StartPacemaker ()
             => timerPacemaker_Baseline.ResetAuto ((int)((60d / Pacemaker_Rate) * 1000));
 
-        private void StopPacemaker () {
+        private async Task StopPacemaker () {
             timerPacemaker_Baseline.Stop ();
             timerPacemaker_Spike.Stop ();
         }
 
-        private void OnDefibrillation () {
+        private async Task OnDefibrillation () {
             timerCardiac_Baseline.Stop ();
             timerCardiac_Atrial_Electric.Stop ();
             timerCardiac_Ventricular_Electric.Stop ();
@@ -926,41 +927,41 @@ namespace II {
             timerDefibrillation.ResetAuto (20);
 
             // Invoke the defibrillation event *after* starting the timer- IsDefibrillating() checks the timer!
-            OnPatientEvent (PatientEventTypes.Defibrillation);
+            await OnPatientEvent (PatientEventTypes.Defibrillation);
         }
 
-        private void OnDefibrillation_End () {
+        private async Task OnDefibrillation_End () {
             timerDefibrillation.Stop ();
             timerCardiac_Baseline.ResetAuto ();
         }
 
         private void OnCardioversion (object sender, EventArgs e) {
             timerCardiac_Ventricular_Electric.Tick -= OnCardioversion;
-            OnDefibrillation ();
+            Task.Run (async () => OnDefibrillation ());
         }
 
-        private void OnPacemaker_Baseline () {
+        private async Task OnPacemaker_Baseline () {
             if (Pacemaker_Energy > 0)
-                OnPatientEvent (PatientEventTypes.Pacermaker_Spike);
+                await OnPatientEvent (PatientEventTypes.Pacermaker_Spike);
 
             if (Pacemaker_Energy >= Pacemaker_Threshold)
                 timerPacemaker_Spike.ResetAuto (40);        // Adds an interval between the spike and the QRS complex
 
-            StartPacemaker ();                          // In case pacemaker was paused... updates .Interval
+            await StartPacemaker ();                          // In case pacemaker was paused... updates .Interval
         }
 
-        private void OnPacemaker_Spike () {
+        private async Task OnPacemaker_Spike () {
             timerPacemaker_Spike.Stop ();
 
             // Trigger the QRS complex, then reset the heart's intrinsic timers
             Cardiac_Rhythm.AberrantBeat = true;
-            OnPatientEvent (PatientEventTypes.Cardiac_Ventricular_Electric);
+            await OnPatientEvent (PatientEventTypes.Cardiac_Ventricular_Electric);
             Cardiac_Rhythm.AberrantBeat = false;
             timerCardiac_Baseline.ResetAuto ();
         }
 
-        private void OnCardiac_Baseline () {
-            OnPatientEvent (PatientEventTypes.Cardiac_Baseline);
+        private async Task OnCardiac_Baseline () {
+            await OnPatientEvent (PatientEventTypes.Cardiac_Baseline);
             timerCardiac_Baseline.Set ((int)(GetHR_Seconds * 1000d));
 
             switch (Cardiac_Rhythm.Value) {
@@ -1108,8 +1109,8 @@ namespace II {
             }
         }
 
-        private void OnCardiac_Atrial_Electric () {
-            OnPatientEvent (PatientEventTypes.Cardiac_Atrial_Electric);
+        private async Task OnCardiac_Atrial_Electric () {
+            await OnPatientEvent (PatientEventTypes.Cardiac_Atrial_Electric);
 
             if (Cardiac_Rhythm.HasPulse_Atrial)
                 timerCardiac_Atrial_Mechanical.ResetAuto (Default_Electromechanical_Delay);
@@ -1179,8 +1180,8 @@ namespace II {
             }
         }
 
-        private void OnCardiac_Ventricular_Electric () {
-            OnPatientEvent (PatientEventTypes.Cardiac_Ventricular_Electric);
+        private async Task OnCardiac_Ventricular_Electric () {
+            await OnPatientEvent (PatientEventTypes.Cardiac_Ventricular_Electric);
 
             if (Cardiac_Rhythm.HasPulse_Ventricular)
                 timerCardiac_Ventricular_Mechanical.ResetAuto (Default_Electromechanical_Delay);
@@ -1191,14 +1192,14 @@ namespace II {
             timerCardiac_Ventricular_Electric.Stop ();
         }
 
-        private void OnCardiac_Atrial_Mechanical () {
-            OnPatientEvent (PatientEventTypes.Cardiac_Atrial_Mechanical);
+        private async Task OnCardiac_Atrial_Mechanical () {
+            await OnPatientEvent (PatientEventTypes.Cardiac_Atrial_Mechanical);
 
             timerCardiac_Atrial_Mechanical.Stop ();
         }
 
-        private void OnCardiac_Ventricular_Mechanical () {
-            OnPatientEvent (PatientEventTypes.Cardiac_Ventricular_Mechanical);
+        private async Task OnCardiac_Ventricular_Mechanical () {
+            await OnPatientEvent (PatientEventTypes.Cardiac_Ventricular_Mechanical);
 
             if (IABP_Active)
                 timerIABP_Balloon_Trigger.ResetAuto ((int)(GetHR_Seconds * 1000d * 0.35d));
@@ -1206,14 +1207,14 @@ namespace II {
             timerCardiac_Ventricular_Mechanical.Stop ();
         }
 
-        private void OnIABP_Balloon_Inflate () {
-            OnPatientEvent (PatientEventTypes.IABP_Balloon_Inflation);
+        private async Task OnIABP_Balloon_Inflate () {
+            await OnPatientEvent (PatientEventTypes.IABP_Balloon_Inflation);
 
             timerIABP_Balloon_Trigger.Stop ();
         }
 
-        private void OnRespiratory_Baseline () {
-            OnPatientEvent (PatientEventTypes.Respiratory_Baseline);
+        private async Task OnRespiratory_Baseline () {
+            await OnPatientEvent (PatientEventTypes.Respiratory_Baseline);
             timerRespiratory_Baseline.Set ((int)(GetRR_Seconds * 1000d));
 
             double c;
@@ -1279,9 +1280,9 @@ namespace II {
             timerRespiratory_Inspiration.ResetAuto (1);
         }
 
-        private void OnRespiratory_Inspiration () {
+        private async Task OnRespiratory_Inspiration () {
             Respiration_Inflated = true;
-            OnPatientEvent (PatientEventTypes.Respiratory_Inspiration);
+            await OnPatientEvent (PatientEventTypes.Respiratory_Inspiration);
             timerRespiratory_Inspiration.Stop ();
 
             // Process pulsus paradoxus (numerical values) for inspiration here
@@ -1313,9 +1314,9 @@ namespace II {
             }
         }
 
-        private void OnRespiratory_Expiration () {
+        private async Task OnRespiratory_Expiration () {
             Respiration_Inflated = false;
-            OnPatientEvent (PatientEventTypes.Respiratory_Expiration);
+            await OnPatientEvent (PatientEventTypes.Respiratory_Expiration);
             timerRespiratory_Expiration.Stop ();
 
             // Process pulsus paradoxus (numerical values) for expiration here
@@ -1332,14 +1333,14 @@ namespace II {
             }
         }
 
-        private void OnObstetric_Baseline () {
-            OnPatientEvent (PatientEventTypes.Obstetric_Baseline);
+        private async Task OnObstetric_Baseline () {
+            await OnPatientEvent (PatientEventTypes.Obstetric_Baseline);
             timerObstetric_Baseline.ResetAuto (10000);
 
-            OnObstetric_RunTimers ();
+            await OnObstetric_RunTimers ();
         }
 
-        private void OnObstetric_RunTimers () {
+        private async Task OnObstetric_RunTimers () {
             if (Contraction_Frequency <= 0) {
                 timerObstetric_Contraction.Stop ();
                 Uterus_Contracted = false;
@@ -1351,17 +1352,17 @@ namespace II {
             }
         }
 
-        private void OnObstetric_Contraction () {
+        private async Task OnObstetric_Contraction () {
             if (!Uterus_Contracted) {       // Contraction onset
                 Uterus_Contracted = true;
                 timerObstetric_Contraction.ResetAuto ((int)(Contraction_Duration * 1000d));
 
-                OnPatientEvent (PatientEventTypes.Obstetric_Contraction_Start);
+                await OnPatientEvent (PatientEventTypes.Obstetric_Contraction_Start);
             } else {                        // Contraction ending
                 Uterus_Contracted = false;
                 timerObstetric_Contraction.ResetAuto ((int)(Contraction_Frequency * 60d * 1000d));
 
-                OnPatientEvent (PatientEventTypes.Obstetric_Contraction_End);
+                await OnPatientEvent (PatientEventTypes.Obstetric_Contraction_End);
             }
         }
     }

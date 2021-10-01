@@ -16,6 +16,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Threading;
 
 using II;
 using II.Localization;
@@ -23,11 +24,7 @@ using II.Server;
 
 namespace II_Avalonia {
 
-    public partial class PatientEditor : Window {
-        /* Properties for applying DPI scaling options */
-        public double UIScale { get { return App.Settings.UIScale; } }
-        public int FontScale { get { return (int)(14 * App.Settings.UIScale); } }
-
+    public partial class Main : Window {
         /* Variables for WPF UI loading */
         private bool uiLoadCompleted = false;
 
@@ -41,70 +38,70 @@ namespace II_Avalonia {
             ChangesApplied
         }
 
-        public PatientEditor () {
+        public Main () {
             InitializeComponent ();
 #if DEBUG
             this.AttachDevTools ();
 #endif
-            Init ();
+            _ = Init ();
         }
 
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
         }
 
-        private void Init () {
+        private async Task Init () {
             DataContext = this;
 
-            this.Width *= UIScale;
-            this.Height *= UIScale;
+            App.Window_Main = this;
 
-            App.Patient_Editor = this;
-
-            InitInitialRun ();
+            await InitInitialRun ();
 #if !DEBUG
-            InitUsageStatistics ();
+            await InitUsageStatistics ();
 #endif
             InitInterface ();
-            InitUpgrade ();
-            InitMirroring ();
-            InitScenario (true);
+            await InitUpgrade ();
+            await InitMirroring ();
+            await InitScenario (true);
 
             if (App.Start_Args?.Length > 0)
-                LoadOpen (App.Start_Args [0]);
+                await LoadOpen (App.Start_Args [0]);
 
-            SetParameterStatus (App.Settings.AutoApplyChanges);
+            await SetParameterStatus (App.Settings.AutoApplyChanges);
 
             /* Debugging and testing code below */
         }
 
-        private void InitInitialRun () {
-            string setLang = App.Settings.Language;
-            if (setLang == null || setLang == ""
-                || !Enum.TryParse<Language.Values> (setLang, out App.Language.Value)) {
-                App.Language = new Language ();
-                DialogInitial ();
+        private async Task InitInitialRun () {
+            if (!Settings.Exists ()) {
+                await DialogEULA ();
             }
         }
 
-        private void InitUsageStatistics () {
+        private async Task InitUsageStatistics () {
             /* Send usage statistics to server in background */
-            _ = Task.Run (() => App.Server.Run_UsageStats (new Server.UsageStat (App.Language)));
+            await Task.Run (() => App.Server.Run_UsageStats (new Server.UsageStat (App.Language)));
         }
 
         private void InitInterface () {
             /* Populate UI strings per language selection */
-            this.FindControl<Window> ("wdwPatientEditor").Title = App.Language.Localize ("PE:WindowTitle");
+            this.FindControl<Window> ("wdwMain").Title = App.Language.Localize ("PE:WindowTitle");
             this.FindControl<MenuItem> ("menuNew").Header = App.Language.Localize ("PE:MenuNewFile");
             this.FindControl<MenuItem> ("menuFile").Header = App.Language.Localize ("PE:MenuFile");
             this.FindControl<MenuItem> ("menuLoad").Header = App.Language.Localize ("PE:MenuLoadSimulation");
             this.FindControl<MenuItem> ("menuSave").Header = App.Language.Localize ("PE:MenuSaveSimulation");
             this.FindControl<MenuItem> ("menuExit").Header = App.Language.Localize ("PE:MenuExitProgram");
 
+            this.FindControl<MenuItem> ("menuMirror").Header = App.Language.Localize ("PE:MenuMirror");
+            this.FindControl<MenuItem> ("menuMirrorDeactivate").Header = App.Language.Localize ("PE:MenuMirrorDeactivate");
+            this.FindControl<MenuItem> ("menuMirrorReceive").Header = App.Language.Localize ("PE:MenuMirrorReceive");
+            this.FindControl<MenuItem> ("menuMirrorBroadcast").Header = App.Language.Localize ("PE:MenuMirrorBroadcast");
+
             this.FindControl<MenuItem> ("menuSettings").Header = App.Language.Localize ("PE:MenuSettings");
             this.FindControl<MenuItem> ("menuSetLanguage").Header = App.Language.Localize ("PE:MenuSetLanguage");
 
             this.FindControl<MenuItem> ("menuHelp").Header = App.Language.Localize ("PE:MenuHelp");
+            this.FindControl<MenuItem> ("menuCheckUpdates").Header = App.Language.Localize ("PE:MenuCheckUpdates");
             this.FindControl<MenuItem> ("menuAbout").Header = App.Language.Localize ("PE:MenuAboutProgram");
 
             this.FindControl<HeaderedContentControl> ("lblGroupDevices").Header = App.Language.Localize ("PE:Devices");
@@ -117,17 +114,6 @@ namespace II_Avalonia {
             //lblDeviceVentilator.Content = App.Language.Dictionary["PE:Ventilator"];
             //lblDeviceIVPump.Content = App.Language.Dictionary["PE:IVPump"];
             //lblDeviceLabResults.Content = App.Language.Dictionary["PE:LabResults"];
-
-            this.FindControl<Label> ("lblGroupMirroring").Content = App.Language.Localize ("PE:MirrorPatientData");
-            this.FindControl<HeaderedContentControl> ("lblMirrorStatus").Header = App.Language.Localize ("PE:Status");
-            this.FindControl<RadioButton> ("radioInactive").Content = App.Language.Localize ("PE:Inactive");
-            this.FindControl<RadioButton> ("radioServer").Content = App.Language.Localize ("PE:Server");
-            this.FindControl<RadioButton> ("radioClient").Content = App.Language.Localize ("PE:Client");
-
-            this.FindControl<Label> ("lblAccessionKey").Content = App.Language.Localize ("PE:AccessionKey");
-            this.FindControl<Label> ("lblAccessPassword").Content = App.Language.Localize ("PE:AccessPassword");
-            this.FindControl<Label> ("lblAdminPassword").Content = App.Language.Localize ("PE:AdminPassword");
-            this.FindControl<Button> ("btnApplyMirroring").Content = App.Language.Localize ("BUTTON:ApplyChanges");
 
             this.FindControl<Label> ("lblGroupScenarioPlayer").Content = App.Language.Localize ("PE:ScenarioPlayer");
             this.FindControl<HeaderedContentControl> ("lblProgressionOptions").Header = App.Language.Localize ("PE:ProgressionOptions");
@@ -228,78 +214,79 @@ namespace II_Avalonia {
             this.FindControl<ListBox> ("listFHRRhythms").Items = fetalHeartRhythms;
         }
 
-        private async void InitUpgrade () {
-            /* Newer version available? Check Server, populate status bar, prompt user for upgrade */
-
-            await Task.Run (() => App.Server.Get_LatestVersion_Windows ());
+        private async Task InitUpgrade () {
+            // Newer version available? Check Server, populate status bar, prompt user for upgrade
+            App.Server.Get_LatestVersion_Windows ();
 
             string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
             if (Utility.IsNewerVersion (version, App.Server.UpgradeVersion)) {
-                //TODO txtUpdateAvailable.Text = String.Format (App.Language.Localize ("STATUS:UpdateAvailable"), App.Server.UpgradeVersion).Trim ();
-            } else {            // If no update available, no status update
-                //TODO statusUpdateAvailable.Visibility = Visibility.Collapsed;
+            } else {            // If no update available, no status update; remove any notification muting
+                App.Settings.MuteUpgrade = false;
+                App.Settings.Save ();
                 return;
             }
 
             if (App.Settings.MuteUpgrade) {
-                if (Utility.IsNewerVersion (App.Settings.MuteUpgradeVersion, App.Server.UpgradeVersion)) {
-                    App.Settings.MuteUpgrade = false;
+                if (DateTime.Compare (App.Settings.MuteUpgradeDate, DateTime.Now - new TimeSpan (30, 0, 0, 0)) < 0) {
+                    App.Settings.MuteUpgrade = false;                       // Reset the notification mute every 30 days
                     App.Settings.Save ();
                 } else {        // Mutes update popup notification
                     return;
                 }
             }
 
-            DialogUpgrade ();
+            await DialogUpgrade ();
         }
 
-        private void InitMirroring () {
+        private async Task InitMirroring () {
             App.Timer_Main.Elapsed += App.Mirror.ProcessTimer;
             App.Mirror.timerUpdate.Tick += OnMirrorTick;
             App.Mirror.timerUpdate.ResetAuto (5000);
         }
 
-        private void InitScenario (bool toInit) {
+        private async Task InitScenario (bool toInit) {
             App.Scenario = new Scenario (toInit);
             App.Scenario.StepChangeRequest += OnStepChangeRequest;    // Allows unlinking of Timers immediately prior to Step change
             App.Scenario.StepChanged += OnStepChanged;                  // Updates App.Patient, allows PatientEditor UI to update
             App.Timer_Main.Elapsed += App.Scenario.ProcessTimer;
 
             if (toInit)         // If toInit is false, Patient is null- InitPatient() will need to be called manually
-                InitPatient ();
+                await InitPatient ();
         }
 
-        private void UnloadScenario () {
+        private async Task UnloadScenario () {
             if (App.Scenario != null) {
                 App.Timer_Main.Elapsed -= App.Scenario.ProcessTimer;   // Unlink Scenario from App/Main Timer
-                App.Scenario.Dispose ();        // Disposes Scenario's events and timer, and all Patients' events and timers
+                await App.Scenario.Dispose ();        // Disposes Scenario's events and timer, and all Patients' events and timers
             }
         }
 
-        private void RefreshScenario (bool toInit) {
-            UnloadScenario ();
-            InitScenario (toInit);
+        private async Task RefreshScenario (bool toInit) {
+            await UnloadScenario ();
+            await InitScenario (toInit);
+
+            await UpdateExpanders ();
         }
 
-        private void InitPatient () {
+        private async Task InitPatient () {
             if (App.Scenario != null)
                 App.Patient = App.Scenario.Patient;
 
-            InitPatientEvents ();
-            InitStep ();
+            await InitPatientEvents ();
+            await InitStep ();
         }
 
-        private void RefreshPatient () {
-            UnloadPatientEvents ();
+        private async Task RefreshPatient () {
+            await UnloadPatientEvents ();
 
             if (App.Patient != null)
-                App.Patient.Dispose ();
+                await App.Patient.Dispose ();
             App.Patient = new Patient ();
 
-            InitPatient ();
+            await InitPatient ();
         }
 
-        private void InitPatientEvents () {
+        private async Task InitPatientEvents () {
             /* Tie the Patient's Timer to the Main Timer */
             App.Timer_Main.Elapsed += App.Patient.ProcessTimers;
 
@@ -307,31 +294,31 @@ namespace II_Avalonia {
             App.Patient.PatientEvent += FormUpdateFields;
             FormUpdateFields (this, new Patient.PatientEventArgs (App.Patient, Patient.PatientEventTypes.Vitals_Change));
 
-            if (App.Device_Monitor != null && App.Device_Monitor.IsActive)
+            if (App.Device_Monitor is not null)
                 App.Patient.PatientEvent += App.Device_Monitor.OnPatientEvent;
-            if (App.Device_ECG != null && App.Device_ECG.IsActive)
+            if (App.Device_ECG is not null)
                 App.Patient.PatientEvent += App.Device_ECG.OnPatientEvent;
-            if (App.Device_Defib != null && App.Device_Defib.IsActive)
+            if (App.Device_Defib is not null)
                 App.Patient.PatientEvent += App.Device_Defib.OnPatientEvent;
-            if (App.Device_IABP != null && App.Device_IABP.IsActive)
+            if (App.Device_IABP is not null)
                 App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
         }
 
-        private void UnloadPatientEvents () {
+        private async Task UnloadPatientEvents () {
             /* Unloading the Patient from the Main Timer also stops all the Patient's Timers
             /* and results in that Patient not triggering PatientEvent's */
             App.Timer_Main.Elapsed -= App.Patient.ProcessTimers;
 
             /* But it's still important to clear PatientEvent subscriptions so they're not adding
             /* as duplicates when InitPatientEvents() is called!! */
-            App.Patient.UnsubscribePatientEvent ();
+            await App.Patient.UnsubscribePatientEvent ();
         }
 
-        private void InitDeviceMonitor () {
+        private async Task InitDeviceMonitor () {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_Monitor is null || !App.Device_Monitor.IsVisible)
+            if (App.Device_Monitor is null)
                 App.Device_Monitor = new DeviceMonitor ();
 
             App.Device_Monitor.Activate ();
@@ -341,11 +328,11 @@ namespace II_Avalonia {
                 App.Patient.PatientEvent += App.Device_Monitor.OnPatientEvent;
         }
 
-        private void InitDeviceECG () {
+        private async Task InitDeviceECG () {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_ECG is null || !App.Device_ECG.IsVisible)
+            if (App.Device_ECG is null)
                 App.Device_ECG = new DeviceECG ();
 
             App.Device_ECG.Activate ();
@@ -355,11 +342,11 @@ namespace II_Avalonia {
                 App.Patient.PatientEvent += App.Device_ECG.OnPatientEvent;
         }
 
-        private void InitDeviceDefib () {
+        private async Task InitDeviceDefib () {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_Defib is null || !App.Device_Defib.IsVisible)
+            if (App.Device_Defib is null)
                 App.Device_Defib = new DeviceDefib ();
 
             App.Device_Defib.Activate ();
@@ -369,11 +356,11 @@ namespace II_Avalonia {
                 App.Patient.PatientEvent += App.Device_Defib.OnPatientEvent;
         }
 
-        private void InitDeviceIABP () {
+        private async Task InitDeviceIABP () {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_IABP is null || !App.Device_IABP.IsVisible)
+            if (App.Device_IABP is null)
                 App.Device_IABP = new DeviceIABP ();
 
             App.Device_IABP.Activate ();
@@ -383,11 +370,11 @@ namespace II_Avalonia {
                 App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
         }
 
-        private void InitDeviceEFM () {
+        private async Task InitDeviceEFM () {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_EFM is null || !App.Device_EFM.IsVisible)
+            if (App.Device_EFM is null)
                 App.Device_EFM = new DeviceEFM ();
 
             App.Device_EFM.Activate ();
@@ -397,36 +384,86 @@ namespace II_Avalonia {
                 App.Patient.PatientEvent += App.Device_EFM.OnPatientEvent;
         }
 
-        private void DialogInitial (bool reloadUI = false) {
+        private async Task DialogEULA () {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            App.Dialog_Language = new DialogInitial ();
-            App.Dialog_Language.Activate ();
-            App.Dialog_Language.ShowDialog (this);
+            DialogEULA dlg = new DialogEULA ();
+            dlg.Activate ();
+            await dlg.ShowDialog (this);
+        }
+
+        private async Task DialogLanguage (bool reloadUI = false) {
+            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                this.Show ();
+
+            var oldLang = App.Language.Value;
+            DialogLanguage dlg = new DialogLanguage ();
+            dlg.Activate ();
+            await dlg.ShowDialog (this);
+
+            reloadUI = oldLang != App.Language.Value;
 
             if (reloadUI)
                 InitInterface ();
         }
 
-        private void DialogAbout () {
+        private async Task DialogMirrorBroadcast (bool reloadUI = false) {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            App.Dialog_About = new DialogAbout ();
-            App.Dialog_About.Activate ();
-            App.Dialog_About.ShowDialog (this);
+            DialogMirrorBroadcast dlg = new DialogMirrorBroadcast ();
+            dlg.Activate ();
+            await dlg.ShowDialog (this);
+
+            await App.Mirror.PostPatient (App.Patient, App.Server);
+            await UpdateExpanders (false);
         }
 
-        private async void DialogUpgrade () {
+        private async Task DialogMirrorReceive (bool reloadUI = false) {
+            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                this.Show ();
+
+            DialogMirrorReceive dlg = new DialogMirrorReceive ();
+            dlg.Activate ();
+            await dlg.ShowDialog (this);
+
+            await UpdateExpanders (false);
+        }
+
+        private async Task DialogAbout () {
+            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                this.Show ();
+
+            DialogAbout dlg = new DialogAbout ();
+            dlg.Activate ();
+            await dlg.ShowDialog (this);
+        }
+
+        private async Task CheckUpgrade () {
+            // Check with server for updated version of Infirmary Integrated- notify user either way
+
+            App.Server.Get_LatestVersion_Windows ();
+
+            string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
+            if (Utility.IsNewerVersion (version, App.Server.UpgradeVersion)) {
+                await DialogUpgrade ();
+            } else {
+                DialogUpgradeCurrent dlg = new DialogUpgradeCurrent ();
+                dlg.Activate ();
+                await dlg.ShowDialog (this);
+            }
+        }
+
+        private async Task DialogUpgrade () {
             Bootstrap.UpgradeRoute decision = Bootstrap.UpgradeRoute.NULL;
 
-            App.Dialog_Upgrade = new DialogUpgrade ();
-            App.Dialog_Upgrade.Activate ();
+            DialogUpgrade dlg = new DialogUpgrade ();
+            dlg.Activate ();
 
-            App.Dialog_Upgrade.OnUpgradeRoute += (s, ea) => decision = ea.Route;
-            await App.Dialog_Upgrade.ShowDialog (this);
-            App.Dialog_Upgrade.OnUpgradeRoute -= (s, ea) => decision = ea.Route;
+            dlg.OnUpgradeRoute += (s, ea) => decision = ea.Route;
+            await dlg.ShowDialog (this);
+            dlg.OnUpgradeRoute -= (s, ea) => decision = ea.Route;
 
             switch (decision) {
                 default:
@@ -436,7 +473,7 @@ namespace II_Avalonia {
 
                 case Bootstrap.UpgradeRoute.MUTE:
                     App.Settings.MuteUpgrade = true;
-                    App.Settings.MuteUpgradeVersion = App.Server.UpgradeVersion;
+                    App.Settings.MuteUpgradeDate = DateTime.Now;
                     App.Settings.Save ();
                     return;
 
@@ -448,15 +485,29 @@ namespace II_Avalonia {
             }
         }
 
-        private void SetParameterStatus (bool autoApplyChanges) {
+        private async Task UpdateExpanders ()
+            => await UpdateExpanders (App.Scenario.IsScenario);
+
+        private async Task UpdateExpanders (bool isScene) {
+            this.FindControl<Border> ("brdScenarioPlayer").IsVisible = isScene;
+            this.FindControl<Expander> ("expScenarioPlayer").IsEnabled = isScene;
+            this.FindControl<Expander> ("expScenarioPlayer").IsExpanded = isScene;
+            this.FindControl<Expander> ("expVitalSigns").IsExpanded = !isScene;
+            this.FindControl<Expander> ("expHemodynamics").IsExpanded = !isScene;
+            this.FindControl<Expander> ("expRespiratoryProfile").IsExpanded = !isScene;
+            this.FindControl<Expander> ("expCardiacProfile").IsExpanded = !isScene;
+            this.FindControl<Expander> ("expObstetricProfile").IsExpanded = !isScene;
+        }
+
+        private async Task SetParameterStatus (bool autoApplyChanges) {
             ParameterStatus = autoApplyChanges
                ? ParameterStatuses.AutoApply
                : ParameterStatuses.ChangesApplied;
 
-            UpdateParameterIndicators ();
+            await UpdateParameterIndicators ();
         }
 
-        private void AdvanceParameterStatus (ParameterStatuses status) {
+        private async Task AdvanceParameterStatus (ParameterStatuses status) {
             /* Toggles between pending changes or changes applied; bypasses if auto-applying or null */
 
             if (status == ParameterStatuses.ChangesApplied && ParameterStatus == ParameterStatuses.ChangesPending)
@@ -464,10 +515,10 @@ namespace II_Avalonia {
             else if (status == ParameterStatuses.ChangesPending && ParameterStatus == ParameterStatuses.ChangesApplied)
                 ParameterStatus = ParameterStatuses.ChangesPending;
 
-            UpdateParameterIndicators ();
+            await UpdateParameterIndicators ();
         }
 
-        private void UpdateParameterIndicators () {
+        private async Task UpdateParameterIndicators () {
             Border brdPendingChangesIndicator = this.FindControl<Border> ("brdPendingChangesIndicator");
 
             switch (ParameterStatus) {
@@ -478,18 +529,10 @@ namespace II_Avalonia {
 
                 case ParameterStatuses.ChangesPending:
                     brdPendingChangesIndicator.BorderBrush = Brushes.Red;
-                    //lblStatusText.Content = App.Language.Localize ("PE:StatusPatientChangesPending");
                     break;
 
                 case ParameterStatuses.ChangesApplied:
                     brdPendingChangesIndicator.BorderBrush = Brushes.Green;
-
-                    /*
-                    if (App.Mirror.Status == Mirror.Statuses.INACTIVE)
-                        lblStatusText.Content = App.Language.Localize ("PE:StatusPatientUpdated");
-                    else if (App.Mirror.Status == Mirror.Statuses.HOST)
-                        lblStatusText.Content = App.Language.Localize ("PE:StatusMirroredPatientUpdated");
-                    */
                     break;
 
                 case ParameterStatuses.AutoApply:
@@ -498,7 +541,7 @@ namespace II_Avalonia {
             }
         }
 
-        private async void LoadFile () {
+        private async Task LoadFile () {
             OpenFileDialog dlgLoad = new OpenFileDialog ();
 
             dlgLoad.Filters.Add (new FileDialogFilter () { Name = "Infirmary Integrated Simulations", Extensions = { "ii" } });
@@ -507,21 +550,21 @@ namespace II_Avalonia {
 
             string [] loadFile = await dlgLoad.ShowAsync (this);
             if (loadFile.Length > 0) {
-                LoadInit (loadFile [0]);
+                await LoadInit (loadFile [0]);
             }
         }
 
-        private void LoadOpen (string fileName) {
+        private async Task LoadOpen (string fileName) {
             if (System.IO.File.Exists (fileName)) {
-                LoadInit (fileName);
+                await LoadInit (fileName);
             } else {
-                LoadFail ();
+                await LoadFail ();
             }
 
             FormUpdateFields (this, new Patient.PatientEventArgs (App.Patient, Patient.PatientEventTypes.Vitals_Change));
         }
 
-        private void LoadInit (string incFile) {
+        private async Task LoadInit (string incFile) {
             StreamReader sr = new StreamReader (incFile);
 
             /* Read savefile metadata indicating data formatting
@@ -529,12 +572,12 @@ namespace II_Avalonia {
                 */
             string metadata = sr.ReadLine ();
             if (metadata.StartsWith (".ii:t1"))
-                LoadValidateT1 (sr);
+                await LoadValidateT1 (sr);
             else
-                LoadFail ();
+                await LoadFail ();
         }
 
-        private void LoadValidateT1 (StreamReader sr) {
+        private async Task LoadValidateT1 (StreamReader sr) {
             /* Savefile type 1: validated and encrypted
                 * Line 1 is metadata (.ii:t1)
                 * Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
@@ -547,12 +590,12 @@ namespace II_Avalonia {
 
             // Original save files used MD5, later changed to SHA256
             if (hash == Encryption.HashSHA256 (file) || hash == Encryption.HashMD5 (file))
-                LoadProcess (file);
+                await LoadProcess (file);
             else
-                LoadFail ();
+                await LoadFail ();
         }
 
-        private void LoadProcess (string incFile) {
+        private async Task LoadProcess (string incFile) {
             StringReader sRead = new StringReader (incFile);
             string line, pline;
             StringBuilder pbuffer;
@@ -564,29 +607,29 @@ namespace II_Avalonia {
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
                             pbuffer.AppendLine (pline);
 
-                        RefreshScenario (true);
-                        App.Patient.Load_Process (pbuffer.ToString ());
+                        await RefreshScenario (true);
+                        await App.Patient.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Scenario") {   // Load files saved by Infirmary Integrated Scenario Editor
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Scenario")
                             pbuffer.AppendLine (pline);
 
-                        RefreshScenario (false);
+                        await RefreshScenario (false);
                         App.Scenario.Load_Process (pbuffer.ToString ());
-                        InitPatient ();     // Needs to be called manually since InitScenario(false) doesn't init a Patient
+                        await InitPatient ();     // Needs to be called manually since InitScenario(false) doesn't init a Patient
                     } else if (line == "> Begin: Editor") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Editor")
                             pbuffer.AppendLine (pline);
 
-                        this.LoadOptions (pbuffer.ToString ());
+                        await this.LoadOptions (pbuffer.ToString ());
                     } else if (line == "> Begin: Cardiac Monitor") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Cardiac Monitor")
                             pbuffer.AppendLine (pline);
 
                         App.Device_Monitor = new DeviceMonitor ();
-                        InitDeviceMonitor ();
+                        await InitDeviceMonitor ();
                         App.Device_Monitor.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: 12 Lead ECG") {
                         pbuffer = new StringBuilder ();
@@ -594,7 +637,7 @@ namespace II_Avalonia {
                             pbuffer.AppendLine (pline);
 
                         App.Device_ECG = new DeviceECG ();
-                        InitDeviceECG ();
+                        await InitDeviceECG ();
                         App.Device_ECG.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Defibrillator") {
                         pbuffer = new StringBuilder ();
@@ -602,7 +645,7 @@ namespace II_Avalonia {
                             pbuffer.AppendLine (pline);
 
                         App.Device_Defib = new DeviceDefib ();
-                        InitDeviceDefib ();
+                        await InitDeviceDefib ();
                         App.Device_Defib.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Intra-aortic Balloon Pump") {
                         pbuffer = new StringBuilder ();
@@ -610,12 +653,12 @@ namespace II_Avalonia {
                             pbuffer.AppendLine (pline);
 
                         App.Device_IABP = new DeviceIABP ();
-                        InitDeviceIABP ();
+                        await InitDeviceIABP ();
                         App.Device_IABP.Load_Process (pbuffer.ToString ());
                     }
                 }
             } catch {
-                LoadFail ();
+                await LoadFail ();
             } finally {
                 sRead.Close ();
             }
@@ -624,26 +667,17 @@ namespace II_Avalonia {
             if (App.Mirror.Status == Mirror.Statuses.CLIENT) {
                 App.Mirror.Status = Mirror.Statuses.INACTIVE;
                 App.Mirror.CancelOperation ();      // Attempt to cancel any possible Mirror downloads
-                //TODO lblStatusText.Content = App.Language.Localize ("PE:StatusMirroringDisabled");
             }
 
             // Initialize the first step of the scenario
             if (App.Scenario.IsScenario)
-                InitStep ();
+                await InitStep ();
 
             // Set Expanders IsExpanded and IsEnabled on whether is a Scenario
-            bool isScene = App.Scenario.IsScenario;
-
-            this.FindControl<Expander> ("expScenarioPlayer").IsEnabled = isScene;
-            this.FindControl<Expander> ("expScenarioPlayer").IsExpanded = isScene;
-            this.FindControl<Expander> ("expVitalSigns").IsExpanded = !isScene;
-            this.FindControl<Expander> ("expHemodynamics").IsExpanded = !isScene;
-            this.FindControl<Expander> ("expRespiratoryProfile").IsExpanded = !isScene;
-            this.FindControl<Expander> ("expCardiacProfile").IsExpanded = !isScene;
-            this.FindControl<Expander> ("expObstetricProfile").IsExpanded = !isScene;
+            await UpdateExpanders ();
         }
 
-        private void LoadOptions (string inc) {
+        private async Task LoadOptions (string inc) {
             StringReader sRead = new StringReader (inc);
 
             try {
@@ -666,7 +700,7 @@ namespace II_Avalonia {
             sRead.Close ();
         }
 
-        private void LoadFail () {
+        private async Task LoadFail () {
             var assets = AvaloniaLocator.Current.GetService<Avalonia.Platform.IAssetLoader> ();
             var icon = new Bitmap (assets.Open (new Uri ("avares://Infirmary Integrated/Third_Party/Icon_DeviceMonitor_48.png")));
 
@@ -687,10 +721,11 @@ namespace II_Avalonia {
                 Topmost = true,
                 CanResize = false,
             });
-            msBoxStandardWindow.Show ();
+
+            await msBoxStandardWindow.Show ();
         }
 
-        private async void SaveFile () {
+        private async Task SaveFile () {
             // Only save single Patient files in base Infirmary Integrated!
             // Scenario files should be created/edited/saved via II Scenario Editor!
 
@@ -715,7 +750,8 @@ namespace II_Avalonia {
                     Topmost = true,
                     CanResize = false,
                 });
-                msBoxStandardWindow.Show ();
+
+                await msBoxStandardWindow.Show ();
 
                 return;
             }
@@ -729,11 +765,11 @@ namespace II_Avalonia {
             string file = await dlgSave.ShowAsync (this);
 
             if (!String.IsNullOrEmpty (file)) {
-                SaveT1 (file);
+                await SaveT1 (file);
             }
         }
 
-        private void SaveT1 (string filename) {
+        private async Task SaveT1 (string filename) {
             if (System.IO.File.Exists (filename))
                 System.IO.File.Delete (filename);
 
@@ -755,22 +791,22 @@ namespace II_Avalonia {
             sb.Append (this.SaveOptions ());
             sb.AppendLine ("> End: Editor");
 
-            if (App.Device_Monitor != null && App.Device_Monitor.IsInitialized) {
+            if (App.Device_Monitor is not null) {
                 sb.AppendLine ("> Begin: Cardiac Monitor");
                 sb.Append (App.Device_Monitor.Save ());
                 sb.AppendLine ("> End: Cardiac Monitor");
             }
-            if (App.Device_ECG != null && App.Device_ECG.IsInitialized) {
+            if (App.Device_ECG is not null) {
                 sb.AppendLine ("> Begin: 12 Lead ECG");
                 sb.Append (App.Device_ECG.Save ());
                 sb.AppendLine ("> End: 12 Lead ECG");
             }
-            if (App.Device_Defib != null && App.Device_Defib.IsInitialized) {
+            if (App.Device_Defib is not null) {
                 sb.AppendLine ("> Begin: Defibrillator");
                 sb.Append (App.Device_Defib.Save ());
                 sb.AppendLine ("> End: Defibrillator");
             }
-            if (App.Device_IABP != null && App.Device_IABP.IsInitialized) {
+            if (App.Device_IABP is not null) {
                 sb.AppendLine ("> Begin: Intra-aortic Balloon Pump");
                 sb.Append (App.Device_IABP.Save ());
                 sb.AppendLine ("> End: Intra-aortic Balloon Pump");
@@ -792,27 +828,32 @@ namespace II_Avalonia {
             return sWrite.ToString ();
         }
 
-        public bool Exit () {
+        public async Task Exit () {
             App.Settings.Save ();
-
-            this.Close ();
-            return true;
+            App.Exit ();
         }
 
-        private void OnMirrorTick (object sender, EventArgs e)
-            => App.Mirror.TimerTick (App.Patient, App.Server);
+        private void OnMirrorTick (object? sender, EventArgs e) {
+            App.Mirror.TimerTick (App.Patient, App.Server);
 
-        private void OnStepChangeRequest (object sender, EventArgs e)
-            => UnloadPatientEvents ();
+            if (App.Mirror.Status == Mirror.Statuses.CLIENT) {
+                ForceUpdateFields (App.Patient);
+            }
+        }
 
-        private void OnStepChanged (object sender, EventArgs e) {
+        private void OnStepChangeRequest (object? sender, EventArgs e)
+            => _ = UnloadPatientEvents ();
+
+        private void OnStepChanged (object? sender, EventArgs e) {
             App.Patient = App.Scenario?.Patient;
 
-            InitPatientEvents ();
-            InitStep ();
+            _ = InitPatientEvents ();
+            _ = InitStep ();
+
+            ForceUpdateFields (App.Patient);
         }
 
-        private void InitStep () {
+        private async Task InitStep () {
             Scenario.Step s = App.Scenario.Current;
 
             Label lblScenarioStep = this.FindControl<Label> ("lblScenarioStep");
@@ -864,17 +905,17 @@ namespace II_Avalonia {
             }
         }
 
-        private void NextStep () {
+        private async Task NextStep () {
             StackPanel stackProgressions = this.FindControl<StackPanel> ("stackProgressions");
 
-            if (App.Scenario.Current.Progressions.Count == 0)
-                App.Scenario.NextStep ();
+            if (App.Scenario?.Current.Progressions.Count == 0)
+                await App.Scenario.NextStep ();
             else {
                 foreach (RadioButton rb in stackProgressions.Children)
                     if (rb.IsChecked ?? false && rb.Name.Contains ("_")) {
                         string prog = rb.Name.Substring (rb.Name.IndexOf ("_") + 1);
                         int optProg = -1;
-                        App.Scenario.NextStep (
+                        await App.Scenario.NextStep (
                             prog == "Default" ? -1
                                 : (int.TryParse (prog, out optProg) ? optProg : -1));
                         break;
@@ -882,24 +923,24 @@ namespace II_Avalonia {
             }
         }
 
-        private void PreviousStep () {
+        private async Task PreviousStep () {
             App.Scenario?.LastStep ();
         }
 
-        private void PauseStep () {
+        private async Task PauseStep () {
             this.FindControl<Button> ("btnPauseStep").IsEnabled = false;
             this.FindControl<Button> ("btnPlayStep").IsEnabled = true;
 
-            App.Scenario.PauseStep ();
+            App.Scenario?.PauseStep ();
 
             this.FindControl<Label> ("lblTimerStep").Content = App.Language.Localize ("PE:ProgressionPaused");
         }
 
-        private void PlayStep () {
+        private async Task PlayStep () {
             this.FindControl<Button> ("btnPauseStep").IsEnabled = true;
             this.FindControl<Button> ("btnPlayStep").IsEnabled = false;
 
-            App.Scenario.PlayStep ();
+            App.Scenario?.PlayStep ();
 
             Label lblTimerStep = this.FindControl<Label> ("lblTimerStep");
 
@@ -912,49 +953,11 @@ namespace II_Avalonia {
                     App.Language.Localize ("PE:ProgressionSeconds"));
         }
 
-        private void ApplyMirroring () {
-            App.Mirror.PatientUpdated = new DateTime ();
-            App.Mirror.ServerQueried = new DateTime ();
-
-            TextBox txtAccessionKey = this.FindControl<TextBox> ("txtAccessionKey");
-            TextBox txtAccessPassword = this.FindControl<TextBox> ("txtAccessPassword");
-            TextBox txtAdminPassword = this.FindControl<TextBox> ("txtAdminPassword");
-            Expander expScenarioPlayer = this.FindControl<Expander> ("expScenarioPlayer");
-
-            if (this.FindControl<RadioButton> ("radioInactive").IsChecked ?? true) {
-                App.Mirror.Status = Mirror.Statuses.INACTIVE;
-                //this.FindControl<Label> ("lblStatusText").Content = App.Language.Localize ("PE:StatusMirroringDisabled");
-            } else if (this.FindControl<RadioButton> ("radioClient").IsChecked ?? true) {
-                /* Set client mirroring status */
-                App.Mirror.Status = Mirror.Statuses.CLIENT;
-                App.Mirror.Accession = txtAccessionKey.Text;
-                App.Mirror.PasswordAccess = txtAccessPassword.Text;
-                //this.FindControl<Label> ("lblStatusText").Content = App.Language.Localize ("PE:StatusMirroringActivated");
-
-                /* When mirroring another patient, disable scenario player and Scenario timer */
-                expScenarioPlayer.IsExpanded = false;   // Can be re-enabled by loading a scenario
-                expScenarioPlayer.IsEnabled = false;
-                App.Scenario.StopTimer ();
-            } else if (this.FindControl<RadioButton> ("radioServer").IsChecked ?? true) {
-                if (txtAccessionKey.Text == "")
-                    txtAccessionKey.Text = Utility.RandomString (8);
-
-                App.Mirror.Status = Mirror.Statuses.HOST;
-                App.Mirror.Accession = txtAccessionKey.Text;
-                App.Mirror.PasswordAccess = txtAccessPassword.Text;
-                App.Mirror.PasswordEdit = txtAdminPassword.Text;
-                //this.FindControl<Label> ("lblStatusText").Content = App.Language.Localize ("PE:StatusMirroringActivated");
-            }
+        private async Task ResetPatientParameters () {
+            await RefreshPatient ();
         }
 
-        private void ResetPatientParameters () {
-            RefreshPatient ();
-            //this.FindControl<Label> ("lblStatusText").Content = App.Language.Localize ("PE:StatusPatientReset");
-        }
-
-        private void ApplyPatientParameters () {
-            ApplyMirroring ();
-
+        private async Task ApplyPatientParameters () {
             ComboBox comboCardiacRhythm = this.FindControl<ComboBox> ("comboCardiacRhythm");
             ComboBox comboRespiratoryRhythm = this.FindControl<ComboBox> ("comboRespiratoryRhythm");
             ComboBox comboPACatheterPlacement = this.FindControl<ComboBox> ("comboPACatheterPlacement");
@@ -969,7 +972,7 @@ namespace II_Avalonia {
                 FHRRhythms.Add ((FHRAccelDecels.Values)Enum.Parse (typeof (FHRAccelDecels.Values), (string)lbi.Tag));
             }
 
-            App.Patient.UpdateParameters (
+            await App.Patient.UpdateParameters (
 
                 // Basic vital signs
                 (int)(this.FindControl<NumericUpDown> ("numHR")?.Value ?? 0),
@@ -1061,101 +1064,91 @@ namespace II_Avalonia {
                     comboUCIntensity.SelectedIndex < 0 ? 0 : comboUCIntensity.SelectedIndex)
             );
 
-            App.Mirror.PostPatient (App.Patient, App.Server);
-            this.FindControl<TextBox> ("txtAccessionKey").Text = App.Mirror.Accession;
+            await App.Mirror.PostPatient (App.Patient, App.Server);
 
-            AdvanceParameterStatus (ParameterStatuses.ChangesApplied);
+            await AdvanceParameterStatus (ParameterStatuses.ChangesApplied);
         }
 
-        private void MenuNewSimulation_Click (object sender, RoutedEventArgs e) => RefreshScenario (true);
+        private void MenuNewSimulation_Click (object sender, RoutedEventArgs e)
+            => _ = RefreshScenario (true);
 
-        private void MenuLoadFile_Click (object s, RoutedEventArgs e) => LoadFile ();
+        private void MenuLoadFile_Click (object s, RoutedEventArgs e)
+            => _ = LoadFile ();
 
-        private void MenuSaveFile_Click (object s, RoutedEventArgs e) => SaveFile ();
+        private void MenuSaveFile_Click (object s, RoutedEventArgs e)
+            => _ = SaveFile ();
 
-        private void MenuExit_Click (object s, RoutedEventArgs e) => Exit ();
+        private void MenuExit_Click (object s, RoutedEventArgs e)
+            => _ = Exit ();
 
-        private void MenuSetLanguage_Click (object s, RoutedEventArgs e) => DialogInitial (true);
+        private void MenuSetLanguage_Click (object s, RoutedEventArgs e)
+            => _ = DialogLanguage (true);
 
-        private void MenuAbout_Click (object s, RoutedEventArgs e) => DialogAbout ();
+        private void MenuMirrorDeactivate_Click (object s, RoutedEventArgs e)
+            => App.Mirror.Status = Mirror.Statuses.INACTIVE;
 
-        private void ButtonDeviceMonitor_Click (object s, RoutedEventArgs e) => InitDeviceMonitor ();
+        private void MenuMirrorBroadcast_Click (object s, RoutedEventArgs e)
+            => _ = DialogMirrorBroadcast (true);
 
-        private void ButtonDeviceDefib_Click (object s, RoutedEventArgs e) => InitDeviceDefib ();
+        private void MenuMirrorReceive_Click (object s, RoutedEventArgs e)
+            => _ = DialogMirrorReceive (true);
 
-        private void ButtonDeviceECG_Click (object s, RoutedEventArgs e) => InitDeviceECG ();
+        private void MenuCheckUpdates_Click (object s, RoutedEventArgs e)
+            => _ = CheckUpgrade ();
 
-        private void ButtonDeviceIABP_Click (object s, RoutedEventArgs e) => InitDeviceIABP ();
+        private void MenuAbout_Click (object s, RoutedEventArgs e)
+            => _ = DialogAbout ();
 
-        private void ButtonDeviceEFM_Click (object s, RoutedEventArgs e) => InitDeviceEFM ();
+        private void ButtonDeviceMonitor_Click (object s, RoutedEventArgs e)
+            => _ = InitDeviceMonitor ();
 
-        private void ButtonGenerateAccessionKey_Click (object sender, RoutedEventArgs e)
-            => this.FindControl<TextBox> ("txtAccessionKey").Text = Utility.RandomString (8);
+        private void ButtonDeviceDefib_Click (object s, RoutedEventArgs e)
+            => _ = InitDeviceDefib ();
 
-        private void ButtonApplyMirroring_Click (object s, RoutedEventArgs e)
-            => ApplyMirroring ();
+        private void ButtonDeviceECG_Click (object s, RoutedEventArgs e)
+            => _ = InitDeviceECG ();
 
-        private void ButtonPreviousStep_Click (object s, RoutedEventArgs e) => PreviousStep ();
+        private void ButtonDeviceIABP_Click (object s, RoutedEventArgs e)
+            => _ = InitDeviceIABP ();
 
-        private void ButtonNextStep_Click (object s, RoutedEventArgs e) => NextStep ();
+        private void ButtonDeviceEFM_Click (object s, RoutedEventArgs e)
+            => _ = InitDeviceEFM ();
 
-        private void ButtonPauseStep_Click (object s, RoutedEventArgs e) => PauseStep ();
+        private void ButtonPreviousStep_Click (object s, RoutedEventArgs e)
+            => _ = PreviousStep ();
 
-        private void ButtonPlayStep_Click (object s, RoutedEventArgs e) => PlayStep ();
+        private void ButtonNextStep_Click (object s, RoutedEventArgs e)
+            => _ = NextStep ();
+
+        private void ButtonPauseStep_Click (object s, RoutedEventArgs e)
+            => _ = PauseStep ();
+
+        private void ButtonPlayStep_Click (object s, RoutedEventArgs e)
+            => _ = PlayStep ();
 
         private void ButtonResetParameters_Click (object s, RoutedEventArgs e)
-            => ResetPatientParameters ();
+            => _ = ResetPatientParameters ();
 
         private void ButtonApplyParameters_Click (object sender, RoutedEventArgs e)
-            => ApplyPatientParameters ();
+            => _ = ApplyPatientParameters ();
 
-        private void Window_Activated (object sender, EventArgs e) {
+        private void OnActivated (object sender, EventArgs e) {
             if (!uiLoadCompleted) {
                 this.Position = new PixelPoint (App.Settings.WindowPosition.X, App.Settings.WindowPosition.Y);
                 this.uiLoadCompleted = true;
             }
         }
 
-        private void Window_Closed (object sender, EventArgs e)
-            => Exit ();
+        private void OnClosed (object sender, EventArgs e)
+            => _ = Exit ();
 
-        private void Window_LayoutUpdated (object sender, EventArgs e) {
+        private void OnLayoutUpdated (object sender, EventArgs e) {
             if (!uiLoadCompleted) {
                 this.Width = App.Settings.WindowSize.X;
                 this.Height = App.Settings.WindowSize.Y;
             } else {
                 App.Settings.WindowSize.X = (int)this.Width;
                 App.Settings.WindowSize.Y = (int)this.Height;
-            }
-        }
-
-        private void TextBoxAccessionKey_PreviewTextInput (object sender, TextInputEventArgs e) {
-            Regex regex = new Regex ("^[a-zA-Z0-9]*$");
-            e.Handled = !regex.IsMatch (e.Text);
-        }
-
-        private void RadioMirrorSelected_Click (object sender, RoutedEventArgs e) {
-            if (!this.IsInitialized || sender == null
-                || this.FindControl<TextBox> ("txtAccessionKey") == null
-                || this.FindControl<TextBox> ("txtAccessPassword") == null
-                || this.FindControl<TextBox> ("txtAdminPassword") == null)
-                return;
-
-            if (((RadioButton)sender).Name == "radioInactive") {
-                this.FindControl<TextBox> ("txtAccessionKey").IsEnabled = false;
-                this.FindControl<Button> ("btnGenerateAccessionKey").IsEnabled = false;
-                this.FindControl<TextBox> ("txtAccessPassword").IsEnabled = false;
-                this.FindControl<TextBox> ("txtAdminPassword").IsEnabled = false;
-            } else if (((RadioButton)sender).Name == "radioClient") {
-                this.FindControl<TextBox> ("txtAccessionKey").IsEnabled = true;
-                this.FindControl<Button> ("btnGenerateAccessionKey").IsEnabled = false;
-                this.FindControl<TextBox> ("txtAccessPassword").IsEnabled = true;
-                this.FindControl<TextBox> ("txtAdminPassword").IsEnabled = false;
-            } else if (((RadioButton)sender).Name == "radioServer") {
-                this.FindControl<TextBox> ("txtAccessionKey").IsEnabled = true;
-                this.FindControl<Button> ("btnGenerateAccessionKey").IsEnabled = true;
-                this.FindControl<TextBox> ("txtAccessPassword").IsEnabled = true;
-                this.FindControl<TextBox> ("txtAdminPassword").IsEnabled = true;
             }
         }
 
@@ -1166,7 +1159,7 @@ namespace II_Avalonia {
             App.Settings.AutoApplyChanges = this.FindControl<CheckBox> ("chkAutoApplyChanges").IsChecked ?? true;
             App.Settings.Save ();
 
-            SetParameterStatus (App.Settings.AutoApplyChanges);
+            _ = SetParameterStatus (App.Settings.AutoApplyChanges);
         }
 
         private void OnUIPatientParameter_KeyDown (object sender, KeyEventArgs e) {
@@ -1194,12 +1187,12 @@ namespace II_Avalonia {
 
                 case ParameterStatuses.ChangesApplied:
                 case ParameterStatuses.ChangesPending:
-                    AdvanceParameterStatus (ParameterStatuses.ChangesPending);
+                    _ = AdvanceParameterStatus (ParameterStatuses.ChangesPending);
                     break;
 
                 case ParameterStatuses.AutoApply:
-                    ApplyPatientParameters ();
-                    UpdateParameterIndicators ();
+                    _ = ApplyPatientParameters ();
+                    _ = UpdateParameterIndicators ();
                     break;
             }
         }
@@ -1272,6 +1265,14 @@ namespace II_Avalonia {
             numPDP.Value = (int)II.Math.Clamp ((double)(numPDP?.Value ?? 0), v.PDPMin, v.PDPMax);
 
             OnUIPatientParameter_Process (sender, e);
+        }
+
+        private void ForceUpdateFields (Patient p) {
+            Dispatcher.UIThread.InvokeAsync (() => {                        // Updating the UI requires being on the proper thread
+                ParameterStatus = ParameterStatuses.Loading;                // To prevent each form update from auto-applying back to Patient
+                FormUpdateFields (this, new Patient.PatientEventArgs (App.Patient, Patient.PatientEventTypes.Vitals_Change));
+                _ = SetParameterStatus (App.Settings.AutoApplyChanges);     // Re-establish parameter status
+            });
         }
 
         private void FormUpdateFields (object sender, Patient.PatientEventArgs e) {

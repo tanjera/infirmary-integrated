@@ -18,80 +18,75 @@
       <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
     </Style>
   </Window.Styles>
-  <LayoutTransformControl Name="layoutControl">
-    <LayoutTransformControl.LayoutTransform>
-      <ScaleTransform ScaleX="{Binding Path=UIScale}" ScaleY="{Binding Path=UIScale}" />
-    </LayoutTransformControl.LayoutTransform>
-    <Grid Margin="10,5,50,10" HorizontalAlignment="Center">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="Auto" />
-      </Grid.RowDefinitions>
+  <Grid Margin="10,5,50,10" HorizontalAlignment="Center">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
 
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="Auto" />
-        <ColumnDefinition Width="*" />
-      </Grid.ColumnDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
 
-      <Image
-				Name="imgIcon"
-				Grid.Row="0"
-				Grid.Column="0"
-				Width="100"
-				Height="100"
-				Margin="10"
-				HorizontalAlignment="Center"
-				VerticalAlignment="Center"
-				Source="avares://Infirmary Integrated/Resources/Icon_II.ico" />
+    <Image
+      Name="imgIcon"
+      Grid.Row="0"
+      Grid.Column="0"
+      Width="100"
+      Height="100"
+      Margin="10"
+      HorizontalAlignment="Center"
+      VerticalAlignment="Center"
+      Source="avares://Infirmary Integrated/Resources/Icon_II.ico" />
 
-      <StackPanel Grid.Row="0" Grid.Column="1">
+    <StackPanel Grid.Row="0" Grid.Column="1">
 
-        <Label
-					Name="lblInfirmaryIntegrated"
-					Margin="5"
-					Padding="5"
-					HorizontalAlignment="Left"
-					VerticalAlignment="Bottom"
-					FontSize="22"
-					FontWeight="Bold" />
+      <Label
+        Name="lblInfirmaryIntegrated"
+        Margin="5"
+        Padding="5"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Bottom"
+        FontSize="22"
+        FontWeight="Bold" />
 
-        <Label
-					Name="lblVersion"
-					Margin="5,0"
-					Padding="5,2,5,0"
-					HorizontalAlignment="Left" />
+      <Label
+        Name="lblVersion"
+        Margin="5,0"
+        Padding="5,2,5,0"
+        HorizontalAlignment="Left" />
 
-        <Label
-					Margin="5,0"
-					Padding="5,0,5,2"
-					HorizontalAlignment="Left"
-					Content="Ibi Keller, (c) 2017-2021" />
+      <Label
+        Margin="5,0"
+        Padding="5,0,5,2"
+        HorizontalAlignment="Left"
+        Content="Ibi Keller, (c) 2017-2021" />
 
-        <TextBlock
-					Name="tblDescription"
-					Margin="5"
-					Padding="5,2"
-					HorizontalAlignment="Left"
-					VerticalAlignment="Top"
-					TextWrapping="Wrap" />
+      <TextBlock
+        Name="tblDescription"
+        Margin="5"
+        Padding="5,2"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top"
+        TextWrapping="Wrap" />
 
-        <Label
-					Margin="5,5,5,0"
-					Padding="5,2,5,0"
-					HorizontalAlignment="Left"
-					Classes="url"
-					Tapped="Hyperlink_Website">
-          http://www.infirmary-integrated.com/
-        </Label>
+      <Label
+        Margin="5,5,5,0"
+        Padding="5,2,5,0"
+        HorizontalAlignment="Left"
+        Classes="url"
+        Tapped="Hyperlink_Website">
+        http://www.infirmary-integrated.com/
+      </Label>
 
-        <Label
-					Margin="5,0,5,5"
-					Padding="5,0,5,2"
-					HorizontalAlignment="Left"
-					Classes="url"
-					Tapped="Hyperlink_GitRepo">
-          https://github.com/tanjera/infirmary-integrated
-        </Label>
-      </StackPanel>
-    </Grid>
-  </LayoutTransformControl>
+      <Label
+        Margin="5,0,5,5"
+        Padding="5,0,5,2"
+        HorizontalAlignment="Left"
+        Classes="url"
+        Tapped="Hyperlink_GitRepo">
+        https://github.com/tanjera/infirmary-integrated
+      </Label>
+    </StackPanel>
+  </Grid>
 </Window>

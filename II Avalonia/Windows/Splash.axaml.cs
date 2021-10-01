@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace II_Avalonia {
 
-    public partial class SplashScreen : Window {
+    public partial class Splash : Window {
 
-        public SplashScreen () {
+        public Splash () {
             InitializeComponent ();
 #if DEBUG
             this.AttachDevTools ();
@@ -19,13 +19,8 @@ namespace II_Avalonia {
             AvaloniaXamlLoader.Load (this);
         }
 
-        public double UIScale { get { return App.Settings.UIScale; } }
-
         private void Init () {
             DataContext = this;
-
-            this.Width *= UIScale;
-            this.Height *= UIScale;
         }
     }
 }

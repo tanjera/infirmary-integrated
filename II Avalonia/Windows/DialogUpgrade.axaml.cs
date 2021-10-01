@@ -21,9 +21,6 @@ namespace II_Avalonia {
             Init ();
         }
 
-        /* Properties for applying DPI scaling options */
-        public double UIScale { get { return App.Settings.UIScale; } }
-
         public event EventHandler<UpgradeEventArgs> OnUpgradeRoute;
 
         public class UpgradeEventArgs : EventArgs {
@@ -39,9 +36,6 @@ namespace II_Avalonia {
 
         public void Init () {
             DataContext = this;
-
-            this.Width *= UIScale;
-            this.Height *= UIScale;
 
             // Populate UI strings per language selection
             this.FindControl<Window> ("dlgUpgrade").Title = App.Language.Localize ("UPGRADE:Upgrade");

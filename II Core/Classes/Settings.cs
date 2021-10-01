@@ -15,19 +15,21 @@ namespace II {
     public class Settings {
         public string Language;
         public bool AutoApplyChanges;
-        public double UIScale;
         public Point WindowSize;
         public Point WindowPosition;
         public bool MuteUpgrade;
-        public string MuteUpgradeVersion;
+        public DateTime MuteUpgradeDate;
 
         public Settings () {
-            Language = "ENU";
+            Language = "ENG";
             AutoApplyChanges = false;
-            UIScale = 0.9d;
             WindowSize = new Point (700, 560);
             MuteUpgrade = false;
-            MuteUpgradeVersion = "";
+            MuteUpgradeDate = new DateTime (2000, 1, 1);
+        }
+
+        public static bool Exists () {
+            return System.IO.File.Exists (File.GetConfigPath ());
         }
 
         public void Load () {
@@ -38,7 +40,6 @@ namespace II {
 
             string? line;
             bool parseBool;
-            double parseDbl;
             int parseInt;
 
             while ((line = sr.ReadLine ()) != null) {
@@ -56,11 +57,6 @@ namespace II {
                             break;
 
                         // Settings for the size of the Patient Editor
-                        case "UIScale":
-                            if (double.TryParse (pValue, out parseDbl))
-                                UIScale = parseDbl;
-                            break;
-
                         case "WindowSizeX":
                             if (int.TryParse (pValue, out parseInt))
                                 WindowSize.X = parseInt;
@@ -77,8 +73,8 @@ namespace II {
                                 MuteUpgrade = parseBool;
                             break;
 
-                        case "MuteUpgradeVersion":
-                            MuteUpgradeVersion = pValue;
+                        case "MuteUpgradeDate":
+                            MuteUpgradeDate = Utility.DateTime_FromString (pValue);
                             break;
                     }
                 }
@@ -93,13 +89,12 @@ namespace II {
 
             sw.WriteLine ($"Language:{Language}");
             sw.WriteLine ($"AutoApplyChanges:{AutoApplyChanges}");
-            sw.WriteLine ($"UIScale:{UIScale}");
             sw.WriteLine ($"WindowSizeX:{WindowSize.X}");
             sw.WriteLine ($"WindowSizeY:{WindowSize.Y}");
             sw.WriteLine ($"WindowPositionX:{WindowPosition.X}");
             sw.WriteLine ($"WindowPositionY:{WindowPosition.Y}");
             sw.WriteLine ($"MuteUpgrade:{MuteUpgrade}");
-            sw.WriteLine ($"MuteUpgradeVersion:{MuteUpgradeVersion}");
+            sw.WriteLine ($"MuteUpgradeDate:{Utility.DateTime_ToString (MuteUpgradeDate)}");
 
             sw.Close ();
             sw.Dispose ();
