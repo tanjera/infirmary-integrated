@@ -14,10 +14,18 @@ using System.Collections.Generic;
 using II.Waveform;
 
 namespace II {
+
     public class Cardiac_Rhythms {
         public Values Value;
-        public Cardiac_Rhythms (Values v) { Value = v; }
-        public Cardiac_Rhythms () { Value = Values.Sinus_Rhythm; }
+
+        public Cardiac_Rhythms (Values v) {
+            Value = v;
+        }
+
+        public Cardiac_Rhythms () {
+            Value = Values.Sinus_Rhythm;
+        }
+
         public bool AberrantBeat = false;           // Signals for aberrancy in rhythm generation
         public bool AlternansBeat = false;          // Signals for switching in pulsus alternans
 
@@ -55,6 +63,12 @@ namespace II {
 
         public static string LookupString (Values value) {
             return String.Format ("RHYTHM:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
+        }
+
+        public bool CanBe_Paced {
+            get {
+                return HasPulse_Ventricular;
+            }
         }
 
         public bool HasPulse_Atrial {
@@ -169,6 +183,7 @@ namespace II {
         }
 
         public class Default_Vitals {
+
             public int HRMin, HRMax,
                         RRMin, RRMax,
                         SPO2Min, SPO2Max,
@@ -375,8 +390,14 @@ namespace II {
 
     public class Respiratory_Rhythms {
         public Values Value;
-        public Respiratory_Rhythms (Values v) { Value = v; }
-        public Respiratory_Rhythms () { Value = Values.Regular; }
+
+        public Respiratory_Rhythms (Values v) {
+            Value = v;
+        }
+
+        public Respiratory_Rhythms () {
+            Value = Values.Regular;
+        }
 
         public static string LookupString (Values value) {
             return String.Format ("RHYTHM:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
@@ -394,6 +415,7 @@ namespace II {
 
         public class Default_Vitals {
             public int RRMin, RRMax;
+
             public float RR_IE_I_Min, RR_IE_I_Max,
                          RR_IE_E_Min, RR_IE_E_Max;
 
@@ -426,8 +448,14 @@ namespace II {
 
     public class PulmonaryArtery_Rhythms {
         public Values Value;
-        public PulmonaryArtery_Rhythms (Values v) { Value = v; }
-        public PulmonaryArtery_Rhythms () { Value = Values.Pulmonary_Artery; }
+
+        public PulmonaryArtery_Rhythms (Values v) {
+            Value = v;
+        }
+
+        public PulmonaryArtery_Rhythms () {
+            Value = Values.Pulmonary_Artery;
+        }
 
         public static string LookupString (Values value) {
             return String.Format ("RHYTHM:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
@@ -463,8 +491,14 @@ namespace II {
 
     public class Cardiac_Axes {
         public Values Value;
-        public Cardiac_Axes (Values v) { Value = v; }
-        public Cardiac_Axes () { Value = Values.Normal; }
+
+        public Cardiac_Axes (Values v) {
+            Value = v;
+        }
+
+        public Cardiac_Axes () {
+            Value = Values.Normal;
+        }
 
         public static string LookupString (Values value) {
             return String.Format ("CARDIAC_AXIS:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
@@ -482,8 +516,14 @@ namespace II {
 
     public class FHRAccelDecels {
         public List<Values> ValueList;
-        public FHRAccelDecels (List<Values> v) { ValueList = v; }
-        public FHRAccelDecels () { ValueList = new List<Values> (); }
+
+        public FHRAccelDecels (List<Values> v) {
+            ValueList = v;
+        }
+
+        public FHRAccelDecels () {
+            ValueList = new List<Values> ();
+        }
 
         public static string LookupString (Values v) {
             return String.Format ("FETAL_RHYTHMS:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v).ToString ());

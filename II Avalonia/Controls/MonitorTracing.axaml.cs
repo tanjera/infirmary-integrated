@@ -238,12 +238,9 @@ namespace II_Avalonia.Controls {
         }
 
         public async Task DrawTracing ()
-            => Draw (Strip.Points, tracingBrush, 1);
+            => Draw (Strip, tracingBrush, 1);
 
-        public void DrawReference ()
-            => Draw (Strip.Reference, referenceBrush, 1);
-
-        public async Task Draw (List<PointD> _Points, IBrush _Brush, double _Thickness) {
+        public async Task Draw (Strip _Strip, IBrush _Brush, double _Thickness) {
             Image imgTracing = this.FindControl<Image> ("imgTracing");
 
             PixelSize size = new PixelSize (    // Must use a size > 0
@@ -255,7 +252,7 @@ namespace II_Avalonia.Controls {
             tracingPen.Brush = _Brush;
             tracingPen.Thickness = _Thickness;
 
-            await Trace.DrawPath (_Points, Tracing, tracingPen, drawOffset, drawMultiplier);
+            Trace.DrawPath (_Strip, Tracing, tracingPen, drawOffset, drawMultiplier);
 
             imgTracing.Source = Tracing;
         }

@@ -22,9 +22,9 @@ namespace II_Avalonia {
 
     public class Trace {
 
-        public static async Task DrawPath (List<PointD> points, RenderTargetBitmap bitmap,
+        public static void DrawPath (Strip strip, RenderTargetBitmap bitmap,
                 Pen pen, PointD offset, PointD multiplier) {
-            if (points.Count < 2)
+            if (strip.Points.Count < 2)
                 return;
 
             if (bitmap == null)     // Can't initiate Bitmap here; don't have width/height
@@ -34,18 +34,19 @@ namespace II_Avalonia {
                 var sg = new StreamGeometry ();
 
                 using (var sgc = sg.Open ()) {
-                    sgc.BeginFigure (new Point (
-                        (points [0].X * multiplier.X) + offset.X,
-                        (points [0].Y * multiplier.Y) + offset.Y),
-                        false);
+                    lock (strip.lockPoints) {
+                        sgc.BeginFigure (new Point (
+                            (strip.Points [0].X * multiplier.X) + offset.X,
+                            (strip.Points [0].Y * multiplier.Y) + offset.Y),
+                            false);
 
-                    for (int i = 1; i < points.Count; i++) {
-                        sgc.LineTo (new Point (
-                            (points [i].X * multiplier.X) + offset.X,
-                            (points [i].Y * multiplier.Y) + offset.Y
-                            ));
+                        for (int i = 1; i < strip.Points.Count; i++) {
+                            sgc.LineTo (new Point (
+                                (strip.Points [i].X * multiplier.X) + offset.X,
+                                (strip.Points [i].Y * multiplier.Y) + offset.Y
+                                ));
+                        }
                     }
-
                     sgc.EndFigure (false);
                 }
 

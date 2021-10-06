@@ -17,6 +17,7 @@ using II.Drawing;
 using II.Waveform;
 
 namespace II.Rhythm {
+
     public class Strip {
         /* Default variables for easy modification of multiple measurement/tracing functions */
         public static double DefaultLength = 6.0d;
@@ -60,7 +61,6 @@ namespace II.Rhythm {
         public Lead Lead;
         public readonly object lockPoints = new object ();
         public List<PointD> Points;                        // Clinical waveform tracing points
-        public List<PointD> Reference;                     // Reference line tracing points
 
         public enum Offsets {
             Center,
@@ -88,11 +88,8 @@ namespace II.Rhythm {
             lock (lockPoints)
                 Points = new List<PointD> ();
 
-            Reference = new List<PointD> ();
-
             SetScale ();
             SetOffset ();
-            SetReference ();
         }
 
         private bool IsECG {
@@ -144,7 +141,6 @@ namespace II.Rhythm {
 
             SetScale ();
             SetOffset ();
-            SetReference ();
         }
 
         private void SetScale () {
@@ -233,27 +229,6 @@ namespace II.Rhythm {
                 case Lead.Values.IAP:
                 case Lead.Values.ICP:
                     Offset = Offsets.Center;
-                    break;
-            }
-        }
-
-        private void SetReference () {
-            /* Create reference line for specific leads */
-            switch (Lead.Value) {
-                default: break;
-
-                case Lead.Values.ETCO2:
-                case Lead.Values.SPO2:
-                    Reference = new List<PointD> () {
-                        new PointD(0, (double)DefaultOffset_ReferenceZero),
-                        new PointD((double)Length, (double)DefaultOffset_ReferenceZero)};
-                    break;
-
-                case Lead.Values.ABP:
-                case Lead.Values.PA:
-                case Lead.Values.CVP:
-                case Lead.Values.IAP:
-                case Lead.Values.ICP:
                     break;
             }
         }

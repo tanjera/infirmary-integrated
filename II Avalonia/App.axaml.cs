@@ -1,10 +1,12 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Threading;
 
 using II;
 using II.Localization;
@@ -45,13 +47,14 @@ namespace II_Avalonia {
             App.Language = new Language (App.Settings.Language);    // Load localization dictionary based on settings
         }
 
-        public override void OnFrameworkInitializationCompleted () {
+        public override async void OnFrameworkInitializationCompleted () {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
                 Window_Splash = new Splash ();
                 Window_Main = new Main ();
 
                 // Show the splash screen for 2 seconds, then swap out to the main window
                 desktop.MainWindow = Window_Splash;
+                Window_Splash.Show ();
 
 #if !DEBUG
                 await Task.Delay (2000);

@@ -954,10 +954,12 @@ namespace II {
             timerPacemaker_Spike.Stop ();
 
             // Trigger the QRS complex, then reset the heart's intrinsic timers
-            Cardiac_Rhythm.AberrantBeat = true;
-            await OnPatientEvent (PatientEventTypes.Cardiac_Ventricular_Electric);
-            Cardiac_Rhythm.AberrantBeat = false;
-            timerCardiac_Baseline.ResetAuto ();
+            if (Cardiac_Rhythm.CanBe_Paced) {
+                Cardiac_Rhythm.AberrantBeat = true;
+                await OnCardiac_Ventricular_Electric ();
+                Cardiac_Rhythm.AberrantBeat = false;
+                timerCardiac_Baseline.ResetAuto ();
+            }
         }
 
         private async Task OnCardiac_Baseline () {

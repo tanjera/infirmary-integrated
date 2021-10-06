@@ -156,33 +156,55 @@
 
   <DockPanel LastChildFill="True">
     <!--  Main Menu  -->
-    <Menu DockPanel.Dock="Top">
-      <MenuItem Name="menuFile">
-        <MenuItem Name="menuNew" Click="MenuNewSimulation_Click" />
-        <Separator />
-        <MenuItem Name="menuLoad" Click="MenuLoadFile_Click" />
-        <MenuItem Name="menuSave" Click="MenuSaveFile_Click" />
-        <Separator />
-        <MenuItem Name="menuExit" Click="MenuExit_Click" />
-      </MenuItem>
+    <Grid DockPanel.Dock="Top">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+      <Menu Grid.Column="0">
+        <MenuItem Name="menuFile">
+          <MenuItem Name="menuNew" Click="MenuNewSimulation_Click" />
+          <Separator />
+          <MenuItem Name="menuLoad" Click="MenuLoadFile_Click" />
+          <MenuItem Name="menuSave" Click="MenuSaveFile_Click" />
+          <Separator />
+          <MenuItem Name="menuExit" Click="MenuExit_Click" />
+        </MenuItem>
 
-      <MenuItem Name="menuMirror">
-        <MenuItem Name="menuMirrorDeactivate" Click="MenuMirrorDeactivate_Click" />
-        <Separator />
-        <MenuItem Name="menuMirrorReceive" Click="MenuMirrorReceive_Click" />
-        <MenuItem Name="menuMirrorBroadcast" Click="MenuMirrorBroadcast_Click" />
-      </MenuItem>
+        <MenuItem Name="menuMirror">
+          <MenuItem Name="menuMirrorStatus" />
+          <Separator />
+          <MenuItem Name="menuMirrorDeactivate" Click="MenuMirrorDeactivate_Click" />
+          <Separator />
+          <MenuItem Name="menuMirrorReceive" Click="MenuMirrorReceive_Click" />
+          <MenuItem Name="menuMirrorBroadcast" Click="MenuMirrorBroadcast_Click" />
+        </MenuItem>
 
-      <MenuItem Name="menuSettings">
-        <MenuItem Name="menuSetLanguage" Click="MenuSetLanguage_Click" />
-      </MenuItem>
+        <MenuItem Name="menuSettings">
+          <MenuItem Name="menuSetLanguage" Click="MenuSetLanguage_Click" />
+        </MenuItem>
 
-      <MenuItem Name="menuHelp">
-        <MenuItem Name="menuCheckUpdates" Click="MenuCheckUpdates_Click" />
-        <Separator />
-        <MenuItem Name="menuAbout" Click="MenuAbout_Click" />
-      </MenuItem>
-    </Menu>
+        <MenuItem Name="menuHelp">
+          <MenuItem Name="menuCheckUpdate" Click="MenuCheckUpdate_Click" />
+          <Separator />
+          <MenuItem Name="menuAbout" Click="MenuAbout_Click" />
+        </MenuItem>
+      </Menu>
+
+      <Menu
+				Grid.Column="1"
+				Margin="10,0"
+				HorizontalAlignment="Right">
+        <MenuItem
+					Name="menuUpdate"
+					Background="Yellow"
+					Click="MenuUpdate_Click"
+					IsVisible="False" />
+      </Menu>
+    </Grid>
 
     <Grid>
       <Grid.RowDefinitions>

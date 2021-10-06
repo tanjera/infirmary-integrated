@@ -101,7 +101,7 @@ namespace II_Avalonia {
             this.FindControl<MenuItem> ("menuSetLanguage").Header = App.Language.Localize ("PE:MenuSetLanguage");
 
             this.FindControl<MenuItem> ("menuHelp").Header = App.Language.Localize ("PE:MenuHelp");
-            this.FindControl<MenuItem> ("menuCheckUpdates").Header = App.Language.Localize ("PE:MenuCheckUpdates");
+            this.FindControl<MenuItem> ("menuCheckUpdate").Header = App.Language.Localize ("PE:MenuCheckUpdates");
             this.FindControl<MenuItem> ("menuAbout").Header = App.Language.Localize ("PE:MenuAboutProgram");
 
             this.FindControl<HeaderedContentControl> ("lblGroupDevices").Header = App.Language.Localize ("PE:Devices");
@@ -220,6 +220,9 @@ namespace II_Avalonia {
 
             string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
             if (Utility.IsNewerVersion (version, App.Server.UpgradeVersion)) {
+                MenuItem miUpdate = this.FindControl<MenuItem> ("menuUpdate");
+                miUpdate.Header = App.Language.Localize ("STATUS:UpdateAvailable");
+                miUpdate.IsVisible = true;
             } else {            // If no update available, no status update; remove any notification muting
                 App.Settings.MuteUpgrade = false;
                 App.Settings.Save ();
@@ -242,6 +245,8 @@ namespace II_Avalonia {
             App.Timer_Main.Elapsed += App.Mirror.ProcessTimer;
             App.Mirror.timerUpdate.Tick += OnMirrorTick;
             App.Mirror.timerUpdate.ResetAuto (5000);
+
+            await UpdateMirrorStatus ();
         }
 
         private async Task InitScenario (bool toInit) {
@@ -408,7 +413,7 @@ namespace II_Avalonia {
                 InitInterface ();
         }
 
-        private async Task DialogMirrorBroadcast (bool reloadUI = false) {
+        private async Task DialogMirrorBroadcast () {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
@@ -417,18 +422,15 @@ namespace II_Avalonia {
             await dlg.ShowDialog (this);
 
             await App.Mirror.PostPatient (App.Patient, App.Server);
-            await UpdateExpanders (false);
         }
 
-        private async Task DialogMirrorReceive (bool reloadUI = false) {
+        private async Task DialogMirrorReceive () {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
             DialogMirrorReceive dlg = new DialogMirrorReceive ();
             dlg.Activate ();
             await dlg.ShowDialog (this);
-
-            await UpdateExpanders (false);
         }
 
         private async Task DialogAbout () {
@@ -438,21 +440,6 @@ namespace II_Avalonia {
             DialogAbout dlg = new DialogAbout ();
             dlg.Activate ();
             await dlg.ShowDialog (this);
-        }
-
-        private async Task CheckUpgrade () {
-            // Check with server for updated version of Infirmary Integrated- notify user either way
-
-            App.Server.Get_LatestVersion_Windows ();
-
-            string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
-            if (Utility.IsNewerVersion (version, App.Server.UpgradeVersion)) {
-                await DialogUpgrade ();
-            } else {
-                DialogUpgradeCurrent dlg = new DialogUpgradeCurrent ();
-                dlg.Activate ();
-                await dlg.ShowDialog (this);
-            }
         }
 
         private async Task DialogUpgrade () {
@@ -482,6 +469,66 @@ namespace II_Avalonia {
                     if (!String.IsNullOrEmpty (App.Server.UpgradeWebpage))
                         InterOp.OpenBrowser (App.Server.UpgradeWebpage);
                     return;
+            }
+        }
+
+        private async Task CheckUpgrade () {
+            // Check with server for updated version of Infirmary Integrated- notify user either way
+
+            App.Server.Get_LatestVersion_Windows ();
+
+            string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
+            if (Utility.IsNewerVersion (version, App.Server.UpgradeVersion)) {
+                await DialogUpgrade ();
+            } else {
+                DialogUpgradeCurrent dlg = new DialogUpgradeCurrent ();
+                dlg.Activate ();
+                await dlg.ShowDialog (this);
+            }
+        }
+
+        private async Task OpenUpgrade () {
+            if (!String.IsNullOrEmpty (App.Server.UpgradeWebpage))
+                InterOp.OpenBrowser (App.Server.UpgradeWebpage);
+        }
+
+        private async Task MirrorDeactivate () {
+            App.Mirror.Status = Mirror.Statuses.INACTIVE;
+
+            await UpdateMirrorStatus ();
+            await UpdateExpanders (false);
+        }
+
+        private async Task MirrorBroadcast () {
+            await DialogMirrorBroadcast ();
+
+            await UpdateMirrorStatus ();
+            await UpdateExpanders (false);
+        }
+
+        private async Task MirrorReceive () {
+            await DialogMirrorReceive ();
+
+            await UpdateMirrorStatus ();
+            await UpdateExpanders (false);
+        }
+
+        private async Task UpdateMirrorStatus () {
+            MenuItem miStatus = this.FindControl<MenuItem> ("menuMirrorStatus");
+
+            switch (App.Mirror.Status) {
+                default:
+                case Mirror.Statuses.INACTIVE:
+                    miStatus.Header = $"{App.Language.Localize ("MIRROR:Status")}: {App.Language.Localize ("MIRROR:Inactive")}";
+                    break;
+
+                case Mirror.Statuses.HOST:
+                    miStatus.Header = $"{App.Language.Localize ("MIRROR:Status")}: {App.Language.Localize ("MIRROR:Server")}";
+                    break;
+
+                case Mirror.Statuses.CLIENT:
+                    miStatus.Header = $"{App.Language.Localize ("MIRROR:Status")}: {App.Language.Localize ("MIRROR:Client")}";
+                    break;
             }
         }
 
@@ -1085,19 +1132,22 @@ namespace II_Avalonia {
             => _ = DialogLanguage (true);
 
         private void MenuMirrorDeactivate_Click (object s, RoutedEventArgs e)
-            => App.Mirror.Status = Mirror.Statuses.INACTIVE;
+            => _ = MirrorDeactivate ();
 
         private void MenuMirrorBroadcast_Click (object s, RoutedEventArgs e)
-            => _ = DialogMirrorBroadcast (true);
+            => _ = MirrorBroadcast ();
 
         private void MenuMirrorReceive_Click (object s, RoutedEventArgs e)
-            => _ = DialogMirrorReceive (true);
-
-        private void MenuCheckUpdates_Click (object s, RoutedEventArgs e)
-            => _ = CheckUpgrade ();
+            => _ = MirrorReceive ();
 
         private void MenuAbout_Click (object s, RoutedEventArgs e)
             => _ = DialogAbout ();
+
+        private void MenuCheckUpdate_Click (object s, RoutedEventArgs e)
+            => _ = CheckUpgrade ();
+
+        private void MenuUpdate_Click (object s, RoutedEventArgs e)
+            => _ = OpenUpgrade ();
 
         private void ButtonDeviceMonitor_Click (object s, RoutedEventArgs e)
             => _ = InitDeviceMonitor ();
