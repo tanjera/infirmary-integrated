@@ -20,7 +20,8 @@
   <Window.Styles>
 
     <Style Selector="Border.control">
-      <Setter Property="CornerRadius" Value="5" />
+      <Setter Property="BorderThickness" Value="1.1" />
+      <Setter Property="CornerRadius" Value="2" />
       <Setter Property="Margin" Value="3" />
     </Style>
 
@@ -46,7 +47,7 @@
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="VerticalAlignment" Value="Stretch" />
       <Setter Property="BorderBrush" Value="White" />
-      <Setter Property="BorderThickness" Value="0.5" />
+      <Setter Property="BorderThickness" Value="1.1" />
       <Setter Property="Margin" Value="5" />
     </Style>
 
@@ -55,7 +56,7 @@
       <Setter Property="HorizontalAlignment" Value="Center" />
       <Setter Property="VerticalAlignment" Value="Center" />
       <Setter Property="TextAlignment" Value="Center" />
-      <Setter Property="Margin" Value="2" />
+      <Setter Property="Margin" Value="10,4" />
       <Setter Property="FontWeight" Value="Bold" />
       <Setter Property="FontSize" Value="60" />
       <Setter Property="Foreground" Value="Black" />
@@ -66,15 +67,14 @@
     <!--  Main Menu  -->
     <Menu Background="White" DockPanel.Dock="Top">
       <MenuItem Name="menuDevice">
-        <MenuItem
-          Name="menuPauseDevice"
-
-          Click="MenuTogglePause_Click" />
+        <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" />
         <Separator />
-        <MenuItem
-          Name="menuCloseDevice"
+        <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" />
+      </MenuItem>
 
-          Click="MenuClose_Click" />
+      <MenuItem Name="menuColor">
+        <MenuItem Name="menuColorLight" Click="MenuColorScheme_Light" />
+        <MenuItem Name="menuColorDark" Click="MenuColorScheme_Dark" />
       </MenuItem>
     </Menu>
     <Grid Name="mainGrid">
@@ -89,10 +89,9 @@
 
       <!--  Display screen for IABP output e.g. waveform tracings, pressures, etc.  -->
       <Grid
-        Name="displayGrid"
-        Grid.Row="0"
-        Grid.Column="0"
-        Background="Black">
+				Name="displayGrid"
+				Grid.Row="0"
+				Grid.Column="0">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="1 *" />
           <ColumnDefinition Width="4 *" />
@@ -106,15 +105,16 @@
 
         <!--  IABP Trigger Source, Operation Mode, Current Status, Helium Remaining  -->
         <Border
-          Grid.Row="0"
-          Grid.RowSpan="3"
-          Grid.Column="0"
-          Margin="5"
-          BorderBrush="SkyBlue"
-          BorderThickness="0.5"
-          CornerRadius="5">
+					Name="brdStatusInfo"
+					Grid.Row="0"
+					Grid.RowSpan="3"
+					Grid.Column="0"
+					Margin="5"
+					BorderBrush="SkyBlue"
+					BorderThickness="0.5"
+					CornerRadius="5">
 
-          <Grid Name="layoutStatusInfo" Background="Black">
+          <Grid Name="layoutStatusInfo">
             <Grid.RowDefinitions>
               <RowDefinition Height="1.5 *" />
               <RowDefinition Height="1.5 *" />
@@ -128,52 +128,52 @@
             </Grid.ColumnDefinitions>
 
             <Border
-              Name="brdTriggerSource"
-              Grid.Row="0"
-              Grid.Column="0"
-              Classes="numeric">
+							Name="brdTriggerSource"
+							Grid.Row="0"
+							Grid.Column="0"
+							Classes="numeric">
               <TextBlock Name="lblTriggerSource" Classes="numeric" />
             </Border>
             <Border
-              Name="brdOperationMode"
-              Grid.Row="1"
-              Grid.Column="0"
-              Classes="numeric">
+							Name="brdOperationMode"
+							Grid.Row="1"
+							Grid.Column="0"
+							Classes="numeric">
               <TextBlock Name="lblOperationMode" Classes="numeric" />
             </Border>
             <Border
-              Name="brdFrequency"
-              Grid.Row="2"
-              Grid.Column="0"
-              Classes="numeric">
+							Name="brdFrequency"
+							Grid.Row="2"
+							Grid.Column="0"
+							Classes="numeric">
               <TextBlock Name="lblFrequency" Classes="numeric" />
             </Border>
             <Border
-              Name="brdMachineStatus"
-              Grid.Row="3"
-              Grid.Column="0"
-              Classes="numeric">
+							Name="brdMachineStatus"
+							Grid.Row="3"
+							Grid.Column="0"
+							Classes="numeric">
               <TextBlock Name="lblMachineStatus" Classes="numeric" />
             </Border>
             <Border
-              Name="brdTubingStatus"
-              Grid.Row="4"
-              Grid.Column="0"
-              Classes="numeric">
+							Name="brdTubingStatus"
+							Grid.Row="4"
+							Grid.Column="0"
+							Classes="numeric">
               <TextBlock
-                Name="lblTubingStatus"
-                Classes="numeric"
-                FontSize="30" />
+								Name="lblTubingStatus"
+								Classes="numeric"
+								FontSize="30" />
             </Border>
             <Border
-              Name="brdHelium"
-              Grid.Row="5"
-              Grid.Column="0"
-              Classes="numeric">
+							Name="brdHelium"
+							Grid.Row="5"
+							Grid.Column="0"
+							Classes="numeric">
               <TextBlock
-                Name="lblHelium"
-                Classes="numeric"
-                FontSize="30" />
+								Name="lblHelium"
+								Classes="numeric"
+								FontSize="30" />
             </Border>
           </Grid>
         </Border>
@@ -186,10 +186,10 @@
 
       <!--  Control panel for IABP e.g. operation mode, trigger selection, etc.  -->
       <Grid
-        Name="controlsGrid"
-        Grid.Row="1"
-        Grid.Column="0"
-        Background="LightGray">
+				Name="controlsGrid"
+				Grid.Row="1"
+				Grid.Column="0"
+				Background="LightGray">
         <Grid.ColumnDefinitions>
           <ColumnDefinition />
           <ColumnDefinition />
@@ -206,174 +206,174 @@
 
         <!--  1st Row: Operation Mode, Start, Standby  -->
         <Border
-          Name="borderOperationMode"
-          Grid.Row="0"
-          Grid.Column="0"
-          Grid.ColumnSpan="2"
-          Background="CornflowerBlue"
-          Classes="control" />
+					Name="borderOperationMode"
+					Grid.Row="0"
+					Grid.Column="0"
+					Grid.ColumnSpan="2"
+					Background="CornflowerBlue"
+					Classes="control" />
         <Border
-          Name="borderStartStandBy"
-          Grid.Row="0"
-          Grid.Column="4"
-          Grid.ColumnSpan="2"
-          Background="CornflowerBlue"
-          Classes="control" />
+					Name="borderStartStandBy"
+					Grid.Row="0"
+					Grid.Column="4"
+					Grid.ColumnSpan="2"
+					Background="CornflowerBlue"
+					Classes="control" />
 
         <Button
-          Grid.Row="0"
-          Grid.Column="0"
-          Background="LightGreen"
-          Classes="round"
-          Click="ButtonModeAuto_Click">
+					Grid.Row="0"
+					Grid.Column="0"
+					Background="LightGreen"
+					Classes="round"
+					Click="ButtonModeAuto_Click">
           <TextBlock Name="buttonModeAuto" Classes="button" />
         </Button>
 
         <Button
-          Grid.Row="0"
-          Grid.Column="1"
-          Background="LightGray"
-          Classes="round"
-          Click="ButtonModeSemiAuto_Click">
+					Grid.Row="0"
+					Grid.Column="1"
+					Background="LightGray"
+					Classes="round"
+					Click="ButtonModeSemiAuto_Click">
           <TextBlock Name="buttonModeSemiAuto" Classes="button" />
         </Button>
 
         <Button
-          Grid.Row="0"
-          Grid.Column="4"
-          Background="LightGreen"
-          Classes="round"
-          Click="ButtonStart_Click">
+					Grid.Row="0"
+					Grid.Column="4"
+					Background="LightGreen"
+					Classes="round"
+					Click="ButtonStart_Click">
           <TextBlock
-            Name="buttonStart"
-            Classes="button"
-            FontSize="34" />
+						Name="buttonStart"
+						Classes="button"
+						FontSize="34" />
         </Button>
 
         <Button
-          Grid.Row="0"
-          Grid.Column="5"
-          Background="Yellow"
-          Classes="round"
-          Click="ButtonPause_Click">
+					Grid.Row="0"
+					Grid.Column="5"
+					Background="Yellow"
+					Classes="round"
+					Click="ButtonPause_Click">
           <TextBlock
-            Name="buttonPause"
-            Classes="button"
-            FontSize="34" />
+						Name="buttonPause"
+						Classes="button"
+						FontSize="34" />
         </Button>
 
         <!--  2nd Row  -->
         <Border
-          Name="borderTrigger"
-          Grid.Row="1"
-          Grid.Column="0"
-          Grid.ColumnSpan="2"
-          Background="LightSkyBlue"
-          Classes="control" />
+					Name="borderTrigger"
+					Grid.Row="1"
+					Grid.Column="0"
+					Grid.ColumnSpan="2"
+					Background="LightSkyBlue"
+					Classes="control" />
         <Border
-          Name="borderAugmentation"
-          Grid.Row="1"
-          Grid.RowSpan="2"
-          Grid.Column="4"
-          Background="Gray"
-          Classes="control" />
+					Name="borderAugmentation"
+					Grid.Row="1"
+					Grid.RowSpan="2"
+					Grid.Column="4"
+					Background="Gray"
+					Classes="control" />
         <Border
-          Name="borderIncreaseDecrease"
-          Grid.Row="1"
-          Grid.RowSpan="2"
-          Grid.Column="5"
-          Background="LightSkyBlue"
-          Classes="control" />
+					Name="borderIncreaseDecrease"
+					Grid.Row="1"
+					Grid.RowSpan="2"
+					Grid.Column="5"
+					Background="LightSkyBlue"
+					Classes="control" />
 
         <Button
-          Name="buttonTrigger"
-          Grid.Row="1"
-          Grid.Column="0"
-          Background="PowderBlue"
-          Classes="round"
-          Click="ButtonTrigger_Click">
+					Name="buttonTrigger"
+					Grid.Row="1"
+					Grid.Column="0"
+					Background="PowderBlue"
+					Classes="round"
+					Click="ButtonTrigger_Click">
           <TextBlock Name="btntxtTrigger" Classes="button" />
         </Button>
 
         <Button
-          Name="buttonFrequency"
-          Grid.Row="1"
-          Grid.Column="1"
-          Background="PowderBlue"
-          Classes="round"
-          Click="ButtonFrequency_Click">
+					Name="buttonFrequency"
+					Grid.Row="1"
+					Grid.Column="1"
+					Background="PowderBlue"
+					Classes="round"
+					Click="ButtonFrequency_Click">
           <TextBlock Name="btntxtFrequency" Classes="button" />
         </Button>
 
         <Button
-          Name="buttonAugmentationPressure"
-          Grid.Row="1"
-          Grid.Column="4"
-          Background="PowderBlue"
-          Classes="round"
-          Click="ButtonAugmentationPressure_Click">
+					Name="buttonAugmentationPressure"
+					Grid.Row="1"
+					Grid.Column="4"
+					Background="PowderBlue"
+					Classes="round"
+					Click="ButtonAugmentationPressure_Click">
           <TextBlock Name="btntxtAugmentationPressure" Classes="button" />
         </Button>
 
         <Button
-          Name="buttonIncrease"
-          Grid.Row="1"
-          Grid.Column="5"
-          Background="AntiqueWhite"
-          Classes="round"
-          Click="ButtonIncrease_Click">
+					Name="buttonIncrease"
+					Grid.Row="1"
+					Grid.Column="5"
+					Background="AntiqueWhite"
+					Classes="round"
+					Click="ButtonIncrease_Click">
           <TextBlock Name="btntxtIncrease" Classes="button" />
         </Button>
 
         <!--  3rd Row  -->
         <Border
-          Name="borderSilenceFill"
-          Grid.Row="2"
-          Grid.Column="0"
-          Background="Gray"
-          Classes="control" />
+					Name="borderSilenceFill"
+					Grid.Row="2"
+					Grid.Column="0"
+					Background="Gray"
+					Classes="control" />
         <Border
-          Name="borderHelp"
-          Grid.Row="2"
-          Grid.Column="1"
-          Background="Gray"
-          Classes="control" />
+					Name="borderHelp"
+					Grid.Row="2"
+					Grid.Column="1"
+					Background="Gray"
+					Classes="control" />
 
         <Button
-          Grid.Row="2"
-          Grid.Column="0"
-          Background="PowderBlue"
-          Classes="round"
-          Click="ButtonPrimeBalloon_Click">
+					Grid.Row="2"
+					Grid.Column="0"
+					Background="PowderBlue"
+					Classes="round"
+					Click="ButtonPrimeBalloon_Click">
           <TextBlock Name="buttonPrimeBalloon" Classes="button" />
         </Button>
 
         <Button
-          Grid.Row="2"
-          Grid.Column="1"
-          Background="PowderBlue"
-          Classes="round"
-          Click="ButtonZeroABP_Click">
+					Grid.Row="2"
+					Grid.Column="1"
+					Background="PowderBlue"
+					Classes="round"
+					Click="ButtonZeroABP_Click">
           <TextBlock Name="buttonZero" Classes="button" />
         </Button>
 
         <Button
-          Name="buttonAugmentationAlarm"
-          Grid.Row="2"
-          Grid.Column="4"
-          Background="PowderBlue"
-          Classes="round"
-          Click="ButtonAugmentationAlarm_Click">
+					Name="buttonAugmentationAlarm"
+					Grid.Row="2"
+					Grid.Column="4"
+					Background="PowderBlue"
+					Classes="round"
+					Click="ButtonAugmentationAlarm_Click">
           <TextBlock Name="btntxtAugmentationAlarm" Classes="button" />
         </Button>
 
         <Button
-          Name="buttonDecrease"
-          Grid.Row="2"
-          Grid.Column="5"
-          Background="AntiqueWhite"
-          Classes="round"
-          Click="ButtonDecrease_Click">
+					Name="buttonDecrease"
+					Grid.Row="2"
+					Grid.Column="5"
+					Background="AntiqueWhite"
+					Classes="round"
+					Click="ButtonDecrease_Click">
           <TextBlock Name="btntxtDecrease" Classes="button" />
         </Button>
       </Grid>

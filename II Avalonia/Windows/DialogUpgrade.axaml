@@ -87,6 +87,7 @@
 			Margin="5"
 			Padding="5,2"
 			HorizontalAlignment="Stretch"
+			HorizontalContentAlignment="Center"
 			Background="White"
 			Click="btnDelay_Click">
       <Grid>
@@ -112,6 +113,7 @@
 			Margin="5"
 			Padding="5,2"
 			HorizontalAlignment="Stretch"
+			HorizontalContentAlignment="Center"
 			Background="White"
 			Click="btnMute_Click">
       <Grid>

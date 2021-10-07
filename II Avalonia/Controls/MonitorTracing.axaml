@@ -14,7 +14,6 @@
   <Border
 		Name="borderTracing"
 		Margin="5"
-		BorderBrush="Black"
 		BorderThickness="1.1"
 		CornerRadius="2">
 

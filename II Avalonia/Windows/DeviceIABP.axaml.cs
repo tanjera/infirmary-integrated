@@ -41,6 +41,7 @@ namespace II_Avalonia {
         private int autoScale_iter = Strip.DefaultAutoScale_Iterations;
 
         private bool isPaused = false;
+        private Color.Schemes colorScheme = Color.Schemes.Dark;
 
         private List<Controls.IABPTracing> listTracings = new List<Controls.IABPTracing> ();
         private List<Controls.IABPNumeric> listNumerics = new List<Controls.IABPNumeric> ();
@@ -149,6 +150,9 @@ namespace II_Avalonia {
             this.FindControl<MenuItem> ("menuDevice").Header = App.Language.Localize ("MENU:MenuDeviceOptions");
             this.FindControl<MenuItem> ("menuPauseDevice").Header = App.Language.Localize ("MENU:MenuPauseDevice");
             this.FindControl<MenuItem> ("menuCloseDevice").Header = App.Language.Localize ("MENU:MenuCloseDevice");
+            this.FindControl<MenuItem> ("menuColor").Header = App.Language.Localize ("MENU:MenuColorScheme");
+            this.FindControl<MenuItem> ("menuColorLight").Header = App.Language.Localize ("MENU:MenuColorSchemeLight");
+            this.FindControl<MenuItem> ("menuColorDark").Header = App.Language.Localize ("MENU:MenuColorSchemeDark");
 
             this.FindControl<TextBlock> ("buttonModeAuto").Text = App.Language.Localize ("IABPMODE:Auto");
             this.FindControl<TextBlock> ("buttonModeSemiAuto").Text = App.Language.Localize ("IABPMODE:SemiAuto");
@@ -171,9 +175,9 @@ namespace II_Avalonia {
             Grid displayGrid = this.FindControl<Grid> ("displayGrid");
 
             // Instantiate and add Tracings to UI
-            listTracings.Add (new Controls.IABPTracing (new Strip (Lead.Values.ECG_II, 6f)));
-            listTracings.Add (new Controls.IABPTracing (new Strip (Lead.Values.ABP, 6f)));
-            listTracings.Add (new Controls.IABPTracing (new Strip (Lead.Values.IABP, 6f)));
+            listTracings.Add (new Controls.IABPTracing (new Strip (Lead.Values.ECG_II, 6f), colorScheme));
+            listTracings.Add (new Controls.IABPTracing (new Strip (Lead.Values.ABP, 6f), colorScheme));
+            listTracings.Add (new Controls.IABPTracing (new Strip (Lead.Values.IABP, 6f), colorScheme));
             for (int i = 0; i < listTracings.Count; i++) {
                 listTracings [i].SetValue (Grid.RowProperty, i);
                 listTracings [i].SetValue (Grid.ColumnProperty, 1);
@@ -181,9 +185,9 @@ namespace II_Avalonia {
             }
 
             // Instantiate and add Numerics to UI
-            listNumerics.Add (new Controls.IABPNumeric (Controls.IABPNumeric.ControlType.Values.ECG));
-            listNumerics.Add (new Controls.IABPNumeric (Controls.IABPNumeric.ControlType.Values.ABP));
-            listNumerics.Add (new Controls.IABPNumeric (Controls.IABPNumeric.ControlType.Values.IABP_AP));
+            listNumerics.Add (new Controls.IABPNumeric (Controls.IABPNumeric.ControlType.Values.ECG, colorScheme));
+            listNumerics.Add (new Controls.IABPNumeric (Controls.IABPNumeric.ControlType.Values.ABP, colorScheme));
+            listNumerics.Add (new Controls.IABPNumeric (Controls.IABPNumeric.ControlType.Values.IABP_AP, colorScheme));
             for (int i = 0; i < listNumerics.Count; i++) {
                 listNumerics [i].SetValue (Grid.RowProperty, i);
                 listNumerics [i].SetValue (Grid.ColumnProperty, 2);
@@ -194,6 +198,17 @@ namespace II_Avalonia {
         }
 
         private void UpdateInterface () {
+            for (int i = 0; i < listTracings.Count; i++)
+                listTracings [i].SetColorScheme (colorScheme);
+
+            for (int i = 0; i < listNumerics.Count; i++)
+                listNumerics [i].SetColorScheme (colorScheme);
+
+            Window window = this.FindControl<Window> ("wdwDeviceIABP");
+            window.Background = Color.GetBackground (Color.Devices.DeviceIABP, colorScheme);
+
+            Border brdStatusInfo = this.FindControl<Border> ("brdStatusInfo");
+
             TextBlock lblTriggerSource = this.FindControl<TextBlock> ("lblTriggerSource");
             TextBlock lblOperationMode = this.FindControl<TextBlock> ("lblOperationMode");
             TextBlock lblFrequency = this.FindControl<TextBlock> ("lblFrequency");
@@ -208,23 +223,25 @@ namespace II_Avalonia {
             Border brdTubingStatus = this.FindControl<Border> ("brdTubingStatus");
             Border brdHelium = this.FindControl<Border> ("brdHelium");
 
-            lblHelium.Foreground = Brushes.MediumPurple;
-            brdHelium.BorderBrush = Brushes.MediumPurple;
+            brdStatusInfo.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.SkyBlue : Brushes.Black;
 
-            lblOperationMode.Foreground = Brushes.Aqua;
-            brdOperationMode.BorderBrush = Brushes.Aqua;
+            lblHelium.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.MediumPurple : Brushes.Black;
+            brdHelium.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.MediumPurple : Brushes.Black;
+
+            lblOperationMode.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Aqua : Brushes.Black;
+            brdOperationMode.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Aqua : Brushes.Black;
 
             lblTriggerSource.Text = App.Language.Localize (Trigger.LookupString ());
             switch (Trigger.Value) {
                 default:
                 case Triggering.Values.ECG:
-                    lblTriggerSource.Foreground = Brushes.Green;
-                    brdTriggerSource.BorderBrush = Brushes.Green;
+                    lblTriggerSource.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Green : Brushes.Black;
+                    brdTriggerSource.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Green : Brushes.Black;
                     break;
 
                 case Triggering.Values.Pressure:
-                    lblTriggerSource.Foreground = Brushes.Red;
-                    brdTriggerSource.BorderBrush = Brushes.Red;
+                    lblTriggerSource.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Red : Brushes.Black;
+                    brdTriggerSource.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Red : Brushes.Black;
                     break;
             }
 
@@ -234,43 +251,43 @@ namespace II_Avalonia {
             switch (Frequency) {
                 default:
                 case 1:
-                    lblFrequency.Foreground = Brushes.LightGreen;
-                    brdFrequency.BorderBrush = Brushes.LightGreen;
+                    lblFrequency.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
+                    brdFrequency.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
                     break;
 
                 case 2:
-                    lblFrequency.Foreground = Brushes.Yellow;
-                    brdFrequency.BorderBrush = Brushes.Yellow;
+                    lblFrequency.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
+                    brdFrequency.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
                     break;
 
                 case 3:
-                    lblFrequency.Foreground = Brushes.OrangeRed;
-                    brdFrequency.BorderBrush = Brushes.OrangeRed;
+                    lblFrequency.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.OrangeRed : Brushes.Black;
+                    brdFrequency.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.OrangeRed : Brushes.Black;
                     break;
             }
 
             if (Running) {
                 lblMachineStatus.Text = App.Language.Localize ("IABP:Running");
-                lblMachineStatus.Foreground = Brushes.LightGreen;
-                brdMachineStatus.BorderBrush = Brushes.LightGreen;
+                lblMachineStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
+                brdMachineStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
             } else {
                 lblMachineStatus.Text = App.Language.Localize ("IABP:Paused");
-                lblMachineStatus.Foreground = Brushes.Yellow;
-                brdMachineStatus.BorderBrush = Brushes.Yellow;
+                lblMachineStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
+                brdMachineStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
             }
 
             if (Priming) {
                 lblTubingStatus.Text = App.Language.Localize ("IABP:Priming");
-                lblTubingStatus.Foreground = Brushes.Yellow;
-                brdTubingStatus.BorderBrush = Brushes.Yellow;
+                lblTubingStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
+                brdTubingStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
             } else if (Primed) {
                 lblTubingStatus.Text = App.Language.Localize ("IABP:Primed");
-                lblTubingStatus.Foreground = Brushes.LightGreen;
-                brdTubingStatus.BorderBrush = Brushes.LightGreen;
+                lblTubingStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
+                brdTubingStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
             } else {
                 lblTubingStatus.Text = App.Language.Localize ("IABP:NotPrimed");
-                lblTubingStatus.Foreground = Brushes.OrangeRed;
-                brdTubingStatus.BorderBrush = Brushes.OrangeRed;
+                lblTubingStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.OrangeRed : Brushes.Black;
+                brdTubingStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.OrangeRed : Brushes.Black;
             }
         }
 
@@ -317,6 +334,11 @@ namespace II_Avalonia {
             sWrite.AppendLine (String.Format ("{0}:{1}", "Primed", Primed));
 
             return sWrite.ToString ();
+        }
+
+        public void SetColorScheme (Color.Schemes scheme) {
+            colorScheme = scheme;
+            UpdateInterface ();
         }
 
         private void TogglePause () {
@@ -463,27 +485,44 @@ namespace II_Avalonia {
             }
         }
 
-        private void ButtonStart_Click (object s, RoutedEventArgs e) => StartDevice ();
+        private void ButtonStart_Click (object s, RoutedEventArgs e)
+            => StartDevice ();
 
-        private void ButtonPause_Click (object s, RoutedEventArgs e) => PauseDevice ();
+        private void ButtonPause_Click (object s, RoutedEventArgs e)
+            => PauseDevice ();
 
-        private void ButtonTrigger_Click (object s, RoutedEventArgs e) => SelectSetting (Settings.Trigger);
+        private void ButtonTrigger_Click (object s, RoutedEventArgs e)
+            => SelectSetting (Settings.Trigger);
 
-        private void ButtonFrequency_Click (object s, RoutedEventArgs e) => SelectSetting (Settings.Frequency);
+        private void ButtonFrequency_Click (object s, RoutedEventArgs e)
+            => SelectSetting (Settings.Frequency);
 
-        private void ButtonAugmentationPressure_Click (object s, RoutedEventArgs e) => SelectSetting (Settings.AugmentationPressure);
+        private void ButtonAugmentationPressure_Click (object s, RoutedEventArgs e)
+            => SelectSetting (Settings.AugmentationPressure);
 
-        private void ButtonAugmentationAlarm_Click (object s, RoutedEventArgs e) => SelectSetting (Settings.AugmentationAlarm);
+        private void ButtonAugmentationAlarm_Click (object s, RoutedEventArgs e)
+            => SelectSetting (Settings.AugmentationAlarm);
 
-        private void ButtonModeAuto_Click (object s, RoutedEventArgs e) => SetOperationMode (Modes.Values.Auto);
+        private void ButtonModeAuto_Click (object s, RoutedEventArgs e)
+            => SetOperationMode (Modes.Values.Auto);
 
-        private void ButtonModeSemiAuto_Click (object s, RoutedEventArgs e) => SetOperationMode (Modes.Values.SemiAuto);
+        private void ButtonModeSemiAuto_Click (object s, RoutedEventArgs e)
+            => SetOperationMode (Modes.Values.SemiAuto);
 
-        private void ButtonPrimeBalloon_Click (object s, RoutedEventArgs e) => PrimeBalloon ();
+        private void ButtonPrimeBalloon_Click (object s, RoutedEventArgs e)
+            => PrimeBalloon ();
 
-        private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
+        private void MenuClose_Click (object s, RoutedEventArgs e)
+            => this.Close ();
 
-        private void MenuTogglePause_Click (object s, RoutedEventArgs e) => TogglePause ();
+        private void MenuTogglePause_Click (object s, RoutedEventArgs e)
+            => TogglePause ();
+
+        private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
+            => SetColorScheme (Color.Schemes.Light);
+
+        private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
+            => SetColorScheme (Color.Schemes.Dark);
 
         private void OnClosed (object sender, EventArgs e)
             => this.Dispose ();

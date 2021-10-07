@@ -19,18 +19,12 @@ namespace II_Avalonia {
 
     public partial class DeviceECG : Window {
         private bool isPaused = false;
+        private Color.Schemes colorScheme = Color.Schemes.Dark;
+        private ImageBrush gridBackground;
 
         private List<Controls.ECGTracing> listTracings = new List<Controls.ECGTracing> ();
 
         private Timer timerTracing = new Timer ();
-        private ColorSchemes colorScheme = ColorSchemes.Dark;
-        private ImageBrush gridBackground;
-
-        public enum ColorSchemes {
-            Grid,
-            Dark,
-            Light
-        }
 
         public DeviceECG () {
             InitializeComponent ();
@@ -107,7 +101,7 @@ namespace II_Avalonia {
             // Populate the grid with tracings for each lead
             for (int iColumns = 0; iColumns < amtColumns; iColumns++) {
                 for (int iRows = 0; iRows < amtRows && indexLeads < listLeads.Count; iRows++) {
-                    listTracings.Add (new Controls.ECGTracing (new Strip (listLeads [indexLeads], (4 - iColumns) * 2.5f, 2.5f)));
+                    listTracings.Add (new Controls.ECGTracing (new Strip (listLeads [indexLeads], (4 - iColumns) * 2.5f, 2.5f), colorScheme));
                     listTracings [indexLeads].SetValue (Grid.ColumnProperty, iColumns);
                     listTracings [indexLeads].SetValue (Grid.RowProperty, iRows);
                     layoutGrid.Children.Add (listTracings [indexLeads]);
@@ -116,7 +110,7 @@ namespace II_Avalonia {
             }
 
             // Add Lead II running along bottom spanning all columns
-            Controls.ECGTracing leadII = new Controls.ECGTracing (new Strip (Lead.Values.ECG_II, 10f));
+            Controls.ECGTracing leadII = new Controls.ECGTracing (new Strip (Lead.Values.ECG_II, 10f), colorScheme);
             leadII.SetValue (Grid.ColumnProperty, 0);
             leadII.SetValue (Grid.RowProperty, 4);
             leadII.SetValue (Grid.ColumnSpanProperty, 4);
@@ -127,24 +121,13 @@ namespace II_Avalonia {
 
         private void UpdateInterface () {
             for (int i = 0; i < listTracings.Count; i++)
-                listTracings [i].SetColors (colorScheme);
+                listTracings [i].SetColorScheme (colorScheme);
 
-            Window wdwDeviceECG = this.FindControl<Window> ("wdwDeviceECG");
-
-            switch (colorScheme) {
-                default:
-                case ColorSchemes.Grid:
-                    wdwDeviceECG.Background = gridBackground;
-                    break;
-
-                case ColorSchemes.Light:
-                    wdwDeviceECG.Background = Brushes.White;
-                    break;
-
-                case ColorSchemes.Dark:
-                    wdwDeviceECG.Background = Brushes.Black;
-                    break;
-            }
+            Window window = this.FindControl<Window> ("wdwDeviceECG");
+            if (colorScheme == Color.Schemes.Grid)
+                window.Background = gridBackground;
+            else
+                window.Background = Color.GetBackground (Color.Devices.DeviceECG, colorScheme);
         }
 
         public void Load_Process (string inc) {
@@ -159,7 +142,7 @@ namespace II_Avalonia {
                         switch (pName) {
                             default: break;
                             case "isPaused": isPaused = bool.Parse (pValue); break;
-                            case "colorScheme": colorScheme = (ColorSchemes)Enum.Parse (typeof (ColorSchemes), pValue); break;
+                            case "colorScheme": colorScheme = (Color.Schemes)Enum.Parse (typeof (Color.Schemes), pValue); break;
                         }
                     }
                 }
@@ -178,9 +161,8 @@ namespace II_Avalonia {
             return sWrite.ToString ();
         }
 
-        private void SetColorScheme (ColorSchemes scheme) {
+        public void SetColorScheme (Color.Schemes scheme) {
             colorScheme = scheme;
-
             UpdateInterface ();
         }
 
@@ -198,13 +180,13 @@ namespace II_Avalonia {
             => TogglePause ();
 
         private void MenuShowGrid_Click (object sender, RoutedEventArgs e)
-            => SetColorScheme (ColorSchemes.Grid);
+            => SetColorScheme (Color.Schemes.Grid);
 
         private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
-            => SetColorScheme (ColorSchemes.Light);
+            => SetColorScheme (Color.Schemes.Light);
 
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
-            => SetColorScheme (ColorSchemes.Dark);
+            => SetColorScheme (Color.Schemes.Dark);
 
         private void OnClosed (object sender, EventArgs e)
             => this.Dispose ();

@@ -42,24 +42,17 @@
     <!--  Main Menu  -->
     <Menu Background="White" DockPanel.Dock="Top">
       <MenuItem Name="menuDevice">
-        <MenuItem
-          Name="menuPauseDevice"
-
-          Click="MenuTogglePause_Click" />
+        <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" />
         <Separator />
-        <MenuItem
-          Name="menuAddNumeric"
-
-          Click="MenuAddNumeric_Click" />
-        <MenuItem
-          Name="menuAddTracing"
-
-          Click="MenuAddTracing_Click" />
+        <MenuItem Name="menuAddNumeric" Click="MenuAddNumeric_Click" />
+        <MenuItem Name="menuAddTracing" Click="MenuAddTracing_Click" />
         <Separator />
-        <MenuItem
-          Name="menuCloseDevice"
+        <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" />
+      </MenuItem>
 
-          Click="MenuClose_Click" />
+      <MenuItem Name="menuColor">
+        <MenuItem Name="menuColorLight" Click="MenuColorScheme_Light" />
+        <MenuItem Name="menuColorDark" Click="MenuColorScheme_Dark" />
       </MenuItem>
     </Menu>
 
@@ -75,10 +68,9 @@
 
       <!--  Display (tracings and numerics)  -->
       <Grid
-        Name="displayGrid"
-        Grid.Row="0"
-        Grid.Column="0"
-        Background="Black">
+				Name="displayGrid"
+				Grid.Row="0"
+				Grid.Column="0">
         <Grid.ColumnDefinitions>
           <ColumnDefinition />
         </Grid.ColumnDefinitions>
@@ -93,10 +85,10 @@
 
       <!--  Control buttons  -->
       <Grid
-        Name="controlsGrid"
-        Grid.Row="0"
-        Grid.Column="1"
-        Background="DarkGray">
+				Name="controlsGrid"
+				Grid.Row="0"
+				Grid.Column="1"
+				Background="DarkGray">
         <Grid.ColumnDefinitions>
           <ColumnDefinition />
         </Grid.ColumnDefinitions>
@@ -116,44 +108,44 @@
         </Grid.RowDefinitions>
 
         <Border
-          Name="borderManual"
-          Grid.Row="0"
-          Grid.RowSpan="4"
-          Grid.Column="0"
-          Background="White"
-          Classes="control" />
+					Name="borderManual"
+					Grid.Row="0"
+					Grid.RowSpan="4"
+					Grid.Column="0"
+					Background="White"
+					Classes="control" />
 
         <Border
-          Name="borderAnalyze"
-          Grid.Row="4"
-          Grid.Column="0"
-          Background="LightBlue"
-          Classes="control" />
+					Name="borderAnalyze"
+					Grid.Row="4"
+					Grid.Column="0"
+					Background="LightBlue"
+					Classes="control" />
 
         <Border
-          Name="borderSync"
-          Grid.Row="5"
-          Grid.Column="0"
-          Background="PaleGoldenrod"
-          Classes="control" />
+					Name="borderSync"
+					Grid.Row="5"
+					Grid.Column="0"
+					Background="PaleGoldenrod"
+					Classes="control" />
 
         <Border
-          Name="borderPacer"
-          Grid.Row="7"
-          Grid.RowSpan="4"
-          Grid.Column="0"
-          Background="LightGray"
-          Classes="control" />
+					Name="borderPacer"
+					Grid.Row="7"
+					Grid.RowSpan="4"
+					Grid.Column="0"
+					Background="LightGray"
+					Classes="control" />
 
         <!--  Manual defibrillation controls  -->
 
         <Button
-          Name="buttonDefib"
-          Grid.Row="0"
-          Grid.Column="0"
-          Background="LightGreen"
-          Classes="round"
-          Click="ButtonDefib_Click">
+					Name="buttonDefib"
+					Grid.Row="0"
+					Grid.Column="0"
+					Background="LightGreen"
+					Classes="round"
+					Click="ButtonDefib_Click">
           <TextBlock Name="btntxtDefib" Classes="button" />
         </Button>
 
@@ -168,84 +160,84 @@
           </Grid.RowDefinitions>
 
           <Button
-            Name="buttonEnergyDecrease"
-            Grid.Row="0"
-            Grid.Column="0"
-            Background="LightGray"
-            Classes="round"
-            Click="ButtonEnergyDecrease_Click">
+						Name="buttonEnergyDecrease"
+						Grid.Row="0"
+						Grid.Column="0"
+						Background="LightGray"
+						Classes="round"
+						Click="ButtonEnergyDecrease_Click">
             <TextBlock Name="btntxtEnergyDecrease" Classes="button" />
           </Button>
 
           <TextBlock
-            Name="txtEnergyAmount"
-            Grid.Row="0"
-            Grid.Column="1"
-            VerticalAlignment="Center"
-            Classes="button" />
+						Name="txtEnergyAmount"
+						Grid.Row="0"
+						Grid.Column="1"
+						VerticalAlignment="Center"
+						Classes="button" />
 
           <Button
-            Name="buttonEnergyIncrease"
-            Grid.Row="0"
-            Grid.Column="2"
-            Background="LightGray"
-            Classes="round"
-            Click="ButtonEnergyIncrease_Click">
+						Name="buttonEnergyIncrease"
+						Grid.Row="0"
+						Grid.Column="2"
+						Background="LightGray"
+						Classes="round"
+						Click="ButtonEnergyIncrease_Click">
             <TextBlock Name="btntxtEnergyIncrease" Classes="button" />
           </Button>
         </Grid>
 
         <Button
-          Name="buttonCharge"
-          Grid.Row="2"
-          Grid.Column="0"
-          Background="Yellow"
-          Classes="round"
-          Click="ButtonCharge_Click">
+					Name="buttonCharge"
+					Grid.Row="2"
+					Grid.Column="0"
+					Background="Yellow"
+					Classes="round"
+					Click="ButtonCharge_Click">
           <TextBlock Name="btntxtCharge" Classes="button" />
         </Button>
 
         <Button
-          Name="buttonShock"
-          Grid.Row="3"
-          Grid.Column="0"
-          Background="Red"
-          Classes="round defib"
-          Click="ButtonShock_Click">
+					Name="buttonShock"
+					Grid.Row="3"
+					Grid.Column="0"
+					Background="Red"
+					Classes="round defib"
+					Click="ButtonShock_Click">
           <TextBlock Name="btntxtShock" Classes="button" />
         </Button>
 
         <!--  AED and sync modes  -->
 
         <Button
-          Name="buttonAnalyze"
-          Grid.Row="4"
-          Grid.Column="0"
-          Background="Orange"
-          Classes="round"
-          Click="ButtonAnalyze_Click">
+					Name="buttonAnalyze"
+					Grid.Row="4"
+					Grid.Column="0"
+					Background="Orange"
+					Classes="round"
+					Click="ButtonAnalyze_Click">
           <TextBlock Name="btntxtAnalyze" Classes="button" />
         </Button>
 
         <Button
-          Name="buttonSync"
-          Grid.Row="5"
-          Grid.Column="0"
-          Background="LightGray"
-          Classes="round"
-          Click="ButtonSync_Click">
+					Name="buttonSync"
+					Grid.Row="5"
+					Grid.Column="0"
+					Background="LightGray"
+					Classes="round"
+					Click="ButtonSync_Click">
           <TextBlock Name="btntxtSync" Classes="button" />
         </Button>
 
         <!--  Pacing mode  -->
 
         <Button
-          Name="buttonPacer"
-          Grid.Row="7"
-          Grid.Column="0"
-          Background="BlanchedAlmond"
-          Classes="round"
-          Click="ButtonPacer_Click">
+					Name="buttonPacer"
+					Grid.Row="7"
+					Grid.Column="0"
+					Background="BlanchedAlmond"
+					Classes="round"
+					Click="ButtonPacer_Click">
           <TextBlock Name="btntxtPacer" Classes="button" />
         </Button>
 
@@ -260,29 +252,29 @@
           </Grid.RowDefinitions>
 
           <Button
-            Name="buttonPaceRateDecrease"
-            Grid.Row="0"
-            Grid.Column="0"
-            Background="BlanchedAlmond"
-            Classes="round"
-            Click="ButtonPaceRateDecrease_Click">
+						Name="buttonPaceRateDecrease"
+						Grid.Row="0"
+						Grid.Column="0"
+						Background="BlanchedAlmond"
+						Classes="round"
+						Click="ButtonPaceRateDecrease_Click">
             <TextBlock Name="btntxtPaceRateDecrease" Classes="button" />
           </Button>
 
           <TextBlock
-            Name="txtPaceRate"
-            Grid.Row="0"
-            Grid.Column="1"
-            VerticalAlignment="Center"
-            Classes="button" />
+						Name="txtPaceRate"
+						Grid.Row="0"
+						Grid.Column="1"
+						VerticalAlignment="Center"
+						Classes="button" />
 
           <Button
-            Name="buttonPaceRateIncrease"
-            Grid.Row="0"
-            Grid.Column="2"
-            Background="BlanchedAlmond"
-            Classes="round"
-            Click="ButtonPaceRateIncrease_Click">
+						Name="buttonPaceRateIncrease"
+						Grid.Row="0"
+						Grid.Column="2"
+						Background="BlanchedAlmond"
+						Classes="round"
+						Click="ButtonPaceRateIncrease_Click">
             <TextBlock Name="btntxtPaceRateIncrease" Classes="button" />
           </Button>
         </Grid>
@@ -298,40 +290,40 @@
           </Grid.RowDefinitions>
 
           <Button
-            Name="buttonPaceEnergyDecrease"
-            Grid.Row="0"
-            Grid.Column="0"
-            Background="BlanchedAlmond"
-            Classes="round"
-            Click="ButtonPaceEnergyDecrease_Click">
+						Name="buttonPaceEnergyDecrease"
+						Grid.Row="0"
+						Grid.Column="0"
+						Background="BlanchedAlmond"
+						Classes="round"
+						Click="ButtonPaceEnergyDecrease_Click">
             <TextBlock Name="btntxtPaceEnergyDecrease" Classes="button" />
           </Button>
 
           <TextBlock
-            Name="txtPaceEnergy"
-            Grid.Row="0"
-            Grid.Column="1"
-            VerticalAlignment="Center"
-            Classes="button" />
+						Name="txtPaceEnergy"
+						Grid.Row="0"
+						Grid.Column="1"
+						VerticalAlignment="Center"
+						Classes="button" />
 
           <Button
-            Name="buttonPaceEnergyIncrease"
-            Grid.Row="0"
-            Grid.Column="2"
-            Background="BlanchedAlmond"
-            Classes="round"
-            Click="ButtonPaceEnergyIncrease_Click">
+						Name="buttonPaceEnergyIncrease"
+						Grid.Row="0"
+						Grid.Column="2"
+						Background="BlanchedAlmond"
+						Classes="round"
+						Click="ButtonPaceEnergyIncrease_Click">
             <TextBlock Name="btntxtPaceEnergyIncrease" Classes="button" />
           </Button>
         </Grid>
 
         <Button
-          Name="buttonPacePause"
-          Grid.Row="10"
-          Grid.Column="0"
-          Background="BlanchedAlmond"
-          Classes="round"
-          Click="ButtonPacePause_Click">
+					Name="buttonPacePause"
+					Grid.Row="10"
+					Grid.Column="0"
+					Background="BlanchedAlmond"
+					Classes="round"
+					Click="ButtonPacePause_Click">
           <TextBlock Name="btntxtPacePause" Classes="button" />
         </Button>
       </Grid>

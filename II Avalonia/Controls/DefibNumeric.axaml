@@ -28,11 +28,10 @@
   <Border
 		Name="borderNumeric"
 		Margin="5"
-		BorderBrush="Black"
 		BorderThickness="1.1"
 		CornerRadius="2">
 
-    <Grid Name="layoutGrid" Background="Black">
+    <Grid Name="layoutGrid">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
         <RowDefinition Height="1.8 *" />

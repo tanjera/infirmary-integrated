@@ -26,9 +26,9 @@ namespace II_Avalonia.Controls {
         public RenderTargetBitmap Tracing;
 
         /* Drawing variables, offsets and multipliers */
+        public Color.Schemes colorScheme;
         private Pen tracingPen = new Pen ();
         private IBrush tracingBrush = Brushes.Black;
-        private IBrush referenceBrush = Brushes.DarkGray;
 
         private PointD drawOffset;
         private PointD drawMultiplier;
@@ -40,14 +40,15 @@ namespace II_Avalonia.Controls {
             InitializeComponent ();
         }
 
-        public MonitorTracing (Strip strip) {
+        public MonitorTracing (Strip strip, Color.Schemes cs) {
             InitializeComponent ();
             DataContext = this;
 
             Strip = strip;
+            colorScheme = cs;
 
             InitInterface ();
-            UpdateInterface (null, null);
+            UpdateInterface ();
         }
 
         private void InitializeComponent () {
@@ -144,48 +145,16 @@ namespace II_Avalonia.Controls {
             menuContext.Items = menuitemsContext;
         }
 
+        public void SetColorScheme (Color.Schemes scheme) {
+            colorScheme = scheme;
+            UpdateInterface ();
+        }
+
+        private void UpdateInterface ()
+            => UpdateInterface (this, new EventArgs ());
+
         private void UpdateInterface (object? sender, EventArgs e) {
-            switch (Lead.Value) {
-                default:
-                    tracingBrush = Brushes.Green;
-                    break;
-
-                case Lead.Values.SPO2:
-                    tracingBrush = Brushes.Orange;
-                    break;
-
-                case Lead.Values.RR:
-                    tracingBrush = Brushes.Salmon;
-                    break;
-
-                case Lead.Values.ETCO2:
-                    tracingBrush = Brushes.Aqua;
-                    break;
-
-                case Lead.Values.ABP:
-                    tracingBrush = Brushes.Red;
-                    break;
-
-                case Lead.Values.CVP:
-                    tracingBrush = Brushes.Blue;
-                    break;
-
-                case Lead.Values.PA:
-                    tracingBrush = Brushes.Yellow;
-                    break;
-
-                case Lead.Values.ICP:
-                    tracingBrush = Brushes.Khaki;
-                    break;
-
-                case Lead.Values.IAP:
-                    tracingBrush = Brushes.Aquamarine;
-                    break;
-
-                case Lead.Values.IABP:
-                    tracingBrush = Brushes.SkyBlue;
-                    break;
-            }
+            tracingBrush = Color.GetLead (Lead.Value, colorScheme);
 
             Border borderTracing = this.FindControl<Border> ("borderTracing");
             Label lblLead = this.FindControl<Label> ("lblLead");
@@ -285,7 +254,7 @@ namespace II_Avalonia.Controls {
 
         private void MenuToggleAutoScale_Click (object? sender, RoutedEventArgs e) {
             Strip.ScaleAuto = !Strip.ScaleAuto;
-            UpdateInterface (null, null);
+            UpdateInterface ();
         }
 
         private void MenuSelectInputSource (object? sender, RoutedEventArgs e) {
@@ -299,7 +268,7 @@ namespace II_Avalonia.Controls {
             Strip.Add_Breath__Respiratory_Baseline (App.Patient);
 
             CalculateOffsets ();
-            UpdateInterface (null, null);
+            UpdateInterface ();
         }
     }
 }

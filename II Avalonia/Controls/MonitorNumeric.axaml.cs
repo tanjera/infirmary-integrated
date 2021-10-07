@@ -18,6 +18,7 @@ namespace II_Avalonia.Controls {
 
     public partial class MonitorNumeric : UserControl {
         public ControlType controlType;
+        public Color.Schemes colorScheme;
 
         private MenuItem menuZeroTransducer;
 
@@ -34,11 +35,29 @@ namespace II_Avalonia.Controls {
                 CO, PA, ICP, IAP
             }
 
+            public Color.Leads GetLead_Color {
+                get { return SwitchLead_Color (this.Value); }
+            }
+
+            private static Color.Leads SwitchLead_Color (Values value) => value switch {
+                ControlType.Values.ECG => Color.Leads.ECG,
+                ControlType.Values.T => Color.Leads.T,
+                ControlType.Values.RR => Color.Leads.RR,
+                ControlType.Values.ETCO2 => Color.Leads.ETCO2,
+                ControlType.Values.SPO2 => Color.Leads.SPO2,
+                ControlType.Values.NIBP => Color.Leads.NIBP,
+                ControlType.Values.ABP => Color.Leads.ABP,
+                ControlType.Values.CVP => Color.Leads.CVP,
+                ControlType.Values.CO => Color.Leads.CO,
+                ControlType.Values.PA => Color.Leads.PA,
+                ControlType.Values.ICP => Color.Leads.ICP,
+                ControlType.Values.IAP => Color.Leads.IAP,
+                _ => Color.Leads.ECG
+            };
+
             public static string LookupString (Values value) {
                 return String.Format ("NUMERIC:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
             }
-
-            public IBrush Color { get { return Coloring [(int)Value]; } }
 
             public static List<string> MenuItem_Formats {
                 get {
@@ -48,33 +67,20 @@ namespace II_Avalonia.Controls {
                     return o;
                 }
             }
-
-            public static IBrush [] Coloring = new IBrush [] {
-                Brushes.Green,
-                Brushes.LightGray,
-                Brushes.Salmon,
-                Brushes.Aqua,
-                Brushes.Orange,
-                Brushes.White,
-                Brushes.Red,
-                Brushes.Blue,
-                Brushes.Brown,
-                Brushes.Yellow,
-                Brushes.Khaki,
-                Brushes.Aquamarine
-            };
         }
 
         public MonitorNumeric () {
             InitializeComponent ();
         }
 
-        public MonitorNumeric (ControlType.Values v) {
+        public MonitorNumeric (ControlType.Values v, Color.Schemes cs) {
             InitializeComponent ();
 
             InitInterface ();
 
             controlType = new ControlType (v);
+            colorScheme = cs;
+
             UpdateInterface ();
         }
 
@@ -138,6 +144,11 @@ namespace II_Avalonia.Controls {
             contextMenu.Items = menuitemsContext;
         }
 
+        public void SetColorScheme (Color.Schemes scheme) {
+            colorScheme = scheme;
+            UpdateInterface ();
+        }
+
         private void UpdateInterface () {
             Border borderNumeric = this.FindControl<Border> ("borderNumeric");
             TextBlock lblNumType = this.FindControl<TextBlock> ("lblNumType");
@@ -145,12 +156,12 @@ namespace II_Avalonia.Controls {
             TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
             TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
 
-            borderNumeric.BorderBrush = controlType.Color;
+            borderNumeric.BorderBrush = Color.GetLead (controlType.GetLead_Color, colorScheme);
 
-            lblNumType.Foreground = controlType.Color;
-            lblLine1.Foreground = controlType.Color;
-            lblLine2.Foreground = controlType.Color;
-            lblLine3.Foreground = controlType.Color;
+            lblNumType.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+            lblLine1.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+            lblLine2.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+            lblLine3.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
 
             lblLine1.IsVisible = true;
             lblLine2.IsVisible = true;

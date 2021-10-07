@@ -25,6 +25,7 @@ namespace II_Avalonia {
         private int autoScale_iter = Strip.DefaultAutoScale_Iterations;
 
         private bool isPaused = false;
+        private Color.Schemes colorScheme = Color.Schemes.Dark;
 
         private List<Controls.MonitorTracing> listTracings = new List<Controls.MonitorTracing> ();
         private List<Controls.MonitorNumeric> listNumerics = new List<Controls.MonitorNumeric> ();
@@ -96,6 +97,20 @@ namespace II_Avalonia {
             this.FindControl<MenuItem> ("menuAddNumeric").Header = App.Language.Localize ("MENU:MenuAddNumeric");
             this.FindControl<MenuItem> ("menuAddTracing").Header = App.Language.Localize ("MENU:MenuAddTracing");
             this.FindControl<MenuItem> ("menuCloseDevice").Header = App.Language.Localize ("MENU:MenuCloseDevice");
+            this.FindControl<MenuItem> ("menuColor").Header = App.Language.Localize ("MENU:MenuColorScheme");
+            this.FindControl<MenuItem> ("menuColorLight").Header = App.Language.Localize ("MENU:MenuColorSchemeLight");
+            this.FindControl<MenuItem> ("menuColorDark").Header = App.Language.Localize ("MENU:MenuColorSchemeDark");
+        }
+
+        private void UpdateInterface () {
+            for (int i = 0; i < listTracings.Count; i++)
+                listTracings [i].SetColorScheme (colorScheme);
+
+            for (int i = 0; i < listNumerics.Count; i++)
+                listNumerics [i].SetColorScheme (colorScheme);
+
+            Window window = this.FindControl<Window> ("wdwDeviceMonitor");
+            window.Background = Color.GetBackground (Color.Devices.DeviceMonitor, colorScheme);
         }
 
         public void Load_Process (string inc) {
@@ -144,6 +159,11 @@ namespace II_Avalonia {
             return sWrite.ToString ();
         }
 
+        public void SetColorScheme (Color.Schemes scheme) {
+            colorScheme = scheme;
+            UpdateInterface ();
+        }
+
         private void TogglePause () {
             isPaused = !isPaused;
 
@@ -173,13 +193,23 @@ namespace II_Avalonia {
             OnLayoutChange ();
         }
 
-        private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
+        private void MenuClose_Click (object s, RoutedEventArgs e)
+            => this.Close ();
 
-        private void MenuAddNumeric_Click (object s, RoutedEventArgs e) => AddNumeric ();
+        private void MenuAddNumeric_Click (object s, RoutedEventArgs e)
+            => AddNumeric ();
 
-        private void MenuAddTracing_Click (object s, RoutedEventArgs e) => AddTracing ();
+        private void MenuAddTracing_Click (object s, RoutedEventArgs e)
+            => AddTracing ();
 
-        private void MenuTogglePause_Click (object s, RoutedEventArgs e) => TogglePause ();
+        private void MenuTogglePause_Click (object s, RoutedEventArgs e)
+            => TogglePause ();
+
+        private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
+            => SetColorScheme (Color.Schemes.Light);
+
+        private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
+            => SetColorScheme (Color.Schemes.Dark);
 
         private void OnClosed (object sender, EventArgs e)
             => this.Dispose ();
@@ -238,7 +268,7 @@ namespace II_Avalonia {
             rowsNumerics = II.Math.Clamp (rowsNumerics, 1, numericTypes.Count);
             for (int i = listNumerics.Count; i < rowsNumerics && i < numericTypes.Count; i++) {
                 Controls.MonitorNumeric newNum;
-                newNum = new Controls.MonitorNumeric ((Controls.MonitorNumeric.ControlType.Values)Enum.Parse (typeof (Controls.MonitorNumeric.ControlType.Values), numericTypes [i]));
+                newNum = new Controls.MonitorNumeric ((Controls.MonitorNumeric.ControlType.Values)Enum.Parse (typeof (Controls.MonitorNumeric.ControlType.Values), numericTypes [i]), colorScheme);
                 listNumerics.Add (newNum);
             }
 
@@ -255,7 +285,7 @@ namespace II_Avalonia {
             rowsTracings = II.Math.Clamp (rowsTracings, 1, tracingTypes.Count);
             for (int i = listTracings.Count; i < rowsTracings && i < tracingTypes.Count; i++) {
                 Strip newStrip = new Strip ((Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]), 6f);
-                Controls.MonitorTracing newTracing = new Controls.MonitorTracing (newStrip);
+                Controls.MonitorTracing newTracing = new Controls.MonitorTracing (newStrip, colorScheme);
                 listTracings.Add (newTracing);
             }
 

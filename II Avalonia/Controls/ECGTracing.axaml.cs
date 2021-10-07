@@ -26,36 +26,42 @@ namespace II_Avalonia.Controls {
         public RenderTargetBitmap Tracing;
 
         /* Drawing variables, offsets and multipliers */
-        private DeviceECG.ColorSchemes colorScheme;
-
+        public Color.Schemes colorScheme;
         private Pen tracingPen = new Pen ();
         private IBrush tracingBrush = Brushes.Green;
-        private IBrush referenceBrush = Brushes.DarkGray;
 
         private PointD drawOffset;
         private PointD drawMultiplier;
-
-        private MenuItem menuZeroTransducer;
-        private MenuItem menuToggleAutoScale;
 
         public ECGTracing () {
             InitializeComponent ();
         }
 
-        public ECGTracing (Strip strip) {
+        public ECGTracing (Strip strip, Color.Schemes cs) {
             InitializeComponent ();
             DataContext = this;
 
             Strip = strip;
+            colorScheme = cs;
 
-            UpdateInterface (null, null);
+            UpdateInterface ();
         }
 
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
         }
 
+        public void SetColorScheme (Color.Schemes scheme) {
+            colorScheme = scheme;
+            UpdateInterface ();
+        }
+
+        private void UpdateInterface ()
+            => UpdateInterface (this, new EventArgs ());
+
         private void UpdateInterface (object? sender, EventArgs e) {
+            tracingBrush = Color.GetLead (Lead.Value, colorScheme);
+
             Label lblLead = this.FindControl<Label> ("lblLead");
 
             lblLead.Foreground = tracingBrush;
@@ -90,27 +96,6 @@ namespace II_Avalonia.Controls {
             Trace.DrawPath (_Strip, Tracing, tracingPen, drawOffset, drawMultiplier);
 
             imgTracing.Source = Tracing;
-        }
-
-        public void SetColors (DeviceECG.ColorSchemes scheme) {
-            colorScheme = scheme;
-
-            switch (scheme) {
-                default:
-
-                case DeviceECG.ColorSchemes.Grid:
-                case DeviceECG.ColorSchemes.Light:
-                    tracingBrush = Brushes.Black;
-                    referenceBrush = Brushes.DarkGray;
-                    break;
-
-                case DeviceECG.ColorSchemes.Dark:
-                    tracingBrush = Brushes.Green;
-                    referenceBrush = Brushes.DarkGray;
-                    break;
-            }
-
-            UpdateInterface (null, null);
         }
     }
 }

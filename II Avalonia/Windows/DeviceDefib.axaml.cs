@@ -36,6 +36,7 @@ namespace II_Avalonia {
         private int autoScale_iter = Strip.DefaultAutoScale_Iterations;
 
         private bool isPaused = false;
+        private Color.Schemes colorScheme = Color.Schemes.Dark;
 
         private List<Controls.DefibTracing> listTracings = new List<Controls.DefibTracing> ();
         private List<Controls.DefibNumeric> listNumerics = new List<Controls.DefibNumeric> ();
@@ -116,6 +117,9 @@ namespace II_Avalonia {
             this.FindControl<MenuItem> ("menuAddNumeric").Header = App.Language.Localize ("MENU:MenuAddNumeric");
             this.FindControl<MenuItem> ("menuAddTracing").Header = App.Language.Localize ("MENU:MenuAddTracing");
             this.FindControl<MenuItem> ("menuCloseDevice").Header = App.Language.Localize ("MENU:MenuCloseDevice");
+            this.FindControl<MenuItem> ("menuColor").Header = App.Language.Localize ("MENU:MenuColorScheme");
+            this.FindControl<MenuItem> ("menuColorLight").Header = App.Language.Localize ("MENU:MenuColorSchemeLight");
+            this.FindControl<MenuItem> ("menuColorDark").Header = App.Language.Localize ("MENU:MenuColorSchemeDark");
 
             this.FindControl<TextBlock> ("btntxtDefib").Text = App.Language.Localize ("DEFIB:Defibrillator");
             this.FindControl<TextBlock> ("txtEnergyAmount").Text = App.Language.Localize ("DEFIB:EnergyAmount");
@@ -141,6 +145,15 @@ namespace II_Avalonia {
                 .Where (n => n.controlType.Value == Controls.DefibNumeric.ControlType.Values.DEFIB)
                 .ToList ()
                 .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
+
+            for (int i = 0; i < listTracings.Count; i++)
+                listTracings [i].SetColorScheme (colorScheme);
+
+            for (int i = 0; i < listNumerics.Count; i++)
+                listNumerics [i].SetColorScheme (colorScheme);
+
+            Window window = this.FindControl<Window> ("wdwDeviceDefib");
+            window.Background = Color.GetBackground (Color.Devices.DeviceDefib, colorScheme);
         }
 
         public void Load_Process (string inc) {
@@ -201,6 +214,11 @@ namespace II_Avalonia {
             sWrite.AppendLine (String.Format ("{0}:{1}", "PacerRate", PacerRate));
 
             return sWrite.ToString ();
+        }
+
+        public void SetColorScheme (Color.Schemes scheme) {
+            colorScheme = scheme;
+            UpdateInterface ();
         }
 
         private void TogglePause () {
@@ -352,15 +370,26 @@ namespace II_Avalonia {
             UpdateInterface ();
         }
 
-        private void ButtonPacePause_Click (object s, RoutedEventArgs e) => App.Patient.PacemakerPause ();
+        private void ButtonPacePause_Click (object s, RoutedEventArgs e)
+            => App.Patient.PacemakerPause ();
 
-        private void MenuClose_Click (object s, RoutedEventArgs e) => this.Close ();
+        private void MenuClose_Click (object s, RoutedEventArgs e)
+            => this.Close ();
 
-        private void MenuAddNumeric_Click (object s, RoutedEventArgs e) => AddNumeric ();
+        private void MenuAddNumeric_Click (object s, RoutedEventArgs e)
+            => AddNumeric ();
 
-        private void MenuAddTracing_Click (object s, RoutedEventArgs e) => AddTracing ();
+        private void MenuAddTracing_Click (object s, RoutedEventArgs e)
+            => AddTracing ();
 
-        private void MenuTogglePause_Click (object s, RoutedEventArgs e) => TogglePause ();
+        private void MenuTogglePause_Click (object s, RoutedEventArgs e)
+            => TogglePause ();
+
+        private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
+            => SetColorScheme (Color.Schemes.Light);
+
+        private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
+            => SetColorScheme (Color.Schemes.Dark);
 
         private void OnTick_ChargingComplete (object sender, EventArgs e) {
             timerAncillary_Delay.Stop ();
@@ -430,7 +459,8 @@ namespace II_Avalonia {
                 Controls.DefibNumeric newNum;
                 newNum = new Controls.DefibNumeric (
                     this,
-                    (Controls.DefibNumeric.ControlType.Values)Enum.Parse (typeof (Controls.DefibNumeric.ControlType.Values), numericTypes [i]));
+                    (Controls.DefibNumeric.ControlType.Values)Enum.Parse (typeof (Controls.DefibNumeric.ControlType.Values), numericTypes [i]),
+                    colorScheme);
                 listNumerics.Add (newNum);
             }
 
@@ -445,7 +475,7 @@ namespace II_Avalonia {
 
             for (int i = listTracings.Count; i < rowsTracings && i < tracingTypes.Count; i++) {
                 Strip newStrip = new Strip ((Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]), 6f);
-                Controls.DefibTracing newTracing = new Controls.DefibTracing (newStrip);
+                Controls.DefibTracing newTracing = new Controls.DefibTracing (newStrip, colorScheme);
                 listTracings.Add (newTracing);
             }
 

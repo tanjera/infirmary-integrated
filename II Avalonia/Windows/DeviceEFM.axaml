@@ -23,22 +23,21 @@
     <Menu Background="White" DockPanel.Dock="Top">
 
       <MenuItem Name="menuDevice">
-        <MenuItem
-          Name="menuPauseDevice"
-
-          Click="MenuTogglePause_Click" />
+        <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" />
         <Separator />
-        <MenuItem
-          Name="menuCloseDevice"
+        <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" />
+      </MenuItem>
 
-          Click="MenuClose_Click" />
+      <MenuItem Name="menuColor">
+        <MenuItem Name="menuColorLight" Click="MenuColorScheme_Light" />
+        <MenuItem Name="menuColorDark" Click="MenuColorScheme_Dark" />
       </MenuItem>
     </Menu>
 
     <Grid
-      Name="displayGrid"
-      HorizontalAlignment="Stretch"
-      VerticalAlignment="Stretch">
+			Name="displayGrid"
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Stretch">
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>

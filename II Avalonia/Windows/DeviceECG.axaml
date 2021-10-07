@@ -23,38 +23,23 @@
     <Menu Background="White" DockPanel.Dock="Top">
 
       <MenuItem Name="menuDevice">
-        <MenuItem
-          Name="menuPauseDevice"
-
-          Click="MenuTogglePause_Click" />
+        <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" />
         <Separator />
-        <MenuItem
-          Name="menuCloseDevice"
-
-          Click="MenuClose_Click" />
+        <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" />
       </MenuItem>
 
       <MenuItem Name="menuColor">
-        <MenuItem
-          Name="menuShowGrid"
-
-          Click="MenuShowGrid_Click" />
+        <MenuItem Name="menuShowGrid" Click="MenuShowGrid_Click" />
         <Separator />
-        <MenuItem
-          Name="menuColorLight"
-
-          Click="MenuColorScheme_Light" />
-        <MenuItem
-          Name="menuColorDark"
-
-          Click="MenuColorScheme_Dark" />
+        <MenuItem Name="menuColorLight" Click="MenuColorScheme_Light" />
+        <MenuItem Name="menuColorDark" Click="MenuColorScheme_Dark" />
       </MenuItem>
     </Menu>
 
     <!--  12 Lead ECG Tracings added to layoutGrid programmatically  -->
     <Grid
-      Name="layoutGrid"
-      HorizontalAlignment="Stretch"
-      VerticalAlignment="Stretch" />
+			Name="layoutGrid"
+			HorizontalAlignment="Stretch"
+			VerticalAlignment="Stretch" />
   </DockPanel>
 </Window>

@@ -19,6 +19,7 @@ namespace II_Avalonia {
 
     public partial class DeviceEFM : Window {
         private bool isPaused = false;
+        private Color.Schemes colorScheme = Color.Schemes.Light;
 
         private List<Controls.EFMTracing> listTracings = new List<Controls.EFMTracing> ();
 
@@ -67,6 +68,9 @@ namespace II_Avalonia {
             this.FindControl<MenuItem> ("menuDevice").Header = App.Language.Localize ("MENU:MenuDeviceOptions");
             this.FindControl<MenuItem> ("menuPauseDevice").Header = App.Language.Localize ("MENU:MenuPauseDevice");
             this.FindControl<MenuItem> ("menuCloseDevice").Header = App.Language.Localize ("MENU:MenuCloseDevice");
+            this.FindControl<MenuItem> ("menuColor").Header = App.Language.Localize ("MENU:MenuColorScheme");
+            this.FindControl<MenuItem> ("menuColorLight").Header = App.Language.Localize ("MENU:MenuColorSchemeLight");
+            this.FindControl<MenuItem> ("menuColorDark").Header = App.Language.Localize ("MENU:MenuColorSchemeDark");
 
             Grid displayGrid = this.FindControl<Grid> ("displayGrid");
 
@@ -79,19 +83,27 @@ namespace II_Avalonia {
             gridToco.Stretch = Stretch.Fill;
 
             // Instantiate and add Tracings to UI
-            Controls.EFMTracing fhrTracing = new Controls.EFMTracing (new Strip (Lead.Values.FHR, 600f));
+            Controls.EFMTracing fhrTracing = new Controls.EFMTracing (new Strip (Lead.Values.FHR, 600f), colorScheme);
             fhrTracing.SetValue (Grid.RowProperty, 0);
             fhrTracing.SetValue (Grid.ColumnProperty, 0);
             fhrTracing.Background = gridFHR;
             listTracings.Add (fhrTracing);
             displayGrid.Children.Add (fhrTracing);
 
-            Controls.EFMTracing tocoTracing = new Controls.EFMTracing (new Strip (Lead.Values.TOCO, 600f));
+            Controls.EFMTracing tocoTracing = new Controls.EFMTracing (new Strip (Lead.Values.TOCO, 600f), colorScheme);
             tocoTracing.SetValue (Grid.RowProperty, 2);
             tocoTracing.SetValue (Grid.ColumnProperty, 0);
             tocoTracing.Background = gridToco;
             listTracings.Add (tocoTracing);
             displayGrid.Children.Add (tocoTracing);
+        }
+
+        private void UpdateInterface () {
+            for (int i = 0; i < listTracings.Count; i++)
+                listTracings [i].SetColorScheme (colorScheme);
+
+            Window window = this.FindControl<Window> ("wdwDeviceEFM");
+            window.Background = Color.GetBackground (Color.Devices.DeviceEFM, colorScheme);
         }
 
         public void Load_Process (string inc) {
@@ -123,6 +135,11 @@ namespace II_Avalonia {
             return sWrite.ToString ();
         }
 
+        public void SetColorScheme (Color.Schemes scheme) {
+            colorScheme = scheme;
+            UpdateInterface ();
+        }
+
         private void TogglePause () {
             isPaused = !isPaused;
 
@@ -135,6 +152,12 @@ namespace II_Avalonia {
 
         private void MenuTogglePause_Click (object s, RoutedEventArgs e)
             => TogglePause ();
+
+        private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
+            => SetColorScheme (Color.Schemes.Light);
+
+        private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
+            => SetColorScheme (Color.Schemes.Dark);
 
         private void OnClosed (object sender, EventArgs e)
             => this.Dispose ();

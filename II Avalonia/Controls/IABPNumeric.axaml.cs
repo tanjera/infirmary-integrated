@@ -19,6 +19,7 @@ namespace II_Avalonia.Controls {
     public partial class IABPNumeric : UserControl {
         public DeviceDefib deviceParent;
         public ControlType controlType;
+        public Color.Schemes colorScheme;
 
         public class ControlType {
             public Values Value;
@@ -31,11 +32,20 @@ namespace II_Avalonia.Controls {
                 ECG, ABP, IABP_AP
             }
 
+            public Color.Leads GetLead_Color {
+                get { return SwitchLead_Color (this.Value); }
+            }
+
+            private static Color.Leads SwitchLead_Color (Values value) => value switch {
+                ControlType.Values.ECG => Color.Leads.ECG,
+                ControlType.Values.ABP => Color.Leads.ABP,
+                ControlType.Values.IABP_AP => Color.Leads.IABP,
+                _ => Color.Leads.ECG
+            };
+
             public static string LookupString (Values value) {
                 return String.Format ("NUMERIC:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
             }
-
-            public IBrush Color { get { return Coloring [(int)Value]; } }
 
             public static List<string> MenuItem_Formats {
                 get {
@@ -45,27 +55,28 @@ namespace II_Avalonia.Controls {
                     return o;
                 }
             }
-
-            public static IBrush [] Coloring = new IBrush [] {
-                Brushes.Green,
-                Brushes.Red,
-                Brushes.SkyBlue
-            };
         }
 
         public IABPNumeric () {
             InitializeComponent ();
         }
 
-        public IABPNumeric (ControlType.Values v) {
+        public IABPNumeric (ControlType.Values v, Color.Schemes cs) {
             InitializeComponent ();
 
             controlType = new ControlType (v);
+            colorScheme = cs;
+
             UpdateInterface ();
         }
 
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
+        }
+
+        public void SetColorScheme (Color.Schemes scheme) {
+            colorScheme = scheme;
+            UpdateInterface ();
         }
 
         private void UpdateInterface () {
@@ -75,12 +86,12 @@ namespace II_Avalonia.Controls {
             TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
             TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
 
-            borderNumeric.BorderBrush = controlType.Color;
+            borderNumeric.BorderBrush = Color.GetLead (controlType.GetLead_Color, colorScheme);
 
-            lblNumType.Foreground = controlType.Color;
-            lblLine1.Foreground = controlType.Color;
-            lblLine2.Foreground = controlType.Color;
-            lblLine3.Foreground = controlType.Color;
+            lblNumType.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+            lblLine1.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+            lblLine2.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+            lblLine3.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
 
             lblLine1.IsVisible = true;
             lblLine2.IsVisible = true;

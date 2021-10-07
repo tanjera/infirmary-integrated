@@ -26,10 +26,9 @@ namespace II_Avalonia.Controls {
         public RenderTargetBitmap Tracing;
 
         /* Drawing variables, offsets and multipliers */
-
+        public Color.Schemes colorScheme;
         private Pen tracingPen = new Pen ();
         private IBrush tracingBrush = Brushes.Green;
-        private IBrush referenceBrush = Brushes.DarkGray;
 
         private PointD drawOffset;
         private PointD drawMultiplier;
@@ -38,20 +37,31 @@ namespace II_Avalonia.Controls {
             InitializeComponent ();
         }
 
-        public EFMTracing (Strip strip) {
+        public EFMTracing (Strip strip, Color.Schemes cs) {
             InitializeComponent ();
             DataContext = this;
 
             Strip = strip;
+            colorScheme = cs;
 
-            UpdateInterface (null, null);
+            UpdateInterface ();
         }
 
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
         }
 
+        public void SetColorScheme (Color.Schemes scheme) {
+            colorScheme = scheme;
+            UpdateInterface ();
+        }
+
+        private void UpdateInterface ()
+            => UpdateInterface (this, new EventArgs ());
+
         private void UpdateInterface (object? sender, EventArgs e) {
+            tracingBrush = Color.GetLead (Lead.Value, colorScheme);
+
             Label lblLead = this.FindControl<Label> ("lblLead");
 
             lblLead.Foreground = tracingBrush;
