@@ -109,7 +109,7 @@ namespace II_Avalonia {
             this.FindControl<Label> ("lblDevice12LeadECG").Content = App.Language.Localize ("PE:12LeadECG");
             this.FindControl<Label> ("lblDeviceDefibrillator").Content = App.Language.Localize ("PE:Defibrillator");
             this.FindControl<Label> ("lblDeviceIABP").Content = App.Language.Localize ("PE:IABP");
-            this.FindControl<Label> ("lblDeviceEFM").Content = App.Language.Localize ("PE:EFM");
+            //this.FindControl<Label> ("lblDeviceEFM").Content = App.Language.Localize ("PE:EFM");
 
             //lblDeviceVentilator.Content = App.Language.Dictionary["PE:Ventilator"];
             //lblDeviceIVPump.Content = App.Language.Dictionary["PE:IVPump"];

@@ -18,14 +18,19 @@ Main features in Infirmary Integrated include:
   - Aberrant/ectopic beats and resulting decreased pulsatility
   - Intrathoracic pressure, depending on mechanical or spontaneous ventilation
 - Able to pause devices to better analyze waveforms or create screenshots
-- Able to compile printouts including realistic 12 lead ECGs
 - Able to create and play scenarios where the patient's condition changes and progresses
   - Students can react to changing patient conditions with pre-made scenario options
-  - Instructors can guide students through simple or complex patient presentations and disease progressions
+  - Instructors can guide students through simple or complex pre-made patient presentations and disease progressions
 - Able to mirror patient data across multiple computers
-  - A teacher can host a simulation via the internet, students can access the patient simulation remotely
+  - A teacher can run a simulation and automatically broadcast it across the internet
+  - Students can subscribe to a broadcasted simulation and their screens will automatically synchronize
+  - Broadcasting is seamlessly and securely processed through Infirmary Integrated's server
 - Able to save simulations to files (.ii extension) that can distributed or saved
   - Device information (e.g. cardiac monitor waveforms) are also saved in simulation files
+- Multiple color schemes can be selected for each device simulator
+  - "Dark" mode for realistic green-on-black ECG and monitor tracings
+  - "Light" mode for high-contrast uses such as on an overhead projector
+  - Some devices allow for "Grid" mode, replicating an ECG traced on gridded ECG paper
 
 And Infirmary Integrated can simulate hemodynamic and other readings including:
 - Heart rate (HR)
@@ -37,6 +42,7 @@ And Infirmary Integrated can simulate hemodynamic and other readings including:
 - Central venous pressure (CVP)
 - Pulmonary artery pressures and waveforms (Swan-Ganz catheter pressures)
   - Including all pressures and waveforms to simulate catheter placement and wedging
+- Cardiac Output (CO)
 - Intracranial pressure (ICP) factoring compliance in the waveform
 - Intra-abdominal pressure (IAP, bladder pressure)
 - Intra-aortic balloon pump augmentation pressures

@@ -219,7 +219,6 @@
       <ScrollViewer
 				Grid.Row="0"
 				Grid.Column="0"
-				Height="350"
 				VerticalAlignment="Top"
 				HorizontalScrollBarVisibility="Auto"
 				VerticalScrollBarVisibility="Visible">
@@ -274,13 +273,12 @@
 							Name="btnDeviceEFM"
 							Classes="device"
 							Click="ButtonDeviceEFM_Click"
-							IsEnabled="False">
+							IsVisible="False">
               <StackPanel Orientation="Horizontal">
                 <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceEFM_48.png" />
                 <Label Name="lblDeviceEFM" Classes="device" />
               </StackPanel>
             </Button>
-
             <!-- <Button Name="btnDeviceVentilator" /> -->
             <!-- <Button Name="btnDeviceIVPump" /> -->
             <!-- <Button Name="btnDeviceLabResults" /> -->
@@ -1288,7 +1286,10 @@
             </Border>
 
             <!--  Group for Obstetric Profile  -->
-            <Border Margin="5,16,5,5" Classes="expander">
+            <Border
+							Margin="5,16,5,5"
+							Classes="expander"
+							IsVisible="False">
               <Expander
 								Name="expObstetricProfile"
 								IsEnabled="True"
