@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using II.Waveform;
 
 namespace II {
-
     public class Cardiac_Rhythms {
         public Values Value;
 
@@ -183,7 +182,6 @@ namespace II {
         }
 
         public class Default_Vitals {
-
             public int HRMin, HRMax,
                         RRMin, RRMax,
                         SPO2Min, SPO2Max,
@@ -284,7 +282,7 @@ namespace II {
                 case Values.AV_Block__1st_Degree: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
                 case Values.AV_Block__Wenckebach: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
                 case Values.AV_Block__Mobitz_II: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.AV_Block__3rd_Degree: s.Underwrite (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.AV_Block__3rd_Degree: s.Combine (Draw.ECG_Complex__P_Normal (p, s.Lead), true); return;
                 case Values.Bundle_Branch_Block: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
                 case Values.CPR_Artifact: return;
                 case Values.Idioventricular: return;

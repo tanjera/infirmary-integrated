@@ -17,7 +17,6 @@ using II.Drawing;
 using II.Waveform;
 
 namespace II.Rhythm {
-
     public class Strip {
         /* Default variables for easy modification of multiple measurement/tracing functions */
         public static double DefaultLength = 6.0d;
@@ -307,7 +306,7 @@ namespace II.Rhythm {
         }
 
         // Splices in a set of points, combining their Y values
-        public void Combine (List<PointD> splice) {
+        public void Combine (List<PointD> splice, bool onlyIfPolar = false) {
             if (splice.Count == 0)
                 return;
 
@@ -346,8 +345,13 @@ namespace II.Rhythm {
                             i++;                                                                                                // Repeat the comparison with current Point ...
                             j--;                                                                                                // ... against the next splice
                         } else {                                                                                                // If this Point is closest to this splice
-                            lastCombine = splice [j].Y;                                                                         // The new combine amount
-                            Points [i].Y += splice [j].Y;                                                                       // And combine them
+                            if (!onlyIfPolar
+                                || Points [i].Y == 0 || splice [j].Y == 0
+                                || (Points [i].Y < 0 && splice [j].Y < 0)
+                                || (Points [i].Y > 0 && splice [j].Y > 0)) {
+                                lastCombine = splice [j].Y;                                                                         // The new combine amount
+                                Points [i].Y += splice [j].Y;                                                                       // And combine them
+                            }
                             j--;                                                                                                // Iterating to the next splice
                         }
                     }
