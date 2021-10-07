@@ -73,7 +73,7 @@ namespace II.Server {
             }
 
             private void GatherInfo_Offline () {
-                string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
+                Version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
 
                 string os = "";
 
