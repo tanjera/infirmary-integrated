@@ -87,7 +87,7 @@ namespace Publishing {
             Process proc = new Process ();
             string arguments = "";
 
-            string dirBuild = Path.Combine (new string[] { dirBin, "Release", "net5.0", release });
+            string dirBuild = Path.Combine (new string[] { dirBin, "Release", progVar.versionDotnet, release });
             string dirPublish = Path.Combine (dirBuild, "publish");
             string dirII = Path.Combine (dirBuild, "Infirmary Integrated");
 

@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <StartupObject>II_Avalonia.Program</StartupObject>
     <SignAssembly>false</SignAssembly>
     <AssemblyName>Infirmary Integrated</AssemblyName>
-    <Copyright>© 2017-2021, Ibi Keller</Copyright>
+    <Copyright>© 2017-2022, Ibi Keller</Copyright>
     <Authors>Ibi Keller</Authors>
-    <Version>2.0.1</Version>
+    <Version>2.0.2</Version>
     <Company>Infirmary Integrated</Company>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageProjectUrl>https://www.infirmary-integrated.com/</PackageProjectUrl>

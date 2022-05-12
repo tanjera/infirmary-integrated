@@ -8,6 +8,7 @@ namespace Publishing {
         // Parameters to be set for runtime environment
 
         public class Variables {
+            public string versionDotnet;
             public string pathDotnet;
             public string pathTar;
             public string pathSigntool;
@@ -15,6 +16,8 @@ namespace Publishing {
             public string dirSolution;
 
             public Variables() {
+                versionDotnet = "net6.0";
+
                 if (OperatingSystem.IsWindows()) {
                     pathDotnet = @"C:\Program Files\dotnet\dotnet.exe";
                     pathTar = @"C:\Windows\System32\tar.exe";
