@@ -4,21 +4,43 @@ using System.IO;
 
 namespace Publishing {
 
-    internal class Program {
+    public class Program {
         // Parameters to be set for runtime environment
 
-        public const string pathDotnet = @"C:\Program Files\dotnet\dotnet.exe";
-        public const string pathTar = @"C:\Windows\System32\tar.exe";
-        public const string pathSigntool = @"C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe";
-        public const string pathCert = @"C:\Users\Ibi\Documents\Code Signing Certificate, Sectigo.pfx";
+        public class Variables {
+            public string pathDotnet;
+            public string pathTar;
+            public string pathSigntool;
+            public string pathCert;
+            public string dirSolution;
 
-        public const string dirSolution = @"C:\Users\Ibi\Documents\Infirmary Integrated";
+            public Variables() {
+                if (OperatingSystem.IsWindows()) {
+                    pathDotnet = @"C:\Program Files\dotnet\dotnet.exe";
+                    pathTar = @"C:\Windows\System32\tar.exe";
+                    pathSigntool = @"C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe";
+                    pathCert = @"C:\Users\Ibi\Documents\Code Signing Certificate, Sectigo.pfx";
+                    dirSolution = @"C:\Users\Ibi\Documents\Infirmary Integrated";
+                } else if (OperatingSystem.IsLinux()) {
+                    pathDotnet = "dotnet";
+                    pathTar = "tar";
+                    dirSolution = @"/home/ibi/Documents/Infirmary Integrated";
+                }
+            }
+        }
 
         private static void Main (string [] args) {
-            // Get base directory for solution and project
+            Program p = new Program();
+            p.Init(args);
+        }
 
-            string dirRelease = Path.Combine (dirSolution, "Release");
-            string dirProject = Path.Combine (dirSolution, "II Avalonia");
+        public void Init (string [] args) {
+            
+            Variables progVar = new Variables();
+
+            // Get base directory for solution and project
+            string dirRelease = Path.Combine (progVar.dirSolution, "Release");
+            string dirProject = Path.Combine (progVar.dirSolution, "II Avalonia");
             string dirBin = Path.Combine (dirProject, "bin");
             string dirObj = Path.Combine (dirProject, "obj");
 
@@ -41,12 +63,12 @@ namespace Publishing {
             Console.ResetColor ();
 
             if (Console.ReadLine ().Trim ().ToLower () == "y") {
-                Building.Clean (dirProject, dirBin, dirObj);
-                Building.Build (dirProject);
+                Building.Clean (progVar, dirProject, dirBin, dirObj);
+                Building.Build (progVar, dirProject);
 
                 foreach (string release in listReleases) {
-                    Building.Publish (dirProject, release);
-                    Building.Pack (dirBin, dirRelease, release, verNumber);
+                    Building.Publish (progVar, dirProject, release);
+                    Building.Pack (progVar, dirBin, dirRelease, release, verNumber);
                 }
             }
 
@@ -57,7 +79,7 @@ namespace Publishing {
                 Console.ResetColor ();
 
                 if (Console.ReadLine ().Trim ().ToLower () == "y") {
-                    Package_Windows.Process (dirSolution, dirRelease, verNumber);
+                    Package_Windows.Process (progVar, dirRelease, verNumber);
                 }
 
                 Console.ForegroundColor = ConsoleColor.Yellow;

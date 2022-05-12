@@ -1,9 +1,16 @@
 #!/bin/bash
+
+# ####
+# Usage: Run in Linux or MacOS *after* II Dev Tools Publishing Utility (called by publishing-windows.bat)!
+# Will repackage build output into a .tar.gz with appropriate MacOS file structure
+# ####
+
+SOLUTION_PATH="/home/ibi/Documents/Infirmary Integrated"
+
 UUID=$(uuidgen)
 PROCESS_PATH="/tmp/$UUID"
 
 APP_NAME="Infirmary Integrated.app"
-SOLUTION_PATH="/mnt/c/Users/Ibi/Documents/Infirmary Integrated"
 PUBLISH_OUTPUT_DIRECTORY="$SOLUTION_PATH/II Avalonia/bin/Release/net5.0/osx-x64/publish"
 INFO_PLIST="$SOLUTION_PATH/Package, MacOS/Info.plist"
 ICON_PATH="$SOLUTION_PATH/Package, MacOS/Icon_II.icns"

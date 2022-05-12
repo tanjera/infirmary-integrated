@@ -60,7 +60,7 @@
         Margin="5,0"
         Padding="5,0,5,2"
         HorizontalAlignment="Left"
-        Content="Ibi Keller, (c) 2017-2021" />
+        Content="Ibi Keller, (c) 2017-2022" />
 
       <TextBlock
         Name="tblDescription"

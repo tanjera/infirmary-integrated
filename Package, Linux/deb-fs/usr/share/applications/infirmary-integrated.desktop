@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Infirmary Integrated
+Comment=Healthcare Device Simulator
+Exec=/usr/bin/infirmary-integrated
+Icon=infirmary-integrated
+Type=Application
+Categories=Education;Science;

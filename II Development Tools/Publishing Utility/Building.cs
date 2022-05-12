@@ -6,7 +6,7 @@ namespace Publishing {
 
     public class Building {
 
-        public static void Clean (string dirProject, string dirBin, string dirObj) {
+        public static void Clean (Program.Variables progVar, string dirProject, string dirBin, string dirObj) {
             Process proc = new Process ();
             string arguments = "";
 
@@ -31,7 +31,7 @@ namespace Publishing {
             Console.WriteLine (Environment.NewLine);
             Console.ResetColor ();
 
-            proc.StartInfo.FileName = Program.pathDotnet;
+            proc.StartInfo.FileName = progVar.pathDotnet;
             proc.StartInfo.Arguments = arguments;
             proc.StartInfo.UseShellExecute = false;
             proc.StartInfo.WorkingDirectory = dirProject;
@@ -39,7 +39,7 @@ namespace Publishing {
             proc.WaitForExit ();
         }
 
-        public static void Build (string dirProject) {
+        public static void Build (Program.Variables progVar, string dirProject) {
             Process proc = new Process ();
             string arguments = "";
 
@@ -51,7 +51,7 @@ namespace Publishing {
             Console.WriteLine (Environment.NewLine);
             Console.ResetColor ();
 
-            proc.StartInfo.FileName = Program.pathDotnet;
+            proc.StartInfo.FileName = progVar.pathDotnet;
             proc.StartInfo.Arguments = arguments;
             proc.StartInfo.UseShellExecute = false;
             proc.StartInfo.WorkingDirectory = dirProject;
@@ -59,7 +59,7 @@ namespace Publishing {
             proc.WaitForExit ();
         }
 
-        public static void Publish (string dirProject, string release) {
+        public static void Publish (Program.Variables progVar, string dirProject, string release) {
             Process proc = new Process ();
             string arguments = "";
 
@@ -75,7 +75,7 @@ namespace Publishing {
             Console.WriteLine (Environment.NewLine);
             Console.ResetColor ();
 
-            proc.StartInfo.FileName = Program.pathDotnet;
+            proc.StartInfo.FileName = progVar.pathDotnet;
             proc.StartInfo.Arguments = arguments;
             proc.StartInfo.UseShellExecute = false;
             proc.StartInfo.WorkingDirectory = dirProject;
@@ -83,11 +83,11 @@ namespace Publishing {
             proc.WaitForExit ();
         }
 
-        public static void Pack (string dirBin, string dirRelease, string release, string verNumber) {
+        public static void Pack (Program.Variables progVar, string dirBin, string dirRelease, string release, string verNumber) {
             Process proc = new Process ();
             string arguments = "";
 
-            string dirBuild = Path.Combine (dirBin, $"Release\\net5.0\\{release}");
+            string dirBuild = Path.Combine (new string[] { dirBin, "Release", "net5.0", release });
             string dirPublish = Path.Combine (dirBuild, "publish");
             string dirII = Path.Combine (dirBuild, "Infirmary Integrated");
 
@@ -108,7 +108,7 @@ namespace Publishing {
                 Console.WriteLine ($"- Executing tar {arguments}");
                 Console.WriteLine (Environment.NewLine);
 
-                proc.StartInfo.FileName = Program.pathTar;
+                proc.StartInfo.FileName = progVar.pathTar;
                 proc.StartInfo.Arguments = arguments;
                 proc.StartInfo.UseShellExecute = false;
                 proc.StartInfo.WorkingDirectory = dirBuild;

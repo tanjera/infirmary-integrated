@@ -6,12 +6,12 @@ namespace Publishing {
 
     public class Package_Windows {
 
-        public static void Process (string dirSolution, string dirRelease, string verNumber) {
+        public static void Process (Program.Variables progVar, string dirRelease, string verNumber) {
             string pkgOrig = $"infirmary-integrated-.msi";
             string pkgName = $"infirmary-integrated-{verNumber}.msi";
 
-            MovePackage_Windows (dirSolution, dirRelease, pkgOrig, pkgName);
-            SignPackage_Windows (dirRelease, pkgName);
+            MovePackage_Windows (progVar.dirSolution, dirRelease, pkgOrig, pkgName);
+            SignPackage_Windows (progVar, dirRelease, pkgName);
         }
 
         public static void MovePackage_Windows (string dirSolution, string dirRelease, string pkgOrig, string pkgName) {
@@ -23,7 +23,7 @@ namespace Publishing {
             }
         }
 
-        public static void SignPackage_Windows (string dirRelease, string pkgName) {
+        public static void SignPackage_Windows (Program.Variables progVar, string dirRelease, string pkgName) {
             Process proc = new Process ();
             string arguments = "";
 
@@ -32,13 +32,13 @@ namespace Publishing {
 
             // "signtool sign /f sigfile.pfx /p password filename"
 
-            arguments = $"sign /f \"{Program.pathCert}\" /p {password} \"{pkgName}\"";
+            arguments = $"sign /f \"{progVar.pathCert}\" /p {password} \"{pkgName}\"";
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine ($"- Executing signtool {arguments}");
             Console.WriteLine (Environment.NewLine);
             Console.ResetColor ();
 
-            proc.StartInfo.FileName = Program.pathSigntool;
+            proc.StartInfo.FileName = progVar.pathSigntool;
             proc.StartInfo.Arguments = arguments;
             proc.StartInfo.UseShellExecute = false;
             proc.StartInfo.WorkingDirectory = dirRelease;
