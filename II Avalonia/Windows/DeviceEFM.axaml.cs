@@ -68,6 +68,9 @@ namespace II_Avalonia {
             this.FindControl<MenuItem> ("menuDevice").Header = App.Language.Localize ("MENU:MenuDeviceOptions");
             this.FindControl<MenuItem> ("menuPauseDevice").Header = App.Language.Localize ("MENU:MenuPauseDevice");
             this.FindControl<MenuItem> ("menuCloseDevice").Header = App.Language.Localize ("MENU:MenuCloseDevice");
+            this.FindControl<MenuItem> ("menuLength").Header = App.Language.Localize ("MENU:StripLength");
+            this.FindControl<MenuItem> ("menu1Min").Header = App.Language.Localize ("MENU:StripLength_1Min");
+            this.FindControl<MenuItem> ("menu10Min").Header = App.Language.Localize ("MENU:StripLength_10Min");
             this.FindControl<MenuItem> ("menuColor").Header = App.Language.Localize ("MENU:MenuColorScheme");
             this.FindControl<MenuItem> ("menuColorLight").Header = App.Language.Localize ("MENU:MenuColorSchemeLight");
             this.FindControl<MenuItem> ("menuColorDark").Header = App.Language.Localize ("MENU:MenuColorSchemeDark");
@@ -83,14 +86,14 @@ namespace II_Avalonia {
             gridToco.Stretch = Stretch.Fill;
 
             // Instantiate and add Tracings to UI
-            Controls.EFMTracing fhrTracing = new Controls.EFMTracing (new Strip (Lead.Values.FHR, 600f), colorScheme);
+            Controls.EFMTracing fhrTracing = new Controls.EFMTracing (new Strip (Lead.Values.FHR, 600d), colorScheme);
             fhrTracing.SetValue (Grid.RowProperty, 0);
             fhrTracing.SetValue (Grid.ColumnProperty, 0);
             fhrTracing.Background = gridFHR;
             listTracings.Add (fhrTracing);
             displayGrid.Children.Add (fhrTracing);
 
-            Controls.EFMTracing tocoTracing = new Controls.EFMTracing (new Strip (Lead.Values.TOCO, 600f), colorScheme);
+            Controls.EFMTracing tocoTracing = new Controls.EFMTracing (new Strip (Lead.Values.TOCO, 600d), colorScheme);
             tocoTracing.SetValue (Grid.RowProperty, 2);
             tocoTracing.SetValue (Grid.ColumnProperty, 0);
             tocoTracing.Background = gridToco;
@@ -140,6 +143,12 @@ namespace II_Avalonia {
             UpdateInterface ();
         }
 
+        private void SetStripLength (int seconds) {
+            listTracings.ForEach (c => {
+                c.Strip = new Strip (c.Strip.Lead.Value, seconds);
+            });
+        }
+
         private void TogglePause () {
             isPaused = !isPaused;
 
@@ -152,6 +161,12 @@ namespace II_Avalonia {
 
         private void MenuTogglePause_Click (object s, RoutedEventArgs e)
             => TogglePause ();
+
+        private void MenuLength_1m (object sender, RoutedEventArgs e)
+            => SetStripLength (60);
+
+        private void MenuLength_10m (object sender, RoutedEventArgs e)
+            => SetStripLength (600);
 
         private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Light);

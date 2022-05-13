@@ -79,7 +79,7 @@ namespace II_Avalonia.Controls {
         }
 
         public async Task DrawTracing ()
-            => Draw (Strip, tracingBrush, 1);
+            => _ = Draw (Strip, tracingBrush, 1);
 
         public async Task Draw (Strip _Strip, IBrush _Brush, double _Thickness) {
             Image imgTracing = this.FindControl<Image> ("imgTracing");

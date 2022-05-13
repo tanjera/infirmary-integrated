@@ -48,7 +48,7 @@ namespace II {
         public Scales.Intensity Contraction_Intensity = new Scales.Intensity (),
                          FHR_Variability = new Scales.Intensity ();
 
-        public double Contraction_Frequency;     // Frequency in minutes
+        public double Contraction_Frequency;     // Frequency in seconds
 
         public int Contraction_Duration,         // Duration in seconds
                     FHR;                         // Baseline fetal heart rate
@@ -296,7 +296,7 @@ namespace II {
                             150,
                             Scales.Intensity.Values.Mild,
                             new List<FHRAccelDecels.Values> (),
-                            5,
+                            300,
                             60,
                             Scales.Intensity.Values.Moderate));
 
@@ -1337,7 +1337,7 @@ namespace II {
 
         private async Task OnObstetric_Baseline () {
             await OnPatientEvent (PatientEventTypes.Obstetric_Baseline);
-            timerObstetric_Baseline.ResetAuto (10000);
+            timerObstetric_Baseline.ResetAuto (1000);
 
             await OnObstetric_RunTimers ();
         }
@@ -1348,7 +1348,7 @@ namespace II {
                 Uterus_Contracted = false;
             } else if (Contraction_Frequency > 0) {
                 if (!Uterus_Contracted)
-                    timerObstetric_Contraction.Continue ((int)(Contraction_Frequency * 60d * 1000d));
+                    timerObstetric_Contraction.Continue ((int)(Contraction_Frequency * 1000d));
                 else if (Uterus_Contracted)
                     timerObstetric_Contraction.Continue ((int)(Contraction_Duration * 1000d));
             }
@@ -1362,7 +1362,7 @@ namespace II {
                 await OnPatientEvent (PatientEventTypes.Obstetric_Contraction_Start);
             } else {                        // Contraction ending
                 Uterus_Contracted = false;
-                timerObstetric_Contraction.ResetAuto ((int)(Contraction_Frequency * 60d * 1000d));
+                timerObstetric_Contraction.ResetAuto ((int)(Contraction_Frequency * 1000d));
 
                 await OnPatientEvent (PatientEventTypes.Obstetric_Contraction_End);
             }

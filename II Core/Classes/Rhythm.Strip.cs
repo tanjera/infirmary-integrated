@@ -17,6 +17,7 @@ using II.Drawing;
 using II.Waveform;
 
 namespace II.Rhythm {
+
     public class Strip {
         /* Default variables for easy modification of multiple measurement/tracing functions */
         public static double DefaultLength = 6.0d;
@@ -124,6 +125,13 @@ namespace II.Rhythm {
             get {
                 return Lead.Value == Lead.Values.ETCO2
                     || Lead.Value == Lead.Values.RR;
+            }
+        }
+
+        private bool IsObstetric {
+            get {
+                return Lead.Value == Lead.Values.FHR
+                    || Lead.Value == Lead.Values.TOCO;
             }
         }
 
@@ -240,6 +248,9 @@ namespace II.Rhythm {
             else if (IsRespiratory)
                 forwardBuffer = System.Math.Max (1 + (2 * ((double)patient.GetRR_Seconds / Length)),
                     (onClear ? 1.1f : forwardBuffer));
+            else if (IsObstetric)
+                forwardBuffer = System.Math.Max (1 + (2 * ((double)patient.Contraction_Frequency / Length)),
+                    (onClear ? 1.1f : forwardBuffer));
         }
 
         public void DecreaseAmplitude ()
@@ -269,8 +280,6 @@ namespace II.Rhythm {
 
         public PointD Last (List<PointD> _In) {
             if (_In.Count < 1)
-
-                // New vectors are added to Points beginning at 5 seconds to marquee backwards to 0
                 return new PointD ((double)Length, 0);
             else
                 return _In [_In.Count - 1];
@@ -640,10 +649,24 @@ namespace II.Rhythm {
         }
 
         public void Add_Beat__Obstetric_Baseline (Patient p) {
+            SetForwardBuffer (p);
+            TrimPoints ();
+
+            if (Lead.Value != Lead.Values.FHR && Lead.Value != Lead.Values.TOCO)
+                return;
+
+            /* Fill waveform through to future buffer with flatline */
+            double fill = (Length * forwardBuffer) - Last (Points).X;
+
             switch (Lead.Value) {
                 default: break;
-                case Lead.Values.FHR: Underwrite (Draw.FHR_Rhythm (p, p.Uterus_Contracted)); break;
-                case Lead.Values.TOCO: Underwrite (Draw.TOCO_Rhythm (p, p.Uterus_Contracted)); break;
+                case Lead.Values.FHR:
+                    Concatenate (Draw.Flat_Line (fill, 0d));
+                    break;
+
+                case Lead.Values.TOCO:
+                    Concatenate (Draw.Flat_Line (fill, 0d));
+                    break;
             }
 
             SortPoints ();

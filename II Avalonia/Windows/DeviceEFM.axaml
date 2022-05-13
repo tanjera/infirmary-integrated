@@ -28,9 +28,20 @@
         <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" />
       </MenuItem>
 
+      <MenuItem Name="menuLength">
+        <MenuItem Name="menu1Min" Click="MenuLength_1m" />
+        <MenuItem Name="menu10Min" Click="MenuLength_10m" />
+      </MenuItem>
+
       <MenuItem Name="menuColor">
-        <MenuItem Name="menuColorLight" Click="MenuColorScheme_Light" />
-        <MenuItem Name="menuColorDark" Click="MenuColorScheme_Dark" />
+        <MenuItem
+					Name="menuColorLight"
+					Click="MenuColorScheme_Light"
+					IsEnabled="False" />
+        <MenuItem
+					Name="menuColorDark"
+					Click="MenuColorScheme_Dark"
+					IsEnabled="False" />
       </MenuItem>
     </Menu>
 

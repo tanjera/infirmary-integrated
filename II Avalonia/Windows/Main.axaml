@@ -272,16 +272,12 @@
             <Button
 							Name="btnDeviceEFM"
 							Classes="device"
-							Click="ButtonDeviceEFM_Click"
-							IsVisible="False">
+							Click="ButtonDeviceEFM_Click">
               <StackPanel Orientation="Horizontal">
                 <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceEFM_48.png" />
                 <Label Name="lblDeviceEFM" Classes="device" />
               </StackPanel>
             </Button>
-            <!-- <Button Name="btnDeviceVentilator" /> -->
-            <!-- <Button Name="btnDeviceIVPump" /> -->
-            <!-- <Button Name="btnDeviceLabResults" /> -->
           </StackPanel>
         </HeaderedContentControl>
       </ScrollViewer>
@@ -1286,10 +1282,7 @@
             </Border>
 
             <!--  Group for Obstetric Profile  -->
-            <Border
-							Margin="5,16,5,5"
-							Classes="expander"
-							IsVisible="False">
+            <Border Margin="5,16,5,5" Classes="expander">
               <Expander
 								Name="expObstetricProfile"
 								IsEnabled="True"
@@ -1368,12 +1361,12 @@
 										Grid.Row="5"
 										Grid.Column="1"
 										Classes="vitals"
-										FormatString="{}{0:#0.0}"
-										Increment="0.5"
+										FormatString="{}{0:#0}"
+										Increment="30"
 										KeyDown="OnUIPatientParameter_KeyDown"
 										LostFocus="OnUIPatientParameter_LostFocus"
-										Maximum="60"
-										Minimum="0"
+										Maximum="600"
+										Minimum="60"
 										ValueChanged="OnUIPatientParameter_Changed" />
                   <Label
 										Name="lblUCDuration"
@@ -1389,7 +1382,7 @@
 										KeyDown="OnUIPatientParameter_KeyDown"
 										LostFocus="OnUIPatientParameter_LostFocus"
 										Maximum="600"
-										Minimum="0"
+										Minimum="30"
 										ValueChanged="OnUIPatientParameter_Changed" />
                   <Label
 										Name="lblUCIntensity"
