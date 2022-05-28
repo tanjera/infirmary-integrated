@@ -11,20 +11,22 @@ namespace Publishing {
             public string versionDotnet;
             public string pathDotnet;
             public string pathTar;
+            public string pathNSIS;
             public string pathSigntool;
             public string pathCert;
             public string dirSolution;
 
-            public Variables() {
+            public Variables () {
                 versionDotnet = "net6.0";
 
-                if (OperatingSystem.IsWindows()) {
+                if (OperatingSystem.IsWindows ()) {
                     pathDotnet = @"C:\Program Files\dotnet\dotnet.exe";
                     pathTar = @"C:\Windows\System32\tar.exe";
+                    pathNSIS = @"C:\Program Files (x86)\NSIS\makensis.exe";
                     pathSigntool = @"C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe";
                     pathCert = @"C:\Users\Ibi\Documents\Code Signing Certificate, Sectigo.pfx";
                     dirSolution = @"C:\Users\Ibi\Documents\Infirmary Integrated";
-                } else if (OperatingSystem.IsLinux()) {
+                } else if (OperatingSystem.IsLinux ()) {
                     pathDotnet = "dotnet";
                     pathTar = "tar";
                     dirSolution = @"/home/ibi/Documents/Infirmary Integrated";
@@ -33,13 +35,12 @@ namespace Publishing {
         }
 
         private static void Main (string [] args) {
-            Program p = new Program();
-            p.Init(args);
+            Program p = new Program ();
+            p.Init (args);
         }
 
         public void Init (string [] args) {
-            
-            Variables progVar = new Variables();
+            Variables progVar = new Variables ();
 
             // Get base directory for solution and project
             string dirRelease = Path.Combine (progVar.dirSolution, "Release");
@@ -50,7 +51,8 @@ namespace Publishing {
             string [] listReleases = {
                 "win-x64",
                 "linux-x64",
-                "osx-x64" };
+                "osx-x64"
+                };
 
             Directory.CreateDirectory (dirRelease);
 
@@ -78,7 +80,7 @@ namespace Publishing {
             if (OperatingSystem.IsWindows ()) {                     // Process Windows packages
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine (Environment.NewLine);
-                Console.Write ("Would you like to process and sign the Windows package? [y/N] ");
+                Console.Write ("Would you like to create and sign the Windows package? [y/N] ");
                 Console.ResetColor ();
 
                 if (Console.ReadLine ().Trim ().ToLower () == "y") {

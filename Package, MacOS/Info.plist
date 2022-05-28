@@ -9,9 +9,9 @@
     <key>CFBundleName</key>
     <string>Infirmary Integrated</string>
     <key>CFBundleVersion</key>
-    <string>A.0.8</string>
+    <string>2.0.2</string>
     <key>CFBundleShortVersionString</key>
-    <string>A.0.8</string>
+    <string>2.0.2</string>
     <key>LSMinimumSystemVersion</key>
     <string>10.12</string>
     <key>CFBundleExecutable</key>

@@ -4,7 +4,7 @@
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
     <StartupObject>II_Avalonia.Program</StartupObject>
-    <SignAssembly>false</SignAssembly>
+    <SignAssembly>False</SignAssembly>
     <AssemblyName>Infirmary Integrated</AssemblyName>
     <Copyright>© 2017-2022, Ibi Keller</Copyright>
     <Authors>Ibi Keller</Authors>
@@ -17,6 +17,7 @@
     <RepositoryUrl>https://github.com/tanjera/infirmary-integrated</RepositoryUrl>
     <Description>Medical device simulator for training healthcare professionals.</Description>
     <ApplicationIcon>Icon_II.ico</ApplicationIcon>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.7" />
