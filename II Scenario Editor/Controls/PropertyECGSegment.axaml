@@ -1,0 +1,185 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="II_Scenario_Editor.Controls.PropertyECGSegment"
+             HorizontalAlignment="Stretch"
+             Margin="0">
+
+  <UserControl.Styles>
+    <Style Selector="NumericUpDown.ecg">
+      <Setter Property="MinWidth" Value="45" />
+      <Setter Property="Height" Value="20" />
+      <Setter Property="Increment" Value="0.1" />
+      <Setter Property="Minimum" Value="-1.0" />
+      <Setter Property="Maximum"  Value="1.0" />
+    </Style>
+
+    <Style Selector="Label.ecg">
+      <Setter Property="Margin" Value="2, 0, 1, 0" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <Label Name="lblKey"
+           Grid.Column="0"
+           Grid.Row="0"
+           Grid.ColumnSpan="4"
+           HorizontalAlignment="Left"
+           Margin="2" />
+
+    <!-- Top row of segments -->
+    <Label Name="lblI"
+           Grid.Column="0"
+           Grid.Row="1"
+           Classes="ecg"
+           Content="I" />
+    <NumericUpDown Name="dblI"
+                   Grid.Column="1"
+                   Grid.Row="1"
+                   Classes="ecg"
+                   FormatString="{}{0:#0.0}" />
+
+    <Label Name="lblaVR"
+           Grid.Column="2"
+           Grid.Row="1"
+           Classes="ecg"
+           Content="aVR" />
+    <NumericUpDown Name="dblaVR"
+                   Grid.Column="3"
+                   Grid.Row="1"
+                   Classes="ecg"
+                   FormatString="{}{0:#0.0}" />
+
+    <Label Name="lblV1"
+           Grid.Column="4"
+           Grid.Row="1"
+           Classes="ecg"
+           Content="V1" />
+    <NumericUpDown Name="dblV1"
+                   Grid.Column="5"
+                   Grid.Row="1"
+                   Classes="ecg"
+                   FormatString="{}{0:#0.0}" />
+
+    <Label Name="lblV4"
+           Grid.Column="6"
+           Grid.Row="1"
+           Classes="ecg"
+           Content="V4" />
+    <NumericUpDown Name="dblV4"
+                   Grid.Column="7"
+                   Grid.Row="1"
+                   Classes="ecg"
+                   FormatString="{}{0:#0.0}" />
+
+    <!-- Middle row of segments -->
+    <Label Name="lblII"
+           Grid.Column="0"
+           Grid.Row="2"
+           Classes="ecg"
+           Content="II" />
+    <NumericUpDown Name="dblII"
+                   Grid.Column="1"
+                   Grid.Row="2"
+                   Classes="ecg"
+                   FormatString="{}{0:#0.0}" />
+
+    <Label Name="lblaVL"
+           Grid.Column="2"
+           Grid.Row="2"
+           Classes="ecg"
+           Content="aVL" />
+    <NumericUpDown Name="dblaVL"
+                   Grid.Column="3"
+                   Grid.Row="2"
+                   Classes="ecg"
+                   FormatString="{}{0:#0.0}" />
+
+    <Label Name="lblV2"
+           Grid.Column="4"
+           Grid.Row="2"
+           Classes="ecg"
+           Content="V2" />
+    <NumericUpDown Name="dblV2"
+                   Grid.Column="5"
+                   Grid.Row="2"
+                   Classes="ecg"
+                   FormatString="{}{0:#0.0}" />
+
+    <Label Name="lblV5"
+           Grid.Column="6"
+           Grid.Row="2"
+           Classes="ecg"
+           Content="V5" />
+    <NumericUpDown Name="dblV5"
+                   Grid.Column="7"
+                   Grid.Row="2"
+                   Classes="ecg"
+                   FormatString="{}{0:#0.0}" />
+
+    <!-- Bottom row of segments -->
+    <Label Name="lblIII"
+           Grid.Column="0"
+           Grid.Row="3"
+           Classes="ecg"
+           Content="III" />
+    <NumericUpDown Name="dblIII"
+                   Grid.Column="1"
+                   Grid.Row="3"
+                   Classes="ecg"
+                   FormatString="{}{0:#0.0}" />
+
+    <Label Name="lblaVF"
+           Grid.Column="2"
+           Grid.Row="3"
+           Classes="ecg"
+           Content="aVF" />
+    <NumericUpDown Name="dblaVF"
+                   Grid.Column="3"
+                   Grid.Row="3"
+                   Classes="ecg"
+                   FormatString="{}{0:#0.0}" />
+
+    <Label Name="lblV3"
+           Grid.Column="4"
+           Grid.Row="3"
+           Classes="ecg"
+           Content="V3" />
+    <NumericUpDown Name="dblV3"
+                   Grid.Column="5"
+                   Grid.Row="3"
+                   Classes="ecg"
+                   FormatString="{}{0:#0.0}" />
+
+    <Label Name="lblV6"
+           Grid.Column="6"
+           Grid.Row="3"
+           Classes="ecg"
+           Content="V6" />
+    <NumericUpDown Name="dblV6"
+                   Grid.Column="7"
+                   Grid.Row="3"
+                   Classes="ecg"
+                   FormatString="{}{0:#0.0}" />
+  </Grid>
+</UserControl>

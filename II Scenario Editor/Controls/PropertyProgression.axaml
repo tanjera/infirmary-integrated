@@ -1,0 +1,83 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="II_Scenario_Editor.Controls.PropertyOptProgression"
+             HorizontalAlignment="Stretch"
+             Margin="0">
+
+  <Border
+    BorderBrush="Black"
+    BorderThickness="0.25"
+    CornerRadius="2"
+    Margin="5"
+    Padding="5,2">
+    <Expander Name="expProgressionProperty"
+              IsExpanded="True">
+      <Expander.Header>
+        <Label Name="lblProgressionProperty"
+               Content="Edit Optional Progression #"
+               Margin="2"
+               FontSize="13"
+               FontWeight="Bold" />
+      </Expander.Header>
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Label Name="lblStepTo"
+               Grid.Column="0"
+               Grid.Row="0"
+               Content="Step To Progress To:"
+               HorizontalAlignment="Left"
+               Margin="2" />
+
+        <NumericUpDown Name="numStepTo"
+                       Grid.Column="1"
+                       Grid.Row="0"
+                       Increment="1"
+                       Minimum="-1"
+                       Maximum="1000"
+                       Value="-1"
+                       MinWidth="60"
+                       Height="22"
+                       Margin="5,0"
+                       FormatString="{}{0:#0}" />
+
+        <Label Name="lblDescription"
+               Grid.Column="0"
+               Grid.Row="1"
+               Grid.ColumnSpan="2"
+               Content="Description or Prerequisite for Progression:"
+               HorizontalAlignment="Left"
+               Margin="2" />
+
+        <TextBox Name="txtDescription"
+                 Grid.Column="0"
+                 Grid.Row="2"
+                 Grid.ColumnSpan="2"
+                 Height="22"
+                 Margin="5, 2" />
+
+        <Button Name="btnDelete"
+                Grid.Column="0"
+                Grid.Row="3"
+                Grid.ColumnSpan="2"
+                Height="22"
+                Margin="5, 2"
+                Click="BtnDelete_Click"
+                Content="Delete This Optional Progression" />
+      </Grid>
+    </Expander>
+  </Border>
+</UserControl>

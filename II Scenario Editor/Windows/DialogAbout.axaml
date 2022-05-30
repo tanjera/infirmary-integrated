@@ -1,0 +1,94 @@
+<Window
+	x:Class="II_Scenario_Editor.DialogAbout"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	Name="dlgAbout"
+	Title="About Infirmary Integrated: Scenario Editor"
+	Icon="avares://Infirmary Integrated Scenario Editor/Resources/Icon_IISE.ico"
+	Width="550"
+	Height="250"
+	WindowStartupLocation="CenterScreen"
+	mc:Ignorable="d">
+  <Window.Styles>
+    <Style Selector="Label.url">
+      <Setter Property="Foreground" Value="Blue" />
+      <Setter Property="BorderBrush" Value="Blue" />
+      <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
+    </Style>
+  </Window.Styles>
+  <Grid Margin="10,5,50,10" HorizontalAlignment="Center">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <Image
+      Name="imgIcon"
+      Grid.Row="0"
+      Grid.Column="0"
+      Width="100"
+      Height="100"
+      Margin="10"
+      HorizontalAlignment="Center"
+      VerticalAlignment="Center"
+      Source="avares://Infirmary Integrated Scenario Editor/Resources/Icon_IISE.ico" />
+
+    <StackPanel Grid.Row="0" Grid.Column="1">
+
+      <Label
+        Name="lblInfirmaryIntegrated"
+        Margin="5"
+        Padding="5"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Bottom"
+        FontSize="22"
+        FontWeight="Bold"
+        Content="Infirmary Integrated" />
+
+      <Label
+        Name="lblVersion"
+        Margin="5,0"
+        Padding="5,2,5,0"
+        HorizontalAlignment="Left" />
+
+      <Label
+        Margin="5,0"
+        Padding="5,0,5,2"
+        HorizontalAlignment="Left"
+        Content="Ibi Keller, (c) 2017-2022" />
+
+      <TextBlock
+        Name="tblDescription"
+        Margin="5"
+        Padding="5,2"
+        HorizontalAlignment="Left"
+        VerticalAlignment="Top"
+        TextWrapping="Wrap"
+        Text="The Infirmary Integrated: Scenario Editor is designed to be a comprehensive tool for creating in-depth scenarios for Infirmary Integrated with an easy to use interface." />
+
+      <Label
+        Margin="5,5,5,0"
+        Padding="5,2,5,0"
+        HorizontalAlignment="Left"
+        Classes="url"
+        Tapped="Hyperlink_Website">
+        http://www.infirmary-integrated.com/
+      </Label>
+
+      <Label
+        Margin="5,0,5,5"
+        Padding="5,0,5,2"
+        HorizontalAlignment="Left"
+        Classes="url"
+        Tapped="Hyperlink_GitRepo">
+        https://github.com/tanjera/infirmary-integrated
+      </Label>
+    </StackPanel>
+  </Grid>
+</Window>

@@ -1,0 +1,22 @@
+<Window
+	x:Class="II_Scenario_Editor.Splash"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	Name="wdwSplash"
+	Title=""
+	Width="800"
+	Height="480"
+	Background="Transparent"
+	CanResize="False"
+	HasSystemDecorations="False"
+	Icon="avares://Infirmary Integrated Scenario Editor/Resources/Icon_IISE.ico"
+	Topmost="True"
+	WindowStartupLocation="CenterScreen"
+	mc:Ignorable="d">
+
+  <DockPanel LastChildFill="True">
+    <Image Name="imgSplash" Source="avares://Infirmary Integrated Scenario Editor/Resources/SplashScreen_Infirmary_800x480.png" />
+  </DockPanel>
+</Window>
