@@ -34,6 +34,9 @@ namespace II_Scenario_Editor.Controls {
         }
 
         public void Init (Keys key, string [] values, List<string> readable) {
+            Label lblKey = this.FindControl<Label> ("lblKey");
+            ComboBox cmbEnumeration = this.FindControl<ComboBox> ("cmbEnumeration");
+
             Key = key;
             Values = new List<string> (values);
 
@@ -56,12 +59,16 @@ namespace II_Scenario_Editor.Controls {
         }
 
         public void Set (int index) {
+            ComboBox cmbEnumeration = this.FindControl<ComboBox> ("cmbEnumeration");
+
             cmbEnumeration.SelectionChanged -= sendPropertyChange;
             cmbEnumeration.SelectedIndex = index;
             cmbEnumeration.SelectionChanged += sendPropertyChange;
         }
 
         private void sendPropertyChange (object? sender, EventArgs e) {
+            ComboBox cmbEnumeration = this.FindControl<ComboBox> ("cmbEnumeration");
+
             if (cmbEnumeration.SelectedIndex < 0)
                 return;
 

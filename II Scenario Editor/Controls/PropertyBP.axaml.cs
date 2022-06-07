@@ -34,6 +34,10 @@ namespace II_Scenario_Editor.Controls {
         public void Init (Keys key,
             int sysInc, int sysMin, int sysMax,
             int diasInc, int diasMin, int diasMax) {
+            Label lblKey = this.FindControl<Label> ("lblKey");
+            NumericUpDown numSystolic = this.FindControl<NumericUpDown> ("numSystolic");
+            NumericUpDown numDiastolic = this.FindControl<NumericUpDown> ("numDiastolic");
+
             Key = key;
             switch (Key) {
                 default: break;
@@ -56,6 +60,9 @@ namespace II_Scenario_Editor.Controls {
         }
 
         public void Set (int systolic, int diastolic) {
+            NumericUpDown numSystolic = this.FindControl<NumericUpDown> ("numSystolic");
+            NumericUpDown numDiastolic = this.FindControl<NumericUpDown> ("numDiastolic");
+
             numSystolic.ValueChanged -= sendPropertyChange;
             numDiastolic.ValueChanged -= sendPropertyChange;
 
@@ -67,6 +74,9 @@ namespace II_Scenario_Editor.Controls {
         }
 
         private void sendPropertyChange (object? sender, EventArgs e) {
+            NumericUpDown numSystolic = this.FindControl<NumericUpDown> ("numSystolic");
+            NumericUpDown numDiastolic = this.FindControl<NumericUpDown> ("numDiastolic");
+
             PropertyIntEventArgs ea = new PropertyIntEventArgs ();
             List<Keys> keys = new List<Keys> ();
 

@@ -34,11 +34,10 @@ namespace II_Scenario_Editor.Controls {
         }
 
         public void Init (Keys key) {
-            Key = key;
-
             Label lblKey = this.FindControl<Label> ("lblKey");
             TextBox txtValue = this.FindControl<TextBox> ("txtValue");
 
+            Key = key;
             switch (Key) {
                 default: break;
                 case Keys.ScenarioAuthor: lblKey.Content = "Author: "; break;

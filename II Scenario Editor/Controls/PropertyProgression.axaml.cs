@@ -35,6 +35,10 @@ namespace II_Scenario_Editor.Controls {
             IndexStepTo = stepTo;
             Description = desc;
 
+            Label lblProgressionProperty = this.FindControl<Label> ("lblProgressionProperty");
+            NumericUpDown numStepTo = this.FindControl<NumericUpDown> ("numStepTo");
+            TextBox txtDescription = this.FindControl<TextBox> ("txtDescription");
+
             numStepTo.Value = IndexStepTo;
             txtDescription.Text = Description;
 
@@ -57,6 +61,9 @@ namespace II_Scenario_Editor.Controls {
         }
 
         private void sendPropertyChange (object? sender, EventArgs e) {
+            NumericUpDown numStepTo = this.FindControl<NumericUpDown> ("numStepTo");
+            TextBox txtDescription = this.FindControl<TextBox> ("txtDescription");
+
             PropertyOptProgressionEventArgs ea = new PropertyOptProgressionEventArgs ();
             ea.Index = Index;
             ea.IndexStepTo = (int)(numStepTo.Value);

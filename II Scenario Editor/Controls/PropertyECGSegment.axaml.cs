@@ -31,6 +31,20 @@ namespace II_Scenario_Editor.Controls {
         }
 
         public void Init (Keys key) {
+            Label lblKey = this.FindControl<Label> ("lblKey");
+            NumericUpDown dblI = this.FindControl<NumericUpDown> ("dblI");
+            NumericUpDown dblII = this.FindControl<NumericUpDown> ("dblII");
+            NumericUpDown dblIII = this.FindControl<NumericUpDown> ("dblIII");
+            NumericUpDown dblaVR = this.FindControl<NumericUpDown> ("dblaVR");
+            NumericUpDown dblaVL = this.FindControl<NumericUpDown> ("dblaVL");
+            NumericUpDown dblaVF = this.FindControl<NumericUpDown> ("dblaVF");
+            NumericUpDown dblV1 = this.FindControl<NumericUpDown> ("dblV1");
+            NumericUpDown dblV2 = this.FindControl<NumericUpDown> ("dblV2");
+            NumericUpDown dblV3 = this.FindControl<NumericUpDown> ("dblV3");
+            NumericUpDown dblV4 = this.FindControl<NumericUpDown> ("dblV4");
+            NumericUpDown dblV5 = this.FindControl<NumericUpDown> ("dblV5");
+            NumericUpDown dblV6 = this.FindControl<NumericUpDown> ("dblV6");
+
             Key = key;
             switch (Key) {
                 default: break;
@@ -66,6 +80,19 @@ namespace II_Scenario_Editor.Controls {
         }
 
         public void Set (double [] values) {
+            NumericUpDown dblI = this.FindControl<NumericUpDown> ("dblI");
+            NumericUpDown dblII = this.FindControl<NumericUpDown> ("dblII");
+            NumericUpDown dblIII = this.FindControl<NumericUpDown> ("dblIII");
+            NumericUpDown dblaVR = this.FindControl<NumericUpDown> ("dblaVR");
+            NumericUpDown dblaVL = this.FindControl<NumericUpDown> ("dblaVL");
+            NumericUpDown dblaVF = this.FindControl<NumericUpDown> ("dblaVF");
+            NumericUpDown dblV1 = this.FindControl<NumericUpDown> ("dblV1");
+            NumericUpDown dblV2 = this.FindControl<NumericUpDown> ("dblV2");
+            NumericUpDown dblV3 = this.FindControl<NumericUpDown> ("dblV3");
+            NumericUpDown dblV4 = this.FindControl<NumericUpDown> ("dblV4");
+            NumericUpDown dblV5 = this.FindControl<NumericUpDown> ("dblV5");
+            NumericUpDown dblV6 = this.FindControl<NumericUpDown> ("dblV6");
+
             dblI.ValueChanged -= sendPropertyChange;
             dblII.ValueChanged -= sendPropertyChange;
             dblIII.ValueChanged -= sendPropertyChange;
@@ -107,6 +134,19 @@ namespace II_Scenario_Editor.Controls {
         }
 
         private void sendPropertyChange (object? sender, EventArgs e) {
+            NumericUpDown dblI = this.FindControl<NumericUpDown> ("dblI");
+            NumericUpDown dblII = this.FindControl<NumericUpDown> ("dblII");
+            NumericUpDown dblIII = this.FindControl<NumericUpDown> ("dblIII");
+            NumericUpDown dblaVR = this.FindControl<NumericUpDown> ("dblaVR");
+            NumericUpDown dblaVL = this.FindControl<NumericUpDown> ("dblaVL");
+            NumericUpDown dblaVF = this.FindControl<NumericUpDown> ("dblaVF");
+            NumericUpDown dblV1 = this.FindControl<NumericUpDown> ("dblV1");
+            NumericUpDown dblV2 = this.FindControl<NumericUpDown> ("dblV2");
+            NumericUpDown dblV3 = this.FindControl<NumericUpDown> ("dblV3");
+            NumericUpDown dblV4 = this.FindControl<NumericUpDown> ("dblV4");
+            NumericUpDown dblV5 = this.FindControl<NumericUpDown> ("dblV5");
+            NumericUpDown dblV6 = this.FindControl<NumericUpDown> ("dblV6");
+
             PropertyECGEventArgs ea = new PropertyECGEventArgs ();
             ea.Key = Key;
             ea.Values = new double [] {

@@ -20,21 +20,23 @@ using Avalonia.Threading;
 
 using II;
 
+using II_Scenario_Editor.Controls;
+
 namespace II_Scenario_Editor {
 
     public partial class Main : Window {
 
         // Master List of all Steps in the Scenario and other Scenario variables
-        private List<Controls.ItemStep> Steps = new List<Controls.ItemStep> ();
+        private List<ItemStep> Steps = new List<ItemStep> ();
 
         private string ScenarioAuthor, ScenarioName, ScenarioDescription;
 
         // Variables and pointers for using UI Elements
         private Canvas canvasDesigner;
 
-        private Controls.ItemStep selStep;
+        private ItemStep selStep;
         /* TODO: IMPLEMENT
-        private ItemStep.UEIStepEnd selEnd;
+        private Controls.ItemStep.UEIStepEnd selEnd;
         */
 
         // For copy/pasting Patient parameters
@@ -57,10 +59,7 @@ namespace II_Scenario_Editor {
             canvasDesigner = this.FindControl<Canvas> ("cnvsDesigner");
 
             InitScenarioProperty ();
-
-            /* TODO: IMPLEMENT
             InitPropertyView ();
-            */
         }
 
         private bool promptUnsavedWork () {
@@ -299,13 +298,9 @@ namespace II_Scenario_Editor {
         }
 
         private void UpdateScenarioProperty () {
-            /* TODO: IMPLEMENT
-             *
-            pstrScenarioAuthor.Set (ScenarioAuthor ?? "");
-            pstrScenarioName.Set (ScenarioName ?? "");
-            pstrScenarioDescription.Set (ScenarioDescription ?? "");
-
-            */
+            this.FindControl<PropertyString> ("pstrScenarioAuthor").Set (ScenarioAuthor ?? "");
+            this.FindControl<PropertyString> ("pstrScenarioName").Set (ScenarioName ?? "");
+            this.FindControl<PropertyString> ("pstrScenarioDescription").Set (ScenarioDescription ?? "");
         }
 
         private async Task DialogAbout () {
@@ -388,131 +383,148 @@ namespace II_Scenario_Editor {
             */
         }
 
+        private void InitPropertyView () {
+            // Populate enum string lists for readable display
+            List<string> cardiacRhythms = new List<string> (),
+                respiratoryRhythms = new List<string> (),
+                pulmonaryRhythms = new List<string> (),
+                cardiacAxes = new List<string> (),
+                intensityScale = new List<string> (),
+                fetalHeartRhythms = new List<string> ();
+
+            foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
+                cardiacRhythms.Add (App.Language.Dictionary [Cardiac_Rhythms.LookupString (v)]);
+
+            foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
+                respiratoryRhythms.Add (App.Language.Dictionary [Respiratory_Rhythms.LookupString (v)]);
+
+            foreach (PulmonaryArtery_Rhythms.Values v in Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)))
+                pulmonaryRhythms.Add (App.Language.Dictionary [PulmonaryArtery_Rhythms.LookupString (v)]);
+
+            foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
+                cardiacAxes.Add (App.Language.Dictionary [Cardiac_Axes.LookupString (v)]);
+
+            // Find all controls and attach to reference
+            PropertyBP pbpNBP = this.FindControl<PropertyBP> ("pbpNBP");
+            PropertyBP pbpABP = this.FindControl<PropertyBP> ("pbpABP");
+            PropertyBP pbpPBP = this.FindControl<PropertyBP> ("pbpPBP");
+
+            PropertyCheck pchkMechanicallyVentilated = this.FindControl<PropertyCheck> ("pchkMechanicallyVentilated");
+            PropertyCheck pchkPulsusParadoxus = this.FindControl<PropertyCheck> ("pchkPulsusParadoxus");
+            PropertyCheck pchkPulsusAlternans = this.FindControl<PropertyCheck> ("pchkPulsusAlternans");
+
+            PropertyDouble pdblT = this.FindControl<PropertyDouble> ("pdblT");
+            PropertyDouble pdblCO = this.FindControl<PropertyDouble> ("pdblCO");
+            PropertyDouble pdblInspiratoryRatio = this.FindControl<PropertyDouble> ("pdblInspiratoryRatio");
+            PropertyDouble pdblExpiratoryRatio = this.FindControl<PropertyDouble> ("pdblExpiratoryRatio");
+
+            PropertyECGSegment pecgSTSegment = this.FindControl<PropertyECGSegment> ("pecgSTSegment");
+            PropertyECGSegment pecgTWave = this.FindControl<PropertyECGSegment> ("pecgTWave");
+
+            PropertyEnum penmCardiacRhythms = this.FindControl<PropertyEnum> ("penmCardiacRhythms");
+            PropertyEnum penmRespiratoryRhythms = this.FindControl<PropertyEnum> ("penmRespiratoryRhythms");
+            PropertyEnum penmCardiacAxis = this.FindControl<PropertyEnum> ("penmCardiacAxis");
+
+            PropertyInt pintHR = this.FindControl<PropertyInt> ("pintHR");
+            PropertyInt pintRR = this.FindControl<PropertyInt> ("pintRR");
+            PropertyInt pintSPO2 = this.FindControl<PropertyInt> ("pintSPO2");
+            PropertyInt pintETCO2 = this.FindControl<PropertyInt> ("pintETCO2");
+            PropertyInt pintCVP = this.FindControl<PropertyInt> ("pintCVP");
+            PropertyInt pintICP = this.FindControl<PropertyInt> ("pintICP");
+            PropertyInt pintIAP = this.FindControl<PropertyInt> ("pintIAP");
+            PropertyInt pintPacemakerThreshold = this.FindControl<PropertyInt> ("pintPacemakerThreshold");
+            PropertyInt pintProgressFrom = this.FindControl<PropertyInt> ("pintProgressFrom");
+            PropertyInt pintProgressTo = this.FindControl<PropertyInt> ("pintProgressTo");
+            PropertyInt pintProgressTimer = this.FindControl<PropertyInt> ("pintProgressTimer");
+
+            PropertyString pstrStepName = this.FindControl<PropertyString> ("pstrStepName");
+            PropertyString pstrStepDescription = this.FindControl<PropertyString> ("pstrStepDescription");
+
+            // Initiate controls for editing Patient values
+            pstrStepName.Init (PropertyString.Keys.StepName);
+            pstrStepDescription.Init (PropertyString.Keys.StepDescription);
+
+            pbpNBP.Init (PropertyBP.Keys.NSBP, 5, 0, 300, 5, 0, 200);
+            pbpABP.Init (PropertyBP.Keys.ASBP, 5, 0, 300, 5, 0, 200);
+            pbpPBP.Init (PropertyBP.Keys.PSP, 5, 0, 200, 5, 0, 200);
+
+            pchkMechanicallyVentilated.Init (PropertyCheck.Keys.MechanicallyVentilated);
+            pchkPulsusParadoxus.Init (PropertyCheck.Keys.PulsusParadoxus);
+            pchkPulsusAlternans.Init (PropertyCheck.Keys.PulsusAlternans);
+
+            pdblT.Init (PropertyDouble.Keys.T, 0.2, 0, 100);
+            pdblCO.Init (PropertyDouble.Keys.CO, 0.1, 0, 20);
+            pdblInspiratoryRatio.Init (PropertyDouble.Keys.RRInspiratoryRatio, 0.1, 0.1, 10);
+            pdblExpiratoryRatio.Init (PropertyDouble.Keys.RRExpiratoryRatio, 0.1, 0.1, 10);
+
+            pecgSTSegment.Init (PropertyECGSegment.Keys.STElevation);
+            pecgTWave.Init (PropertyECGSegment.Keys.TWave);
+
+            penmCardiacRhythms.Init (PropertyEnum.Keys.Cardiac_Rhythms,
+                Enum.GetNames (typeof (Cardiac_Rhythms.Values)), cardiacRhythms);
+            penmRespiratoryRhythms.Init (PropertyEnum.Keys.Respiratory_Rhythms,
+                Enum.GetNames (typeof (Respiratory_Rhythms.Values)), respiratoryRhythms);
+            penmPACatheterRhythm.Init (PropertyEnum.Keys.PACatheter_Rhythms,
+                Enum.GetNames (typeof (PulmonaryArtery_Rhythms.Values)), pulmonaryRhythms);
+            penmCardiacAxis.Init (PropertyEnum.Keys.Cardiac_Axis,
+                Enum.GetNames (typeof (Cardiac_Axes.Values)), cardiacAxes);
+
+            pintHR.Init (PropertyInt.Keys.HR, 5, 0, 500);
+            pintRR.Init (PropertyInt.Keys.RR, 2, 0, 100);
+            pintSPO2.Init (PropertyInt.Keys.SPO2, 2, 0, 100);
+            pintICP.Init (PropertyInt.Keys.ICP, 1, -100, 100);
+            pintIAP.Init (PropertyInt.Keys.IAP, 1, -100, 100);
+            pintPacemakerThreshold.Init (PropertyInt.Keys.PacemakerThreshold, 5, 0, 200);
+            pintProgressFrom.Init (PropertyInt.Keys.ProgressFrom, 1, -1, 1000);
+            pintProgressTo.Init (PropertyInt.Keys.ProgressTo, 1, -1, 1000);
+            pintProgressTimer.Init (PropertyInt.Keys.ProgressTimer, 1, -1, 1000);
+
+            pintETCO2.Init (PropertyInt.Keys.ETCO2, 2, 0, 100);
+            pintCVP.Init (PropertyInt.Keys.CVP, 1, -100, 100);
+
+            /* TODO: IMPLEMENT updateProperty for each Property below!!
+            pbpNBP.PropertyChanged += updateProperty;
+            pbpABP.PropertyChanged += updateProperty;
+            pbpPBP.PropertyChanged += updateProperty;
+
+            pchkMechanicallyVentilated.PropertyChanged += updateProperty;
+            pchkPulsusParadoxus.PropertyChanged += updateProperty;
+            pchkPulsusAlternans.PropertyChanged += updateProperty;
+
+            pdblT.PropertyChanged += updateProperty;
+            pdblCO.PropertyChanged += updateProperty;
+            pdblInspiratoryRatio.PropertyChanged += updateProperty;
+            pdblExpiratoryRatio.PropertyChanged += updateProperty;
+
+            pecgSTSegment.PropertyChanged += updateProperty;
+            pecgTWave.PropertyChanged += updateProperty;
+
+            penmCardiacRhythms.PropertyChanged += updateProperty;
+            penmCardiacRhythms.PropertyChanged += updateCardiacRhythm;
+            penmRespiratoryRhythms.PropertyChanged += updateProperty;
+            penmRespiratoryRhythms.PropertyChanged += updateRespiratoryRhythm;
+            penmPACatheterRhythm.PropertyChanged += updateProperty;
+            penmPACatheterRhythm.PropertyChanged += updatePACatheterRhythm;
+            penmCardiacAxis.PropertyChanged += updateProperty;
+
+            pintICP.PropertyChanged += updateProperty;
+            pintIAP.PropertyChanged += updateProperty;
+            pintHR.PropertyChanged += updateProperty;
+            pintRR.PropertyChanged += updateProperty;
+            pintSPO2.PropertyChanged += updateProperty;
+            pintETCO2.PropertyChanged += updateProperty;
+            pintCVP.PropertyChanged += updateProperty;
+            pintPacemakerThreshold.PropertyChanged += updateProperty;
+            pintProgressFrom.PropertyChanged += updateProperty;
+            pintProgressTo.PropertyChanged += updateProperty;
+            pintProgressTimer.PropertyChanged += updateProperty;
+
+            pstrStepName.PropertyChanged += updateProperty;
+            pstrStepDescription.PropertyChanged += updateProperty;
+            */
+        }
+
         /* TODO: IMPLEMENT
-
-            private void initPropertyView () {
-                // Populate enum string lists for readable display
-                List<string> cardiacRhythms = new List<string> (),
-                    respiratoryRhythms = new List<string> (),
-                    pulmonaryRhythms = new List<string> (),
-                    cardiacAxes = new List<string> (),
-                    intensityScale = new List<string> (),
-                    fetalHeartRhythms = new List<string> ();
-
-                foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
-                    cardiacRhythms.Add (App.Language.Dictionary [Cardiac_Rhythms.LookupString (v)]);
-
-                foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
-                    respiratoryRhythms.Add (App.Language.Dictionary [Respiratory_Rhythms.LookupString (v)]);
-
-                foreach (PulmonaryArtery_Rhythms.Values v in Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)))
-                    pulmonaryRhythms.Add (App.Language.Dictionary [PulmonaryArtery_Rhythms.LookupString (v)]);
-
-                foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
-                    cardiacAxes.Add (App.Language.Dictionary [Cardiac_Axes.LookupString (v)]);
-
-                // Initiate controls for editing Patient values
-                pstrStepName.Init (PropertyString.Keys.StepName);
-                pstrStepName.PropertyChanged += updateProperty;
-
-                pstrStepDescription.Init (PropertyString.Keys.StepDescription);
-                pstrStepDescription.PropertyChanged += updateProperty;
-
-                pintHR.Init (PropertyInt.Keys.HR, 5, 0, 500);
-                pintHR.PropertyChanged += updateProperty;
-
-                pbpNBP.Init (PropertyBP.Keys.NSBP,
-                    5, 0, 300,
-                    5, 0, 200);
-                pbpNBP.PropertyChanged += updateProperty;
-
-                pintRR.Init (PropertyInt.Keys.RR, 2, 0, 100);
-                pintRR.PropertyChanged += updateProperty;
-
-                pintSPO2.Init (PropertyInt.Keys.SPO2, 2, 0, 100);
-                pintSPO2.PropertyChanged += updateProperty;
-
-                pdblT.Init (PropertyDouble.Keys.T, 0.2, 0, 100);
-                pdblT.PropertyChanged += updateProperty;
-
-                penmCardiacRhythms.Init (PropertyEnum.Keys.Cardiac_Rhythms,
-                    Enum.GetNames (typeof (Cardiac_Rhythms.Values)), cardiacRhythms);
-                penmCardiacRhythms.PropertyChanged += updateProperty;
-                penmCardiacRhythms.PropertyChanged += updateCardiacRhythm;
-
-                penmRespiratoryRhythms.Init (PropertyEnum.Keys.Respiratory_Rhythms,
-                    Enum.GetNames (typeof (Respiratory_Rhythms.Values)), respiratoryRhythms);
-                penmRespiratoryRhythms.PropertyChanged += updateProperty;
-                penmRespiratoryRhythms.PropertyChanged += updateRespiratoryRhythm;
-
-                pintETCO2.Init (PropertyInt.Keys.ETCO2, 2, 0, 100);
-                pintETCO2.PropertyChanged += updateProperty;
-
-                pintCVP.Init (PropertyInt.Keys.CVP, 1, -100, 100);
-                pintCVP.PropertyChanged += updateProperty;
-
-                pbpABP.Init (PropertyBP.Keys.ASBP,
-                    5, 0, 300,
-                    5, 0, 200);
-                pbpABP.PropertyChanged += updateProperty;
-
-                pdblCO.Init (PropertyDouble.Keys.CO, 0.1, 0, 20);
-                pdblCO.PropertyChanged += updateProperty;
-
-                penmPACatheterRhythm.Init (PropertyEnum.Keys.PACatheter_Rhythms,
-                    Enum.GetNames (typeof (PulmonaryArtery_Rhythms.Values)), pulmonaryRhythms);
-                penmPACatheterRhythm.PropertyChanged += updateProperty;
-                penmPACatheterRhythm.PropertyChanged += updatePACatheterRhythm;
-
-                pbpPBP.Init (PropertyBP.Keys.PSP,
-                    5, 0, 200,
-                    5, 0, 200);
-                pbpPBP.PropertyChanged += updateProperty;
-
-                pintICP.Init (PropertyInt.Keys.ICP, 1, -100, 100);
-                pintICP.PropertyChanged += updateProperty;
-
-                pintIAP.Init (PropertyInt.Keys.IAP, 1, -100, 100);
-                pintIAP.PropertyChanged += updateProperty;
-
-                pchkMechanicallyVentilated.Init (PropertyCheck.Keys.MechanicallyVentilated);
-                pchkMechanicallyVentilated.PropertyChanged += updateProperty;
-
-                pdblInspiratoryRatio.Init (PropertyDouble.Keys.RRInspiratoryRatio, 0.1, 0.1, 10);
-                pdblInspiratoryRatio.PropertyChanged += updateProperty;
-
-                pdblExpiratoryRatio.Init (PropertyDouble.Keys.RRExpiratoryRatio, 0.1, 0.1, 10);
-                pdblExpiratoryRatio.PropertyChanged += updateProperty;
-
-                pintPacemakerThreshold.Init (PropertyInt.Keys.PacemakerThreshold, 5, 0, 200);
-                pintPacemakerThreshold.PropertyChanged += updateProperty;
-
-                pchkPulsusParadoxus.Init (PropertyCheck.Keys.PulsusParadoxus);
-                pchkPulsusParadoxus.PropertyChanged += updateProperty;
-
-                pchkPulsusAlternans.Init (PropertyCheck.Keys.PulsusAlternans);
-                pchkPulsusAlternans.PropertyChanged += updateProperty;
-
-                penmCardiacAxis.Init (PropertyEnum.Keys.Cardiac_Axis,
-                    Enum.GetNames (typeof (Cardiac_Axes.Values)), cardiacAxes);
-                penmCardiacAxis.PropertyChanged += updateProperty;
-
-                pecgSTSegment.Init (PropertyECGSegment.Keys.STElevation);
-                pecgSTSegment.PropertyChanged += updateProperty;
-
-                pecgTWave.Init (PropertyECGSegment.Keys.TWave);
-                pecgTWave.PropertyChanged += updateProperty;
-
-                pintProgressFrom.Init (PropertyInt.Keys.ProgressFrom, 1, -1, 1000);
-                pintProgressFrom.PropertyChanged += updateProperty;
-
-                pintProgressTo.Init (PropertyInt.Keys.ProgressTo, 1, -1, 1000);
-                pintProgressTo.PropertyChanged += updateProperty;
-
-                pintProgressTimer.Init (PropertyInt.Keys.ProgressTimer, 1, -1, 1000);
-                pintProgressTimer.PropertyChanged += updateProperty;
-            }
-
             private void updatePropertyView () {
                 if (selStep == null)
                     return;

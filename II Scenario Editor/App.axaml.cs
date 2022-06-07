@@ -16,6 +16,8 @@ namespace II_Scenario_Editor {
     public partial class App : Application {
         public static string []? Start_Args;
 
+        public static Language? Language = new Language();
+
         public static Scenario? Scenario;
 
         public static Splash? Window_Splash;

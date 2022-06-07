@@ -32,6 +32,9 @@ namespace II_Scenario_Editor.Controls {
         }
 
         public void Init (Keys key, double increment, double minvalue, double maxvalue) {
+            Label lblKey = this.FindControl<Label> ("lblKey");
+            NumericUpDown numValue = this.FindControl<NumericUpDown> ("numValue");
+
             Key = key;
             switch (Key) {
                 default: break;
@@ -46,16 +49,20 @@ namespace II_Scenario_Editor.Controls {
         }
 
         public void Set (double value) {
+            NumericUpDown numValue = this.FindControl<NumericUpDown> ("numValue");
+
             numValue.ValueChanged -= sendPropertyChange;
             numValue.Value = value;
             numValue.ValueChanged += sendPropertyChange;
         }
 
         private void sendPropertyChange (object? sender, EventArgs e) {
+            NumericUpDown numValue = this.FindControl<NumericUpDown> ("numValue");
+
             PropertyDoubleEventArgs ea = new PropertyDoubleEventArgs ();
             ea.Key = Key;
             ea.Value = numValue.Value;
-            PropertyChanged (this, ea);
+            PropertyChanged?.Invoke (this, ea);
         }
     }
 }

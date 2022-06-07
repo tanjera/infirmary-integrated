@@ -25,7 +25,7 @@ namespace Publishing {
                     pathNSIS = @"C:\Program Files (x86)\NSIS\makensis.exe";
                     pathSigntool = @"C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe";
                     pathCert = @"C:\Users\Ibi\Documents\Code Signing Certificate, Sectigo.pfx";
-                    dirSolution = @"C:\Users\Ibi\Documents\Infirmary Integrated";
+                    dirSolution = @"Z:\Infirmary Integrated";
                 } else if (OperatingSystem.IsLinux ()) {
                     pathDotnet = "dotnet";
                     pathTar = "tar";

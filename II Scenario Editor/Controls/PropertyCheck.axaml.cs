@@ -32,6 +32,8 @@ namespace II_Scenario_Editor.Controls {
         }
 
         public void Init (Keys key) {
+            CheckBox chkValue = this.FindControl<CheckBox> ("chkValue");
+
             Key = key;
             switch (Key) {
                 default: break;
@@ -45,12 +47,16 @@ namespace II_Scenario_Editor.Controls {
         }
 
         public void Set (bool value) {
+            CheckBox chkValue = this.FindControl<CheckBox> ("chkValue");
+
             chkValue.Checked -= sendPropertyChange;
             chkValue.IsChecked = value;
             chkValue.Checked += sendPropertyChange;
         }
 
         private void sendPropertyChange (object? sender, EventArgs e) {
+            CheckBox chkValue = this.FindControl<CheckBox> ("chkValue");
+
             PropertyCheckEventArgs ea = new PropertyCheckEventArgs ();
             ea.Key = Key;
             ea.Value = chkValue.IsChecked ?? false;
