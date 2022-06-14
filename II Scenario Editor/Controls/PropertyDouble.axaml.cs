@@ -13,7 +13,8 @@ namespace II_Scenario_Editor.Controls {
         public enum Keys {
             T,
             CO,
-            RRInspiratoryRatio, RRExpiratoryRatio
+            RRInspiratoryRatio,
+            RRExpiratoryRatio
         }
 
         public new event EventHandler<PropertyDoubleEventArgs>? PropertyChanged;
@@ -38,6 +39,9 @@ namespace II_Scenario_Editor.Controls {
             Key = key;
             switch (Key) {
                 default: break;
+                case Keys.CO: lblKey.Content = "Cardiac Output: "; break;
+                case Keys.RRExpiratoryRatio: lblKey.Content = "Expiratory Ratio: "; break;
+                case Keys.RRInspiratoryRatio: lblKey.Content = "Inspiratory Ratio: "; break;
                 case Keys.T: lblKey.Content = "Temperature: "; break;
             }
 

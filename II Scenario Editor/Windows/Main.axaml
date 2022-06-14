@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		    xmlns:ii="clr-namespace:II_Scenario_Editor.Controls"
         mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
-        WindowState="Normal"
+        WindowState="Maximized"
         x:Class="II_Scenario_Editor.Main"
         Title="Infirmary Integrated: Scenario Editor"
 	      Icon="avares://Infirmary Integrated Scenario Editor/Resources/Icon_IISE.ico">
@@ -40,11 +40,11 @@
 
     <Grid>
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="1 *" />
+        <ColumnDefinition Width="0.8 *" />
         <ColumnDefinition Width="Auto" />
         <ColumnDefinition Width="2 *" />
         <ColumnDefinition Width="Auto" />
-        <ColumnDefinition Width="1 *" />
+        <ColumnDefinition Width="1.2 *" />
       </Grid.ColumnDefinitions>
 
       <ScrollViewer Name="scrollToolbox"
@@ -57,7 +57,8 @@
           <!-- Scenario properties -->
           <Border>
             <Expander Name="expScenarioProperty"
-								  IsExpanded="True">
+								      IsExpanded="True"
+                      HorizontalContentAlignment="Stretch">
               <Expander.Header>
                 <Label Name="lblScenarioProperty"
 									   Content="Edit Scenario Properties" />
@@ -74,47 +75,57 @@
 
           <!-- Toolbox -->
           <Button Name="btnAddStep"
-							Click="ButtonAddStep_Click">
+							    Click="ButtonAddStep_Click"
+                  HorizontalAlignment="Stretch">
             <StackPanel Orientation="Horizontal">
               <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_PlayerAdd_48.png" />
               <Label Name="lblAddStep"
-								   Content="Add Step" />
+								     Content="Add Step"
+                     VerticalContentAlignment="Center" />
             </StackPanel>
           </Button>
           <Button Name="btnDuplicateStep"
-							Click="ButtonDuplicateStep_Click">
+							    Click="ButtonDuplicateStep_Click"
+                  HorizontalAlignment="Stretch">
             <StackPanel Orientation="Horizontal">
               <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_Stack_48.png" />
               <Label Name="lblDuplicateStep"
-								   Content="Duplicate Step" />
+								   Content="Duplicate Step"
+                     VerticalContentAlignment="Center" />
             </StackPanel>
           </Button>
 
           <Button Name="btnDeleteStep"
-							Click="BtnDeleteStep_Click">
+							    Click="BtnDeleteStep_Click"
+                  HorizontalAlignment="Stretch">
             <StackPanel Orientation="Horizontal">
               <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_TrashBin_48.png" />
               <Label Name="lblDeleteStep"
-								   Content="Delete Step" />
+								   Content="Delete Step"
+                     VerticalContentAlignment="Center" />
             </StackPanel>
           </Button>
 
           <Separator Margin="3, 10" />
 
           <Button Name="btnCopyPatient"
-							Click="BtnCopyPatient_Click">
+							    Click="BtnCopyPatient_Click"
+                  HorizontalAlignment="Stretch">
             <StackPanel Orientation="Horizontal">
               <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_CopyData_48.png" />
               <Label Name="lblCopyPatient"
-								   Content="Copy Patient Properties" />
+								   Content="Copy Patient Properties"
+                     VerticalContentAlignment="Center" />
             </StackPanel>
           </Button>
           <Button Name="btnPastePatient"
-							Click="BtnPastePatient_Click">
+							    Click="BtnPastePatient_Click"
+                  HorizontalAlignment="Stretch">
             <StackPanel Orientation="Horizontal">
               <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_PasteData_48.png" />
               <Label Name="lblPastePatient"
-								   Content="Paste Patient Properties" />
+								   Content="Paste Patient Properties"
+                     VerticalContentAlignment="Center" />
             </StackPanel>
           </Button>
         </StackPanel>
@@ -167,14 +178,15 @@
 
                 <!-- Step Information -->
                 <Border>
-                  <Expander IsExpanded="True">
+                  <Expander IsExpanded="True"
+                            HorizontalContentAlignment="Stretch">
                     <Expander.Header>
                       <Label Name="lblStepInformation"
 												   Content="Step Information" />
                     </Expander.Header>
 
                     <StackPanel Margin="3"
-													Orientation="Vertical">
+													      Orientation="Vertical">
                       <ii:PropertyString x:Name="pstrStepName" />
                       <ii:PropertyString x:Name="pstrStepDescription" />
                     </StackPanel>
@@ -183,7 +195,8 @@
 
                 <!-- Basic Vital Signs -->
                 <Border>
-                  <Expander IsExpanded="True">
+                  <Expander IsExpanded="True"
+                            HorizontalContentAlignment="Stretch">
                     <Expander.Header>
                       <Label Name="lblBasicVitalSigns"
 												   Content="Basic Vital Signs" />
@@ -208,7 +221,8 @@
 
                 <!-- Advanced Hemodynamics -->
                 <Border>
-                  <Expander IsExpanded="True">
+                  <Expander IsExpanded="True"
+                            HorizontalContentAlignment="Stretch">
                     <Expander.Header>
                       <Label Name="lblAdvancedHemodynamics"
 												   Content="Advanced Hemodynamics" />
@@ -230,7 +244,8 @@
 
                 <!-- Respiratory Profile -->
                 <Border>
-                  <Expander IsExpanded="True">
+                  <Expander IsExpanded="True"
+                            HorizontalContentAlignment="Stretch">
                     <Expander.Header>
                       <Label Name="lblRespiratoryProfile"
 												   Content="Respiratory Profile" />
@@ -247,7 +262,8 @@
 
                 <!-- Cardiac Profile -->
                 <Border>
-                  <Expander IsExpanded="True">
+                  <Expander IsExpanded="True"
+                            HorizontalContentAlignment="Stretch">
                     <Expander.Header>
                       <Label Name="lblCardiacProfile"
 												   Content="Cardiac Profile" />
@@ -273,7 +289,8 @@
 
           <Border>
             <Expander Name="expProgressionProperty"
-								  IsExpanded="False">
+								      IsExpanded="False"
+                      HorizontalContentAlignment="Stretch">
               <Expander.Header>
                 <Label Name="lblProgressionProperty"
 									   Content="Edit Progressions" />
@@ -287,7 +304,6 @@
                   <ii:PropertyInt x:Name="pintProgressTimer" />
                   <Label Content="Note: Entering a value of -1 disables the timer or progress target." />
                   <Button Name="btnDeleteProgression"
-											Height="22"
 											Content="Delete Default Progression"
 											Click="BtnDeleteDefaultProgression_Click"
 											Margin="5, 2" />

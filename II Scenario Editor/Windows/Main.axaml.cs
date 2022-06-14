@@ -62,6 +62,10 @@ namespace II_Scenario_Editor {
             InitPropertyView ();
         }
 
+        private void InitializeComponent () {
+            AvaloniaXamlLoader.Load (this);
+        }
+
         private bool promptUnsavedWork () {
             /* TODO: IMPLEMENT
             if (Steps.Count > 0)
@@ -286,15 +290,18 @@ namespace II_Scenario_Editor {
         }
 
         private void InitScenarioProperty () {
+            PropertyString pstrScenarioAuthor = this.FindControl<PropertyString> ("pstrScenarioAuthor");
+            PropertyString pstrScenarioName = this.FindControl<PropertyString> ("pstrScenarioName");
+            PropertyString pstrScenarioDescription = this.FindControl<PropertyString> ("pstrScenarioDescription");
+
             // Initiate controls for editing Scenario properties
-            this.FindControl<Controls.PropertyString> ("pstrScenarioAuthor")?.Init (Controls.PropertyString.Keys.ScenarioAuthor);
-            //pstrScenarioAuthor.PropertyChanged += updateProperty;
+            pstrScenarioAuthor.Init (PropertyString.Keys.ScenarioAuthor);
+            pstrScenarioName.Init (PropertyString.Keys.ScenarioName);
+            pstrScenarioDescription.Init (PropertyString.Keys.ScenarioDescription);
 
-            this.FindControl<Controls.PropertyString> ("pstrScenarioName").Init (Controls.PropertyString.Keys.ScenarioName);
-            //pstrScenarioName.PropertyChanged += updateProperty;
-
-            this.FindControl<Controls.PropertyString> ("pstrScenarioDescription").Init (Controls.PropertyString.Keys.ScenarioDescription);
-            //pstrScenarioDescription.PropertyChanged += updateProperty;
+            pstrScenarioAuthor.PropertyChanged += UpdateProperty;
+            pstrScenarioName.PropertyChanged += UpdateProperty;
+            pstrScenarioDescription.PropertyChanged += UpdateProperty;
         }
 
         private void UpdateScenarioProperty () {
@@ -332,9 +339,7 @@ namespace II_Scenario_Editor {
             => _ = DialogAbout ();
 
         private void ButtonAddStep_Click (object sender, RoutedEventArgs e) {
-            /* TODO: IMPLEMENT
-             addStep (null);
-            */
+            addStep (null);
         }
 
         private void ButtonDuplicateStep_Click (object sender, RoutedEventArgs e) {
@@ -354,27 +359,23 @@ namespace II_Scenario_Editor {
             */
         }
 
-        private void BtnCopyPatient_Click (object sender, RoutedEventArgs e) {
+        private async void BtnCopyPatient_Click (object sender, RoutedEventArgs e) {
             if (selStep == null)
                 return;
 
-            /* TODO: IMPLEMENT
             copiedPatient = new Patient ();
-            copiedPatient.Load_Process (selStep.Patient.Save ());
-            */
+            await copiedPatient.Load_Process (selStep.Patient.Save ());
         }
 
-        private void BtnPastePatient_Click (object sender, RoutedEventArgs e) {
+        private async void BtnPastePatient_Click (object sender, RoutedEventArgs e) {
             if (selStep == null)
                 return;
 
-            /* TODO: IMPLEMENT
             if (copiedPatient != null) {
-                selStep.Patient.Load_Process (copiedPatient.Save ());
+                await selStep.Patient.Load_Process (copiedPatient.Save ());
             }
 
-            updatePropertyView ();
-            */
+            UpdatePropertyView ();
         }
 
         private void BtnDeleteDefaultProgression_Click (object sender, RoutedEventArgs e) {
@@ -392,17 +393,19 @@ namespace II_Scenario_Editor {
                 intensityScale = new List<string> (),
                 fetalHeartRhythms = new List<string> ();
 
-            foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
-                cardiacRhythms.Add (App.Language.Dictionary [Cardiac_Rhythms.LookupString (v)]);
+            if (App.Language != null) {
+                foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
+                    cardiacRhythms.Add (App.Language.Dictionary [Cardiac_Rhythms.LookupString (v)]);
 
-            foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
-                respiratoryRhythms.Add (App.Language.Dictionary [Respiratory_Rhythms.LookupString (v)]);
+                foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
+                    respiratoryRhythms.Add (App.Language.Dictionary [Respiratory_Rhythms.LookupString (v)]);
 
-            foreach (PulmonaryArtery_Rhythms.Values v in Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)))
-                pulmonaryRhythms.Add (App.Language.Dictionary [PulmonaryArtery_Rhythms.LookupString (v)]);
+                foreach (PulmonaryArtery_Rhythms.Values v in Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)))
+                    pulmonaryRhythms.Add (App.Language.Dictionary [PulmonaryArtery_Rhythms.LookupString (v)]);
 
-            foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
-                cardiacAxes.Add (App.Language.Dictionary [Cardiac_Axes.LookupString (v)]);
+                foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
+                    cardiacAxes.Add (App.Language.Dictionary [Cardiac_Axes.LookupString (v)]);
+            }
 
             // Find all controls and attach to reference
             PropertyBP pbpNBP = this.FindControl<PropertyBP> ("pbpNBP");
@@ -424,6 +427,7 @@ namespace II_Scenario_Editor {
             PropertyEnum penmCardiacRhythms = this.FindControl<PropertyEnum> ("penmCardiacRhythms");
             PropertyEnum penmRespiratoryRhythms = this.FindControl<PropertyEnum> ("penmRespiratoryRhythms");
             PropertyEnum penmCardiacAxis = this.FindControl<PropertyEnum> ("penmCardiacAxis");
+            PropertyEnum penmPACatheterRhythm = this.FindControl<PropertyEnum> ("penmPACatheterRhythm");
 
             PropertyInt pintHR = this.FindControl<PropertyInt> ("pintHR");
             PropertyInt pintRR = this.FindControl<PropertyInt> ("pintRR");
@@ -482,129 +486,179 @@ namespace II_Scenario_Editor {
             pintETCO2.Init (PropertyInt.Keys.ETCO2, 2, 0, 100);
             pintCVP.Init (PropertyInt.Keys.CVP, 1, -100, 100);
 
-            /* TODO: IMPLEMENT updateProperty for each Property below!!
-            pbpNBP.PropertyChanged += updateProperty;
-            pbpABP.PropertyChanged += updateProperty;
-            pbpPBP.PropertyChanged += updateProperty;
+            pbpNBP.PropertyChanged += UpdateProperty;
+            pbpABP.PropertyChanged += UpdateProperty;
+            pbpPBP.PropertyChanged += UpdateProperty;
 
-            pchkMechanicallyVentilated.PropertyChanged += updateProperty;
-            pchkPulsusParadoxus.PropertyChanged += updateProperty;
-            pchkPulsusAlternans.PropertyChanged += updateProperty;
+            pchkMechanicallyVentilated.PropertyChanged += UpdateProperty;
+            pchkPulsusParadoxus.PropertyChanged += UpdateProperty;
+            pchkPulsusAlternans.PropertyChanged += UpdateProperty;
 
-            pdblT.PropertyChanged += updateProperty;
-            pdblCO.PropertyChanged += updateProperty;
-            pdblInspiratoryRatio.PropertyChanged += updateProperty;
-            pdblExpiratoryRatio.PropertyChanged += updateProperty;
+            pdblT.PropertyChanged += UpdateProperty;
+            pdblCO.PropertyChanged += UpdateProperty;
+            pdblInspiratoryRatio.PropertyChanged += UpdateProperty;
+            pdblExpiratoryRatio.PropertyChanged += UpdateProperty;
 
-            pecgSTSegment.PropertyChanged += updateProperty;
-            pecgTWave.PropertyChanged += updateProperty;
+            pecgSTSegment.PropertyChanged += UpdateProperty;
+            pecgTWave.PropertyChanged += UpdateProperty;
 
-            penmCardiacRhythms.PropertyChanged += updateProperty;
-            penmCardiacRhythms.PropertyChanged += updateCardiacRhythm;
-            penmRespiratoryRhythms.PropertyChanged += updateProperty;
-            penmRespiratoryRhythms.PropertyChanged += updateRespiratoryRhythm;
-            penmPACatheterRhythm.PropertyChanged += updateProperty;
-            penmPACatheterRhythm.PropertyChanged += updatePACatheterRhythm;
-            penmCardiacAxis.PropertyChanged += updateProperty;
+            penmCardiacRhythms.PropertyChanged += UpdateProperty;
+            penmRespiratoryRhythms.PropertyChanged += UpdateProperty;
+            penmPACatheterRhythm.PropertyChanged += UpdateProperty;
+            penmCardiacAxis.PropertyChanged += UpdateProperty;
 
-            pintICP.PropertyChanged += updateProperty;
-            pintIAP.PropertyChanged += updateProperty;
-            pintHR.PropertyChanged += updateProperty;
-            pintRR.PropertyChanged += updateProperty;
-            pintSPO2.PropertyChanged += updateProperty;
-            pintETCO2.PropertyChanged += updateProperty;
-            pintCVP.PropertyChanged += updateProperty;
-            pintPacemakerThreshold.PropertyChanged += updateProperty;
-            pintProgressFrom.PropertyChanged += updateProperty;
-            pintProgressTo.PropertyChanged += updateProperty;
-            pintProgressTimer.PropertyChanged += updateProperty;
+            penmCardiacRhythms.PropertyChanged += UpdateCardiacRhythm;
+            penmRespiratoryRhythms.PropertyChanged += UpdateRespiratoryRhythm;
+            penmPACatheterRhythm.PropertyChanged += UpdatePACatheterRhythm;
 
-            pstrStepName.PropertyChanged += updateProperty;
-            pstrStepDescription.PropertyChanged += updateProperty;
-            */
+            pintICP.PropertyChanged += UpdateProperty;
+            pintIAP.PropertyChanged += UpdateProperty;
+            pintHR.PropertyChanged += UpdateProperty;
+            pintRR.PropertyChanged += UpdateProperty;
+            pintSPO2.PropertyChanged += UpdateProperty;
+            pintETCO2.PropertyChanged += UpdateProperty;
+            pintCVP.PropertyChanged += UpdateProperty;
+            pintPacemakerThreshold.PropertyChanged += UpdateProperty;
+            pintProgressFrom.PropertyChanged += UpdateProperty;
+            pintProgressTo.PropertyChanged += UpdateProperty;
+            pintProgressTimer.PropertyChanged += UpdateProperty;
+
+            pstrStepName.PropertyChanged += UpdateProperty;
+            pstrStepDescription.PropertyChanged += UpdateProperty;
         }
 
-        /* TODO: IMPLEMENT
-            private void updatePropertyView () {
-                if (selStep == null)
-                    return;
+        private void UpdatePropertyView () {
+            if (selStep == null)
+                return;
 
-                // Update all controls with Patient values
-                pstrStepName.Set (selStep.Step.Name ?? "");
-                pstrStepDescription.Set (selStep.Step.Description ?? "");
-                pintHR.Set (selStep.Patient.VS_Settings.HR);
-                pbpNBP.Set (selStep.Patient.VS_Settings.NSBP, selStep.Patient.VS_Settings.NDBP);
-                pintRR.Set (selStep.Patient.VS_Settings.RR);
-                pintSPO2.Set (selStep.Patient.VS_Settings.SPO2);
-                pdblT.Set (selStep.Patient.VS_Settings.T);
-                penmCardiacRhythms.Set ((int)selStep.Patient.Cardiac_Rhythm.Value);
-                penmRespiratoryRhythms.Set ((int)selStep.Patient.Respiratory_Rhythm.Value);
-                pintETCO2.Set (selStep.Patient.VS_Settings.ETCO2);
-                pintCVP.Set (selStep.Patient.VS_Settings.CVP);
-                pbpABP.Set (selStep.Patient.VS_Settings.ASBP, selStep.Patient.VS_Settings.ADBP);
-                pdblCO.Set (selStep.Patient.VS_Settings.CO);
-                penmPACatheterRhythm.Set ((int)selStep.Patient.PulmonaryArtery_Placement.Value);
-                pbpPBP.Set (selStep.Patient.VS_Settings.PSP, selStep.Patient.VS_Settings.PDP);
-                pintICP.Set (selStep.Patient.VS_Settings.ICP);
-                pintIAP.Set (selStep.Patient.VS_Settings.IAP);
-                pchkMechanicallyVentilated.Set (selStep.Patient.Mechanically_Ventilated);
-                pdblInspiratoryRatio.Set (selStep.Patient.VS_Settings.RR_IE_I);
-                pdblExpiratoryRatio.Set (selStep.Patient.VS_Settings.RR_IE_E);
-                pintPacemakerThreshold.Set (selStep.Patient.Pacemaker_Threshold);
-                pchkPulsusParadoxus.Set (selStep.Patient.Pulsus_Paradoxus);
-                pchkPulsusAlternans.Set (selStep.Patient.Pulsus_Alternans);
-                penmCardiacAxis.Set ((int)selStep.Patient.Cardiac_Axis.Value);
-                pecgSTSegment.Set (selStep.Patient.ST_Elevation);
-                pecgTWave.Set (selStep.Patient.T_Elevation);
+            // Find all controls and attach to reference
+            PropertyBP pbpNBP = this.FindControl<PropertyBP> ("pbpNBP");
+            PropertyBP pbpABP = this.FindControl<PropertyBP> ("pbpABP");
+            PropertyBP pbpPBP = this.FindControl<PropertyBP> ("pbpPBP");
 
-                // Update progression controls with values
-                pintProgressFrom.Set (selStep.Step.ProgressFrom);
-                pintProgressTo.Set (selStep.Step.ProgressTo);
-                pintProgressTimer.Set (selStep.Step.ProgressTimer);
+            PropertyCheck pchkMechanicallyVentilated = this.FindControl<PropertyCheck> ("pchkMechanicallyVentilated");
+            PropertyCheck pchkPulsusParadoxus = this.FindControl<PropertyCheck> ("pchkPulsusParadoxus");
+            PropertyCheck pchkPulsusAlternans = this.FindControl<PropertyCheck> ("pchkPulsusAlternans");
 
-                updateOptionalProgressionView ();
+            PropertyDouble pdblT = this.FindControl<PropertyDouble> ("pdblT");
+            PropertyDouble pdblCO = this.FindControl<PropertyDouble> ("pdblCO");
+            PropertyDouble pdblInspiratoryRatio = this.FindControl<PropertyDouble> ("pdblInspiratoryRatio");
+            PropertyDouble pdblExpiratoryRatio = this.FindControl<PropertyDouble> ("pdblExpiratoryRatio");
+
+            PropertyECGSegment pecgSTSegment = this.FindControl<PropertyECGSegment> ("pecgSTSegment");
+            PropertyECGSegment pecgTWave = this.FindControl<PropertyECGSegment> ("pecgTWave");
+
+            PropertyEnum penmCardiacRhythms = this.FindControl<PropertyEnum> ("penmCardiacRhythms");
+            PropertyEnum penmRespiratoryRhythms = this.FindControl<PropertyEnum> ("penmRespiratoryRhythms");
+            PropertyEnum penmCardiacAxis = this.FindControl<PropertyEnum> ("penmCardiacAxis");
+            PropertyEnum penmPACatheterRhythm = this.FindControl<PropertyEnum> ("penmPACatheterRhythm");
+
+            PropertyInt pintHR = this.FindControl<PropertyInt> ("pintHR");
+            PropertyInt pintRR = this.FindControl<PropertyInt> ("pintRR");
+            PropertyInt pintSPO2 = this.FindControl<PropertyInt> ("pintSPO2");
+            PropertyInt pintETCO2 = this.FindControl<PropertyInt> ("pintETCO2");
+            PropertyInt pintCVP = this.FindControl<PropertyInt> ("pintCVP");
+            PropertyInt pintICP = this.FindControl<PropertyInt> ("pintICP");
+            PropertyInt pintIAP = this.FindControl<PropertyInt> ("pintIAP");
+            PropertyInt pintPacemakerThreshold = this.FindControl<PropertyInt> ("pintPacemakerThreshold");
+            PropertyInt pintProgressFrom = this.FindControl<PropertyInt> ("pintProgressFrom");
+            PropertyInt pintProgressTo = this.FindControl<PropertyInt> ("pintProgressTo");
+            PropertyInt pintProgressTimer = this.FindControl<PropertyInt> ("pintProgressTimer");
+
+            PropertyString pstrStepName = this.FindControl<PropertyString> ("pstrStepName");
+            PropertyString pstrStepDescription = this.FindControl<PropertyString> ("pstrStepDescription");
+
+            // Update all controls with Patient values
+            pbpNBP.Set (selStep.Patient.VS_Settings.NSBP, selStep.Patient.VS_Settings.NDBP);
+            pbpABP.Set (selStep.Patient.VS_Settings.ASBP, selStep.Patient.VS_Settings.ADBP);
+            pbpPBP.Set (selStep.Patient.VS_Settings.PSP, selStep.Patient.VS_Settings.PDP);
+
+            pchkMechanicallyVentilated.Set (selStep.Patient.Mechanically_Ventilated);
+            pchkPulsusParadoxus.Set (selStep.Patient.Pulsus_Paradoxus);
+            pchkPulsusAlternans.Set (selStep.Patient.Pulsus_Alternans);
+
+            pdblT.Set (selStep.Patient.VS_Settings.T);
+            pdblCO.Set (selStep.Patient.VS_Settings.CO);
+            pdblInspiratoryRatio.Set (selStep.Patient.VS_Settings.RR_IE_I);
+            pdblExpiratoryRatio.Set (selStep.Patient.VS_Settings.RR_IE_E);
+
+            pecgSTSegment.Set (selStep.Patient.ST_Elevation);
+            pecgTWave.Set (selStep.Patient.T_Elevation);
+
+            penmCardiacRhythms.Set ((int)selStep.Patient.Cardiac_Rhythm.Value);
+            penmRespiratoryRhythms.Set ((int)selStep.Patient.Respiratory_Rhythm.Value);
+            penmPACatheterRhythm.Set ((int)selStep.Patient.PulmonaryArtery_Placement.Value);
+            penmCardiacAxis.Set ((int)selStep.Patient.Cardiac_Axis.Value);
+
+            pintHR.Set (selStep.Patient.VS_Settings.HR);
+            pintRR.Set (selStep.Patient.VS_Settings.RR);
+            pintSPO2.Set (selStep.Patient.VS_Settings.SPO2);
+            pintETCO2.Set (selStep.Patient.VS_Settings.ETCO2);
+            pintCVP.Set (selStep.Patient.VS_Settings.CVP);
+            pintICP.Set (selStep.Patient.VS_Settings.ICP);
+            pintIAP.Set (selStep.Patient.VS_Settings.IAP);
+            pintPacemakerThreshold.Set (selStep.Patient.Pacemaker_Threshold);
+            pintProgressFrom.Set (selStep.Step.ProgressFrom);
+            pintProgressTo.Set (selStep.Step.ProgressTo);
+            pintProgressTimer.Set (selStep.Step.ProgressTimer);
+
+            pstrStepName.Set (selStep.Step.Name ?? "");
+            pstrStepDescription.Set (selStep.Step.Description ?? "");
+
+            UpdateOptionalProgressionView ();
+        }
+
+        private void UpdateOptionalProgressionView () {
+            StackPanel stackOptionalProgressions = this.FindControl<StackPanel> ("stackOptionalProgressions");
+
+            stackOptionalProgressions.Children.Clear ();
+
+            for (int i = 0; i < selStep.Step.Progressions.Count; i++) {
+                Scenario.Step.Progression p = selStep.Step.Progressions [i];
+                PropertyOptProgression pp = new PropertyOptProgression ();
+                pp.Init (i, p.DestinationIndex, p.Description);
+                pp.PropertyChanged += updateProperty;
+                stackOptionalProgressions.Children.Add (pp);
+            }
+        }
+
+        private void updateProperty (object? sender, PropertyOptProgression.PropertyOptProgressionEventArgs e) {
+            if (e.Index >= selStep.Step.Progressions.Count)
+                return;
+
+            Scenario.Step.Progression p = selStep.Step.Progressions [e.Index];
+            p.DestinationIndex = e.IndexStepTo;
+            p.Description = e.Description ?? "";
+
+            // Deletes an optional progression via this route
+            if (e.ToDelete) {
+                selStep.Step.Progressions.RemoveAt (e.Index);
+                UpdateOptionalProgressionView ();
+                /* TODO: IMPLEMENT
+                drawIProgressions ();
+                */
+            }
+        }
+
+        private void UpdateProperty (object? sender, PropertyString.PropertyStringEventArgs e) {
+            switch (e.Key) {
+                default: break;
+                case PropertyString.Keys.ScenarioAuthor: ScenarioAuthor = e.Value ?? ""; break;
+                case PropertyString.Keys.ScenarioName: ScenarioName = e.Value ?? ""; break;
+                case PropertyString.Keys.ScenarioDescription: ScenarioDescription = e.Value ?? ""; break;
             }
 
-            private void updateOptionalProgressionView () {
-                stackOptionalProgressions.Children.Clear ();
-
-                for (int i = 0; i < selStep.Step.Progressions.Count; i++) {
-                    Scenario.Step.Progression p = selStep.Step.Progressions [i];
-                    PropertyOptProgression pp = new PropertyOptProgression ();
-                    pp.Init (i, p.DestinationIndex, p.Description);
-                    pp.PropertyChanged += updateProperty;
-                    stackOptionalProgressions.Children.Add (pp);
-                }
-            }
-
-            private void updateProperty (object sender, PropertyOptProgression.PropertyOptProgressionEventArgs e) {
-                if (e.Index >= selStep.Step.Progressions.Count)
-                    return;
-
-                Scenario.Step.Progression p = selStep.Step.Progressions [e.Index];
-                p.DestinationIndex = e.IndexStepTo;
-                p.Description = e.Description;
-
-                // Deletes an optional progression via this route
-                if (e.ToDelete) {
-                    selStep.Step.Progressions.RemoveAt (e.Index);
-                    updateOptionalProgressionView ();
-                    drawIProgressions ();
-                }
-            }
-
-            private void updateProperty (object sender, PropertyString.PropertyStringEventArgs e) {
+            if (selStep != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyString.Keys.ScenarioAuthor: ScenarioAuthor = e.Value; break;
-                    case PropertyString.Keys.ScenarioName: ScenarioName = e.Value; break;
-                    case PropertyString.Keys.ScenarioDescription: ScenarioDescription = e.Value; break;
-                    case PropertyString.Keys.StepName: selStep.SetName (e.Value); break;
-                    case PropertyString.Keys.StepDescription: selStep.Step.Description = e.Value; break;
+                    case PropertyString.Keys.StepName: selStep.SetName (e.Value ?? ""); break;
+                    case PropertyString.Keys.StepDescription: selStep.Step.Description = e.Value ?? ""; break;
                 }
             }
+        }
 
-            private void updateProperty (object sender, PropertyInt.PropertyIntEventArgs e) {
+        private void UpdateProperty (object? sender, PropertyInt.PropertyIntEventArgs e) {
+            if (selStep != null) {
                 switch (e.Key) {
                     default: break;
                     case PropertyInt.Keys.HR: selStep.Patient.HR = e.Value; break;
@@ -621,39 +675,39 @@ namespace II_Scenario_Editor {
                     case PropertyInt.Keys.ProgressTimer: selStep.Step.ProgressTimer = e.Value; break;
                 }
             }
+        }
 
-            private void updateProperty (object sender, PropertyDouble.PropertyDoubleEventArgs e) {
+        private void UpdateProperty (object? sender, PropertyDouble.PropertyDoubleEventArgs e) {
+            if (selStep != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyDouble.Keys.T: selStep.Patient.T = e.Value; break;
-                    case PropertyDouble.Keys.CO: selStep.Patient.CO = e.Value; break;
+                    case PropertyDouble.Keys.T: selStep.Patient.T = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.CO: selStep.Patient.CO = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.RRInspiratoryRatio: selStep.Patient.RR_IE_I = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.RRExpiratoryRatio: selStep.Patient.RR_IE_E = e.Value ?? 0d; break;
                 }
             }
+        }
 
-            private void updateProperty (object sender, PropertyFloat.PropertyFloatEventArgs e) {
+        private void UpdateProperty (object? sender, PropertyBP.PropertyIntEventArgs e) {
+            if (selStep != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyFloat.Keys.RRInspiratoryRatio: selStep.Patient.RR_IE_I = e.Value; break;
-                    case PropertyFloat.Keys.RRExpiratoryRatio: selStep.Patient.RR_IE_E = e.Value; break;
+                    case PropertyBP.Keys.NSBP: selStep.Patient.NSBP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.NDBP: selStep.Patient.NDBP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.NMAP: selStep.Patient.NMAP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.ASBP: selStep.Patient.ASBP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.ADBP: selStep.Patient.ADBP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.AMAP: selStep.Patient.AMAP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.PSP: selStep.Patient.PSP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.PDP: selStep.Patient.PDP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.PMP: selStep.Patient.PMP = e.Value ?? 0; break;
                 }
             }
+        }
 
-            private void updateProperty (object sender, PropertyBP.PropertyIntEventArgs e) {
-                switch (e.Key) {
-                    default: break;
-                    case PropertyBP.Keys.NSBP: selStep.Patient.NSBP = e.Value; break;
-                    case PropertyBP.Keys.NDBP: selStep.Patient.NDBP = e.Value; break;
-                    case PropertyBP.Keys.NMAP: selStep.Patient.NMAP = e.Value; break;
-                    case PropertyBP.Keys.ASBP: selStep.Patient.ASBP = e.Value; break;
-                    case PropertyBP.Keys.ADBP: selStep.Patient.ADBP = e.Value; break;
-                    case PropertyBP.Keys.AMAP: selStep.Patient.AMAP = e.Value; break;
-                    case PropertyBP.Keys.PSP: selStep.Patient.PSP = e.Value; break;
-                    case PropertyBP.Keys.PDP: selStep.Patient.PDP = e.Value; break;
-                    case PropertyBP.Keys.PMP: selStep.Patient.PMP = e.Value; break;
-                }
-            }
-
-            private void updateProperty (object sender, PropertyEnum.PropertyEnumEventArgs e) {
+        private void UpdateProperty (object? sender, PropertyEnum.PropertyEnumEventArgs e) {
+            if (e.Value != null && selStep != null) {
                 switch (e.Key) {
                     default: break;
 
@@ -674,8 +728,10 @@ namespace II_Scenario_Editor {
                         break;
                 }
             }
+        }
 
-            private void updateProperty (object sender, PropertyCheck.PropertyCheckEventArgs e) {
+        private void UpdateProperty (object? sender, PropertyCheck.PropertyCheckEventArgs e) {
+            if (selStep != null) {
                 switch (e.Key) {
                     default: break;
                     case PropertyCheck.Keys.PulsusParadoxus: selStep.Patient.Pulsus_Paradoxus = e.Value; break;
@@ -683,69 +739,76 @@ namespace II_Scenario_Editor {
                     case PropertyCheck.Keys.MechanicallyVentilated: selStep.Patient.Mechanically_Ventilated = e.Value; break;
                 }
             }
+        }
 
-            private void updateProperty (object sender, PropertyECGSegment.PropertyECGEventArgs e) {
+        private void UpdateProperty (object? sender, PropertyECGSegment.PropertyECGEventArgs e) {
+            if (selStep != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyECGSegment.Keys.STElevation: selStep.Patient.ST_Elevation = e.Values; break;
-                    case PropertyECGSegment.Keys.TWave: selStep.Patient.T_Elevation = e.Values; break;
+                    case PropertyECGSegment.Keys.STElevation: selStep.Patient.ST_Elevation = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
+                    case PropertyECGSegment.Keys.TWave: selStep.Patient.T_Elevation = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
                 }
             }
+        }
 
-            private void updateCardiacRhythm (object sender, PropertyEnum.PropertyEnumEventArgs e) {
-                if (!chkClampVitals.IsChecked ?? false || selStep == null)
-                    return;
+        private void UpdateCardiacRhythm (object? sender, PropertyEnum.PropertyEnumEventArgs e) {
+            CheckBox chkClampVitals = this.FindControl<CheckBox> ("chkClampVitals");
+            if ((!chkClampVitals.IsChecked ?? false) || e.Value == null || selStep == null)
+                return;
 
-                Patient p = ((ItemStep)selStep).Patient;
+            Patient p = ((ItemStep)selStep).Patient;
 
-                Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
-                    (Cardiac_Rhythms.Values)Enum.Parse (typeof (Cardiac_Rhythms.Values), e.Value));
+            Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
+                (Cardiac_Rhythms.Values)Enum.Parse (typeof (Cardiac_Rhythms.Values), e.Value));
 
-                p.HR = (int)II.Math.Clamp ((double)p.VS_Settings.HR, v.HRMin, v.HRMax);
-                p.RR = (int)II.Math.Clamp ((double)p.VS_Settings.RR, v.RRMin, v.RRMax);
-                p.SPO2 = (int)II.Math.Clamp ((double)p.VS_Settings.SPO2, v.SPO2Min, v.SPO2Max);
-                p.ETCO2 = (int)II.Math.Clamp ((double)p.VS_Settings.ETCO2, v.ETCO2Min, v.ETCO2Max);
-                p.NSBP = (int)II.Math.Clamp ((double)p.VS_Settings.NSBP, v.SBPMin, v.SBPMax);
-                p.NDBP = (int)II.Math.Clamp ((double)p.VS_Settings.NDBP, v.DBPMin, v.DBPMax);
-                p.ASBP = (int)II.Math.Clamp ((double)p.VS_Settings.ASBP, v.SBPMin, v.SBPMax);
-                p.ADBP = (int)II.Math.Clamp ((double)p.VS_Settings.ADBP, v.DBPMin, v.DBPMax);
-                p.PSP = (int)II.Math.Clamp ((double)p.VS_Settings.PSP, v.PSPMin, v.PSPMax);
-                p.PDP = (int)II.Math.Clamp ((double)p.VS_Settings.PDP, v.PDPMin, v.PDPMax);
+            p.HR = (int)II.Math.Clamp ((double)p.VS_Settings.HR, v.HRMin, v.HRMax);
+            p.RR = (int)II.Math.Clamp ((double)p.VS_Settings.RR, v.RRMin, v.RRMax);
+            p.SPO2 = (int)II.Math.Clamp ((double)p.VS_Settings.SPO2, v.SPO2Min, v.SPO2Max);
+            p.ETCO2 = (int)II.Math.Clamp ((double)p.VS_Settings.ETCO2, v.ETCO2Min, v.ETCO2Max);
+            p.NSBP = (int)II.Math.Clamp ((double)p.VS_Settings.NSBP, v.SBPMin, v.SBPMax);
+            p.NDBP = (int)II.Math.Clamp ((double)p.VS_Settings.NDBP, v.DBPMin, v.DBPMax);
+            p.ASBP = (int)II.Math.Clamp ((double)p.VS_Settings.ASBP, v.SBPMin, v.SBPMax);
+            p.ADBP = (int)II.Math.Clamp ((double)p.VS_Settings.ADBP, v.DBPMin, v.DBPMax);
+            p.PSP = (int)II.Math.Clamp ((double)p.VS_Settings.PSP, v.PSPMin, v.PSPMax);
+            p.PDP = (int)II.Math.Clamp ((double)p.VS_Settings.PDP, v.PDPMin, v.PDPMax);
 
-                updatePropertyView ();
-            }
+            UpdatePropertyView ();
+        }
 
-            private void updateRespiratoryRhythm (object sender, PropertyEnum.PropertyEnumEventArgs e) {
-                if (!chkClampVitals.IsChecked ?? false || selStep == null)
-                    return;
+        private void UpdateRespiratoryRhythm (object? sender, PropertyEnum.PropertyEnumEventArgs e) {
+            CheckBox chkClampVitals = this.FindControl<CheckBox> ("chkClampVitals");
 
-                Patient p = ((ItemStep)selStep).Patient;
+            if ((!chkClampVitals.IsChecked ?? false) || e.Value == null || selStep == null)
+                return;
 
-                Respiratory_Rhythms.Default_Vitals v = Respiratory_Rhythms.DefaultVitals (
-                    (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), e.Value));
+            Patient p = ((ItemStep)selStep).Patient;
 
-                p.RR = (int)II.Math.Clamp ((double)p.RR, v.RRMin, v.RRMax);
-                p.RR_IE_I = (int)II.Math.Clamp ((double)p.RR_IE_I, v.RR_IE_I_Min, v.RR_IE_I_Max);
-                p.RR_IE_E = (int)II.Math.Clamp ((double)p.RR_IE_E, v.RR_IE_E_Min, v.RR_IE_E_Max);
+            Respiratory_Rhythms.Default_Vitals v = Respiratory_Rhythms.DefaultVitals (
+                (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), e.Value));
 
-                updatePropertyView ();
-            }
+            p.RR = (int)II.Math.Clamp ((double)p.RR, v.RRMin, v.RRMax);
+            p.RR_IE_I = (int)II.Math.Clamp ((double)p.RR_IE_I, v.RR_IE_I_Min, v.RR_IE_I_Max);
+            p.RR_IE_E = (int)II.Math.Clamp ((double)p.RR_IE_E, v.RR_IE_E_Min, v.RR_IE_E_Max);
 
-            private void updatePACatheterRhythm (object sender, PropertyEnum.PropertyEnumEventArgs e) {
-                if (selStep == null)
-                    return;
+            UpdatePropertyView ();
+        }
 
-                Patient p = ((ItemStep)selStep).Patient;
+        private void UpdatePACatheterRhythm (object? sender, PropertyEnum.PropertyEnumEventArgs e) {
+            if (e.Value == null || selStep == null)
+                return;
 
-                PulmonaryArtery_Rhythms.Default_Vitals v = PulmonaryArtery_Rhythms.DefaultVitals (
-                    (PulmonaryArtery_Rhythms.Values)Enum.Parse (typeof (PulmonaryArtery_Rhythms.Values), e.Value));
+            Patient p = ((ItemStep)selStep).Patient;
 
-                p.PSP = (int)II.Math.Clamp ((double)p.PSP, v.PSPMin, v.PSPMax);
-                p.PDP = (int)II.Math.Clamp ((double)p.PDP, v.PDPMin, v.PDPMax);
+            PulmonaryArtery_Rhythms.Default_Vitals v = PulmonaryArtery_Rhythms.DefaultVitals (
+                (PulmonaryArtery_Rhythms.Values)Enum.Parse (typeof (PulmonaryArtery_Rhythms.Values), e.Value));
 
-                updatePropertyView ();
-            }
+            p.PSP = (int)II.Math.Clamp ((double)p.PSP, v.PSPMin, v.PSPMax);
+            p.PDP = (int)II.Math.Clamp ((double)p.PDP, v.PDPMin, v.PDPMax);
 
+            UpdatePropertyView ();
+        }
+
+        /* TODO: IMPLEMENT
             private void selectStep (ItemStep ist) {
                 selStep = ist;
 

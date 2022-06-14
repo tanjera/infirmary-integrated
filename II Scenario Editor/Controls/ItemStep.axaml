@@ -1,8 +1,33 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="II_Scenario_Editor.Controls.ItemStep">
-  Welcome to Avalonia!
+						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+						 mc:Ignorable="d"
+						 x:Class="II_Scenario_Editor.Controls.ItemStep"
+						 Height="150"
+             Width="100"
+						 Margin="0"
+             Background="Aqua">
+
+  <Grid Name="gridMain">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="Auto" />
+    </Grid.ColumnDefinitions>
+
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <Label Name="lblNumber"
+           Grid.Column="0"
+           Grid.Row="0"
+           Margin="5, 2" />
+
+    <Label Name="lblName"
+           Grid.Column="0"
+           Grid.Row="1"
+           Margin="5, 2" />
+  </Grid>
 </UserControl>
