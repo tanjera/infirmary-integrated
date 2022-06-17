@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -32,31 +33,39 @@ namespace II_Scenario_Editor {
         private string ScenarioAuthor, ScenarioName, ScenarioDescription;
 
         // Variables and pointers for using UI Elements
-        private Canvas canvasDesigner;
+        private Canvas ICanvasSteps;
 
-        private ItemStep selStep;
-        /* TODO: IMPLEMENT
-        private Controls.ItemStep.UEIStepEnd selEnd;
-        */
+        private ItemStep? ISelectedStep;
+        private bool IsSelectedStepEnd = false;
 
         // For copy/pasting Patient parameters
-        private Patient copiedPatient;
+        private Patient CopiedPatient;
 
         // Variables for capturing mouse and dragging UI elements
-        private bool mouseCaptured = false;
-
-        private double xShape, yShape,
-            xCanvas, yCanvas;
+        private bool IsMouseCaptured = false;
 
         // Switch for processing elements ina  loading sequence
-        private bool isLoading = false;
+        private bool IsLoading = false;
+
+        // Permanents for reference/interface styling
+        public readonly Brush
+            Stroke_Default = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#555555")),
+            Fill_Default = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#dddddd")),
+            Fill_StepZero = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#b0d68b")),
+            Fill_StepEndNoProgression = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#d4a29b")),
+            Fill_StepEndNoOptionalProgression = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#dee685")),
+            Fill_StepEndMultipleProgressions = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#b9cfa3"));
+
+        public readonly Avalonia.Thickness
+            StrokeThickness_Default = new Thickness (.5d),
+            StrokeThickness_Selected = new Thickness (2.0d);
 
         public Main () {
             InitializeComponent ();
 
             DataContext = this;
 
-            canvasDesigner = this.FindControl<Canvas> ("cnvsDesigner");
+            ICanvasSteps = this.FindControl<Canvas> ("cnvsDesigner");
 
             InitScenarioProperty ();
             InitPropertyView ();
@@ -84,15 +93,13 @@ namespace II_Scenario_Editor {
             if (promptUnsavedWork () == false)
                 return;
 
-            /* TODO: IMPLEMENT
-
             // Reset buffer parameters
-            selStep = null;
-            selEnd = null;
-            mouseCaptured = false;
+            ISelectedStep = null;
+            IsSelectedStepEnd = false;
+            IsMouseCaptured = false;
 
             // Clear master lists and UI elements
-            canvasDesigner.Children.Clear ();
+            ICanvasSteps.Children.Clear ();
             Steps.Clear ();
 
             // Clear scenario data
@@ -101,7 +108,6 @@ namespace II_Scenario_Editor {
             ScenarioDescription = "";
 
             UpdateScenarioProperty ();
-            */
         }
 
         private async Task LoadScenario () {
@@ -183,7 +189,7 @@ namespace II_Scenario_Editor {
             ScenarioDescription = sc.Description;
 
             Steps.Clear ();
-            canvasDesigner.Children.Clear ();
+            ICanvasSteps.Children.Clear ();
 
             for (int i = 0; i < sc.Steps.Count; i++) {
                 /* TODO: IMPLEMENT
@@ -339,40 +345,35 @@ namespace II_Scenario_Editor {
             => _ = DialogAbout ();
 
         private void ButtonAddStep_Click (object sender, RoutedEventArgs e) {
-            addStep (null);
+            AddStep ();
         }
 
         private void ButtonDuplicateStep_Click (object sender, RoutedEventArgs e) {
-            if (selStep == null)
+            if (ISelectedStep == null)
                 return;
-            /* TODO: IMPLEMENT
-            addStep (selStep.Duplicate ());
-            */
+
+            AddStep (ISelectedStep);
         }
 
         private void BtnDeleteStep_Click (object sender, RoutedEventArgs e) {
-            if (selStep == null)
-                return;
-
-            /* TODO: IMPLEMENT
-            deleteStep (selStep);
-            */
+            if (ISelectedStep != null)
+                DeleteStep (ISelectedStep);
         }
 
         private async void BtnCopyPatient_Click (object sender, RoutedEventArgs e) {
-            if (selStep == null)
+            if (ISelectedStep == null)
                 return;
 
-            copiedPatient = new Patient ();
-            await copiedPatient.Load_Process (selStep.Patient.Save ());
+            CopiedPatient = new Patient ();
+            await CopiedPatient.Load_Process (ISelectedStep.Patient.Save ());
         }
 
         private async void BtnPastePatient_Click (object sender, RoutedEventArgs e) {
-            if (selStep == null)
+            if (ISelectedStep == null)
                 return;
 
-            if (copiedPatient != null) {
-                await selStep.Patient.Load_Process (copiedPatient.Save ());
+            if (CopiedPatient != null) {
+                await ISelectedStep.Patient.Load_Process (CopiedPatient.Save ());
             }
 
             UpdatePropertyView ();
@@ -437,14 +438,16 @@ namespace II_Scenario_Editor {
             PropertyInt pintICP = this.FindControl<PropertyInt> ("pintICP");
             PropertyInt pintIAP = this.FindControl<PropertyInt> ("pintIAP");
             PropertyInt pintPacemakerThreshold = this.FindControl<PropertyInt> ("pintPacemakerThreshold");
-            PropertyInt pintProgressFrom = this.FindControl<PropertyInt> ("pintProgressFrom");
-            PropertyInt pintProgressTo = this.FindControl<PropertyInt> ("pintProgressTo");
             PropertyInt pintProgressTimer = this.FindControl<PropertyInt> ("pintProgressTimer");
 
+            PropertyString pstrProgressFrom = this.FindControl<PropertyString> ("pstrProgressFrom");
+            PropertyString pstrProgressTo = this.FindControl<PropertyString> ("pstrProgressTo");
             PropertyString pstrStepName = this.FindControl<PropertyString> ("pstrStepName");
             PropertyString pstrStepDescription = this.FindControl<PropertyString> ("pstrStepDescription");
 
             // Initiate controls for editing Patient values
+            pstrProgressFrom.Init (PropertyString.Keys.ProgressFrom);
+            pstrProgressTo.Init (PropertyString.Keys.ProgressTo);
             pstrStepName.Init (PropertyString.Keys.StepName);
             pstrStepDescription.Init (PropertyString.Keys.StepDescription);
 
@@ -479,8 +482,6 @@ namespace II_Scenario_Editor {
             pintICP.Init (PropertyInt.Keys.ICP, 1, -100, 100);
             pintIAP.Init (PropertyInt.Keys.IAP, 1, -100, 100);
             pintPacemakerThreshold.Init (PropertyInt.Keys.PacemakerThreshold, 5, 0, 200);
-            pintProgressFrom.Init (PropertyInt.Keys.ProgressFrom, 1, -1, 1000);
-            pintProgressTo.Init (PropertyInt.Keys.ProgressTo, 1, -1, 1000);
             pintProgressTimer.Init (PropertyInt.Keys.ProgressTimer, 1, -1, 1000);
 
             pintETCO2.Init (PropertyInt.Keys.ETCO2, 2, 0, 100);
@@ -519,16 +520,16 @@ namespace II_Scenario_Editor {
             pintETCO2.PropertyChanged += UpdateProperty;
             pintCVP.PropertyChanged += UpdateProperty;
             pintPacemakerThreshold.PropertyChanged += UpdateProperty;
-            pintProgressFrom.PropertyChanged += UpdateProperty;
-            pintProgressTo.PropertyChanged += UpdateProperty;
             pintProgressTimer.PropertyChanged += UpdateProperty;
 
+            pstrProgressFrom.PropertyChanged += UpdateProperty;
+            pstrProgressTo.PropertyChanged += UpdateProperty;
             pstrStepName.PropertyChanged += UpdateProperty;
             pstrStepDescription.PropertyChanged += UpdateProperty;
         }
 
         private void UpdatePropertyView () {
-            if (selStep == null)
+            if (ISelectedStep == null)
                 return;
 
             // Find all controls and attach to reference
@@ -561,78 +562,79 @@ namespace II_Scenario_Editor {
             PropertyInt pintICP = this.FindControl<PropertyInt> ("pintICP");
             PropertyInt pintIAP = this.FindControl<PropertyInt> ("pintIAP");
             PropertyInt pintPacemakerThreshold = this.FindControl<PropertyInt> ("pintPacemakerThreshold");
-            PropertyInt pintProgressFrom = this.FindControl<PropertyInt> ("pintProgressFrom");
-            PropertyInt pintProgressTo = this.FindControl<PropertyInt> ("pintProgressTo");
             PropertyInt pintProgressTimer = this.FindControl<PropertyInt> ("pintProgressTimer");
 
+            PropertyString pstrProgressFrom = this.FindControl<PropertyString> ("pstrProgressFrom");
+            PropertyString pstrProgressTo = this.FindControl<PropertyString> ("pstrProgressTo");
             PropertyString pstrStepName = this.FindControl<PropertyString> ("pstrStepName");
             PropertyString pstrStepDescription = this.FindControl<PropertyString> ("pstrStepDescription");
 
             // Update all controls with Patient values
-            pbpNBP.Set (selStep.Patient.VS_Settings.NSBP, selStep.Patient.VS_Settings.NDBP);
-            pbpABP.Set (selStep.Patient.VS_Settings.ASBP, selStep.Patient.VS_Settings.ADBP);
-            pbpPBP.Set (selStep.Patient.VS_Settings.PSP, selStep.Patient.VS_Settings.PDP);
+            pbpNBP.Set (ISelectedStep.Patient.VS_Settings.NSBP, ISelectedStep.Patient.VS_Settings.NDBP);
+            pbpABP.Set (ISelectedStep.Patient.VS_Settings.ASBP, ISelectedStep.Patient.VS_Settings.ADBP);
+            pbpPBP.Set (ISelectedStep.Patient.VS_Settings.PSP, ISelectedStep.Patient.VS_Settings.PDP);
 
-            pchkMechanicallyVentilated.Set (selStep.Patient.Mechanically_Ventilated);
-            pchkPulsusParadoxus.Set (selStep.Patient.Pulsus_Paradoxus);
-            pchkPulsusAlternans.Set (selStep.Patient.Pulsus_Alternans);
+            pchkMechanicallyVentilated.Set (ISelectedStep.Patient.Mechanically_Ventilated);
+            pchkPulsusParadoxus.Set (ISelectedStep.Patient.Pulsus_Paradoxus);
+            pchkPulsusAlternans.Set (ISelectedStep.Patient.Pulsus_Alternans);
 
-            pdblT.Set (selStep.Patient.VS_Settings.T);
-            pdblCO.Set (selStep.Patient.VS_Settings.CO);
-            pdblInspiratoryRatio.Set (selStep.Patient.VS_Settings.RR_IE_I);
-            pdblExpiratoryRatio.Set (selStep.Patient.VS_Settings.RR_IE_E);
+            pdblT.Set (ISelectedStep.Patient.VS_Settings.T);
+            pdblCO.Set (ISelectedStep.Patient.VS_Settings.CO);
+            pdblInspiratoryRatio.Set (ISelectedStep.Patient.VS_Settings.RR_IE_I);
+            pdblExpiratoryRatio.Set (ISelectedStep.Patient.VS_Settings.RR_IE_E);
 
-            pecgSTSegment.Set (selStep.Patient.ST_Elevation);
-            pecgTWave.Set (selStep.Patient.T_Elevation);
+            pecgSTSegment.Set (ISelectedStep.Patient.ST_Elevation);
+            pecgTWave.Set (ISelectedStep.Patient.T_Elevation);
 
-            penmCardiacRhythms.Set ((int)selStep.Patient.Cardiac_Rhythm.Value);
-            penmRespiratoryRhythms.Set ((int)selStep.Patient.Respiratory_Rhythm.Value);
-            penmPACatheterRhythm.Set ((int)selStep.Patient.PulmonaryArtery_Placement.Value);
-            penmCardiacAxis.Set ((int)selStep.Patient.Cardiac_Axis.Value);
+            penmCardiacRhythms.Set ((int)ISelectedStep.Patient.Cardiac_Rhythm.Value);
+            penmRespiratoryRhythms.Set ((int)ISelectedStep.Patient.Respiratory_Rhythm.Value);
+            penmPACatheterRhythm.Set ((int)ISelectedStep.Patient.PulmonaryArtery_Placement.Value);
+            penmCardiacAxis.Set ((int)ISelectedStep.Patient.Cardiac_Axis.Value);
 
-            pintHR.Set (selStep.Patient.VS_Settings.HR);
-            pintRR.Set (selStep.Patient.VS_Settings.RR);
-            pintSPO2.Set (selStep.Patient.VS_Settings.SPO2);
-            pintETCO2.Set (selStep.Patient.VS_Settings.ETCO2);
-            pintCVP.Set (selStep.Patient.VS_Settings.CVP);
-            pintICP.Set (selStep.Patient.VS_Settings.ICP);
-            pintIAP.Set (selStep.Patient.VS_Settings.IAP);
-            pintPacemakerThreshold.Set (selStep.Patient.Pacemaker_Threshold);
-            pintProgressFrom.Set (selStep.Step.ProgressFrom);
-            pintProgressTo.Set (selStep.Step.ProgressTo);
-            pintProgressTimer.Set (selStep.Step.ProgressTimer);
+            pintHR.Set (ISelectedStep.Patient.VS_Settings.HR);
+            pintRR.Set (ISelectedStep.Patient.VS_Settings.RR);
+            pintSPO2.Set (ISelectedStep.Patient.VS_Settings.SPO2);
+            pintETCO2.Set (ISelectedStep.Patient.VS_Settings.ETCO2);
+            pintCVP.Set (ISelectedStep.Patient.VS_Settings.CVP);
+            pintICP.Set (ISelectedStep.Patient.VS_Settings.ICP);
+            pintIAP.Set (ISelectedStep.Patient.VS_Settings.IAP);
+            pintPacemakerThreshold.Set (ISelectedStep.Patient.Pacemaker_Threshold);
+            pintProgressTimer.Set (ISelectedStep.Step.ProgressTimer);
 
-            pstrStepName.Set (selStep.Step.Name ?? "");
-            pstrStepDescription.Set (selStep.Step.Description ?? "");
+            pstrProgressFrom.Set (ISelectedStep.Step.ProgressFrom);
+            pstrProgressTo.Set (ISelectedStep.Step.ProgressTo);
+            pstrStepName.Set (ISelectedStep.Step.Name ?? "");
+            pstrStepDescription.Set (ISelectedStep.Step.Description ?? "");
 
             UpdateOptionalProgressionView ();
         }
 
         private void UpdateOptionalProgressionView () {
             StackPanel stackOptionalProgressions = this.FindControl<StackPanel> ("stackOptionalProgressions");
-
             stackOptionalProgressions.Children.Clear ();
 
-            for (int i = 0; i < selStep.Step.Progressions.Count; i++) {
-                Scenario.Step.Progression p = selStep.Step.Progressions [i];
-                PropertyOptProgression pp = new PropertyOptProgression ();
-                pp.Init (i, p.DestinationIndex, p.Description);
-                pp.PropertyChanged += updateProperty;
-                stackOptionalProgressions.Children.Add (pp);
+            if (ISelectedStep != null) {
+                for (int i = 0; i < ISelectedStep.Step.Progressions.Count; i++) {
+                    Scenario.Step.Progression p = ISelectedStep.Step.Progressions [i];
+                    PropertyOptProgression pp = new PropertyOptProgression ();
+                    pp.Init (i, p.ToStepUUID, p.Description);
+                    pp.PropertyChanged += updateProperty;
+                    stackOptionalProgressions.Children.Add (pp);
+                }
             }
         }
 
         private void updateProperty (object? sender, PropertyOptProgression.PropertyOptProgressionEventArgs e) {
-            if (e.Index >= selStep.Step.Progressions.Count)
+            if (e.Index >= ISelectedStep.Step.Progressions.Count)
                 return;
 
-            Scenario.Step.Progression p = selStep.Step.Progressions [e.Index];
-            p.DestinationIndex = e.IndexStepTo;
+            Scenario.Step.Progression p = ISelectedStep.Step.Progressions [e.Index];
+            p.ToStepUUID = e.StepToUUID;
             p.Description = e.Description ?? "";
 
             // Deletes an optional progression via this route
             if (e.ToDelete) {
-                selStep.Step.Progressions.RemoveAt (e.Index);
+                ISelectedStep.Step.Progressions.RemoveAt (e.Index);
                 UpdateOptionalProgressionView ();
                 /* TODO: IMPLEMENT
                 drawIProgressions ();
@@ -648,115 +650,115 @@ namespace II_Scenario_Editor {
                 case PropertyString.Keys.ScenarioDescription: ScenarioDescription = e.Value ?? ""; break;
             }
 
-            if (selStep != null) {
+            if (ISelectedStep != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyString.Keys.StepName: selStep.SetName (e.Value ?? ""); break;
-                    case PropertyString.Keys.StepDescription: selStep.Step.Description = e.Value ?? ""; break;
+                    case PropertyString.Keys.ProgressFrom: ISelectedStep.Step.ProgressFrom = e.Value; break;
+                    case PropertyString.Keys.ProgressTo: ISelectedStep.Step.ProgressTo = e.Value; break;
+
+                    case PropertyString.Keys.StepName: ISelectedStep.SetName (e.Value ?? ""); break;
+                    case PropertyString.Keys.StepDescription: ISelectedStep.Step.Description = e.Value ?? ""; break;
                 }
             }
         }
 
         private void UpdateProperty (object? sender, PropertyInt.PropertyIntEventArgs e) {
-            if (selStep != null) {
+            if (ISelectedStep != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyInt.Keys.HR: selStep.Patient.HR = e.Value; break;
-                    case PropertyInt.Keys.RR: selStep.Patient.RR = e.Value; break;
-                    case PropertyInt.Keys.ETCO2: selStep.Patient.ETCO2 = e.Value; break;
-                    case PropertyInt.Keys.SPO2: selStep.Patient.SPO2 = e.Value; break;
-                    case PropertyInt.Keys.CVP: selStep.Patient.CVP = e.Value; break;
-                    case PropertyInt.Keys.ICP: selStep.Patient.ICP = e.Value; break;
-                    case PropertyInt.Keys.IAP: selStep.Patient.IAP = e.Value; break;
-                    case PropertyInt.Keys.PacemakerThreshold: selStep.Patient.Pacemaker_Threshold = e.Value; break;
-
-                    case PropertyInt.Keys.ProgressFrom: selStep.Step.ProgressFrom = e.Value; break;
-                    case PropertyInt.Keys.ProgressTo: selStep.Step.ProgressTo = e.Value; break;
-                    case PropertyInt.Keys.ProgressTimer: selStep.Step.ProgressTimer = e.Value; break;
+                    case PropertyInt.Keys.HR: ISelectedStep.Patient.HR = e.Value; break;
+                    case PropertyInt.Keys.RR: ISelectedStep.Patient.RR = e.Value; break;
+                    case PropertyInt.Keys.ETCO2: ISelectedStep.Patient.ETCO2 = e.Value; break;
+                    case PropertyInt.Keys.SPO2: ISelectedStep.Patient.SPO2 = e.Value; break;
+                    case PropertyInt.Keys.CVP: ISelectedStep.Patient.CVP = e.Value; break;
+                    case PropertyInt.Keys.ICP: ISelectedStep.Patient.ICP = e.Value; break;
+                    case PropertyInt.Keys.IAP: ISelectedStep.Patient.IAP = e.Value; break;
+                    case PropertyInt.Keys.PacemakerThreshold: ISelectedStep.Patient.Pacemaker_Threshold = e.Value; break;
+                    case PropertyInt.Keys.ProgressTimer: ISelectedStep.Step.ProgressTimer = e.Value; break;
                 }
             }
         }
 
         private void UpdateProperty (object? sender, PropertyDouble.PropertyDoubleEventArgs e) {
-            if (selStep != null) {
+            if (ISelectedStep != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyDouble.Keys.T: selStep.Patient.T = e.Value ?? 0d; break;
-                    case PropertyDouble.Keys.CO: selStep.Patient.CO = e.Value ?? 0d; break;
-                    case PropertyDouble.Keys.RRInspiratoryRatio: selStep.Patient.RR_IE_I = e.Value ?? 0d; break;
-                    case PropertyDouble.Keys.RRExpiratoryRatio: selStep.Patient.RR_IE_E = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.T: ISelectedStep.Patient.T = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.CO: ISelectedStep.Patient.CO = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.RRInspiratoryRatio: ISelectedStep.Patient.RR_IE_I = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.RRExpiratoryRatio: ISelectedStep.Patient.RR_IE_E = e.Value ?? 0d; break;
                 }
             }
         }
 
         private void UpdateProperty (object? sender, PropertyBP.PropertyIntEventArgs e) {
-            if (selStep != null) {
+            if (ISelectedStep != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyBP.Keys.NSBP: selStep.Patient.NSBP = e.Value ?? 0; break;
-                    case PropertyBP.Keys.NDBP: selStep.Patient.NDBP = e.Value ?? 0; break;
-                    case PropertyBP.Keys.NMAP: selStep.Patient.NMAP = e.Value ?? 0; break;
-                    case PropertyBP.Keys.ASBP: selStep.Patient.ASBP = e.Value ?? 0; break;
-                    case PropertyBP.Keys.ADBP: selStep.Patient.ADBP = e.Value ?? 0; break;
-                    case PropertyBP.Keys.AMAP: selStep.Patient.AMAP = e.Value ?? 0; break;
-                    case PropertyBP.Keys.PSP: selStep.Patient.PSP = e.Value ?? 0; break;
-                    case PropertyBP.Keys.PDP: selStep.Patient.PDP = e.Value ?? 0; break;
-                    case PropertyBP.Keys.PMP: selStep.Patient.PMP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.NSBP: ISelectedStep.Patient.NSBP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.NDBP: ISelectedStep.Patient.NDBP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.NMAP: ISelectedStep.Patient.NMAP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.ASBP: ISelectedStep.Patient.ASBP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.ADBP: ISelectedStep.Patient.ADBP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.AMAP: ISelectedStep.Patient.AMAP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.PSP: ISelectedStep.Patient.PSP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.PDP: ISelectedStep.Patient.PDP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.PMP: ISelectedStep.Patient.PMP = e.Value ?? 0; break;
                 }
             }
         }
 
         private void UpdateProperty (object? sender, PropertyEnum.PropertyEnumEventArgs e) {
-            if (e.Value != null && selStep != null) {
+            if (e.Value != null && ISelectedStep != null) {
                 switch (e.Key) {
                     default: break;
 
                     case PropertyEnum.Keys.Cardiac_Axis:
-                        selStep.Patient.Cardiac_Axis.Value = (Cardiac_Axes.Values)Enum.Parse (typeof (Cardiac_Axes.Values), e.Value);
+                        ISelectedStep.Patient.Cardiac_Axis.Value = (Cardiac_Axes.Values)Enum.Parse (typeof (Cardiac_Axes.Values), e.Value);
                         break;
 
                     case PropertyEnum.Keys.Cardiac_Rhythms:
-                        selStep.Patient.Cardiac_Rhythm.Value = (Cardiac_Rhythms.Values)Enum.Parse (typeof (Cardiac_Rhythms.Values), e.Value);
+                        ISelectedStep.Patient.Cardiac_Rhythm.Value = (Cardiac_Rhythms.Values)Enum.Parse (typeof (Cardiac_Rhythms.Values), e.Value);
                         break;
 
                     case PropertyEnum.Keys.Respiratory_Rhythms:
-                        selStep.Patient.Respiratory_Rhythm.Value = (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), e.Value);
+                        ISelectedStep.Patient.Respiratory_Rhythm.Value = (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), e.Value);
                         break;
 
                     case PropertyEnum.Keys.PACatheter_Rhythms:
-                        selStep.Patient.PulmonaryArtery_Placement.Value = (PulmonaryArtery_Rhythms.Values)Enum.Parse (typeof (PulmonaryArtery_Rhythms.Values), e.Value);
+                        ISelectedStep.Patient.PulmonaryArtery_Placement.Value = (PulmonaryArtery_Rhythms.Values)Enum.Parse (typeof (PulmonaryArtery_Rhythms.Values), e.Value);
                         break;
                 }
             }
         }
 
         private void UpdateProperty (object? sender, PropertyCheck.PropertyCheckEventArgs e) {
-            if (selStep != null) {
+            if (ISelectedStep != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyCheck.Keys.PulsusParadoxus: selStep.Patient.Pulsus_Paradoxus = e.Value; break;
-                    case PropertyCheck.Keys.PulsusAlternans: selStep.Patient.Pulsus_Alternans = e.Value; break;
-                    case PropertyCheck.Keys.MechanicallyVentilated: selStep.Patient.Mechanically_Ventilated = e.Value; break;
+                    case PropertyCheck.Keys.PulsusParadoxus: ISelectedStep.Patient.Pulsus_Paradoxus = e.Value; break;
+                    case PropertyCheck.Keys.PulsusAlternans: ISelectedStep.Patient.Pulsus_Alternans = e.Value; break;
+                    case PropertyCheck.Keys.MechanicallyVentilated: ISelectedStep.Patient.Mechanically_Ventilated = e.Value; break;
                 }
             }
         }
 
         private void UpdateProperty (object? sender, PropertyECGSegment.PropertyECGEventArgs e) {
-            if (selStep != null) {
+            if (ISelectedStep != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyECGSegment.Keys.STElevation: selStep.Patient.ST_Elevation = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
-                    case PropertyECGSegment.Keys.TWave: selStep.Patient.T_Elevation = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
+                    case PropertyECGSegment.Keys.STElevation: ISelectedStep.Patient.ST_Elevation = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
+                    case PropertyECGSegment.Keys.TWave: ISelectedStep.Patient.T_Elevation = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
                 }
             }
         }
 
         private void UpdateCardiacRhythm (object? sender, PropertyEnum.PropertyEnumEventArgs e) {
             CheckBox chkClampVitals = this.FindControl<CheckBox> ("chkClampVitals");
-            if ((!chkClampVitals.IsChecked ?? false) || e.Value == null || selStep == null)
+            if ((!chkClampVitals.IsChecked ?? false) || e.Value == null || ISelectedStep == null)
                 return;
 
-            Patient p = ((ItemStep)selStep).Patient;
+            Patient p = ((ItemStep)ISelectedStep).Patient;
 
             Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
                 (Cardiac_Rhythms.Values)Enum.Parse (typeof (Cardiac_Rhythms.Values), e.Value));
@@ -778,10 +780,10 @@ namespace II_Scenario_Editor {
         private void UpdateRespiratoryRhythm (object? sender, PropertyEnum.PropertyEnumEventArgs e) {
             CheckBox chkClampVitals = this.FindControl<CheckBox> ("chkClampVitals");
 
-            if ((!chkClampVitals.IsChecked ?? false) || e.Value == null || selStep == null)
+            if ((!chkClampVitals.IsChecked ?? false) || e.Value == null || ISelectedStep == null)
                 return;
 
-            Patient p = ((ItemStep)selStep).Patient;
+            Patient p = ((ItemStep)ISelectedStep).Patient;
 
             Respiratory_Rhythms.Default_Vitals v = Respiratory_Rhythms.DefaultVitals (
                 (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), e.Value));
@@ -794,10 +796,10 @@ namespace II_Scenario_Editor {
         }
 
         private void UpdatePACatheterRhythm (object? sender, PropertyEnum.PropertyEnumEventArgs e) {
-            if (e.Value == null || selStep == null)
+            if (e.Value == null || ISelectedStep == null)
                 return;
 
-            Patient p = ((ItemStep)selStep).Patient;
+            Patient p = ((ItemStep)ISelectedStep).Patient;
 
             PulmonaryArtery_Rhythms.Default_Vitals v = PulmonaryArtery_Rhythms.DefaultVitals (
                 (PulmonaryArtery_Rhythms.Values)Enum.Parse (typeof (PulmonaryArtery_Rhythms.Values), e.Value));
@@ -808,95 +810,89 @@ namespace II_Scenario_Editor {
             UpdatePropertyView ();
         }
 
-        /* TODO: IMPLEMENT
-            private void selectStep (ItemStep ist) {
-                selStep = ist;
+        private void SelectStep (ItemStep item) {
+            ISelectedStep = item;
+            IsSelectedStepEnd = false;
 
-                foreach (ItemStep i in Steps)
-                    i.IStep.StrokeThickness = (i == selStep) ? i.StrokeThickness_Selected : i.StrokeThickness_Default;
+            foreach (ItemStep i in Steps)
+                i.IStep.BorderThickness = (i == ISelectedStep) ? StrokeThickness_Selected : StrokeThickness_Default;
+        }
+
+        private void SelectStepEnd (ItemStep item) {
+            ISelectedStep = item;
+            IsSelectedStepEnd = true;
+
+            foreach (ItemStep i in Steps)
+                i.IStepEnd.BorderThickness = (i == ISelectedStep) ? StrokeThickness_Selected : StrokeThickness_Default;
+        }
+
+        private async void AddStep (ItemStep? incItem = null) {
+            ItemStep item = new ();
+
+            if (incItem != null) {  // Duplicate
+                // Copy interface properties and interface item properties
+                item.ILabelName.Content = incItem.ILabelName.Content?.ToString ();
+
+                // Copy data structures
+                item.Step.Name = incItem.Step.Name;
+                item.Step.Description = incItem.Step.Description;
+
+                await item.Step.Patient.Load_Process (incItem.Patient.Save ());
             }
 
-            private void selectStepEnd (ItemStep.UEIStepEnd iste) {
-                selEnd = iste;
+            // Add to lists and display elements
+            Steps.Add (item);
+            ICanvasSteps.Children.Add (item);
+            item.ZIndex = 1;
 
-                foreach (ItemStep i in Steps)
-                    i.IStepEnd.StrokeThickness = (i.IStepEnd == selEnd) ? i.StrokeThickness_Selected : i.StrokeThickness_Default;
-            }
+            // Select the added step, give a default name by its index
+            SelectStep (item);
+            item.SetNumber (Steps.FindIndex (o => { return o == ISelectedStep; }));
 
-            private void addStep (ItemStep ist) {
-                if (ist == null)
-                    ist = new ItemStep ();
+            // Refresh the Properties View and draw Progression elements/colors
+            UpdatePropertyView ();
+            /* TODO: IMPLEMENT
+            drawIProgressions ();
+            */
 
-                // Init ItemStep
-                ist.Init ();
+            Expander expStepProperty = this.FindControl<Expander> ("expStepProperty");
+            Expander expProgressionProperty = this.FindControl<Expander> ("expProgressionProperty");
 
-                ist.IStep.MouseLeftButtonDown += IStep_MouseLeftButtonDown;
-                ist.IStep.MouseLeftButtonUp += IStep_MouseLeftButtonUp;
-                ist.IStep.MouseMove += IStep_MouseMove;
+            expStepProperty.IsExpanded = true;
+            expProgressionProperty.IsExpanded = true;
+        }
 
-                ist.IStepEnd.MouseLeftButtonDown += IStepEnd_MouseLeftButtonDown;
+        private void DeleteStep (ItemStep item) {
+            // Remove the selected Step from the stack and visual
+            Steps.Remove (item);
+            ICanvasSteps.Children.Remove (item);
 
-                // Add to lists and display elements
-                Steps.Add (ist);
-                canvasDesigner.Children.Add (ist);
-                Canvas.SetZIndex (ist, 1);
+            foreach (Line line in item.IProgressions)
+                ICanvasSteps.Children.Remove (line);
 
-                // Select the added step, give a default name by its index
-                selectStep (ist);
-                ist.SetNumber (Steps.FindIndex (o => { return o == selStep; }));
+            foreach (ItemStep s in Steps) {
+                // Nullify any default progressions that
+                if (s.Step.ProgressTo == item.UUID)
+                    s.Step.ProgressTo = null;
 
-                // Refresh the Properties View and draw Progression elements/colors
-                updatePropertyView ();
-                drawIProgressions ();
-
-                expStepProperty.IsExpanded = true;
-                expProgressionProperty.IsExpanded = true;
-            }
-
-            private void deleteStep (ItemStep ist) {
-                int iStep = Steps.FindIndex (obj => { return obj == ist; });
-
-                int iFrom = (ist.Step.ProgressFrom > iStep)
-                    ? ist.Step.ProgressFrom - 1 : ist.Step.ProgressFrom;
-                int iTo = (ist.Step.ProgressTo > iStep)
-                    ? ist.Step.ProgressTo - 1 : ist.Step.ProgressTo;
-
-                // Remove the selected Step from the stack and visual
-                Steps.RemoveAt (iStep);
-                canvasDesigner.Children.Remove (ist);
-                foreach (ItemStep.UIEProgression uiep in ist.IProgressions)
-                    canvasDesigner.Children.Remove (uiep);
-
-                foreach (ItemStep s in Steps) {
-                    // Adjust all references past the index -= 1
-                    if (s.Step.ProgressTo > iStep)
-                        s.Step.ProgressTo -= 1;
-                    if (s.Step.ProgressFrom > iStep)
-                        s.Step.ProgressFrom -= 1;
-
-                    // Tie any references to the removed Step to its references Steps
-                    if (s.Step.ProgressTo == iStep)
-                        s.Step.ProgressTo = iTo;
-                    if (s.Step.ProgressFrom == iStep)
-                        s.Step.ProgressFrom = iFrom;
-
-                    // Remove any optional Progressions that target the deleted Step
-                    for (int i = 0; i < s.Step.Progressions.Count; i++) {
-                        Scenario.Step.Progression p = s.Step.Progressions [i];
-
-                        if (p.DestinationIndex == iStep)
-                            s.Step.Progressions.RemoveAt (i);
-                    }
+                // Remove all optional progressions targeting the Step being removed
+                for (int i = s.Step.Progressions.Count - 1; i >= 0; i--) {
+                    if (s.Step.Progressions [i].ToStepUUID == item.UUID)
+                        s.Step.Progressions.RemoveAt (i);
                 }
-
-                // Set all Steps' indices for their Labels
-                for (int i = 0; i < Steps.Count; i++)
-                    Steps [i].SetNumber (i);
-
-                // Refresh all IProgressions (visual lines)
-                drawIProgressions ();
             }
 
+            // Set all Steps' indices for their Labels
+            for (int i = 0; i < Steps.Count; i++)
+                Steps [i].SetNumber (i);
+
+            // Refresh all IProgressions (visual lines)
+            /* TODO: IMPLEMENT
+            drawIProgressions ();
+            */
+        }
+
+        /* TODO: IMPLEMENT
             private void addProgression (ItemStep stepFrom, ItemStep stepTo) {
                 if (stepFrom == stepTo)
                     return;

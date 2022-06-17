@@ -124,14 +124,14 @@ namespace II_Avalonia {
             this.FindControl<CheckBox> ("checkDefaultVitals").Content = App.Language.Localize ("PE:UseDefaultVitalSignRanges");
 
             this.FindControl<Label> ("lblGroupHemodynamics").Content = App.Language.Localize ("PE:AdvancedHemodynamics");
-            this.FindControl<Label> ("lblETCO2").Content = $"{ App.Language.Localize ("PE:EndTidalCO2")}:";
-            this.FindControl<Label> ("lblCVP").Content = $"{ App.Language.Localize ("PE:CentralVenousPressure")}:";
-            this.FindControl<Label> ("lblASBP").Content = $"{ App.Language.Localize ("PE:ArterialBloodPressure")}:";
-            this.FindControl<Label> ("lblPACatheterPlacement").Content = $"{ App.Language.Localize ("PE:PulmonaryArteryCatheterPlacement")}:";
-            this.FindControl<Label> ("lblCO").Content = $"{ App.Language.Localize ("PE:CardiacOutput")}:";
-            this.FindControl<Label> ("lblPSP").Content = $"{ App.Language.Localize ("PE:PulmonaryArteryPressure")}:";
-            this.FindControl<Label> ("lblICP").Content = $"{ App.Language.Localize ("PE:IntracranialPressure")}:";
-            this.FindControl<Label> ("lblIAP").Content = $"{ App.Language.Localize ("PE:IntraabdominalPressure")}:";
+            this.FindControl<Label> ("lblETCO2").Content = $"{App.Language.Localize ("PE:EndTidalCO2")}:";
+            this.FindControl<Label> ("lblCVP").Content = $"{App.Language.Localize ("PE:CentralVenousPressure")}:";
+            this.FindControl<Label> ("lblASBP").Content = $"{App.Language.Localize ("PE:ArterialBloodPressure")}:";
+            this.FindControl<Label> ("lblPACatheterPlacement").Content = $"{App.Language.Localize ("PE:PulmonaryArteryCatheterPlacement")}:";
+            this.FindControl<Label> ("lblCO").Content = $"{App.Language.Localize ("PE:CardiacOutput")}:";
+            this.FindControl<Label> ("lblPSP").Content = $"{App.Language.Localize ("PE:PulmonaryArteryPressure")}:";
+            this.FindControl<Label> ("lblICP").Content = $"{App.Language.Localize ("PE:IntracranialPressure")}:";
+            this.FindControl<Label> ("lblIAP").Content = $"{App.Language.Localize ("PE:IntraabdominalPressure")}:";
 
             this.FindControl<Label> ("lblGroupRespiratoryProfile").Content = App.Language.Localize ("PE:RespiratoryProfile");
             this.FindControl<Label> ("lblRespiratoryRhythm").Content = $"{App.Language.Localize ("PE:RespiratoryRhythm")}:";
@@ -139,20 +139,20 @@ namespace II_Avalonia {
             this.FindControl<Label> ("lblInspiratoryRatio").Content = $"{App.Language.Localize ("PE:InspiratoryExpiratoryRatio")}:";
 
             this.FindControl<Label> ("lblGroupCardiacProfile").Content = App.Language.Localize ("PE:CardiacProfile");
-            this.FindControl<Label> ("lblPacemakerCaptureThreshold").Content = $"{ App.Language.Localize ("PE:PacemakerCaptureThreshold")}:";
-            this.FindControl<Label> ("lblPulsusParadoxus").Content = $"{ App.Language.Localize ("PE:PulsusParadoxus")}:";
-            this.FindControl<Label> ("lblPulsusAlternans").Content = $"{ App.Language.Localize ("PE:PulsusAlternans")}:";
+            this.FindControl<Label> ("lblPacemakerCaptureThreshold").Content = $"{App.Language.Localize ("PE:PacemakerCaptureThreshold")}:";
+            this.FindControl<Label> ("lblPulsusParadoxus").Content = $"{App.Language.Localize ("PE:PulsusParadoxus")}:";
+            this.FindControl<Label> ("lblPulsusAlternans").Content = $"{App.Language.Localize ("PE:PulsusAlternans")}:";
             this.FindControl<Label> ("lblCardiacAxis").Content = $"{App.Language.Localize ("PE:CardiacAxis")}:";
             this.FindControl<HeaderedContentControl> ("grpSTSegmentElevation").Header = App.Language.Localize ("PE:STSegmentElevation");
             this.FindControl<HeaderedContentControl> ("grpTWaveElevation").Header = App.Language.Localize ("PE:TWaveElevation");
 
             this.FindControl<Label> ("lblGroupObstetricProfile").Content = App.Language.Localize ("PE:ObstetricProfile");
-            this.FindControl<Label> ("lblFHR").Content = $"{ App.Language.Localize ("PE:FetalHeartRate")}:";
-            this.FindControl<Label> ("lblFHRRhythms").Content = $"{ App.Language.Localize ("PE:FetalHeartRhythms")}:";
-            this.FindControl<Label> ("lblFHRVariability").Content = $"{ App.Language.Localize ("PE:FetalHeartVariability")}:";
-            this.FindControl<Label> ("lblUCFrequency").Content = $"{ App.Language.Localize ("PE:UterineContractionFrequency")}:";
-            this.FindControl<Label> ("lblUCDuration").Content = $"{ App.Language.Localize ("PE:UterineContractionDuration")}:";
-            this.FindControl<Label> ("lblUCIntensity").Content = $"{ App.Language.Localize ("PE:UterineContractionIntensity")}:";
+            this.FindControl<Label> ("lblFHR").Content = $"{App.Language.Localize ("PE:FetalHeartRate")}:";
+            this.FindControl<Label> ("lblFHRRhythms").Content = $"{App.Language.Localize ("PE:FetalHeartRhythms")}:";
+            this.FindControl<Label> ("lblFHRVariability").Content = $"{App.Language.Localize ("PE:FetalHeartVariability")}:";
+            this.FindControl<Label> ("lblUCFrequency").Content = $"{App.Language.Localize ("PE:UterineContractionFrequency")}:";
+            this.FindControl<Label> ("lblUCDuration").Content = $"{App.Language.Localize ("PE:UterineContractionDuration")}:";
+            this.FindControl<Label> ("lblUCIntensity").Content = $"{App.Language.Localize ("PE:UterineContractionIntensity")}:";
 
             this.FindControl<CheckBox> ("chkAutoApplyChanges").Content = App.Language.Localize ("BUTTON:AutoApplyChanges");
             this.FindControl<Label> ("lblParametersApply").Content = App.Language.Localize ("BUTTON:ApplyChanges");
@@ -904,15 +904,15 @@ namespace II_Avalonia {
             StackPanel stackProgressions = this.FindControl<StackPanel> ("stackProgressions");
 
             // Set Previous, Next, Pause, and Play buttons .IsEnabled based on Step properties
-            this.FindControl<Button> ("btnPreviousStep").IsEnabled = (s.ProgressFrom >= 0);
-            this.FindControl<Button> ("btnNextStep").IsEnabled = (s.ProgressTo >= 0 || s.Progressions.Count > 0);
+            this.FindControl<Button> ("btnPreviousStep").IsEnabled = (!String.IsNullOrEmpty (s.ProgressFrom));
+            this.FindControl<Button> ("btnNextStep").IsEnabled = (!String.IsNullOrEmpty (s.ProgressTo) || s.Progressions.Count > 0);
             this.FindControl<Button> ("btnPauseStep").IsEnabled = (s.ProgressTimer > 0);
             this.FindControl<Button> ("btnPlayStep").IsEnabled = false;
 
             // Display Scenario's Step count
             lblScenarioStep.Content = String.Format ("{0} {1} / {2}",
                 App.Language.Localize ("PE:ProgressionStep"),
-                App.Scenario.CurrentIndex,          // Retaining zero-based index to confuse end-user
+                App.Scenario.AtStep,          // Retaining zero-based index to confuse end-user
                 App.Scenario.Steps.Count - 1);      // But also for consistency with Scenario Editor and program development
 
             // Display Progress Timer if applicable, otherwise instruct that the Step requires manual progression
@@ -941,7 +941,7 @@ namespace II_Avalonia {
                 stackProgressions.Children.Add (new RadioButton () {
                     IsChecked = false,
                     Content = p.Description,
-                    Name = String.Format ("radioProgression_{0}", i),
+                    Name = String.Format ("radioProgression_{0}", p.ToStepUUID),
                     GroupName = "ProgressionOptions",
                     Margin = (i == s.Progressions.Count - 1 ? new Thickness (10, 5, 10, 10) : new Thickness (10, 5))
                 });
@@ -957,10 +957,7 @@ namespace II_Avalonia {
                 foreach (RadioButton rb in stackProgressions.Children)
                     if (rb.IsChecked ?? false && rb.Name.Contains ("_")) {
                         string prog = rb.Name.Substring (rb.Name.IndexOf ("_") + 1);
-                        int optProg = -1;
-                        await App.Scenario.NextStep (
-                            prog == "Default" ? -1
-                                : (int.TryParse (prog, out optProg) ? optProg : -1));
+                        await App.Scenario.NextStep (prog == "Default" ? null : prog);
                         break;
                     }
             }

@@ -11,6 +11,8 @@ namespace II_Scenario_Editor.Controls {
         public Keys Key;
 
         public enum Keys {
+            ProgressFrom,
+            ProgressTo,
             ScenarioAuthor,
             ScenarioName,
             ScenarioDescription,
@@ -40,6 +42,8 @@ namespace II_Scenario_Editor.Controls {
             Key = key;
             switch (Key) {
                 default: break;
+                case Keys.ProgressFrom: lblKey.Content = "Default Step to Progress From: "; break;
+                case Keys.ProgressTo: lblKey.Content = "Default Step to Progress To: "; break;
                 case Keys.ScenarioAuthor: lblKey.Content = "Author: "; break;
                 case Keys.ScenarioName: lblKey.Content = "Title: "; break;
                 case Keys.ScenarioDescription: lblKey.Content = "Description: "; break;

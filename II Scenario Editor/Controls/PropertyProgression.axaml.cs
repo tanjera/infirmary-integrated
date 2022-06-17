@@ -10,14 +10,14 @@ namespace II_Scenario_Editor.Controls {
 
     public partial class PropertyOptProgression : UserControl {
         public int Index;
-        public int IndexStepTo;
+        public string? StepToUUID;
         public string? Description;
 
         public new event EventHandler<PropertyOptProgressionEventArgs>? PropertyChanged;
 
         public class PropertyOptProgressionEventArgs : EventArgs {
             public int Index;
-            public int IndexStepTo;
+            public string? StepToUUID;
             public string? Description;
             public bool ToDelete = false;
         }
@@ -30,22 +30,22 @@ namespace II_Scenario_Editor.Controls {
             AvaloniaXamlLoader.Load (this);
         }
 
-        public void Init (int index, int stepTo, string desc) {
+        public void Init (int index, string? stepTo, string? desc) {
             Index = index;
-            IndexStepTo = stepTo;
+            StepToUUID = stepTo;
             Description = desc;
 
             Label lblProgressionProperty = this.FindControl<Label> ("lblProgressionProperty");
-            NumericUpDown numStepTo = this.FindControl<NumericUpDown> ("numStepTo");
+            TextBox txtStepTo = this.FindControl<TextBox> ("txtStepTo");
             TextBox txtDescription = this.FindControl<TextBox> ("txtDescription");
 
-            numStepTo.Value = IndexStepTo;
+            txtStepTo.Text = StepToUUID;
             txtDescription.Text = Description;
 
-            lblProgressionProperty.Content = String.Format ("Edit Optional Progression To Step #{0:000}", IndexStepTo);
+            lblProgressionProperty.Content = String.Format ("Edit Optional Progression To Step #{0:000}", StepToUUID);
 
-            numStepTo.ValueChanged += sendPropertyChange;
-            numStepTo.LostFocus += sendPropertyChange;
+            txtStepTo.TextInput += sendPropertyChange;
+            txtStepTo.LostFocus += sendPropertyChange;
 
             txtDescription.TextInput += sendPropertyChange;
             txtDescription.LostFocus += sendPropertyChange;
@@ -54,7 +54,7 @@ namespace II_Scenario_Editor.Controls {
         private void BtnDelete_Click (object? sender, RoutedEventArgs e) {
             PropertyOptProgressionEventArgs ea = new PropertyOptProgressionEventArgs ();
             ea.Index = Index;
-            ea.IndexStepTo = IndexStepTo;
+            ea.StepToUUID = StepToUUID;
             ea.ToDelete = true;
 
             PropertyChanged?.Invoke (this, ea);
@@ -66,7 +66,7 @@ namespace II_Scenario_Editor.Controls {
 
             PropertyOptProgressionEventArgs ea = new PropertyOptProgressionEventArgs ();
             ea.Index = Index;
-            ea.IndexStepTo = (int)(numStepTo.Value);
+            ea.StepToUUID = txtStepTo.Text;
             ea.Description = txtDescription.Text;
 
             PropertyChanged?.Invoke (this, ea);

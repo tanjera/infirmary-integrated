@@ -17,7 +17,10 @@ namespace II {
     public class Scenario {
         public string Name, Description, Author;
         public DateTime Updated;
-        public int CurrentIndex = 0;
+
+        public string? BeginStep = null;
+        public string? AtStep = null;
+
         public List<Step> Steps = new List<Step> ();
         public Timer ProgressTimer = new Timer ();
 
@@ -25,9 +28,15 @@ namespace II {
 
         public event EventHandler<EventArgs> StepChanged;
 
-        public Scenario (bool toInit) {
-            if (toInit)
-                Steps.Add (new Step ());
+        public Scenario (bool toInit = false) {
+            if (toInit) {
+                Step s = new ();
+
+                BeginStep = s.UUID;
+                AtStep = s.UUID;
+
+                Steps.Add (s);
+            }
 
             ProgressTimer.Tick += ProgressTimer_Tick;
         }
@@ -56,7 +65,7 @@ namespace II {
         }
 
         public Step Current {
-            get { return Steps [CurrentIndex]; }
+            get { return Steps.Find (s => s.UUID == AtStep); }
         }
 
         public bool IsScenario {    // If there's only one Step- it's a regular Patient parameter
@@ -65,7 +74,8 @@ namespace II {
 
         public void Reset () {
             Steps.Clear ();
-            CurrentIndex = 0;
+            BeginStep = null;
+            AtStep = null;
 
             Name = "";
             Description = "";
@@ -74,8 +84,8 @@ namespace II {
         }
 
         public Patient Patient {
-            get { return Steps [CurrentIndex].Patient; }
-            set { Steps [CurrentIndex].Patient = value; }
+            get { return Current?.Patient; }
+            set { if (Current != null) Current.Patient = value; }
         }
 
         public void Load_Process (string inc) {
@@ -106,6 +116,7 @@ namespace II {
                             case "Name": Name = pValue; break;
                             case "Description": Description = pValue; break;
                             case "Author": Author = pValue; break;
+                            case "Beginning": BeginStep = pValue; break;
                         }
                     }
                 }
@@ -113,7 +124,8 @@ namespace II {
                 // If the load fails... just bail on the actual value parsing and continue the load process
             }
 
-            _ = SetStep (0);
+            _ = SetStep (BeginStep);
+
             sRead.Close ();
         }
 
@@ -124,6 +136,7 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}:{1}", "Name", Name));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Description", Description));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Author", Author));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Beginning", BeginStep));
 
             for (int i = 0; i < Steps.Count; i++) {
                 sWrite.AppendLine ("> Begin: Step");
@@ -134,22 +147,25 @@ namespace II {
             return sWrite.ToString ();
         }
 
-        public async Task NextStep (int optProg = -1) {
+        public async Task NextStep (string? optProg = null) {
             StepChangeRequest?.Invoke (this, new EventArgs ());
 
-            int pFrom = CurrentIndex;
+            string? progFrom = AtStep;
 
-            if (optProg < 0 || optProg >= Current.Progressions.Count)       // Default Progression
-                CurrentIndex = Current.ProgressTo >= 0
-                    ? Current.ProgressTo
-                    : System.Math.Min (CurrentIndex + 1, Steps.Count - 1);
-            else                                                            // Optional Progression
-                CurrentIndex = Current.Progressions [optProg].DestinationIndex;
+            if (String.IsNullOrEmpty (optProg)) {                            // Default Progression
+                AtStep = Current.ProgressTo;
+            } else {                                                        // Optional Progression
+                AtStep = optProg;
+            }
 
-            if (pFrom != CurrentIndex) {                                    // If the actual step Index changed
-                Current.ProgressFrom = pFrom;
-                CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
-                await Steps [pFrom].Patient.Deactivate ();                        // Additional unlinking of events and timers!
+            if (progFrom != AtStep) {                                       // If the actual step Index changed
+                Current.ProgressFrom = progFrom;
+                Step? stepFrom = Steps.Find (s => s.UUID == progFrom);
+
+                if (stepFrom != null) {
+                    CopyDeviceStatus (stepFrom.Patient, Current.Patient);
+                    await stepFrom.Patient.Deactivate ();                   // Additional unlinking of events and timers!
+                }
             }
 
             // Init step regardless of whether step Index changed; step may have been deactivated by StepChangeRequest()
@@ -164,12 +180,17 @@ namespace II {
         public async Task LastStep () {
             StepChangeRequest?.Invoke (this, new EventArgs ());
 
-            int pFrom = CurrentIndex;
-            CurrentIndex = Current.ProgressFrom;
+            string? progFrom = AtStep;
+            AtStep = Current.ProgressFrom;
 
-            if (pFrom != CurrentIndex) {                                    // If the actual step Index changed
-                CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
-                await Steps [pFrom].Patient.Deactivate ();                        // Additional unlinking of events and timers!
+            if (progFrom != AtStep) {                                       // If the actual step Index changed
+                Current.ProgressFrom = progFrom;
+                Step? stepFrom = Steps.Find (s => s.UUID == progFrom);
+
+                if (stepFrom != null) {
+                    CopyDeviceStatus (stepFrom.Patient, Current.Patient);
+                    await stepFrom.Patient.Deactivate ();                   // Additional unlinking of events and timers!
+                }
             }
 
             // Init step regardless of whether step Index changed; step may have been deactivated by StepChangeRequest()
@@ -181,18 +202,25 @@ namespace II {
             await Current.Patient.OnPatientEvent (Patient.PatientEventTypes.Vitals_Change);
         }
 
-        public async Task SetStep (int incIndex) {
+        public async Task SetStep (string? incUUID) {
+            if (incUUID == null)
+                return;
+
             StepChangeRequest?.Invoke (this, new EventArgs ());
 
-            int pFrom = CurrentIndex;
-            CurrentIndex = II.Math.Clamp (incIndex, 0, Steps.Count - 1);
+            string? progFrom = AtStep;
+            AtStep = incUUID;
 
-            if (pFrom != CurrentIndex) {                                    // If the actual step Index changed
-                CopyDeviceStatus (Steps [pFrom].Patient, Current.Patient);
-                await Steps [pFrom].Patient.Deactivate ();                        // Additional unlinking of events and timers!
+            if (progFrom != AtStep) {                                       // If the actual step Index changed
+                Current.ProgressFrom = progFrom;
+                Step? stepFrom = Steps.Find (s => s.UUID == progFrom);
+
+                if (stepFrom != null) {
+                    CopyDeviceStatus (stepFrom.Patient, Current.Patient);
+                    await stepFrom.Patient.Deactivate ();                   // Additional unlinking of events and timers!
+                }
             }
 
-            // Init step regardless of whether step Index changed; step may have been deactivated by StepChangeRequest()
             SetTimer ();
             await Current.Patient.Activate ();
 
@@ -231,18 +259,20 @@ namespace II {
             => _ = NextStep ();
 
         public class Step {
+            public string? UUID = null;
             public Patient Patient;
             public string Name, Description;
 
             public List<Progression> Progressions = new List<Progression> ();
-            public int ProgressTo = -1;
-            public int ProgressFrom = -1;
+            public string? ProgressTo = null;
+            public string? ProgressFrom = null;
             public int ProgressTimer = -1;
 
             // Metadata: for drawing interface items in Scenario Editor
             public double IPositionX, IPositionY;
 
             public Step () {
+                UUID = Guid.NewGuid ().ToString ();
                 Patient = new Patient ();
             }
 
@@ -277,8 +307,8 @@ namespace II {
                                 default: break;
                                 case "Name": Name = pValue; break;
                                 case "Description": Description = pValue; break;
-                                case "ProgressTo": ProgressTo = int.Parse (pValue); break;
-                                case "ProgressFrom": ProgressFrom = int.Parse (pValue); break;
+                                case "ProgressTo": ProgressTo = pValue; break;
+                                case "ProgressFrom": ProgressFrom = pValue; break;
                                 case "ProgressTime": ProgressTimer = int.Parse (pValue); break;
                                 case "IPositionX": IPositionX = double.Parse (pValue); break;
                                 case "IPositionY": IPositionY = double.Parse (pValue); break;
@@ -319,14 +349,14 @@ namespace II {
             /* Possible progressions/routes to the next step of the scenario */
 
             public class Progression {
-                public int DestinationIndex;
-                public string Description;
+                public string? ToStepUUID;
+                public string? Description;
 
                 public Progression () {
                 }
 
-                public Progression (int dest, string desc = "") {
-                    DestinationIndex = dest;
+                public Progression (string dest, string desc = "") {
+                    ToStepUUID = dest;
                     Description = desc;
                 }
 
@@ -343,7 +373,7 @@ namespace II {
                                 switch (pName) {
                                     default: break;
                                     case "Description": Description = pValue; break;
-                                    case "DestinationIndex": DestinationIndex = int.Parse (pValue); break;
+                                    case "Destination": ToStepUUID = pValue; break;
                                 }
                             }
                         }
@@ -358,7 +388,7 @@ namespace II {
                     StringBuilder sWrite = new StringBuilder ();
 
                     sWrite.AppendLine (String.Format ("{0}:{1}", "Description", Description));
-                    sWrite.AppendLine (String.Format ("{0}:{1}", "DestinationIndex", DestinationIndex));
+                    sWrite.AppendLine (String.Format ("{0}:{1}", "Destination", ToStepUUID));
 
                     return sWrite.ToString ();
                 }

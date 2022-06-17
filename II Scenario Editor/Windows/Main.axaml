@@ -299,8 +299,8 @@
                 <StackPanel Margin="3"
 											Orientation="Vertical">
 
-                  <ii:PropertyInt x:Name="pintProgressFrom" />
-                  <ii:PropertyInt x:Name="pintProgressTo" />
+                  <ii:PropertyString x:Name="pstrProgressFrom" />
+                  <ii:PropertyString x:Name="pstrProgressTo" />
                   <ii:PropertyInt x:Name="pintProgressTimer" />
                   <Label Content="Note: Entering a value of -1 disables the timer or progress target." />
                   <Button Name="btnDeleteProgression"

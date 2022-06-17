@@ -4,30 +4,37 @@
 						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 						 mc:Ignorable="d"
 						 x:Class="II_Scenario_Editor.Controls.ItemStep"
-						 Height="150"
-             Width="100"
-						 Margin="0"
-             Background="Aqua">
+						 MinHeight="50"
+             MinWidth="50"
+						 Margin="2">
 
-  <Grid Name="gridMain">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="Auto" />
-      <ColumnDefinition Width="Auto" />
-    </Grid.ColumnDefinitions>
+  <UserControl.Styles>
+    <Style Selector="Border">
+      <Setter Property="BorderBrush" Value="Black" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
 
-    <Grid.RowDefinitions>
-      <RowDefinition Height="Auto" />
-      <RowDefinition Height="Auto" />
-    </Grid.RowDefinitions>
+    <Style Selector="Label">
+      <Setter Property="Margin" Value="5,2" />
+    </Style>
+  </UserControl.Styles>
 
-    <Label Name="lblNumber"
-           Grid.Column="0"
-           Grid.Row="0"
-           Margin="5, 2" />
+  <StackPanel Orientation="Horizontal">
+    <Border Name="brdStep"
+            CornerRadius="5">
+      <StackPanel Orientation="Vertical">
+        <Label Name="lblNumber"
+               Content="#" />
+        <Label Name="lblName"
+               Content="Name" />
+      </StackPanel>
+    </Border>
 
-    <Label Name="lblName"
-           Grid.Column="0"
-           Grid.Row="1"
-           Margin="5, 2" />
-  </Grid>
+    <Panel Width="10" />
+
+    <Border Name="brdStepEnd"
+            Height="20"
+            Width="20"
+            CornerRadius="10" />
+  </StackPanel>
 </UserControl>

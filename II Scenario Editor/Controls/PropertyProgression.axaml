@@ -42,17 +42,11 @@
                HorizontalAlignment="Left"
                Margin="2" />
 
-        <NumericUpDown Name="numStepTo"
+        <TextBox Name="txtStepTo"
                        Grid.Column="1"
                        Grid.Row="0"
-                       Increment="1"
-                       Minimum="-1"
-                       Maximum="1000"
-                       Value="-1"
-                       MinWidth="60"
                        Height="22"
-                       Margin="5,0"
-                       FormatString="{}{0:#0}" />
+                       Margin="5,2" />
 
         <Label Name="lblDescription"
                Grid.Column="0"

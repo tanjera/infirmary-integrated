@@ -15,8 +15,6 @@ namespace II_Scenario_Editor.Controls {
             CVP,                            // Central venous pressure,
             ICP, IAP,                       // Intracranial pressure, intra-abdominal pressure
             PacemakerThreshold,
-            ProgressFrom,
-            ProgressTo,
             ProgressTimer
         }
 
@@ -50,9 +48,6 @@ namespace II_Scenario_Editor.Controls {
                 case Keys.ICP: lblKey.Content = "Intra-cranial Pressure: "; break;
                 case Keys.IAP: lblKey.Content = "Intra-abdominal Pressure: "; break;
                 case Keys.PacemakerThreshold: lblKey.Content = "Pacemaker Capture Threshold: "; break;
-
-                case Keys.ProgressFrom: lblKey.Content = "Default Step to Progress From: "; break;
-                case Keys.ProgressTo: lblKey.Content = "Default Step to Progress To: "; break;
                 case Keys.ProgressTimer: lblKey.Content = "Time (in seconds) until next step: "; break;
             }
 
