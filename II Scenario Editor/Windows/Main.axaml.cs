@@ -42,23 +42,10 @@ namespace II_Scenario_Editor {
         private Patient CopiedPatient;
 
         // Variables for capturing mouse and dragging UI elements
-        private bool IsMouseCaptured = false;
+        private Point? PointerPosition = null;
 
         // Switch for processing elements ina  loading sequence
         private bool IsLoading = false;
-
-        // Permanents for reference/interface styling
-        public readonly Brush
-            Stroke_Default = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#555555")),
-            Fill_Default = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#dddddd")),
-            Fill_StepZero = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#b0d68b")),
-            Fill_StepEndNoProgression = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#d4a29b")),
-            Fill_StepEndNoOptionalProgression = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#dee685")),
-            Fill_StepEndMultipleProgressions = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#b9cfa3"));
-
-        public readonly Avalonia.Thickness
-            StrokeThickness_Default = new Thickness (.5d),
-            StrokeThickness_Selected = new Thickness (2.0d);
 
         public Main () {
             InitializeComponent ();
@@ -96,7 +83,7 @@ namespace II_Scenario_Editor {
             // Reset buffer parameters
             ISelectedStep = null;
             IsSelectedStepEnd = false;
-            IsMouseCaptured = false;
+            PointerPosition = null;
 
             // Clear master lists and UI elements
             ICanvasSteps.Children.Clear ();
@@ -810,20 +797,11 @@ namespace II_Scenario_Editor {
             UpdatePropertyView ();
         }
 
-        private void SelectStep (ItemStep item) {
-            ISelectedStep = item;
-            IsSelectedStepEnd = false;
-
-            foreach (ItemStep i in Steps)
-                i.IStep.BorderThickness = (i == ISelectedStep) ? StrokeThickness_Selected : StrokeThickness_Default;
-        }
-
-        private void SelectStepEnd (ItemStep item) {
-            ISelectedStep = item;
-            IsSelectedStepEnd = true;
-
-            foreach (ItemStep i in Steps)
-                i.IStepEnd.BorderThickness = (i == ISelectedStep) ? StrokeThickness_Selected : StrokeThickness_Default;
+        private void UpdateItemBorders () {
+            foreach (ItemStep i in Steps) {
+                i.SetBorder_Step (i == ISelectedStep);
+                i.SetBorder_End (IsSelectedStepEnd && i == ISelectedStep);
+            }
         }
 
         private async void AddStep (ItemStep? incItem = null) {
@@ -831,7 +809,7 @@ namespace II_Scenario_Editor {
 
             if (incItem != null) {  // Duplicate
                 // Copy interface properties and interface item properties
-                item.ILabelName.Content = incItem.ILabelName.Content?.ToString ();
+                item.SetName (incItem.Label);
 
                 // Copy data structures
                 item.Step.Name = incItem.Step.Name;
@@ -846,11 +824,16 @@ namespace II_Scenario_Editor {
             item.ZIndex = 1;
 
             // Select the added step, give a default name by its index
-            SelectStep (item);
-            item.SetNumber (Steps.FindIndex (o => { return o == ISelectedStep; }));
+            item.SetNumber (Steps.FindIndex (o => { return o == item; }));
+
+            item.PointerPressed += Item_PointerPressed;
+            item.PointerReleased += Item_PointerReleased;
+            item.PointerMoved += Item_PointerMoved;
+            item.IStepEnd.PointerPressed += Item_PointerPressed;
 
             // Refresh the Properties View and draw Progression elements/colors
             UpdatePropertyView ();
+            UpdateItemBorders ();
             /* TODO: IMPLEMENT
             drawIProgressions ();
             */
@@ -890,6 +873,48 @@ namespace II_Scenario_Editor {
             /* TODO: IMPLEMENT
             drawIProgressions ();
             */
+        }
+
+        private void Item_PointerPressed (object? sender, PointerPressedEventArgs e) {
+            if (PointerPosition != null)                        // An object on a stack of Controls may have already been pressed!
+                return;
+
+            if (sender is ItemStep) {
+                ISelectedStep = (ItemStep)sender;
+                IsSelectedStepEnd = false;
+
+                e.Pointer.Capture ((ItemStep)sender);
+            } else if (sender is ItemStepEnd) {
+                ISelectedStep = ((ItemStepEnd)sender).Step;
+                IsSelectedStepEnd = true;
+
+                e.Pointer.Capture (((ItemStepEnd)sender).Step);
+            }
+
+            PointerPosition = e.GetPosition (null);
+
+            UpdateItemBorders ();
+        }
+
+        private void Item_PointerReleased (object? sender, PointerReleasedEventArgs e) {
+            e.Pointer.Capture (null);
+            PointerPosition = null;
+
+            UpdateItemBorders ();
+        }
+
+        private void Item_PointerMoved (object? sender, PointerEventArgs e) {
+            if (PointerPosition != null && sender != null && sender is ItemStep && ISelectedStep == (ItemStep)sender) {
+                Point p = e.GetPosition (null);
+                Point deltaPosition = p - (Point)PointerPosition;
+                PointerPosition = p;
+
+                double left = ISelectedStep.Bounds.Left + deltaPosition.X;
+                double top = ISelectedStep.Bounds.Top + deltaPosition.Y;
+
+                Canvas.SetLeft (ISelectedStep, left);
+                Canvas.SetTop (ISelectedStep, top);
+            }
         }
 
         /* TODO: IMPLEMENT
@@ -977,72 +1002,6 @@ namespace II_Scenario_Editor {
                         uiep.UpdatePositions ();
                 }
             }
-
-            private void IStep_MouseLeftButtonDown (object sender, MouseButtonEventArgs e) {
-                selectStep (((ItemStep.UIEStep)sender).ItemStep);
-                selectStepEnd (null);
-
-                Mouse.Capture (sender as ItemStep.UIEStep);
-                mouseCaptured = true;
-
-                xShape = selStep.Left;
-                yShape = selStep.Top;
-                xCanvas = e.GetPosition (LayoutRoot).X;
-                yCanvas = e.GetPosition (LayoutRoot).Y;
-
-                updatePropertyView ();
-
-                expStepProperty.IsExpanded = true;
-                expProgressionProperty.IsExpanded = true;
-            }
-
-            private void IStep_MouseLeftButtonUp (object sender, MouseButtonEventArgs e) {
-                Mouse.Capture (null);
-                mouseCaptured = false;
-            }
-
-            private void IStep_MouseMove (object sender, MouseEventArgs e) {
-                if (mouseCaptured) {
-                    double x = e.GetPosition (LayoutRoot).X;
-                    double y = e.GetPosition (LayoutRoot).Y;
-                    xShape += x - xCanvas;
-                    xCanvas = x;
-                    yShape += y - yCanvas;
-                    yCanvas = y;
-
-                    ItemStep istep = ((ItemStep.UIEStep)sender).ItemStep;
-                    Canvas.SetLeft (selStep, II.Math.Clamp (xShape, 0, canvasDesigner.ActualWidth - istep.ActualWidth));
-                    Canvas.SetTop (selStep, II.Math.Clamp (yShape, 0, canvasDesigner.ActualHeight - istep.ActualHeight));
-                    updateIProgressions ();
-                }
-            }
-
-            private void IStepEnd_MouseLeftButtonDown (object sender, MouseButtonEventArgs e) {
-                selectStep (((ItemStep.UEIStepEnd)sender).ItemStep);
-                selectStepEnd ((ItemStep.UEIStepEnd)sender);
-
-                updatePropertyView ();
-
-                expStepProperty.IsExpanded = false;
-                expProgressionProperty.IsExpanded = true;
-            }
-
-            protected override void OnMouseLeftButtonUp (MouseButtonEventArgs e) {
-                base.OnMouseLeftButtonUp (e);
-
-                if (selEnd != null) {
-                    if (Mouse.DirectlyOver is ItemStep.UEIStepEnd) {
-                        addProgression (selStep, ((ItemStep.UEIStepEnd)Mouse.DirectlyOver).ItemStep);
-                    } else if (Mouse.DirectlyOver is ItemStep.UIEStep)
-                        addProgression (selStep, ((ItemStep.UIEStep)Mouse.DirectlyOver).ItemStep);
-                    else if (Mouse.DirectlyOver is ItemStep)
-                        addProgression (selStep, (ItemStep)Mouse.DirectlyOver);
-                }
-            }
-        }
-    }
-         *
-         *
-         */
+        */
     }
 }

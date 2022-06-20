@@ -2,9 +2,8 @@
 						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		         xmlns:ii="clr-namespace:II_Scenario_Editor.Controls"
 						 mc:Ignorable="d"
-						 x:Class="II_Scenario_Editor.Controls.ItemStep"
+						 x:Class="II_Scenario_Editor.Controls.ItemStepEnd"
 						 MinHeight="50"
              MinWidth="50"
              Background="Transparent">
@@ -20,23 +19,9 @@
     </Style>
   </UserControl.Styles>
 
-  <StackPanel Orientation="Horizontal">
-    <Border Name="brdStep"
-            CornerRadius="5">
-      <StackPanel Orientation="Vertical">
-        <Label Name="lblNumber"
-               Content="#" />
-        <Label Name="lblName"
-               Content="Name" />
-      </StackPanel>
-    </Border>
-
-    <Panel Width="10" />
-
-    <ii:ItemStepEnd Name="iseStepEnd"
-            Height="20"
-            Width="20"
-            CornerRadius="10"
-            Background="Transparent" />
-  </StackPanel>
+  <Border Name="brdStepEnd"
+          Height="20"
+          Width="20"
+          CornerRadius="10"
+          Background="Transparent" />
 </UserControl>

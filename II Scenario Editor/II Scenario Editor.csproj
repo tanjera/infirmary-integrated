@@ -95,6 +95,9 @@
     <PackageReference Include="XamlNameReferenceGenerator" Version="1.3.4" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="Controls\ItemStepEnd.axaml.cs">
+      <DependentUpon>ItemStepEnd.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Windows\DialogAbout.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
