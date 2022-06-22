@@ -61,7 +61,7 @@ namespace II_Scenario_Editor.Controls {
         }
 
         private void sendPropertyChange (object? sender, EventArgs e) {
-            NumericUpDown numStepTo = this.FindControl<NumericUpDown> ("numStepTo");
+            TextBox txtStepTo = this.FindControl<TextBox> ("txtStepTo");
             TextBox txtDescription = this.FindControl<TextBox> ("txtDescription");
 
             PropertyOptProgressionEventArgs ea = new PropertyOptProgressionEventArgs ();

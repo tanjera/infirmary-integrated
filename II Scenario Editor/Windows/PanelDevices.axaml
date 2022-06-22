@@ -1,0 +1,146 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		         xmlns:iic="clr-namespace:II_Scenario_Editor.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="II_Scenario_Editor.Windows.PanelDevices">
+
+  <UserControl.Styles>
+    <Style Selector="Menu">
+      <Setter Property="BorderBrush" Value="#bbbbbb" />
+      <Setter Property="BorderThickness" Value="0 0 0 1" />
+      <Setter Property="Background" Value="#f2f2f2" />
+    </Style>
+
+    <Style Selector="StackPanel.spgrp">
+      <Setter Property="Margin" Value="3" />
+      <Setter Property="Orientation" Value="Vertical" />
+    </Style>
+
+    <Style Selector="Expander.exgrp">
+      <Setter Property="IsExpanded" Value="False" />
+      <Setter Property="Margin" Value="0" />
+    </Style>
+  </UserControl.Styles>
+  <DockPanel LastChildFill="True">
+
+    <!--  Main Menu  -->
+
+    <Menu DockPanel.Dock="Top"
+          Background="#f2f2f2">
+      <MenuItem Name="menuFile"
+                  Header="File">
+        <MenuItem Name="menuNew"
+              Header="New Scenario"
+              Click="MenuFileNew_Click" />
+        <Separator />
+        <MenuItem Name="menuLoad"
+              Header="Load Scenario"
+              Click="MenuFileLoad_Click" />
+        <MenuItem Name="menuSave"
+              Header="Save Scenario"
+              Click="MenuFileSave_Click" />
+        <Separator />
+        <MenuItem Name="menuExit"
+              Header="Exit Program"
+              Click="MenuFileExit_Click" />
+      </MenuItem>
+
+      <MenuItem Name="menuEdit"
+                  Header="Edit" />
+
+      <MenuItem Name="menuHelp"
+          Header="Help">
+        <MenuItem Name="menuAbout"
+              Header="About"
+              Click="MenuHelpAbout_Click" />
+      </MenuItem>
+    </Menu>
+
+    <!-- Property Editor -->
+
+    <ScrollViewer Name="scrlProperties"
+            VerticalScrollBarVisibility="Auto"
+            HorizontalScrollBarVisibility="Auto"
+            Background="White">
+
+      <StackPanel Background="White" Orientation="Vertical">
+
+        <!-- Basic Vital Signs -->
+
+        <Expander Classes="exgrp">
+          <Expander.Header>
+            <Label Name="lblBasicVitalSigns"
+                 Content="Basic Vital Signs" />
+          </Expander.Header>
+
+          <StackPanel Classes="spgrp">
+            <iic:PropertyInt x:Name="pintHR" />
+            <iic:PropertyBP x:Name="pbpNBP" />
+            <iic:PropertyInt x:Name="pintRR" />
+            <iic:PropertyInt x:Name="pintSPO2" />
+            <iic:PropertyDouble x:Name="pdblT" />
+            <iic:PropertyEnum x:Name="penmCardiacRhythms" />
+            <iic:PropertyEnum x:Name="penmRespiratoryRhythms" />
+            <CheckBox x:Name="chkClampVitals"
+                  IsChecked="False"
+                  Margin="5,10"
+                  Content="Use default vital signs per cardiac rhythm?" />
+          </StackPanel>
+        </Expander>
+
+        <!-- Advanced Hemodynamics -->
+
+        <Expander Classes="exgrp">
+          <Expander.Header>
+            <Label Content="Advanced Hemodynamics" />
+          </Expander.Header>
+
+          <StackPanel Classes="spgrp">
+            <iic:PropertyInt x:Name="pintETCO2" />
+            <iic:PropertyInt x:Name="pintCVP" />
+            <iic:PropertyDouble x:Name="pdblCO" />
+            <iic:PropertyBP x:Name="pbpABP" />
+            <iic:PropertyEnum x:Name="penmPACatheterRhythm" />
+            <iic:PropertyBP x:Name="pbpPBP" />
+            <iic:PropertyInt x:Name="pintICP" />
+            <iic:PropertyInt x:Name="pintIAP" />
+          </StackPanel>
+        </Expander>
+
+        <!-- Respiratory Profile -->
+
+        <Expander Classes="exgrp">
+          <Expander.Header>
+            <Label Content="Respiratory Profile" />
+          </Expander.Header>
+
+          <StackPanel Classes="spgrp">
+            <iic:PropertyCheck x:Name="pchkMechanicallyVentilated" />
+            <iic:PropertyDouble x:Name="pdblInspiratoryRatio" />
+            <iic:PropertyDouble x:Name="pdblExpiratoryRatio" />
+          </StackPanel>
+        </Expander>
+
+        <!-- Cardiac Profile -->
+
+        <Expander Classes="exgrp">
+          <Expander.Header>
+            <Label Content="Cardiac Profile" />
+          </Expander.Header>
+
+          <StackPanel Classes="spgrp">
+
+            <iic:PropertyInt x:Name="pintPacemakerThreshold" />
+            <iic:PropertyCheck x:Name="pchkPulsusParadoxus" />
+            <iic:PropertyCheck x:Name="pchkPulsusAlternans" />
+            <iic:PropertyEnum x:Name="penmCardiacAxis" />
+            <iic:PropertyECGSegment x:Name="pecgSTSegment" />
+            <iic:PropertyECGSegment x:Name="pecgTWave" />
+          </StackPanel>
+        </Expander>
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>

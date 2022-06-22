@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
@@ -7,7 +7,7 @@
     <TrimMode>copyused</TrimMode>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <AssemblyName>Infirmary Integrated Scenario Editor</AssemblyName>
-    <Version>0.7.1</Version>
+    <Version>0.7.7</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Remove=".gitignore" />
@@ -101,11 +101,11 @@
     <Compile Update="Windows\DialogAbout.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Windows\Main.axaml.cs">
-      <DependentUpon>Main.axaml</DependentUpon>
+    <Compile Update="Windows\WindowMain.axaml.cs">
+      <DependentUpon>WindowMain.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Windows\Splash.axaml.cs">
-      <DependentUpon>%(Filename)</DependentUpon>
+    <Compile Update="Windows\WindowSplash.axaml.cs">
+      <DependentUpon>WindowSplash.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <Import Project="..\II Core\II_Core.projitems" Label="Shared" />

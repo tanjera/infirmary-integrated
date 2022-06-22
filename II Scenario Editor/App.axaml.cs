@@ -16,12 +16,12 @@ namespace II_Scenario_Editor {
     public partial class App : Application {
         public static string []? Start_Args;
 
-        public static Language? Language = new Language();
+        public static Language? Language = new Language ();
 
         public static Scenario? Scenario;
 
-        public static Splash? Window_Splash;
-        public static Main? Window_Main;
+        public static WindowSplash? WindowSplash;
+        public static WindowMain? WindowMain;
 
         public override void Initialize () {
             AvaloniaXamlLoader.Load (this);
@@ -29,23 +29,23 @@ namespace II_Scenario_Editor {
 
         public override async void OnFrameworkInitializationCompleted () {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
-                Window_Splash = new Splash ();
-                Window_Main = new Main ();
+                WindowSplash = new ();
+                WindowMain = new ();
 
                 // Show the splash screen for 2 seconds, then swap out to the main window
-                desktop.MainWindow = Window_Splash;
-                Window_Splash.Show ();
+                desktop.MainWindow = WindowSplash;
+                WindowSplash.Show ();
 
 #if !DEBUG
                 await Task.Delay (2000);
 #endif
 
-                Window_Splash.Hide ();
-                Window_Main.Show ();
+                WindowSplash.Hide ();
+                WindowMain.Show ();
 
-                desktop.MainWindow = Window_Main;
+                desktop.MainWindow = WindowMain;
 
-                Window_Splash.Close ();
+                WindowSplash.Close ();
 
                 Start_Args = desktop.Args;
             }
@@ -54,8 +54,8 @@ namespace II_Scenario_Editor {
         }
 
         public static async Task Exit () {
-            Window_Splash?.Close ();
-            Window_Main?.Close ();
+            WindowSplash?.Close ();
+            WindowMain?.Close ();
         }
     }
 }

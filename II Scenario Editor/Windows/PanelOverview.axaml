@@ -1,0 +1,219 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		         xmlns:iic="clr-namespace:II_Scenario_Editor.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="II_Scenario_Editor.Windows.PanelOverview">
+
+  <UserControl.Styles>
+    <Style Selector="Menu">
+      <Setter Property="BorderBrush" Value="#bbbbbb" />
+      <Setter Property="BorderThickness" Value="0 0 0 1" />
+      <Setter Property="Background" Value="#f2f2f2" />
+    </Style>
+
+    <Style Selector="Button.imgbtn">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="Background" Value="Transparent" />
+    </Style>
+  </UserControl.Styles>
+
+  <DockPanel LastChildFill="True">
+
+    <!--  Main Menu  -->
+    <Menu DockPanel.Dock="Top">
+      <MenuItem Name="menuFile"
+                  Header="File">
+        <MenuItem Name="menuNew"
+              Header="New Scenario"
+              Click="MenuFileNew_Click" />
+        <Separator />
+        <MenuItem Name="menuLoad"
+              Header="Load Scenario"
+              Click="MenuFileLoad_Click" />
+        <MenuItem Name="menuSave"
+              Header="Save Scenario"
+              Click="MenuFileSave_Click" />
+        <Separator />
+        <MenuItem Name="menuExit"
+              Header="Exit Program"
+              Click="MenuFileExit_Click" />
+      </MenuItem>
+
+      <MenuItem Name="menuEdit"
+                  Header="Edit">
+
+        <MenuItem Name="menuEditAddStep"
+              Header="Add Step"
+              Click="MenuEditAddStep_Click" />
+        <MenuItem Name="menuEditDuplicateStep"
+              Header="Duplicate Step"
+              Click="MenuEditDuplicateStep_Click" />
+
+        <Separator />
+
+        <MenuItem Name="menuEditDeleteStep"
+              Header="Delete Step"
+              Click="MenuEditDeleteStep_Click" />
+
+        <Separator />
+
+        <MenuItem Name="menuEditCopyPatient"
+              Header="Copy Patient Properties"
+              Click="MenuEditCopyPatient_Click" />
+        <MenuItem Name="menuEditPastePatient"
+                  Header="Paste Patient Properties"
+                  Click="MenuEditPastePatient_Click" />
+
+        <Separator />
+
+        <MenuItem Name="menuEditIndexSteps"
+              Header="Reset Step Indices"
+              Click="MenuEditIndexSteps_Click" />
+      </MenuItem>
+
+      <MenuItem Name="menuHelp"
+          Header="Help">
+        <MenuItem Name="menuAbout"
+              Header="About"
+              Click="MenuHelpAbout_Click" />
+      </MenuItem>
+    </Menu>
+
+    <Grid Background="White">
+
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="1 *" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="3 *" />
+      </Grid.ColumnDefinitions>
+
+      <ScrollViewer Name="scrollToolbox"
+              Grid.Column="0"
+              VerticalScrollBarVisibility="Auto"
+              HorizontalScrollBarVisibility="Auto"
+              Background="White">
+        <StackPanel Orientation="Vertical">
+
+          <!-- Scenario properties -->
+
+          <Expander IsExpanded="True"
+                    HorizontalContentAlignment="Stretch">
+            <Expander.Header>
+              <Label Name="lblScenarioProperty"
+                   Content="Edit Scenario Properties" />
+            </Expander.Header>
+
+            <StackPanel Margin="3"
+                  Orientation="Vertical">
+              <iic:PropertyString x:Name="pstrScenarioAuthor" />
+              <iic:PropertyString x:Name="pstrScenarioName" />
+              <iic:PropertyString x:Name="pstrScenarioDescription" />
+            </StackPanel>
+          </Expander>
+
+          <Separator Margin="0 5" />
+
+          <!-- Step Information -->
+
+          <Expander IsExpanded="True"
+                    HorizontalContentAlignment="Stretch">
+            <Expander.Header>
+              <Label Name="lblStepInformation"
+                   Content="Step Information" />
+            </Expander.Header>
+
+            <StackPanel Margin="3"
+                        Orientation="Vertical">
+              <iic:PropertyString x:Name="pstrStepName" />
+              <iic:PropertyString x:Name="pstrStepDescription" />
+            </StackPanel>
+          </Expander>
+
+          <Separator Margin="0 5" />
+
+          <Expander IsExpanded="True"
+                    HorizontalContentAlignment="Stretch">
+            <Expander.Header>
+              <Label Name="lblProgressionProperty"
+                   Content="Edit Progressions" />
+            </Expander.Header>
+            <StackPanel>
+              <StackPanel Margin="3"
+                    Orientation="Vertical">
+
+                <iic:PropertyString x:Name="pstrProgressFrom" />
+                <iic:PropertyString x:Name="pstrProgressTo" />
+                <iic:PropertyInt x:Name="pintProgressTimer" />
+                <Label Content="Note: Entering a value of -1 disables the timer or progress target." />
+                <Button Name="btnDeleteProgression"
+                    Content="Delete Default Progression"
+                    Click="BtnDeleteDefaultProgression_Click"
+                    Margin="5, 2" />
+              </StackPanel>
+
+              <StackPanel Name="stackProgressions"
+                    Margin="3"
+                    Orientation="Vertical" />
+            </StackPanel>
+          </Expander>
+        </StackPanel>
+      </ScrollViewer>
+
+      <GridSplitter Grid.Column="1"
+              Width="3"
+              HorizontalAlignment="Stretch"
+              Background="LightGray"
+              BorderThickness="0" />
+
+      <!-- Toolbox Buttons -->
+
+      <StackPanel Grid.Column="2"
+                  Orientation="Horizontal">
+        <StackPanel Orientation="Vertical">
+
+          <Button Name="btnAddStep"
+                  Click="ButtonAddStep_Click"
+                  Classes="imgbtn">
+            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_PlayerAdd_48.png" />
+          </Button>
+          <Button Name="btnDuplicateStep"
+                  Click="ButtonDuplicateStep_Click"
+                  Classes="imgbtn">
+            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_Stack_48.png" />
+          </Button>
+
+          <Button Name="btnDeleteStep"
+                  Click="BtnDeleteStep_Click"
+                  Classes="imgbtn">
+            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_TrashBin_48.png" />
+          </Button>
+
+          <Separator Margin="3, 10" />
+
+          <Button Name="btnCopyPatient"
+                  Click="BtnCopyPatient_Click"
+                  Classes="imgbtn">
+            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_CopyData_48.png" />
+          </Button>
+          <Button Name="btnPastePatient"
+                  Click="BtnPastePatient_Click"
+                  Classes="imgbtn">
+
+            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_PasteData_48.png" />
+          </Button>
+        </StackPanel>
+
+        <!-- Designer Canvas -->
+
+        <Canvas Name="cnvsDesigner"
+
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Margin="0"
+                Background="Transparent" />
+      </StackPanel>
+    </Grid>
+  </DockPanel>
+</UserControl>

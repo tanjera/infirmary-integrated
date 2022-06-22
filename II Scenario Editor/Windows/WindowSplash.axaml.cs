@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace II_Scenario_Editor {
 
-    public partial class Splash : Window {
+    public partial class WindowSplash : Window {
 
-        public Splash () {
+        public WindowSplash () {
             InitializeComponent ();
 #if DEBUG
             this.AttachDevTools ();
