@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -26,17 +27,15 @@ using II_Scenario_Editor.Controls;
 namespace II_Scenario_Editor {
 
     public partial class Main : Window {
+        /* Main data structure to build our scene into */
+        private Scenario Scenario;
 
-        // Master List of all Steps in the Scenario and other Scenario variables
-        private List<ItemStep> Steps = new List<ItemStep> ();
-
-        private string ScenarioAuthor, ScenarioName, ScenarioDescription;
-
-        // Variables and pointers for using UI Elements
-        private Canvas ICanvasSteps;
-
+        /* Interface items */
+        private Canvas ICanvas;
         private ItemStep? ISelectedStep;
         private bool IsSelectedStepEnd = false;
+        private List<ItemStep> ISteps = new List<ItemStep> ();
+        private List<ItemStep.Progression> IProgressions = new List<ItemStep.Progression> ();
 
         // For copy/pasting Patient parameters
         private Patient CopiedPatient;
@@ -44,7 +43,9 @@ namespace II_Scenario_Editor {
         // Variables for capturing mouse and dragging UI elements
         private Point? PointerPosition = null;
 
-        // Switch for processing elements ina  loading sequence
+        private Avalonia.Input.Pointer? PointerCaptured = null;
+
+        // Switch for processing elements in a loading sequence
         private bool IsLoading = false;
 
         public Main () {
@@ -52,17 +53,36 @@ namespace II_Scenario_Editor {
 
             DataContext = this;
 
-            ICanvasSteps = this.FindControl<Canvas> ("cnvsDesigner");
+            ICanvas = this.FindControl<Canvas> ("cnvsDesigner");
+            ICanvas.PointerPressed += Item_PointerPressed;
 
-            InitScenarioProperty ();
-            InitPropertyView ();
+            _ = InitScenario ();
+            _ = InitScenarioProperty ();
+            _ = InitPropertyView ();
+
+            _ = DrawISteps ();
+            _ = UpdateIProgressions ();
+            _ = DrawIProgressions ();
         }
 
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
         }
 
-        private bool promptUnsavedWork () {
+        private async Task DialogAbout () {
+            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                this.Show ();
+
+            DialogAbout dlg = new DialogAbout ();
+            dlg.Activate ();
+            await dlg.ShowDialog (this);
+        }
+
+        private static async Task Exit () {
+            await App.Exit ();
+        }
+
+        private bool PromptUnsavedWork () {
             /* TODO: IMPLEMENT
             if (Steps.Count > 0)
                 return MessageBox.Show (
@@ -76,36 +96,75 @@ namespace II_Scenario_Editor {
             return true;
         }
 
-        private async Task NewScenario () {
-            if (promptUnsavedWork () == false)
-                return;
+#if DEBUG
 
+        private async Task DebugOutput () {
+            int steps = 0,
+                isteps = 0,
+                progs = 0,
+                iprogs = 0;
+
+            foreach (Scenario.Step step in Scenario.Steps) {
+                steps++;
+
+                foreach (Scenario.Step.Progression prog in step.Progressions)
+                    progs++;
+            }
+
+            foreach (ItemStep istep in ISteps) {
+                isteps++;
+
+                foreach (ItemStep.Progression iprog in istep.Progressions)
+                    iprogs++;
+            }
+
+            Debug.WriteLine ($"Steps {steps:0}      Progressions {progs:0}");
+            Debug.WriteLine ($"ItemSteps {isteps:0}      ItemStep.Progressions {iprogs:0}");
+
+            if (iprogs != IProgressions.Count || progs != IProgressions.Count)
+                Debug.WriteLine ($"DISCREPANCY: Scenario.Step.Progressions count != IISE.Progressions pointer list count");
+        }
+
+#endif
+
+        private async Task InitScenario () {
             // Reset buffer parameters
             ISelectedStep = null;
             IsSelectedStepEnd = false;
             PointerPosition = null;
 
             // Clear master lists and UI elements
-            ICanvasSteps.Children.Clear ();
-            Steps.Clear ();
+            ICanvas.Children.Clear ();
+            ISteps.Clear ();
 
             // Clear scenario data
-            ScenarioAuthor = "";
-            ScenarioName = "";
-            ScenarioDescription = "";
+            Scenario = new Scenario (false);
+            Scenario.Author = "";
+            Scenario.Description = "";
+            Scenario.Name = "";
 
-            UpdateScenarioProperty ();
+            await AddStep ();
+            Scenario.BeginStep = ISteps.First ().UUID;
+
+            await UpdateScenarioProperty ();
+        }
+
+        private async Task NewScenario () {
+            if (PromptUnsavedWork () == false)
+                return;
+
+            await InitScenario ();
         }
 
         private async Task LoadScenario () {
-            if (promptUnsavedWork () == false)
+            if (PromptUnsavedWork () == false)
                 return;
 
             string filepath = LoadDialog ();
             if (String.IsNullOrEmpty (filepath))
                 return;
 
-            LoadFile (filepath);
+            await LoadFile (filepath);
         }
 
         private string LoadDialog () {
@@ -122,10 +181,10 @@ namespace II_Scenario_Editor {
                 return null;
             */
 
-            return null;
+            return "";
         }
 
-        private void LoadFile (string filepath) {
+        private async Task LoadFile (string filepath) {
             StreamReader sr = new StreamReader (filepath);
 
             // Read savefile metadata indicating data formatting
@@ -153,15 +212,13 @@ namespace II_Scenario_Editor {
             string line, pline;
             StringBuilder pbuffer;
 
-            Scenario sc = new Scenario (false);
-
             try {
                 while ((line = sRead.ReadLine ()) != null) {
                     if (line == "> Begin: Scenario") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Scenario")
                             pbuffer.AppendLine (pline);
-                        sc.Load_Process (pbuffer.ToString ());
+                        Scenario.Load_Process (pbuffer.ToString ());
                     }
                 }
             } catch {
@@ -170,15 +227,10 @@ namespace II_Scenario_Editor {
                 sRead.Close ();
             }
 
-            // Convert loaded scenario to Scenario Editor data structures
-            ScenarioAuthor = sc.Author;
-            ScenarioName = sc.Name;
-            ScenarioDescription = sc.Description;
+            ISteps.Clear ();
+            ICanvas.Children.Clear ();
 
-            Steps.Clear ();
-            ICanvasSteps.Children.Clear ();
-
-            for (int i = 0; i < sc.Steps.Count; i++) {
+            for (int i = 0; i < Scenario.Steps.Count; i++) {
                 /* TODO: IMPLEMENT
 
                 // Add to the main Steps stack
@@ -230,16 +282,10 @@ namespace II_Scenario_Editor {
         }
 
         private async Task SaveScenario () {
-            // Prepare Scenario for saving
-            Scenario sc = new Scenario (false);
-
-            sc.Updated = DateTime.Now;
-            sc.Author = ScenarioAuthor;
-            sc.Name = ScenarioName;
-            sc.Description = ScenarioDescription;
-
-            for (int i = 0; i < Steps.Count; i++) {
+            for (int i = 0; i < ISteps.Count; i++) {
                 /* TODO: IMPLEMENT
+
+                // SAVE METADATA SECTION FOR ITEMSTEP POSITIONING!!!!!!
 
                 // Set metadata for saving
                 Steps [i].Step.IPositionX = Steps [i].Left;
@@ -282,7 +328,7 @@ namespace II_Scenario_Editor {
             */
         }
 
-        private void InitScenarioProperty () {
+        private async Task InitScenarioProperty () {
             PropertyString pstrScenarioAuthor = this.FindControl<PropertyString> ("pstrScenarioAuthor");
             PropertyString pstrScenarioName = this.FindControl<PropertyString> ("pstrScenarioName");
             PropertyString pstrScenarioDescription = this.FindControl<PropertyString> ("pstrScenarioDescription");
@@ -297,82 +343,7 @@ namespace II_Scenario_Editor {
             pstrScenarioDescription.PropertyChanged += UpdateProperty;
         }
 
-        private void UpdateScenarioProperty () {
-            this.FindControl<PropertyString> ("pstrScenarioAuthor").Set (ScenarioAuthor ?? "");
-            this.FindControl<PropertyString> ("pstrScenarioName").Set (ScenarioName ?? "");
-            this.FindControl<PropertyString> ("pstrScenarioDescription").Set (ScenarioDescription ?? "");
-        }
-
-        private async Task DialogAbout () {
-            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
-                this.Show ();
-
-            DialogAbout dlg = new DialogAbout ();
-            dlg.Activate ();
-            await dlg.ShowDialog (this);
-        }
-
-        private static async Task Exit () {
-            await App.Exit ();
-        }
-
-        private void MenuItemNew_Click (object sender, RoutedEventArgs e)
-            => _ = NewScenario ();
-
-        private void MenuItemLoad_Click (object sender, RoutedEventArgs e)
-            => _ = LoadScenario ();
-
-        private void MenuSave_Click (object sender, RoutedEventArgs e)
-            => _ = SaveScenario ();
-
-        private void MenuItemExit_Click (object sender, RoutedEventArgs e)
-            => _ = Exit ();
-
-        private void MenuItemAbout_Click (object sender, RoutedEventArgs e)
-            => _ = DialogAbout ();
-
-        private void ButtonAddStep_Click (object sender, RoutedEventArgs e) {
-            AddStep ();
-        }
-
-        private void ButtonDuplicateStep_Click (object sender, RoutedEventArgs e) {
-            if (ISelectedStep == null)
-                return;
-
-            AddStep (ISelectedStep);
-        }
-
-        private void BtnDeleteStep_Click (object sender, RoutedEventArgs e) {
-            if (ISelectedStep != null)
-                DeleteStep (ISelectedStep);
-        }
-
-        private async void BtnCopyPatient_Click (object sender, RoutedEventArgs e) {
-            if (ISelectedStep == null)
-                return;
-
-            CopiedPatient = new Patient ();
-            await CopiedPatient.Load_Process (ISelectedStep.Patient.Save ());
-        }
-
-        private async void BtnPastePatient_Click (object sender, RoutedEventArgs e) {
-            if (ISelectedStep == null)
-                return;
-
-            if (CopiedPatient != null) {
-                await ISelectedStep.Patient.Load_Process (CopiedPatient.Save ());
-            }
-
-            UpdatePropertyView ();
-        }
-
-        private void BtnDeleteDefaultProgression_Click (object sender, RoutedEventArgs e) {
-            /* TODO: IMPLEMENT
-             deleteDefaultProgression ();
-            */
-        }
-
-        private void InitPropertyView () {
+        private async Task InitPropertyView () {
             // Populate enum string lists for readable display
             List<string> cardiacRhythms = new List<string> (),
                 respiratoryRhythms = new List<string> (),
@@ -433,8 +404,8 @@ namespace II_Scenario_Editor {
             PropertyString pstrStepDescription = this.FindControl<PropertyString> ("pstrStepDescription");
 
             // Initiate controls for editing Patient values
-            pstrProgressFrom.Init (PropertyString.Keys.ProgressFrom);
-            pstrProgressTo.Init (PropertyString.Keys.ProgressTo);
+            pstrProgressFrom.Init (PropertyString.Keys.DefaultSource);
+            pstrProgressTo.Init (PropertyString.Keys.DefaultProgression);
             pstrStepName.Init (PropertyString.Keys.StepName);
             pstrStepDescription.Init (PropertyString.Keys.StepDescription);
 
@@ -515,7 +486,13 @@ namespace II_Scenario_Editor {
             pstrStepDescription.PropertyChanged += UpdateProperty;
         }
 
-        private void UpdatePropertyView () {
+        private async Task UpdateScenarioProperty () {
+            this.FindControl<PropertyString> ("pstrScenarioAuthor").Set (Scenario.Author ?? "");
+            this.FindControl<PropertyString> ("pstrScenarioName").Set (Scenario.Name ?? "");
+            this.FindControl<PropertyString> ("pstrScenarioDescription").Set (Scenario.Description ?? "");
+        }
+
+        private async Task UpdatePropertyView () {
             if (ISelectedStep == null)
                 return;
 
@@ -588,15 +565,15 @@ namespace II_Scenario_Editor {
             pintPacemakerThreshold.Set (ISelectedStep.Patient.Pacemaker_Threshold);
             pintProgressTimer.Set (ISelectedStep.Step.ProgressTimer);
 
-            pstrProgressFrom.Set (ISelectedStep.Step.ProgressFrom);
-            pstrProgressTo.Set (ISelectedStep.Step.ProgressTo);
-            pstrStepName.Set (ISelectedStep.Step.Name ?? "");
-            pstrStepDescription.Set (ISelectedStep.Step.Description ?? "");
+            pstrProgressFrom.Set (ISelectedStep?.Step?.DefaultSource ?? "");
+            pstrProgressTo.Set (ISelectedStep?.Step?.DefaultProgression?.UUID ?? "");
+            pstrStepName.Set (ISelectedStep?.Step?.Name ?? "");
+            pstrStepDescription.Set (ISelectedStep?.Step?.Description ?? "");
 
-            UpdateOptionalProgressionView ();
+            await UpdateOptionalProgressionView ();
         }
 
-        private void UpdateOptionalProgressionView () {
+        private async Task UpdateOptionalProgressionView () {
             StackPanel stackOptionalProgressions = this.FindControl<StackPanel> ("stackOptionalProgressions");
             stackOptionalProgressions.Children.Clear ();
 
@@ -605,13 +582,13 @@ namespace II_Scenario_Editor {
                     Scenario.Step.Progression p = ISelectedStep.Step.Progressions [i];
                     PropertyOptProgression pp = new PropertyOptProgression ();
                     pp.Init (i, p.ToStepUUID, p.Description);
-                    pp.PropertyChanged += updateProperty;
+                    pp.PropertyChanged += UpdateProperty;
                     stackOptionalProgressions.Children.Add (pp);
                 }
             }
         }
 
-        private void updateProperty (object? sender, PropertyOptProgression.PropertyOptProgressionEventArgs e) {
+        private void UpdateProperty (object? sender, PropertyOptProgression.PropertyOptProgressionEventArgs e) {
             if (e.Index >= ISelectedStep.Step.Progressions.Count)
                 return;
 
@@ -622,27 +599,26 @@ namespace II_Scenario_Editor {
             // Deletes an optional progression via this route
             if (e.ToDelete) {
                 ISelectedStep.Step.Progressions.RemoveAt (e.Index);
-                UpdateOptionalProgressionView ();
-                /* TODO: IMPLEMENT
-                drawIProgressions ();
-                */
+                _ = UpdateOptionalProgressionView ();
+
+                UpdateIProgressions ();
+                DrawIProgressions ();
             }
         }
 
         private void UpdateProperty (object? sender, PropertyString.PropertyStringEventArgs e) {
             switch (e.Key) {
                 default: break;
-                case PropertyString.Keys.ScenarioAuthor: ScenarioAuthor = e.Value ?? ""; break;
-                case PropertyString.Keys.ScenarioName: ScenarioName = e.Value ?? ""; break;
-                case PropertyString.Keys.ScenarioDescription: ScenarioDescription = e.Value ?? ""; break;
+                case PropertyString.Keys.ScenarioAuthor: Scenario.Author = e.Value ?? ""; break;
+                case PropertyString.Keys.ScenarioName: Scenario.Name = e.Value ?? ""; break;
+                case PropertyString.Keys.ScenarioDescription: Scenario.Description = e.Value ?? ""; break;
             }
 
             if (ISelectedStep != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyString.Keys.ProgressFrom: ISelectedStep.Step.ProgressFrom = e.Value; break;
-                    case PropertyString.Keys.ProgressTo: ISelectedStep.Step.ProgressTo = e.Value; break;
-
+                    case PropertyString.Keys.DefaultSource: ISelectedStep.Step.DefaultSource = e.Value; break;
+                    case PropertyString.Keys.DefaultProgression: throw new NotImplementedException (); break;
                     case PropertyString.Keys.StepName: ISelectedStep.SetName (e.Value ?? ""); break;
                     case PropertyString.Keys.StepDescription: ISelectedStep.Step.Description = e.Value ?? ""; break;
                 }
@@ -761,7 +737,7 @@ namespace II_Scenario_Editor {
             p.PSP = (int)II.Math.Clamp ((double)p.VS_Settings.PSP, v.PSPMin, v.PSPMax);
             p.PDP = (int)II.Math.Clamp ((double)p.VS_Settings.PDP, v.PDPMin, v.PDPMax);
 
-            UpdatePropertyView ();
+            _ = UpdatePropertyView ();
         }
 
         private void UpdateRespiratoryRhythm (object? sender, PropertyEnum.PropertyEnumEventArgs e) {
@@ -779,7 +755,7 @@ namespace II_Scenario_Editor {
             p.RR_IE_I = (int)II.Math.Clamp ((double)p.RR_IE_I, v.RR_IE_I_Min, v.RR_IE_I_Max);
             p.RR_IE_E = (int)II.Math.Clamp ((double)p.RR_IE_E, v.RR_IE_E_Min, v.RR_IE_E_Max);
 
-            UpdatePropertyView ();
+            _ = UpdatePropertyView ();
         }
 
         private void UpdatePACatheterRhythm (object? sender, PropertyEnum.PropertyEnumEventArgs e) {
@@ -794,17 +770,10 @@ namespace II_Scenario_Editor {
             p.PSP = (int)II.Math.Clamp ((double)p.PSP, v.PSPMin, v.PSPMax);
             p.PDP = (int)II.Math.Clamp ((double)p.PDP, v.PDPMin, v.PDPMax);
 
-            UpdatePropertyView ();
+            _ = UpdatePropertyView ();
         }
 
-        private void UpdateItemBorders () {
-            foreach (ItemStep i in Steps) {
-                i.SetBorder_Step (i == ISelectedStep);
-                i.SetBorder_End (IsSelectedStepEnd && i == ISelectedStep);
-            }
-        }
-
-        private async void AddStep (ItemStep? incItem = null) {
+        private async Task AddStep (ItemStep? incItem = null) {
             ItemStep item = new ();
 
             if (incItem != null) {  // Duplicate
@@ -819,12 +788,9 @@ namespace II_Scenario_Editor {
             }
 
             // Add to lists and display elements
-            Steps.Add (item);
-            ICanvasSteps.Children.Add (item);
+            ISteps.Add (item);
+            ICanvas.Children.Add (item);
             item.ZIndex = 1;
-
-            // Select the added step, give a default name by its index
-            item.SetNumber (Steps.FindIndex (o => { return o == item; }));
 
             item.PointerPressed += Item_PointerPressed;
             item.PointerReleased += Item_PointerReleased;
@@ -832,11 +798,10 @@ namespace II_Scenario_Editor {
             item.IStepEnd.PointerPressed += Item_PointerPressed;
 
             // Refresh the Properties View and draw Progression elements/colors
-            UpdatePropertyView ();
-            UpdateItemBorders ();
-            /* TODO: IMPLEMENT
-            drawIProgressions ();
-            */
+            await UpdateStepIndices ();
+            await UpdatePropertyView ();
+            await DrawISteps ();
+            await DrawIProgressions ();
 
             Expander expStepProperty = this.FindControl<Expander> ("expStepProperty");
             Expander expProgressionProperty = this.FindControl<Expander> ("expProgressionProperty");
@@ -845,66 +810,281 @@ namespace II_Scenario_Editor {
             expProgressionProperty.IsExpanded = true;
         }
 
-        private void DeleteStep (ItemStep item) {
+        private async Task DeleteStep (ItemStep item) {
             // Remove the selected Step from the stack and visual
-            Steps.Remove (item);
-            ICanvasSteps.Children.Remove (item);
+            ISteps.Remove (item);
+            ICanvas.Children.Remove (item);
 
-            foreach (Line line in item.IProgressions)
-                ICanvasSteps.Children.Remove (line);
+            foreach (ItemStep.Progression line in item.Progressions) {
+                IProgressions.Remove (line);
+                ICanvas.Children.Remove (line);
+            }
 
-            foreach (ItemStep s in Steps) {
-                // Nullify any default progressions that
-                if (s.Step.ProgressTo == item.UUID)
-                    s.Step.ProgressTo = null;
+            foreach (ItemStep s in ISteps) {
+                // Nullify any default progression pointers that target the Step being deleted
+                if (s.Step?.DefaultProgression?.UUID == item.UUID)
+                    s.Step.DefaultProgression = null;
 
-                // Remove all optional progressions targeting the Step being removed
+                // Remove all progressions targeting the Step being removed
                 for (int i = s.Step.Progressions.Count - 1; i >= 0; i--) {
                     if (s.Step.Progressions [i].ToStepUUID == item.UUID)
                         s.Step.Progressions.RemoveAt (i);
                 }
             }
 
-            // Set all Steps' indices for their Labels
-            for (int i = 0; i < Steps.Count; i++)
-                Steps [i].SetNumber (i);
+            await UpdateStepIndices ();
+            await UpdateIProgressions ();
+            await DrawIProgressions ();
+        }
 
-            // Refresh all IProgressions (visual lines)
-            /* TODO: IMPLEMENT
-            drawIProgressions ();
-            */
+        private async Task AddProgression (ItemStep itemFrom, ItemStep itemTo) {
+            if (itemFrom == itemTo)
+                return;
+
+            /* Create the data structure and its interface model structure */
+            Scenario.Step.Progression p = new Scenario.Step.Progression (Guid.NewGuid ().ToString (), itemTo.UUID);
+            ItemStep.Progression ip = new ItemStep.Progression (itemFrom, itemTo, itemFrom.IStepEnd, p);
+
+            itemFrom.Step.Progressions.Add (p);
+
+            /* Link the steps with the progression; add default progression if this is the 1st progression added */
+            if (String.IsNullOrEmpty (itemTo.Step.DefaultSource))
+                itemTo.Step.DefaultSource = itemFrom.UUID;
+
+            if (itemFrom.Step.DefaultProgression == null)
+                itemFrom.Step.DefaultProgression = p;
+
+            await UpdateIProgressions ();
+            await DrawIProgressions ();
+            await UpdatePropertyView ();
+
+            Expander expStepProperty = this.FindControl<Expander> ("expStepProperty");
+            Expander expProgressionProperty = this.FindControl<Expander> ("expProgressionProperty");
+            expStepProperty.IsExpanded = false;
+            expProgressionProperty.IsExpanded = true;
+
+            Debug.WriteLine ($"Progression created from {itemFrom.UUID} -> {itemTo.UUID}");
+        }
+
+        private async Task DrawISteps () {
+            foreach (ItemStep item in ISteps) {
+                await item.SetStep_Border (item == ISelectedStep);
+                await item.SetEndStep_Border (IsSelectedStepEnd && item == ISelectedStep);
+
+                // Color Step's Background depending
+                if (Scenario.BeginStep == item.UUID)
+                    await item.SetStep_Fill (ItemStep.Fill_FirstStep);
+                else {
+                    bool isLinked = false;
+                    foreach (Scenario.Step s in Scenario.Steps) {
+                        foreach (Scenario.Step.Progression p in s.Progressions) {
+                            if (p.ToStepUUID == item.UUID) {
+                                isLinked = true;
+                            }
+                        }
+                    }
+
+                    if (isLinked)
+                        await item.SetStep_Fill (ItemStep.Fill_Linked);
+                    else
+                        await item.SetStep_Fill (ItemStep.Fill_Unlinked);
+                }
+
+                // Color StepEnd's Background depending on whether it has progressions
+                if (item.Step.Progressions.Count == 0)
+                    await item.SetEndStep_Fill (ItemStepEnd.Fill_NoProgressions);
+                else if (item.Step.Progressions.Count >= 1) {
+                    if (item.Step.DefaultProgression == null)
+                        await item.SetEndStep_Fill (ItemStepEnd.Fill_NoDefaultProgression);
+                    else {
+                        if (item.Step.Progressions.Count == 1)
+                            await item.SetEndStep_Fill (ItemStepEnd.Fill_NoOptionalProgression);
+                        else if (item.Step.Progressions.Count > 1)
+                            await item.SetEndStep_Fill (ItemStepEnd.Fill_MultipleProgressions);
+                    }
+                } else {
+                    await item.SetEndStep_Fill (ItemStepEnd.Fill_Default);
+                }
+            }
+        }
+
+        private async Task DrawIProgressions () {
+            /* Recalculate the positions of Progression Lines on the Canvas
+             * To be called when visual elements have moved on the Canvas
+             */
+
+            foreach (ItemStep.Progression ip in IProgressions) {
+                ip.StartPoint = new Point (ip.Step.Bounds.Left + ip.StepEnd.Bounds.Left + ip.StepEnd.Width, ip.Step.Bounds.Center.Y);
+                ip.EndPoint = new Point (ip.StepTo.Bounds.Left, ip.StepTo.Bounds.Center.Y);
+                ip.InvalidateVisual ();
+            }
+        }
+
+        private async Task UpdateIProgressions () {
+            /* Re-iterate all Progressions and re-populate the list of Lines accordingly
+             * To be called when the list of Progressions has changed
+             */
+
+            foreach (ItemStep.Progression ip in IProgressions)
+                ICanvas.Children.Remove (ip);
+
+            IProgressions.Clear ();
+
+            foreach (ItemStep istep in ISteps) {
+                istep.Progressions.Clear ();
+
+                foreach (Scenario.Step.Progression prog in istep.Step.Progressions) {
+                    ItemStep? itemTo = ISteps.Find (s => s.UUID == prog.ToStepUUID);
+
+                    if (itemTo == null)
+                        throw new IndexOutOfRangeException ();
+
+                    ItemStep.Progression p = new (istep, itemTo, istep.IStepEnd, prog);
+                    istep.Progressions.Add (p);
+                    IProgressions.Add (p);
+                    ICanvas.Children.Add (p);
+                }
+            }
+        }
+
+        private async Task UpdateStepIndices () {
+            // Set all Steps' indices for their Labels
+            for (int i = 0; i < ISteps.Count; i++)
+                ISteps [i].SetNumber (i);
+        }
+
+        private async Task SelectIStep (ItemStep item, Avalonia.Input.Pointer? capture = null) {
+            ISelectedStep = item;
+            IsSelectedStepEnd = false;
+
+            if (capture != null) {
+                PointerCaptured = capture;
+                PointerCaptured.Capture (item);
+            }
+        }
+
+        private async Task SelectEndStep (ItemStepEnd end, Avalonia.Input.Pointer? capture = null) {
+            ISelectedStep = end.Step;
+            IsSelectedStepEnd = true;
+
+            if (capture != null) {
+                PointerCaptured = capture;
+                PointerCaptured.Capture (end.Step);
+            }
+        }
+
+        private async Task DeselectAll () {
+            ISelectedStep = null;
+            IsSelectedStepEnd = false;
+
+            PointerPosition = null;
+
+            if (PointerCaptured != null) {
+                PointerCaptured.Capture (null);
+                PointerCaptured = null;
+            }
+        }
+
+        private void MenuItemNew_Click (object sender, RoutedEventArgs e)
+            => _ = NewScenario ();
+
+        private void MenuItemLoad_Click (object sender, RoutedEventArgs e)
+            => _ = LoadScenario ();
+
+        private void MenuSave_Click (object sender, RoutedEventArgs e)
+            => _ = SaveScenario ();
+
+        private void MenuItemExit_Click (object sender, RoutedEventArgs e)
+            => _ = Exit ();
+
+        private void MenuItemAbout_Click (object sender, RoutedEventArgs e)
+            => _ = DialogAbout ();
+
+        private void ButtonAddStep_Click (object sender, RoutedEventArgs e) {
+            _ = AddStep ();
+        }
+
+        private void ButtonDuplicateStep_Click (object sender, RoutedEventArgs e) {
+            if (ISelectedStep == null)
+                return;
+
+            _ = AddStep (ISelectedStep);
+        }
+
+        private void BtnDeleteStep_Click (object sender, RoutedEventArgs e) {
+            if (ISelectedStep != null)
+                _ = DeleteStep (ISelectedStep);
+        }
+
+        private async void BtnCopyPatient_Click (object sender, RoutedEventArgs e) {
+            if (ISelectedStep == null)
+                return;
+
+            CopiedPatient = new Patient ();
+            await CopiedPatient.Load_Process (ISelectedStep.Patient.Save ());
+        }
+
+        private async void BtnPastePatient_Click (object sender, RoutedEventArgs e) {
+            if (ISelectedStep == null)
+                return;
+
+            if (CopiedPatient != null) {
+                await ISelectedStep.Patient.Load_Process (CopiedPatient.Save ());
+            }
+
+            await UpdatePropertyView ();
+        }
+
+        private void BtnDeleteDefaultProgression_Click (object sender, RoutedEventArgs e) {
+            throw new NotImplementedException ();
         }
 
         private void Item_PointerPressed (object? sender, PointerPressedEventArgs e) {
-            if (PointerPosition != null)                        // An object on a stack of Controls may have already been pressed!
+            if (sender is ItemStep item) {
+                e.Handled = true;
+
+                if (ISelectedStep == null || !IsSelectedStepEnd) {
+                    _ = SelectIStep (item);
+                } else if (ISelectedStep != null && IsSelectedStepEnd) {
+                    if (ISelectedStep == item) {
+                        _ = SelectIStep (item);
+                    } else {
+                        _ = AddProgression (ISelectedStep, item);
+                        _ = DeselectAll ();
+                    }
+                }
+            } else if (sender is ItemStepEnd end) {
+                e.Handled = true;
+
+                _ = SelectEndStep (end);
+            } else if (sender is Canvas cnv) {
+                e.Handled = true;
+
+                _ = DeselectAll ();
+            } else {
                 return;
-
-            if (sender is ItemStep) {
-                ISelectedStep = (ItemStep)sender;
-                IsSelectedStepEnd = false;
-
-                e.Pointer.Capture ((ItemStep)sender);
-            } else if (sender is ItemStepEnd) {
-                ISelectedStep = ((ItemStepEnd)sender).Step;
-                IsSelectedStepEnd = true;
-
-                e.Pointer.Capture (((ItemStepEnd)sender).Step);
             }
 
             PointerPosition = e.GetPosition (null);
 
-            UpdateItemBorders ();
+            _ = DrawISteps ();
+            _ = DrawIProgressions ();
         }
 
         private void Item_PointerReleased (object? sender, PointerReleasedEventArgs e) {
+            e.Handled = true;
+
             e.Pointer.Capture (null);
             PointerPosition = null;
 
-            UpdateItemBorders ();
+            _ = DrawISteps ();
+            _ = DrawIProgressions ();
         }
 
         private void Item_PointerMoved (object? sender, PointerEventArgs e) {
-            if (PointerPosition != null && sender != null && sender is ItemStep && ISelectedStep == (ItemStep)sender) {
+            if (PointerPosition != null && sender != null && sender is ItemStep item && ISelectedStep == item) {
+                e.Handled = true;
+
                 Point p = e.GetPosition (null);
                 Point deltaPosition = p - (Point)PointerPosition;
                 PointerPosition = p;
@@ -914,94 +1094,9 @@ namespace II_Scenario_Editor {
 
                 Canvas.SetLeft (ISelectedStep, left);
                 Canvas.SetTop (ISelectedStep, top);
+
+                _ = DrawIProgressions ();
             }
         }
-
-        /* TODO: IMPLEMENT
-            private void addProgression (ItemStep stepFrom, ItemStep stepTo) {
-                if (stepFrom == stepTo)
-                    return;
-
-                int indexFrom = Steps.FindIndex (o => { return o == stepFrom; });
-                int indexTo = Steps.FindIndex (o => { return o == stepTo; });
-
-                if (stepTo.Step.ProgressFrom < 0)
-                    stepTo.Step.ProgressFrom = indexFrom;
-
-                if (stepFrom.Step.ProgressTo < 0)               // Create a default progression
-                    stepFrom.Step.ProgressTo = indexTo;
-                else                                            // Create an optional progression
-                    stepFrom.Step.Progressions.Add (new Scenario.Step.Progression (indexTo));
-
-                drawIProgressions ();
-                updatePropertyView ();
-
-                expStepProperty.IsExpanded = false;
-                expProgressionProperty.IsExpanded = true;
-            }
-
-            private void deleteDefaultProgression () {
-                selStep.Step.ProgressTo = -1;
-                selStep.Step.ProgressTimer = -1;
-
-                updatePropertyView ();
-                drawIProgressions ();
-            }
-
-            private void loadIProgressions (object sender, EventArgs e) {
-                if (isLoading) {
-                    updateIProgressions ();
-                    isLoading = false;
-                }
-            }
-
-            private void drawIProgressions () {
-                // Completely recreate and add all progression lines to list and canvas
-                foreach (ItemStep iStep in Steps) {
-                    foreach (ItemStep.UIEProgression uiep in iStep.IProgressions)
-                        canvasDesigner.Children.Remove (uiep);
-
-                    iStep.IProgressions.Clear ();
-
-                    if (iStep.Step.ProgressTo > -1 && iStep.Step.ProgressTo < Steps.Count) {
-                        // Draw default progress
-                        ItemStep iTo = Steps [iStep.Step.ProgressTo];
-                        ItemStep.UIEProgression uiep = new ItemStep.UIEProgression (iStep, iTo, canvasDesigner);
-                        iStep.IProgressions.Add (uiep);
-                    }
-
-                    foreach (Scenario.Step.Progression p in iStep.Step.Progressions) {
-                        if (p.DestinationIndex >= Steps.Count)
-                            continue;
-
-                        ItemStep iTo = Steps [p.DestinationIndex];
-                        ItemStep.UIEProgression uiep = new ItemStep.UIEProgression (iStep, iTo, canvasDesigner);
-                        iStep.IProgressions.Add (uiep);
-                    }
-
-                    // Add all new progression lines to canvas
-                    foreach (ItemStep.UIEProgression uiep in iStep.IProgressions) {
-                        canvasDesigner.Children.Add (uiep);
-                        Canvas.SetZIndex (uiep, 0);
-                    }
-
-                    // Color IStepEnd depending on whether it has progressions
-                    if (iStep?.IProgressions?.Count == 0)
-                        iStep.IStepEnd.Fill = iStep.Fill_StepEndNoProgression;
-                    else if (iStep?.IProgressions?.Count == 1)
-                        iStep.IStepEnd.Fill = iStep.Fill_StepEndNoOptionalProgression;
-                    else if (iStep?.IProgressions?.Count > 1)
-                        iStep.IStepEnd.Fill = iStep.Fill_StepEndMultipleProgressions;
-                }
-            }
-
-            private void updateIProgressions () {
-                // Redraw progressions between sources to destinations
-                foreach (ItemStep iStep in Steps) {
-                    foreach (ItemStep.UIEProgression uiep in iStep.IProgressions)
-                        uiep.UpdatePositions ();
-                }
-            }
-        */
     }
 }

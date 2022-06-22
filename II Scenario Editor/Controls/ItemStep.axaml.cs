@@ -19,30 +19,31 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 
+using II;
+
 namespace II_Scenario_Editor.Controls {
 
     public partial class ItemStep : UserControl {
-        public List<Line> IProgressions = new ();
-
         /* Data structures */
-        public string UUID;
+        public Scenario.Step Step = new Scenario.Step ();
+
         public ItemStepEnd IStepEnd;
-        public II.Scenario.Step Step = new II.Scenario.Step ();
+        public List<Progression> Progressions = new List<Progression> ();
 
         /* Exposed properties */
         public int Index;
 
+        public string? UUID { get { return Step.UUID; } }
+
         /* Permanents for reference/interface styling */
 
-        public readonly Brush
-            Stroke_Default = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#555555")),
+        public static Brush
             Fill_Default = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#dddddd")),
-            Fill_StepZero = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#b0d68b")),
-            Fill_StepEndNoProgression = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#d4a29b")),
-            Fill_StepEndNoOptionalProgression = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#dee685")),
-            Fill_StepEndMultipleProgressions = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#b9cfa3"));
+            Fill_FirstStep = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#38761d")),
+            Fill_Linked = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#b0d68b")),
+            Fill_Unlinked = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#ea9999"));
 
-        public readonly Avalonia.Thickness
+        public static Thickness
             StrokeThickness_Default = new Thickness (.5d),
             StrokeThickness_Selected = new Thickness (2.0d);
 
@@ -62,9 +63,7 @@ namespace II_Scenario_Editor.Controls {
             InitializeComponent ();
 
             IStepEnd = this.FindControl<ItemStepEnd> ("iseStepEnd");
-            IStepEnd.SetStep (this);
-
-            UUID = Guid.NewGuid ().ToString ();
+            _ = IStepEnd.SetStep (this);
         }
 
         private void InitializeComponent () {
@@ -88,19 +87,44 @@ namespace II_Scenario_Editor.Controls {
             lblName.Content = name;
         }
 
-        public void SetBorder_Step (bool isSelected) {
+        public async Task SetStep_Border (bool isSelected) {
             Border step = this.FindControl<Border> ("brdStep");
             step.BorderThickness = (isSelected) ? StrokeThickness_Selected : StrokeThickness_Default;
         }
 
-        public void SetBorder_End (bool isSelected)
-            => IStepEnd.SetBorder_End (isSelected);
+        public async Task SetStep_Fill (Brush brush) {
+            Border step = this.FindControl<Border> ("brdStep");
+            step.Background = brush;
+        }
+
+        public async Task SetEndStep_Border (bool isSelected)
+            => IStepEnd.SetEndStep_Border (isSelected);
+
+        public async Task SetEndStep_Fill (Brush brush)
+            => IStepEnd.SetEndStep_Fill (brush);
 
         public class StepEnd : Border {
             public ItemStep Step;
 
             public StepEnd (ItemStep step) {
                 Step = step;
+            }
+        }
+
+        public class Progression : Line {
+            public ItemStep Step;
+            public ItemStep StepTo;
+            public ItemStepEnd StepEnd;
+            public Scenario.Step.Progression StepProgression;
+
+            public Progression (ItemStep step, ItemStep stepTo, ItemStepEnd stepEnd, Scenario.Step.Progression stepProgression) {
+                Stroke = Brushes.Black;
+                StrokeThickness = 1d;
+
+                Step = step;
+                StepTo = stepTo;
+                StepEnd = stepEnd;
+                StepProgression = stepProgression;
             }
         }
     }

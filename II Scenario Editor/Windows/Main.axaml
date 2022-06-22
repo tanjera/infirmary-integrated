@@ -138,18 +138,18 @@
 						  BorderThickness="0" />
 
       <!-- Designer Canvas -->
-      <Grid Grid.Column="2">
 
-        <Border BorderBrush="LightGray"
-						BorderThickness="0, 2"
-						HorizontalAlignment="Stretch"
-						VerticalAlignment="Stretch"
-						Margin="0">
+      <Border Grid.Column="2"
+              BorderBrush="LightGray"
+              BorderThickness="0, 2"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch"
+              Margin="0">
 
-          <Canvas Name="cnvsDesigner"
-							Background="Transparent" />
-        </Border>
-      </Grid>
+        <Canvas Name="cnvsDesigner"
+            Background="Transparent">
+        </Canvas>
+      </Border>
 
       <GridSplitter Grid.Column="3"
 						  Width="3"

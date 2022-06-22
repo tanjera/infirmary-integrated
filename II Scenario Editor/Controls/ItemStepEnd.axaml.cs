@@ -26,17 +26,16 @@ namespace II_Scenario_Editor.Controls {
 
         /* Permanents for reference/interface styling */
 
-        public readonly Brush
-            Stroke_Default = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#555555")),
+        public static Brush
             Fill_Default = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#dddddd")),
-            Fill_StepZero = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#b0d68b")),
-            Fill_StepEndNoProgression = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#d4a29b")),
-            Fill_StepEndNoOptionalProgression = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#dee685")),
-            Fill_StepEndMultipleProgressions = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#b9cfa3"));
+            Fill_NoProgressions = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#ff4e36")),
+            Fill_NoDefaultProgression = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#d4a29b")),
+            Fill_NoOptionalProgression = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#dee685")),
+            Fill_MultipleProgressions = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#b9cfa3"));
 
-        public readonly Avalonia.Thickness
-            StrokeThickness_Default = new Thickness (.5d),
-            StrokeThickness_Selected = new Thickness (2.0d);
+        public static Thickness
+            Thickness_Default = new Thickness (.5d),
+            Thickness_Selected = new Thickness (2.0d);
 
         public ItemStepEnd () {
             InitializeComponent ();
@@ -46,13 +45,18 @@ namespace II_Scenario_Editor.Controls {
             AvaloniaXamlLoader.Load (this);
         }
 
-        public void SetStep (ItemStep step) {
+        public async Task SetStep (ItemStep step) {
             Step = step;
         }
 
-        public void SetBorder_End (bool isSelected) {
+        public async Task SetEndStep_Border (bool isSelected) {
             Border end = this.FindControl<Border> ("brdStepEnd");
-            end.BorderThickness = (isSelected) ? StrokeThickness_Selected : StrokeThickness_Default;
+            end.BorderThickness = isSelected ? Thickness_Selected : Thickness_Default;
+        }
+
+        public async Task SetEndStep_Fill (Brush brush) {
+            Border end = this.FindControl<Border> ("brdStepEnd");
+            end.Background = brush;
         }
     }
 }

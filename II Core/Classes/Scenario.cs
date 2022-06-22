@@ -153,13 +153,13 @@ namespace II {
             string? progFrom = AtStep;
 
             if (String.IsNullOrEmpty (optProg)) {                            // Default Progression
-                AtStep = Current.ProgressTo;
-            } else {                                                        // Optional Progression
+                AtStep = Current?.DefaultProgression?.ToStepUUID;
+            } else {                                                                // Optional Progression
                 AtStep = optProg;
             }
 
             if (progFrom != AtStep) {                                       // If the actual step Index changed
-                Current.ProgressFrom = progFrom;
+                Current.DefaultSource = progFrom;
                 Step? stepFrom = Steps.Find (s => s.UUID == progFrom);
 
                 if (stepFrom != null) {
@@ -181,10 +181,10 @@ namespace II {
             StepChangeRequest?.Invoke (this, new EventArgs ());
 
             string? progFrom = AtStep;
-            AtStep = Current.ProgressFrom;
+            AtStep = Current.DefaultSource;
 
             if (progFrom != AtStep) {                                       // If the actual step Index changed
-                Current.ProgressFrom = progFrom;
+                Current.DefaultSource = progFrom;
                 Step? stepFrom = Steps.Find (s => s.UUID == progFrom);
 
                 if (stepFrom != null) {
@@ -212,7 +212,7 @@ namespace II {
             AtStep = incUUID;
 
             if (progFrom != AtStep) {                                       // If the actual step Index changed
-                Current.ProgressFrom = progFrom;
+                Current.DefaultSource = progFrom;
                 Step? stepFrom = Steps.Find (s => s.UUID == progFrom);
 
                 if (stepFrom != null) {
@@ -264,12 +264,9 @@ namespace II {
             public string Name, Description;
 
             public List<Progression> Progressions = new List<Progression> ();
-            public string? ProgressTo = null;
-            public string? ProgressFrom = null;
+            public Progression? DefaultProgression = null;
+            public string? DefaultSource = null;
             public int ProgressTimer = -1;
-
-            // Metadata: for drawing interface items in Scenario Editor
-            public double IPositionX, IPositionY;
 
             public Step () {
                 UUID = Guid.NewGuid ().ToString ();
@@ -299,6 +296,9 @@ namespace II {
                             Progression p = new Progression ();
                             p.Load_Process (pbuffer.ToString ());
                             Progressions.Add (p);
+
+                            if (p.UUID == DefaultProgression?.UUID)
+                                DefaultProgression = p;
                         } else if (line.Contains (":")) {
                             string pName = line.Substring (0, line.IndexOf (':')),
                                     pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
@@ -307,11 +307,9 @@ namespace II {
                                 default: break;
                                 case "Name": Name = pValue; break;
                                 case "Description": Description = pValue; break;
-                                case "ProgressTo": ProgressTo = pValue; break;
-                                case "ProgressFrom": ProgressFrom = pValue; break;
+                                case "DefaultProgression": DefaultProgression = new Progression (pValue, null); break;
+                                case "DefaultSource": DefaultSource = pValue; break;
                                 case "ProgressTime": ProgressTimer = int.Parse (pValue); break;
-                                case "IPositionX": IPositionX = double.Parse (pValue); break;
-                                case "IPositionY": IPositionY = double.Parse (pValue); break;
                             }
                         }
                     }
@@ -327,11 +325,9 @@ namespace II {
 
                 sWrite.AppendLine (String.Format ("{0}:{1}", "Name", Name));
                 sWrite.AppendLine (String.Format ("{0}:{1}", "Description", Description));
-                sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressTo", ProgressTo));
-                sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressFrom", ProgressFrom));
+                sWrite.AppendLine (String.Format ("{0}:{1}", "DefaultProgression", DefaultProgression?.UUID));
+                sWrite.AppendLine (String.Format ("{0}:{1}", "DefaultSource", DefaultSource));
                 sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressTime", ProgressTimer));
-                sWrite.AppendLine (String.Format ("{0}:{1}", "IPositionX", System.Math.Round (IPositionX, 2)));
-                sWrite.AppendLine (String.Format ("{0}:{1}", "IPositionY", System.Math.Round (IPositionY, 2)));
 
                 sWrite.AppendLine ("> Begin: Patient");
                 sWrite.Append (Patient.Save ());
@@ -349,13 +345,16 @@ namespace II {
             /* Possible progressions/routes to the next step of the scenario */
 
             public class Progression {
+                public string? UUID;
                 public string? ToStepUUID;
                 public string? Description;
 
                 public Progression () {
+                    UUID = Guid.NewGuid ().ToString ();
                 }
 
-                public Progression (string dest, string desc = "") {
+                public Progression (string? uuid, string? dest, string? desc = "") {
+                    UUID = uuid;
                     ToStepUUID = dest;
                     Description = desc;
                 }
