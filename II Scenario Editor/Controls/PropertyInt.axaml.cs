@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace II_Scenario_Editor.Controls {
 
@@ -59,25 +60,26 @@ namespace II_Scenario_Editor.Controls {
             numValue.Increment = increment;
             numValue.Minimum = minvalue;
             numValue.Maximum = maxvalue;
-            numValue.ValueChanged += sendPropertyChange;
-            numValue.LostFocus += sendPropertyChange;
+            numValue.ValueChanged += SendPropertyChange;
+            numValue.LostFocus += SendPropertyChange;
         }
 
         public void Set (int value) {
             NumericUpDown numValue = this.FindControl<NumericUpDown> ("numValue");
 
-            numValue.ValueChanged -= sendPropertyChange;
+            numValue.ValueChanged -= SendPropertyChange;
             numValue.Value = value;
-            numValue.ValueChanged += sendPropertyChange;
+            numValue.ValueChanged += SendPropertyChange;
         }
 
-        private void sendPropertyChange (object? sender, EventArgs e) {
+        private void SendPropertyChange (object? sender, EventArgs e) {
             NumericUpDown numValue = this.FindControl<NumericUpDown> ("numValue");
 
             PropertyIntEventArgs ea = new PropertyIntEventArgs ();
             ea.Key = Key;
             ea.Value = (int)numValue.Value;
 
+            Debug.WriteLine ($"PropertyChanged: {ea.Key} '{ea.Value}'");
             PropertyChanged?.Invoke (this, ea);
         }
     }

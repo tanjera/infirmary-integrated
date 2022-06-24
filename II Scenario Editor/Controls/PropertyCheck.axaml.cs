@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace II_Scenario_Editor.Controls {
 
@@ -47,25 +48,26 @@ namespace II_Scenario_Editor.Controls {
                 case Keys.MechanicallyVentilated: chkValue.Content = "Mechanically ventilated?"; break;
             }
 
-            chkValue.Checked += sendPropertyChange;
-            chkValue.LostFocus += sendPropertyChange;
+            chkValue.Checked += SendPropertyChange;
+            chkValue.LostFocus += SendPropertyChange;
         }
 
         public void Set (bool value) {
             CheckBox chkValue = this.FindControl<CheckBox> ("chkValue");
 
-            chkValue.Checked -= sendPropertyChange;
+            chkValue.Checked -= SendPropertyChange;
             chkValue.IsChecked = value;
-            chkValue.Checked += sendPropertyChange;
+            chkValue.Checked += SendPropertyChange;
         }
 
-        private void sendPropertyChange (object? sender, EventArgs e) {
+        private void SendPropertyChange (object? sender, EventArgs e) {
             CheckBox chkValue = this.FindControl<CheckBox> ("chkValue");
 
             PropertyCheckEventArgs ea = new PropertyCheckEventArgs ();
             ea.Key = Key;
             ea.Value = chkValue.IsChecked ?? false;
 
+            Debug.WriteLine ($"PropertyChanged: {ea.Key} '{ea.Value}'");
             PropertyChanged?.Invoke (this, ea);
         }
     }

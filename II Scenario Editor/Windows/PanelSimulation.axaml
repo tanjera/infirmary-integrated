@@ -1,0 +1,104 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		         xmlns:iic="clr-namespace:II_Scenario_Editor.Controls"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="II_Scenario_Editor.Windows.PanelSimulation">
+
+  <UserControl.Styles>
+    <Style Selector="Label">
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="Menu">
+      <Setter Property="BorderBrush" Value="#bbbbbb" />
+      <Setter Property="BorderThickness" Value="0 0 0 1" />
+      <Setter Property="Background" Value="#f2f2f2" />
+    </Style>
+
+    <Style Selector="StackPanel.spgrp">
+      <Setter Property="Margin" Value="3" />
+      <Setter Property="Orientation" Value="Vertical" />
+      <Setter Property="MinWidth" Value="250" />
+    </Style>
+
+    <Style Selector="Expander.exgrpf">
+      <Setter Property="IsExpanded" Value="False" />
+      <Setter Property="Margin" Value="0" />
+    </Style>
+
+    <Style Selector="Expander.exgrpt">
+      <Setter Property="IsExpanded" Value="True" />
+      <Setter Property="Margin" Value="0" />
+    </Style>
+  </UserControl.Styles>
+
+  <DockPanel LastChildFill="True">
+
+    <!--  Main Menu  -->
+    <Menu DockPanel.Dock="Top">
+      <MenuItem Name="menuFile"
+                  Header="_File">
+        <MenuItem Name="menuNew"
+                  Header="New"
+                  Command="{Binding MenuFileNew_Command}"
+                  Click="MenuFileNew_Click" />
+        <Separator />
+        <MenuItem Name="menuLoad"
+              Header="_Open"
+              Command="{Binding MenuFileLoad_Command}"
+              Click="MenuFileLoad_Click" />
+        <MenuItem Name="menuSave"
+              Header="_Save"
+              Command="{Binding MenuFileSave_Command}"
+              Click="MenuFileSave_Click" />
+        <MenuItem Name="menuSaveAs"
+              Header="Save As"
+              Click="MenuFileSaveAs_Click" />
+        <Separator />
+        <MenuItem Name="menuExit"
+              Header="E_xit Program"
+              Click="MenuFileExit_Click" />
+      </MenuItem>
+
+      <MenuItem Name="menuEdit"
+                  Header="_Edit">
+      </MenuItem>
+
+      <MenuItem Name="menu_Help"
+          Header="_Help">
+        <MenuItem Name="menuAbout"
+              Header="_About"
+              Click="MenuHelpAbout_Click" />
+      </MenuItem>
+    </Menu>
+
+    <!-- Property Editor -->
+
+    <ScrollViewer Name="scrlProperties"
+            VerticalScrollBarVisibility="Auto"
+            HorizontalScrollBarVisibility="Auto"
+            Background="White">
+
+      <StackPanel Orientation="Vertical"
+                  Background="White">
+
+        <!-- Scenario properties -->
+
+        <Expander Classes="exgrpt">
+          <Expander.Header>
+            <Label Name="lblScenarioProperty"
+                 Content="Edit Scenario Properties" />
+          </Expander.Header>
+
+          <StackPanel Classes="spgrp">
+            <iic:PropertyString x:Name="pstrScenarioAuthor" />
+            <iic:PropertyString x:Name="pstrScenarioName" />
+            <iic:PropertyString x:Name="pstrScenarioDescription" />
+          </StackPanel>
+        </Expander>
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>

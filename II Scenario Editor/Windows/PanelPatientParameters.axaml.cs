@@ -25,12 +25,12 @@ using II_Scenario_Editor.Controls;
 
 namespace II_Scenario_Editor.Windows {
 
-    public partial class PanelDevices : UserControl {
+    public partial class PanelPatientParameters : UserControl {
         /* Pointer to main data structure for the scenario, patient, devices, etc. */
         public Patient? Patient;
         private WindowMain IMain;
 
-        public PanelDevices () {
+        public PanelPatientParameters () {
             InitializeComponent ();
 
             DataContext = this;
@@ -42,11 +42,13 @@ namespace II_Scenario_Editor.Windows {
             AvaloniaXamlLoader.Load (this);
         }
 
-        public async Task InitReferences (WindowMain main) {
+        public Task InitReferences (WindowMain main) {
             IMain = main;
+
+            return Task.CompletedTask;
         }
 
-        public async Task SetPatient (Patient patient) {
+        public async Task SetPatient (Patient? patient) {
             Patient = patient;
 
             await UpdateViewModel ();
@@ -319,8 +321,7 @@ namespace II_Scenario_Editor.Windows {
         }
 
         private async Task UpdateViewModel () {
-            if (Patient == null)
-                return;
+            CheckBox chkClampVitals = this.FindControl<CheckBox> ("chkClampVitals");
 
             PropertyBP pbpNBP = this.FindControl<PropertyBP> ("pbpNBP");
             PropertyBP pbpABP = this.FindControl<PropertyBP> ("pbpABP");
@@ -352,36 +353,71 @@ namespace II_Scenario_Editor.Windows {
             PropertyInt pintIAP = this.FindControl<PropertyInt> ("pintIAP");
             PropertyInt pintPacemakerThreshold = this.FindControl<PropertyInt> ("pintPacemakerThreshold");
 
-            // Update all controls with Patient values
-            pbpNBP.Set (Patient.VS_Settings.NSBP, Patient.VS_Settings.NDBP);
-            pbpABP.Set (Patient.VS_Settings.ASBP, Patient.VS_Settings.ADBP);
-            pbpPBP.Set (Patient.VS_Settings.PSP, Patient.VS_Settings.PDP);
+            // Enable/Disable controls based on if Patient is null!
+            chkClampVitals.IsEnabled = (Patient != null);
 
-            pchkMechanicallyVentilated.Set (Patient.Mechanically_Ventilated);
-            pchkPulsusParadoxus.Set (Patient.Pulsus_Paradoxus);
-            pchkPulsusAlternans.Set (Patient.Pulsus_Alternans);
+            pbpNBP.IsEnabled = (Patient != null);
+            pbpABP.IsEnabled = (Patient != null);
+            pbpPBP.IsEnabled = (Patient != null);
 
-            pdblT.Set (Patient.VS_Settings.T);
-            pdblCO.Set (Patient.VS_Settings.CO);
-            pdblInspiratoryRatio.Set (Patient.VS_Settings.RR_IE_I);
-            pdblExpiratoryRatio.Set (Patient.VS_Settings.RR_IE_E);
+            pchkMechanicallyVentilated.IsEnabled = (Patient != null);
+            pchkPulsusParadoxus.IsEnabled = (Patient != null);
+            pchkPulsusAlternans.IsEnabled = (Patient != null);
 
-            pecgSTSegment.Set (Patient.ST_Elevation);
-            pecgTWave.Set (Patient.T_Elevation);
+            pdblT.IsEnabled = (Patient != null);
+            pdblCO.IsEnabled = (Patient != null);
+            pdblInspiratoryRatio.IsEnabled = (Patient != null);
+            pdblExpiratoryRatio.IsEnabled = (Patient != null);
 
-            penmCardiacRhythms.Set ((int)Patient.Cardiac_Rhythm.Value);
-            penmRespiratoryRhythms.Set ((int)Patient.Respiratory_Rhythm.Value);
-            penmPACatheterRhythm.Set ((int)Patient.PulmonaryArtery_Placement.Value);
-            penmCardiacAxis.Set ((int)Patient.Cardiac_Axis.Value);
+            pecgSTSegment.IsEnabled = (Patient != null);
+            pecgTWave.IsEnabled = (Patient != null);
 
-            pintHR.Set (Patient.VS_Settings.HR);
-            pintRR.Set (Patient.VS_Settings.RR);
-            pintSPO2.Set (Patient.VS_Settings.SPO2);
-            pintETCO2.Set (Patient.VS_Settings.ETCO2);
-            pintCVP.Set (Patient.VS_Settings.CVP);
-            pintICP.Set (Patient.VS_Settings.ICP);
-            pintIAP.Set (Patient.VS_Settings.IAP);
-            pintPacemakerThreshold.Set (Patient.Pacemaker_Threshold);
+            penmCardiacRhythms.IsEnabled = (Patient != null);
+            penmRespiratoryRhythms.IsEnabled = (Patient != null);
+            penmPACatheterRhythm.IsEnabled = (Patient != null);
+            penmCardiacAxis.IsEnabled = (Patient != null);
+
+            pintHR.IsEnabled = (Patient != null);
+            pintRR.IsEnabled = (Patient != null);
+            pintSPO2.IsEnabled = (Patient != null);
+            pintETCO2.IsEnabled = (Patient != null);
+            pintCVP.IsEnabled = (Patient != null);
+            pintICP.IsEnabled = (Patient != null);
+            pintIAP.IsEnabled = (Patient != null);
+            pintPacemakerThreshold.IsEnabled = (Patient != null);
+
+            if (Patient != null) {
+                // Update all controls with Patient values
+                pbpNBP.Set (Patient.VS_Settings.NSBP, Patient.VS_Settings.NDBP);
+                pbpABP.Set (Patient.VS_Settings.ASBP, Patient.VS_Settings.ADBP);
+                pbpPBP.Set (Patient.VS_Settings.PSP, Patient.VS_Settings.PDP);
+
+                pchkMechanicallyVentilated.Set (Patient.Mechanically_Ventilated);
+                pchkPulsusParadoxus.Set (Patient.Pulsus_Paradoxus);
+                pchkPulsusAlternans.Set (Patient.Pulsus_Alternans);
+
+                pdblT.Set (Patient.VS_Settings.T);
+                pdblCO.Set (Patient.VS_Settings.CO);
+                pdblInspiratoryRatio.Set (Patient.VS_Settings.RR_IE_I);
+                pdblExpiratoryRatio.Set (Patient.VS_Settings.RR_IE_E);
+
+                pecgSTSegment.Set (Patient.ST_Elevation);
+                pecgTWave.Set (Patient.T_Elevation);
+
+                penmCardiacRhythms.Set ((int)Patient.Cardiac_Rhythm.Value);
+                penmRespiratoryRhythms.Set ((int)Patient.Respiratory_Rhythm.Value);
+                penmPACatheterRhythm.Set ((int)Patient.PulmonaryArtery_Placement.Value);
+                penmCardiacAxis.Set ((int)Patient.Cardiac_Axis.Value);
+
+                pintHR.Set (Patient.VS_Settings.HR);
+                pintRR.Set (Patient.VS_Settings.RR);
+                pintSPO2.Set (Patient.VS_Settings.SPO2);
+                pintETCO2.Set (Patient.VS_Settings.ETCO2);
+                pintCVP.Set (Patient.VS_Settings.CVP);
+                pintICP.Set (Patient.VS_Settings.ICP);
+                pintIAP.Set (Patient.VS_Settings.IAP);
+                pintPacemakerThreshold.Set (Patient.Pacemaker_Threshold);
+            }
         }
 
         /* Generic Menu Items (across all Panels) */
@@ -394,6 +430,9 @@ namespace II_Scenario_Editor.Windows {
 
         private void MenuFileSave_Click (object sender, RoutedEventArgs e)
             => IMain.MenuFileSave_Click (sender, e);
+
+        private void MenuFileSaveAs_Click (object sender, RoutedEventArgs e)
+            => IMain.MenuFileSaveAs_Click (sender, e);
 
         private void MenuFileExit_Click (object sender, RoutedEventArgs e)
             => IMain.MenuFileExit_Click (sender, e);

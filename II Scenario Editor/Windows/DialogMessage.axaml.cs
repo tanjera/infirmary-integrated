@@ -59,7 +59,7 @@ namespace II_Scenario_Editor {
             DataContext = this;
         }
 
-        public Task UpdateViewModel () {
+        public void UpdateViewModel () {
             TextBlock lblMessage = this.FindControl<TextBlock> ("lblMessage");
             Image imgIcon = this.FindControl<Image> ("imgIcon");
             Button btnLeft = this.FindControl<Button> ("btnLeft");
@@ -92,15 +92,13 @@ namespace II_Scenario_Editor {
                     Response = Responses.No;            // Default response
                     break;
             }
-
-            return Task.CompletedTask;
         }
 
         public async Task<Responses?> AsyncShow (Window parent) {
             if (!parent.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 parent.Show ();
 
-            await UpdateViewModel ();
+            UpdateViewModel ();
 
             this.Activate ();
             await this.ShowDialog (parent);

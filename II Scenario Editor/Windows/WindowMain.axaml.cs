@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -32,12 +33,13 @@ namespace II_Scenario_Editor {
 
         /* Pointers for interface items */
         private TabControl ITabControl;
-        private PanelOverview IPanelOverview;
-        private PanelDevices IPanelDevices;
-        private PanelChart IPanelChart;
+        private PanelSimulation IPanelSimulation;
+        private PanelStepEditor IPanelStepEditor;
+        private PanelPatientParameters IPanelPatientParameters;
+        private PanelPatientChart IPanelPatientChart;
 
-        // Switch for processing elements in a loading sequence
-        private bool IsLoading = false;
+        /* Data structures for use */
+        private string? SaveFilePath;
 
         public WindowMain () {
             InitializeComponent ();
@@ -45,15 +47,18 @@ namespace II_Scenario_Editor {
             DataContext = this;
 
             ITabControl = this.FindControl<TabControl> ("tabControl");
-            IPanelOverview = this.FindControl<PanelOverview> ("panelOverview");
-            IPanelDevices = this.FindControl<PanelDevices> ("panelDevices");
-            IPanelChart = this.FindControl<PanelChart> ("panelChart");
+            IPanelSimulation = this.FindControl<PanelSimulation> ("panelSimulation");
+            IPanelStepEditor = this.FindControl<PanelStepEditor> ("panelStepEditor");
+            IPanelPatientParameters = this.FindControl<PanelPatientParameters> ("panelPatientParameters");
+            IPanelPatientChart = this.FindControl<PanelPatientChart> ("panelPatientChart");
 
-            _ = IPanelOverview.InitReferences (this);
-            _ = IPanelDevices.InitReferences (this);
-            _ = IPanelChart.InitReferences (this);
+            _ = IPanelSimulation.InitReferences (this);
+            _ = IPanelStepEditor.InitReferences (this);
+            _ = IPanelPatientParameters.InitReferences (this);
+            _ = IPanelPatientChart.InitReferences (this);
 
             _ = InitScenario ();
+            _ = InitHotkeys ();
         }
 
         private void InitializeComponent () {
@@ -65,8 +70,22 @@ namespace II_Scenario_Editor {
             await dlg.ShowDialog (this);
         }
 
-        private static async Task Exit () {
-            await App.Exit ();
+        private async Task Exit (bool toConfirm = true) {
+            if (toConfirm && Scenario.Steps.Count > 0) {
+                DialogMessage dlg = new () {
+                    Title = "Lose Unsaved Work?",
+                    Message = "Are you sure you want to continue? All unsaved work will be lost!",
+                    Option = DialogMessage.Options.YesNo,
+                    Indicator = DialogMessage.Indicators.InfirmaryIntegratedScenarioEditor
+                };
+                DialogMessage.Responses? response = await dlg.AsyncShow (this);
+
+                if (response != null && response == DialogMessage.Responses.Yes)
+                    await App.Exit ();
+                else
+                    return;
+            } else
+                await App.Exit ();
         }
 
         private async Task<bool> PromptUnsavedWork () {
@@ -84,12 +103,33 @@ namespace II_Scenario_Editor {
                 return true;
         }
 
+        private async Task InitHotkeys () {
+            var menuNew = IPanelSimulation.FindControl<MenuItem> ("menuNew");
+            var menuLoad = IPanelSimulation.FindControl<MenuItem> ("menuLoad");
+            var menuSave = IPanelSimulation.FindControl<MenuItem> ("menuSave");
+
+            HotKeyManager.SetHotKey (menuNew, new KeyGesture (Key.N, KeyModifiers.Control));
+            HotKeyManager.SetHotKey (menuLoad, new KeyGesture (Key.O, KeyModifiers.Control));
+            HotKeyManager.SetHotKey (menuSave, new KeyGesture (Key.S, KeyModifiers.Control));
+        }
+
         private async Task InitScenario () {
-            Scenario = new (false);
-            await IPanelOverview.SetScenario (Scenario);
+            SaveFilePath = null;
+            await SetScenario (new Scenario (false));
+        }
+
+        private async Task SetScenario (Scenario scenario) {
+            Scenario = scenario;
+
+            await IPanelSimulation.SetScenario (Scenario);
+            await IPanelStepEditor.SetScenario (Scenario);
+            await IPanelPatientParameters.SetPatient (null);
 
             ITabControl.SelectedIndex = 0;
         }
+
+        public async Task SetPatient (Patient? patient)
+            => await IPanelPatientParameters.SetPatient (patient);
 
         private async Task NewScenario () {
             if (await PromptUnsavedWork () == false)
@@ -106,14 +146,27 @@ namespace II_Scenario_Editor {
             if (String.IsNullOrEmpty (filepath))
                 return;
 
-            await LoadFile (filepath);
+            Scenario? res = await LoadFile (filepath);
+            if (res == null)
+                await LoadFail ();
+            else {
+                SaveFilePath = filepath;
+                await SetScenario (res);
+            }
         }
 
-        private async Task SaveScenario () {
-            string filepath = await SaveDialog ();
+        private async Task SaveScenario (bool useCurrentFile = false) {
+            string filepath;
+
+            if (useCurrentFile && !String.IsNullOrEmpty (SaveFilePath))
+                filepath = SaveFilePath;
+            else
+                filepath = await SaveDialog ();
+
             if (String.IsNullOrEmpty (filepath))
                 return;
 
+            SaveFilePath = filepath;
             await SaveFile (filepath);
         }
 
@@ -139,15 +192,14 @@ namespace II_Scenario_Editor {
             return String.IsNullOrEmpty (res) ? "" : res;
         }
 
-        private async Task LoadFile (string filepath) {
+        private async Task<Scenario?> LoadFile (string filepath) {
             StreamReader sr = new StreamReader (filepath);
 
             // Read savefile metadata indicating data formatting
             // Supports II:T1 file structure
             string metadata = sr.ReadLine ();
             if (!metadata.StartsWith (".ii:t1")) {
-                await LoadFail ();
-                return;
+                return null;
             }
 
             // Savefile type 1: validated and encrypted
@@ -159,8 +211,7 @@ namespace II_Scenario_Editor {
 
             // Original save files used MD5, later changed to SHA256
             if (hash != Encryption.HashSHA256 (file) && hash != Encryption.HashMD5 (file)) {
-                await LoadFail ();
-                return;
+                return null;
             }
 
             StringReader sRead = new StringReader (file);
@@ -179,9 +230,8 @@ namespace II_Scenario_Editor {
                     }
                 }
             } catch {
-                await LoadFail ();
-            } finally {
                 sRead.Close ();
+                return null;
             }
 
             for (int i = 0; i < Scenario.Steps.Count; i++) {
@@ -225,6 +275,8 @@ namespace II_Scenario_Editor {
             expStepProperty.IsExpanded = true;
             expProgressionProperty.IsExpanded = true;
             */
+
+            return new Scenario (false);
         }
 
         private async Task LoadFail () {
@@ -257,7 +309,7 @@ namespace II_Scenario_Editor {
 #if DEBUG
             sw.WriteLine ();
             sw.WriteLine ();
-            sw.WriteLine (sb.ToString ());                                          // FOR DEBUGGING: An unencrypted write call
+            sw.WriteLine (sb.ToString ());                                      // FOR DEBUGGING: An unencrypted write call; human-readable output
 #endif
 
             sw.Close ();
@@ -272,10 +324,13 @@ namespace II_Scenario_Editor {
             => _ = LoadScenario ();
 
         public void MenuFileSave_Click (object sender, RoutedEventArgs e)
-            => _ = SaveScenario ();
+            => _ = SaveScenario (true);
+
+        public void MenuFileSaveAs_Click (object sender, RoutedEventArgs e)
+            => _ = SaveScenario (false);
 
         public void MenuFileExit_Click (object sender, RoutedEventArgs e)
-            => _ = Exit ();
+            => _ = Exit (true);
 
         public void MenuHelpAbout_Click (object sender, RoutedEventArgs e)
             => _ = DialogAbout ();

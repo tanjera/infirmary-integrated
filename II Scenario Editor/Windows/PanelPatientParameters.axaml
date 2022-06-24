@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		         xmlns:iic="clr-namespace:II_Scenario_Editor.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="II_Scenario_Editor.Windows.PanelDevices">
+             x:Class="II_Scenario_Editor.Windows.PanelPatientParameters">
 
   <UserControl.Styles>
     <Style Selector="Menu">
@@ -16,6 +16,7 @@
     <Style Selector="StackPanel.spgrp">
       <Setter Property="Margin" Value="3" />
       <Setter Property="Orientation" Value="Vertical" />
+      <Setter Property="MinWidth" Value="250" />
     </Style>
 
     <Style Selector="Expander.exgrp">
@@ -27,33 +28,36 @@
 
     <!--  Main Menu  -->
 
-    <Menu DockPanel.Dock="Top"
-          Background="#f2f2f2">
+    <Menu DockPanel.Dock="Top">
       <MenuItem Name="menuFile"
-                  Header="File">
+                  Header="_File">
         <MenuItem Name="menuNew"
-              Header="New Scenario"
-              Click="MenuFileNew_Click" />
+                  Header="New"
+                  Click="MenuFileNew_Click" />
         <Separator />
         <MenuItem Name="menuLoad"
-              Header="Load Scenario"
+              Header="_Open"
               Click="MenuFileLoad_Click" />
         <MenuItem Name="menuSave"
-              Header="Save Scenario"
+              Header="_Save"
               Click="MenuFileSave_Click" />
+        <MenuItem Name="menuSaveAs"
+              Header="Save As"
+              Click="MenuFileSaveAs_Click" />
         <Separator />
         <MenuItem Name="menuExit"
-              Header="Exit Program"
+              Header="E_xit Program"
               Click="MenuFileExit_Click" />
       </MenuItem>
 
       <MenuItem Name="menuEdit"
-                  Header="Edit" />
+                  Header="_Edit">
+      </MenuItem>
 
-      <MenuItem Name="menuHelp"
-          Header="Help">
+      <MenuItem Name="menu_Help"
+          Header="_Help">
         <MenuItem Name="menuAbout"
-              Header="About"
+              Header="_About"
               Click="MenuHelpAbout_Click" />
       </MenuItem>
     </Menu>

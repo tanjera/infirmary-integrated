@@ -25,7 +25,7 @@ using II_Scenario_Editor.Controls;
 
 namespace II_Scenario_Editor.Windows {
 
-    public partial class PanelOverview : UserControl {
+    public partial class PanelStepEditor : UserControl {
         /* Pointer to main data structure for the scenario, patient, devices, etc. */
         private Scenario Scenario;
         private WindowMain IMain;
@@ -45,7 +45,7 @@ namespace II_Scenario_Editor.Windows {
 
         private Avalonia.Input.Pointer? PointerCaptured = null;
 
-        public PanelOverview () {
+        public PanelStepEditor () {
             InitializeComponent ();
 
             DataContext = this;
@@ -72,6 +72,8 @@ namespace II_Scenario_Editor.Windows {
             // Reset buffer parameters
             ISelectedStep = null;
             IsSelectedStepEnd = false;
+            await IMain.SetPatient (null);
+
             PointerPosition = null;
 
             // Clear master lists and UI elements
@@ -89,9 +91,6 @@ namespace II_Scenario_Editor.Windows {
         private async Task InitViewModel () {
             PropertyCombo pcmbProgressFrom = this.FindControl<PropertyCombo> ("pcmbProgressFrom");
             PropertyCombo pcmbProgressTo = this.FindControl<PropertyCombo> ("pcmbProgressTo");
-            PropertyString pstrScenarioAuthor = this.FindControl<PropertyString> ("pstrScenarioAuthor");
-            PropertyString pstrScenarioName = this.FindControl<PropertyString> ("pstrScenarioName");
-            PropertyString pstrScenarioDescription = this.FindControl<PropertyString> ("pstrScenarioDescription");
             PropertyString pstrStepName = this.FindControl<PropertyString> ("pstrStepName");
             PropertyString pstrStepDescription = this.FindControl<PropertyString> ("pstrStepDescription");
             PropertyInt pintProgressTimer = this.FindControl<PropertyInt> ("pintProgressTimer");
@@ -100,18 +99,12 @@ namespace II_Scenario_Editor.Windows {
 
             pcmbProgressFrom.Init (PropertyCombo.Keys.DefaultSource, Array.Empty<string> (), new List<string> ());
             pcmbProgressTo.Init (PropertyCombo.Keys.DefaultProgression, Array.Empty<string> (), new List<string> ());
-            pstrScenarioAuthor.Init (PropertyString.Keys.ScenarioAuthor);
-            pstrScenarioName.Init (PropertyString.Keys.ScenarioName);
-            pstrScenarioDescription.Init (PropertyString.Keys.ScenarioDescription);
             pstrStepName.Init (PropertyString.Keys.StepName);
             pstrStepDescription.Init (PropertyString.Keys.StepDescription);
             pintProgressTimer.Init (PropertyInt.Keys.ProgressTimer, 1, -1, 1000);
 
             pcmbProgressFrom.PropertyChanged += UpdateScenario;
             pcmbProgressTo.PropertyChanged += UpdateScenario;
-            pstrScenarioAuthor.PropertyChanged += UpdateScenario;
-            pstrScenarioName.PropertyChanged += UpdateScenario;
-            pstrScenarioDescription.PropertyChanged += UpdateScenario;
             pstrStepName.PropertyChanged += UpdateScenario;
             pstrStepDescription.PropertyChanged += UpdateScenario;
             pintProgressTimer.PropertyChanged += UpdateScenario;
@@ -131,13 +124,6 @@ namespace II_Scenario_Editor.Windows {
         }
 
         private void UpdateScenario (object? sender, PropertyString.PropertyStringEventArgs e) {
-            switch (e.Key) {
-                default: break;
-                case PropertyString.Keys.ScenarioAuthor: Scenario.Author = e.Value ?? ""; break;
-                case PropertyString.Keys.ScenarioName: Scenario.Name = e.Value ?? ""; break;
-                case PropertyString.Keys.ScenarioDescription: Scenario.Description = e.Value ?? ""; break;
-            }
-
             if (ISelectedStep != null) {
                 switch (e.Key) {
                     default: break;
@@ -181,7 +167,6 @@ namespace II_Scenario_Editor.Windows {
         private async Task UpdateViewModel () {
             await UpdateStepViewModel ();
             await UpdateProgressionViewModel ();
-            await UpdateScenarioViewModel ();
         }
 
         private async Task UpdateProgressionViewModel () {
@@ -201,12 +186,6 @@ namespace II_Scenario_Editor.Windows {
                     }
                 }
             }
-        }
-
-        private async Task UpdateScenarioViewModel () {
-            this.FindControl<PropertyString> ("pstrScenarioAuthor").Set (Scenario.Author ?? "");
-            this.FindControl<PropertyString> ("pstrScenarioName").Set (Scenario.Name ?? "");
-            this.FindControl<PropertyString> ("pstrScenarioDescription").Set (Scenario.Description ?? "");
         }
 
         private async Task UpdateStepViewModel () {
@@ -239,11 +218,12 @@ namespace II_Scenario_Editor.Windows {
 
                 // Populate the actual ViewModel UserControls with the appropriate lists
                 pcmbProgressFrom.Update (srcUUIDs, srcNames,
-                    ISelectedStep.Step.DefaultSource == null ? 0 : srcUUIDs.FindIndex (ds => ds == ISelectedStep.Step.DefaultSource)
-                    );
+                    ISelectedStep.Step.DefaultSource == null
+                        ? 0 : srcUUIDs.FindIndex (ds => ds == ISelectedStep.Step.DefaultSource));
 
                 pcmbProgressTo.Update (destUUIDs, destNames,
-                    ISelectedStep.Step.DefaultProgression == null ? 0 : destUUIDs.FindIndex (ds => ds == ISelectedStep.Step.DefaultProgression.DestinationUUID));
+                    ISelectedStep.Step.DefaultProgression == null
+                        ? 0 : destUUIDs.FindIndex (ds => ds == ISelectedStep.Step.DefaultProgression.DestinationUUID));
 
                 pintProgressTimer.Set (ISelectedStep.Step.ProgressTimer);
                 pstrStepName.Set (ISelectedStep?.Step?.Name ?? "");
@@ -425,6 +405,7 @@ namespace II_Scenario_Editor.Windows {
         private async Task SelectIStep (ItemStep item, Avalonia.Input.Pointer? capture = null) {
             ISelectedStep = item;
             IsSelectedStepEnd = false;
+            await IMain.SetPatient (ISelectedStep.Patient);
 
             if (capture != null) {
                 PointerCaptured = capture;
@@ -437,6 +418,7 @@ namespace II_Scenario_Editor.Windows {
         private async Task SelectEndStep (ItemStepEnd end, Avalonia.Input.Pointer? capture = null) {
             ISelectedStep = end.Step;
             IsSelectedStepEnd = true;
+            await IMain.SetPatient (ISelectedStep.Patient);
 
             if (capture != null) {
                 PointerCaptured = capture;
@@ -449,6 +431,7 @@ namespace II_Scenario_Editor.Windows {
         private async Task DeselectAll () {
             ISelectedStep = null;
             IsSelectedStepEnd = false;
+            await IMain.SetPatient (null);
 
             PointerPosition = null;
 
@@ -471,8 +454,10 @@ namespace II_Scenario_Editor.Windows {
         }
 
         private void Action_DeleteStep () {
-            if (ISelectedStep != null)
+            if (ISelectedStep != null) {
                 _ = DeleteStep (ISelectedStep);
+                _ = DeselectAll ();
+            }
         }
 
         private async Task Action_CopyPatient () {
@@ -502,6 +487,9 @@ namespace II_Scenario_Editor.Windows {
 
         private void MenuFileSave_Click (object sender, RoutedEventArgs e)
             => IMain.MenuFileSave_Click (sender, e);
+
+        private void MenuFileSaveAs_Click (object sender, RoutedEventArgs e)
+            => IMain.MenuFileSaveAs_Click (sender, e);
 
         private void MenuFileExit_Click (object sender, RoutedEventArgs e)
             => IMain.MenuFileExit_Click (sender, e);

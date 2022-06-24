@@ -7,7 +7,7 @@
     <TrimMode>copyused</TrimMode>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <AssemblyName>Infirmary Integrated Scenario Editor</AssemblyName>
-    <Version>0.7.7</Version>
+    <Version>0.7.9</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Remove=".gitignore" />
@@ -106,6 +106,18 @@
     </Compile>
     <Compile Update="Windows\DialogAbout.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\PanelPatientChart.axaml.cs">
+      <DependentUpon>PanelPatientChart.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\PanelPatientParameters.axaml.cs">
+      <DependentUpon>PanelPatientParameters.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\PanelSimulation.axaml.cs">
+      <DependentUpon>PanelSimulation.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\PanelStepEditor.axaml.cs">
+      <DependentUpon>PanelStepEditor.axaml</DependentUpon>
     </Compile>
     <Compile Update="Windows\WindowMain.axaml.cs">
       <DependentUpon>WindowMain.axaml</DependentUpon>

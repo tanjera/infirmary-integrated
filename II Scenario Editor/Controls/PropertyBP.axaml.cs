@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace II_Scenario_Editor.Controls {
 
@@ -54,31 +55,31 @@ namespace II_Scenario_Editor.Controls {
             numSystolic.Increment = sysInc;
             numSystolic.Minimum = sysMin;
             numSystolic.Maximum = sysMax;
-            numSystolic.ValueChanged += sendPropertyChange;
-            numSystolic.LostFocus += sendPropertyChange;
+            numSystolic.ValueChanged += SendPropertyChange;
+            numSystolic.LostFocus += SendPropertyChange;
 
             numDiastolic.Increment = diasInc;
             numDiastolic.Minimum = diasMin;
             numDiastolic.Maximum = diasMax;
-            numDiastolic.ValueChanged += sendPropertyChange;
-            numDiastolic.LostFocus += sendPropertyChange;
+            numDiastolic.ValueChanged += SendPropertyChange;
+            numDiastolic.LostFocus += SendPropertyChange;
         }
 
         public void Set (int systolic, int diastolic) {
             NumericUpDown numSystolic = this.FindControl<NumericUpDown> ("numSystolic");
             NumericUpDown numDiastolic = this.FindControl<NumericUpDown> ("numDiastolic");
 
-            numSystolic.ValueChanged -= sendPropertyChange;
-            numDiastolic.ValueChanged -= sendPropertyChange;
+            numSystolic.ValueChanged -= SendPropertyChange;
+            numDiastolic.ValueChanged -= SendPropertyChange;
 
             numSystolic.Value = systolic;
             numDiastolic.Value = diastolic;
 
-            numSystolic.ValueChanged += sendPropertyChange;
-            numDiastolic.ValueChanged += sendPropertyChange;
+            numSystolic.ValueChanged += SendPropertyChange;
+            numDiastolic.ValueChanged += SendPropertyChange;
         }
 
-        private void sendPropertyChange (object? sender, EventArgs e) {
+        private void SendPropertyChange (object? sender, EventArgs e) {
             NumericUpDown numSystolic = this.FindControl<NumericUpDown> ("numSystolic");
             NumericUpDown numDiastolic = this.FindControl<NumericUpDown> ("numDiastolic");
 
@@ -112,6 +113,7 @@ namespace II_Scenario_Editor.Controls {
                     case 2: ea.Value = II.Patient.CalculateMAP ((int)numSystolic.Value, (int)numDiastolic.Value); break;
                 }
 
+                Debug.WriteLine ($"PropertyChanged: {ea.Key} '{ea.Value}'");
                 PropertyChanged?.Invoke (this, ea);
             }
         }

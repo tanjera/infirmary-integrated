@@ -5,6 +5,7 @@ using Avalonia.Markup.Xaml;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace II_Scenario_Editor.Controls {
 
@@ -49,8 +50,8 @@ namespace II_Scenario_Editor.Controls {
             txtDescription.Text = Description;
             lblProgressionProperty.Content = $"Progression To: {StepToName}";
 
-            txtDescription.TextInput += sendPropertyChange;
-            txtDescription.LostFocus += sendPropertyChange;
+            txtDescription.TextInput += SendPropertyChange;
+            txtDescription.LostFocus += SendPropertyChange;
         }
 
         private void BtnDelete_Click (object? sender, RoutedEventArgs e) {
@@ -63,7 +64,7 @@ namespace II_Scenario_Editor.Controls {
             PropertyChanged?.Invoke (this, ea);
         }
 
-        private void sendPropertyChange (object? sender, EventArgs e) {
+        private void SendPropertyChange (object? sender, EventArgs e) {
             TextBox txtStepTo = this.FindControl<TextBox> ("txtStepTo");
             TextBox txtDescription = this.FindControl<TextBox> ("txtDescription");
 
@@ -73,6 +74,7 @@ namespace II_Scenario_Editor.Controls {
             ea.StepToName = StepToName;
             ea.Description = txtDescription.Text;
 
+            Debug.WriteLine ($"PropertyChanged: Progression {ea.UUID} -> {ea.StepToUUID} ({ea.StepToName}) {ea.Description}");
             PropertyChanged?.Invoke (this, ea);
         }
     }

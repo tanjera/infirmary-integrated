@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace II_Scenario_Editor.Controls {
 
@@ -57,31 +58,31 @@ namespace II_Scenario_Editor.Controls {
                 case Keys.TWave: lblKey.Content = "T Wave Elevation: "; break;
             }
 
-            dblI.ValueChanged += sendPropertyChange;
-            dblII.ValueChanged += sendPropertyChange;
-            dblIII.ValueChanged += sendPropertyChange;
-            dblaVR.ValueChanged += sendPropertyChange;
-            dblaVL.ValueChanged += sendPropertyChange;
-            dblaVF.ValueChanged += sendPropertyChange;
-            dblV1.ValueChanged += sendPropertyChange;
-            dblV2.ValueChanged += sendPropertyChange;
-            dblV3.ValueChanged += sendPropertyChange;
-            dblV4.ValueChanged += sendPropertyChange;
-            dblV5.ValueChanged += sendPropertyChange;
-            dblV6.ValueChanged += sendPropertyChange;
+            dblI.ValueChanged += SendPropertyChange;
+            dblII.ValueChanged += SendPropertyChange;
+            dblIII.ValueChanged += SendPropertyChange;
+            dblaVR.ValueChanged += SendPropertyChange;
+            dblaVL.ValueChanged += SendPropertyChange;
+            dblaVF.ValueChanged += SendPropertyChange;
+            dblV1.ValueChanged += SendPropertyChange;
+            dblV2.ValueChanged += SendPropertyChange;
+            dblV3.ValueChanged += SendPropertyChange;
+            dblV4.ValueChanged += SendPropertyChange;
+            dblV5.ValueChanged += SendPropertyChange;
+            dblV6.ValueChanged += SendPropertyChange;
 
-            dblI.LostFocus += sendPropertyChange;
-            dblII.LostFocus += sendPropertyChange;
-            dblIII.LostFocus += sendPropertyChange;
-            dblaVR.LostFocus += sendPropertyChange;
-            dblaVL.LostFocus += sendPropertyChange;
-            dblaVF.LostFocus += sendPropertyChange;
-            dblV1.LostFocus += sendPropertyChange;
-            dblV2.LostFocus += sendPropertyChange;
-            dblV3.LostFocus += sendPropertyChange;
-            dblV4.LostFocus += sendPropertyChange;
-            dblV5.LostFocus += sendPropertyChange;
-            dblV6.LostFocus += sendPropertyChange;
+            dblI.LostFocus += SendPropertyChange;
+            dblII.LostFocus += SendPropertyChange;
+            dblIII.LostFocus += SendPropertyChange;
+            dblaVR.LostFocus += SendPropertyChange;
+            dblaVL.LostFocus += SendPropertyChange;
+            dblaVF.LostFocus += SendPropertyChange;
+            dblV1.LostFocus += SendPropertyChange;
+            dblV2.LostFocus += SendPropertyChange;
+            dblV3.LostFocus += SendPropertyChange;
+            dblV4.LostFocus += SendPropertyChange;
+            dblV5.LostFocus += SendPropertyChange;
+            dblV6.LostFocus += SendPropertyChange;
         }
 
         public void Set (double [] values) {
@@ -98,18 +99,18 @@ namespace II_Scenario_Editor.Controls {
             NumericUpDown dblV5 = this.FindControl<NumericUpDown> ("dblV5");
             NumericUpDown dblV6 = this.FindControl<NumericUpDown> ("dblV6");
 
-            dblI.ValueChanged -= sendPropertyChange;
-            dblII.ValueChanged -= sendPropertyChange;
-            dblIII.ValueChanged -= sendPropertyChange;
-            dblaVR.ValueChanged -= sendPropertyChange;
-            dblaVL.ValueChanged -= sendPropertyChange;
-            dblaVF.ValueChanged -= sendPropertyChange;
-            dblV1.ValueChanged -= sendPropertyChange;
-            dblV2.ValueChanged -= sendPropertyChange;
-            dblV3.ValueChanged -= sendPropertyChange;
-            dblV4.ValueChanged -= sendPropertyChange;
-            dblV5.ValueChanged -= sendPropertyChange;
-            dblV6.ValueChanged -= sendPropertyChange;
+            dblI.ValueChanged -= SendPropertyChange;
+            dblII.ValueChanged -= SendPropertyChange;
+            dblIII.ValueChanged -= SendPropertyChange;
+            dblaVR.ValueChanged -= SendPropertyChange;
+            dblaVL.ValueChanged -= SendPropertyChange;
+            dblaVF.ValueChanged -= SendPropertyChange;
+            dblV1.ValueChanged -= SendPropertyChange;
+            dblV2.ValueChanged -= SendPropertyChange;
+            dblV3.ValueChanged -= SendPropertyChange;
+            dblV4.ValueChanged -= SendPropertyChange;
+            dblV5.ValueChanged -= SendPropertyChange;
+            dblV6.ValueChanged -= SendPropertyChange;
 
             dblI.Value = values [0];
             dblII.Value = values [1];
@@ -124,21 +125,21 @@ namespace II_Scenario_Editor.Controls {
             dblV5.Value = values [10];
             dblV6.Value = values [11];
 
-            dblI.ValueChanged += sendPropertyChange;
-            dblII.ValueChanged += sendPropertyChange;
-            dblIII.ValueChanged += sendPropertyChange;
-            dblaVR.ValueChanged += sendPropertyChange;
-            dblaVL.ValueChanged += sendPropertyChange;
-            dblaVF.ValueChanged += sendPropertyChange;
-            dblV1.ValueChanged += sendPropertyChange;
-            dblV2.ValueChanged += sendPropertyChange;
-            dblV3.ValueChanged += sendPropertyChange;
-            dblV4.ValueChanged += sendPropertyChange;
-            dblV5.ValueChanged += sendPropertyChange;
-            dblV6.ValueChanged += sendPropertyChange;
+            dblI.ValueChanged += SendPropertyChange;
+            dblII.ValueChanged += SendPropertyChange;
+            dblIII.ValueChanged += SendPropertyChange;
+            dblaVR.ValueChanged += SendPropertyChange;
+            dblaVL.ValueChanged += SendPropertyChange;
+            dblaVF.ValueChanged += SendPropertyChange;
+            dblV1.ValueChanged += SendPropertyChange;
+            dblV2.ValueChanged += SendPropertyChange;
+            dblV3.ValueChanged += SendPropertyChange;
+            dblV4.ValueChanged += SendPropertyChange;
+            dblV5.ValueChanged += SendPropertyChange;
+            dblV6.ValueChanged += SendPropertyChange;
         }
 
-        private void sendPropertyChange (object? sender, EventArgs e) {
+        private void SendPropertyChange (object? sender, EventArgs e) {
             NumericUpDown dblI = this.FindControl<NumericUpDown> ("dblI");
             NumericUpDown dblII = this.FindControl<NumericUpDown> ("dblII");
             NumericUpDown dblIII = this.FindControl<NumericUpDown> ("dblIII");
@@ -160,6 +161,8 @@ namespace II_Scenario_Editor.Controls {
                 dblV1.Value, dblV2.Value, dblV3.Value,
                 dblV4.Value, dblV5.Value, dblV6.Value
                 };
+
+            Debug.WriteLine ($"PropertyChanged: {ea.Key} '{ea.Values}'");
             PropertyChanged?.Invoke (this, ea);
         }
     }

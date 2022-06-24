@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace II_Scenario_Editor.Controls {
 
@@ -55,14 +56,14 @@ namespace II_Scenario_Editor.Controls {
                 listItems.Add (new ComboBoxItem () { Content = s });
 
             cmbEnumeration.Items = listItems;
-            cmbEnumeration.SelectionChanged += sendPropertyChange;
-            cmbEnumeration.LostFocus += sendPropertyChange;
+            cmbEnumeration.SelectionChanged += SendPropertyChange;
+            cmbEnumeration.LostFocus += SendPropertyChange;
         }
 
         public void Update (List<string> values, List<string> readable, int index = 0) {
             ComboBox cmbEnumeration = this.FindControl<ComboBox> ("cmbEnumeration");
 
-            cmbEnumeration.SelectionChanged -= sendPropertyChange;
+            cmbEnumeration.SelectionChanged -= SendPropertyChange;
 
             Values = new List<string> (values);
 
@@ -73,18 +74,18 @@ namespace II_Scenario_Editor.Controls {
             cmbEnumeration.Items = listItems;
             cmbEnumeration.SelectedIndex = index;
 
-            cmbEnumeration.SelectionChanged += sendPropertyChange;
+            cmbEnumeration.SelectionChanged += SendPropertyChange;
         }
 
         public void Set (int index) {
             ComboBox cmbEnumeration = this.FindControl<ComboBox> ("cmbEnumeration");
 
-            cmbEnumeration.SelectionChanged -= sendPropertyChange;
+            cmbEnumeration.SelectionChanged -= SendPropertyChange;
             cmbEnumeration.SelectedIndex = index;
-            cmbEnumeration.SelectionChanged += sendPropertyChange;
+            cmbEnumeration.SelectionChanged += SendPropertyChange;
         }
 
-        private void sendPropertyChange (object? sender, EventArgs e) {
+        private void SendPropertyChange (object? sender, EventArgs e) {
             ComboBox cmbEnumeration = this.FindControl<ComboBox> ("cmbEnumeration");
 
             if (cmbEnumeration.SelectedIndex < 0)
@@ -95,6 +96,7 @@ namespace II_Scenario_Editor.Controls {
             if (Values != null && Values.Count > 0)
                 ea.Value = Values [cmbEnumeration.SelectedIndex];
 
+            Debug.WriteLine ($"PropertyChanged: {ea.Key} '{ea.Value}'");
             PropertyChanged?.Invoke (this, ea);
         }
     }

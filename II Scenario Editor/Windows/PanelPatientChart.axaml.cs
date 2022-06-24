@@ -25,12 +25,12 @@ using II_Scenario_Editor.Controls;
 
 namespace II_Scenario_Editor.Windows {
 
-    public partial class PanelChart : UserControl {
+    public partial class PanelPatientChart : UserControl {
         /* Pointer to main data structure for the scenario, patient, devices, etc. */
         private Scenario Scenario;
         private WindowMain IMain;
 
-        public PanelChart () {
+        public PanelPatientChart () {
             InitializeComponent ();
         }
 
@@ -52,6 +52,9 @@ namespace II_Scenario_Editor.Windows {
 
         private void MenuFileSave_Click (object sender, RoutedEventArgs e)
             => IMain.MenuFileSave_Click (sender, e);
+
+        private void MenuFileSaveAs_Click (object sender, RoutedEventArgs e)
+            => IMain.MenuFileSaveAs_Click (sender, e);
 
         private void MenuFileExit_Click (object sender, RoutedEventArgs e)
             => IMain.MenuFileExit_Click (sender, e);

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		         xmlns:iic="clr-namespace:II_Scenario_Editor.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="II_Scenario_Editor.Windows.PanelOverview">
+             x:Class="II_Scenario_Editor.Windows.PanelStepEditor">
 
   <UserControl.Styles>
     <Style Selector="Label">
@@ -28,31 +28,34 @@
     <!--  Main Menu  -->
     <Menu DockPanel.Dock="Top">
       <MenuItem Name="menuFile"
-                  Header="File">
+                  Header="_File">
         <MenuItem Name="menuNew"
-              Header="New Scenario"
-              Click="MenuFileNew_Click" />
+                  Header="New"
+                  Click="MenuFileNew_Click" />
         <Separator />
         <MenuItem Name="menuLoad"
-              Header="Load Scenario"
+              Header="_Open"
               Click="MenuFileLoad_Click" />
         <MenuItem Name="menuSave"
-              Header="Save Scenario"
+              Header="_Save"
               Click="MenuFileSave_Click" />
+        <MenuItem Name="menuSaveAs"
+              Header="Save As"
+              Click="MenuFileSaveAs_Click" />
         <Separator />
         <MenuItem Name="menuExit"
-              Header="Exit Program"
+              Header="E_xit Program"
               Click="MenuFileExit_Click" />
       </MenuItem>
 
       <MenuItem Name="menuEdit"
-                  Header="Edit">
+                  Header="_Edit">
 
         <MenuItem Name="menuEditAddStep"
-              Header="Add Step"
+              Header="_Add Step"
               Click="MenuEditAddStep_Click" />
         <MenuItem Name="menuEditDuplicateStep"
-              Header="Duplicate Step"
+              Header="_Duplicate Step"
               Click="MenuEditDuplicateStep_Click" />
 
         <Separator />
@@ -72,9 +75,9 @@
       </MenuItem>
 
       <MenuItem Name="menuHelp"
-          Header="Help">
+          Header="_Help">
         <MenuItem Name="menuAbout"
-              Header="About"
+              Header="_About"
               Click="MenuHelpAbout_Click" />
       </MenuItem>
     </Menu>
@@ -92,26 +95,6 @@
               HorizontalScrollBarVisibility="Auto"
               Background="White">
         <StackPanel Orientation="Vertical">
-
-          <!-- Scenario properties -->
-
-          <Expander IsExpanded="True"
-                    HorizontalContentAlignment="Stretch">
-            <Expander.Header>
-              <Label Name="lblScenarioProperty"
-                   Content="Edit Scenario Properties" />
-            </Expander.Header>
-
-            <StackPanel Orientation="Vertical"
-                        Margin="3">
-              <iic:PropertyString x:Name="pstrScenarioAuthor" />
-              <iic:PropertyString x:Name="pstrScenarioName" />
-              <iic:PropertyString x:Name="pstrScenarioDescription" />
-            </StackPanel>
-          </Expander>
-
-          <Separator Margin="0 5" />
-
           <!-- Step Information -->
 
           <Expander IsExpanded="True"

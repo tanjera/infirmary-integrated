@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace II_Scenario_Editor.Controls {
 
@@ -52,25 +53,26 @@ namespace II_Scenario_Editor.Controls {
                 case Keys.StepDescription: lblKey.Content = "Description: "; break;
             }
 
-            txtValue.TextInput += sendPropertyChange;
-            txtValue.LostFocus += sendPropertyChange;
+            txtValue.KeyUp += SendPropertyChange;
+            txtValue.LostFocus += SendPropertyChange;
         }
 
         public void Set (string value) {
             TextBox txtValue = this.FindControl<TextBox> ("txtValue");
 
-            txtValue.TextInput -= sendPropertyChange;
+            txtValue.TextInput -= SendPropertyChange;
             txtValue.Text = value;
-            txtValue.TextInput += sendPropertyChange;
+            txtValue.TextInput += SendPropertyChange;
         }
 
-        private void sendPropertyChange (object? sender, EventArgs e) {
+        private void SendPropertyChange (object? sender, EventArgs e) {
             TextBox txtValue = this.FindControl<TextBox> ("txtValue");
 
             PropertyStringEventArgs ea = new PropertyStringEventArgs ();
             ea.Key = Key;
             ea.Value = txtValue?.Text ?? "";
 
+            Debug.WriteLine ($"PropertyChanged: {ea.Key} '{ea.Value}'");
             PropertyChanged?.Invoke (this, ea);
         }
     }

@@ -44,16 +44,20 @@
   </Window.Styles>
 
   <TabControl Name="tabControl">
-    <TabItem Header="Overview Editor">
-      <iiw:PanelOverview x:Name="panelOverview" />
+    <TabItem Header="Simulation Options">
+      <iiw:PanelSimulation x:Name="panelSimulation" />
     </TabItem>
 
-    <TabItem Header="Devices and Parameters Editor">
-      <iiw:PanelDevices x:Name="panelDevices" />
+    <TabItem Header="Steps and Progressions">
+      <iiw:PanelStepEditor x:Name="panelStepEditor" />
     </TabItem>
 
-    <TabItem Header="Patient Chart Editor">
-      <iiw:PanelChart x:Name="panelChart" />
+    <TabItem Header="Physiologic Parameters">
+      <iiw:PanelPatientParameters x:Name="panelPatientParameters" />
+    </TabItem>
+
+    <TabItem Header="Patient Chart">
+      <iiw:PanelPatientChart x:Name="panelPatientChart" />
     </TabItem>
   </TabControl>
 </Window>
