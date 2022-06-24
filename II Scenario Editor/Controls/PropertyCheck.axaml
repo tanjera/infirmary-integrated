@@ -4,8 +4,8 @@
 						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 						 mc:Ignorable="d"
 						 x:Class="II_Scenario_Editor.Controls.PropertyCheck"
-						 HorizontalAlignment="Stretch"
-						 Margin="0">
+             HorizontalAlignment="Stretch"
+						 Margin="2">
 
   <Grid>
     <Grid.ColumnDefinitions>

@@ -5,7 +5,13 @@
              mc:Ignorable="d"
              x:Class="II_Scenario_Editor.Controls.PropertyECGSegment"
              HorizontalAlignment="Stretch"
-             Margin="0">
+             Margin="2">
+
+  <UserControl.Styles>
+    <Style Selector="Label">
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+  </UserControl.Styles>
 
   <UserControl.Styles>
     <Style Selector="NumericUpDown.ecg">

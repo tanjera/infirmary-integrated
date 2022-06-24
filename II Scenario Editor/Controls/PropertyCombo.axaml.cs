@@ -7,25 +7,23 @@ using System.Collections.Generic;
 
 namespace II_Scenario_Editor.Controls {
 
-    public partial class PropertyEnum : UserControl {
+    public partial class PropertyCombo : UserControl {
         public Keys Key;
         public List<string>? Values;
 
         public enum Keys {
-            Cardiac_Axis,
-            Cardiac_Rhythms,
-            Respiratory_Rhythms,
-            PACatheter_Rhythms
+            DefaultSource,
+            DefaultProgression
         }
 
-        public new event EventHandler<PropertyEnumEventArgs>? PropertyChanged;
+        public new event EventHandler<PropertyComboEventArgs>? PropertyChanged;
 
-        public class PropertyEnumEventArgs : EventArgs {
+        public class PropertyComboEventArgs : EventArgs {
             public Keys Key;
             public string? Value;
         }
 
-        public PropertyEnum () {
+        public PropertyCombo () {
             InitializeComponent ();
         }
 
@@ -36,7 +34,7 @@ namespace II_Scenario_Editor.Controls {
         public void Init (Keys key, string [] values, List<string> readable) {
             if (PropertyChanged != null) {              // In case of re-initiation, need to wipe all subscriptions
                 foreach (Delegate d in PropertyChanged.GetInvocationList ())
-                    PropertyChanged -= (EventHandler<PropertyEnumEventArgs>)d;
+                    PropertyChanged -= (EventHandler<PropertyComboEventArgs>)d;
             }
 
             Label lblKey = this.FindControl<Label> ("lblKey");
@@ -47,10 +45,8 @@ namespace II_Scenario_Editor.Controls {
 
             switch (Key) {
                 default: break;
-                case Keys.Cardiac_Axis: lblKey.Content = "Cardiac Axis: "; break;
-                case Keys.Cardiac_Rhythms: lblKey.Content = "Cardiac Rhythm: "; break;
-                case Keys.Respiratory_Rhythms: lblKey.Content = "Respiratory Rhythm: "; break;
-                case Keys.PACatheter_Rhythms: lblKey.Content = "Pulmonary Artery Catheter Placement: "; break;
+                case Keys.DefaultSource: lblKey.Content = "Default Step to Progress From: "; break;
+                case Keys.DefaultProgression: lblKey.Content = "Default Step to Progress To: "; break;
             }
 
             List<ComboBoxItem> listItems = new List<ComboBoxItem> ();
@@ -61,6 +57,23 @@ namespace II_Scenario_Editor.Controls {
             cmbEnumeration.Items = listItems;
             cmbEnumeration.SelectionChanged += sendPropertyChange;
             cmbEnumeration.LostFocus += sendPropertyChange;
+        }
+
+        public void Update (List<string> values, List<string> readable, int index = 0) {
+            ComboBox cmbEnumeration = this.FindControl<ComboBox> ("cmbEnumeration");
+
+            cmbEnumeration.SelectionChanged -= sendPropertyChange;
+
+            Values = new List<string> (values);
+
+            List<ComboBoxItem> listItems = new List<ComboBoxItem> ();
+            foreach (string s in readable)
+                listItems.Add (new ComboBoxItem () { Content = s });
+
+            cmbEnumeration.Items = listItems;
+            cmbEnumeration.SelectedIndex = index;
+
+            cmbEnumeration.SelectionChanged += sendPropertyChange;
         }
 
         public void Set (int index) {
@@ -77,7 +90,7 @@ namespace II_Scenario_Editor.Controls {
             if (cmbEnumeration.SelectedIndex < 0)
                 return;
 
-            PropertyEnumEventArgs ea = new PropertyEnumEventArgs ();
+            PropertyComboEventArgs ea = new PropertyComboEventArgs ();
             ea.Key = Key;
             if (Values != null && Values.Count > 0)
                 ea.Value = Values [cmbEnumeration.SelectedIndex];

@@ -11,8 +11,6 @@ namespace II_Scenario_Editor.Controls {
         public Keys Key;
 
         public enum Keys {
-            DefaultSource,
-            DefaultProgression,
             ScenarioAuthor,
             ScenarioName,
             ScenarioDescription,
@@ -36,14 +34,17 @@ namespace II_Scenario_Editor.Controls {
         }
 
         public void Init (Keys key) {
+            if (PropertyChanged != null) {              // In case of re-initiation, need to wipe all subscriptions
+                foreach (Delegate d in PropertyChanged.GetInvocationList ())
+                    PropertyChanged -= (EventHandler<PropertyStringEventArgs>)d;
+            }
+
             Label lblKey = this.FindControl<Label> ("lblKey");
             TextBox txtValue = this.FindControl<TextBox> ("txtValue");
 
             Key = key;
             switch (Key) {
                 default: break;
-                case Keys.DefaultSource: lblKey.Content = "Default Step to Progress From: "; break;
-                case Keys.DefaultProgression: lblKey.Content = "Default Step to Progress To: "; break;
                 case Keys.ScenarioAuthor: lblKey.Content = "Author: "; break;
                 case Keys.ScenarioName: lblKey.Content = "Title: "; break;
                 case Keys.ScenarioDescription: lblKey.Content = "Description: "; break;

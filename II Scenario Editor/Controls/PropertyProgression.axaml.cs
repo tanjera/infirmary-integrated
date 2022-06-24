@@ -8,21 +8,23 @@ using System.Collections.Generic;
 
 namespace II_Scenario_Editor.Controls {
 
-    public partial class PropertyOptProgression : UserControl {
-        public int Index;
+    public partial class PropertyProgression : UserControl {
+        public string? UUID;
         public string? StepToUUID;
+        public string? StepToName;
         public string? Description;
 
-        public new event EventHandler<PropertyOptProgressionEventArgs>? PropertyChanged;
+        public new event EventHandler<PropertyProgressionEventArgs>? PropertyChanged;
 
-        public class PropertyOptProgressionEventArgs : EventArgs {
-            public int Index;
+        public class PropertyProgressionEventArgs : EventArgs {
+            public string? UUID;
             public string? StepToUUID;
+            public string? StepToName;
             public string? Description;
             public bool ToDelete = false;
         }
 
-        public PropertyOptProgression () {
+        public PropertyProgression () {
             InitializeComponent ();
         }
 
@@ -30,31 +32,32 @@ namespace II_Scenario_Editor.Controls {
             AvaloniaXamlLoader.Load (this);
         }
 
-        public void Init (int index, string? stepTo, string? desc) {
-            Index = index;
-            StepToUUID = stepTo;
+        public void Init (string? uuid, string? stepToUUID, string? stepToName, string? desc) {
+            if (PropertyChanged != null) {              // In case of re-initiation, need to wipe all subscriptions
+                foreach (Delegate d in PropertyChanged.GetInvocationList ())
+                    PropertyChanged -= (EventHandler<PropertyProgressionEventArgs>)d;
+            }
+
+            UUID = uuid;
+            StepToUUID = stepToUUID;
+            StepToName = stepToName;
             Description = desc;
 
             Label lblProgressionProperty = this.FindControl<Label> ("lblProgressionProperty");
-            TextBox txtStepTo = this.FindControl<TextBox> ("txtStepTo");
             TextBox txtDescription = this.FindControl<TextBox> ("txtDescription");
 
-            txtStepTo.Text = StepToUUID;
             txtDescription.Text = Description;
-
-            lblProgressionProperty.Content = String.Format ("Edit Optional Progression To Step #{0:000}", StepToUUID);
-
-            txtStepTo.TextInput += sendPropertyChange;
-            txtStepTo.LostFocus += sendPropertyChange;
+            lblProgressionProperty.Content = $"Progression To: {StepToName}";
 
             txtDescription.TextInput += sendPropertyChange;
             txtDescription.LostFocus += sendPropertyChange;
         }
 
         private void BtnDelete_Click (object? sender, RoutedEventArgs e) {
-            PropertyOptProgressionEventArgs ea = new PropertyOptProgressionEventArgs ();
-            ea.Index = Index;
+            PropertyProgressionEventArgs ea = new PropertyProgressionEventArgs ();
+            ea.UUID = UUID;
             ea.StepToUUID = StepToUUID;
+            ea.StepToName = StepToName;
             ea.ToDelete = true;
 
             PropertyChanged?.Invoke (this, ea);
@@ -64,9 +67,10 @@ namespace II_Scenario_Editor.Controls {
             TextBox txtStepTo = this.FindControl<TextBox> ("txtStepTo");
             TextBox txtDescription = this.FindControl<TextBox> ("txtDescription");
 
-            PropertyOptProgressionEventArgs ea = new PropertyOptProgressionEventArgs ();
-            ea.Index = Index;
-            ea.StepToUUID = txtStepTo.Text;
+            PropertyProgressionEventArgs ea = new PropertyProgressionEventArgs ();
+            ea.UUID = UUID;
+            ea.StepToUUID = StepToUUID;
+            ea.StepToName = StepToName;
             ea.Description = txtDescription.Text;
 
             PropertyChanged?.Invoke (this, ea);

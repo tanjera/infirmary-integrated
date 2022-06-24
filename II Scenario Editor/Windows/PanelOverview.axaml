@@ -7,6 +7,10 @@
              x:Class="II_Scenario_Editor.Windows.PanelOverview">
 
   <UserControl.Styles>
+    <Style Selector="Label">
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
     <Style Selector="Menu">
       <Setter Property="BorderBrush" Value="#bbbbbb" />
       <Setter Property="BorderThickness" Value="0 0 0 1" />
@@ -65,12 +69,6 @@
         <MenuItem Name="menuEditPastePatient"
                   Header="Paste Patient Properties"
                   Click="MenuEditPastePatient_Click" />
-
-        <Separator />
-
-        <MenuItem Name="menuEditIndexSteps"
-              Header="Reset Step Indices"
-              Click="MenuEditIndexSteps_Click" />
       </MenuItem>
 
       <MenuItem Name="menuHelp"
@@ -88,7 +86,6 @@
         <ColumnDefinition Width="Auto" />
         <ColumnDefinition Width="3 *" />
       </Grid.ColumnDefinitions>
-
       <ScrollViewer Name="scrollToolbox"
               Grid.Column="0"
               VerticalScrollBarVisibility="Auto"
@@ -105,8 +102,8 @@
                    Content="Edit Scenario Properties" />
             </Expander.Header>
 
-            <StackPanel Margin="3"
-                  Orientation="Vertical">
+            <StackPanel Orientation="Vertical"
+                        Margin="3">
               <iic:PropertyString x:Name="pstrScenarioAuthor" />
               <iic:PropertyString x:Name="pstrScenarioName" />
               <iic:PropertyString x:Name="pstrScenarioDescription" />
@@ -124,8 +121,8 @@
                    Content="Step Information" />
             </Expander.Header>
 
-            <StackPanel Margin="3"
-                        Orientation="Vertical">
+            <StackPanel Orientation="Vertical"
+                        Margin="3">
               <iic:PropertyString x:Name="pstrStepName" />
               <iic:PropertyString x:Name="pstrStepDescription" />
             </StackPanel>
@@ -140,22 +137,19 @@
                    Content="Edit Progressions" />
             </Expander.Header>
             <StackPanel>
-              <StackPanel Margin="3"
-                    Orientation="Vertical">
+              <StackPanel Orientation="Vertical"
+                          Margin="3">
 
-                <iic:PropertyString x:Name="pstrProgressFrom" />
-                <iic:PropertyString x:Name="pstrProgressTo" />
+                <iic:PropertyCombo x:Name="pcmbProgressFrom" />
+                <iic:PropertyCombo x:Name="pcmbProgressTo" />
                 <iic:PropertyInt x:Name="pintProgressTimer" />
-                <Label Content="Note: Entering a value of -1 disables the timer or progress target." />
-                <Button Name="btnDeleteProgression"
-                    Content="Delete Default Progression"
-                    Click="BtnDeleteDefaultProgression_Click"
-                    Margin="5, 2" />
+                <Label Content="Note: Entering a value of -1 disables the timer or progress target."
+                       Margin="2" />
               </StackPanel>
 
               <StackPanel Name="stackProgressions"
-                    Margin="3"
-                    Orientation="Vertical" />
+                          Orientation="Vertical"
+                          Margin="3" />
             </StackPanel>
           </Expander>
         </StackPanel>
@@ -169,9 +163,14 @@
 
       <!-- Toolbox Buttons -->
 
-      <StackPanel Grid.Column="2"
-                  Orientation="Horizontal">
-        <StackPanel Orientation="Vertical">
+      <Grid Grid.Column="2">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0"
+                    Orientation="Vertical">
 
           <Button Name="btnAddStep"
                   Click="ButtonAddStep_Click"
@@ -208,12 +207,12 @@
         <!-- Designer Canvas -->
 
         <Canvas Name="cnvsDesigner"
-
+                Grid.Column="1"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Margin="0"
                 Background="Transparent" />
-      </StackPanel>
+      </Grid>
     </Grid>
   </DockPanel>
 </UserControl>

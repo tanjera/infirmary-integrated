@@ -80,7 +80,7 @@ namespace II {
             Name = "";
             Description = "";
             Author = "";
-            Updated = DateTime.Now;
+            Updated = DateTime.UtcNow;
         }
 
         public Patient Patient {
@@ -89,18 +89,19 @@ namespace II {
         }
 
         public void Load_Process (string inc) {
-            StringReader sRead = new StringReader (inc);
-            string line, pline;
+            StringReader sRead = new (inc);
+            string? line, pline;
             StringBuilder pbuffer;
 
             this.Reset ();
 
             try {
-                while ((line = sRead.ReadLine ()) != null) {
+                while (!String.IsNullOrEmpty (line = sRead.ReadLine ())) {
+                    line = line.Trim ();
                     if (line == "> Begin: Step") {
                         pbuffer = new StringBuilder ();
 
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Step")
+                        while ((pline = sRead.ReadLine ().Trim ()) != null && pline != "> End: Step")
                             pbuffer.AppendLine (pline);
 
                         Step s = new Step ();
@@ -129,19 +130,20 @@ namespace II {
             sRead.Close ();
         }
 
-        public string Save () {
+        public string Save (int indent = 1) {
+            string dent = Utility.Indent (indent);
             StringBuilder sWrite = new StringBuilder ();
 
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Updated", Utility.DateTime_ToString (Updated)));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Name", Name));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Description", Description));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Author", Author));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Beginning", BeginStep));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Updated", Utility.DateTime_ToString (Updated)));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Name", Name));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Description", Description));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Author", Author));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Beginning", BeginStep));
 
             for (int i = 0; i < Steps.Count; i++) {
-                sWrite.AppendLine ("> Begin: Step");
-                sWrite.Append (Steps [i].Save ());
-                sWrite.AppendLine ("> End: Step");
+                sWrite.AppendLine ($"{dent}> Begin: Step");
+                sWrite.Append (Steps [i].Save (indent + 1));
+                sWrite.AppendLine ($"{dent}> End: Step");
             }
 
             return sWrite.ToString ();
@@ -153,7 +155,7 @@ namespace II {
             string? progFrom = AtStep;
 
             if (String.IsNullOrEmpty (optProg)) {                            // Default Progression
-                AtStep = Current?.DefaultProgression?.ToStepUUID;
+                AtStep = Current?.DefaultProgression?.DestinationUUID;
             } else {                                                                // Optional Progression
                 AtStep = optProg;
             }
@@ -275,11 +277,12 @@ namespace II {
 
             public void Load_Process (string inc) {
                 StringReader sRead = new StringReader (inc);
-                string line, pline;
+                string? line, pline;
                 StringBuilder pbuffer;
 
                 try {
-                    while ((line = sRead.ReadLine ()) != null) {
+                    while (!String.IsNullOrEmpty (line = sRead.ReadLine ())) {
+                        line = line.Trim ();
                         if (line == "> Begin: Patient") {
                             pbuffer = new StringBuilder ();
 
@@ -293,7 +296,7 @@ namespace II {
                             while ((pline = sRead.ReadLine ()) != null && pline != "> End: Progression")
                                 pbuffer.AppendLine (pline);
 
-                            Progression p = new Progression ();
+                            Progression p = new ();
                             p.Load_Process (pbuffer.ToString ());
                             Progressions.Add (p);
 
@@ -320,23 +323,25 @@ namespace II {
                 sRead.Close ();
             }
 
-            public string Save () {
+            public string Save (int indent = 1) {
+                string dent = Utility.Indent (indent);
                 StringBuilder sWrite = new StringBuilder ();
 
-                sWrite.AppendLine (String.Format ("{0}:{1}", "Name", Name));
-                sWrite.AppendLine (String.Format ("{0}:{1}", "Description", Description));
-                sWrite.AppendLine (String.Format ("{0}:{1}", "DefaultProgression", DefaultProgression?.UUID));
-                sWrite.AppendLine (String.Format ("{0}:{1}", "DefaultSource", DefaultSource));
-                sWrite.AppendLine (String.Format ("{0}:{1}", "ProgressTime", ProgressTimer));
+                sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "UUID", UUID));
+                sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Name", Name));
+                sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Description", Description));
+                sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "DefaultProgression", DefaultProgression?.UUID));
+                sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "DefaultSource", DefaultSource));
+                sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ProgressTime", ProgressTimer));
 
-                sWrite.AppendLine ("> Begin: Patient");
-                sWrite.Append (Patient.Save ());
-                sWrite.AppendLine ("> End: Patient");
+                sWrite.AppendLine ($"{dent}> Begin: Patient");
+                sWrite.Append (Patient.Save (indent + 1));
+                sWrite.AppendLine ($"{dent}> End: Patient");
 
                 foreach (Progression p in Progressions) {
-                    sWrite.AppendLine ("> Begin: Progression");
-                    sWrite.Append (p.Save ());
-                    sWrite.AppendLine ("> End: Progression");
+                    sWrite.AppendLine ($"{dent}> Begin: Progression");
+                    sWrite.Append (p.Save (indent + 1));
+                    sWrite.AppendLine ($"{dent}> End: Progression");
                 }
 
                 return sWrite.ToString ();
@@ -346,7 +351,7 @@ namespace II {
 
             public class Progression {
                 public string? UUID;
-                public string? ToStepUUID;
+                public string? DestinationUUID;
                 public string? Description;
 
                 public Progression () {
@@ -355,24 +360,27 @@ namespace II {
 
                 public Progression (string? uuid, string? dest, string? desc = "") {
                     UUID = uuid;
-                    ToStepUUID = dest;
+                    DestinationUUID = dest;
                     Description = desc;
                 }
 
                 public void Load_Process (string inc) {
                     StringReader sRead = new StringReader (inc);
-                    string line;
+                    string? line;
 
                     try {
-                        while ((line = sRead.ReadLine ()) != null) {
+                        while (!String.IsNullOrEmpty (line = sRead.ReadLine ())) {
+                            line = line.Trim ();
+
                             if (line.Contains (":")) {
                                 string pName = line.Substring (0, line.IndexOf (':')),
                                         pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
 
                                 switch (pName) {
                                     default: break;
+                                    case "UUID": UUID = pValue; break;
                                     case "Description": Description = pValue; break;
-                                    case "Destination": ToStepUUID = pValue; break;
+                                    case "DestinationUUID": DestinationUUID = pValue; break;
                                 }
                             }
                         }
@@ -383,11 +391,13 @@ namespace II {
                     sRead.Close ();
                 }
 
-                public string Save () {
-                    StringBuilder sWrite = new StringBuilder ();
+                public string Save (int indent = 1) {
+                    string dent = Utility.Indent (indent);
+                    StringBuilder sWrite = new ();
 
-                    sWrite.AppendLine (String.Format ("{0}:{1}", "Description", Description));
-                    sWrite.AppendLine (String.Format ("{0}:{1}", "Destination", ToStepUUID));
+                    sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "UUID", UUID));
+                    sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Description", Description));
+                    sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "DestinationUUID", DestinationUUID));
 
                     return sWrite.ToString ();
                 }

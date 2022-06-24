@@ -5,7 +5,13 @@
 			       mc:Ignorable="d"
 			       x:Class="II_Scenario_Editor.Controls.PropertyDouble"
 			       HorizontalAlignment="Stretch"
-			       Margin="0">
+			       Margin="2">
+
+  <UserControl.Styles>
+    <Style Selector="Label">
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+  </UserControl.Styles>
 
   <Grid>
     <Grid.ColumnDefinitions>
@@ -30,7 +36,6 @@
                    Minimum="0"
                    Maximum="500"
                    MinWidth="60"
-                   Height="22"
                    Margin="5,0"
                    FormatString="{}{0:#0.0}" />
   </Grid>

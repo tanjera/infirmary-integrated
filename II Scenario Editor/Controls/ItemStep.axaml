@@ -24,10 +24,10 @@
     <Border Name="brdStep"
             CornerRadius="5">
       <StackPanel Orientation="Vertical">
-        <Label Name="lblNumber"
-               Content="#" />
         <Label Name="lblName"
-               Content="Name" />
+               Content="" />
+        <Label Name="lblDescription"
+               Content="" />
       </StackPanel>
     </Border>
 

@@ -31,8 +31,6 @@ namespace II_Scenario_Editor.Controls {
         public List<Progression> Progressions = new List<Progression> ();
 
         /* Exposed properties */
-        public int Index;
-
         public string? UUID { get { return Step.UUID; } }
 
         /* Permanents for reference/interface styling */
@@ -52,56 +50,21 @@ namespace II_Scenario_Editor.Controls {
             set { Step.Patient = value; }
         }
 
-        public string? Label {
-            get {
-                Label lblName = this.FindControl<Label> ("lblName");
-                return lblName.Content.ToString ();
+        public string Name {
+            get { return Step.Name; }
+            set {
+                Step.Name = value;
+                this.FindControl<Label> ("lblName").Content = value;
             }
         }
 
-        public ItemStep () {
-            InitializeComponent ();
-
-            IStepEnd = this.FindControl<ItemStepEnd> ("iseStepEnd");
-            _ = IStepEnd.SetStep (this);
+        public string Description {
+            get { return Step.Description; }
+            set {
+                Step.Description = value;
+                this.FindControl<Label> ("lblDescription").Content = value;
+            }
         }
-
-        private void InitializeComponent () {
-            AvaloniaXamlLoader.Load (this);
-        }
-
-        public void SetNumber (int index) {
-            Label lblNumber = this.FindControl<Label> ("lblNumber");
-
-            Index = index;
-            lblNumber.Content = Index.ToString ();
-        }
-
-        public void SetName (string? name) {
-            if (String.IsNullOrEmpty (name))
-                name = "";
-
-            Label lblName = this.FindControl<Label> ("lblName");
-
-            Step.Name = name;
-            lblName.Content = name;
-        }
-
-        public async Task SetStep_Border (bool isSelected) {
-            Border step = this.FindControl<Border> ("brdStep");
-            step.BorderThickness = (isSelected) ? StrokeThickness_Selected : StrokeThickness_Default;
-        }
-
-        public async Task SetStep_Fill (Brush brush) {
-            Border step = this.FindControl<Border> ("brdStep");
-            step.Background = brush;
-        }
-
-        public async Task SetEndStep_Border (bool isSelected)
-            => IStepEnd.SetEndStep_Border (isSelected);
-
-        public async Task SetEndStep_Fill (Brush brush)
-            => IStepEnd.SetEndStep_Fill (brush);
 
         public class StepEnd : Border {
             public ItemStep Step;
@@ -127,5 +90,32 @@ namespace II_Scenario_Editor.Controls {
                 StepProgression = stepProgression;
             }
         }
+
+        public ItemStep () {
+            InitializeComponent ();
+
+            IStepEnd = this.FindControl<ItemStepEnd> ("iseStepEnd");
+            _ = IStepEnd.SetStep (this);
+        }
+
+        private void InitializeComponent () {
+            AvaloniaXamlLoader.Load (this);
+        }
+
+        public async Task SetStep_Border (bool isSelected) {
+            Border step = this.FindControl<Border> ("brdStep");
+            step.BorderThickness = (isSelected) ? StrokeThickness_Selected : StrokeThickness_Default;
+        }
+
+        public async Task SetStep_Fill (Brush brush) {
+            Border step = this.FindControl<Border> ("brdStep");
+            step.Background = brush;
+        }
+
+        public async Task SetEndStep_Border (bool isSelected)
+            => await IStepEnd.SetEndStep_Border (isSelected);
+
+        public async Task SetEndStep_Fill (Brush brush)
+            => await IStepEnd.SetEndStep_Fill (brush);
     }
 }

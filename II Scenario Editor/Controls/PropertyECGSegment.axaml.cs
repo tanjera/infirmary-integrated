@@ -31,6 +31,11 @@ namespace II_Scenario_Editor.Controls {
         }
 
         public void Init (Keys key) {
+            if (PropertyChanged != null) {              // In case of re-initiation, need to wipe all subscriptions
+                foreach (Delegate d in PropertyChanged.GetInvocationList ())
+                    PropertyChanged -= (EventHandler<PropertyECGEventArgs>)d;
+            }
+
             Label lblKey = this.FindControl<Label> ("lblKey");
             NumericUpDown dblI = this.FindControl<NumericUpDown> ("dblI");
             NumericUpDown dblII = this.FindControl<NumericUpDown> ("dblII");

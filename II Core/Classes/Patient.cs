@@ -485,9 +485,11 @@ namespace II {
             StringReader sRead = new StringReader (inc);
 
             try {
-                string line;
-                while ((line = sRead.ReadLine ()) != null) {
-                    if (line.Contains (":")) {
+                string? line;
+                while (!String.IsNullOrEmpty (line = sRead.ReadLine ())) {
+                    line = line.Trim ();
+
+                    if (line.Contains (':')) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
                         switch (pName) {
@@ -596,77 +598,78 @@ namespace II {
 
         /* Process for saving Patient{} information to simulation file  */
 
-        public string Save () {
+        public string Save (int indent = 1) {
+            string dent = Utility.Indent (indent);
             StringBuilder sWrite = new StringBuilder ();
 
             // File/scenario information
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Updated", Utility.DateTime_ToString (Updated)));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Updated", Utility.DateTime_ToString (Updated)));
 
             // Basic vital signs
-            sWrite.AppendLine (String.Format ("{0}:{1}", "HR", VS_Settings.HR));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "NSBP", VS_Settings.NSBP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "NDBP", VS_Settings.NDBP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "NMAP", VS_Settings.NMAP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "RR", VS_Settings.RR));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "SPO2", VS_Settings.SPO2));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "T", VS_Settings.T));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "HR", VS_Settings.HR));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "NSBP", VS_Settings.NSBP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "NDBP", VS_Settings.NDBP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "NMAP", VS_Settings.NMAP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "RR", VS_Settings.RR));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "SPO2", VS_Settings.SPO2));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "T", VS_Settings.T));
 
             // Rhythms
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Rhythm", Cardiac_Rhythm.Value));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_Rhythm", Respiratory_Rhythm.Value));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "PulmonaryArtery_Rhythm", PulmonaryArtery_Placement.Value));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Cardiac_Rhythm", Cardiac_Rhythm.Value));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Respiratory_Rhythm", Respiratory_Rhythm.Value));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "PulmonaryArtery_Rhythm", PulmonaryArtery_Placement.Value));
 
             // Advanced hemodynamics
-            sWrite.AppendLine (String.Format ("{0}:{1}", "ETCO2", VS_Settings.ETCO2));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "CVP", VS_Settings.CVP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "ASBP", VS_Settings.ASBP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "ADBP", VS_Settings.ADBP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "AMAP", VS_Settings.AMAP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "CO", VS_Settings.CO));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "PSP", VS_Settings.PSP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "PDP", VS_Settings.PDP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "PMP", VS_Settings.PMP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "ICP", VS_Settings.ICP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "IAP", VS_Settings.IAP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ETCO2", VS_Settings.ETCO2));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "CVP", VS_Settings.CVP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ASBP", VS_Settings.ASBP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ADBP", VS_Settings.ADBP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "AMAP", VS_Settings.AMAP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "CO", VS_Settings.CO));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "PSP", VS_Settings.PSP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "PDP", VS_Settings.PDP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "PMP", VS_Settings.PMP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ICP", VS_Settings.ICP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "IAP", VS_Settings.IAP));
 
             // Respiratory profile
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Mechanically_Ventilated", Mechanically_Ventilated));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_I", VS_Settings.RR_IE_I));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiratory_IERatio_E", VS_Settings.RR_IE_E));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Respiration_Inflated", Respiration_Inflated));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Mechanically_Ventilated", Mechanically_Ventilated));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Respiratory_IERatio_I", VS_Settings.RR_IE_I));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Respiratory_IERatio_E", VS_Settings.RR_IE_E));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Respiration_Inflated", Respiration_Inflated));
 
             // Cardiac profile
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Pacemaker_Threshold", Pacemaker_Threshold));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "PulsusParadoxus", Pulsus_Paradoxus));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "PulsusAlternans", Pulsus_Alternans));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Cardiac_Axis", Cardiac_Axis.Value));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "ST_Elevation", string.Join (",", ST_Elevation)));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "T_Elevation", string.Join (",", T_Elevation)));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Pacemaker_Threshold", Pacemaker_Threshold));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "PulsusParadoxus", Pulsus_Paradoxus));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "PulsusAlternans", Pulsus_Alternans));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Cardiac_Axis", Cardiac_Axis.Value));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ST_Elevation", string.Join (",", ST_Elevation)));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "T_Elevation", string.Join (",", T_Elevation)));
 
             // Obstetric profile
-            sWrite.AppendLine (String.Format ("{0}:{1}", "FHR", FHR));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "FHR_Variability", FHR_Variability.Value));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "FHR_Rhythms", string.Join (",", FHR_AccelDecels.ValueList)));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "UterineContraction_Frequency", Contraction_Frequency));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "UterineContraction_Duration", Contraction_Duration));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "UterineContraction_Intensity", Contraction_Intensity.Value));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Uterus_Contracted", Uterus_Contracted));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "FHR", FHR));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "FHR_Variability", FHR_Variability.Value));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "FHR_Rhythms", string.Join (",", FHR_AccelDecels.ValueList)));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "UterineContraction_Frequency", Contraction_Frequency));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "UterineContraction_Duration", Contraction_Duration));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "UterineContraction_Intensity", Contraction_Intensity.Value));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Uterus_Contracted", Uterus_Contracted));
 
             // Device settings
-            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_ABP", TransducerZeroed_ABP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_CVP", TransducerZeroed_CVP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_PA", TransducerZeroed_PA));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_ICP", TransducerZeroed_ICP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "TransducerZeroed_IAP", TransducerZeroed_IAP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "TransducerZeroed_ABP", TransducerZeroed_ABP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "TransducerZeroed_CVP", TransducerZeroed_CVP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "TransducerZeroed_PA", TransducerZeroed_PA));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "TransducerZeroed_ICP", TransducerZeroed_ICP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "TransducerZeroed_IAP", TransducerZeroed_IAP));
 
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Pacemaker_Rate", Pacemaker_Rate));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Pacemaker_Energy", Pacemaker_Energy));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Pacemaker_Rate", Pacemaker_Rate));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Pacemaker_Energy", Pacemaker_Energy));
 
-            sWrite.AppendLine (String.Format ("{0}:{1}", "IABP_AP", IABP_AP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "IABP_DBP", IABP_DBP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "IABP_MAP", IABP_MAP));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "IABP_Active", IABP_Active));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "IABP_Trigger", IABP_Trigger));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "IABP_AP", IABP_AP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "IABP_DBP", IABP_DBP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "IABP_MAP", IABP_MAP));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "IABP_Active", IABP_Active));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "IABP_Trigger", IABP_Trigger));
 
             return sWrite.ToString ();
         }

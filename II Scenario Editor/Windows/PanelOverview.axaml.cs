@@ -83,50 +83,51 @@ namespace II_Scenario_Editor.Windows {
             Scenario = s;
 
             await InitInterface ();
-            await UpdateStepViewModel ();
-        }
-
-        public async Task InitScenario (Scenario s) {
-            Scenario = s;
-
-            await InitInterface ();
-
-            // Clear scenario data
-            Scenario.Author = "";
-            Scenario.Description = "";
-            Scenario.Name = "";
-
-            await UpdateStepViewModel ();
+            await UpdateViewModel ();
         }
 
         private async Task InitViewModel () {
+            PropertyCombo pcmbProgressFrom = this.FindControl<PropertyCombo> ("pcmbProgressFrom");
+            PropertyCombo pcmbProgressTo = this.FindControl<PropertyCombo> ("pcmbProgressTo");
             PropertyString pstrScenarioAuthor = this.FindControl<PropertyString> ("pstrScenarioAuthor");
             PropertyString pstrScenarioName = this.FindControl<PropertyString> ("pstrScenarioName");
             PropertyString pstrScenarioDescription = this.FindControl<PropertyString> ("pstrScenarioDescription");
-            PropertyString pstrProgressFrom = this.FindControl<PropertyString> ("pstrProgressFrom");
-            PropertyString pstrProgressTo = this.FindControl<PropertyString> ("pstrProgressTo");
             PropertyString pstrStepName = this.FindControl<PropertyString> ("pstrStepName");
             PropertyString pstrStepDescription = this.FindControl<PropertyString> ("pstrStepDescription");
             PropertyInt pintProgressTimer = this.FindControl<PropertyInt> ("pintProgressTimer");
 
             // Initiate controls for editing Scenario properties
+
+            pcmbProgressFrom.Init (PropertyCombo.Keys.DefaultSource, Array.Empty<string> (), new List<string> ());
+            pcmbProgressTo.Init (PropertyCombo.Keys.DefaultProgression, Array.Empty<string> (), new List<string> ());
             pstrScenarioAuthor.Init (PropertyString.Keys.ScenarioAuthor);
             pstrScenarioName.Init (PropertyString.Keys.ScenarioName);
             pstrScenarioDescription.Init (PropertyString.Keys.ScenarioDescription);
-            pstrProgressFrom.Init (PropertyString.Keys.DefaultSource);
-            pstrProgressTo.Init (PropertyString.Keys.DefaultProgression);
             pstrStepName.Init (PropertyString.Keys.StepName);
             pstrStepDescription.Init (PropertyString.Keys.StepDescription);
             pintProgressTimer.Init (PropertyInt.Keys.ProgressTimer, 1, -1, 1000);
 
+            pcmbProgressFrom.PropertyChanged += UpdateScenario;
+            pcmbProgressTo.PropertyChanged += UpdateScenario;
             pstrScenarioAuthor.PropertyChanged += UpdateScenario;
             pstrScenarioName.PropertyChanged += UpdateScenario;
             pstrScenarioDescription.PropertyChanged += UpdateScenario;
-            pstrProgressFrom.PropertyChanged += UpdateScenario;
-            pstrProgressTo.PropertyChanged += UpdateScenario;
             pstrStepName.PropertyChanged += UpdateScenario;
             pstrStepDescription.PropertyChanged += UpdateScenario;
             pintProgressTimer.PropertyChanged += UpdateScenario;
+        }
+
+        private void UpdateScenario (object? sender, PropertyCombo.PropertyComboEventArgs e) {
+            if (ISelectedStep != null) {
+                switch (e.Key) {
+                    default: break;
+                    case PropertyCombo.Keys.DefaultSource: ISelectedStep.Step.DefaultSource = e.Value; break;
+
+                    case PropertyCombo.Keys.DefaultProgression:
+                        ISelectedStep.Step.DefaultProgression = ISelectedStep.Step.Progressions.Find (p => p.UUID == e.Value);
+                        break;
+                }
+            }
         }
 
         private void UpdateScenario (object? sender, PropertyString.PropertyStringEventArgs e) {
@@ -140,10 +141,8 @@ namespace II_Scenario_Editor.Windows {
             if (ISelectedStep != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyString.Keys.DefaultSource: ISelectedStep.Step.DefaultSource = e.Value; break;
-                    case PropertyString.Keys.DefaultProgression: throw new NotImplementedException (); break;
-                    case PropertyString.Keys.StepName: ISelectedStep.SetName (e.Value ?? ""); break;
-                    case PropertyString.Keys.StepDescription: ISelectedStep.Step.Description = e.Value ?? ""; break;
+                    case PropertyString.Keys.StepName: ISelectedStep.Name = e.Value ?? ""; break;
+                    case PropertyString.Keys.StepDescription: ISelectedStep.Description = e.Value ?? ""; break;
                 }
             }
         }
@@ -157,22 +156,32 @@ namespace II_Scenario_Editor.Windows {
             }
         }
 
-        private void UpdateScenario (object? sender, PropertyOptProgression.PropertyOptProgressionEventArgs e) {
-            if (e.Index >= ISelectedStep?.Step.Progressions.Count)
+        private void UpdateScenario (object? sender, PropertyProgression.PropertyProgressionEventArgs e) {
+            if (ISelectedStep == null)
                 return;
 
-            Scenario.Step.Progression p = ISelectedStep.Step.Progressions [e.Index];
-            p.ToStepUUID = e.StepToUUID;
-            p.Description = e.Description ?? "";
+            Scenario.Step.Progression? prog = ISelectedStep?.Step.Progressions.Find (p => p.UUID == e.UUID);
 
-            // Deletes an optional progression via this route
+            if (prog == null)
+                return;
+
+            prog.DestinationUUID = e.StepToUUID;
+            prog.Description = e.Description ?? "";
+
+            // Deletes a progression via this route
             if (e.ToDelete) {
-                ISelectedStep.Step.Progressions.RemoveAt (e.Index);
+                ISelectedStep?.Step.Progressions.Remove (prog);
                 _ = UpdateProgressionViewModel ();
 
                 _ = UpdateIProgressions ();
                 _ = DrawIProgressions ();
             }
+        }
+
+        private async Task UpdateViewModel () {
+            await UpdateStepViewModel ();
+            await UpdateProgressionViewModel ();
+            await UpdateScenarioViewModel ();
         }
 
         private async Task UpdateProgressionViewModel () {
@@ -181,11 +190,15 @@ namespace II_Scenario_Editor.Windows {
 
             if (ISelectedStep != null) {
                 for (int i = 0; i < ISelectedStep.Step.Progressions.Count; i++) {
-                    Scenario.Step.Progression p = ISelectedStep.Step.Progressions [i];
-                    PropertyOptProgression pp = new PropertyOptProgression ();
-                    pp.Init (i, p.ToStepUUID, p.Description);
-                    pp.PropertyChanged += UpdateScenario;
-                    stackProgressions.Children.Add (pp);
+                    Scenario.Step.Progression prog = ISelectedStep.Step.Progressions [i];
+                    Scenario.Step? dest = Scenario.Steps.Find (s => s.UUID == prog.DestinationUUID);
+
+                    if (dest != null) {
+                        PropertyProgression pProg = new PropertyProgression ();
+                        pProg.Init (prog.UUID, prog.DestinationUUID, dest.Name, prog.Description);
+                        pProg.PropertyChanged += UpdateScenario;
+                        stackProgressions.Children.Add (pProg);
+                    }
                 }
             }
         }
@@ -197,57 +210,83 @@ namespace II_Scenario_Editor.Windows {
         }
 
         private async Task UpdateStepViewModel () {
-            if (ISelectedStep == null)
-                return;
-
             PropertyInt pintProgressTimer = this.FindControl<PropertyInt> ("pintProgressTimer");
-
-            PropertyString pstrProgressFrom = this.FindControl<PropertyString> ("pstrProgressFrom");
-            PropertyString pstrProgressTo = this.FindControl<PropertyString> ("pstrProgressTo");
+            PropertyCombo pcmbProgressFrom = this.FindControl<PropertyCombo> ("pcmbProgressFrom");
+            PropertyCombo pcmbProgressTo = this.FindControl<PropertyCombo> ("pcmbProgressTo");
             PropertyString pstrStepName = this.FindControl<PropertyString> ("pstrStepName");
             PropertyString pstrStepDescription = this.FindControl<PropertyString> ("pstrStepDescription");
 
-            pintProgressTimer.Set (ISelectedStep.Step.ProgressTimer);
+            pintProgressTimer.IsEnabled = (ISelectedStep != null);
+            pcmbProgressFrom.IsEnabled = (ISelectedStep != null);
+            pcmbProgressTo.IsEnabled = (ISelectedStep != null);
+            pstrStepName.IsEnabled = (ISelectedStep != null);
+            pstrStepDescription.IsEnabled = (ISelectedStep != null);
 
-            pstrProgressFrom.Set (ISelectedStep?.Step?.DefaultSource ?? "");
-            pstrProgressTo.Set (ISelectedStep?.Step?.DefaultProgression?.UUID ?? "");
-            pstrStepName.Set (ISelectedStep?.Step?.Name ?? "");
-            pstrStepDescription.Set (ISelectedStep?.Step?.Description ?? "");
+            if (ISelectedStep != null) {
+                /* This next chunk of code populates the "Progress To" and "Progress From" portion of the Step ViewModel*/
 
-            await UpdateProgressionViewModel ();
-            await UpdateScenarioViewModel ();
+                // Should only be able to select default source and destination progression based on existing progressions!
+                List<string> srcUUIDs = new () { "" }, srcNames = new () { "None" };
+                List<string> destUUIDs = new () { "" }, destNames = new () { "None" };
+
+                List<Scenario.Step> srcSteps = new (Scenario.Steps.FindAll (s => s.Progressions.Any (p => p.DestinationUUID == ISelectedStep.UUID)));
+                List<Scenario.Step> destSteps = new (Scenario.Steps.FindAll (s => ISelectedStep.Step.Progressions.Any (p => p.DestinationUUID == s.UUID)));
+
+                srcUUIDs.AddRange (srcSteps.Select (s => s.UUID ?? ""));
+                srcNames.AddRange (srcSteps.Select (s => s.Name ?? ""));
+                destUUIDs.AddRange (destSteps.Select (s => s.UUID ?? ""));
+                destNames.AddRange (destSteps.Select (s => s.Name ?? ""));
+
+                // Populate the actual ViewModel UserControls with the appropriate lists
+                pcmbProgressFrom.Update (srcUUIDs, srcNames,
+                    ISelectedStep.Step.DefaultSource == null ? 0 : srcUUIDs.FindIndex (ds => ds == ISelectedStep.Step.DefaultSource)
+                    );
+
+                pcmbProgressTo.Update (destUUIDs, destNames,
+                    ISelectedStep.Step.DefaultProgression == null ? 0 : destUUIDs.FindIndex (ds => ds == ISelectedStep.Step.DefaultProgression.DestinationUUID));
+
+                pintProgressTimer.Set (ISelectedStep.Step.ProgressTimer);
+                pstrStepName.Set (ISelectedStep?.Step?.Name ?? "");
+                pstrStepDescription.Set (ISelectedStep?.Step?.Description ?? "");
+            }
         }
 
         private async Task AddStep (ItemStep? incItem = null) {
+            // Create data structures
             ItemStep item = new ();
+            Scenario.Step step = new ();
+
+            // Reference all relevant and interwoven data structures
+            item.Step = step;
+            Scenario.Steps.Add (step);
+            ISteps.Add (item);
+            ICanvas.Children.Add (item);
 
             if (incItem != null) {  // Duplicate
-                // Copy interface properties and interface item properties
-                item.SetName (incItem.Label);
-
-                // Copy data structures
+                                    // Copy interface properties and interface item properties
+                item.Name = incItem.Name;
                 item.Step.Name = incItem.Step.Name;
+
+                item.Description = incItem.Description;
                 item.Step.Description = incItem.Step.Description;
 
                 await item.Step.Patient.Load_Process (incItem.Patient.Save ());
+            } else {
+                item.Name = $"Step #{ISteps.Count}";
             }
 
-            // Add to lists and display elements
-            ISteps.Add (item);
-            ICanvas.Children.Add (item);
-            item.ZIndex = 1;
+            // If this is the 1st step to be created, make it the Scenario's starting step
+            if (item == ISteps.First ())
+                Scenario.BeginStep = item.UUID;
 
+            item.ZIndex = 1;
             item.PointerPressed += Item_PointerPressed;
             item.PointerReleased += Item_PointerReleased;
             item.PointerMoved += Item_PointerMoved;
             item.IStepEnd.PointerPressed += Item_PointerPressed;
 
-            /* Set ItemStep.Index to currently highest Index + 1; is not actually used for indexing
-             * but for end-user experience and organization */
-            item.SetNumber (ISteps.Max (i => i.Index) + 1);
-
             // Refresh the Properties View and draw Progression elements/colors
-            await UpdateStepViewModel ();
+            await UpdateViewModel ();
             await DrawISteps ();
             await DrawIProgressions ();
         }
@@ -269,7 +308,7 @@ namespace II_Scenario_Editor.Windows {
 
                 // Remove all progressions targeting the Step being removed
                 for (int i = s.Step.Progressions.Count - 1; i >= 0; i--) {
-                    if (s.Step.Progressions [i].ToStepUUID == item.UUID)
+                    if (s.Step.Progressions [i].DestinationUUID == item.UUID)
                         s.Step.Progressions.RemoveAt (i);
                 }
             }
@@ -297,7 +336,7 @@ namespace II_Scenario_Editor.Windows {
 
             await UpdateIProgressions ();
             await DrawIProgressions ();
-            await UpdateStepViewModel ();
+            await UpdateViewModel ();
 
             Debug.WriteLine ($"Progression created from {itemFrom.UUID} -> {itemTo.UUID}");
         }
@@ -314,7 +353,7 @@ namespace II_Scenario_Editor.Windows {
                     bool isLinked = false;
                     foreach (Scenario.Step s in Scenario.Steps) {
                         foreach (Scenario.Step.Progression p in s.Progressions) {
-                            if (p.ToStepUUID == item.UUID) {
+                            if (p.DestinationUUID == item.UUID) {
                                 isLinked = true;
                             }
                         }
@@ -370,7 +409,7 @@ namespace II_Scenario_Editor.Windows {
                 istep.Progressions.Clear ();
 
                 foreach (Scenario.Step.Progression prog in istep.Step.Progressions) {
-                    ItemStep? itemTo = ISteps.Find (s => s.UUID == prog.ToStepUUID);
+                    ItemStep? itemTo = ISteps.Find (s => s.UUID == prog.DestinationUUID);
 
                     if (itemTo == null)
                         throw new IndexOutOfRangeException ();
@@ -383,13 +422,6 @@ namespace II_Scenario_Editor.Windows {
             }
         }
 
-        private async Task UpdateStepIndices () {
-            // Set all Steps' indices for their Labels
-            // Start at 1! This is an end-user convenience; these aren't used for data indexing, just aesthetics
-            for (int i = 1; i < ISteps.Count; i++)
-                ISteps [i].SetNumber (i);
-        }
-
         private async Task SelectIStep (ItemStep item, Avalonia.Input.Pointer? capture = null) {
             ISelectedStep = item;
             IsSelectedStepEnd = false;
@@ -398,6 +430,8 @@ namespace II_Scenario_Editor.Windows {
                 PointerCaptured = capture;
                 PointerCaptured.Capture (item);
             }
+
+            await UpdateViewModel ();
         }
 
         private async Task SelectEndStep (ItemStepEnd end, Avalonia.Input.Pointer? capture = null) {
@@ -408,6 +442,8 @@ namespace II_Scenario_Editor.Windows {
                 PointerCaptured = capture;
                 PointerCaptured.Capture (end.Step);
             }
+
+            await UpdateViewModel ();
         }
 
         private async Task DeselectAll () {
@@ -420,6 +456,8 @@ namespace II_Scenario_Editor.Windows {
                 PointerCaptured.Capture (null);
                 PointerCaptured = null;
             }
+
+            await UpdateViewModel ();
         }
 
         private void Action_AddStep ()
@@ -452,8 +490,6 @@ namespace II_Scenario_Editor.Windows {
             if (CopiedPatient != null) {
                 await ISelectedStep.Patient.Load_Process (CopiedPatient.Save ());
             }
-
-            await UpdateProgressionViewModel ();
         }
 
         /* Generic Menu Items (across all Panels) */
@@ -490,9 +526,6 @@ namespace II_Scenario_Editor.Windows {
         private void MenuEditPastePatient_Click (object sender, RoutedEventArgs e)
             => _ = Action_PastePatient ();
 
-        private void MenuEditIndexSteps_Click (object sender, RoutedEventArgs e)
-            => _ = UpdateStepIndices ();
-
         /* Any other Routed events for this Panel */
 
         private void ButtonAddStep_Click (object sender, RoutedEventArgs e)
@@ -509,10 +542,6 @@ namespace II_Scenario_Editor.Windows {
 
         private void BtnPastePatient_Click (object sender, RoutedEventArgs e)
             => _ = Action_PastePatient ();
-
-        private void BtnDeleteDefaultProgression_Click (object sender, RoutedEventArgs e) {
-            throw new NotImplementedException ();
-        }
 
         private void Item_PointerPressed (object? sender, PointerPressedEventArgs e) {
             if (sender is ItemStep item) {

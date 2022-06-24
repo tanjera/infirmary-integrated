@@ -3,75 +3,57 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             x:Class="II_Scenario_Editor.Controls.PropertyOptProgression"
+             x:Class="II_Scenario_Editor.Controls.PropertyProgression"
              HorizontalAlignment="Stretch"
-             Margin="0">
+             Margin="2">
 
-  <Border
-    BorderBrush="Black"
-    BorderThickness="0.25"
-    CornerRadius="2"
-    Margin="5"
-    Padding="5,2">
-    <Expander Name="expProgressionProperty"
-              IsExpanded="True">
-      <Expander.Header>
-        <Label Name="lblProgressionProperty"
-               Content="Edit Optional Progression #"
-               Margin="2"
-               FontSize="13"
-               FontWeight="Bold" />
-      </Expander.Header>
-      <Grid>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
+  <UserControl.Styles>
+    <Style Selector="Label">
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+  </UserControl.Styles>
 
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+  <Expander Name="expProgressionProperty"
+            HorizontalContentAlignment="Stretch"
+            IsExpanded="True">
+    <Expander.Header>
+      <Label Name="lblProgressionProperty"
+             Content="Edit Optional Progression #" />
+    </Expander.Header>
 
-        <Label Name="lblStepTo"
-               Grid.Column="0"
+    <Grid HorizontalAlignment="Stretch">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <Grid.RowDefinitions>
+        <RowDefinition />
+        <RowDefinition />
+      </Grid.RowDefinitions>
+
+      <Label Name="lblDescription"
+             Grid.Column="0"
+             Grid.Row="0"
+             Content="Description:"
+             HorizontalAlignment="Left"
+             Margin="2" />
+
+      <TextBox Name="txtDescription"
+               Grid.Column="1"
                Grid.Row="0"
-               Content="Step To Progress To:"
-               HorizontalAlignment="Left"
+               HorizontalAlignment="Stretch"
                Margin="2" />
 
-        <TextBox Name="txtStepTo"
-                       Grid.Column="1"
-                       Grid.Row="0"
-                       Height="22"
-                       Margin="5,2" />
-
-        <Label Name="lblDescription"
-               Grid.Column="0"
-               Grid.Row="1"
-               Grid.ColumnSpan="2"
-               Content="Description or Prerequisite for Progression:"
-               HorizontalAlignment="Left"
-               Margin="2" />
-
-        <TextBox Name="txtDescription"
-                 Grid.Column="0"
-                 Grid.Row="2"
-                 Grid.ColumnSpan="2"
-                 Height="22"
-                 Margin="5, 2" />
-
-        <Button Name="btnDelete"
-                Grid.Column="0"
-                Grid.Row="3"
-                Grid.ColumnSpan="2"
-                Height="22"
-                Margin="5, 2"
-                Click="BtnDelete_Click"
-                Content="Delete This Optional Progression" />
-      </Grid>
-    </Expander>
-  </Border>
+      <Button Name="btnDelete"
+              Grid.Column="0"
+              Grid.Row="1"
+              Grid.ColumnSpan="2"
+              HorizontalAlignment="Stretch"
+              HorizontalContentAlignment="Center"
+              Margin="5"
+              Click="BtnDelete_Click"
+              Content="Delete This Progression" />
+    </Grid>
+  </Expander>
 </UserControl>

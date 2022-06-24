@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
 
 using Avalonia;
 using Avalonia.Controls;
@@ -30,6 +31,14 @@ namespace II_Scenario_Editor {
 
             this.FindControl<Label> ("lblVersion").Content = String.Format ("Version {0}",
                 Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0");
+        }
+
+        public async Task AsyncShow (Window parent) {
+            if (!parent.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                parent.Show ();
+
+            this.Activate ();
+            await this.ShowDialog (parent);
         }
 
         private void Hyperlink_Website (object sender, RoutedEventArgs e)

@@ -7,11 +7,20 @@
 	Name="dlgAbout"
 	Title="About Infirmary Integrated: Scenario Editor"
 	Icon="avares://Infirmary Integrated Scenario Editor/Resources/Icon_IISE.ico"
-	Width="550"
-	Height="250"
+	SizeToContent="WidthAndHeight"
 	WindowStartupLocation="CenterScreen"
 	mc:Ignorable="d">
   <Window.Styles>
+    <Style Selector="Label">
+      <Setter Property="HorizontalAlignment" Value="Left" />
+      <Setter Property="MaxWidth" Value="500" />
+    </Style>
+
+    <Style Selector="TextBlock">
+      <Setter Property="HorizontalAlignment" Value="Left" />
+      <Setter Property="MaxWidth" Value="500" />
+    </Style>
+
     <Style Selector="Label.url">
       <Setter Property="Foreground" Value="Blue" />
       <Setter Property="BorderBrush" Value="Blue" />
@@ -45,7 +54,6 @@
         Name="lblInfirmaryIntegrated"
         Margin="5"
         Padding="5"
-        HorizontalAlignment="Left"
         VerticalAlignment="Bottom"
         FontSize="22"
         FontWeight="Bold"
@@ -54,20 +62,17 @@
       <Label
         Name="lblVersion"
         Margin="5,0"
-        Padding="5,2,5,0"
-        HorizontalAlignment="Left" />
+        Padding="5,2,5,0" />
 
       <Label
         Margin="5,0"
         Padding="5,0,5,2"
-        HorizontalAlignment="Left"
         Content="Ibi Keller, (c) 2017-2022" />
 
       <TextBlock
         Name="tblDescription"
         Margin="5"
         Padding="5,2"
-        HorizontalAlignment="Left"
         VerticalAlignment="Top"
         TextWrapping="Wrap"
         Text="The Infirmary Integrated: Scenario Editor is designed to be a comprehensive tool for creating in-depth scenarios for Infirmary Integrated with an easy to use interface." />
@@ -75,7 +80,6 @@
       <Label
         Margin="5,5,5,0"
         Padding="5,2,5,0"
-        HorizontalAlignment="Left"
         Classes="url"
         Tapped="Hyperlink_Website">
         http://www.infirmary-integrated.com/
@@ -84,7 +88,6 @@
       <Label
         Margin="5,0,5,5"
         Padding="5,0,5,2"
-        HorizontalAlignment="Left"
         Classes="url"
         Tapped="Hyperlink_GitRepo">
         https://github.com/tanjera/infirmary-integrated

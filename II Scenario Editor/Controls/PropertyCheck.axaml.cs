@@ -32,6 +32,11 @@ namespace II_Scenario_Editor.Controls {
         }
 
         public void Init (Keys key) {
+            if (PropertyChanged != null) {              // In case of re-initiation, need to wipe all subscriptions
+                foreach (Delegate d in PropertyChanged.GetInvocationList ())
+                    PropertyChanged -= (EventHandler<PropertyCheckEventArgs>)d;
+            }
+
             CheckBox chkValue = this.FindControl<CheckBox> ("chkValue");
 
             Key = key;

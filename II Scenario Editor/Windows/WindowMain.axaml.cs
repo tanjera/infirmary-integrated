@@ -61,11 +61,7 @@ namespace II_Scenario_Editor {
         }
 
         private async Task DialogAbout () {
-            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
-                this.Show ();
-
-            DialogAbout dlg = new DialogAbout ();
-            dlg.Activate ();
+            DialogAbout dlg = new ();
             await dlg.ShowDialog (this);
         }
 
@@ -73,60 +69,74 @@ namespace II_Scenario_Editor {
             await App.Exit ();
         }
 
-        private bool PromptUnsavedWork () {
-            /* TODO: IMPLEMENT
-            if (Steps.Count > 0)
-                return MessageBox.Show (
-                        "Are you sure you want to continue? All unsaved work will be lost!",
-                        "Lose Unsaved Work?",
-                        MessageBoxButton.OKCancel, MessageBoxImage.Warning);
-            else
-                return MessageBoxResult.OK;
-            */
+        private async Task<bool> PromptUnsavedWork () {
+            if (Scenario.Steps.Count > 0) {
+                DialogMessage dlg = new () {
+                    Title = "Lose Unsaved Work?",
+                    Message = "Are you sure you want to continue? All unsaved work will be lost!",
+                    Option = DialogMessage.Options.YesNo,
+                    Indicator = DialogMessage.Indicators.InfirmaryIntegratedScenarioEditor
+                };
+                DialogMessage.Responses? response = await dlg.AsyncShow (this);
 
-            return true;
+                return (response != null && response == DialogMessage.Responses.Yes);
+            } else
+                return true;
         }
 
         private async Task InitScenario () {
             Scenario = new (false);
-            await IPanelOverview.InitScenario (Scenario);
+            await IPanelOverview.SetScenario (Scenario);
 
             ITabControl.SelectedIndex = 0;
         }
 
         private async Task NewScenario () {
-            if (PromptUnsavedWork () == false)
+            if (await PromptUnsavedWork () == false)
                 return;
 
             await InitScenario ();
         }
 
         private async Task LoadScenario () {
-            if (PromptUnsavedWork () == false)
+            if (await PromptUnsavedWork () == false)
                 return;
 
-            string filepath = LoadDialog ();
+            string filepath = await LoadDialog ();
             if (String.IsNullOrEmpty (filepath))
                 return;
 
             await LoadFile (filepath);
         }
 
-        private string LoadDialog () {
-            /* TODO: IMPLEMENT
-            Microsoft.Win32.OpenFileDialog dlgLoad = new Microsoft.Win32.OpenFileDialog ();
+        private async Task SaveScenario () {
+            string filepath = await SaveDialog ();
+            if (String.IsNullOrEmpty (filepath))
+                return;
 
-            dlgLoad.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
-            dlgLoad.FilterIndex = 1;
-            dlgLoad.RestoreDirectory = true;
+            await SaveFile (filepath);
+        }
 
-            if (dlgLoad.ShowDialog () == true)
-                return dlgLoad.FileName;
-            else
-                return null;
-            */
+        private async Task<string> LoadDialog () {
+            OpenFileDialog dlg = new ();
+            dlg.Title = "Save Simulation";
+            dlg.Filters.Add (new FileDialogFilter () { Name = "Infirmary Integrated Simulation", Extensions = { "ii" } });
+            dlg.Filters.Add (new FileDialogFilter () { Name = "All Files", Extensions = { "*" } });
+            dlg.AllowMultiple = false;
 
-            return "";
+            string []? res = await dlg.ShowAsync (this);
+            return (res == null || res.Length == 0 || String.IsNullOrEmpty (res [0])) ? "" : res [0];
+        }
+
+        private async Task<string> SaveDialog () {
+            SaveFileDialog dlg = new ();
+            dlg.Title = "Save Simulation";
+            dlg.Filters.Add (new FileDialogFilter () { Name = "Infirmary Integrated Simulation", Extensions = { "ii" } });
+            dlg.Filters.Add (new FileDialogFilter () { Name = "All Files", Extensions = { "*" } });
+            dlg.DefaultExtension = "ii";
+
+            string? res = await dlg.ShowAsync (this);
+            return String.IsNullOrEmpty (res) ? "" : res;
         }
 
         private async Task LoadFile (string filepath) {
@@ -136,7 +146,7 @@ namespace II_Scenario_Editor {
             // Supports II:T1 file structure
             string metadata = sr.ReadLine ();
             if (!metadata.StartsWith (".ii:t1")) {
-                LoadFail ();
+                await LoadFail ();
                 return;
             }
 
@@ -149,16 +159,18 @@ namespace II_Scenario_Editor {
 
             // Original save files used MD5, later changed to SHA256
             if (hash != Encryption.HashSHA256 (file) && hash != Encryption.HashMD5 (file)) {
-                LoadFail ();
+                await LoadFail ();
                 return;
             }
 
             StringReader sRead = new StringReader (file);
-            string line, pline;
+            string? line, pline;
             StringBuilder pbuffer;
 
             try {
-                while ((line = sRead.ReadLine ()) != null) {
+                while (!String.IsNullOrEmpty (line = sRead.ReadLine ())) {
+                    line = line.Trim ();
+
                     if (line == "> Begin: Scenario") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Scenario")
@@ -167,7 +179,7 @@ namespace II_Scenario_Editor {
                     }
                 }
             } catch {
-                LoadFail ();
+                await LoadFail ();
             } finally {
                 sRead.Close ();
             }
@@ -215,57 +227,42 @@ namespace II_Scenario_Editor {
             */
         }
 
-        private void LoadFail () {
-            /* TODO: IMPLEMENT
-            MessageBox.Show (
-                    "The selected file was unable to be loaded. Perhaps the file was damaged or edited outside of Infirmary Integrated.",
-                    "Unable to Load File", MessageBoxButton.OK, MessageBoxImage.Error);
-            */
+        private async Task LoadFail () {
+            DialogMessage dlg = new () {
+                Title = "Unable to Load File",
+                Message = "The selected file was unable to be loaded. Perhaps the file was damaged or edited outside of Infirmary Integrated.",
+                Option = DialogMessage.Options.OK,
+                Indicator = DialogMessage.Indicators.InfirmaryIntegratedScenarioEditor
+            };
+            await dlg.AsyncShow (this);
         }
 
-        private async Task SaveScenario () {
-            /* TODO: IMPLEMENT
+        private Task SaveFile (string filepath, int indent = 1) {
+            Scenario.Updated = DateTime.UtcNow;
 
-            // SAVE METADATA SECTION FOR ITEMSTEP POSITIONING!!!!!!
+            string dent = Utility.Indent (indent);
+            StringBuilder sb = new ();
 
-            // Set metadata for saving
-            Steps [i].Step.IPositionX = Steps [i].Left;
-            Steps [i].Step.IPositionY = Steps [i].Top;
+            sb.AppendLine ($"{dent}> Begin: Scenario");
+            sb.Append (Scenario.Save (indent + 1));
+            sb.AppendLine ($"{dent}> End: Scenario");
 
-            // And add to the main Scenario stack
-            sc.Steps.Add (Steps [i].Step);
+            // Save in II:T1 format
+            StreamWriter sw = new StreamWriter (filepath);
+            sw.WriteLine (".ii:t1");                                            // Metadata (type 1 savefile)
 
-            */
+            sw.WriteLine (Encryption.HashSHA256 (sb.ToString ()));              // Hash for validation
+            sw.Write (Encryption.EncryptAES (sb.ToString ()));                  // Savefile data encrypted with AES
 
-            // Initiate IO stream, show Save File dialog to select file destination
-            Stream s;
+#if DEBUG
+            sw.WriteLine ();
+            sw.WriteLine ();
+            sw.WriteLine (sb.ToString ());                                          // FOR DEBUGGING: An unencrypted write call
+#endif
 
-            /* TODO: IMPLEMENT
-            Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
+            sw.Close ();
 
-            dlgSave.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
-            dlgSave.FilterIndex = 1;
-            dlgSave.RestoreDirectory = true;
-
-            if (dlgSave.ShowDialog () == true) {
-                if ((s = dlgSave.OpenFile ()) != null) {
-                    // Save in II:T1 format
-                    StringBuilder sb = new StringBuilder ();
-
-                    sb.AppendLine ("> Begin: Scenario");
-                    sb.Append (sc.Save ());
-                    sb.AppendLine ("> End: Scenario");
-
-                    StreamWriter sw = new StreamWriter (s);
-                    sw.WriteLine (".ii:t1");                                        // Metadata (type 1 savefile)
-                    sw.WriteLine (Encryption.HashSHA256 (sb.ToString ().Trim ()));     // Hash for validation
-                    sw.Write (Encryption.EncryptAES (sb.ToString ().Trim ()));         // Savefile data encrypted with AES
-                    sw.Close ();
-                    s.Close ();
-                }
-            }
-
-            */
+            return Task.CompletedTask;
         }
 
         public void MenuFileNew_Click (object sender, RoutedEventArgs e)

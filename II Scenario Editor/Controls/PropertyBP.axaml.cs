@@ -34,6 +34,11 @@ namespace II_Scenario_Editor.Controls {
         public void Init (Keys key,
             int sysInc, int sysMin, int sysMax,
             int diasInc, int diasMin, int diasMax) {
+            if (PropertyChanged != null) {              // In case of re-initiation, need to wipe all subscriptions
+                foreach (Delegate d in PropertyChanged.GetInvocationList ())
+                    PropertyChanged -= (EventHandler<PropertyIntEventArgs>)d;
+            }
+
             Label lblKey = this.FindControl<Label> ("lblKey");
             NumericUpDown numSystolic = this.FindControl<NumericUpDown> ("numSystolic");
             NumericUpDown numDiastolic = this.FindControl<NumericUpDown> ("numDiastolic");

@@ -904,8 +904,8 @@ namespace II_Avalonia {
             StackPanel stackProgressions = this.FindControl<StackPanel> ("stackProgressions");
 
             // Set Previous, Next, Pause, and Play buttons .IsEnabled based on Step properties
-            this.FindControl<Button> ("btnPreviousStep").IsEnabled = (!String.IsNullOrEmpty (s.ProgressFrom));
-            this.FindControl<Button> ("btnNextStep").IsEnabled = (!String.IsNullOrEmpty (s.ProgressTo) || s.Progressions.Count > 0);
+            this.FindControl<Button> ("btnPreviousStep").IsEnabled = (!String.IsNullOrEmpty (s.DefaultSource));
+            this.FindControl<Button> ("btnNextStep").IsEnabled = (!String.IsNullOrEmpty (s.DefaultProgression?.UUID) || s.Progressions.Count > 0);
             this.FindControl<Button> ("btnPauseStep").IsEnabled = (s.ProgressTimer > 0);
             this.FindControl<Button> ("btnPlayStep").IsEnabled = false;
 
@@ -941,7 +941,7 @@ namespace II_Avalonia {
                 stackProgressions.Children.Add (new RadioButton () {
                     IsChecked = false,
                     Content = p.Description,
-                    Name = String.Format ("radioProgression_{0}", p.ToStepUUID),
+                    Name = String.Format ("radioProgression_{0}", p.DestinationUUID),
                     GroupName = "ProgressionOptions",
                     Margin = (i == s.Progressions.Count - 1 ? new Thickness (10, 5, 10, 10) : new Thickness (10, 5))
                 });

@@ -67,5 +67,15 @@ namespace II {
         public static string SpaceToUnderscore (string str) {
             return str.Replace (' ', '_');
         }
+
+        public static string Indent (int indent) {
+            string space = "    ";
+            string output = "";
+
+            for (int i = 0; i < indent; i++)
+                output += space;
+
+            return output;
+        }
     }
 }
