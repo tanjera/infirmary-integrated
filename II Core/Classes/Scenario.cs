@@ -215,7 +215,7 @@ namespace II {
 
             if (progFrom != AtStep) {                                       // If the actual step Index changed
                 Current.DefaultSource = progFrom;
-                Step? stepFrom = Steps.Find (s => s.UUID == progFrom);
+                Step? stepFrom = Steps.Find (s => s.UUID == (progFrom ?? ""));
 
                 if (stepFrom != null) {
                     CopyDeviceStatus (stepFrom.Patient, Current.Patient);
@@ -308,6 +308,7 @@ namespace II {
 
                             switch (pName) {
                                 default: break;
+                                case "UUID": UUID = pValue; break;
                                 case "Name": Name = pValue; break;
                                 case "Description": Description = pValue; break;
                                 case "DefaultProgression": DefaultProgression = new Progression (pValue, null); break;

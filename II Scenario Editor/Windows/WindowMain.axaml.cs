@@ -217,6 +217,7 @@ namespace II_Scenario_Editor {
             StringReader sRead = new StringReader (file);
             string? line, pline;
             StringBuilder pbuffer;
+            Scenario loadScene = new ();
 
             try {
                 while (!String.IsNullOrEmpty (line = sRead.ReadLine ())) {
@@ -226,57 +227,17 @@ namespace II_Scenario_Editor {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Scenario")
                             pbuffer.AppendLine (pline);
-                        Scenario.Load_Process (pbuffer.ToString ());
+
+                        loadScene.Load_Process (pbuffer.ToString ());
                     }
                 }
+
+                sRead.Close ();
+                return loadScene;
             } catch {
                 sRead.Close ();
                 return null;
             }
-
-            for (int i = 0; i < Scenario.Steps.Count; i++) {
-                /* TODO: IMPLEMENT
-
-                // Add to the main Steps stack
-                ItemStep ist = new ItemStep ();
-                ist.Init ();
-                ist.Step = sc.Steps [i];
-                ist.SetNumber (i);
-                ist.SetName (ist.Step.Name);
-
-                // After all UIElements are initialized, will need to "refresh" the line positions via loadIProgressions
-                isLoading = true;
-                ist.LayoutUpdated += loadIProgressions;
-
-                ist.IStep.MouseLeftButtonDown += IStep_MouseLeftButtonDown;
-                ist.IStep.MouseLeftButtonUp += IStep_MouseLeftButtonUp;
-                ist.IStep.MouseMove += IStep_MouseMove;
-
-                ist.IStepEnd.MouseLeftButtonDown += IStepEnd_MouseLeftButtonDown;
-
-                // Add to lists and display elements
-                Steps.Add (ist);
-                canvasDesigner.Children.Add (ist);
-
-                Canvas.SetZIndex (ist, 1);
-                Canvas.SetLeft (ist, ist.Step.IPositionX);
-                Canvas.SetTop (ist, ist.Step.IPositionY);
-
-                */
-            }
-
-            // Refresh the Properties View with the newly selected step
-
-            /* TODO: IMPLEMENT
-            selectStep (Steps.Count > 0 ? Steps [0] : null);
-            updatePropertyView ();
-            UpdateScenarioProperty ();
-            drawIProgressions ();
-            expStepProperty.IsExpanded = true;
-            expProgressionProperty.IsExpanded = true;
-            */
-
-            return new Scenario (false);
         }
 
         private async Task LoadFail () {
@@ -307,9 +268,8 @@ namespace II_Scenario_Editor {
             sw.Write (Encryption.EncryptAES (sb.ToString ()));                  // Savefile data encrypted with AES
 
 #if DEBUG
-            sw.WriteLine ();
-            sw.WriteLine ();
-            sw.WriteLine (sb.ToString ());                                      // FOR DEBUGGING: An unencrypted write call; human-readable output
+            //sw.WriteLine ($"{Environment.NewLine}{Environment.NewLine}");
+            //sw.WriteLine (sb.ToString ());                                      // FOR DEBUGGING: An unencrypted write call; human-readable output
 #endif
 
             sw.Close ();

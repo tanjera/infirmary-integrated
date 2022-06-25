@@ -38,7 +38,7 @@ namespace II_Scenario_Editor.Windows {
         public List<ItemStep.Progression> IProgressions = new List<ItemStep.Progression> ();
 
         // For copy/pasting Patient parameters
-        private Patient CopiedPatient;
+        private Patient? CopiedPatient;
 
         // Variables for capturing mouse and dragging UI elements
         private Point? PointerPosition = null;
@@ -85,7 +85,13 @@ namespace II_Scenario_Editor.Windows {
             Scenario = s;
 
             await InitInterface ();
+            await ImportSteps ();
+
+            // Refresh the Properties View and draw Progression elements/colors
             await UpdateViewModel ();
+            await DrawISteps ();
+            await DrawIProgressions ();
+            await UpdateIProgressions ();
         }
 
         private async Task InitViewModel () {
@@ -231,7 +237,28 @@ namespace II_Scenario_Editor.Windows {
             }
         }
 
+        private async Task ImportSteps () {
+            /* For use when loading a saved file- Steps are already embedded in the Scenario,
+             * the Scenario should already be set, and now we just need to process the Steps and
+             * Progressions into the interface */
+
+            foreach (Scenario.Step step in Scenario.Steps) {
+                ItemStep item = new ();
+                item.Step = step;
+                ISteps.Add (item);
+                ICanvas.Children.Add (item);
+
+                item.ZIndex = 1;
+                item.PointerPressed += Item_PointerPressed;
+                item.PointerReleased += Item_PointerReleased;
+                item.PointerMoved += Item_PointerMoved;
+                item.IStepEnd.PointerPressed += Item_PointerPressed;
+            }
+        }
+
         private async Task AddStep (ItemStep? incItem = null) {
+            /* For use when adding a step via the UI designer- creates and instantiates the Step */
+
             // Create data structures
             ItemStep item = new ();
             Scenario.Step step = new ();
@@ -323,6 +350,7 @@ namespace II_Scenario_Editor.Windows {
 
         private async Task DrawISteps () {
             foreach (ItemStep item in ISteps) {
+                await item.UpdateViewModel ();
                 await item.SetStep_Border (item == ISelectedStep);
                 await item.SetEndStep_Border (IsSelectedStepEnd && item == ISelectedStep);
 
