@@ -9,9 +9,11 @@
 SOLUTION_PATH="/home/ibi/Documents/Infirmary Integrated"
 
 # Location of published executable files in the build structure
+# Published by II Developer Tools\Publishing Utility
 RELEASE_PATH="$SOLUTION_PATH/Release"
 PUB_FOLDER="Infirmary Integrated"
-PUB_EXE="Infirmary Integrated/Infirmary Integrated"
+PUB_SIMEXE="Infirmary Integrated/Infirmary Integrated/Infirmary Integrated"
+PUB_SCENEDEXE="Infirmary Integrated/Infirmary Integrated Scenario Editor/Infirmary Integrated Scenario Editor"
 
 # Location of .deb package filesystem template to utilize for .deb packaging
 DEB_FILESYSTEM="$SOLUTION_PATH/Package, Linux/deb-fs"
@@ -25,8 +27,6 @@ if ! command -v uuidgen &> /dev/null; then
     echo "Please install package uuid-runtime"
     exit
 fi
-
-
 
 ZIPFILE=$( ls "$RELEASE_PATH/"_linux-x64*zip )
 
@@ -55,7 +55,8 @@ cd "$PROCESS_PATH"
 ZIPFILE=$( ls _linux-x64*zip )
 tar -xf "$ZIPFILE"
 rm "$ZIPFILE"
-chmod +x "$PUB_EXE"
+chmod +x "$PUB_SIMEXE"
+chmod +x "$PUB_SCENEDEXE"
 
 len1=`echo $ZIPFILE | wc -c`
 len2=$(expr $len1 - 5)
@@ -88,6 +89,7 @@ else
     cp -R "$DEB_FILESYSTEM/"* "$DEB_FS"
     printf "\nVersion: %s\n" $VERSION >> "$DEB_FS/DEBIAN/control"
     mv "$PROCESS_PATH/Infirmary Integrated" "$DEB_FS/usr/share/infirmary-integrated"
+    chmod +x "$DEB_FS/usr/bin"/*
 
     echo -e "Packing .deb package\n"
     dpkg-deb --build "$DEB_FS" >> /dev/null
@@ -101,6 +103,6 @@ fi
 # ####
 # Clean up temp directories
 # ####
-
+exit
 echo -e "Removing temp directory $PROCESS_PATH\n"
 rm -rf "$PROCESS_PATH"

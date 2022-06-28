@@ -7,7 +7,7 @@
     <TrimMode>copyused</TrimMode>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <AssemblyName>Infirmary Integrated Scenario Editor</AssemblyName>
-    <Version>0.7.9</Version>
+    <Version>0.9.1</Version>
   </PropertyGroup>
   <ItemGroup>
     <None Remove=".gitignore" />
@@ -126,5 +126,5 @@
       <DependentUpon>WindowSplash.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
-  <Import Project="..\II Core\II_Core.projitems" Label="Shared" />
+  <Import Project="..\II Library\II Library.projitems" Label="Shared" />
 </Project>

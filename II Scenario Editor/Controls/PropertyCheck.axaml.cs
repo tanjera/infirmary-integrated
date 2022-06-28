@@ -14,7 +14,12 @@ namespace II_Scenario_Editor.Controls {
         public enum Keys {
             PulsusParadoxus,
             PulsusAlternans,
-            MechanicallyVentilated
+            MechanicallyVentilated,
+
+            MonitorIsEnabled,
+            DefibIsEnabled,
+            ECGIsEnabled,
+            IABPIsEnabled
         }
 
         public new event EventHandler<PropertyCheckEventArgs>? PropertyChanged;
@@ -46,9 +51,15 @@ namespace II_Scenario_Editor.Controls {
                 case Keys.PulsusParadoxus: chkValue.Content = "Pulsus Paradoxus"; break;
                 case Keys.PulsusAlternans: chkValue.Content = "Pulsus Alternans"; break;
                 case Keys.MechanicallyVentilated: chkValue.Content = "Mechanically ventilated?"; break;
+
+                case Keys.MonitorIsEnabled: chkValue.Content = "Enable Cardiac Monitor?"; break;
+                case Keys.DefibIsEnabled: chkValue.Content = "Enable Defibrillator?"; break;
+                case Keys.ECGIsEnabled: chkValue.Content = "Enable 12 Lead ECG?"; break;
+                case Keys.IABPIsEnabled: chkValue.Content = "Enable Intra-Aortic Balloon Pump?"; break;
             }
 
             chkValue.Checked += SendPropertyChange;
+            chkValue.Unchecked += SendPropertyChange;
             chkValue.LostFocus += SendPropertyChange;
         }
 

@@ -15,9 +15,11 @@ namespace Publishing {
             public string pathSigntool;
             public string pathCert;
             public string dirSolution;
+            public string dirTemporary;
 
             public Variables () {
                 versionDotnet = "net6.0";
+                dirTemporary = Path.Combine (Path.GetTempPath (), Guid.NewGuid ().ToString ());
 
                 if (OperatingSystem.IsWindows ()) {
                     pathDotnet = @"C:\Program Files\dotnet\dotnet.exe";
@@ -25,7 +27,8 @@ namespace Publishing {
                     pathNSIS = @"C:\Program Files (x86)\NSIS\makensis.exe";
                     pathSigntool = @"C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe";
                     pathCert = @"C:\Users\Ibi\Documents\Code Signing Certificate, Sectigo.pfx";
-                    dirSolution = @"Z:\Infirmary Integrated";
+                    //dirSolution = @"Z:\Infirmary Integrated";
+                    dirSolution = @"C:\Users\Ibi\Documents\Infirmary Integrated";
                 } else if (OperatingSystem.IsLinux ()) {
                     pathDotnet = "dotnet";
                     pathTar = "tar";
@@ -40,13 +43,18 @@ namespace Publishing {
         }
 
         public void Init (string [] args) {
-            Variables progVar = new Variables ();
+            Variables progVar = new ();
 
             // Get base directory for solution and project
             string dirRelease = Path.Combine (progVar.dirSolution, "Release");
-            string dirProject = Path.Combine (progVar.dirSolution, "II Avalonia");
-            string dirBin = Path.Combine (dirProject, "bin");
-            string dirObj = Path.Combine (dirProject, "obj");
+
+            string dirSimulator = Path.Combine (progVar.dirSolution, "II Simulator");
+            string dirSimulatorBin = Path.Combine (dirSimulator, "bin");
+            string dirSimulatorObj = Path.Combine (dirSimulator, "obj");
+
+            string dirScenarioEditor = Path.Combine (progVar.dirSolution, "II Scenario Editor");
+            string dirScenarioEditorBin = Path.Combine (dirScenarioEditor, "bin");
+            string dirScenarioEditorObj = Path.Combine (dirScenarioEditor, "obj");
 
             string [] listReleases = {
                 "win-x64",
@@ -68,12 +76,17 @@ namespace Publishing {
             Console.ResetColor ();
 
             if (Console.ReadLine ().Trim ().ToLower () == "y") {
-                Building.Clean (progVar, dirProject, dirBin, dirObj);
-                Building.Build (progVar, dirProject);
+                Building.Clean (progVar, dirSimulator, dirSimulatorBin, dirSimulatorObj);
+                Building.Clean (progVar, dirScenarioEditor, dirScenarioEditorBin, dirScenarioEditorObj);
+
+                Building.Build (progVar, dirSimulator);
+                Building.Build (progVar, dirScenarioEditor);
 
                 foreach (string release in listReleases) {
-                    Building.Publish (progVar, dirProject, release);
-                    Building.Pack (progVar, dirBin, dirRelease, release, verNumber);
+                    Building.Publish (progVar, dirSimulator, release);
+                    Building.Publish (progVar, dirScenarioEditor, release);
+
+                    Building.Pack (progVar, dirSimulatorBin, dirScenarioEditorBin, dirRelease, release, verNumber);
                 }
             }
 

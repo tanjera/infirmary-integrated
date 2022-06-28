@@ -195,48 +195,49 @@ namespace II_Scenario_Editor {
         private async Task<Scenario?> LoadFile (string filepath) {
             StreamReader sr = new StreamReader (filepath);
 
-            // Read savefile metadata indicating data formatting
-            // Supports II:T1 file structure
-            string metadata = sr.ReadLine ();
-            if (!metadata.StartsWith (".ii:t1")) {
-                return null;
-            }
-
-            // Savefile type 1: validated and encrypted
-            // Line 1 is metadata (.ii:t1)
-            // Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
-            // Line 3 is savefile data encrypted by AES encoding
-            string hash = sr.ReadLine ().Trim ();
-            string file = Encryption.DecryptAES (sr.ReadToEnd ().Trim ());
-
-            // Original save files used MD5, later changed to SHA256
-            if (hash != Encryption.HashSHA256 (file) && hash != Encryption.HashMD5 (file)) {
-                return null;
-            }
-
-            StringReader sRead = new StringReader (file);
-            string? line, pline;
-            StringBuilder pbuffer;
-            Scenario loadScene = new ();
-
             try {
-                while (!String.IsNullOrEmpty (line = sRead.ReadLine ())) {
-                    line = line.Trim ();
+                // Read savefile metadata indicating data formatting
+                // Supports II:T1 file structure
+                string metadata = sr.ReadLine ();
+                if (!metadata.StartsWith (".ii:t1")) {
+                    return null;
+                }
 
-                    if (line == "> Begin: Scenario") {
-                        pbuffer = new StringBuilder ();
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Scenario")
-                            pbuffer.AppendLine (pline);
+                // Savefile type 1: validated and encrypted
+                // Line 1 is metadata (.ii:t1)
+                // Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
+                // Line 3 is savefile data encrypted by AES encoding
+                string hash = sr.ReadLine ().Trim ();
+                string file = Encryption.DecryptAES (sr.ReadToEnd ().Trim ());
 
-                        loadScene.Load_Process (pbuffer.ToString ());
+                // Original save files used MD5, later changed to SHA256
+                if (hash != Encryption.HashSHA256 (file) && hash != Encryption.HashMD5 (file)) {
+                    return null;
+                }
+
+                string? line, pline;
+                StringBuilder pbuffer;
+                Scenario loadScene = new ();
+
+                using (StringReader sRead = new StringReader (file)) {
+                    while (!String.IsNullOrEmpty (line = sRead.ReadLine ())) {
+                        line = line.Trim ();
+
+                        if (line == "> Begin: Scenario") {
+                            pbuffer = new StringBuilder ();
+                            while ((pline = sRead.ReadLine ()) != null && pline != "> End: Scenario")
+                                pbuffer.AppendLine (pline);
+
+                            loadScene.Load_Process (pbuffer.ToString ());
+                        }
                     }
                 }
 
-                sRead.Close ();
                 return loadScene;
             } catch {
-                sRead.Close ();
                 return null;
+            } finally {
+                sr.Close ();
             }
         }
 
@@ -268,6 +269,7 @@ namespace II_Scenario_Editor {
             sw.Write (Encryption.EncryptAES (sb.ToString ()));                  // Savefile data encrypted with AES
 
 #if DEBUG
+            /* Note: the following debugging code CRASHES the Load() process */
             //sw.WriteLine ($"{Environment.NewLine}{Environment.NewLine}");
             //sw.WriteLine (sb.ToString ());                                      // FOR DEBUGGING: An unencrypted write call; human-readable output
 #endif

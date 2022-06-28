@@ -9,7 +9,7 @@ namespace Publishing {
         public static void Process (Program.Variables progVar, string dirRelease, string verNumber) {
             string pkgOrig = $"infirmary-integrated-.exe";
             string pkgName = $"infirmary-integrated-{verNumber}.exe";
-            string dirPackage = Path.Combine (progVar.dirSolution, @$"II Avalonia\bin\Release\{progVar.versionDotnet}\win-x64");
+            string dirPackage = Path.Combine (progVar.dirSolution, @$"II Simulator\bin\Release\{progVar.versionDotnet}\win-x64");
 
             CreatePackage_Windows (progVar, dirPackage);
             MovePackage_Windows (dirPackage, dirRelease, pkgOrig, pkgName);

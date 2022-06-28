@@ -84,18 +84,64 @@
       <StackPanel Orientation="Vertical"
                   Background="White">
 
-        <!-- Scenario properties -->
+        <!-- Scenario Properties -->
 
         <Expander Classes="exgrpt">
           <Expander.Header>
-            <Label Name="lblScenarioProperty"
-                 Content="Edit Scenario Properties" />
+            <Label Content="Scenario Properties" />
           </Expander.Header>
 
           <StackPanel Classes="spgrp">
             <iic:PropertyString x:Name="pstrScenarioAuthor" />
             <iic:PropertyString x:Name="pstrScenarioName" />
             <iic:PropertyString x:Name="pstrScenarioDescription" />
+          </StackPanel>
+        </Expander>
+
+        <!-- Device Options: Cardiac Monitor, Defib, 12L, IABP-->
+
+        <Expander Classes="exgrpt"
+                  HorizontalContentAlignment="Stretch">
+          <Expander.Header>
+            <Label Content="Device Options" />
+          </Expander.Header>
+          <StackPanel>
+
+            <Expander Classes="exgrpf">
+              <Expander.Header>
+                <Label Content="Cardiac Monitor" />
+              </Expander.Header>
+              <StackPanel>
+                <iic:PropertyCheck x:Name="pchkMonitorEnabled" />
+              </StackPanel>
+            </Expander>
+
+            <Expander Classes="exgrpf">
+              <Expander.Header>
+                <Label Content="Defibrillator" />
+              </Expander.Header>
+              <StackPanel>
+                <iic:PropertyCheck x:Name="pchkDefibEnabled" />
+              </StackPanel>
+            </Expander>
+
+            <Expander Classes="exgrpf">
+              <Expander.Header>
+                <Label Content="12 Lead Electrocardiogram (ECG)" />
+              </Expander.Header>
+              <StackPanel>
+                <iic:PropertyCheck x:Name="pchkECGEnabled" />
+              </StackPanel>
+            </Expander>
+
+            <Expander Classes="exgrpf">
+              <Expander.Header>
+                <Label Content="Intra-Aortic Balloon Pump (IABP" />
+              </Expander.Header>
+              <StackPanel>
+                <iic:PropertyCheck x:Name="pchkIABPEnabled" />
+              </StackPanel>
+            </Expander>
           </StackPanel>
         </Expander>
       </StackPanel>

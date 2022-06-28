@@ -33,11 +33,11 @@ namespace II {
             get { return (double)(DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess ().StartTime.ToUniversalTime ()).TotalSeconds; }
         }
 
-        public static string DateTime_ToString (DateTime dt)
-            => dt.ToString ("yyyy/MM/dd HH:mm:ss");
+        public static string? DateTime_ToString (DateTime? dt)
+            => dt?.ToString ("yyyy/MM/dd HH:mm:ss");
 
-        public static string DateTime_ToString_FilePath (DateTime dt)
-            => dt.ToString ("yyyy.MM.dd.HH.mm.ss");
+        public static string? DateTime_ToString_FilePath (DateTime? dt)
+            => dt?.ToString ("yyyy.MM.dd.HH.mm.ss");
 
         public static DateTime DateTime_FromString (string str) {
             return new DateTime (

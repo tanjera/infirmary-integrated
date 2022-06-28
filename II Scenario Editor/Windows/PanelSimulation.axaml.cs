@@ -30,6 +30,15 @@ namespace II_Scenario_Editor.Windows {
         private Scenario Scenario;
         private WindowMain IMain;
 
+        /* View Controls for referencing by ViewModel */
+        private PropertyCheck vpchkMonitorEnabled;
+        private PropertyCheck vpchkDefibEnabled;
+        private PropertyCheck vpchkECGEnabled;
+        private PropertyCheck vpchkIABPEnabled;
+        private PropertyString vpstrScenarioAuthor;
+        private PropertyString vpstrScenarioName;
+        private PropertyString vpstrScenarioDescription;
+
         public PanelSimulation () {
             InitializeComponent ();
 
@@ -53,20 +62,51 @@ namespace II_Scenario_Editor.Windows {
         }
 
         private Task InitViewModel () {
-            PropertyString pstrScenarioAuthor = this.FindControl<PropertyString> ("pstrScenarioAuthor");
-            PropertyString pstrScenarioName = this.FindControl<PropertyString> ("pstrScenarioName");
-            PropertyString pstrScenarioDescription = this.FindControl<PropertyString> ("pstrScenarioDescription");
+            ReferenceViewModel ();
 
-            // Initiate controls for editing Scenario properties
-            pstrScenarioAuthor.Init (PropertyString.Keys.ScenarioAuthor);
-            pstrScenarioName.Init (PropertyString.Keys.ScenarioName);
-            pstrScenarioDescription.Init (PropertyString.Keys.ScenarioDescription);
+            // Initiate controls
+            vpchkMonitorEnabled.Init (PropertyCheck.Keys.MonitorIsEnabled);
+            vpchkDefibEnabled.Init (PropertyCheck.Keys.DefibIsEnabled);
+            vpchkECGEnabled.Init (PropertyCheck.Keys.ECGIsEnabled);
+            vpchkIABPEnabled.Init (PropertyCheck.Keys.IABPIsEnabled);
 
-            pstrScenarioAuthor.PropertyChanged += UpdateScenario;
-            pstrScenarioName.PropertyChanged += UpdateScenario;
-            pstrScenarioDescription.PropertyChanged += UpdateScenario;
+            vpstrScenarioAuthor.Init (PropertyString.Keys.ScenarioAuthor);
+            vpstrScenarioName.Init (PropertyString.Keys.ScenarioName);
+            vpstrScenarioDescription.Init (PropertyString.Keys.ScenarioDescription);
+
+            vpchkMonitorEnabled.PropertyChanged += UpdateScenario;
+            vpchkDefibEnabled.PropertyChanged += UpdateScenario;
+            vpchkECGEnabled.PropertyChanged += UpdateScenario;
+            vpchkIABPEnabled.PropertyChanged += UpdateScenario;
+
+            vpstrScenarioAuthor.PropertyChanged += UpdateScenario;
+            vpstrScenarioName.PropertyChanged += UpdateScenario;
+            vpstrScenarioDescription.PropertyChanged += UpdateScenario;
 
             return Task.CompletedTask;
+        }
+
+        private Task ReferenceViewModel () {
+            vpstrScenarioAuthor = this.FindControl<PropertyString> ("pstrScenarioAuthor");
+            vpstrScenarioName = this.FindControl<PropertyString> ("pstrScenarioName");
+            vpstrScenarioDescription = this.FindControl<PropertyString> ("pstrScenarioDescription");
+
+            vpchkMonitorEnabled = this.FindControl<PropertyCheck> ("pchkMonitorEnabled");
+            vpchkDefibEnabled = this.FindControl<PropertyCheck> ("pchkDefibEnabled");
+            vpchkECGEnabled = this.FindControl<PropertyCheck> ("pchkECGEnabled");
+            vpchkIABPEnabled = this.FindControl<PropertyCheck> ("pchkIABPEnabled");
+
+            return Task.CompletedTask;
+        }
+
+        private void UpdateScenario (object? sender, PropertyCheck.PropertyCheckEventArgs e) {
+            switch (e.Key) {
+                default: break;
+                case PropertyCheck.Keys.MonitorIsEnabled: Scenario.DeviceMonitor.IsEnabled = e.Value; break;
+                case PropertyCheck.Keys.DefibIsEnabled: Scenario.DeviceDefib.IsEnabled = e.Value; break;
+                case PropertyCheck.Keys.ECGIsEnabled: Scenario.DeviceECG.IsEnabled = e.Value; break;
+                case PropertyCheck.Keys.IABPIsEnabled: Scenario.DeviceIABP.IsEnabled = e.Value; break;
+            }
         }
 
         private void UpdateScenario (object? sender, PropertyString.PropertyStringEventArgs e) {
@@ -79,9 +119,16 @@ namespace II_Scenario_Editor.Windows {
         }
 
         private Task UpdateViewModel () {
-            this.FindControl<PropertyString> ("pstrScenarioAuthor").Set (Scenario.Author ?? "");
-            this.FindControl<PropertyString> ("pstrScenarioName").Set (Scenario.Name ?? "");
-            this.FindControl<PropertyString> ("pstrScenarioDescription").Set (Scenario.Description ?? "");
+            ReferenceViewModel ();
+
+            vpchkMonitorEnabled.Set (Scenario.DeviceMonitor.IsEnabled);
+            vpchkDefibEnabled.Set (Scenario.DeviceDefib.IsEnabled);
+            vpchkECGEnabled.Set (Scenario.DeviceECG.IsEnabled);
+            vpchkIABPEnabled.Set (Scenario.DeviceIABP.IsEnabled);
+
+            vpstrScenarioAuthor.Set (Scenario.Author ?? "");
+            vpstrScenarioName.Set (Scenario.Name ?? "");
+            vpstrScenarioDescription.Set (Scenario.Description ?? "");
 
             return Task.CompletedTask;
         }

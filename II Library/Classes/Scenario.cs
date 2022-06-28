@@ -13,10 +13,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
-
     public class Scenario {
-        public string Name, Description, Author;
-        public DateTime Updated;
+        public string? Name, Description, Author;
+        public DateTime? Updated;
 
         public string? BeginStep = null;
         public string? AtStep = null;
@@ -24,9 +23,14 @@ namespace II {
         public List<Step> Steps = new List<Step> ();
         public Timer ProgressTimer = new Timer ();
 
-        public event EventHandler<EventArgs> StepChangeRequest;
+        public DeviceSettings DeviceMonitor = new ();
+        public DeviceSettings DeviceDefib = new ();
+        public DeviceSettings DeviceECG = new ();
+        public DeviceSettings DeviceIABP = new ();
 
-        public event EventHandler<EventArgs> StepChanged;
+        public event EventHandler<EventArgs>? StepChangeRequest;
+
+        public event EventHandler<EventArgs>? StepChanged;
 
         public Scenario (bool toInit = false) {
             if (toInit) {
@@ -107,6 +111,34 @@ namespace II {
                         Step s = new Step ();
                         s.Load_Process (pbuffer.ToString ());
                         Steps.Add (s);
+                    } else if (line == "> Begin: DeviceMonitor") {
+                        pbuffer = new StringBuilder ();
+
+                        while ((pline = sRead.ReadLine ().Trim ()) != null && pline != "> End: DeviceMonitor")
+                            pbuffer.AppendLine (pline);
+
+                        DeviceMonitor.Load_Process (pbuffer.ToString ());
+                    } else if (line == "> Begin: DeviceDefib") {
+                        pbuffer = new StringBuilder ();
+
+                        while ((pline = sRead.ReadLine ().Trim ()) != null && pline != "> End: DeviceDefib")
+                            pbuffer.AppendLine (pline);
+
+                        DeviceDefib.Load_Process (pbuffer.ToString ());
+                    } else if (line == "> Begin: DeviceECG") {
+                        pbuffer = new StringBuilder ();
+
+                        while ((pline = sRead.ReadLine ().Trim ()) != null && pline != "> End: DeviceECG")
+                            pbuffer.AppendLine (pline);
+
+                        DeviceECG.Load_Process (pbuffer.ToString ());
+                    } else if (line == "> Begin: DeviceIABP") {
+                        pbuffer = new StringBuilder ();
+
+                        while ((pline = sRead.ReadLine ().Trim ()) != null && pline != "> End: DeviceIABP")
+                            pbuffer.AppendLine (pline);
+
+                        DeviceIABP.Load_Process (pbuffer.ToString ());
                     } else if (line.Contains (":")) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
@@ -140,6 +172,24 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Author", Author));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Beginning", BeginStep));
 
+            /* Save() each Device's Settings */
+            sWrite.AppendLine ($"{dent}> Begin: DeviceMonitor");
+            sWrite.Append (DeviceMonitor.Save (indent + 1));
+            sWrite.AppendLine ($"{dent}> End: DeviceMonitor");
+
+            sWrite.AppendLine ($"{dent}> Begin: DeviceDefib");
+            sWrite.Append (DeviceDefib.Save (indent + 1));
+            sWrite.AppendLine ($"{dent}> End: DeviceDefib");
+
+            sWrite.AppendLine ($"{dent}> Begin: DeviceECG");
+            sWrite.Append (DeviceECG.Save (indent + 1));
+            sWrite.AppendLine ($"{dent}> End: DeviceECG");
+
+            sWrite.AppendLine ($"{dent}> Begin: DeviceIABP");
+            sWrite.Append (DeviceIABP.Save (indent + 1));
+            sWrite.AppendLine ($"{dent}> End: DeviceIABP");
+
+            /* Iterate and Save() each Step in Steps[] */
             for (int i = 0; i < Steps.Count; i++) {
                 sWrite.AppendLine ($"{dent}> Begin: Step");
                 sWrite.Append (Steps [i].Save (indent + 1));
@@ -257,7 +307,7 @@ namespace II {
         public void ProcessTimer (object sender, EventArgs e)
             => ProgressTimer.Process ();
 
-        private void ProgressTimer_Tick (object sender, EventArgs e)
+        private void ProgressTimer_Tick (object? sender, EventArgs e)
             => _ = NextStep ();
 
         public class Step {
@@ -269,6 +319,10 @@ namespace II {
             public Progression? DefaultProgression = null;
             public string? DefaultSource = null;
             public int ProgressTimer = -1;
+
+            /* Positioning metadata for II Scenario Editor */
+            public int IISEPositionX = 0;
+            public int IISEPositionY = 0;
 
             public Step () {
                 UUID = Guid.NewGuid ().ToString ();
@@ -314,6 +368,8 @@ namespace II {
                                 case "DefaultProgression": DefaultProgression = new Progression (pValue, null); break;
                                 case "DefaultSource": DefaultSource = pValue; break;
                                 case "ProgressTime": ProgressTimer = int.Parse (pValue); break;
+                                case "IISEPositionX": IISEPositionX = int.Parse (pValue); break;
+                                case "IISEPositionY": IISEPositionY = int.Parse (pValue); break;
                             }
                         }
                     }
@@ -334,6 +390,8 @@ namespace II {
                 sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "DefaultProgression", DefaultProgression?.UUID));
                 sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "DefaultSource", DefaultSource));
                 sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ProgressTime", ProgressTimer));
+                sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "IISEPositionX", IISEPositionX));
+                sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "IISEPositionY", IISEPositionY));
 
                 sWrite.AppendLine ($"{dent}> Begin: Patient");
                 sWrite.Append (Patient.Save (indent + 1));

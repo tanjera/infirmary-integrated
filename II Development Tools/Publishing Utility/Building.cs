@@ -27,7 +27,7 @@ namespace Publishing {
 
             arguments = $"clean";
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine ($"- Executing dotnet {arguments}");
+            Console.WriteLine ($"- {dirProject}: Executing dotnet {arguments}");
             Console.WriteLine (Environment.NewLine);
             Console.ResetColor ();
 
@@ -47,7 +47,7 @@ namespace Publishing {
 
             arguments = $"build -c Release";
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine ($"- Executing dotnet {arguments}");
+            Console.WriteLine ($"- {dirProject}: Executing dotnet {arguments}");
             Console.WriteLine (Environment.NewLine);
             Console.ResetColor ();
 
@@ -71,7 +71,7 @@ namespace Publishing {
                 arguments += " -p:UseAppHost=true";
 
             Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine ($"- Executing dotnet {arguments}");
+            Console.WriteLine ($"- {dirProject}: Executing dotnet {arguments}");
             Console.WriteLine (Environment.NewLine);
             Console.ResetColor ();
 
@@ -83,52 +83,62 @@ namespace Publishing {
             proc.WaitForExit ();
         }
 
-        public static void Pack (Program.Variables progVar, string dirBin, string dirRelease, string release, string verNumber) {
+        public static void Pack (Program.Variables progVar,
+                string dirSimulatorBin, string dirScenarioEditorBin,
+                string dirRelease, string release, string verNumber) {
             Process proc = new Process ();
             string arguments = "";
 
-            string dirBuild = Path.Combine (new string[] { dirBin, "Release", progVar.versionDotnet, release });
-            string dirPublish = Path.Combine (dirBuild, "publish");
-            string dirII = Path.Combine (dirBuild, "Infirmary Integrated");
+            // Ensure the directory exists and is empty
+            if (!Directory.Exists (progVar.dirTemporary))
+                Directory.CreateDirectory (progVar.dirTemporary);
 
-            if (File.Exists (dirII)) {
-                File.Delete (dirII);
-            }
+            // Define the directory structure for the packages
+            string dirTempRoot = Path.Combine (progVar.dirTemporary, "Infirmary Integrated");
+            string dirTempSimulator = Path.Combine (dirTempRoot, "Infirmary Integrated");
+            string dirTempScenarioEditor = Path.Combine (dirTempRoot, "Infirmary Integrated Scenario Editor");
 
-            Directory.Move (dirPublish, dirII);
+            // Create the directory structure for the packages
+            Directory.CreateDirectory (dirTempRoot);
+
+            // Move files into place for packaging
+            string dirSimulatorPub = Path.Combine (new string [] { dirSimulatorBin, "Release", progVar.versionDotnet, release, "publish" });
+            string dirScenarioEditorPub = Path.Combine (new string [] { dirScenarioEditorBin, "Release", progVar.versionDotnet, release, "publish" });
+
+            Directory.Move (dirSimulatorPub, dirTempSimulator);
+            Directory.Move (dirScenarioEditorPub, dirTempScenarioEditor);
 
             Console.WriteLine (Environment.NewLine);
             Console.ForegroundColor = ConsoleColor.Yellow;
 
-            if (Directory.Exists (Path.Combine (dirII))) {
-                Console.WriteLine ($"Packing build: {release}-{verNumber}");
-                string tarName = $"_{release}-{verNumber}.zip";
-                arguments = $"-c -f {tarName} \"Infirmary Integrated\"";
+            // Tar the directories/files into a tarball (.zip file)
+            Console.WriteLine ($"Packing build: {release}-{verNumber}");
+            string tarName = $"_{release}-{verNumber}.zip";
+            arguments = $"-c -f {tarName} \"Infirmary Integrated\"";
 
-                Console.WriteLine ($"- Executing tar {arguments}");
-                Console.WriteLine (Environment.NewLine);
+            Console.WriteLine ($"- Executing tar {arguments}");
+            Console.WriteLine (Environment.NewLine);
 
-                proc.StartInfo.FileName = progVar.pathTar;
-                proc.StartInfo.Arguments = arguments;
-                proc.StartInfo.UseShellExecute = false;
-                proc.StartInfo.WorkingDirectory = dirBuild;
-                proc.Start ();
-                proc.WaitForExit ();
+            proc.StartInfo.FileName = progVar.pathTar;
+            proc.StartInfo.Arguments = arguments;
+            proc.StartInfo.UseShellExecute = false;
+            proc.StartInfo.WorkingDirectory = progVar.dirTemporary;
+            proc.Start ();
+            proc.WaitForExit ();
 
-                string tarFile = Path.Combine (dirBuild, tarName);
-                string tarRelease = Path.Combine (dirRelease, tarName);
+            string tarFile = Path.Combine (progVar.dirTemporary, tarName);
+            string tarRelease = Path.Combine (dirRelease, tarName);
 
-                if (File.Exists (tarFile)) {
-                    Console.WriteLine ($"- Moving tar file to {dirRelease}");
-                    File.Move (tarFile, tarRelease, true);
-                } else {
-                    Console.WriteLine ($"Error: Unable to locate {tarFile}");
-                }
+            // Move the .tar file to the Infirmary Integrated/Release folder
+            if (File.Exists (tarFile)) {
+                Console.WriteLine ($"- Moving tar file to {dirRelease}");
+                File.Move (tarFile, tarRelease, true);
             } else {
-                Console.WriteLine ($"Error: Unable to locate {dirII}");
+                Console.WriteLine ($"Error: Unable to locate {tarFile}");
             }
 
-            Directory.Move (dirII, dirPublish);
+            // Clean the temporary directory
+            Directory.Delete (progVar.dirTemporary, true);
 
             Console.ResetColor ();
         }

@@ -90,8 +90,8 @@ namespace II_Scenario_Editor.Windows {
             // Refresh the Properties View and draw Progression elements/colors
             await UpdateViewModel ();
             await DrawISteps ();
-            await DrawIProgressions ();
             await UpdateIProgressions ();
+            await DrawIProgressions ();
         }
 
         private async Task InitViewModel () {
@@ -237,10 +237,10 @@ namespace II_Scenario_Editor.Windows {
             }
         }
 
-        private async Task ImportSteps () {
+        private Task ImportSteps () {
             /* For use when loading a saved file- Steps are already embedded in the Scenario,
              * the Scenario should already be set, and now we just need to process the Steps and
-             * Progressions into the interface */
+             * Progressions into the interface items (IStep) */
 
             foreach (Scenario.Step step in Scenario.Steps) {
                 ItemStep item = new ();
@@ -253,7 +253,12 @@ namespace II_Scenario_Editor.Windows {
                 item.PointerReleased += Item_PointerReleased;
                 item.PointerMoved += Item_PointerMoved;
                 item.IStepEnd.PointerPressed += Item_PointerPressed;
+
+                Canvas.SetLeft (item, item.Step.IISEPositionX);
+                Canvas.SetTop (item, item.Step.IISEPositionY);
             }
+
+            return Task.CompletedTask;
         }
 
         private async Task AddStep (ItemStep? incItem = null) {
@@ -488,6 +493,32 @@ namespace II_Scenario_Editor.Windows {
             }
         }
 
+        private async Task Action_RepositionSteps () {
+            _ = DeselectAll ();
+
+            int minorOffset = 25;
+            int majorOffset = 200;
+            int majorStack = 10;
+
+            for (int i = 0; i < ISteps.Count; i++) {
+                Canvas.SetLeft (ISteps [i],
+                    (minorOffset * i)                                                                   // Cascading "minor" offset: x axis
+                    - (System.Math.Floor ((double)(i / majorStack)) * majorStack * minorOffset));       // Reverts the "minor" offset every "major" offset to the stack's starting point
+
+                Canvas.SetTop (ISteps [i],
+                    (minorOffset * i)                                                                   // Cascading "minor" offset: y axis
+                    + (System.Math.Floor ((double)(i / majorStack)) * majorOffset)                      // Adds a new "row" of cascading w/ a "major" offset
+                    - (System.Math.Floor ((double)(i / majorStack)) * majorStack * minorOffset));       // But reverts the "minor" offset to the stack's starting point
+
+                /* Set Step's metadata for saving/loading positioning data */
+                ISteps [i].Step.IISEPositionX = (int)ISteps [i].Bounds.Left;
+                ISteps [i].Step.IISEPositionY = (int)ISteps [i].Bounds.Top;
+            }
+
+            await UpdateIProgressions ();
+            await DrawIProgressions ();
+        }
+
         private async Task Action_CopyPatient () {
             if (ISelectedStep == null)
                 return;
@@ -535,6 +566,9 @@ namespace II_Scenario_Editor.Windows {
 
         private void MenuEditDeleteStep_Click (object sender, RoutedEventArgs e)
             => Action_DeleteStep ();
+
+        private void MenuEditRepositionSteps_Click (object sender, RoutedEventArgs e)
+            => _ = Action_RepositionSteps ();
 
         private void MenuEditCopyPatient_Click (object sender, RoutedEventArgs e)
             => _ = Action_CopyPatient ();
@@ -614,6 +648,10 @@ namespace II_Scenario_Editor.Windows {
 
                 Canvas.SetLeft (ISelectedStep, left);
                 Canvas.SetTop (ISelectedStep, top);
+
+                /* Set Step's metadata for saving/loading positioning data */
+                ISelectedStep.Step.IISEPositionX = (int)ISelectedStep.Bounds.Left;
+                ISelectedStep.Step.IISEPositionY = (int)ISelectedStep.Bounds.Top;
 
                 _ = DrawIProgressions ();
             }

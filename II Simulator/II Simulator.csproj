@@ -8,7 +8,7 @@
     <AssemblyName>Infirmary Integrated</AssemblyName>
     <Copyright>© 2017-2022, Ibi Keller</Copyright>
     <Authors>Ibi Keller</Authors>
-    <Version>2.0.2</Version>
+    <Version>2.0.3</Version>
     <Company>Infirmary Integrated</Company>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageProjectUrl>https://www.infirmary-integrated.com/</PackageProjectUrl>
@@ -74,7 +74,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <Import Project="..\II Core\II_Core.projitems" Label="Shared" />
+  <Import Project="..\II Library\II Library.projitems" Label="Shared" />
   <ItemGroup>
     <AvaloniaResource Include="Resources\**" />
     <AvaloniaResource Include="Third_Party\**" />

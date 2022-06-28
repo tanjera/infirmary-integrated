@@ -66,6 +66,12 @@
 
         <Separator />
 
+        <MenuItem Name="menuEditRepositionSteps"
+              Header="Reposition All Steps"
+              Click="MenuEditRepositionSteps_Click" />
+
+        <Separator />
+
         <MenuItem Name="menuEditCopyPatient"
               Header="Copy Patient Properties"
               Click="MenuEditCopyPatient_Click" />

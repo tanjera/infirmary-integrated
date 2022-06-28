@@ -45,6 +45,6 @@ Section "" ;No components page, name is not important
   Delete "$INSTDIR\${Name}.lnk"
 
   ; Register file association
-  ${registerExtension} "$INSTDIR\${NAME}.exe" ".ii" "Infirmary_Integrated_Scenario"
+  ${registerExtension} "$INSTDIR\${NAME}.exe" ".ii" "Infirmary Integrated Scenario"
 
 SectionEnd

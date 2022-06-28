@@ -621,21 +621,27 @@ namespace II_Avalonia {
         }
 
         private async Task LoadValidateT1 (StreamReader sr) {
-            /* Savefile type 1: validated and encrypted
-                * Line 1 is metadata (.ii:t1)
-                * Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
-                * Line 3 is savefile data encrypted by AES encoding
-                */
+            try {
+                /* Savefile type 1: validated and encrypted
+                    * Line 1 is metadata (.ii:t1)
+                    * Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
+                    * Line 3 is savefile data encrypted by AES encoding
+                    */
 
-            string hash = sr.ReadLine ().Trim ();
-            string file = Encryption.DecryptAES (sr.ReadToEnd ().Trim ());
-            sr.Close ();
+                string hash = sr.ReadLine ().Trim ();
+                string file = Encryption.DecryptAES (sr.ReadToEnd ().Trim ());
+                sr.Close ();
 
-            // Original save files used MD5, later changed to SHA256
-            if (hash == Encryption.HashSHA256 (file) || hash == Encryption.HashMD5 (file))
-                await LoadProcess (file);
-            else
+                // Original save files used MD5, later changed to SHA256
+                if (hash == Encryption.HashSHA256 (file) || hash == Encryption.HashMD5 (file))
+                    await LoadProcess (file);
+                else
+                    await LoadFail ();
+            } catch {
                 await LoadFail ();
+            } finally {
+                sr.Close ();
+            }
         }
 
         private async Task LoadProcess (string incFile) {

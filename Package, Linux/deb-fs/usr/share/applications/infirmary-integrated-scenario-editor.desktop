@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=Infirmary Integrated Scenario Editor
+Comment=Edit Scenarios for the Healthcare Device Simulator
+Exec=/usr/bin/infirmary-integrated-scenario-editor
+Icon=infirmary-integrated-scenario-editor
+Type=Application
+Categories=Education;Science;

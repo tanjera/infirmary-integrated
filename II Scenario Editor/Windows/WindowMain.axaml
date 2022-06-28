@@ -56,7 +56,8 @@
       <iiw:PanelPatientParameters x:Name="panelPatientParameters" />
     </TabItem>
 
-    <TabItem Header="Patient Chart">
+    <TabItem Header="Patient Chart"
+             IsVisible="False">
       <iiw:PanelPatientChart x:Name="panelPatientChart" />
     </TabItem>
   </TabControl>
