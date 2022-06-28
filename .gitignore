@@ -32,6 +32,9 @@ bld/
 [Oo]bj/
 [Ll]og/
 
+# DON'T ignore Linux packaging binary files e.g. bin scripts
+!/Package, Linux/deb-fs/usr/bin
+
 # VS Code build and debug files
 .vscode/*
 !.vscode/settings.json
