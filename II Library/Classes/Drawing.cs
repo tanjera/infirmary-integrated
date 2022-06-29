@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace II.Drawing {
+
     public class PointD {
         public double X { get; set; }
         public double Y { get; set; }
@@ -17,18 +18,19 @@ namespace II.Drawing {
             Y = y;
         }
 
-        public bool Equals (PointD p) {
-            if (p is null)
+        public override bool Equals (object? p) {
+            if (p != null && p is PointD pt)
+                return X == pt.X && Y == pt.Y;
+            else
                 return false;
-
-            if (this.GetType () != p.GetType ())
-                return false;
-
-            return X == p.X && Y == p.Y;
         }
 
         public static PointD Lerp (PointD a, PointD b, double t) {
             return new PointD (Math.Lerp (a.X, b.X, t), Math.Lerp (a.Y, b.Y, t));
+        }
+
+        public override int GetHashCode () {
+            return HashCode.Combine (X, Y);
         }
 
         public static bool operator == (PointD lhs, PointD rhs) {

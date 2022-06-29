@@ -9,18 +9,19 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Threading;
 
 using II;
 using II.Localization;
 using II.Rhythm;
 
-namespace II_Avalonia.Controls {
+namespace II_Simulator.Controls {
 
     public partial class MonitorNumeric : UserControl {
-        public ControlType controlType;
+        public ControlType? controlType;
         public Color.Schemes colorScheme;
 
-        private MenuItem menuZeroTransducer;
+        private MenuItem? menuZeroTransducer;
 
         public class ControlType {
             public Values Value;
@@ -56,7 +57,7 @@ namespace II_Avalonia.Controls {
             };
 
             public static string LookupString (Values value) {
-                return String.Format ("NUMERIC:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
+                return String.Format ("NUMERIC:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value)?.ToString ());
             }
 
             public static List<string> MenuItem_Formats {
@@ -102,7 +103,7 @@ namespace II_Avalonia.Controls {
             this.FindControl<Viewbox> ("vbLine2").ContextMenu = contextMenu;
             this.FindControl<Viewbox> ("vbLine3").ContextMenu = contextMenu;
 
-            menuZeroTransducer = new MenuItem ();
+            menuZeroTransducer = new ();
             menuZeroTransducer.Header = App.Language.Localize ("MENU:MenuZeroTransducer");
             menuZeroTransducer.Classes.Add ("item");
             menuZeroTransducer.Click += MenuZeroTransducer_Click;
@@ -110,13 +111,13 @@ namespace II_Avalonia.Controls {
 
             menuitemsContext.Add (new Separator ());
 
-            MenuItem menuAddNumeric = new MenuItem ();
+            MenuItem menuAddNumeric = new ();
             menuAddNumeric.Header = App.Language.Localize ("MENU:MenuAddNumeric");
             menuAddNumeric.Classes.Add ("item");
             menuAddNumeric.Click += MenuAddNumeric_Click;
             menuitemsContext.Add (menuAddNumeric);
 
-            MenuItem menuRemoveNumeric = new MenuItem ();
+            MenuItem menuRemoveNumeric = new ();
             menuRemoveNumeric.Header = App.Language.Localize ("MENU:MenuRemoveNumeric");
             menuRemoveNumeric.Classes.Add ("item");
             menuRemoveNumeric.Click += MenuRemoveNumeric_Click;
@@ -124,13 +125,13 @@ namespace II_Avalonia.Controls {
 
             menuitemsContext.Add (new Separator ());
 
-            MenuItem menuSelectInput = new MenuItem ();
-            List<object> menuitemsSelectInput = new List<object> ();
+            MenuItem menuSelectInput = new ();
+            List<object> menuitemsSelectInput = new ();
             menuSelectInput.Header = App.Language.Localize ("MENU:MenuSelectInputSource");
             menuSelectInput.Classes.Add ("item");
 
             foreach (ControlType.Values v in Enum.GetValues (typeof (ControlType.Values))) {
-                MenuItem mi = new MenuItem ();
+                MenuItem mi = new ();
                 mi.Header = App.Language.Localize (ControlType.LookupString (v));
                 mi.Classes.Add ("item");
                 mi.Name = v.ToString ();
@@ -150,64 +151,69 @@ namespace II_Avalonia.Controls {
         }
 
         private void UpdateInterface () {
-            Border borderNumeric = this.FindControl<Border> ("borderNumeric");
-            TextBlock lblNumType = this.FindControl<TextBlock> ("lblNumType");
-            TextBlock lblLine1 = this.FindControl<TextBlock> ("lblLine1");
-            TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
-            TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
+            if (controlType is null)
+                return;
 
-            borderNumeric.BorderBrush = Color.GetLead (controlType.GetLead_Color, colorScheme);
+            Dispatcher.UIThread.InvokeAsync (() => {
+                Border borderNumeric = this.FindControl<Border> ("borderNumeric");
+                TextBlock lblNumType = this.FindControl<TextBlock> ("lblNumType");
+                TextBlock lblLine1 = this.FindControl<TextBlock> ("lblLine1");
+                TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
+                TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
 
-            lblNumType.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-            lblLine1.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-            lblLine2.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-            lblLine3.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                borderNumeric.BorderBrush = Color.GetLead (controlType.GetLead_Color, colorScheme);
 
-            lblLine1.IsVisible = true;
-            lblLine2.IsVisible = true;
-            lblLine3.IsVisible = true;
+                lblNumType.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                lblLine1.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                lblLine2.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                lblLine3.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
 
-            lblNumType.Text = App.Language.Localize (ControlType.LookupString (controlType.Value));
+                lblLine1.IsVisible = true;
+                lblLine2.IsVisible = true;
+                lblLine3.IsVisible = true;
 
-            /* Set lines to be visible/hidden as appropriate */
-            switch (controlType.Value) {
-                default:
-                case ControlType.Values.NIBP:
-                case ControlType.Values.ABP:
-                case ControlType.Values.PA:
-                    break;
+                lblNumType.Text = App.Language.Localize (ControlType.LookupString (controlType.Value));
 
-                case ControlType.Values.SPO2:
-                case ControlType.Values.ETCO2:
-                case ControlType.Values.ICP:
-                    lblLine3.IsVisible = false;
-                    break;
+                /* Set lines to be visible/hidden as appropriate */
+                switch (controlType.Value) {
+                    default:
+                    case ControlType.Values.NIBP:
+                    case ControlType.Values.ABP:
+                    case ControlType.Values.PA:
+                        break;
 
-                case ControlType.Values.ECG:
-                case ControlType.Values.T:
-                case ControlType.Values.RR:
-                case ControlType.Values.CVP:
-                case ControlType.Values.CO:
-                case ControlType.Values.IAP:
-                    lblLine2.IsVisible = false;
-                    lblLine3.IsVisible = false;
-                    break;
-            }
+                    case ControlType.Values.SPO2:
+                    case ControlType.Values.ETCO2:
+                    case ControlType.Values.ICP:
+                        lblLine3.IsVisible = false;
+                        break;
 
-            /* Set menu items enabled/disabled accordingly */
-            switch (controlType.Value) {
-                default:
-                    menuZeroTransducer.IsEnabled = false;
-                    break;
+                    case ControlType.Values.ECG:
+                    case ControlType.Values.T:
+                    case ControlType.Values.RR:
+                    case ControlType.Values.CVP:
+                    case ControlType.Values.CO:
+                    case ControlType.Values.IAP:
+                        lblLine2.IsVisible = false;
+                        lblLine3.IsVisible = false;
+                        break;
+                }
 
-                case ControlType.Values.ABP:
-                case ControlType.Values.CVP:
-                case ControlType.Values.IAP:
-                case ControlType.Values.ICP:
-                case ControlType.Values.PA:
-                    menuZeroTransducer.IsEnabled = true;
-                    break;
-            }
+                /* Set menu items enabled/disabled accordingly */
+                switch (controlType.Value) {
+                    default:
+                        menuZeroTransducer.IsEnabled = false;
+                        break;
+
+                    case ControlType.Values.ABP:
+                    case ControlType.Values.CVP:
+                    case ControlType.Values.IAP:
+                    case ControlType.Values.ICP:
+                    case ControlType.Values.PA:
+                        menuZeroTransducer.IsEnabled = true;
+                        break;
+                }
+            });
         }
 
         public void UpdateVitals () {
@@ -218,7 +224,7 @@ namespace II_Avalonia.Controls {
             TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
             TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
 
-            switch (controlType.Value) {
+            switch (controlType?.Value) {
                 default:
                 case ControlType.Values.ECG:
                     lblLine1.Text = String.Format ("{0:0}", App.Patient.MeasureHR_ECG (
@@ -308,7 +314,10 @@ namespace II_Avalonia.Controls {
         }
 
         private void MenuZeroTransducer_Click (object? sender, RoutedEventArgs e) {
-            switch (controlType.Value) {
+            if (App.Patient is null)
+                return;
+
+            switch (controlType?.Value) {
                 case ControlType.Values.ABP: App.Patient.TransducerZeroed_ABP = true; return;
                 case ControlType.Values.CVP: App.Patient.TransducerZeroed_CVP = true; return;
                 case ControlType.Values.PA: App.Patient.TransducerZeroed_PA = true; return;
@@ -318,17 +327,22 @@ namespace II_Avalonia.Controls {
         }
 
         private void MenuAddNumeric_Click (object? sender, RoutedEventArgs e)
-            => App.Device_Monitor.AddNumeric ();
+            => App.Device_Monitor?.AddNumeric ();
 
         private void MenuRemoveNumeric_Click (object? sender, RoutedEventArgs e)
-            => App.Device_Monitor.RemoveNumeric (this);
+            => App.Device_Monitor?.RemoveNumeric (this);
 
         private void MenuSelectInputSource (object? sender, RoutedEventArgs e) {
-            ControlType.Values selectedValue;
-            if (!Enum.TryParse<ControlType.Values> (((MenuItem)sender).Name, out selectedValue))
+            if (sender is not MenuItem)
                 return;
 
-            controlType.Value = selectedValue;
+            if (!Enum.TryParse<ControlType.Values> (((MenuItem)sender).Name, out ControlType.Values selectedValue))
+                return;
+
+            if (controlType is null)
+                controlType = new (selectedValue);
+            else
+                controlType.Value = selectedValue;
 
             UpdateInterface ();
             UpdateVitals ();

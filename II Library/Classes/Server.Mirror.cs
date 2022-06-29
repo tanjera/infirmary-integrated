@@ -36,13 +36,13 @@ namespace II.Server {
             _BackgroundWorker.WorkerSupportsCancellation = true;
         }
 
-        public void ProcessTimer (object sender, EventArgs e) {
+        public void ProcessTimer (object? sender, EventArgs e) {
             timerUpdate.Process ();
         }
 
-        public void TimerTick (Patient p, Server s) {
-            timerUpdate.ResetAuto (5000);
-            GetPatient (p, s);
+        public void TimerTick (Patient? p, Server s) {
+            _ = timerUpdate.ResetAuto (5000);
+            _ = GetPatient (p, s);
         }
 
         public void CancelOperation () {
@@ -55,34 +55,30 @@ namespace II.Server {
             }
         }
 
-        public void GetPatient (Patient p, Server s) {
+        public async Task GetPatient (Patient? p, Server s) {
             /* Mirroring not active; neither client or host */
             if (Status != Statuses.CLIENT)
                 return;
 
             /* Mirroring as client, check server q RefreshSeconds */
             if (DateTime.Compare (ServerQueried, DateTime.UtcNow.Subtract (new TimeSpan (0, 0, RefreshSeconds))) < 0) {
-                // Must use intermediary Patient(), if App.Patient is thread-locked, Waveforms stop populating!!
-                Patient pBuffer = new Patient ();
-
-                _BackgroundWorker.DoWork += delegate {
-                    pBuffer = s.Get_PatientMirror (this);
-                };
-                _BackgroundWorker.RunWorkerCompleted += delegate {
-                    ThreadLock = false;
-                    ResetBackgroundWorker ();
-
-                    if (pBuffer != null)
-                        _ = p.Load_Process (pBuffer.Save ());
-                };
+                // Using a thread lock to prevent multiple web calls from generating race conditions against each other
                 if (!ThreadLock) {
                     ThreadLock = true;
-                    _BackgroundWorker.RunWorkerAsync ();
+                    Patient? pBuffer = await Server.Get_PatientMirror (this);
+                    ThreadLock = false;
+
+                    if (pBuffer != null) {
+                        if (p == null)
+                            p = new ();
+
+                        await p.Load_Process (pBuffer.Save ());
+                    }
                 }
             }
         }
 
-        public async Task PostPatient (Patient p, Server s) {
+        public async Task PostPatient (Patient? p, Server s) {
             if (Status != Statuses.HOST)
                 return;
 
@@ -94,7 +90,7 @@ namespace II.Server {
             if (Accession.Length <= 0 || !regex.IsMatch (Accession))
                 return;
 
-            _ = s.Post_PatientMirror (this, pStr, pUp);
+            await Server.Post_PatientMirror (this, pStr, pUp);
         }
     }
 }

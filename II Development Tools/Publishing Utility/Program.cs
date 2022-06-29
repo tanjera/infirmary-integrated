@@ -97,6 +97,10 @@ namespace Publishing {
                 Console.ResetColor ();
 
                 if (Console.ReadLine ().Trim ().ToLower () == "y") {
+                    // Re-publish for Windows target because previous Pack() moved/deleted the Publish directory
+                    Building.Publish (progVar, dirSimulator, "win-x64");
+                    Building.Publish (progVar, dirScenarioEditor, "win-x64");
+
                     Package_Windows.Process (progVar, dirRelease, verNumber);
                 }
 

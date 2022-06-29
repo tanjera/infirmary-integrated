@@ -102,19 +102,25 @@ namespace II_Scenario_Editor.Controls {
             AvaloniaXamlLoader.Load (this);
         }
 
-        public async Task UpdateViewModel () {
+        public Task UpdateViewModel () {
             this.FindControl<Label> ("lblName").Content = Name;
             this.FindControl<Label> ("lblDescription").Content = Description;
+
+            return Task.CompletedTask;
         }
 
-        public async Task SetStep_Border (bool isSelected) {
+        public Task SetStep_Border (bool isSelected) {
             Border step = this.FindControl<Border> ("brdStep");
             step.BorderThickness = (isSelected) ? StrokeThickness_Selected : StrokeThickness_Default;
+
+            return Task.CompletedTask;
         }
 
-        public async Task SetStep_Fill (Brush brush) {
+        public Task SetStep_Fill (Brush brush) {
             Border step = this.FindControl<Border> ("brdStep");
             step.Background = brush;
+
+            return Task.CompletedTask;
         }
 
         public async Task SetEndStep_Border (bool isSelected)

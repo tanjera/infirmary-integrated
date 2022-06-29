@@ -12,26 +12,27 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Threading;
 
 using II;
 using II.Drawing;
 using II.Localization;
 using II.Rhythm;
 
-namespace II_Avalonia.Controls {
+namespace II_Simulator.Controls {
 
     public partial class EFMTracing : UserControl {
-        public Strip Strip;
+        public Strip? Strip;
         public Lead Lead { get { return Strip.Lead; } }
-        public RenderTargetBitmap Tracing;
+        public RenderTargetBitmap? Tracing;
 
         /* Drawing variables, offsets and multipliers */
         public Color.Schemes colorScheme;
         private Pen tracingPen = new Pen ();
         private IBrush tracingBrush = Brushes.Green;
 
-        private PointD drawOffset;
-        private PointD drawMultiplier;
+        private PointD? drawOffset;
+        private PointD? drawMultiplier;
 
         public EFMTracing () {
             InitializeComponent ();
@@ -59,15 +60,17 @@ namespace II_Avalonia.Controls {
         private void UpdateInterface ()
             => UpdateInterface (this, new EventArgs ());
 
-        private void UpdateInterface (object? sender, EventArgs e) {
-            tracingBrush = Color.GetLead (Lead.Value, colorScheme);
+        private void UpdateInterface (object sender, EventArgs e) {
+            Dispatcher.UIThread.InvokeAsync (() => {
+                tracingBrush = Color.GetLead (Lead.Value, colorScheme);
 
-            Label lblLead = this.FindControl<Label> ("lblLead");
+                Label lblLead = this.FindControl<Label> ("lblLead");
 
-            lblLead.Foreground = tracingBrush;
-            lblLead.Content = App.Language.Localize (Lead.LookupString (Lead.Value, true));
+                lblLead.Foreground = tracingBrush;
+                lblLead.Content = App.Language.Localize (Lead.LookupString (Lead.Value, true));
 
-            CalculateOffsets ();
+                CalculateOffsets ();
+            });
         }
 
         public void CalculateOffsets () {
@@ -79,9 +82,9 @@ namespace II_Avalonia.Controls {
         }
 
         public async Task DrawTracing ()
-            => _ = Draw (Strip, tracingBrush, 1);
+            => await Draw (Strip, tracingBrush, 1);
 
-        public async Task Draw (Strip _Strip, IBrush _Brush, double _Thickness) {
+        public Task Draw (Strip _Strip, IBrush _Brush, double _Thickness) {
             Image imgTracing = this.FindControl<Image> ("imgTracing");
 
             PixelSize size = new PixelSize (    // Must use a size > 0
@@ -96,6 +99,8 @@ namespace II_Avalonia.Controls {
             Trace.DrawPath (_Strip, Tracing, tracingPen, drawOffset, drawMultiplier);
 
             imgTracing.Source = Tracing;
+
+            return Task.CompletedTask;
         }
     }
 }

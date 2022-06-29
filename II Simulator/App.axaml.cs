@@ -12,7 +12,7 @@ using II;
 using II.Localization;
 using II.Server;
 
-namespace II_Avalonia {
+namespace II_Simulator {
 
     public class App : Application {
         public static string []? Start_Args;
@@ -25,8 +25,8 @@ namespace II_Avalonia {
         public static Scenario? Scenario;
         public static Patient? Patient;
 
-        public static Splash? Window_Splash;
-        public static Main? Window_Main;
+        public static WindowSplash? Window_Splash;
+        public static WindowMain? Window_Main;
 
         public static DeviceMonitor? Device_Monitor;
         public static DeviceECG? Device_ECG;
@@ -47,10 +47,12 @@ namespace II_Avalonia {
             App.Language = new Language (App.Settings.Language);    // Load localization dictionary based on settings
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+
         public override async void OnFrameworkInitializationCompleted () {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
-                Window_Splash = new Splash ();
-                Window_Main = new Main ();
+                Window_Splash = new ();
+                Window_Main = new ();
 
                 // Show the splash screen for 2 seconds, then swap out to the main window
                 desktop.MainWindow = Window_Splash;
@@ -72,6 +74,8 @@ namespace II_Avalonia {
 
             base.OnFrameworkInitializationCompleted ();
         }
+
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
         public static void Exit () {
             Window_Splash?.Close ();

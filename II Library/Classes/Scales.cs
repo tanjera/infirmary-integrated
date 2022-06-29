@@ -13,7 +13,7 @@ namespace II {
 
             public string LookupString () => LookupString (Value);
             public static string LookupString (Values v) {
-                return String.Format ("INTENSITY:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v).ToString ());
+                return String.Format ("INTENSITY:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v)?.ToString ());
             }
         }
     }

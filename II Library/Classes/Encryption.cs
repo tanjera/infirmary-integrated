@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace II {
+
     public static class Encryption {
         private static string keyString = "!8x/A?b(G+KbPe$hVkYpEs6V9y$B&E)H";
         public static byte [] Key { get { return Encoding.UTF8.GetBytes (keyString); } }
@@ -28,43 +29,48 @@ namespace II {
             byte [] bytes = Encoding.ASCII.GetBytes (str);
             byte [] hash = md5.ComputeHash (bytes);
 
-            StringBuilder sb = new StringBuilder ();
+            StringBuilder sb = new ();
             foreach (byte b in hash)
                 sb.Append (b.ToString ("X2"));
 
             return sb.ToString ();
         }
 
-        public static string EncryptAES (string str) {
+        public static string EncryptAES (string? str) {
+            if (str is null)
+                return "";
+
             byte [] output;
-            using (AesManaged aes = new AesManaged ()) {
+            using (Aes aes = Aes.Create ()) {
                 aes.Key = Encryption.Key;
                 aes.IV = Encryption.IV;
                 ICryptoTransform encryptor = aes.CreateEncryptor (aes.Key, aes.IV);
-                using (MemoryStream ms = new MemoryStream ()) {
-                    using (CryptoStream cs = new CryptoStream (ms, encryptor, CryptoStreamMode.Write)) {
-                        using (StreamWriter sw = new StreamWriter (cs))
-                            sw.Write (str);
-                        output = ms.ToArray ();
-                    }
+                using MemoryStream ms = new ();
+                using CryptoStream cs = new (ms, encryptor, CryptoStreamMode.Write);
+                using (StreamWriter sw = new (cs)) {
+                    sw.Write (str);
                 }
+
+                output = ms.ToArray ();
             }
             return Convert.ToBase64String (output);
         }
 
-        public static string DecryptAES (string str) {
+        public static string DecryptAES (string? str) {
+            if (str is null)
+                return "";
+
             string output;
-            using (AesManaged aes = new AesManaged ()) {
+            using (Aes aes = Aes.Create ()) {
                 aes.Key = Encryption.Key;
                 aes.IV = Encryption.IV;
                 ICryptoTransform decryptor = aes.CreateDecryptor (aes.Key, aes.IV);
-                using (MemoryStream ms = new MemoryStream (Convert.FromBase64String (str))) {
-                    using (CryptoStream cs = new CryptoStream (ms, decryptor, CryptoStreamMode.Read)) {
-                        using (StreamReader reader = new StreamReader (cs))
-                            output = reader.ReadToEnd ();
-                    }
-                }
+                using MemoryStream ms = new (Convert.FromBase64String (str));
+                using CryptoStream cs = new (ms, decryptor, CryptoStreamMode.Read);
+                using StreamReader reader = new (cs);
+                output = reader.ReadToEnd ();
             }
+
             return output;
         }
     }

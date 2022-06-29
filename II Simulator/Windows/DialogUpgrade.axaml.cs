@@ -8,7 +8,7 @@ using Avalonia.Markup.Xaml;
 using II;
 using II.Localization;
 
-namespace II_Avalonia {
+namespace II_Simulator {
 
     public partial class DialogUpgrade : Window {
 

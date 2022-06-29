@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 
 namespace II.Localization {
-
     public partial class Language {
         public Values Value;
 

@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 
-namespace II_Avalonia {
+namespace II_Simulator {
 
     public partial class DialogUpgradeCurrent : Window {
 

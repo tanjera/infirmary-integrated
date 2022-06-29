@@ -18,17 +18,23 @@ using II.Drawing;
 using II.Rhythm;
 using II.Waveform;
 
-namespace II_Avalonia {
+namespace II_Simulator {
 
     public class Trace {
 
-        public static void DrawPath (Strip strip, RenderTargetBitmap bitmap,
-                Pen pen, PointD offset, PointD multiplier) {
-            if (strip.Points.Count < 2)
+        public static void DrawPath (Strip? strip, RenderTargetBitmap bitmap,
+                Pen pen, PointD? offset, PointD? multiplier) {
+            if (strip is null || strip.Points.Count < 2)
                 return;
 
             if (bitmap == null)     // Can't initiate Bitmap here; don't have width/height
                 return;
+
+            if (offset is null)
+                offset = new ();
+
+            if (multiplier is null)
+                multiplier = new (1d, 1d);
 
             using (IDrawingContextImpl ctx = bitmap.CreateDrawingContext (null)) {
                 var sg = new StreamGeometry ();

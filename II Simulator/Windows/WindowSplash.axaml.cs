@@ -2,16 +2,12 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace II_Avalonia {
+namespace II_Simulator {
 
-    public partial class Splash : Window {
+    public partial class WindowSplash : Window {
 
-        public Splash () {
+        public WindowSplash () {
             InitializeComponent ();
-#if DEBUG
-            this.AttachDevTools ();
-#endif
-
             Init ();
         }
 

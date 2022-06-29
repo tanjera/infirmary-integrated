@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using II.Waveform;
 
 namespace II {
+
     public class Cardiac_Rhythms {
         public Values Value;
 
@@ -61,7 +62,7 @@ namespace II {
         }
 
         public static string LookupString (Values value) {
-            return String.Format ("RHYTHM:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
+            return String.Format ("RHYTHM:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value)?.ToString ());
         }
 
         public bool CanBe_Paced {
@@ -182,6 +183,7 @@ namespace II {
         }
 
         public class Default_Vitals {
+
             public int HRMin, HRMax,
                         RRMin, RRMax,
                         SPO2Min, SPO2Max,
@@ -398,7 +400,7 @@ namespace II {
         }
 
         public static string LookupString (Values value) {
-            return String.Format ("RHYTHM:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
+            return String.Format ("RHYTHM:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value)?.ToString ());
         }
 
         public enum Values {
@@ -456,7 +458,7 @@ namespace II {
         }
 
         public static string LookupString (Values value) {
-            return String.Format ("RHYTHM:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
+            return String.Format ("RHYTHM:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value)?.ToString ());
         }
 
         public enum Values {
@@ -499,7 +501,7 @@ namespace II {
         }
 
         public static string LookupString (Values value) {
-            return String.Format ("CARDIAC_AXIS:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
+            return String.Format ("CARDIAC_AXIS:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value)?.ToString ());
         }
 
         public enum Values {
@@ -524,7 +526,7 @@ namespace II {
         }
 
         public static string LookupString (Values v) {
-            return String.Format ("FETAL_RHYTHMS:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v).ToString ());
+            return String.Format ("FETAL_RHYTHMS:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v)?.ToString ());
         }
 
         public enum Values {

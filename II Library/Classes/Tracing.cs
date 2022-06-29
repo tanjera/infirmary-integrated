@@ -12,13 +12,15 @@ namespace II.Rhythm {
     public class Tracing {
 
         public static void CalculateOffsets (
-            Strip strip,
+            Strip? strip,
             double width, double height,
-            ref PointD drawOffset,
-            ref PointD drawMultiplier) {
-            if (drawOffset == null)
+            ref PointD? drawOffset,
+            ref PointD? drawMultiplier) {
+            if (strip is null)
+                return;
+            if (drawOffset is null)
                 drawOffset = new PointD ();
-            if (drawMultiplier == null)
+            if (drawMultiplier is null)
                 drawMultiplier = new PointD ();
 
             drawOffset.X = 0;

@@ -15,7 +15,7 @@ using II;
 using II.Rhythm;
 using II.Waveform;
 
-namespace II_Avalonia {
+namespace II_Simulator {
 
     public partial class DeviceMonitor : Window {
         /* Device variables */
@@ -66,7 +66,8 @@ namespace II_Avalonia {
             timerVitals_Respiratory.Dispose ();
 
             /* Unsubscribe from the main Patient event listing */
-            App.Patient.PatientEvent -= OnPatientEvent;
+            if (App.Patient != null)
+                App.Patient.PatientEvent -= OnPatientEvent;
         }
 
         private void InitTimers () {
@@ -103,24 +104,26 @@ namespace II_Avalonia {
         }
 
         private void UpdateInterface () {
-            for (int i = 0; i < listTracings.Count; i++)
-                listTracings [i].SetColorScheme (colorScheme);
+            Dispatcher.UIThread.InvokeAsync (() => {
+                for (int i = 0; i < listTracings.Count; i++)
+                    listTracings [i].SetColorScheme (colorScheme);
 
-            for (int i = 0; i < listNumerics.Count; i++)
-                listNumerics [i].SetColorScheme (colorScheme);
+                for (int i = 0; i < listNumerics.Count; i++)
+                    listNumerics [i].SetColorScheme (colorScheme);
 
-            Window window = this.FindControl<Window> ("wdwDeviceMonitor");
-            window.Background = Color.GetBackground (Color.Devices.DeviceMonitor, colorScheme);
+                Window window = this.FindControl<Window> ("wdwDeviceMonitor");
+                window.Background = Color.GetBackground (Color.Devices.DeviceMonitor, colorScheme);
+            });
         }
 
-        public void Load_Process (string inc) {
-            StringReader sRead = new StringReader (inc);
-            List<string> numericTypes = new List<string> (),
-                         tracingTypes = new List<string> ();
+        public async Task Load_Process (string inc) {
+            StringReader sRead = new (inc);
+            List<string> numericTypes = new (),
+                         tracingTypes = new ();
 
             try {
-                string line;
-                while ((line = sRead.ReadLine ()) != null) {
+                string? line;
+                while ((line = await sRead.ReadLineAsync ()) != null) {
                     if (line.Contains (":")) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1);
@@ -211,10 +214,10 @@ namespace II_Avalonia {
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Dark);
 
-        private void OnClosed (object sender, EventArgs e)
+        private void OnClosed (object? sender, EventArgs e)
             => this.Dispose ();
 
-        private void OnTick_Tracing (object sender, EventArgs e) {
+        private void OnTick_Tracing (object? sender, EventArgs e) {
             if (isPaused)
                 return;
 
@@ -224,7 +227,7 @@ namespace II_Avalonia {
             }
         }
 
-        private void OnTick_Vitals_Cardiac (object sender, EventArgs e) {
+        private void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
             if (isPaused)
                 return;
 
@@ -236,7 +239,7 @@ namespace II_Avalonia {
                 .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }
 
-        private void OnTick_Vitals_Respiratory (object sender, EventArgs e) {
+        private void OnTick_Vitals_Respiratory (object? sender, EventArgs e) {
             if (isPaused)
                 return;
 
@@ -248,7 +251,7 @@ namespace II_Avalonia {
                 .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }
 
-        private void OnLayoutChange (List<string> numericTypes = null, List<string> tracingTypes = null) {
+        private void OnLayoutChange (List<string>? numericTypes = null, List<string>? tracingTypes = null) {
             // If numericTypes or tracingTypes are not null... then we are loading a file; clear lNumerics and lTracings!
             if (numericTypes != null)
                 listNumerics.Clear ();

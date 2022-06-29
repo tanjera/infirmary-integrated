@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 
@@ -9,22 +10,35 @@ namespace Publishing {
         public static void Process (Program.Variables progVar, string dirRelease, string verNumber) {
             string pkgOrig = $"infirmary-integrated-.exe";
             string pkgName = $"infirmary-integrated-{verNumber}.exe";
-            string dirPackage = Path.Combine (progVar.dirSolution, @$"II Simulator\bin\Release\{progVar.versionDotnet}\win-x64");
+            string dirSimulator = Path.Combine (progVar.dirSolution, @$"II Simulator\bin\Release\{progVar.versionDotnet}\win-x64\publish");
+            string dirScenarioEditor = Path.Combine (progVar.dirSolution, @$"II Scenario Editor\bin\Release\{progVar.versionDotnet}\win-x64\publish");
 
-            CreatePackage_Windows (progVar, dirPackage);
-            MovePackage_Windows (dirPackage, dirRelease, pkgOrig, pkgName);
+            // Ensure the directory exists and is empty
+            if (!Directory.Exists (progVar.dirTemporary))
+                Directory.CreateDirectory (progVar.dirTemporary);
+
+            Directory.Move (dirSimulator, Path.Combine (progVar.dirTemporary, "Infirmary Integrated"));
+            Directory.Move (dirScenarioEditor, Path.Combine (progVar.dirTemporary, "Infirmary Integrated Scenario Editor"));
+
+            CreatePackage_Windows (progVar, progVar.dirTemporary, verNumber);
+            MovePackage_Windows (progVar.dirTemporary, dirRelease, pkgOrig, pkgName);
             SignPackage_Windows (progVar, dirRelease, pkgName);
+
+            // Clean the temporary directory
+            Directory.Delete (progVar.dirTemporary, true);
         }
 
-        public static void CreatePackage_Windows (Program.Variables progVar, string dirPackage) {
+        public static void CreatePackage_Windows (Program.Variables progVar, string dirPackage, string verNumber) {
             string nsiOriginal = Path.Combine (progVar.dirSolution, @$"Package, Windows\Package.nsi");
-
             string nsiBuffer = Path.Combine (dirPackage, "Package.nsi");
 
             if (File.Exists (nsiOriginal)) {
-                File.Copy (nsiOriginal, nsiBuffer);
+                List<string> nsiTextFile = new List<string> (File.ReadAllLines (nsiOriginal));
+                int editIndex = nsiTextFile.FindIndex (s => s.Trim () == ("\"DisplayName\" \"Infirmary Integrated\" ; <-- Package_Windows.cs EDIT <--"));
+                nsiTextFile [editIndex] = $"\"DisplayName\" \"Infirmary Integrated {verNumber}\"";
+                File.WriteAllLines (nsiBuffer, nsiTextFile.ToArray ());
 
-                Process proc = new Process ();
+                Process proc = new ();
 
                 //makensis.exe {dir}\Package.nsi
 

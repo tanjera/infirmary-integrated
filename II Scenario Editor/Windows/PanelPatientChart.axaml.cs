@@ -38,8 +38,10 @@ namespace II_Scenario_Editor.Windows {
             AvaloniaXamlLoader.Load (this);
         }
 
-        public async Task InitReferences (WindowMain main) {
+        public Task InitReferences (WindowMain main) {
             IMain = main;
+
+            return Task.CompletedTask;
         }
 
         /* Generic Menu Items (across all Panels) */

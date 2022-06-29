@@ -45,18 +45,24 @@ namespace II_Scenario_Editor.Controls {
             AvaloniaXamlLoader.Load (this);
         }
 
-        public async Task SetStep (ItemStep step) {
+        public Task SetStep (ItemStep step) {
             Step = step;
+
+            return Task.CompletedTask;
         }
 
-        public async Task SetEndStep_Border (bool isSelected) {
+        public Task SetEndStep_Border (bool isSelected) {
             Border end = this.FindControl<Border> ("brdStepEnd");
             end.BorderThickness = isSelected ? Thickness_Selected : Thickness_Default;
+
+            return Task.CompletedTask;
         }
 
-        public async Task SetEndStep_Fill (Brush brush) {
+        public Task SetEndStep_Fill (Brush brush) {
             Border end = this.FindControl<Border> ("brdStepEnd");
             end.Background = brush;
+
+            return Task.CompletedTask;
         }
     }
 }

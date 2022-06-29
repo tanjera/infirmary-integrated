@@ -13,12 +13,16 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
+
     public class Scenario {
         public string? Name, Description, Author;
         public DateTime? Updated;
 
         public string? BeginStep = null;
         public string? AtStep = null;
+
+        // A holdover from IsScenario... indicates if this Scenario is from a loaded file
+        public bool IsLoaded = false;
 
         public List<Step> Steps = new List<Step> ();
         public Timer ProgressTimer = new Timer ();
@@ -56,24 +60,22 @@ namespace II {
             ProgressTimer.Dispose ();
         }
 
-        public async Task UnsubscribeEvents () {
+        public Task UnsubscribeEvents () {
             if (StepChangeRequest != null) {
-                foreach (Delegate d in StepChangeRequest?.GetInvocationList ())
+                foreach (Delegate d in StepChangeRequest.GetInvocationList ())
                     StepChangeRequest -= (EventHandler<EventArgs>)d;
             }
 
             if (StepChanged != null) {
-                foreach (Delegate d in StepChanged?.GetInvocationList ())
+                foreach (Delegate d in StepChanged.GetInvocationList ())
                     StepChanged -= (EventHandler<EventArgs>)d;
             }
+
+            return Task.CompletedTask;
         }
 
-        public Step Current {
+        public Step? Current {
             get { return Steps.Find (s => s.UUID == AtStep); }
-        }
-
-        public bool IsScenario {    // If there's only one Step- it's a regular Patient parameter
-            get { return Steps.Count != 1; }
         }
 
         public void Reset () {
@@ -87,12 +89,12 @@ namespace II {
             Updated = DateTime.UtcNow;
         }
 
-        public Patient Patient {
+        public Patient? Patient {
             get { return Current?.Patient; }
             set { if (Current != null) Current.Patient = value; }
         }
 
-        public void Load_Process (string inc) {
+        public async Task Load_Process (string inc) {
             StringReader sRead = new (inc);
             string? line, pline;
             StringBuilder pbuffer;
@@ -105,40 +107,41 @@ namespace II {
                     if (line == "> Begin: Step") {
                         pbuffer = new StringBuilder ();
 
-                        while ((pline = sRead.ReadLine ().Trim ()) != null && pline != "> End: Step")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Step")
                             pbuffer.AppendLine (pline);
 
+                        IsLoaded = true;
                         Step s = new Step ();
-                        s.Load_Process (pbuffer.ToString ());
+                        await s.Load_Process (pbuffer.ToString ());
                         Steps.Add (s);
                     } else if (line == "> Begin: DeviceMonitor") {
                         pbuffer = new StringBuilder ();
 
-                        while ((pline = sRead.ReadLine ().Trim ()) != null && pline != "> End: DeviceMonitor")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: DeviceMonitor")
                             pbuffer.AppendLine (pline);
 
-                        DeviceMonitor.Load_Process (pbuffer.ToString ());
+                        await DeviceMonitor.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: DeviceDefib") {
                         pbuffer = new StringBuilder ();
 
-                        while ((pline = sRead.ReadLine ().Trim ()) != null && pline != "> End: DeviceDefib")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: DeviceDefib")
                             pbuffer.AppendLine (pline);
 
-                        DeviceDefib.Load_Process (pbuffer.ToString ());
+                        await DeviceDefib.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: DeviceECG") {
                         pbuffer = new StringBuilder ();
 
-                        while ((pline = sRead.ReadLine ().Trim ()) != null && pline != "> End: DeviceECG")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: DeviceECG")
                             pbuffer.AppendLine (pline);
 
-                        DeviceECG.Load_Process (pbuffer.ToString ());
+                        await DeviceECG.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: DeviceIABP") {
                         pbuffer = new StringBuilder ();
 
-                        while ((pline = sRead.ReadLine ().Trim ()) != null && pline != "> End: DeviceIABP")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: DeviceIABP")
                             pbuffer.AppendLine (pline);
 
-                        DeviceIABP.Load_Process (pbuffer.ToString ());
+                        await DeviceIABP.Load_Process (pbuffer.ToString ());
                     } else if (line.Contains (":")) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
@@ -221,7 +224,7 @@ namespace II {
             }
 
             // Init step regardless of whether step Index changed; step may have been deactivated by StepChangeRequest()
-            SetTimer ();
+            await SetTimer ();
             await Current.Patient.Activate ();
 
             // Trigger events for loading current Patient, and trigger propagation to devices
@@ -230,6 +233,9 @@ namespace II {
         }
 
         public async Task LastStep () {
+            if (Current == null || String.IsNullOrEmpty (Current.DefaultSource))
+                return;
+
             StepChangeRequest?.Invoke (this, new EventArgs ());
 
             string? progFrom = AtStep;
@@ -246,7 +252,7 @@ namespace II {
             }
 
             // Init step regardless of whether step Index changed; step may have been deactivated by StepChangeRequest()
-            SetTimer ();
+            await SetTimer ();
             await Current.Patient.Activate ();
 
             // Trigger events for loading current Patient, and trigger propagation to devices
@@ -263,6 +269,11 @@ namespace II {
             string? progFrom = AtStep;
             AtStep = incUUID;
 
+            if (Current == null) {
+                AtStep = progFrom;
+                return;
+            }
+
             if (progFrom != AtStep) {                                       // If the actual step Index changed
                 Current.DefaultSource = progFrom;
                 Step? stepFrom = Steps.Find (s => s.UUID == (progFrom ?? ""));
@@ -273,7 +284,7 @@ namespace II {
                 }
             }
 
-            SetTimer ();
+            await SetTimer ();
             await Current.Patient.Activate ();
 
             // Trigger events for loading current Patient, and trigger propagation to devices
@@ -289,22 +300,25 @@ namespace II {
             thisPatient.TransducerZeroed_IAP = lastPatient.TransducerZeroed_IAP;
         }
 
-        public void PauseStep () => ProgressTimer.Stop ();
+        public async Task PauseStep () => await ProgressTimer.Stop ();
 
-        public void PlayStep () => ProgressTimer.Start ();
+        public async Task PlayStep () => await ProgressTimer.Start ();
 
-        public void SetTimer () {
+        public async Task SetTimer () {
+            if (Current == null)
+                return;
+
             if (Current.ProgressTimer > 0)
-                ProgressTimer.ResetAuto (Current.ProgressTimer * 1000);
+                await ProgressTimer.ResetAuto (Current.ProgressTimer * 1000);
             else
-                ProgressTimer.Stop ();
+                await ProgressTimer.Stop ();
         }
 
-        public void StopTimer () => ProgressTimer.Stop ();
+        public async Task StopTimer () => await ProgressTimer.Stop ();
 
-        public void ResumeTimer () => ProgressTimer.Start ();
+        public async Task ResumeTimer () => await ProgressTimer.Start ();
 
-        public void ProcessTimer (object sender, EventArgs e)
+        public void ProcessTimer (object? sender, EventArgs e)
             => ProgressTimer.Process ();
 
         private void ProgressTimer_Tick (object? sender, EventArgs e)
@@ -313,7 +327,7 @@ namespace II {
         public class Step {
             public string? UUID = null;
             public Patient Patient;
-            public string Name, Description;
+            public string? Name, Description;
 
             public List<Progression> Progressions = new List<Progression> ();
             public Progression? DefaultProgression = null;
@@ -329,29 +343,29 @@ namespace II {
                 Patient = new Patient ();
             }
 
-            public void Load_Process (string inc) {
-                StringReader sRead = new StringReader (inc);
+            public async Task Load_Process (string inc) {
+                StringReader sRead = new (inc);
                 string? line, pline;
                 StringBuilder pbuffer;
 
                 try {
-                    while (!String.IsNullOrEmpty (line = sRead.ReadLine ())) {
+                    while (!String.IsNullOrEmpty (line = await sRead.ReadLineAsync ())) {
                         line = line.Trim ();
                         if (line == "> Begin: Patient") {
-                            pbuffer = new StringBuilder ();
+                            pbuffer = new ();
 
-                            while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
+                            while ((pline = await sRead.ReadLineAsync ()) != null && pline != "> End: Patient")
                                 pbuffer.AppendLine (pline);
 
-                            _ = Patient.Load_Process (pbuffer.ToString ());
+                            await Patient.Load_Process (pbuffer.ToString ());
                         } else if (line == "> Begin: Progression") {
-                            pbuffer = new StringBuilder ();
+                            pbuffer = new ();
 
-                            while ((pline = sRead.ReadLine ()) != null && pline != "> End: Progression")
+                            while ((pline = await sRead.ReadLineAsync ()) != null && pline != "> End: Progression")
                                 pbuffer.AppendLine (pline);
 
                             Progression p = new ();
-                            p.Load_Process (pbuffer.ToString ());
+                            await p.Load_Process (pbuffer.ToString ());
                             Progressions.Add (p);
 
                             if (p.UUID == DefaultProgression?.UUID)
@@ -423,12 +437,12 @@ namespace II {
                     Description = desc;
                 }
 
-                public void Load_Process (string inc) {
+                public async Task Load_Process (string inc) {
                     StringReader sRead = new StringReader (inc);
                     string? line;
 
                     try {
-                        while (!String.IsNullOrEmpty (line = sRead.ReadLine ())) {
+                        while (!String.IsNullOrEmpty (line = await sRead.ReadLineAsync ())) {
                             line = line.Trim ();
 
                             if (line.Contains (":")) {

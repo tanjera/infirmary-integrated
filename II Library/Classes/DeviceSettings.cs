@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
+
     public class DeviceSettings {
         public bool IsEnabled { get; set; }
 
@@ -25,12 +26,12 @@ namespace II {
             return sw.ToString ();
         }
 
-        public void Load_Process (string inc) {
+        public async Task Load_Process (string inc) {
             StringReader sRead = new StringReader (inc);
             string? line;
 
             try {
-                while (!String.IsNullOrEmpty (line = sRead.ReadLine ())) {
+                while (!String.IsNullOrEmpty (line = await sRead.ReadLineAsync ())) {
                     line = line.Trim ();
 
                     if (line.Contains (":")) {

@@ -54,7 +54,7 @@ namespace II_Scenario_Editor.Windows {
             await UpdateViewModel ();
         }
 
-        private async Task InitViewModel () {
+        private Task InitViewModel () {
             // Populate enum string lists for readable display
             List<string> cardiacRhythms = new List<string> (),
                 respiratoryRhythms = new List<string> (),
@@ -177,6 +177,8 @@ namespace II_Scenario_Editor.Windows {
             pintETCO2.PropertyChanged += UpdatePatient;
             pintCVP.PropertyChanged += UpdatePatient;
             pintPacemakerThreshold.PropertyChanged += UpdatePatient;
+
+            return Task.CompletedTask;
         }
 
         private void UpdatePatient (object? sender, PropertyInt.PropertyIntEventArgs e) {

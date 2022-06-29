@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Media;
 
-namespace II_Avalonia {
+namespace II_Simulator {
 
     public class Color {
 

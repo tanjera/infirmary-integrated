@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 using Avalonia;
 using Avalonia.Controls;
@@ -15,16 +16,16 @@ using II;
 using II.Rhythm;
 using II.Waveform;
 
-namespace II_Avalonia {
+namespace II_Simulator {
 
     public partial class DeviceECG : Window {
         private bool isPaused = false;
         private Color.Schemes colorScheme = Color.Schemes.Dark;
-        private ImageBrush gridBackground;
+        private ImageBrush? gridBackground;
 
-        private List<Controls.ECGTracing> listTracings = new List<Controls.ECGTracing> ();
+        private List<Controls.ECGTracing> listTracings = new ();
 
-        private Timer timerTracing = new Timer ();
+        private Timer timerTracing = new ();
 
         public DeviceECG () {
             InitializeComponent ();
@@ -120,22 +121,24 @@ namespace II_Avalonia {
         }
 
         private void UpdateInterface () {
-            for (int i = 0; i < listTracings.Count; i++)
-                listTracings [i].SetColorScheme (colorScheme);
+            Dispatcher.UIThread.InvokeAsync (() => {
+                for (int i = 0; i < listTracings.Count; i++)
+                    listTracings [i].SetColorScheme (colorScheme);
 
-            Window window = this.FindControl<Window> ("wdwDeviceECG");
-            if (colorScheme == Color.Schemes.Grid)
-                window.Background = gridBackground;
-            else
-                window.Background = Color.GetBackground (Color.Devices.DeviceECG, colorScheme);
+                Window window = this.FindControl<Window> ("wdwDeviceECG");
+                if (colorScheme == Color.Schemes.Grid)
+                    window.Background = gridBackground;
+                else
+                    window.Background = Color.GetBackground (Color.Devices.DeviceECG, colorScheme);
+            });
         }
 
-        public void Load_Process (string inc) {
+        public async Task Load_Process (string inc) {
             StringReader sRead = new StringReader (inc);
 
             try {
-                string line;
-                while ((line = sRead.ReadLine ()) != null) {
+                string? line;
+                while ((line = await sRead.ReadLineAsync ()) != null) {
                     if (line.Contains (":")) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1);
@@ -188,10 +191,10 @@ namespace II_Avalonia {
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Dark);
 
-        private void OnClosed (object sender, EventArgs e)
+        private void OnClosed (object? sender, EventArgs e)
             => this.Dispose ();
 
-        private void OnTick_Tracing (object sender, EventArgs e) {
+        private void OnTick_Tracing (object? sender, EventArgs e) {
             if (isPaused)
                 return;
 

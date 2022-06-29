@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace II {
+
     public class Timer {
         private int _Interval = 0;
         private bool _Locked = false;
 
-        DateTime Last;
-        bool Running = false;
+        private DateTime Last;
+        private bool Running = false;
 
         public bool IsRunning { get { return Running; } }
 
@@ -15,11 +17,11 @@ namespace II {
         ~Timer () => Dispose ();
 
         public void Dispose () {
-            if (Tick == null)
-                return;
-
-            foreach (Delegate d in Tick?.GetInvocationList ())
-                Tick -= (EventHandler<EventArgs>)d;
+            if (Tick != null) {
+                foreach (Delegate d in Tick.GetInvocationList ()) {
+                    Tick -= (EventHandler<EventArgs>)d;
+                }
+            }
         }
 
         public bool IsLocked { get => _Locked; }
@@ -28,44 +30,56 @@ namespace II {
         public int Remainder { get => _Interval - (int)((DateTime.Now - Last).TotalSeconds * 1000); }
 
         public void Lock () => _Locked = true;
+
         public void Unlock () => _Locked = false;
 
-        public void Start () {
+        public Task Start () {
             Running = true;
+
+            return Task.CompletedTask;
         }
 
-        public void Continue (int interval) {
+        public Task Continue (int interval) {
             _Interval = interval;
             Running = true;
+
+            return Task.CompletedTask;
         }
 
-        public void Stop () {
+        public Task Stop () {
             Running = false;
+
+            return Task.CompletedTask;
         }
 
-        public void Set (int interval) {
+        public Task Set (int interval) {
             _Interval = interval;
             Last = DateTime.Now;
+
+            return Task.CompletedTask;
         }
 
-        public void Reset ()
-            => Last = DateTime.Now;
+        public Task Reset () {
+            Last = DateTime.Now;
 
-        public void Reset (int interval)
-            => Set (interval);
-
-        public void ResetAuto () {
-            Reset ();
-            Start ();
+            return Task.CompletedTask;
         }
 
-        public void ResetAuto (int interval) {
-            Reset (interval);
-            Start ();
+        public async Task Reset (int interval)
+            => await Set (interval);
+
+        public async Task ResetAuto () {
+            await Reset ();
+            await Start ();
         }
 
-        public void ResetAuto (float interval)
-            => ResetAuto ((int)interval);
+        public async Task ResetAuto (int interval) {
+            await Reset (interval);
+            await Start ();
+        }
+
+        public async Task ResetAuto (float interval)
+            => await ResetAuto ((int)interval);
 
         public void Process () {
             if (!Running)
@@ -77,7 +91,7 @@ namespace II {
             }
         }
 
-        public void Process (object sender, EventArgs e)
+        public void Process (object? sender, EventArgs e)
             => Process ();
     }
 }

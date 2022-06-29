@@ -15,7 +15,7 @@ using II;
 using II.Rhythm;
 using II.Waveform;
 
-namespace II_Avalonia {
+namespace II_Simulator {
 
     public partial class DeviceEFM : Window {
         private bool isPaused = false;
@@ -102,11 +102,13 @@ namespace II_Avalonia {
         }
 
         private void UpdateInterface () {
-            for (int i = 0; i < listTracings.Count; i++)
-                listTracings [i].SetColorScheme (colorScheme);
+            Dispatcher.UIThread.InvokeAsync (() => {
+                for (int i = 0; i < listTracings.Count; i++)
+                    listTracings [i].SetColorScheme (colorScheme);
 
-            Window window = this.FindControl<Window> ("wdwDeviceEFM");
-            window.Background = Color.GetBackground (Color.Devices.DeviceEFM, colorScheme);
+                Window window = this.FindControl<Window> ("wdwDeviceEFM");
+                window.Background = Color.GetBackground (Color.Devices.DeviceEFM, colorScheme);
+            });
         }
 
         public void Load_Process (string inc) {
@@ -174,10 +176,10 @@ namespace II_Avalonia {
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Dark);
 
-        private void OnClosed (object sender, EventArgs e)
+        private void OnClosed (object? sender, EventArgs e)
             => this.Dispose ();
 
-        private void OnTick_Tracing (object sender, EventArgs e) {
+        private void OnTick_Tracing (object? sender, EventArgs e) {
             if (isPaused)
                 return;
 
@@ -187,7 +189,7 @@ namespace II_Avalonia {
             }
         }
 
-        public void OnPatientEvent (object sender, Patient.PatientEventArgs e) {
+        public void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
             switch (e.EventType) {
                 default: break;
                 case Patient.PatientEventTypes.Obstetric_Baseline:

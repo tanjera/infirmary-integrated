@@ -20,12 +20,12 @@ namespace II.Rhythm {
 
     public class Strip {
         /* Default variables for easy modification of multiple measurement/tracing functions */
-        public static double DefaultLength = 6.0d;
-        public static double DefaultBufferLength = .2d;
-        public static double DefaultRespiratoryCoefficient = 3d;
+        public const double DefaultLength = 6.0d;
+        public const double DefaultBufferLength = .2d;
+        public const double DefaultRespiratoryCoefficient = 3d;
 
         /* Default offsets and amplitudes */
-        public static double DefaultOffset_ReferenceZero = -0.015d;      // Accounts for line thickness, for clarity
+        public const double DefaultOffset_ReferenceZero = -0.015d;      // Accounts for line thickness, for clarity
 
         /* Reference pressures for scaling transduced waveforms based on systolic/diastolic */
         public const int DefaultAutoScale_Iterations = 10;
@@ -58,9 +58,9 @@ namespace II.Rhythm {
         public int ScaleMax;
 
         /* Data structures for tracing information */
-        public Lead Lead;
-        public readonly object lockPoints = new object ();
-        public List<PointD> Points;                        // Clinical waveform tracing points
+        public Lead? Lead;
+        public readonly object lockPoints = new ();
+        public List<PointD>? Points;                        // Clinical waveform tracing points
 
         public enum Offsets {
             Center,
@@ -94,6 +94,9 @@ namespace II.Rhythm {
 
         private bool IsECG {
             get {
+                if (Lead is null)
+                    return false;
+
                 return Lead.Value == Lead.Values.ECG_I || Lead.Value == Lead.Values.ECG_II
                     || Lead.Value == Lead.Values.ECG_III || Lead.Value == Lead.Values.ECG_AVR
                     || Lead.Value == Lead.Values.ECG_AVL || Lead.Value == Lead.Values.ECG_AVF
@@ -105,6 +108,9 @@ namespace II.Rhythm {
 
         private bool IsCardiac {
             get {
+                if (Lead is null)
+                    return false;
+
                 return Lead.Value == Lead.Values.ECG_I || Lead.Value == Lead.Values.ECG_II
                     || Lead.Value == Lead.Values.ECG_III || Lead.Value == Lead.Values.ECG_AVR
                     || Lead.Value == Lead.Values.ECG_AVL || Lead.Value == Lead.Values.ECG_AVF
@@ -123,6 +129,9 @@ namespace II.Rhythm {
 
         private bool IsRespiratory {
             get {
+                if (Lead is null)
+                    return false;
+
                 return Lead.Value == Lead.Values.ETCO2
                     || Lead.Value == Lead.Values.RR;
             }
@@ -130,6 +139,9 @@ namespace II.Rhythm {
 
         private bool IsObstetric {
             get {
+                if (Lead is null)
+                    return false;
+
                 return Lead.Value == Lead.Values.FHR
                     || Lead.Value == Lead.Values.TOCO;
             }
@@ -137,6 +149,9 @@ namespace II.Rhythm {
 
         public bool CanScale {
             get {
+                if (Lead is null)
+                    return false;
+
                 return Lead.Value == Lead.Values.ABP
                     || Lead.Value == Lead.Values.PA;
             }
@@ -167,8 +182,8 @@ namespace II.Rhythm {
             }
         }
 
-        public void SetAutoScale (Patient _P) {
-            if (!CanScale || !ScaleAuto)
+        public void SetAutoScale (Patient? _P) {
+            if (_P is null || !CanScale || !ScaleAuto)
                 return;
 
             int peak = 0;
@@ -259,12 +274,17 @@ namespace II.Rhythm {
         public void IncreaseAmplitude ()
             => Amplitude = System.Math.Min (Amplitude + 0.2d, 2.0d);
 
-        public async Task Reset () {
+        public Task Reset () {
             lock (lockPoints)
                 Points.Clear ();
+
+            return Task.CompletedTask;
         }
 
-        public void ClearFuture (Patient patient) {
+        public void ClearFuture (Patient? patient) {
+            if (Points is null || patient is null)
+                return;
+
             SetForwardBuffer (patient, true);         // Since accounting for forward edge buffer, recalculate
 
             lock (lockPoints) {
@@ -278,15 +298,15 @@ namespace II.Rhythm {
             }
         }
 
-        public PointD Last (List<PointD> _In) {
-            if (_In.Count < 1)
+        public PointD Last (List<PointD>? _In) {
+            if (_In is null || _In.Count < 1)
                 return new PointD ((double)Length, 0);
             else
                 return _In [_In.Count - 1];
         }
 
         public void Concatenate (List<PointD> addition) {
-            if (addition.Count == 0)
+            if (Points is null || addition.Count == 0)
                 return;
 
             double offsetX = Last (Points).X;
@@ -298,7 +318,7 @@ namespace II.Rhythm {
 
         // Splices in a set of points, replacing the existing set of points in that time (x-axis)
         public void Replace (List<PointD> splice) {
-            if (splice.Count == 0)
+            if (Points is null || splice.Count == 0)
                 return;
 
             // Offset the splice to meet the leading/future edge of the strip
@@ -316,7 +336,7 @@ namespace II.Rhythm {
 
         // Splices in a set of points, combining their Y values
         public void Combine (List<PointD> splice, bool onlyIfPolar = false) {
-            if (splice.Count == 0)
+            if (Points is null || splice.Count == 0)
                 return;
 
             // Offset the splice to meet the leading/future edge of the strip
@@ -370,7 +390,7 @@ namespace II.Rhythm {
 
         // Splices in a set of points, only showing the splice if it's Y is larger than the existing
         public void Underwrite (List<PointD> splice) {
-            if (splice.Count == 0)
+            if (Points is null || splice.Count == 0)
                 return;
 
             // Offset the splice to meet the leading/future edge of the strip
@@ -428,13 +448,13 @@ namespace II.Rhythm {
 
         public void TrimPoints () {
             lock (lockPoints) {
-                Points.RemoveAll (p => { return p is null || p.X < -Length; });
+                Points?.RemoveAll (p => { return p is null || p.X < -Length; });
             }
         }
 
         public void SortPoints () {
             lock (lockPoints) {
-                Points.Sort (delegate (PointD p1, PointD p2) {
+                Points?.Sort (delegate (PointD p1, PointD p2) {
                     if (p1 is null && p2 is null) return 0;
                     else if (p1 is null) return -1;
                     else if (p2 is null) return 1;
@@ -444,6 +464,9 @@ namespace II.Rhythm {
         }
 
         public void Scroll () {
+            if (Points is null)
+                return;
+
             if (scrollingUnpausing) {
                 scrollingUnpausing = false;
                 scrolledLast = DateTime.UtcNow;
@@ -463,12 +486,12 @@ namespace II.Rhythm {
             scrollingUnpausing = true;
         }
 
-        public List<PointD> Scale (Patient p, List<PointD> addition) {
-            if (!CanScale || addition.Count == 0)
+        public List<PointD> Scale (Patient? p, List<PointD> addition) {
+            if (p is null || Lead is null || !CanScale || addition.Count == 0)
                 return addition;
 
             int peak, trough;
-            switch (Lead.Value) {
+            switch (Lead?.Value) {
                 default: return addition;
 
                 case Lead.Values.ABP:
@@ -499,7 +522,10 @@ namespace II.Rhythm {
             return addition;
         }
 
-        public void Add_Beat__Cardiac_Baseline (Patient p) {
+        public void Add_Beat__Cardiac_Baseline (Patient? p) {
+            if (p is null || Lead is null)
+                return;
+
             SetForwardBuffer (p);
             TrimPoints ();
 
@@ -517,8 +543,8 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__Cardiac_Atrial_Electrical (Patient p) {
-            if (!IsECG)
+        public void Add_Beat__Cardiac_Atrial_Electrical (Patient? p) {
+            if (p is null || Lead is null || !IsECG)
                 return;
 
             p.Cardiac_Rhythm.ECG_Atrial (p, this);
@@ -526,8 +552,8 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__Cardiac_Ventricular_Electrical (Patient p) {
-            if (!IsECG)
+        public void Add_Beat__Cardiac_Ventricular_Electrical (Patient? p) {
+            if (p is null || Lead is null || !IsECG)
                 return;
 
             p.Cardiac_Rhythm.ECG_Ventricular (p, this);
@@ -535,12 +561,18 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__Cardiac_Atrial_Mechanical (Patient p) {
+        public void Add_Beat__Cardiac_Atrial_Mechanical (Patient? p) {
+            if (p is null || Lead is null)
+                return;
+
             return;
         }
 
-        public void Add_Beat__Cardiac_Ventricular_Mechanical (Patient p) {
-            switch (Lead.Value) {
+        public void Add_Beat__Cardiac_Ventricular_Mechanical (Patient? p) {
+            if (p is null || Lead is null)
+                return;
+
+            switch (Lead?.Value) {
                 default: return;
 
                 case Lead.Values.SPO2:
@@ -581,8 +613,11 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__IABP_Balloon (Patient p) {
-            if (Lead.Value != Lead.Values.IABP || !p.IABP_Active)
+        public void Add_Beat__IABP_Balloon (Patient? p) {
+            if (p is null || Lead is null)
+                return;
+
+            if (Lead?.Value != Lead.Values.IABP || !p.IABP_Active)
                 return;
 
             if (p.Cardiac_Rhythm.HasWaveform_Ventricular && p.IABP_Trigger == "ECG") {
@@ -596,7 +631,10 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__Cardiac_Defibrillation (Patient p) {
+        public void Add_Beat__Cardiac_Defibrillation (Patient? p) {
+            if (p is null || Lead is null)
+                return;
+
             if (!IsECG)
                 return;
 
@@ -605,7 +643,10 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__Cardiac_Pacemaker (Patient p) {
+        public void Add_Beat__Cardiac_Pacemaker (Patient? p) {
+            if (p is null || Lead is null)
+                return;
+
             if (!IsECG)
                 return;
 
@@ -614,11 +655,14 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Breath__Respiratory_Baseline (Patient p) {
+        public void Add_Breath__Respiratory_Baseline (Patient? p) {
+            if (p is null || Lead is null)
+                return;
+
             SetForwardBuffer (p);
             TrimPoints ();
 
-            if (Lead.Value != Lead.Values.RR && Lead.Value != Lead.Values.ETCO2)
+            if (Lead?.Value != Lead.Values.RR && Lead?.Value != Lead.Values.ETCO2)
                 return;
 
             /* Fill waveform through to future buffer with flatline */
@@ -628,8 +672,11 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Breath__Respiratory_Inspiration (Patient p) {
-            switch (Lead.Value) {
+        public void Add_Breath__Respiratory_Inspiration (Patient? p) {
+            if (p is null || Lead is null)
+                return;
+
+            switch (Lead?.Value) {
                 default: return;
                 case Lead.Values.RR: Replace (Draw.RR_Rhythm (p, true)); break;
                 case Lead.Values.ETCO2: break;    // End-tidal waveform is only present on expiration!! Is flatline on inspiration.
@@ -638,8 +685,11 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Breath__Respiratory_Expiration (Patient p) {
-            switch (Lead.Value) {
+        public void Add_Breath__Respiratory_Expiration (Patient? p) {
+            if (p is null || Lead is null)
+                return;
+
+            switch (Lead?.Value) {
                 default: break;
                 case Lead.Values.RR: Replace (Draw.RR_Rhythm (p, false)); break;
                 case Lead.Values.ETCO2: Replace (Draw.ETCO2_Rhythm (p)); break;
@@ -648,11 +698,14 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__Obstetric_Baseline (Patient p) {
+        public void Add_Beat__Obstetric_Baseline (Patient? p) {
+            if (p is null || Lead is null)
+                return;
+
             SetForwardBuffer (p);
             TrimPoints ();
 
-            if (Lead.Value != Lead.Values.FHR && Lead.Value != Lead.Values.TOCO)
+            if (Lead?.Value != Lead.Values.FHR && Lead?.Value != Lead.Values.TOCO)
                 return;
 
             /* Fill waveform through to future buffer with flatline */
@@ -672,8 +725,10 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__Obstetric_Contraction_Start (Patient p) {
-            switch (Lead.Value) {
+        public void Add_Beat__Obstetric_Contraction_Start (Patient? p) {
+            if (p is null || Lead is null)
+                return;
+            switch (Lead?.Value) {
                 default: break;
                 case Lead.Values.TOCO: Replace (Draw.TOCO_Rhythm (p, p.Uterus_Contracted)); break;
             }

@@ -9,16 +9,17 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Threading;
 
 using II;
 using II.Localization;
 using II.Rhythm;
 
-namespace II_Avalonia.Controls {
+namespace II_Simulator.Controls {
 
     public partial class IABPNumeric : UserControl {
-        public DeviceDefib deviceParent;
-        public ControlType controlType;
+        public DeviceDefib? deviceParent;
+        public ControlType? controlType;
         public Color.Schemes colorScheme;
 
         public class ControlType {
@@ -44,12 +45,12 @@ namespace II_Avalonia.Controls {
             };
 
             public static string LookupString (Values value) {
-                return String.Format ("NUMERIC:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
+                return String.Format ("NUMERIC:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value)?.ToString ());
             }
 
             public static List<string> MenuItem_Formats {
                 get {
-                    List<string> o = new List<string> ();
+                    List<string> o = new ();
                     foreach (Values v in Enum.GetValues (typeof (Values)))
                         o.Add (String.Format ("{0}: {1}", v.ToString (), LookupString (v)));
                     return o;
@@ -80,37 +81,39 @@ namespace II_Avalonia.Controls {
         }
 
         private void UpdateInterface () {
-            Border borderNumeric = this.FindControl<Border> ("borderNumeric");
-            TextBlock lblNumType = this.FindControl<TextBlock> ("lblNumType");
-            TextBlock lblLine1 = this.FindControl<TextBlock> ("lblLine1");
-            TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
-            TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
+            Dispatcher.UIThread.InvokeAsync (() => {
+                Border borderNumeric = this.FindControl<Border> ("borderNumeric");
+                TextBlock lblNumType = this.FindControl<TextBlock> ("lblNumType");
+                TextBlock lblLine1 = this.FindControl<TextBlock> ("lblLine1");
+                TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
+                TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
 
-            borderNumeric.BorderBrush = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                borderNumeric.BorderBrush = Color.GetLead (controlType.GetLead_Color, colorScheme);
 
-            lblNumType.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-            lblLine1.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-            lblLine2.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-            lblLine3.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                lblNumType.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                lblLine1.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                lblLine2.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                lblLine3.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
 
-            lblLine1.IsVisible = true;
-            lblLine2.IsVisible = true;
-            lblLine3.IsVisible = true;
+                lblLine1.IsVisible = true;
+                lblLine2.IsVisible = true;
+                lblLine3.IsVisible = true;
 
-            lblNumType.Text = App.Language.Localize (ControlType.LookupString (controlType.Value));
+                lblNumType.Text = App.Language.Localize (ControlType.LookupString (controlType.Value));
 
-            /* Set lines to be visible/hidden as appropriate */
-            switch (controlType.Value) {
-                default:
-                case ControlType.Values.ABP:
-                case ControlType.Values.IABP_AP:
-                    break;
+                /* Set lines to be visible/hidden as appropriate */
+                switch (controlType.Value) {
+                    default:
+                    case ControlType.Values.ABP:
+                    case ControlType.Values.IABP_AP:
+                        break;
 
-                case ControlType.Values.ECG:
-                    lblLine2.IsVisible = false;
-                    lblLine3.IsVisible = false;
-                    break;
-            }
+                    case ControlType.Values.ECG:
+                        lblLine2.IsVisible = false;
+                        lblLine3.IsVisible = false;
+                        break;
+                }
+            });
         }
 
         public void UpdateVitals () {
@@ -121,7 +124,7 @@ namespace II_Avalonia.Controls {
             TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
             TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
 
-            switch (controlType.Value) {
+            switch (controlType?.Value) {
                 default:
                 case ControlType.Values.ECG:
                     lblLine1.Text = String.Format ("{0:0}", App.Patient.MeasureHR_ECG (

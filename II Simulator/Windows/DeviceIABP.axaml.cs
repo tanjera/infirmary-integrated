@@ -16,7 +16,7 @@ using II;
 using II.Rhythm;
 using II.Waveform;
 
-namespace II_Avalonia {
+namespace II_Simulator {
 
     public partial class DeviceIABP : Window {
 
@@ -74,7 +74,7 @@ namespace II_Avalonia {
             public string LookupString () => LookupString (Value);
 
             public static string LookupString (Values v) {
-                return String.Format ("IABPTRIGGER:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v).ToString ());
+                return String.Format ("IABPTRIGGER:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v)?.ToString ());
             }
         }
 
@@ -94,7 +94,7 @@ namespace II_Avalonia {
             public string LookupString () => LookupString (Value);
 
             public static string LookupString (Values v) {
-                return String.Format ("IABPMODE:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v).ToString ());
+                return String.Format ("IABPMODE:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)v)?.ToString ());
             }
         }
 
@@ -198,105 +198,107 @@ namespace II_Avalonia {
         }
 
         private void UpdateInterface () {
-            for (int i = 0; i < listTracings.Count; i++)
-                listTracings [i].SetColorScheme (colorScheme);
+            Dispatcher.UIThread.InvokeAsync (() => {
+                for (int i = 0; i < listTracings.Count; i++)
+                    listTracings [i].SetColorScheme (colorScheme);
 
-            for (int i = 0; i < listNumerics.Count; i++)
-                listNumerics [i].SetColorScheme (colorScheme);
+                for (int i = 0; i < listNumerics.Count; i++)
+                    listNumerics [i].SetColorScheme (colorScheme);
 
-            Window window = this.FindControl<Window> ("wdwDeviceIABP");
-            window.Background = Color.GetBackground (Color.Devices.DeviceIABP, colorScheme);
+                Window window = this.FindControl<Window> ("wdwDeviceIABP");
+                window.Background = Color.GetBackground (Color.Devices.DeviceIABP, colorScheme);
 
-            Border brdStatusInfo = this.FindControl<Border> ("brdStatusInfo");
+                Border brdStatusInfo = this.FindControl<Border> ("brdStatusInfo");
 
-            TextBlock lblTriggerSource = this.FindControl<TextBlock> ("lblTriggerSource");
-            TextBlock lblOperationMode = this.FindControl<TextBlock> ("lblOperationMode");
-            TextBlock lblFrequency = this.FindControl<TextBlock> ("lblFrequency");
-            TextBlock lblMachineStatus = this.FindControl<TextBlock> ("lblMachineStatus");
-            TextBlock lblTubingStatus = this.FindControl<TextBlock> ("lblTubingStatus");
-            TextBlock lblHelium = this.FindControl<TextBlock> ("lblHelium");
+                TextBlock lblTriggerSource = this.FindControl<TextBlock> ("lblTriggerSource");
+                TextBlock lblOperationMode = this.FindControl<TextBlock> ("lblOperationMode");
+                TextBlock lblFrequency = this.FindControl<TextBlock> ("lblFrequency");
+                TextBlock lblMachineStatus = this.FindControl<TextBlock> ("lblMachineStatus");
+                TextBlock lblTubingStatus = this.FindControl<TextBlock> ("lblTubingStatus");
+                TextBlock lblHelium = this.FindControl<TextBlock> ("lblHelium");
 
-            Border brdTriggerSource = this.FindControl<Border> ("brdTriggerSource");
-            Border brdOperationMode = this.FindControl<Border> ("brdOperationMode");
-            Border brdFrequency = this.FindControl<Border> ("brdFrequency");
-            Border brdMachineStatus = this.FindControl<Border> ("brdMachineStatus");
-            Border brdTubingStatus = this.FindControl<Border> ("brdTubingStatus");
-            Border brdHelium = this.FindControl<Border> ("brdHelium");
+                Border brdTriggerSource = this.FindControl<Border> ("brdTriggerSource");
+                Border brdOperationMode = this.FindControl<Border> ("brdOperationMode");
+                Border brdFrequency = this.FindControl<Border> ("brdFrequency");
+                Border brdMachineStatus = this.FindControl<Border> ("brdMachineStatus");
+                Border brdTubingStatus = this.FindControl<Border> ("brdTubingStatus");
+                Border brdHelium = this.FindControl<Border> ("brdHelium");
 
-            brdStatusInfo.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.SkyBlue : Brushes.Black;
+                brdStatusInfo.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.SkyBlue : Brushes.Black;
 
-            lblHelium.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.MediumPurple : Brushes.Black;
-            brdHelium.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.MediumPurple : Brushes.Black;
+                lblHelium.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.MediumPurple : Brushes.Black;
+                brdHelium.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.MediumPurple : Brushes.Black;
 
-            lblOperationMode.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Aqua : Brushes.Black;
-            brdOperationMode.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Aqua : Brushes.Black;
+                lblOperationMode.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Aqua : Brushes.Black;
+                brdOperationMode.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Aqua : Brushes.Black;
 
-            lblTriggerSource.Text = App.Language.Localize (Trigger.LookupString ());
-            switch (Trigger.Value) {
-                default:
-                case Triggering.Values.ECG:
-                    lblTriggerSource.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Green : Brushes.Black;
-                    brdTriggerSource.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Green : Brushes.Black;
-                    break;
+                lblTriggerSource.Text = App.Language.Localize (Trigger.LookupString ());
+                switch (Trigger.Value) {
+                    default:
+                    case Triggering.Values.ECG:
+                        lblTriggerSource.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Green : Brushes.Black;
+                        brdTriggerSource.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Green : Brushes.Black;
+                        break;
 
-                case Triggering.Values.Pressure:
-                    lblTriggerSource.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Red : Brushes.Black;
-                    brdTriggerSource.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Red : Brushes.Black;
-                    break;
-            }
+                    case Triggering.Values.Pressure:
+                        lblTriggerSource.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Red : Brushes.Black;
+                        brdTriggerSource.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Red : Brushes.Black;
+                        break;
+                }
 
-            lblOperationMode.Text = App.Language.Localize (Mode.LookupString ());
+                lblOperationMode.Text = App.Language.Localize (Mode.LookupString ());
 
-            lblFrequency.Text = String.Format ("1 : {0}", Frequency);
-            switch (Frequency) {
-                default:
-                case 1:
-                    lblFrequency.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
-                    brdFrequency.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
-                    break;
+                lblFrequency.Text = String.Format ("1 : {0}", Frequency);
+                switch (Frequency) {
+                    default:
+                    case 1:
+                        lblFrequency.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
+                        brdFrequency.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
+                        break;
 
-                case 2:
-                    lblFrequency.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
-                    brdFrequency.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
-                    break;
+                    case 2:
+                        lblFrequency.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
+                        brdFrequency.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
+                        break;
 
-                case 3:
-                    lblFrequency.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.OrangeRed : Brushes.Black;
-                    brdFrequency.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.OrangeRed : Brushes.Black;
-                    break;
-            }
+                    case 3:
+                        lblFrequency.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.OrangeRed : Brushes.Black;
+                        brdFrequency.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.OrangeRed : Brushes.Black;
+                        break;
+                }
 
-            if (Running) {
-                lblMachineStatus.Text = App.Language.Localize ("IABP:Running");
-                lblMachineStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
-                brdMachineStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
-            } else {
-                lblMachineStatus.Text = App.Language.Localize ("IABP:Paused");
-                lblMachineStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
-                brdMachineStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
-            }
+                if (Running) {
+                    lblMachineStatus.Text = App.Language.Localize ("IABP:Running");
+                    lblMachineStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
+                    brdMachineStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
+                } else {
+                    lblMachineStatus.Text = App.Language.Localize ("IABP:Paused");
+                    lblMachineStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
+                    brdMachineStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
+                }
 
-            if (Priming) {
-                lblTubingStatus.Text = App.Language.Localize ("IABP:Priming");
-                lblTubingStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
-                brdTubingStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
-            } else if (Primed) {
-                lblTubingStatus.Text = App.Language.Localize ("IABP:Primed");
-                lblTubingStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
-                brdTubingStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
-            } else {
-                lblTubingStatus.Text = App.Language.Localize ("IABP:NotPrimed");
-                lblTubingStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.OrangeRed : Brushes.Black;
-                brdTubingStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.OrangeRed : Brushes.Black;
-            }
+                if (Priming) {
+                    lblTubingStatus.Text = App.Language.Localize ("IABP:Priming");
+                    lblTubingStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
+                    brdTubingStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
+                } else if (Primed) {
+                    lblTubingStatus.Text = App.Language.Localize ("IABP:Primed");
+                    lblTubingStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
+                    brdTubingStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
+                } else {
+                    lblTubingStatus.Text = App.Language.Localize ("IABP:NotPrimed");
+                    lblTubingStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.OrangeRed : Brushes.Black;
+                    brdTubingStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.OrangeRed : Brushes.Black;
+                }
+            });
         }
 
-        public void Load_Process (string inc) {
+        public async Task Load_Process (string inc) {
             StringReader sRead = new StringReader (inc);
 
             try {
-                string line;
-                while ((line = sRead.ReadLine ()) != null) {
+                string? line;
+                while ((line = await sRead.ReadLineAsync ()) != null) {
                     if (line.Contains (":")) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1);
@@ -527,7 +529,7 @@ namespace II_Avalonia {
         private void OnClosed (object sender, EventArgs e)
             => this.Dispose ();
 
-        private void OnTick_PrimingComplete (object sender, EventArgs e) {
+        private void OnTick_PrimingComplete (object? sender, EventArgs e) {
             timerAncillary_Delay.Stop ();
             timerAncillary_Delay.Unlock ();
             timerAncillary_Delay.Tick -= OnTick_PrimingComplete;
@@ -543,7 +545,7 @@ namespace II_Avalonia {
             Dispatcher.UIThread.InvokeAsync (UpdateInterface);
         }
 
-        private void OnTick_Tracing (object sender, EventArgs e) {
+        private void OnTick_Tracing (object? sender, EventArgs e) {
             if (isPaused)
                 return;
 
@@ -553,7 +555,7 @@ namespace II_Avalonia {
             }
         }
 
-        private void OnTick_Vitals (object sender, EventArgs e) {
+        private void OnTick_Vitals (object? sender, EventArgs e) {
             if (isPaused)
                 return;
 

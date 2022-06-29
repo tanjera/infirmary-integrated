@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using System;
 
-namespace II_Avalonia {
+namespace II_Simulator {
 
     internal class Program {
 

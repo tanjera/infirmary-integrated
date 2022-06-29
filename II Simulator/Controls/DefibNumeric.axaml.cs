@@ -9,12 +9,13 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Threading;
 
 using II;
 using II.Localization;
 using II.Rhythm;
 
-namespace II_Avalonia.Controls {
+namespace II_Simulator.Controls {
 
     public partial class DefibNumeric : UserControl {
         public DeviceDefib deviceParent;
@@ -55,7 +56,7 @@ namespace II_Avalonia.Controls {
             };
 
             public static string LookupString (Values value) {
-                return String.Format ("NUMERIC:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString ());
+                return String.Format ("NUMERIC:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value)?.ToString ());
             }
 
             public static List<string> MenuItem_Formats {
@@ -149,61 +150,66 @@ namespace II_Avalonia.Controls {
             UpdateInterface ();
         }
 
-        private void UpdateInterface () {
-            Border borderNumeric = this.FindControl<Border> ("borderNumeric");
-            TextBlock lblNumType = this.FindControl<TextBlock> ("lblNumType");
-            TextBlock lblLine1 = this.FindControl<TextBlock> ("lblLine1");
-            TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
-            TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
+        private void UpdateInterface ()
+            => UpdateInterface (this, new EventArgs ());
 
-            borderNumeric.BorderBrush = Color.GetLead (controlType.GetLead_Color, colorScheme);
+        private void UpdateInterface (object sender, EventArgs e) {
+            Dispatcher.UIThread.InvokeAsync (() => {
+                Border borderNumeric = this.FindControl<Border> ("borderNumeric");
+                TextBlock lblNumType = this.FindControl<TextBlock> ("lblNumType");
+                TextBlock lblLine1 = this.FindControl<TextBlock> ("lblLine1");
+                TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
+                TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
 
-            lblNumType.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-            lblLine1.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-            lblLine2.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-            lblLine3.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                borderNumeric.BorderBrush = Color.GetLead (controlType.GetLead_Color, colorScheme);
 
-            lblLine1.IsVisible = true;
-            lblLine2.IsVisible = true;
-            lblLine3.IsVisible = true;
+                lblNumType.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                lblLine1.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                lblLine2.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                lblLine3.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
 
-            lblNumType.Text = App.Language.Localize (ControlType.LookupString (controlType.Value));
+                lblLine1.IsVisible = true;
+                lblLine2.IsVisible = true;
+                lblLine3.IsVisible = true;
 
-            /* Set lines to be visible/hidden as appropriate */
-            switch (controlType.Value) {
-                default:
-                case ControlType.Values.NIBP:
-                case ControlType.Values.ABP:
-                case ControlType.Values.PA:
-                case ControlType.Values.DEFIB:
-                    break;
+                lblNumType.Text = App.Language.Localize (ControlType.LookupString (controlType.Value));
 
-                case ControlType.Values.ECG:
-                case ControlType.Values.T:
-                case ControlType.Values.RR:
-                case ControlType.Values.CVP:
-                    lblLine3.IsVisible = false;
-                    break;
+                /* Set lines to be visible/hidden as appropriate */
+                switch (controlType.Value) {
+                    default:
+                    case ControlType.Values.NIBP:
+                    case ControlType.Values.ABP:
+                    case ControlType.Values.PA:
+                    case ControlType.Values.DEFIB:
+                        break;
 
-                case ControlType.Values.SPO2:
-                case ControlType.Values.ETCO2:
-                    lblLine2.IsVisible = false;
-                    lblLine3.IsVisible = false;
-                    break;
-            }
+                    case ControlType.Values.ECG:
+                    case ControlType.Values.T:
+                    case ControlType.Values.RR:
+                    case ControlType.Values.CVP:
+                        lblLine3.IsVisible = false;
+                        break;
 
-            /* Set menu items enabled/disabled accordingly */
-            switch (controlType.Value) {
-                default:
-                    menuZeroTransducer.IsEnabled = false;
-                    break;
+                    case ControlType.Values.SPO2:
+                    case ControlType.Values.ETCO2:
+                        lblLine2.IsVisible = false;
+                        lblLine3.IsVisible = false;
+                        break;
+                }
 
-                case ControlType.Values.ABP:
-                case ControlType.Values.CVP:
-                case ControlType.Values.PA:
-                    menuZeroTransducer.IsEnabled = true;
-                    break;
-            }
+                /* Set menu items enabled/disabled accordingly */
+                switch (controlType.Value) {
+                    default:
+                        menuZeroTransducer.IsEnabled = false;
+                        break;
+
+                    case ControlType.Values.ABP:
+                    case ControlType.Values.CVP:
+                    case ControlType.Values.PA:
+                        menuZeroTransducer.IsEnabled = true;
+                        break;
+                }
+            });
         }
 
         public void UpdateVitals () {

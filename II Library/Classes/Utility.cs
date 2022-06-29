@@ -7,11 +7,12 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 namespace II {
+
     public static class Utility {
+
         public static bool IsNewerVersion (string current, string comparison) {
             string [] curSplit = current.Split ('.'),
                 compSplit = comparison.Split ('.');
-            int buffer;
 
             for (int i = 0; i < compSplit.Length; i++) {
                 // Sanitize inputs

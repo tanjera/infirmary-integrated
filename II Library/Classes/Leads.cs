@@ -29,7 +29,7 @@ namespace II {
 
         public static string LookupString (Values value, bool shortName = false) {
             return String.Format ("LEAD:{0}{1}",
-                Enum.GetValues (typeof (Values)).GetValue ((int)value).ToString (),
+                Enum.GetValues (typeof (Values)).GetValue ((int)value)?.ToString (),
                 shortName ? "__SHORT" : "");
         }
 

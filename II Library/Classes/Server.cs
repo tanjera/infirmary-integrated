@@ -19,6 +19,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Text;
@@ -39,15 +40,15 @@ namespace II.Server {
             => inc.Replace ("#", "_").Replace ("$", "_");
 
         public class UsageStat {
-            public DateTime Timestamp;
-            public string Version;
-            public string Environment_OS;
-            public string Environment_Language;
-            public string Client_Language;
-            public string Client_Country;
-            public string Hash_IPAddress;
-            public string Hash_MACAddress;
-            public string Hash_Username;
+            public DateTime? Timestamp;
+            public string? Version;
+            public string? Environment_OS;
+            public string? Environment_Language;
+            public string? Client_Language;
+            public string? Client_Country;
+            public string? Hash_IPAddress;
+            public string? Hash_MACAddress;
+            public string? Hash_Username;
 
             public UsageStat () {
             }
@@ -64,15 +65,15 @@ namespace II.Server {
                 Hash_Username = copy.Hash_Username;
             }
 
-            public UsageStat (Language appLanguage) {
+            public async Task Init (Language appLanguage) {
                 Timestamp = DateTime.UtcNow;
                 Client_Language = appLanguage.Value.ToString ();
 
-                GatherInfo_Offline ();
-                GatherInfo_Online ();
+                await GatherInfo_Offline ();
+                await GatherInfo_Online ();
             }
 
-            private void GatherInfo_Offline () {
+            private Task GatherInfo_Offline () {
                 Version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
 
                 string os = "";
@@ -103,91 +104,84 @@ namespace II.Server {
                 } else {
                     Hash_MACAddress = "No Network Interface";
                 }
+
+                return Task.CompletedTask;
             }
 
-            private void GatherInfo_Online () {
+            private async Task GatherInfo_Online () {
+                HttpClient hc = new ();
+
                 try {
                     // Get the user's IP address using icanhazip.com; only store a hashed version for end-user security
-                    string ipAddress = new WebClient ().DownloadString ("http://ipv4.icanhazip.com/").Trim ();
+                    string ipAddress = (await hc.GetStringAsync ("http://ipv4.icanhazip.com/")).Trim ();
                     Hash_IPAddress = Encryption.HashSHA256 (ipAddress);
 
                     // Get the user's country code via geolocation service via PHP script
-                    WebRequest req = WebRequest.Create (FormatForPHP (String.Format (
+                    string resp = await hc.GetStringAsync (FormatForPHP (String.Format (
                         "http://server.infirmary-integrated.com/ipdata_provider.php?ip_address={0}",
                         ipAddress)));
-                    WebResponse resp = req.GetResponse ();
-                    Stream str = resp.GetResponseStream ();
-                    string body = String.Empty;
 
-                    using (StreamReader sr = new StreamReader (str)) {
-                        while (!sr.EndOfStream) {
-                            body = sr.ReadLine ();
-
-                            if (body.Contains ("country_code"))
+                    string? body;
+                    using (StringReader sr = new (resp)) {
+                        while ((body = await sr.ReadLineAsync ()) != null) {
+                            if (body.Contains ("country_code")) {
+                                int start = body.IndexOf (": \"") + 3;
+                                int length = body.IndexOf ("\",") - start;
+                                Client_Country = body.Substring (start, length);
                                 break;
+                            }
                         }
                     }
 
-                    if (!body.Contains ("country_code")) {
-                        return;
-                    }
-
-                    resp.Close ();
-                    str.Close ();
-
-                    resp.Dispose ();
-                    str.Dispose ();
-
-                    int start = body.IndexOf (": \"") + 3;
-                    int length = body.IndexOf ("\",") - start;
-
-                    Client_Country = body.Substring (start, length);
+                    hc.Dispose ();
+                    return;
                 } catch {
-                    Hash_IPAddress = "Offline";
-                    Client_Country = "Offline";
+                    Hash_IPAddress = "OFFLINE";
+                    Client_Country = "OFFLINE";
+
+                    hc.Dispose ();
                     return;
                 }
             }
         }
 
-        public void Run_UsageStats (UsageStat stat) {
-            List<UsageStat> stats = new List<UsageStat> () { stat };
+        public async Task Run_UsageStats (UsageStat stat) {
+            List<UsageStat> stats = new () { stat };
 
-            stats.AddRange (Retrieve_UsageStats ());                    // Retrieve stored offline usage statistics
-            System.IO.File.Delete (File.GetUsageStatsPath ());          // Delete offline cached usage statistics
+            stats.AddRange (await Retrieve_UsageStats ());                      // Retrieve stored offline usage statistics
+            System.IO.File.Delete (File.GetUsageStatsPath ());                  // Delete offline cached usage statistics
 
             for (int i = stats.Count - 1; i > -1; i--) {
-                if (Post_UsageStats (stats [i])) {                      // If stats post to server successfully
-                    stats.RemoveAt (i);                                 // Remove posted stat from running list
+                if (await Post_UsageStats (stats [i])) {                        // If stats post to server successfully
+                    stats.RemoveAt (i);                                         // Remove posted stat from running list
                 }
             }
 
-            if (stats.Count > 0)                                        // If any stats are not successfully posted
-                Store_UsageStats (stats);                               // Store them to offline usage statistics
+            if (stats.Count > 0)                                                // If any stats are not successfully posted
+                await Store_UsageStats (stats);                                 // Store them to offline usage statistics
         }
 
-        private List<UsageStat> Retrieve_UsageStats () {
-            List<UsageStat> listStats = new List<UsageStat> ();
+        private async Task<List<UsageStat>> Retrieve_UsageStats () {
+            List<UsageStat> listStats = new ();
 
             if (!System.IO.File.Exists (File.GetUsageStatsPath ()))
                 return listStats;
 
-            StreamReader sr = new StreamReader (File.GetUsageStatsPath ());
+            using StreamReader sr = new (File.GetUsageStatsPath ());
 
-            string line;
-            UsageStat bufferStat = new UsageStat ();
+            string? line;
+            UsageStat bufferStat = new ();
 
-            while ((line = sr.ReadLine ()) != null) {
+            while (!String.IsNullOrEmpty (line = await sr.ReadLineAsync ())) {
                 if (line == "# USAGESTAT BEGIN") {
                     bufferStat = new UsageStat ();
                 } else if (line == "# USAGESTAT END") {
                     listStats.Add (new UsageStat (bufferStat));
-                } else if (line.Contains (":")) {
+                } else if (line.Contains (':')) {
                     string pName = line.Substring (0, line.IndexOf (':')),
                             pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
                     switch (pName) {
                         default: break;
-
                         case "Timestamp": bufferStat.Timestamp = Utility.DateTime_FromString (pValue); break;
                         case "Version": bufferStat.Version = pValue; break;
                         case "Environment_OS": bufferStat.Environment_OS = pValue; break;
@@ -202,43 +196,39 @@ namespace II.Server {
             }
 
             sr.Close ();
-            sr.Dispose ();
-
             return listStats;
         }
 
-        private void Store_UsageStats (List<UsageStat> listStats) {
-            StreamWriter sw = new StreamWriter (File.GetUsageStatsPath (), false);
+        private static async Task Store_UsageStats (List<UsageStat> listStats) {
+            using StreamWriter sw = new (File.GetUsageStatsPath (), false);
 
             foreach (UsageStat stat in listStats) {
-                sw.WriteLine ("# USAGESTAT BEGIN");
-
-                sw.WriteLine ($"Timestamp:{Utility.DateTime_ToString (stat.Timestamp)}");
-                sw.WriteLine ($"Version:{stat.Version}");
-                sw.WriteLine ($"Environment_OS:{stat.Environment_OS}");
-                sw.WriteLine ($"Environment_Language:{stat.Environment_Language}");
-                sw.WriteLine ($"Client_Language:{stat.Client_Language}");
-                sw.WriteLine ($"Client_Country:{stat.Client_Country}");
-                sw.WriteLine ($"Hash_IPAddress:{stat.Hash_IPAddress}");
-                sw.WriteLine ($"Hash_MACAddress:{stat.Hash_MACAddress}");
-                sw.WriteLine ($"Hash_Username:{stat.Hash_Username}");
-
-                sw.WriteLine ("# USAGESTAT END");
-                sw.WriteLine ("");
-                sw.Flush ();
+                await sw.WriteLineAsync ("# USAGESTAT BEGIN");
+                await sw.WriteLineAsync ($"Timestamp:{Utility.DateTime_ToString (stat.Timestamp)}");
+                await sw.WriteLineAsync ($"Version:{stat.Version}");
+                await sw.WriteLineAsync ($"Environment_OS:{stat.Environment_OS}");
+                await sw.WriteLineAsync ($"Environment_Language:{stat.Environment_Language}");
+                await sw.WriteLineAsync ($"Client_Language:{stat.Client_Language}");
+                await sw.WriteLineAsync ($"Client_Country:{stat.Client_Country}");
+                await sw.WriteLineAsync ($"Hash_IPAddress:{stat.Hash_IPAddress}");
+                await sw.WriteLineAsync ($"Hash_MACAddress:{stat.Hash_MACAddress}");
+                await sw.WriteLineAsync ($"Hash_Username:{stat.Hash_Username}");
+                await sw.WriteLineAsync ("# USAGESTAT END");
+                await sw.WriteLineAsync ("");
+                await sw.FlushAsync ();
             }
 
             sw.Close ();
-            sw.Dispose ();
         }
 
-        private bool Post_UsageStats (UsageStat stat) {
+        private static async Task<bool> Post_UsageStats (UsageStat stat) {
+            HttpClient hc = new ();
+
             try {
-                WebRequest req = WebRequest.Create (FormatForPHP (String.Format (
+                HttpResponseMessage resp = await hc.GetAsync (FormatForPHP (String.Format (
                     "http://server.infirmary-integrated.com/usage_post.php" +
                         "?timestamp={0}&ii_version={1}&env_os={2}&env_lang={3}&client_lang={4}&client_country={5}"
                         + "&client_ip={6}&client_mac={7}&client_user={8}",
-
                     Utility.DateTime_ToString (stat.Timestamp),
                     stat.Version,
                     stat.Environment_OS,
@@ -248,24 +238,28 @@ namespace II.Server {
                     stat.Hash_IPAddress,
                     stat.Hash_MACAddress,
                     stat.Hash_Username
-
                     )));
 
-                req.GetResponse ();
+                // We want this exception thrown in case of web disconnect- it will finish the task and end the faux ThreadLock
+                resp.EnsureSuccessStatusCode ();
 
+                hc.Dispose ();
                 return true;
             } catch {
+                hc.Dispose ();
                 return false;
             }
         }
 
-        public void Post_Exception (Exception e) {
+        public static async Task Post_Exception (Exception e) {
+            HttpClient hc = new ();
+
             try {
                 StringBuilder excData = new StringBuilder ();
                 foreach (DictionaryEntry entry in e.Data)
-                    excData.AppendLine (String.Format ("{0,-20} '{1}'", entry.Key.ToString (), entry.Value.ToString ()));
+                    excData.AppendLine (String.Format ("{0,-20} '{1}'", entry.Key.ToString (), entry.Value?.ToString ()));
 
-                WebRequest req = WebRequest.Create (FormatForPHP (String.Format (
+                HttpResponseMessage resp = await hc.GetAsync (FormatForPHP (String.Format (
                     "http://server.infirmary-integrated.com/exception_post.php" +
                         "?timestamp={0}&ii_version={1}&client_os={2}&exception_message={3}&exception_method={4}&exception_stacktrace={5}&exception_hresult={6}&exception_data={7}",
 
@@ -278,60 +272,51 @@ namespace II.Server {
                     e.HResult.ToString () ?? "null",
                     excData.ToString () ?? "null")));
 
-                req.GetResponse ();
+                hc.Dispose ();
             } catch {
+                hc.Dispose ();
             }
         }
 
-        public void Get_LatestVersion_Windows () {
-            try {
-                WebRequest req = WebRequest.Create ("http://server.infirmary-integrated.com/version.php");
-                WebResponse resp = req.GetResponse ();
-                Stream str = resp.GetResponseStream ();
+        public async Task Get_LatestVersion_Windows () {
+            HttpClient hc = new ();
 
-                using (StreamReader sr = new StreamReader (str)) {
-                    UpgradeVersion = sr.ReadLine ().Trim ();
-                    UpgradeWebpage = sr.ReadLine ().Trim ();
-                    BootstrapExeUri = sr.ReadLine ().Trim ();
-                    BootstrapHashMd5 = sr.ReadLine ().Trim ();
+            try {
+                string resp = await hc.GetStringAsync ("http://server.infirmary-integrated.com/version.php");
+
+                using (StringReader sr = new (resp)) {
+                    UpgradeVersion = (await sr.ReadLineAsync ())?.Trim () ?? "0.0";
+                    UpgradeWebpage = (await sr.ReadLineAsync ())?.Trim () ?? "";
+                    BootstrapExeUri = (await sr.ReadLineAsync ())?.Trim () ?? "";
+                    BootstrapHashMd5 = (await sr.ReadLineAsync ())?.Trim () ?? "";
                 }
 
-                resp.Close ();
-                str.Close ();
-
-                resp.Dispose ();
-                str.Dispose ();
-
-                UpgradeVersion = String.IsNullOrEmpty (UpgradeVersion) ? "0.0" : UpgradeVersion;
-                UpgradeWebpage = String.IsNullOrEmpty (UpgradeWebpage) ? "" : UpgradeWebpage;
-                BootstrapExeUri = String.IsNullOrEmpty (BootstrapExeUri) ? "" : BootstrapExeUri;
-                BootstrapHashMd5 = String.IsNullOrEmpty (BootstrapHashMd5) ? "" : BootstrapHashMd5;
+                hc.Dispose ();
             } catch {
+                hc.Dispose ();
             }
         }
 
-        public Patient Get_PatientMirror (Mirror m) {
+        public static async Task<Patient?> Get_PatientMirror (Mirror m) {
+            HttpClient hc = new ();
+
             try {
-                WebRequest req = WebRequest.Create (FormatForPHP (String.Format (
+                HttpResponseMessage resp = await hc.GetAsync (FormatForPHP (String.Format (
                     "http://server.infirmary-integrated.com/mirror_get.php?accession={0}&accesshash={1}",
                     m.Accession,
                     Encryption.HashSHA256 (m.PasswordAccess))));
 
-                WebResponse resp = req.GetResponse ();
-                Stream str = resp.GetResponseStream ();
+                // We want this exception thrown in case of web disconnect- it will finish the task and end the faux ThreadLock
+                resp.EnsureSuccessStatusCode ();
 
-                string updated = String.Empty;
-                string patient = String.Empty;
-                using (StreamReader sr = new StreamReader (str)) {
-                    updated = sr.ReadLine ().Trim ();
-                    patient = sr.ReadLine ().Trim ();
+                string updated, patient;
+                using (StringReader sr = new (await resp.Content.ReadAsStringAsync ())) {
+                    updated = (await sr.ReadLineAsync ())?.Trim () ?? "";
+                    patient = (await sr.ReadLineAsync ())?.Trim () ?? "";
                 }
 
-                resp.Close ();
-                str.Close ();
-
-                resp.Dispose ();
-                str.Dispose ();
+                if (String.IsNullOrEmpty (updated) || String.IsNullOrEmpty (patient))
+                    return null;
 
                 DateTime serverUpdated = Utility.DateTime_FromString (updated);
                 if (DateTime.Compare (serverUpdated, m.PatientUpdated) <= 0)
@@ -339,20 +324,25 @@ namespace II.Server {
 
                 m.ServerQueried = DateTime.UtcNow;
                 m.PatientUpdated = serverUpdated;
-                Patient p = new Patient ();
-                _ = p.Load_Process (Encryption.DecryptAES (patient.Replace (' ', '+')));
 
+                Patient p = new ();
+                await p.Load_Process (Encryption.DecryptAES (patient.Replace (' ', '+')));
+
+                hc.Dispose ();
                 return p;
             } catch {
+                hc.Dispose ();
                 return null;
             }
         }
 
-        public async Task Post_PatientMirror (Mirror m, string pStr, DateTime pUp) {
-            try {
-                string ipAddress = new WebClient ().DownloadString ("http://icanhazip.com").Trim ();
+        public static async Task Post_PatientMirror (Mirror m, string pStr, DateTime pUp) {
+            HttpClient hc = new ();
 
-                WebRequest req = WebRequest.Create (FormatForPHP (String.Format (
+            try {
+                string ipAddress = (await hc.GetStringAsync ("http://icanhazip.com")).Trim ().Trim ('\n');
+
+                HttpResponseMessage resp = await hc.GetAsync (FormatForPHP (String.Format (
                     "http://server.infirmary-integrated.com/mirror_post.php" +
                     "?accession={0}&key_access={1}&key_edit={2}&patient={3}&updated={4}&client_ip={5}&client_user={6}",
                     m.Accession,
@@ -363,8 +353,9 @@ namespace II.Server {
                     Encryption.HashSHA256 (ipAddress),
                     Encryption.HashSHA256 (Environment.UserName))));
 
-                req.GetResponse ();
+                hc.Dispose ();
             } catch {
+                hc.Dispose ();
             }
         }
     }

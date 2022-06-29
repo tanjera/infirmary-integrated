@@ -27,6 +27,8 @@ namespace II_Scenario_Editor {
             AvaloniaXamlLoader.Load (this);
         }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
+
         public override async void OnFrameworkInitializationCompleted () {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
                 WindowSplash = new ();
@@ -53,9 +55,13 @@ namespace II_Scenario_Editor {
             base.OnFrameworkInitializationCompleted ();
         }
 
-        public static async Task Exit () {
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
+
+        public static Task Exit () {
             WindowSplash?.Close ();
             WindowMain?.Close ();
+
+            return Task.CompletedTask;
         }
     }
 }

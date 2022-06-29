@@ -175,7 +175,7 @@ namespace II_Scenario_Editor.Windows {
             await UpdateProgressionViewModel ();
         }
 
-        private async Task UpdateProgressionViewModel () {
+        private Task UpdateProgressionViewModel () {
             StackPanel stackProgressions = this.FindControl<StackPanel> ("stackProgressions");
             stackProgressions.Children.Clear ();
 
@@ -192,9 +192,11 @@ namespace II_Scenario_Editor.Windows {
                     }
                 }
             }
+
+            return Task.CompletedTask;
         }
 
-        private async Task UpdateStepViewModel () {
+        private Task UpdateStepViewModel () {
             PropertyInt pintProgressTimer = this.FindControl<PropertyInt> ("pintProgressTimer");
             PropertyCombo pcmbProgressFrom = this.FindControl<PropertyCombo> ("pcmbProgressFrom");
             PropertyCombo pcmbProgressTo = this.FindControl<PropertyCombo> ("pcmbProgressTo");
@@ -235,6 +237,8 @@ namespace II_Scenario_Editor.Windows {
                 pstrStepName.Set (ISelectedStep?.Step?.Name ?? "");
                 pstrStepDescription.Set (ISelectedStep?.Step?.Description ?? "");
             }
+
+            return Task.CompletedTask;
         }
 
         private Task ImportSteps () {

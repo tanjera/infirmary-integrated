@@ -22,9 +22,9 @@ using II;
 using II.Localization;
 using II.Server;
 
-namespace II_Avalonia {
+namespace II_Simulator {
 
-    public partial class Main : Window {
+    public partial class WindowMain : Window {
         /* Variables for WPF UI loading */
         private bool uiLoadCompleted = false;
 
@@ -38,11 +38,8 @@ namespace II_Avalonia {
             ChangesApplied
         }
 
-        public Main () {
+        public WindowMain () {
             InitializeComponent ();
-#if DEBUG
-            this.AttachDevTools ();
-#endif
             _ = Init ();
         }
 
@@ -56,9 +53,11 @@ namespace II_Avalonia {
             App.Window_Main = this;
 
             await InitInitialRun ();
+
 #if !DEBUG
             await InitUsageStatistics ();
 #endif
+
             InitInterface ();
             await InitUpgrade ();
             await InitMirroring ();
@@ -78,9 +77,12 @@ namespace II_Avalonia {
             }
         }
 
-        private async Task InitUsageStatistics () {
+        private static async Task InitUsageStatistics () {
+            Server.UsageStat stat = new ();
+            await stat.Init (App.Language);
+
             /* Send usage statistics to server in background */
-            await Task.Run (() => App.Server.Run_UsageStats (new Server.UsageStat (App.Language)));
+            _ = App.Server.Run_UsageStats (stat);
         }
 
         private void InitInterface () {
@@ -212,7 +214,7 @@ namespace II_Avalonia {
 
         private async Task InitUpgrade () {
             // Newer version available? Check Server, populate status bar, prompt user for upgrade
-            App.Server.Get_LatestVersion_Windows ();
+            await App.Server.Get_LatestVersion_Windows ();
 
             string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
             if (Utility.IsNewerVersion (version, App.Server.UpgradeVersion)) {
@@ -240,7 +242,7 @@ namespace II_Avalonia {
         private async Task InitMirroring () {
             App.Timer_Main.Elapsed += App.Mirror.ProcessTimer;
             App.Mirror.timerUpdate.Tick += OnMirrorTick;
-            App.Mirror.timerUpdate.ResetAuto (5000);
+            await App.Mirror.timerUpdate.ResetAuto (5000);
 
             await UpdateMirrorStatus ();
         }
@@ -287,7 +289,7 @@ namespace II_Avalonia {
             await InitPatient ();
         }
 
-        private async Task InitPatientEvents () {
+        private Task InitPatientEvents () {
             /* Tie the Patient's Timer to the Main Timer */
             App.Timer_Main.Elapsed += App.Patient.ProcessTimers;
 
@@ -303,6 +305,8 @@ namespace II_Avalonia {
                 App.Patient.PatientEvent += App.Device_Defib.OnPatientEvent;
             if (App.Device_IABP is not null)
                 App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
+
+            return Task.CompletedTask;
         }
 
         private async Task UnloadPatientEvents () {
@@ -315,7 +319,7 @@ namespace II_Avalonia {
             await App.Patient.UnsubscribePatientEvent ();
         }
 
-        private async Task InitDeviceMonitor () {
+        private Task InitDeviceMonitor () {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
@@ -327,9 +331,11 @@ namespace II_Avalonia {
 
             if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_Monitor.OnPatientEvent;
+
+            return Task.CompletedTask;
         }
 
-        private async Task InitDeviceECG () {
+        private Task InitDeviceECG () {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
@@ -341,9 +347,11 @@ namespace II_Avalonia {
 
             if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_ECG.OnPatientEvent;
+
+            return Task.CompletedTask;
         }
 
-        private async Task InitDeviceDefib () {
+        private Task InitDeviceDefib () {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
@@ -355,9 +363,11 @@ namespace II_Avalonia {
 
             if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_Defib.OnPatientEvent;
+
+            return Task.CompletedTask;
         }
 
-        private async Task InitDeviceIABP () {
+        private Task InitDeviceIABP () {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
@@ -369,9 +379,11 @@ namespace II_Avalonia {
 
             if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
+
+            return Task.CompletedTask;
         }
 
-        private async Task InitDeviceEFM () {
+        private Task InitDeviceEFM () {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
@@ -383,6 +395,8 @@ namespace II_Avalonia {
 
             if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_EFM.OnPatientEvent;
+
+            return Task.CompletedTask;
         }
 
         private async Task DialogEULA () {
@@ -471,7 +485,7 @@ namespace II_Avalonia {
         private async Task CheckUpgrade () {
             // Check with server for updated version of Infirmary Integrated- notify user either way
 
-            App.Server.Get_LatestVersion_Windows ();
+            await App.Server.Get_LatestVersion_Windows ();
 
             string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
             if (Utility.IsNewerVersion (version, App.Server.UpgradeVersion)) {
@@ -483,9 +497,11 @@ namespace II_Avalonia {
             }
         }
 
-        private async Task OpenUpgrade () {
+        private Task OpenUpgrade () {
             if (!String.IsNullOrEmpty (App.Server.UpgradeWebpage))
                 InterOp.OpenBrowser (App.Server.UpgradeWebpage);
+
+            return Task.CompletedTask;
         }
 
         private async Task MirrorDeactivate () {
@@ -509,7 +525,7 @@ namespace II_Avalonia {
             await UpdateExpanders (false);
         }
 
-        private async Task UpdateMirrorStatus () {
+        private Task UpdateMirrorStatus () {
             MenuItem miStatus = this.FindControl<MenuItem> ("menuMirrorStatus");
 
             switch (App.Mirror.Status) {
@@ -526,12 +542,14 @@ namespace II_Avalonia {
                     miStatus.Header = $"{App.Language.Localize ("MIRROR:Status")}: {App.Language.Localize ("MIRROR:Client")}";
                     break;
             }
+
+            return Task.CompletedTask;
         }
 
         private async Task UpdateExpanders ()
-            => await UpdateExpanders (App.Scenario.IsScenario);
+            => await UpdateExpanders (App.Scenario?.IsLoaded ?? false);
 
-        private async Task UpdateExpanders (bool isScene) {
+        private Task UpdateExpanders (bool isScene) {
             this.FindControl<Border> ("brdScenarioPlayer").IsVisible = isScene;
             this.FindControl<Expander> ("expScenarioPlayer").IsEnabled = isScene;
             this.FindControl<Expander> ("expScenarioPlayer").IsExpanded = isScene;
@@ -540,6 +558,8 @@ namespace II_Avalonia {
             this.FindControl<Expander> ("expRespiratoryProfile").IsExpanded = !isScene;
             this.FindControl<Expander> ("expCardiacProfile").IsExpanded = !isScene;
             this.FindControl<Expander> ("expObstetricProfile").IsExpanded = !isScene;
+
+            return Task.CompletedTask;
         }
 
         private async Task SetParameterStatus (bool autoApplyChanges) {
@@ -561,27 +581,16 @@ namespace II_Avalonia {
             await UpdateParameterIndicators ();
         }
 
-        private async Task UpdateParameterIndicators () {
+        private Task UpdateParameterIndicators () {
             Border brdPendingChangesIndicator = this.FindControl<Border> ("brdPendingChangesIndicator");
 
-            switch (ParameterStatus) {
-                default:
-                case ParameterStatuses.Loading:
-                    brdPendingChangesIndicator.BorderBrush = Brushes.Transparent;
-                    break;
-
-                case ParameterStatuses.ChangesPending:
-                    brdPendingChangesIndicator.BorderBrush = Brushes.Red;
-                    break;
-
-                case ParameterStatuses.ChangesApplied:
-                    brdPendingChangesIndicator.BorderBrush = Brushes.Green;
-                    break;
-
-                case ParameterStatuses.AutoApply:
-                    brdPendingChangesIndicator.BorderBrush = Brushes.Orange;
-                    break;
-            }
+            brdPendingChangesIndicator.BorderBrush = ParameterStatus switch {
+                ParameterStatuses.ChangesPending => Brushes.Red,
+                ParameterStatuses.ChangesApplied => Brushes.Green,
+                ParameterStatuses.AutoApply => Brushes.Orange,
+                _ => Brushes.Transparent,
+            };
+            return Task.CompletedTask;
         }
 
         private async Task LoadFile () {
@@ -608,19 +617,24 @@ namespace II_Avalonia {
         }
 
         private async Task LoadInit (string incFile) {
-            StreamReader sr = new StreamReader (incFile);
+            using StreamReader sr = new StreamReader (incFile);
+            string? metadata = await sr.ReadLineAsync ();
+            string? data = await sr.ReadToEndAsync ();
+            sr.Close ();
 
             /* Read savefile metadata indicating data formatting
                 * Multiple data formats for forward compatibility
                 */
-            string metadata = sr.ReadLine ();
-            if (metadata.StartsWith (".ii:t1"))
-                await LoadValidateT1 (sr);
+
+            if (!String.IsNullOrEmpty (metadata) && metadata.StartsWith (".ii:t1"))
+                await LoadValidateT1 (data);
             else
                 await LoadFail ();
         }
 
-        private async Task LoadValidateT1 (StreamReader sr) {
+        private async Task LoadValidateT1 (string data) {
+            using StringReader sr = new (data);
+
             try {
                 /* Savefile type 1: validated and encrypted
                     * Line 1 is metadata (.ii:t1)
@@ -628,8 +642,8 @@ namespace II_Avalonia {
                     * Line 3 is savefile data encrypted by AES encoding
                     */
 
-                string hash = sr.ReadLine ().Trim ();
-                string file = Encryption.DecryptAES (sr.ReadToEnd ().Trim ());
+                string? hash = (await sr.ReadLineAsync ())?.Trim ();
+                string? file = Encryption.DecryptAES ((await sr.ReadToEndAsync ())?.Trim ());
                 sr.Close ();
 
                 // Original save files used MD5, later changed to SHA256
@@ -645,12 +659,17 @@ namespace II_Avalonia {
         }
 
         private async Task LoadProcess (string incFile) {
-            StringReader sRead = new StringReader (incFile);
-            string line, pline;
+            if (App.Patient is null)
+                App.Patient = new ();
+            if (App.Scenario is null)
+                App.Scenario = new ();
+
+            StringReader sRead = new (incFile);
+            string? line, pline;
             StringBuilder pbuffer;
 
             try {
-                while ((line = sRead.ReadLine ()) != null) {
+                while ((line = (await sRead.ReadLineAsync ())?.Trim ()) != null) {
                     if (line == "> Begin: Patient") {           // Load files saved by Infirmary Integrated (base)
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
@@ -664,7 +683,7 @@ namespace II_Avalonia {
                             pbuffer.AppendLine (pline);
 
                         await RefreshScenario (false);
-                        App.Scenario.Load_Process (pbuffer.ToString ());
+                        await App.Scenario.Load_Process (pbuffer.ToString ());
                         await InitPatient ();     // Needs to be called manually since InitScenario(false) doesn't init a Patient
                     } else if (line == "> Begin: Editor") {
                         pbuffer = new StringBuilder ();
@@ -679,7 +698,7 @@ namespace II_Avalonia {
 
                         App.Device_Monitor = new DeviceMonitor ();
                         await InitDeviceMonitor ();
-                        App.Device_Monitor.Load_Process (pbuffer.ToString ());
+                        await App.Device_Monitor.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: 12 Lead ECG") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: 12 Lead ECG")
@@ -687,7 +706,7 @@ namespace II_Avalonia {
 
                         App.Device_ECG = new DeviceECG ();
                         await InitDeviceECG ();
-                        App.Device_ECG.Load_Process (pbuffer.ToString ());
+                        await App.Device_ECG.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Defibrillator") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Defibrillator")
@@ -695,7 +714,7 @@ namespace II_Avalonia {
 
                         App.Device_Defib = new DeviceDefib ();
                         await InitDeviceDefib ();
-                        App.Device_Defib.Load_Process (pbuffer.ToString ());
+                        await App.Device_Defib.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Intra-aortic Balloon Pump") {
                         pbuffer = new StringBuilder ();
                         while ((pline = sRead.ReadLine ()) != null && pline != "> End: Intra-aortic Balloon Pump")
@@ -703,7 +722,7 @@ namespace II_Avalonia {
 
                         App.Device_IABP = new DeviceIABP ();
                         await InitDeviceIABP ();
-                        App.Device_IABP.Load_Process (pbuffer.ToString ());
+                        await App.Device_IABP.Load_Process (pbuffer.ToString ());
                     }
                 }
             } catch {
@@ -719,8 +738,18 @@ namespace II_Avalonia {
             }
 
             // Initialize the first step of the scenario
-            if (App.Scenario.IsScenario)
+            if (App.Scenario.IsLoaded) {
                 await InitStep ();
+
+                if (App.Scenario.DeviceMonitor.IsEnabled)
+                    await InitDeviceMonitor ();
+                if (App.Scenario.DeviceDefib.IsEnabled)
+                    await InitDeviceDefib ();
+                if (App.Scenario.DeviceECG.IsEnabled)
+                    await InitDeviceECG ();
+                if (App.Scenario.DeviceIABP.IsEnabled)
+                    await InitDeviceIABP ();
+            }
 
             // Set Expanders IsExpanded and IsEnabled on whether is a Scenario
             await UpdateExpanders ();
@@ -730,8 +759,8 @@ namespace II_Avalonia {
             StringReader sRead = new StringReader (inc);
 
             try {
-                string line;
-                while ((line = sRead.ReadLine ()) != null) {
+                string? line;
+                while ((line = await sRead.ReadLineAsync ()) != null) {
                     if (line.Contains (":")) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1);
@@ -778,7 +807,7 @@ namespace II_Avalonia {
             // Only save single Patient files in base Infirmary Integrated!
             // Scenario files should be created/edited/saved via II Scenario Editor!
 
-            if (App.Scenario.IsScenario) {
+            if (App.Scenario?.IsLoaded ?? false) {
                 var assets = AvaloniaLocator.Current.GetService<Avalonia.Platform.IAssetLoader> ();
                 var icon = new Bitmap (assets.Open (new Uri ("avares://Infirmary Integrated/Third_Party/Icon_DeviceMonitor_48.png")));
 
@@ -822,18 +851,18 @@ namespace II_Avalonia {
             if (System.IO.File.Exists (filename))
                 System.IO.File.Delete (filename);
 
-            FileStream s = new FileStream (filename, FileMode.OpenOrCreate, FileAccess.Write);
+            using FileStream s = new (filename, FileMode.OpenOrCreate, FileAccess.Write);
 
             // Ensure only saving Patient file, not Scenario file; is screened in SaveFile()
-            if (App.Scenario.IsScenario) {
+            if (App.Scenario != null && App.Scenario.IsLoaded) {
                 s.Close ();
                 return;
             }
 
-            StringBuilder sb = new StringBuilder ();
+            StringBuilder sb = new ();
 
             sb.AppendLine ("> Begin: Patient");
-            sb.Append (App.Patient.Save ());
+            sb.Append (App.Patient?.Save ());
             sb.AppendLine ("> End: Patient");
 
             sb.AppendLine ("> Begin: Editor");
@@ -861,10 +890,12 @@ namespace II_Avalonia {
                 sb.AppendLine ("> End: Intra-aortic Balloon Pump");
             }
 
-            StreamWriter sw = new StreamWriter (s);
-            sw.WriteLine (".ii:t1");                                           // Metadata (type 1 savefile)
-            sw.WriteLine (Encryption.HashSHA256 (sb.ToString ().Trim ()));     // Hash for validation
-            sw.Write (Encryption.EncryptAES (sb.ToString ().Trim ()));         // Savefile data encrypted with AES
+            using StreamWriter sw = new (s);
+            await sw.WriteLineAsync (".ii:t1");                                           // Metadata (type 1 savefile)
+            await sw.WriteLineAsync (Encryption.HashSHA256 (sb.ToString ().Trim ()));     // Hash for validation
+            await sw.WriteAsync (Encryption.EncryptAES (sb.ToString ().Trim ()));         // Savefile data encrypted with AES
+            await sw.FlushAsync ();
+
             sw.Close ();
             s.Close ();
         }
@@ -877,9 +908,11 @@ namespace II_Avalonia {
             return sWrite.ToString ();
         }
 
-        public async Task Exit () {
+        public Task Exit () {
             App.Settings.Save ();
             App.Exit ();
+
+            return Task.CompletedTask;
         }
 
         private void OnMirrorTick (object? sender, EventArgs e) {
@@ -902,8 +935,8 @@ namespace II_Avalonia {
             ForceUpdateFields (App.Patient);
         }
 
-        private async Task InitStep () {
-            Scenario.Step s = App.Scenario.Current;
+        private Task InitStep () {
+            Scenario.Step s = App.Scenario.Current ?? new Scenario.Step ();
 
             Label lblScenarioStep = this.FindControl<Label> ("lblScenarioStep");
             Label lblTimerStep = this.FindControl<Label> ("lblTimerStep");
@@ -916,10 +949,7 @@ namespace II_Avalonia {
             this.FindControl<Button> ("btnPlayStep").IsEnabled = false;
 
             // Display Scenario's Step count
-            lblScenarioStep.Content = String.Format ("{0} {1} / {2}",
-                App.Language.Localize ("PE:ProgressionStep"),
-                App.Scenario.AtStep,          // Retaining zero-based index to confuse end-user
-                App.Scenario.Steps.Count - 1);      // But also for consistency with Scenario Editor and program development
+            lblScenarioStep.Content = $"{App.Language.Localize ("PE:ProgressionStep")}: {s.Name}";
 
             // Display Progress Timer if applicable, otherwise instruct that the Step requires manual progression
             if (s.ProgressTimer == -1)
@@ -952,6 +982,8 @@ namespace II_Avalonia {
                     Margin = (i == s.Progressions.Count - 1 ? new Thickness (10, 5, 10, 10) : new Thickness (10, 5))
                 });
             }
+
+            return Task.CompletedTask;
         }
 
         private async Task NextStep () {
@@ -970,14 +1002,14 @@ namespace II_Avalonia {
         }
 
         private async Task PreviousStep () {
-            App.Scenario?.LastStep ();
+            await App.Scenario?.LastStep ();
         }
 
         private async Task PauseStep () {
             this.FindControl<Button> ("btnPauseStep").IsEnabled = false;
             this.FindControl<Button> ("btnPlayStep").IsEnabled = true;
 
-            App.Scenario?.PauseStep ();
+            await App.Scenario?.PauseStep ();
 
             this.FindControl<Label> ("lblTimerStep").Content = App.Language.Localize ("PE:ProgressionPaused");
         }
@@ -986,16 +1018,16 @@ namespace II_Avalonia {
             this.FindControl<Button> ("btnPauseStep").IsEnabled = true;
             this.FindControl<Button> ("btnPlayStep").IsEnabled = false;
 
-            App.Scenario?.PlayStep ();
+            await App.Scenario?.PlayStep ();
 
             Label lblTimerStep = this.FindControl<Label> ("lblTimerStep");
 
-            if (App.Scenario.Current.ProgressTimer == -1)
+            if (App.Scenario?.Current?.ProgressTimer == -1)
                 lblTimerStep.Content = App.Language.Localize ("PE:ProgressionManual");
             else
                 lblTimerStep.Content = String.Format ("{0} {1} {2}",
                     App.Language.Localize ("PE:ProgressionAutomatic"),
-                    App.Scenario.Current.ProgressTimer - (App.Scenario.ProgressTimer.Elapsed / 1000),
+                    App.Scenario?.Current?.ProgressTimer - (App.Scenario?.ProgressTimer.Elapsed / 1000),
                     App.Language.Localize ("PE:ProgressionSeconds"));
         }
 
@@ -1015,7 +1047,8 @@ namespace II_Avalonia {
             List<FHRAccelDecels.Values> FHRRhythms = new List<FHRAccelDecels.Values> ();
 
             foreach (ListBoxItem lbi in listFHRRhythms.SelectedItems) {
-                FHRRhythms.Add ((FHRAccelDecels.Values)Enum.Parse (typeof (FHRAccelDecels.Values), (string)lbi.Tag));
+                if (lbi.Tag != null)
+                    FHRRhythms.Add ((FHRAccelDecels.Values)Enum.Parse (typeof (FHRAccelDecels.Values), (string)lbi.Tag));
             }
 
             await App.Patient.UpdateParameters (
@@ -1316,7 +1349,7 @@ namespace II_Avalonia {
             OnUIPatientParameter_Process (sender, e);
         }
 
-        private void ForceUpdateFields (Patient p) {
+        private void ForceUpdateFields (Patient? p) {
             Dispatcher.UIThread.InvokeAsync (() => {                        // Updating the UI requires being on the proper thread
                 ParameterStatus = ParameterStatuses.Loading;                // To prevent each form update from auto-applying back to Patient
                 FormUpdateFields (this, new Patient.PatientEventArgs (App.Patient, Patient.PatientEventTypes.Vitals_Change));
@@ -1324,7 +1357,10 @@ namespace II_Avalonia {
             });
         }
 
-        private void FormUpdateFields (object sender, Patient.PatientEventArgs e) {
+        private void FormUpdateFields (object? sender, Patient.PatientEventArgs e) {
+            if (e.Patient is null)
+                return;
+
             if (e.EventType == Patient.PatientEventTypes.Vitals_Change) {
                 // Basic vital signs
                 this.FindControl<NumericUpDown> ("numHR").Value = e.Patient.VS_Settings.HR;
@@ -1359,31 +1395,35 @@ namespace II_Avalonia {
                 this.FindControl<CheckBox> ("chkPulsusAlternans").IsChecked = e.Patient.Pulsus_Alternans;
                 this.FindControl<ComboBox> ("comboCardiacAxis").SelectedIndex = (int)e.Patient.Cardiac_Axis.Value;
 
-                this.FindControl<NumericUpDown> ("numSTE_I").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_I];
-                this.FindControl<NumericUpDown> ("numSTE_II").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_II];
-                this.FindControl<NumericUpDown> ("numSTE_III").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_III];
-                this.FindControl<NumericUpDown> ("numSTE_aVR").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_AVR];
-                this.FindControl<NumericUpDown> ("numSTE_aVL").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_AVL];
-                this.FindControl<NumericUpDown> ("numSTE_aVF").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_AVF];
-                this.FindControl<NumericUpDown> ("numSTE_V1").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V1];
-                this.FindControl<NumericUpDown> ("numSTE_V2").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V2];
-                this.FindControl<NumericUpDown> ("numSTE_V3").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V3];
-                this.FindControl<NumericUpDown> ("numSTE_V4").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V4];
-                this.FindControl<NumericUpDown> ("numSTE_V5").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V5];
-                this.FindControl<NumericUpDown> ("numSTE_V6").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V6];
+                if (e.Patient.ST_Elevation is not null) {
+                    this.FindControl<NumericUpDown> ("numSTE_I").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_I];
+                    this.FindControl<NumericUpDown> ("numSTE_II").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_II];
+                    this.FindControl<NumericUpDown> ("numSTE_III").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_III];
+                    this.FindControl<NumericUpDown> ("numSTE_aVR").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_AVR];
+                    this.FindControl<NumericUpDown> ("numSTE_aVL").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_AVL];
+                    this.FindControl<NumericUpDown> ("numSTE_aVF").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_AVF];
+                    this.FindControl<NumericUpDown> ("numSTE_V1").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V1];
+                    this.FindControl<NumericUpDown> ("numSTE_V2").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V2];
+                    this.FindControl<NumericUpDown> ("numSTE_V3").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V3];
+                    this.FindControl<NumericUpDown> ("numSTE_V4").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V4];
+                    this.FindControl<NumericUpDown> ("numSTE_V5").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V5];
+                    this.FindControl<NumericUpDown> ("numSTE_V6").Value = (double)e.Patient.ST_Elevation [(int)Lead.Values.ECG_V6];
+                }
 
-                this.FindControl<NumericUpDown> ("numTWE_I").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_I];
-                this.FindControl<NumericUpDown> ("numTWE_II").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_II];
-                this.FindControl<NumericUpDown> ("numTWE_III").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_III];
-                this.FindControl<NumericUpDown> ("numTWE_aVR").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_AVR];
-                this.FindControl<NumericUpDown> ("numTWE_aVL").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_AVL];
-                this.FindControl<NumericUpDown> ("numTWE_aVF").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_AVF];
-                this.FindControl<NumericUpDown> ("numTWE_V1").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_V1];
-                this.FindControl<NumericUpDown> ("numTWE_V2").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_V2];
-                this.FindControl<NumericUpDown> ("numTWE_V3").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_V3];
-                this.FindControl<NumericUpDown> ("numTWE_V4").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_V4];
-                this.FindControl<NumericUpDown> ("numTWE_V5").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_V5];
-                this.FindControl<NumericUpDown> ("numTWE_V6").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_V6];
+                if (e.Patient.T_Elevation is not null) {
+                    this.FindControl<NumericUpDown> ("numTWE_I").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_I];
+                    this.FindControl<NumericUpDown> ("numTWE_II").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_II];
+                    this.FindControl<NumericUpDown> ("numTWE_III").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_III];
+                    this.FindControl<NumericUpDown> ("numTWE_aVR").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_AVR];
+                    this.FindControl<NumericUpDown> ("numTWE_aVL").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_AVL];
+                    this.FindControl<NumericUpDown> ("numTWE_aVF").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_AVF];
+                    this.FindControl<NumericUpDown> ("numTWE_V1").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_V1];
+                    this.FindControl<NumericUpDown> ("numTWE_V2").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_V2];
+                    this.FindControl<NumericUpDown> ("numTWE_V3").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_V3];
+                    this.FindControl<NumericUpDown> ("numTWE_V4").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_V4];
+                    this.FindControl<NumericUpDown> ("numTWE_V5").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_V5];
+                    this.FindControl<NumericUpDown> ("numTWE_V6").Value = (double)e.Patient.T_Elevation [(int)Lead.Values.ECG_V6];
+                }
 
                 // Obstetric profile
                 this.FindControl<NumericUpDown> ("numFHR").Value = e.Patient.FHR;
@@ -1396,7 +1436,7 @@ namespace II_Avalonia {
                 listFHRRhythms.SelectedItems.Clear ();
                 foreach (FHRAccelDecels.Values fhr_rhythm in e.Patient.FHR_AccelDecels.ValueList) {
                     foreach (ListBoxItem lbi in listFHRRhythms.Items) {
-                        if ((string)lbi.Tag == fhr_rhythm.ToString ())
+                        if (lbi.Tag != null && (string)lbi.Tag == fhr_rhythm.ToString ())
                             listFHRRhythms.SelectedItems.Add (lbi);
                     }
                 }

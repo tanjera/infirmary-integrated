@@ -12,13 +12,14 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Threading;
 
 using II;
 using II.Drawing;
 using II.Localization;
 using II.Rhythm;
 
-namespace II_Avalonia.Controls {
+namespace II_Simulator.Controls {
 
     public partial class IABPTracing : UserControl {
         public Strip Strip;
@@ -59,33 +60,35 @@ namespace II_Avalonia.Controls {
         private void UpdateInterface ()
             => UpdateInterface (this, new EventArgs ());
 
-        private void UpdateInterface (object? sender, EventArgs e) {
-            tracingBrush = Color.GetLead (Lead.Value, colorScheme);
+        private void UpdateInterface (object sender, EventArgs e) {
+            Dispatcher.UIThread.InvokeAsync (() => {
+                tracingBrush = Color.GetLead (Lead.Value, colorScheme);
 
-            Border borderTracing = this.FindControl<Border> ("borderTracing");
-            Label lblLead = this.FindControl<Label> ("lblLead");
-            Label lblScaleAuto = this.FindControl<Label> ("lblScaleAuto");
-            Label lblScaleMin = this.FindControl<Label> ("lblScaleMin");
-            Label lblScaleMax = this.FindControl<Label> ("lblScaleMax");
+                Border borderTracing = this.FindControl<Border> ("borderTracing");
+                Label lblLead = this.FindControl<Label> ("lblLead");
+                Label lblScaleAuto = this.FindControl<Label> ("lblScaleAuto");
+                Label lblScaleMin = this.FindControl<Label> ("lblScaleMin");
+                Label lblScaleMax = this.FindControl<Label> ("lblScaleMax");
 
-            borderTracing.BorderBrush = tracingBrush;
+                borderTracing.BorderBrush = tracingBrush;
 
-            lblLead.Foreground = tracingBrush;
-            lblLead.Content = App.Language.Localize (Lead.LookupString (Lead.Value));
+                lblLead.Foreground = tracingBrush;
+                lblLead.Content = App.Language.Localize (Lead.LookupString (Lead.Value));
 
-            if (Strip.CanScale) {
-                lblScaleAuto.Foreground = tracingBrush;
-                lblScaleMin.Foreground = tracingBrush;
-                lblScaleMax.Foreground = tracingBrush;
+                if (Strip.CanScale) {
+                    lblScaleAuto.Foreground = tracingBrush;
+                    lblScaleMin.Foreground = tracingBrush;
+                    lblScaleMax.Foreground = tracingBrush;
 
-                lblScaleAuto.Content = Strip.ScaleAuto
-                    ? App.Language.Localize ("TRACING:Auto")
-                    : App.Language.Localize ("TRACING:Fixed");
-                lblScaleMin.Content = Strip.ScaleMin.ToString ();
-                lblScaleMax.Content = Strip.ScaleMax.ToString ();
-            }
+                    lblScaleAuto.Content = Strip.ScaleAuto
+                        ? App.Language.Localize ("TRACING:Auto")
+                        : App.Language.Localize ("TRACING:Fixed");
+                    lblScaleMin.Content = Strip.ScaleMin.ToString ();
+                    lblScaleMax.Content = Strip.ScaleMax.ToString ();
+                }
 
-            CalculateOffsets ();
+                CalculateOffsets ();
+            });
         }
 
         public void UpdateScale () {
@@ -110,9 +113,9 @@ namespace II_Avalonia.Controls {
         }
 
         public async Task DrawTracing ()
-            => _ = Draw (Strip, tracingBrush, 1);
+            => await Draw (Strip, tracingBrush, 1);
 
-        public async Task Draw (Strip _Strip, IBrush _Brush, double _Thickness) {
+        public Task Draw (Strip _Strip, IBrush _Brush, double _Thickness) {
             Image imgTracing = this.FindControl<Image> ("imgTracing");
 
             PixelSize size = new PixelSize (    // Must use a size > 0
@@ -127,6 +130,8 @@ namespace II_Avalonia.Controls {
             Trace.DrawPath (_Strip, Tracing, tracingPen, drawOffset, drawMultiplier);
 
             imgTracing.Source = Tracing;
+
+            return Task.CompletedTask;
         }
     }
 }

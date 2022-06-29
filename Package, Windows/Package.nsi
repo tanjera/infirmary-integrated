@@ -3,6 +3,8 @@
 
 ; definitions
 !define NAME "Infirmary Integrated"
+!define NAME_SIMULATOR "Infirmary Integrated"
+!define NAME_SCENARIOEDITOR "Infirmary Integrated Scenario Editor"
 
 
 ; Named variables
@@ -34,17 +36,39 @@ Section "" ;No components page, name is not important
   SetOutPath $INSTDIR
   
   ; Put file there
-  File /r "publish\"
-  
+  File /r /x "Package.nsi" ".\*"
+
+  ; Create the uninstaller and associated registry keys
+  WriteUninstaller "$INSTDIR\uninstall.exe"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Infirmary Integrated" \
+                 "DisplayName" "Infirmary Integrated" ; <-- Package_Windows.cs EDIT <--
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Infirmary Integrated" \
+                 "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Infirmary Integrated" \
+                 "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
+  WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Infirmary Integrated" \
+                 "DisplayIcon" "$\"$INSTDIR\${NAME_SIMULATOR}\Icon_II.ico$\""                 
+             
   ; Create application shortcut (first in installation dir to have the correct "start in" target)  
-  CreateShortCut "$INSTDIR\${Name}.lnk" "$INSTDIR\${NAME}.exe"
+  CreateShortCut "$INSTDIR\${NAME_SIMULATOR}.lnk" "$INSTDIR\${NAME_SIMULATOR}\${NAME_SIMULATOR}.exe"
+  CreateShortCut "$INSTDIR\${NAME_SCENARIOEDITOR}.lnk" "$INSTDIR\${NAME_SCENARIOEDITOR}\${NAME_SCENARIOEDITOR}.exe"
 
   ; Start menu entries
   SetOutPath "$SMPROGRAMS\${Name}\"
-  CopyFiles "$INSTDIR\${Name}.lnk" "$SMPROGRAMS\${NAME}\"
-  Delete "$INSTDIR\${Name}.lnk"
+  CopyFiles "$INSTDIR\${NAME_SIMULATOR}.lnk" "$SMPROGRAMS\${NAME}\"
+  CopyFiles "$INSTDIR\${NAME_SCENARIOEDITOR}.lnk" "$SMPROGRAMS\${NAME}\"
+  Delete "$INSTDIR\${NAME_SIMULATOR}.lnk"
+  Delete "$INSTDIR\${NAME_SCENARIOEDITOR}.lnk"
 
   ; Register file association
-  ${registerExtension} "$INSTDIR\${NAME}.exe" ".ii" "Infirmary Integrated Scenario"
+  ${registerExtension} "$INSTDIR\${NAME_SIMULATOR}\${NAME_SIMULATOR}.exe" ".ii" "Infirmary Integrated Scenario"
 
+SectionEnd
+
+;--------------------------------
+
+Section "Uninstall"
+  RMDir /r $INSTDIR
+  RMDir /r "$SMPROGRAMS\${Name}"
+  DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Infirmary Integrated"
 SectionEnd

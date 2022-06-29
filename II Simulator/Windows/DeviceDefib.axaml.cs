@@ -15,7 +15,7 @@ using II;
 using II.Rhythm;
 using II.Waveform;
 
-namespace II_Avalonia {
+namespace II_Simulator {
 
     public partial class DeviceDefib : Window {
 
@@ -38,14 +38,14 @@ namespace II_Avalonia {
         private bool isPaused = false;
         private Color.Schemes colorScheme = Color.Schemes.Dark;
 
-        private List<Controls.DefibTracing> listTracings = new List<Controls.DefibTracing> ();
-        private List<Controls.DefibNumeric> listNumerics = new List<Controls.DefibNumeric> ();
+        private List<Controls.DefibTracing> listTracings = new ();
+        private List<Controls.DefibNumeric> listNumerics = new ();
 
         private Timer
-            timerTracing = new Timer (),
-            timerVitals_Cardiac = new Timer (),
-            timerVitals_Respiratory = new Timer (),
-            timerAncillary_Delay = new Timer ();
+            timerTracing = new (),
+            timerVitals_Cardiac = new (),
+            timerVitals_Respiratory = new (),
+            timerAncillary_Delay = new ();
 
         public enum Modes {
             DEFIB,
@@ -87,7 +87,8 @@ namespace II_Avalonia {
             timerAncillary_Delay.Dispose ();
 
             /* Unsubscribe from the main Patient event listing */
-            App.Patient.PatientEvent -= OnPatientEvent;
+            if (App.Patient != null)
+                App.Patient.PatientEvent -= OnPatientEvent;
         }
 
         private void InitTimers () {
@@ -141,29 +142,31 @@ namespace II_Avalonia {
         }
 
         private void UpdateInterface () {
-            listNumerics
-                .Where (n => n.controlType.Value == Controls.DefibNumeric.ControlType.Values.DEFIB)
-                .ToList ()
-                .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
+            Dispatcher.UIThread.InvokeAsync (() => {
+                listNumerics
+                    .Where (n => n.controlType.Value == Controls.DefibNumeric.ControlType.Values.DEFIB)
+                    .ToList ()
+                    .ForEach (n => n.UpdateVitals ());
 
-            for (int i = 0; i < listTracings.Count; i++)
-                listTracings [i].SetColorScheme (colorScheme);
+                for (int i = 0; i < listTracings.Count; i++)
+                    listTracings [i].SetColorScheme (colorScheme);
 
-            for (int i = 0; i < listNumerics.Count; i++)
-                listNumerics [i].SetColorScheme (colorScheme);
+                for (int i = 0; i < listNumerics.Count; i++)
+                    listNumerics [i].SetColorScheme (colorScheme);
 
-            Window window = this.FindControl<Window> ("wdwDeviceDefib");
-            window.Background = Color.GetBackground (Color.Devices.DeviceDefib, colorScheme);
+                Window window = this.FindControl<Window> ("wdwDeviceDefib");
+                window.Background = Color.GetBackground (Color.Devices.DeviceDefib, colorScheme);
+            });
         }
 
-        public void Load_Process (string inc) {
-            StringReader sRead = new StringReader (inc);
-            List<string> numericTypes = new List<string> (),
-                         tracingTypes = new List<string> ();
+        public async Task Load_Process (string inc) {
+            StringReader sRead = new (inc);
+            List<string> numericTypes = new (),
+                         tracingTypes = new ();
 
             try {
-                string line;
-                while ((line = sRead.ReadLine ()) != null) {
+                string? line;
+                while ((line = await sRead.ReadLineAsync ()) != null) {
                     if (line.Contains (":")) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1);
@@ -251,7 +254,7 @@ namespace II_Avalonia {
         }
 
         private void UpdatePacemaker () {
-            App.Patient.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            _ = App.Patient?.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
         }
 
         private void ButtonDefib_Click (object s, RoutedEventArgs e) {
@@ -306,8 +309,8 @@ namespace II_Avalonia {
 
             switch (Mode) {
                 default: break;
-                case Modes.DEFIB: App.Patient.Defibrillate (); break;
-                case Modes.SYNC: App.Patient.Cardiovert (); break;
+                case Modes.DEFIB: _ = App.Patient?.Defibrillate (); break;
+                case Modes.SYNC: _ = App.Patient?.Cardiovert (); break;
             }
 
             UpdateInterface ();
@@ -371,7 +374,7 @@ namespace II_Avalonia {
         }
 
         private void ButtonPacePause_Click (object s, RoutedEventArgs e)
-            => App.Patient.PacemakerPause ();
+            => _ = App.Patient?.PacemakerPause ();
 
         private void MenuClose_Click (object s, RoutedEventArgs e)
             => this.Close ();
@@ -391,7 +394,7 @@ namespace II_Avalonia {
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Dark);
 
-        private void OnTick_ChargingComplete (object sender, EventArgs e) {
+        private void OnTick_ChargingComplete (object? sender, EventArgs e) {
             timerAncillary_Delay.Stop ();
             timerAncillary_Delay.Unlock ();
             timerAncillary_Delay.Tick -= OnTick_ChargingComplete;
@@ -402,10 +405,10 @@ namespace II_Avalonia {
             UpdateInterface ();
         }
 
-        private void OnClosed (object sender, EventArgs e)
+        private void OnClosed (object? sender, EventArgs e)
             => this.Dispose ();
 
-        private void OnTick_Tracing (object sender, EventArgs e) {
+        private void OnTick_Tracing (object? sender, EventArgs e) {
             if (isPaused)
                 return;
 
@@ -415,7 +418,7 @@ namespace II_Avalonia {
             }
         }
 
-        private void OnTick_Vitals_Cardiac (object sender, EventArgs e) {
+        private void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
             if (isPaused)
                 return;
 
@@ -427,7 +430,7 @@ namespace II_Avalonia {
                 .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }
 
-        private void OnTick_Vitals_Respiratory (object sender, EventArgs e) {
+        private void OnTick_Vitals_Respiratory (object? sender, EventArgs e) {
             if (isPaused)
                 return;
 
@@ -439,7 +442,7 @@ namespace II_Avalonia {
                 .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }
 
-        private void OnLayoutChange (List<string> numericTypes = null, List<string> tracingTypes = null) {
+        private void OnLayoutChange (List<string>? numericTypes = null, List<string>? tracingTypes = null) {
             // If numericTypes or tracingTypes are not null... then we are loading a file; clear lNumerics and lTracings!
             if (numericTypes != null)
                 listNumerics.Clear ();
@@ -448,9 +451,9 @@ namespace II_Avalonia {
 
             // Set default numeric types to populate
             if (numericTypes == null || numericTypes.Count == 0)
-                numericTypes = new List<string> (new string [] { "DEFIB", "ECG", "NIBP", "SPO2", "ETCO2", "ABP" });
+                numericTypes = new (new string [] { "DEFIB", "ECG", "NIBP", "SPO2", "ETCO2", "ABP" });
             else if (numericTypes.Count < colsNumerics) {
-                List<string> buffer = new List<string> (new string [] { "DEFIB", "ECG", "NIBP", "SPO2", "ETCO2", "ABP" });
+                List<string> buffer = new (new string [] { "DEFIB", "ECG", "NIBP", "SPO2", "ETCO2", "ABP" });
                 buffer.RemoveRange (0, numericTypes.Count);
                 numericTypes.AddRange (buffer);
             }
@@ -466,15 +469,15 @@ namespace II_Avalonia {
 
             // Set default tracing types to populate
             if (tracingTypes == null || tracingTypes.Count == 0)
-                tracingTypes = new List<string> (new string [] { "ECG_II", "SPO2", "ETCO2", "ABP" });
+                tracingTypes = new (new string [] { "ECG_II", "SPO2", "ETCO2", "ABP" });
             else if (tracingTypes.Count < rowsTracings) {
-                List<string> buffer = new List<string> (new string [] { "ECG_II", "SPO2", "ETCO2", "ABP" });
+                List<string> buffer = new (new string [] { "ECG_II", "SPO2", "ETCO2", "ABP" });
                 buffer.RemoveRange (0, tracingTypes.Count);
                 tracingTypes.AddRange (buffer);
             }
 
             for (int i = listTracings.Count; i < rowsTracings && i < tracingTypes.Count; i++) {
-                Strip newStrip = new Strip ((Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]), 6f);
+                Strip newStrip = new ((Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]), 6f);
                 Controls.DefibTracing newTracing = new Controls.DefibTracing (newStrip, colorScheme);
                 listTracings.Add (newTracing);
             }
@@ -545,7 +548,7 @@ namespace II_Avalonia {
                     autoScale_iter -= 1;
                     if (autoScale_iter <= 0) {
                         for (int i = 0; i < listTracings.Count; i++) {
-                            listTracings [i].Strip.SetAutoScale (App.Patient);
+                            listTracings [i].Strip.SetAutoScale (App.Patient ?? new Patient ());
                             Dispatcher.UIThread.InvokeAsync (listTracings [i].UpdateScale);
                         }
 

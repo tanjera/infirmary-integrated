@@ -3,12 +3,12 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <StartupObject>II_Avalonia.Program</StartupObject>
+    <StartupObject>II_Simulator.Program</StartupObject>
     <SignAssembly>False</SignAssembly>
     <AssemblyName>Infirmary Integrated</AssemblyName>
     <Copyright>© 2017-2022, Ibi Keller</Copyright>
     <Authors>Ibi Keller</Authors>
-    <Version>2.0.3</Version>
+    <Version>2.0.4</Version>
     <Company>Infirmary Integrated</Company>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageProjectUrl>https://www.infirmary-integrated.com/</PackageProjectUrl>
@@ -61,11 +61,11 @@
     <Compile Update="Windows\DialogEULA.axaml.cs">
       <DependentUpon>DialogEULA.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Windows\Main.axaml.cs">
-      <DependentUpon>Main.axaml</DependentUpon>
+    <Compile Update="Windows\WindowMain.axaml.cs">
+      <DependentUpon>WindowMain.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Windows\Splash.axaml.cs">
-      <DependentUpon>Splash.axaml</DependentUpon>
+    <Compile Update="Windows\WindowSplash.axaml.cs">
+      <DependentUpon>WindowSplash.axaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -87,6 +87,11 @@
     <None Include="..\License.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Icon_II.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>
