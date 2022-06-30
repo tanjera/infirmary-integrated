@@ -22,10 +22,10 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 
 using II;
-using II_Scenario_Editor.Controls;
-using II_Scenario_Editor.Windows;
+using IISE.Controls;
+using IISE.Windows;
 
-namespace II_Scenario_Editor {
+namespace IISE {
 
     public partial class WindowMain : Window {
         /* Main data structure to build our scene into */
@@ -103,7 +103,7 @@ namespace II_Scenario_Editor {
                 return true;
         }
 
-        private async Task InitHotkeys () {
+        private Task InitHotkeys () {
             var menuNew = IPanelSimulation.FindControl<MenuItem> ("menuNew");
             var menuLoad = IPanelSimulation.FindControl<MenuItem> ("menuLoad");
             var menuSave = IPanelSimulation.FindControl<MenuItem> ("menuSave");
@@ -111,6 +111,8 @@ namespace II_Scenario_Editor {
             HotKeyManager.SetHotKey (menuNew, new KeyGesture (Key.N, KeyModifiers.Control));
             HotKeyManager.SetHotKey (menuLoad, new KeyGesture (Key.O, KeyModifiers.Control));
             HotKeyManager.SetHotKey (menuSave, new KeyGesture (Key.S, KeyModifiers.Control));
+
+            return Task.CompletedTask;
         }
 
         private async Task InitScenario () {
@@ -207,8 +209,8 @@ namespace II_Scenario_Editor {
                 // Line 1 is metadata (.ii:t1)
                 // Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
                 // Line 3 is savefile data encrypted by AES encoding
-                string hash = sr.ReadLine ().Trim ();
-                string file = Encryption.DecryptAES (sr.ReadToEnd ().Trim ());
+                string hash = (await sr.ReadLineAsync ())?.Trim () ?? "";
+                string file = Encryption.DecryptAES ((await sr.ReadToEndAsync ()).Trim ());
 
                 // Original save files used MD5, later changed to SHA256
                 if (hash != Encryption.HashSHA256 (file) && hash != Encryption.HashMD5 (file)) {
@@ -219,16 +221,16 @@ namespace II_Scenario_Editor {
                 StringBuilder pbuffer;
                 Scenario loadScene = new ();
 
-                using (StringReader sRead = new StringReader (file)) {
-                    while (!String.IsNullOrEmpty (line = sRead.ReadLine ())) {
+                using (StringReader sRead = new (file)) {
+                    while (!String.IsNullOrEmpty (line = await sRead.ReadLineAsync ())) {
                         line = line.Trim ();
 
                         if (line == "> Begin: Scenario") {
                             pbuffer = new StringBuilder ();
-                            while ((pline = sRead.ReadLine ()) != null && pline != "> End: Scenario")
+                            while ((pline = await sRead.ReadLineAsync ()) != null && pline != "> End: Scenario")
                                 pbuffer.AppendLine (pline);
 
-                            loadScene.Load_Process (pbuffer.ToString ());
+                            await loadScene.Load (pbuffer.ToString ());
                         }
                     }
                 }
@@ -251,22 +253,22 @@ namespace II_Scenario_Editor {
             await dlg.AsyncShow (this);
         }
 
-        private Task SaveFile (string filepath, int indent = 1) {
+        private async Task SaveFile (string filepath, int indent = 1) {
             Scenario.Updated = DateTime.UtcNow;
 
             string dent = Utility.Indent (indent);
             StringBuilder sb = new ();
 
             sb.AppendLine ($"{dent}> Begin: Scenario");
-            sb.Append (Scenario.Save (indent + 1));
+            sb.Append (await Scenario.Save (indent + 1));
             sb.AppendLine ($"{dent}> End: Scenario");
 
             // Save in II:T1 format
             StreamWriter sw = new StreamWriter (filepath);
-            sw.WriteLine (".ii:t1");                                            // Metadata (type 1 savefile)
+            await sw.WriteLineAsync (".ii:t1");                                            // Metadata (type 1 savefile)
 
-            sw.WriteLine (Encryption.HashSHA256 (sb.ToString ()));              // Hash for validation
-            sw.Write (Encryption.EncryptAES (sb.ToString ()));                  // Savefile data encrypted with AES
+            await sw.WriteLineAsync (Encryption.HashSHA256 (sb.ToString ()));              // Hash for validation
+            await sw.WriteAsync (Encryption.EncryptAES (sb.ToString ()));                  // Savefile data encrypted with AES
 
 #if DEBUG
             /* Note: the following debugging code CRASHES the Load() process */
@@ -275,8 +277,6 @@ namespace II_Scenario_Editor {
 #endif
 
             sw.Close ();
-
-            return Task.CompletedTask;
         }
 
         public void MenuFileNew_Click (object sender, RoutedEventArgs e)

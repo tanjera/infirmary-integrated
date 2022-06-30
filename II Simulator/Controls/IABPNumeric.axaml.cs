@@ -15,7 +15,7 @@ using II;
 using II.Localization;
 using II.Rhythm;
 
-namespace II_Simulator.Controls {
+namespace IISIM.Controls {
 
     public partial class IABPNumeric : UserControl {
         public DeviceDefib? deviceParent;

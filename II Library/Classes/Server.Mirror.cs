@@ -7,13 +7,13 @@ namespace II.Server {
 
     public class Mirror {
         private bool ThreadLock = false;
-        public Timer timerUpdate = new Timer ();
+        public Timer timerUpdate = new();
 
         public enum Statuses { INACTIVE, HOST, CLIENT };
 
         private int RefreshSeconds = 5;
         private string _Accession = "";
-        private BackgroundWorker _BackgroundWorker = new BackgroundWorker ();
+        private BackgroundWorker _BackgroundWorker = new();
 
         public Statuses Status = Statuses.INACTIVE;
 
@@ -86,7 +86,7 @@ namespace II.Server {
             string pStr = p.Save ();
             DateTime pUp = p.Updated;
 
-            Regex regex = new Regex ("^[a-zA-Z0-9]*$");
+            Regex regex = new("^[a-zA-Z0-9]*$");
             if (Accession.Length <= 0 || !regex.IsMatch (Accession))
                 return;
 

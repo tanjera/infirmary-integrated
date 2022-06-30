@@ -7,7 +7,7 @@ namespace II.Localization {
 
 	public partial class Language {
 
-		static Dictionary<string, string> ENG = new Dictionary<string, string> () {
+		static Dictionary<string, string> ENG = new() {
 			{"BUTTON:Continue",                                           "Continue"},
 			{"BUTTON:ApplyChanges",                                       "Apply Changes"},
 			{"BUTTON:ResetParameters",                                    "Reset Parameters"},
@@ -307,7 +307,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "Download in process. The installer will run when it is finished downloading."},
 		};
 
-		static Dictionary<string, string> AMH = new Dictionary<string, string> () {
+		static Dictionary<string, string> AMH = new() {
 			{"BUTTON:Continue",                                           "ቀጥል"},
 			{"BUTTON:ApplyChanges",                                       "ለውጦች ተግብር"},
 			{"BUTTON:ResetParameters",                                    "ዳግም አስጀምር መለኪያዎች"},
@@ -607,7 +607,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "ማውረዱ በሂደት ላይ ነው። ጫኝው መጫኑን ሲያጠናቅቅ ይሠራል።"},
 		};
 
-		static Dictionary<string, string> ARA = new Dictionary<string, string> () {
+		static Dictionary<string, string> ARA = new() {
 			{"BUTTON:Continue",                                           "استمر"},
 			{"BUTTON:ApplyChanges",                                       "تطبيق التغييرات"},
 			{"BUTTON:ResetParameters",                                    "معلمات إعادة تعيين"},
@@ -907,7 +907,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "التنزيل قيد التنفيذ. سيتم تشغيل المثبت عند الانتهاء من التنزيل."},
 		};
 
-		static Dictionary<string, string> DEU = new Dictionary<string, string> () {
+		static Dictionary<string, string> DEU = new() {
 			{"BUTTON:Continue",                                           "Fortsetzen"},
 			{"BUTTON:ApplyChanges",                                       "Änderungen übernehmen"},
 			{"BUTTON:ResetParameters",                                    "Parameter zurücksetzen"},
@@ -1207,7 +1207,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "Der herunterladen wird ausgeführt. Das Installationsprogramm wird ausgeführt, wenn der herunterladen abgeschlossen ist."},
 		};
 
-		static Dictionary<string, string> FAS = new Dictionary<string, string> () {
+		static Dictionary<string, string> FAS = new() {
 			{"BUTTON:Continue",                                           "ادامه هید"},
 			{"BUTTON:ApplyChanges",                                       "تغغیرات را اعمال کن"},
 			{"BUTTON:ResetParameters",                                    "پارامترهای تنظیم مجدد"},
@@ -1507,7 +1507,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "بارگیری در حال انجام است. پس از اتمام بارگیری ، نصب خواهد شد."},
 		};
 
-		static Dictionary<string, string> SPA = new Dictionary<string, string> () {
+		static Dictionary<string, string> SPA = new() {
 			{"BUTTON:Continue",                                           "Continuar"},
 			{"BUTTON:ApplyChanges",                                       "Aplicar cambios"},
 			{"BUTTON:ResetParameters",                                    "Restablecer parámetros"},
@@ -1807,7 +1807,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "La descarga está en progreso. El instalador se ejecutará una vez que se complete la descarga."},
 		};
 
-		static Dictionary<string, string> FRA = new Dictionary<string, string> () {
+		static Dictionary<string, string> FRA = new() {
 			{"BUTTON:Continue",                                           "Continuer"},
 			{"BUTTON:ApplyChanges",                                       "Appliquer les modifications"},
 			{"BUTTON:ResetParameters",                                    "Réinitialiser les paramètres"},
@@ -2107,7 +2107,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "Le téléchargement est en cours. Le programme d'installation s'exécutera une fois le téléchargement terminé."},
 		};
 
-		static Dictionary<string, string> HEB = new Dictionary<string, string> () {
+		static Dictionary<string, string> HEB = new() {
 			{"BUTTON:Continue",                                           "המשך"},
 			{"BUTTON:ApplyChanges",                                       "החל שינויים"},
 			{"BUTTON:ResetParameters",                                    "פרמטרי איפוס"},
@@ -2407,7 +2407,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "ההורדה מתבצעת. המתקין יפעל לאחר סיום ההורדה."},
 		};
 
-		static Dictionary<string, string> HIN = new Dictionary<string, string> () {
+		static Dictionary<string, string> HIN = new() {
 			{"BUTTON:Continue",                                           "जारी रहना"},
 			{"BUTTON:ApplyChanges",                                       "परिवर्तन लागू करें"},
 			{"BUTTON:ResetParameters",                                    "रीसेट पैरामीटर"},
@@ -2707,7 +2707,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "डाउनलोड प्रगति पर है। डाउनलोड पूरा होने के बाद इंस्टॉलर चलेगा।"},
 		};
 
-		static Dictionary<string, string> ITA = new Dictionary<string, string> () {
+		static Dictionary<string, string> ITA = new() {
 			{"BUTTON:Continue",                                           "Continua"},
 			{"BUTTON:ApplyChanges",                                       "Applica i cambiamenti"},
 			{"BUTTON:ResetParameters",                                    "Ripristina i parametri"},
@@ -3007,7 +3007,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "Il trasferimento è in corso. Il programma di installazione verrà eseguito al termine del trasferimento."},
 		};
 
-		static Dictionary<string, string> KOR = new Dictionary<string, string> () {
+		static Dictionary<string, string> KOR = new() {
 			{"BUTTON:Continue",                                           "잇다"},
 			{"BUTTON:ApplyChanges",                                       "변경 승인"},
 			{"BUTTON:ResetParameters",                                    "매개 변수 재설정"},
@@ -3307,7 +3307,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "다운로드가 진행 중입니다. 다운로드가 완료되면 설치 관리자가 실행됩니다."},
 		};
 
-		static Dictionary<string, string> POR = new Dictionary<string, string> () {
+		static Dictionary<string, string> POR = new() {
 			{"BUTTON:Continue",                                           "Continuar"},
 			{"BUTTON:ApplyChanges",                                       "Aplicar mudanças"},
 			{"BUTTON:ResetParameters",                                    "Parâmetros de redefinição"},
@@ -3607,7 +3607,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "A transferência está em processo. O instalador será executado quando terminar a transferência."},
 		};
 
-		static Dictionary<string, string> RUS = new Dictionary<string, string> () {
+		static Dictionary<string, string> RUS = new() {
 			{"BUTTON:Continue",                                           "Продолжать"},
 			{"BUTTON:ApplyChanges",                                       "Применить изменения"},
 			{"BUTTON:ResetParameters",                                    "Сбросить параметры"},
@@ -3907,7 +3907,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "Загрузка продолжается. Когда загрузка будет завершена, установщик запустится."},
 		};
 
-		static Dictionary<string, string> SWK = new Dictionary<string, string> () {
+		static Dictionary<string, string> SWK = new() {
 			{"BUTTON:Continue",                                           "Endelea"},
 			{"BUTTON:ApplyChanges",                                       "Tumia Mabadiliko"},
 			{"BUTTON:ResetParameters",                                    "Weka upya Vipengele"},
@@ -4207,7 +4207,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "Upakuaji unaendelea. Kisakinishi kitaendesha wakati imekamilika kupakua."},
 		};
 
-		static Dictionary<string, string> ZHO = new Dictionary<string, string> () {
+		static Dictionary<string, string> ZHO = new() {
 			{"BUTTON:Continue",                                           "继续"},
 			{"BUTTON:ApplyChanges",                                       "应用更改"},
 			{"BUTTON:ResetParameters",                                    "重新设置参数"},

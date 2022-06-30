@@ -1,0 +1,70 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="IISE.Controls.PropertyAlarm"
+             HorizontalAlignment="Stretch"
+             Margin="2">
+
+  <UserControl.Styles>
+    <Style Selector="Label">
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="HorizontalAlignment" Value="Right" />
+      <Setter Property="Margin" Value="5 0" />
+    </Style>
+  </UserControl.Styles>
+
+  <UserControl.Styles>
+    <Style Selector="NumericUpDown">
+      <Setter Property="MinWidth" Value="45" />
+      <Setter Property="Height" Value="20" />
+      <Setter Property="Increment" Value="5" />
+      <Setter Property="Minimum" Value="0" />
+      <Setter Property="Maximum"  Value="300" />
+      <Setter Property="FormatString" Value="{}{0:#0}" />
+    </Style>
+
+    <Style Selector="StackPanel">
+      <Setter Property="Margin" Value="10 0" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="*" />
+      <ColumnDefinition />
+      <ColumnDefinition />
+      <ColumnDefinition />
+      <ColumnDefinition />
+    </Grid.ColumnDefinitions>
+    <Label Name="lblKey"
+           Grid.Column="0"
+           HorizontalAlignment="Left"
+           Content="Key" />
+
+    <StackPanel Grid.Column="1"
+                Orientation="Horizontal">
+      <Label Content="Enabled:" />
+      <CheckBox Name="chkEnabled" />
+    </StackPanel>
+
+    <StackPanel Grid.Column="2"
+                Orientation="Horizontal">
+      <Label Content="High:" />
+      <NumericUpDown Name="numHigh" />
+    </StackPanel>
+
+    <StackPanel Grid.Column="3"
+                Orientation="Horizontal">
+      <Label Content="Low:" />
+      <NumericUpDown Name="numLow" />
+    </StackPanel>
+
+    <StackPanel Grid.Column="4"
+                Orientation="Horizontal">
+      <Label Content="Severity:" />
+      <ComboBox Name="cmbSeverity" />
+    </StackPanel>
+  </Grid>
+</UserControl>

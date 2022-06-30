@@ -5,7 +5,7 @@ namespace II.Waveform {
 
     public static partial class Dictionary {
 
-        public static Plot ABP_Default = new Plot () {
+        public static Plot ABP_Default = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -18,7 +18,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot CVP_Atrioventricular = new Plot () {
+        public static Plot CVP_Atrioventricular = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -32,7 +32,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot CVP_Ventricular = new Plot () {
+        public static Plot CVP_Ventricular = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -46,7 +46,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot ECG_Complex_Idioventricular = new Plot () {
+        public static Plot ECG_Complex_Idioventricular = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -60,7 +60,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot ECG_Complex_VT = new Plot () {
+        public static Plot ECG_Complex_VT = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -74,7 +74,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot ECG_CPR_Artifact = new Plot () {
+        public static Plot ECG_CPR_Artifact = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -87,7 +87,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot ECG_Defibrillation = new Plot () {
+        public static Plot ECG_Defibrillation = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -96,7 +96,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot ECG_Pacemaker = new Plot () {
+        public static Plot ECG_Pacemaker = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -104,7 +104,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot EFM_Contraction = new Plot () {
+        public static Plot EFM_Contraction = new() {
             DrawResolution = 100,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -131,7 +131,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot EFM_Variability = new Plot () {
+        public static Plot EFM_Variability = new() {
             DrawResolution = 100,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -145,7 +145,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot ETCO2_Default = new Plot () {
+        public static Plot ETCO2_Default = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -167,7 +167,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot IABP_ABP_Default = new Plot () {
+        public static Plot IABP_ABP_Default = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -180,7 +180,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot IABP_ABP_Ectopic = new Plot () {
+        public static Plot IABP_ABP_Ectopic = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -193,7 +193,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot IABP_ABP_Nonpulsatile = new Plot () {
+        public static Plot IABP_ABP_Nonpulsatile = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -206,7 +206,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot IABP_Balloon_Default = new Plot () {
+        public static Plot IABP_Balloon_Default = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -219,7 +219,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot IAP_Default = new Plot () {
+        public static Plot IAP_Default = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -233,7 +233,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot ICP_HighCompliance = new Plot () {
+        public static Plot ICP_HighCompliance = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -247,7 +247,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot ICP_LowCompliance = new Plot () {
+        public static Plot ICP_LowCompliance = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -261,7 +261,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot PA_Default = new Plot () {
+        public static Plot PA_Default = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -274,7 +274,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot PCW_Default = new Plot () {
+        public static Plot PCW_Default = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -287,7 +287,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot RV_Default = new Plot () {
+        public static Plot RV_Default = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {
@@ -299,7 +299,7 @@ namespace II.Waveform {
             }
         };
 
-        public static Plot SPO2_Rhythm = new Plot () {
+        public static Plot SPO2_Rhythm = new() {
             DrawResolution = 10,
             IndexOffset = 0,
             Vertices = new double [] {

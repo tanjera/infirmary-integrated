@@ -12,15 +12,15 @@ using II;
 using II.Localization;
 using II.Server;
 
-namespace II_Simulator {
+namespace IISIM {
 
     public class App : Application {
         public static string []? Start_Args;
 
-        public static Settings Settings = new Settings ();
-        public static Server Server = new Server ();
-        public static Mirror Mirror = new Mirror ();
-        public static Language Language = new Language ();
+        public static II.Settings.Simulator Settings = new ();
+        public static Server Server = new ();
+        public static Mirror Mirror = new ();
+        public static Language Language = new ();
 
         public static Scenario? Scenario;
         public static Patient? Patient;
@@ -34,7 +34,7 @@ namespace II_Simulator {
         public static DeviceIABP? Device_IABP;
         public static DeviceEFM? Device_EFM;
 
-        public static System.Timers.Timer Timer_Main = new System.Timers.Timer ();
+        public static System.Timers.Timer Timer_Main = new ();
 
         public override void Initialize () {
             AvaloniaXamlLoader.Load (this);

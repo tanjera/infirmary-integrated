@@ -15,7 +15,7 @@ using II;
 using II.Rhythm;
 using II.Waveform;
 
-namespace II_Simulator {
+namespace IISIM {
 
     public partial class DeviceDefib : Window {
 
@@ -160,7 +160,7 @@ namespace II_Simulator {
         }
 
         public async Task Load_Process (string inc) {
-            StringReader sRead = new (inc);
+            using StringReader sRead = new (inc);
             List<string> numericTypes = new (),
                          tracingTypes = new ();
 
@@ -195,14 +195,14 @@ namespace II_Simulator {
         }
 
         public string Save () {
-            StringBuilder sWrite = new StringBuilder ();
+            StringBuilder sWrite = new ();
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "rowsTracings", rowsTracings));
             sWrite.AppendLine (String.Format ("{0}:{1}", "colsNumerics", colsNumerics));
             sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", isPaused));
 
-            List<string> numericTypes = new List<string> (),
-                         tracingTypes = new List<string> ();
+            List<string> numericTypes = new (),
+                         tracingTypes = new ();
 
             listNumerics.ForEach (o => { numericTypes.Add (o.controlType.Value.ToString ()); });
             listTracings.ForEach (o => { tracingTypes.Add (o.Strip.Lead.Value.ToString ()); });
@@ -478,7 +478,7 @@ namespace II_Simulator {
 
             for (int i = listTracings.Count; i < rowsTracings && i < tracingTypes.Count; i++) {
                 Strip newStrip = new ((Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]), 6f);
-                Controls.DefibTracing newTracing = new Controls.DefibTracing (newStrip, colorScheme);
+                Controls.DefibTracing newTracing = new (newStrip, colorScheme);
                 listTracings.Add (newTracing);
             }
 

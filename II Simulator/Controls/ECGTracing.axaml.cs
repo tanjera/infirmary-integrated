@@ -19,7 +19,7 @@ using II.Drawing;
 using II.Localization;
 using II.Rhythm;
 
-namespace II_Simulator.Controls {
+namespace IISIM.Controls {
 
     public partial class ECGTracing : UserControl {
         public Strip Strip;
@@ -28,7 +28,7 @@ namespace II_Simulator.Controls {
 
         /* Drawing variables, offsets and multipliers */
         public Color.Schemes colorScheme;
-        private Pen tracingPen = new Pen ();
+        private Pen tracingPen = new();
         private IBrush tracingBrush = Brushes.Green;
 
         private PointD drawOffset;
@@ -87,7 +87,7 @@ namespace II_Simulator.Controls {
         public Task Draw (Strip _Strip, IBrush _Brush, double _Thickness) {
             Image imgTracing = this.FindControl<Image> ("imgTracing");
 
-            PixelSize size = new PixelSize (    // Must use a size > 0
+            PixelSize size = new(    // Must use a size > 0
                 imgTracing.Bounds.Width > 0 ? (int)imgTracing.Bounds.Width : 100,
                 imgTracing.Bounds.Height > 0 ? (int)imgTracing.Bounds.Height : 100);
 

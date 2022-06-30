@@ -19,7 +19,7 @@ using II.Drawing;
 using II.Localization;
 using II.Rhythm;
 
-namespace II_Simulator.Controls {
+namespace IISIM.Controls {
 
     public partial class MonitorTracing : UserControl {
         public Strip? Strip;
@@ -28,7 +28,7 @@ namespace II_Simulator.Controls {
 
         /* Drawing variables, offsets and multipliers */
         public Color.Schemes colorScheme;
-        private Pen tracingPen = new Pen ();
+        private Pen tracingPen = new();
         private IBrush tracingBrush = Brushes.Black;
 
         private PointD? drawOffset;
@@ -58,8 +58,8 @@ namespace II_Simulator.Controls {
 
         private void InitInterface () {
             // Context Menu (right-click menu!)
-            ContextMenu menuContext = new ContextMenu ();
-            List<object> menuitemsContext = new List<object> ();
+            ContextMenu menuContext = new();
+            List<object> menuitemsContext = new();
             this.FindControl<Image> ("imgTracing").ContextMenu = menuContext;
             this.FindControl<Label> ("lblLead").ContextMenu = menuContext;
 
@@ -71,13 +71,13 @@ namespace II_Simulator.Controls {
 
             menuitemsContext.Add (new Separator ());
 
-            MenuItem menuAddTracing = new MenuItem ();
+            MenuItem menuAddTracing = new();
             menuAddTracing.Header = App.Language.Localize ("MENU:MenuAddTracing");
             menuAddTracing.Classes.Add ("item");
             menuAddTracing.Click += MenuAddTracing_Click;
             menuitemsContext.Add (menuAddTracing);
 
-            MenuItem menuRemoveTracing = new MenuItem ();
+            MenuItem menuRemoveTracing = new();
             menuRemoveTracing.Header = App.Language.Localize ("MENU:MenuRemoveTracing");
             menuRemoveTracing.Classes.Add ("item");
             menuRemoveTracing.Click += MenuRemoveTracing_Click;
@@ -85,13 +85,13 @@ namespace II_Simulator.Controls {
 
             menuitemsContext.Add (new Separator ());
 
-            MenuItem menuIncreaseAmplitude = new MenuItem ();
+            MenuItem menuIncreaseAmplitude = new();
             menuIncreaseAmplitude.Header = App.Language.Localize ("MENU:IncreaseAmplitude");
             menuIncreaseAmplitude.Classes.Add ("item");
             menuIncreaseAmplitude.Click += MenuIncreaseAmplitude_Click;
             menuitemsContext.Add (menuIncreaseAmplitude);
 
-            MenuItem menuDecreaseAmplitude = new MenuItem ();
+            MenuItem menuDecreaseAmplitude = new();
             menuDecreaseAmplitude.Header = App.Language.Localize ("MENU:DecreaseAmplitude");
             menuDecreaseAmplitude.Classes.Add ("item");
             menuDecreaseAmplitude.Click += MenuDecreaseAmplitude_Click;
@@ -107,10 +107,10 @@ namespace II_Simulator.Controls {
 
             menuitemsContext.Add (new Separator ());
 
-            MenuItem menuSelectInput = new MenuItem (),
-                     menuECGLeads = new MenuItem ();
-            List<object> menuitemsSelectInput = new List<object> (),
-                menuitemsECGLeads = new List<object> ();
+            MenuItem menuSelectInput = new(),
+                     menuECGLeads = new();
+            List<object> menuitemsSelectInput = new(),
+                menuitemsECGLeads = new();
 
             menuSelectInput.Header = App.Language.Localize ("MENU:MenuSelectInputSource");
             menuSelectInput.Classes.Add ("item");
@@ -128,7 +128,7 @@ namespace II_Simulator.Controls {
                     && el != "ICP" && el != "IAP")
                     continue;
 
-                MenuItem mi = new MenuItem ();
+                MenuItem mi = new();
                 mi.Header = App.Language.Localize (Lead.LookupString (v));
                 mi.Classes.Add ("item");
                 mi.Name = v.ToString ();
@@ -215,7 +215,7 @@ namespace II_Simulator.Controls {
         public Task Draw (Strip? _Strip, IBrush _Brush, double _Thickness) {
             Image imgTracing = this.FindControl<Image> ("imgTracing");
 
-            PixelSize size = new PixelSize (    // Must use a size > 0
+            PixelSize size = new(    // Must use a size > 0
                 imgTracing.Bounds.Width > 0 ? (int)imgTracing.Bounds.Width : 100,
                 imgTracing.Bounds.Height > 0 ? (int)imgTracing.Bounds.Height : 100);
 

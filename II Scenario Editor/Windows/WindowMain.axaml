@@ -2,9 +2,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		    xmlns:iiw="clr-namespace:II_Scenario_Editor.Windows"
+		    xmlns:iiw="clr-namespace:IISE.Windows"
         mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="800"
-        x:Class="II_Scenario_Editor.WindowMain"
+        x:Class="IISE.WindowMain"
         Title="Infirmary Integrated: Scenario Editor"
 	      Icon="avares://Infirmary Integrated Scenario Editor/Resources/Icon_IISE.ico">
 

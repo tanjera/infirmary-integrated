@@ -16,7 +16,7 @@ using II;
 using II.Rhythm;
 using II.Waveform;
 
-namespace II_Simulator {
+namespace IISIM {
 
     public partial class DeviceIABP : Window {
 
@@ -26,8 +26,8 @@ namespace II_Simulator {
                    Augmentation = 100,              // Expressed as % (e.g. 10%, 100%)
                    AugmentationAlarm = 100;         // Expressed as mmHg
 
-        public Triggering Trigger = new Triggering ();
-        public Modes Mode = new Modes ();
+        public Triggering Trigger = new ();
+        public Modes Mode = new ();
 
         public bool Running = false;
         public bool Priming = false;
@@ -43,12 +43,12 @@ namespace II_Simulator {
         private bool isPaused = false;
         private Color.Schemes colorScheme = Color.Schemes.Dark;
 
-        private List<Controls.IABPTracing> listTracings = new List<Controls.IABPTracing> ();
-        private List<Controls.IABPNumeric> listNumerics = new List<Controls.IABPNumeric> ();
+        private List<Controls.IABPTracing> listTracings = new ();
+        private List<Controls.IABPNumeric> listNumerics = new ();
 
-        private Timer timerTracing = new Timer ();
-        private Timer timerVitals = new Timer ();
-        private Timer timerAncillary_Delay = new Timer ();
+        private Timer timerTracing = new ();
+        private Timer timerVitals = new ();
+        private Timer timerAncillary_Delay = new ();
 
         public enum Settings {
             None,
@@ -294,7 +294,7 @@ namespace II_Simulator {
         }
 
         public async Task Load_Process (string inc) {
-            StringReader sRead = new StringReader (inc);
+            using StringReader sRead = new (inc);
 
             try {
                 string? line;
@@ -323,7 +323,7 @@ namespace II_Simulator {
         }
 
         public string Save () {
-            StringBuilder sWrite = new StringBuilder ();
+            StringBuilder sWrite = new ();
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", isPaused));
 

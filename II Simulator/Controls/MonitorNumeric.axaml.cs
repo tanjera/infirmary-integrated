@@ -15,7 +15,7 @@ using II;
 using II.Localization;
 using II.Rhythm;
 
-namespace II_Simulator.Controls {
+namespace IISIM.Controls {
 
     public partial class MonitorNumeric : UserControl {
         public ControlType? controlType;
@@ -62,7 +62,7 @@ namespace II_Simulator.Controls {
 
             public static List<string> MenuItem_Formats {
                 get {
-                    List<string> o = new List<string> ();
+                    List<string> o = new();
                     foreach (Values v in Enum.GetValues (typeof (Values)))
                         o.Add (String.Format ("{0}: {1}", v.ToString (), LookupString (v)));
                     return o;
@@ -91,8 +91,8 @@ namespace II_Simulator.Controls {
 
         private void InitInterface () {
             // Context Menu (right-click menu!)
-            ContextMenu contextMenu = new ContextMenu ();
-            List<object> menuitemsContext = new List<object> ();
+            ContextMenu contextMenu = new();
+            List<object> menuitemsContext = new();
 
             this.FindControl<Grid> ("layoutGrid").ContextMenu = contextMenu;
             this.FindControl<TextBlock> ("lblNumType").ContextMenu = contextMenu;

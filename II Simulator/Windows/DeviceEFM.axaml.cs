@@ -15,15 +15,15 @@ using II;
 using II.Rhythm;
 using II.Waveform;
 
-namespace II_Simulator {
+namespace IISIM {
 
     public partial class DeviceEFM : Window {
         private bool isPaused = false;
         private Color.Schemes colorScheme = Color.Schemes.Light;
 
-        private List<Controls.EFMTracing> listTracings = new List<Controls.EFMTracing> ();
+        private List<Controls.EFMTracing> listTracings = new ();
 
-        private Timer timerTracing = new Timer ();
+        private Timer timerTracing = new ();
         private ImageBrush gridFHR, gridToco;
 
         public DeviceEFM () {
@@ -86,14 +86,14 @@ namespace II_Simulator {
             gridToco.Stretch = Stretch.Fill;
 
             // Instantiate and add Tracings to UI
-            Controls.EFMTracing fhrTracing = new Controls.EFMTracing (new Strip (Lead.Values.FHR, 600d), colorScheme);
+            Controls.EFMTracing fhrTracing = new (new Strip (Lead.Values.FHR, 600d), colorScheme);
             fhrTracing.SetValue (Grid.RowProperty, 0);
             fhrTracing.SetValue (Grid.ColumnProperty, 0);
             fhrTracing.Background = gridFHR;
             listTracings.Add (fhrTracing);
             displayGrid.Children.Add (fhrTracing);
 
-            Controls.EFMTracing tocoTracing = new Controls.EFMTracing (new Strip (Lead.Values.TOCO, 600d), colorScheme);
+            Controls.EFMTracing tocoTracing = new (new Strip (Lead.Values.TOCO, 600d), colorScheme);
             tocoTracing.SetValue (Grid.RowProperty, 2);
             tocoTracing.SetValue (Grid.ColumnProperty, 0);
             tocoTracing.Background = gridToco;
@@ -112,7 +112,7 @@ namespace II_Simulator {
         }
 
         public void Load_Process (string inc) {
-            StringReader sRead = new StringReader (inc);
+            using StringReader sRead = new (inc);
 
             try {
                 string line;
@@ -133,7 +133,7 @@ namespace II_Simulator {
         }
 
         public string Save () {
-            StringBuilder sWrite = new StringBuilder ();
+            StringBuilder sWrite = new ();
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", isPaused));
 

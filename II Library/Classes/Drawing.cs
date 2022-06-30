@@ -52,16 +52,16 @@ namespace II.Drawing {
         }
 
         public static PointD operator + (PointD a, PointD b)
-        => new PointD (a.X + b.X, a.Y + b.Y);
+        => new(a.X + b.X, a.Y + b.Y);
 
         public static PointD operator - (PointD a, PointD b)
-        => new PointD (a.X - b.X, a.Y - b.Y);
+        => new(a.X - b.X, a.Y - b.Y);
 
         public static PointD operator * (PointD a, PointD b)
-        => new PointD (a.X * b.X, a.Y * b.Y);
+        => new(a.X * b.X, a.Y * b.Y);
 
         public static PointD operator * (PointD a, double b)
-        => new PointD (a.X * b, a.Y * b);
+        => new(a.X * b, a.Y * b);
 
         public static PointD operator / (PointD a, PointD b) {
             if (b.X == 0 || b.Y == 0)

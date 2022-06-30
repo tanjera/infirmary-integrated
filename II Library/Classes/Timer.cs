@@ -12,7 +12,7 @@ namespace II {
 
         public bool IsRunning { get { return Running; } }
 
-        public event EventHandler<EventArgs> Tick;
+        public event EventHandler<EventArgs>? Tick;
 
         ~Timer () => Dispose ();
 

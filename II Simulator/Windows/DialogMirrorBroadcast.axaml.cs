@@ -12,7 +12,7 @@ using Avalonia.Media.Imaging;
 using II;
 using II.Localization;
 
-namespace II_Simulator {
+namespace IISIM {
 
     public partial class DialogMirrorBroadcast : Window {
 
@@ -50,7 +50,7 @@ namespace II_Simulator {
             => this.FindControl<TextBox> ("tbAccessPassword").Text = Utility.RandomString (8);
 
         private void OnClick_Continue (object sender, RoutedEventArgs e) {
-            Regex regex = new Regex ("^[a-zA-Z0-9]*$");
+            Regex regex = new("^[a-zA-Z0-9]*$");
             if ((this.FindControl<TextBox> ("tbAccessionKey").Text ?? "").Length > 0
                     && regex.IsMatch (this.FindControl<TextBox> ("tbAccessionKey").Text)) {
                 App.Mirror.Status = II.Server.Mirror.Statuses.HOST;

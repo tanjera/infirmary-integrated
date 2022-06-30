@@ -8,7 +8,7 @@ using Avalonia.Markup.Xaml;
 using II;
 using II.Localization;
 
-namespace II_Simulator {
+namespace IISIM {
 
     public partial class DialogLanguage : Window {
 

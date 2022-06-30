@@ -255,7 +255,7 @@ namespace II.Server {
             HttpClient hc = new ();
 
             try {
-                StringBuilder excData = new StringBuilder ();
+                StringBuilder excData = new();
                 foreach (DictionaryEntry entry in e.Data)
                     excData.AppendLine (String.Format ("{0,-20} '{1}'", entry.Key.ToString (), entry.Value?.ToString ()));
 

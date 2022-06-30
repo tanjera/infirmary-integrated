@@ -13,7 +13,7 @@ using Avalonia.Threading;
 
 using II;
 
-namespace II_Scenario_Editor {
+namespace IISE {
 
     public partial class DialogMessage : Window {
         public string? Message { get; set; }

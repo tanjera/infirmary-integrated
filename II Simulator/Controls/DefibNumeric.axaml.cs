@@ -15,7 +15,7 @@ using II;
 using II.Localization;
 using II.Rhythm;
 
-namespace II_Simulator.Controls {
+namespace IISIM.Controls {
 
     public partial class DefibNumeric : UserControl {
         public DeviceDefib deviceParent;
@@ -61,7 +61,7 @@ namespace II_Simulator.Controls {
 
             public static List<string> MenuItem_Formats {
                 get {
-                    List<string> o = new List<string> ();
+                    List<string> o = new();
                     foreach (Values v in Enum.GetValues (typeof (Values)))
                         o.Add (String.Format ("{0}: {1}", v.ToString (), LookupString (v)));
                     return o;
@@ -91,8 +91,8 @@ namespace II_Simulator.Controls {
 
         private void InitInterface () {
             // Context Menu (right-click menu!)
-            ContextMenu contextMenu = new ContextMenu ();
-            List<object> menuitemsContext = new List<object> ();
+            ContextMenu contextMenu = new();
+            List<object> menuitemsContext = new();
 
             this.FindControl<Grid> ("layoutGrid").ContextMenu = contextMenu;
             this.FindControl<TextBlock> ("lblNumType").ContextMenu = contextMenu;
@@ -111,13 +111,13 @@ namespace II_Simulator.Controls {
 
             menuitemsContext.Add (new Separator ());
 
-            MenuItem menuAddNumeric = new MenuItem ();
+            MenuItem menuAddNumeric = new();
             menuAddNumeric.Header = App.Language.Localize ("MENU:MenuAddNumeric");
             menuAddNumeric.Classes.Add ("item");
             menuAddNumeric.Click += MenuAddNumeric_Click;
             menuitemsContext.Add (menuAddNumeric);
 
-            MenuItem menuRemoveNumeric = new MenuItem ();
+            MenuItem menuRemoveNumeric = new();
             menuRemoveNumeric.Header = App.Language.Localize ("MENU:MenuRemoveNumeric");
             menuRemoveNumeric.Classes.Add ("item");
             menuRemoveNumeric.Click += MenuRemoveNumeric_Click;
@@ -125,13 +125,13 @@ namespace II_Simulator.Controls {
 
             menuitemsContext.Add (new Separator ());
 
-            MenuItem menuSelectInput = new MenuItem ();
-            List<object> menuitemsSelectInput = new List<object> ();
+            MenuItem menuSelectInput = new();
+            List<object> menuitemsSelectInput = new();
             menuSelectInput.Header = App.Language.Localize ("MENU:MenuSelectInputSource");
             menuSelectInput.Classes.Add ("item");
 
             foreach (ControlType.Values v in Enum.GetValues (typeof (ControlType.Values))) {
-                MenuItem mi = new MenuItem ();
+                MenuItem mi = new();
                 mi.Header = App.Language.Localize (ControlType.LookupString (v));
                 mi.Classes.Add ("item");
                 mi.Name = v.ToString ();

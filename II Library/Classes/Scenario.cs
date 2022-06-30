@@ -24,13 +24,13 @@ namespace II {
         // A holdover from IsScenario... indicates if this Scenario is from a loaded file
         public bool IsLoaded = false;
 
-        public List<Step> Steps = new List<Step> ();
-        public Timer ProgressTimer = new Timer ();
+        public List<Step> Steps = new ();
+        public Timer ProgressTimer = new ();
 
-        public DeviceSettings DeviceMonitor = new ();
-        public DeviceSettings DeviceDefib = new ();
-        public DeviceSettings DeviceECG = new ();
-        public DeviceSettings DeviceIABP = new ();
+        public Settings.Device DeviceMonitor = new (Settings.Device.Devices.Monitor);
+        public Settings.Device DeviceDefib = new (Settings.Device.Devices.Defib);
+        public Settings.Device DeviceECG = new (Settings.Device.Devices.ECG);
+        public Settings.Device DeviceIABP = new (Settings.Device.Devices.IABP);
 
         public event EventHandler<EventArgs>? StepChangeRequest;
 
@@ -94,8 +94,8 @@ namespace II {
             set { if (Current != null) Current.Patient = value; }
         }
 
-        public async Task Load_Process (string inc) {
-            StringReader sRead = new (inc);
+        public async Task Load (string inc) {
+            using StringReader sRead = new (inc);
             string? line, pline;
             StringBuilder pbuffer;
 
@@ -111,7 +111,7 @@ namespace II {
                             pbuffer.AppendLine (pline);
 
                         IsLoaded = true;
-                        Step s = new Step ();
+                        Step s = new ();
                         await s.Load_Process (pbuffer.ToString ());
                         Steps.Add (s);
                     } else if (line == "> Begin: DeviceMonitor") {
@@ -120,28 +120,28 @@ namespace II {
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: DeviceMonitor")
                             pbuffer.AppendLine (pline);
 
-                        await DeviceMonitor.Load_Process (pbuffer.ToString ());
+                        await DeviceMonitor.Load (pbuffer.ToString ());
                     } else if (line == "> Begin: DeviceDefib") {
                         pbuffer = new StringBuilder ();
 
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: DeviceDefib")
                             pbuffer.AppendLine (pline);
 
-                        await DeviceDefib.Load_Process (pbuffer.ToString ());
+                        await DeviceDefib.Load (pbuffer.ToString ());
                     } else if (line == "> Begin: DeviceECG") {
                         pbuffer = new StringBuilder ();
 
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: DeviceECG")
                             pbuffer.AppendLine (pline);
 
-                        await DeviceECG.Load_Process (pbuffer.ToString ());
+                        await DeviceECG.Load (pbuffer.ToString ());
                     } else if (line == "> Begin: DeviceIABP") {
                         pbuffer = new StringBuilder ();
 
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: DeviceIABP")
                             pbuffer.AppendLine (pline);
 
-                        await DeviceIABP.Load_Process (pbuffer.ToString ());
+                        await DeviceIABP.Load (pbuffer.ToString ());
                     } else if (line.Contains (":")) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
@@ -165,9 +165,9 @@ namespace II {
             sRead.Close ();
         }
 
-        public string Save (int indent = 1) {
+        public async Task<string> Save (int indent = 1) {
             string dent = Utility.Indent (indent);
-            StringBuilder sWrite = new StringBuilder ();
+            StringBuilder sWrite = new ();
 
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Updated", Utility.DateTime_ToString (Updated)));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Name", Name));
@@ -177,19 +177,19 @@ namespace II {
 
             /* Save() each Device's Settings */
             sWrite.AppendLine ($"{dent}> Begin: DeviceMonitor");
-            sWrite.Append (DeviceMonitor.Save (indent + 1));
+            sWrite.Append (await DeviceMonitor.Save (indent + 1));
             sWrite.AppendLine ($"{dent}> End: DeviceMonitor");
 
             sWrite.AppendLine ($"{dent}> Begin: DeviceDefib");
-            sWrite.Append (DeviceDefib.Save (indent + 1));
+            sWrite.Append (await DeviceDefib.Save (indent + 1));
             sWrite.AppendLine ($"{dent}> End: DeviceDefib");
 
             sWrite.AppendLine ($"{dent}> Begin: DeviceECG");
-            sWrite.Append (DeviceECG.Save (indent + 1));
+            sWrite.Append (await DeviceECG.Save (indent + 1));
             sWrite.AppendLine ($"{dent}> End: DeviceECG");
 
             sWrite.AppendLine ($"{dent}> Begin: DeviceIABP");
-            sWrite.Append (DeviceIABP.Save (indent + 1));
+            sWrite.Append (await DeviceIABP.Save (indent + 1));
             sWrite.AppendLine ($"{dent}> End: DeviceIABP");
 
             /* Iterate and Save() each Step in Steps[] */
@@ -329,7 +329,7 @@ namespace II {
             public Patient Patient;
             public string? Name, Description;
 
-            public List<Progression> Progressions = new List<Progression> ();
+            public List<Progression> Progressions = new ();
             public Progression? DefaultProgression = null;
             public string? DefaultSource = null;
             public int ProgressTimer = -1;
@@ -344,7 +344,7 @@ namespace II {
             }
 
             public async Task Load_Process (string inc) {
-                StringReader sRead = new (inc);
+                using StringReader sRead = new (inc);
                 string? line, pline;
                 StringBuilder pbuffer;
 
@@ -396,7 +396,7 @@ namespace II {
 
             public string Save (int indent = 1) {
                 string dent = Utility.Indent (indent);
-                StringBuilder sWrite = new StringBuilder ();
+                StringBuilder sWrite = new ();
 
                 sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "UUID", UUID));
                 sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Name", Name));
@@ -438,7 +438,7 @@ namespace II {
                 }
 
                 public async Task Load_Process (string inc) {
-                    StringReader sRead = new StringReader (inc);
+                    using StringReader sRead = new (inc);
                     string? line;
 
                     try {

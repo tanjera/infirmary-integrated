@@ -36,7 +36,7 @@ namespace II {
         }
 
         public static double RandomDouble (double min, double max) {
-            Random r = new Random ();
+            Random r = new();
             return (double)r.NextDouble () * (max - min) + min;
         }
 

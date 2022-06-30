@@ -17,7 +17,7 @@ namespace II {
             byte [] bytes = Encoding.ASCII.GetBytes (str);
             byte [] hash = sha256.ComputeHash (bytes);
 
-            StringBuilder sb = new StringBuilder ();
+            StringBuilder sb = new();
             foreach (byte b in hash)
                 sb.Append (b.ToString ("X2"));
 

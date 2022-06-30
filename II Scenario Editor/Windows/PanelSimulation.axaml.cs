@@ -21,9 +21,9 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 
 using II;
-using II_Scenario_Editor.Controls;
+using IISE.Controls;
 
-namespace II_Scenario_Editor.Windows {
+namespace IISE.Windows {
 
     public partial class PanelSimulation : UserControl {
         /* Pointer to main data structure for the scenario, patient, devices, etc. */
@@ -38,6 +38,8 @@ namespace II_Scenario_Editor.Windows {
         private PropertyString vpstrScenarioAuthor;
         private PropertyString vpstrScenarioName;
         private PropertyString vpstrScenarioDescription;
+        private StackPanel vspMonitorAlarms;
+        private List<PropertyAlarm> listMonitorAlarms;
 
         public PanelSimulation () {
             InitializeComponent ();
@@ -51,8 +53,10 @@ namespace II_Scenario_Editor.Windows {
             AvaloniaXamlLoader.Load (this);
         }
 
-        public async Task InitReferences (WindowMain main) {
+        public Task InitReferences (WindowMain main) {
             IMain = main;
+
+            return Task.CompletedTask;
         }
 
         public async Task SetScenario (Scenario s) {
@@ -61,18 +65,18 @@ namespace II_Scenario_Editor.Windows {
             await UpdateViewModel ();
         }
 
-        private Task InitViewModel () {
-            ReferenceViewModel ();
+        private async Task InitViewModel () {
+            await ReferenceViewModel ();
 
             // Initiate controls
-            vpchkMonitorEnabled.Init (PropertyCheck.Keys.MonitorIsEnabled);
-            vpchkDefibEnabled.Init (PropertyCheck.Keys.DefibIsEnabled);
-            vpchkECGEnabled.Init (PropertyCheck.Keys.ECGIsEnabled);
-            vpchkIABPEnabled.Init (PropertyCheck.Keys.IABPIsEnabled);
+            await vpchkMonitorEnabled.Init (PropertyCheck.Keys.MonitorIsEnabled);
+            await vpchkDefibEnabled.Init (PropertyCheck.Keys.DefibIsEnabled);
+            await vpchkECGEnabled.Init (PropertyCheck.Keys.ECGIsEnabled);
+            await vpchkIABPEnabled.Init (PropertyCheck.Keys.IABPIsEnabled);
 
-            vpstrScenarioAuthor.Init (PropertyString.Keys.ScenarioAuthor);
-            vpstrScenarioName.Init (PropertyString.Keys.ScenarioName);
-            vpstrScenarioDescription.Init (PropertyString.Keys.ScenarioDescription);
+            await vpstrScenarioAuthor.Init (PropertyString.Keys.ScenarioAuthor);
+            await vpstrScenarioName.Init (PropertyString.Keys.ScenarioName);
+            await vpstrScenarioDescription.Init (PropertyString.Keys.ScenarioDescription);
 
             vpchkMonitorEnabled.PropertyChanged += UpdateScenario;
             vpchkDefibEnabled.PropertyChanged += UpdateScenario;
@@ -83,7 +87,17 @@ namespace II_Scenario_Editor.Windows {
             vpstrScenarioName.PropertyChanged += UpdateScenario;
             vpstrScenarioDescription.PropertyChanged += UpdateScenario;
 
-            return Task.CompletedTask;
+            // Populate PropertyAlarms into StackPanel and initiate
+            listMonitorAlarms = new ();
+            foreach (Alarms.Alarm.Parameters param in Enum.GetValues (typeof (Alarms.Alarm.Parameters))) {
+                PropertyAlarm pa = new ();
+                await pa.Init (PropertyAlarm.Devices.Monitor, param);
+
+                pa.PropertyChanged += UpdateScenario;
+
+                vspMonitorAlarms.Children.Add (pa);
+                listMonitorAlarms.Add (pa);
+            }
         }
 
         private Task ReferenceViewModel () {
@@ -96,7 +110,14 @@ namespace II_Scenario_Editor.Windows {
             vpchkECGEnabled = this.FindControl<PropertyCheck> ("pchkECGEnabled");
             vpchkIABPEnabled = this.FindControl<PropertyCheck> ("pchkIABPEnabled");
 
+            vspMonitorAlarms = this.FindControl<StackPanel> ("spMonitorAlarms");
+
             return Task.CompletedTask;
+        }
+
+        private void UpdateScenario (object? sender, PropertyAlarm.PropertyAlarmEventArgs e) {
+            if (sender is PropertyAlarm && listMonitorAlarms.Contains (sender))
+                _ = Scenario.DeviceMonitor.Alarms?.Set (e.Key, e.Value);
         }
 
         private void UpdateScenario (object? sender, PropertyCheck.PropertyCheckEventArgs e) {
@@ -118,19 +139,21 @@ namespace II_Scenario_Editor.Windows {
             }
         }
 
-        private Task UpdateViewModel () {
-            ReferenceViewModel ();
+        private async Task UpdateViewModel () {
+            await ReferenceViewModel ();
 
-            vpchkMonitorEnabled.Set (Scenario.DeviceMonitor.IsEnabled);
-            vpchkDefibEnabled.Set (Scenario.DeviceDefib.IsEnabled);
-            vpchkECGEnabled.Set (Scenario.DeviceECG.IsEnabled);
-            vpchkIABPEnabled.Set (Scenario.DeviceIABP.IsEnabled);
+            await vpchkMonitorEnabled.Set (Scenario.DeviceMonitor.IsEnabled);
+            await vpchkDefibEnabled.Set (Scenario.DeviceDefib.IsEnabled);
+            await vpchkECGEnabled.Set (Scenario.DeviceECG.IsEnabled);
+            await vpchkIABPEnabled.Set (Scenario.DeviceIABP.IsEnabled);
 
-            vpstrScenarioAuthor.Set (Scenario.Author ?? "");
-            vpstrScenarioName.Set (Scenario.Name ?? "");
-            vpstrScenarioDescription.Set (Scenario.Description ?? "");
+            await vpstrScenarioAuthor.Set (Scenario.Author ?? "");
+            await vpstrScenarioName.Set (Scenario.Name ?? "");
+            await vpstrScenarioDescription.Set (Scenario.Description ?? "");
 
-            return Task.CompletedTask;
+            foreach (PropertyAlarm pa in listMonitorAlarms) {
+                await pa.Set (await Scenario.DeviceMonitor.Alarms?.Get (pa.Key));
+            }
         }
 
         /* Generic Menu Items (across all Panels) */

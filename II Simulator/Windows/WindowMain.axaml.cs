@@ -22,11 +22,11 @@ using II;
 using II.Localization;
 using II.Server;
 
-namespace II_Simulator {
+namespace IISIM {
 
     public partial class WindowMain : Window {
-        /* Variables for WPF UI loading */
-        private bool uiLoadCompleted = false;
+        /* Variables for UI loading */
+        private bool IsUILoadCompleted = false;
 
         /* Variables for Auto-Apply functionality */
         private ParameterStatuses ParameterStatus = ParameterStatuses.Loading;
@@ -67,12 +67,10 @@ namespace II_Simulator {
                 await LoadOpen (App.Start_Args [0]);
 
             await SetParameterStatus (App.Settings.AutoApplyChanges);
-
-            /* Debugging and testing code below */
         }
 
         private async Task InitInitialRun () {
-            if (!Settings.Exists ()) {
+            if (!II.Settings.Simulator.Exists ()) {
                 await DialogEULA ();
             }
         }
@@ -162,12 +160,12 @@ namespace II_Simulator {
 
             this.FindControl<CheckBox> ("chkAutoApplyChanges").IsChecked = App.Settings.AutoApplyChanges;
 
-            List<ComboBoxItem> cardiacRhythms = new List<ComboBoxItem> (),
-                respiratoryRhythms = new List<ComboBoxItem> (),
-                pulmonaryArteryRhythms = new List<ComboBoxItem> (),
-                cardiacAxes = new List<ComboBoxItem> (),
-                intensityScale = new List<ComboBoxItem> ();
-            List<ListBoxItem> fetalHeartRhythms = new List<ListBoxItem> ();
+            List<ComboBoxItem> cardiacRhythms = new (),
+                respiratoryRhythms = new (),
+                pulmonaryArteryRhythms = new (),
+                cardiacAxes = new (),
+                intensityScale = new ();
+            List<ListBoxItem> fetalHeartRhythms = new ();
 
             foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
                 cardiacRhythms.Add (new ComboBoxItem () {
@@ -403,7 +401,7 @@ namespace II_Simulator {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            DialogEULA dlg = new DialogEULA ();
+            DialogEULA dlg = new ();
             dlg.Activate ();
             await dlg.ShowDialog (this);
         }
@@ -413,7 +411,7 @@ namespace II_Simulator {
                 this.Show ();
 
             var oldLang = App.Language.Value;
-            DialogLanguage dlg = new DialogLanguage ();
+            DialogLanguage dlg = new ();
             dlg.Activate ();
             await dlg.ShowDialog (this);
 
@@ -427,7 +425,7 @@ namespace II_Simulator {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            DialogMirrorBroadcast dlg = new DialogMirrorBroadcast ();
+            DialogMirrorBroadcast dlg = new ();
             dlg.Activate ();
             await dlg.ShowDialog (this);
 
@@ -438,7 +436,7 @@ namespace II_Simulator {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            DialogMirrorReceive dlg = new DialogMirrorReceive ();
+            DialogMirrorReceive dlg = new ();
             dlg.Activate ();
             await dlg.ShowDialog (this);
         }
@@ -447,15 +445,15 @@ namespace II_Simulator {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            DialogAbout dlg = new DialogAbout ();
+            DialogAbout dlg = new ();
             dlg.Activate ();
             await dlg.ShowDialog (this);
         }
 
         private async Task DialogUpgrade () {
-            Bootstrap.UpgradeRoute decision = Bootstrap.UpgradeRoute.NULL;
+            DialogUpgrade.UpgradeOptions decision = IISIM.DialogUpgrade.UpgradeOptions.None;
 
-            DialogUpgrade dlg = new DialogUpgrade ();
+            DialogUpgrade dlg = new ();
             dlg.Activate ();
 
             dlg.OnUpgradeRoute += (s, ea) => decision = ea.Route;
@@ -464,18 +462,17 @@ namespace II_Simulator {
 
             switch (decision) {
                 default:
-                case Bootstrap.UpgradeRoute.NULL:
-                case Bootstrap.UpgradeRoute.DELAY:
+                case IISIM.DialogUpgrade.UpgradeOptions.None:
+                case IISIM.DialogUpgrade.UpgradeOptions.Delay:
                     return;
 
-                case Bootstrap.UpgradeRoute.MUTE:
+                case IISIM.DialogUpgrade.UpgradeOptions.Mute:
                     App.Settings.MuteUpgrade = true;
                     App.Settings.MuteUpgradeDate = DateTime.Now;
                     App.Settings.Save ();
                     return;
 
-                case Bootstrap.UpgradeRoute.WEBSITE:
-                case Bootstrap.UpgradeRoute.INSTALL:
+                case IISIM.DialogUpgrade.UpgradeOptions.Website:
                     if (!String.IsNullOrEmpty (App.Server.UpgradeWebpage))
                         InterOp.OpenBrowser (App.Server.UpgradeWebpage);
                     return;
@@ -491,7 +488,7 @@ namespace II_Simulator {
             if (Utility.IsNewerVersion (version, App.Server.UpgradeVersion)) {
                 await DialogUpgrade ();
             } else {
-                DialogUpgradeCurrent dlg = new DialogUpgradeCurrent ();
+                DialogUpgradeCurrent dlg = new ();
                 dlg.Activate ();
                 await dlg.ShowDialog (this);
             }
@@ -594,7 +591,7 @@ namespace II_Simulator {
         }
 
         private async Task LoadFile () {
-            OpenFileDialog dlgLoad = new OpenFileDialog ();
+            OpenFileDialog dlgLoad = new ();
 
             dlgLoad.Filters.Add (new FileDialogFilter () { Name = "Infirmary Integrated Simulations", Extensions = { "ii" } });
             dlgLoad.Filters.Add (new FileDialogFilter () { Name = "All files", Extensions = { "*" } });
@@ -617,7 +614,7 @@ namespace II_Simulator {
         }
 
         private async Task LoadInit (string incFile) {
-            using StreamReader sr = new StreamReader (incFile);
+            using StreamReader sr = new (incFile);
             string? metadata = await sr.ReadLineAsync ();
             string? data = await sr.ReadToEndAsync ();
             sr.Close ();
@@ -664,7 +661,7 @@ namespace II_Simulator {
             if (App.Scenario is null)
                 App.Scenario = new ();
 
-            StringReader sRead = new (incFile);
+            using StringReader sRead = new (incFile);
             string? line, pline;
             StringBuilder pbuffer;
 
@@ -672,28 +669,28 @@ namespace II_Simulator {
                 while ((line = (await sRead.ReadLineAsync ())?.Trim ()) != null) {
                     if (line == "> Begin: Patient") {           // Load files saved by Infirmary Integrated (base)
                         pbuffer = new StringBuilder ();
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Patient")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Patient")
                             pbuffer.AppendLine (pline);
 
                         await RefreshScenario (true);
                         await App.Patient.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Scenario") {   // Load files saved by Infirmary Integrated Scenario Editor
                         pbuffer = new StringBuilder ();
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Scenario")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Scenario")
                             pbuffer.AppendLine (pline);
 
                         await RefreshScenario (false);
-                        await App.Scenario.Load_Process (pbuffer.ToString ());
+                        await App.Scenario.Load (pbuffer.ToString ());
                         await InitPatient ();     // Needs to be called manually since InitScenario(false) doesn't init a Patient
                     } else if (line == "> Begin: Editor") {
                         pbuffer = new StringBuilder ();
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Editor")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Editor")
                             pbuffer.AppendLine (pline);
 
                         await this.LoadOptions (pbuffer.ToString ());
                     } else if (line == "> Begin: Cardiac Monitor") {
                         pbuffer = new StringBuilder ();
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Cardiac Monitor")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Cardiac Monitor")
                             pbuffer.AppendLine (pline);
 
                         App.Device_Monitor = new DeviceMonitor ();
@@ -701,7 +698,7 @@ namespace II_Simulator {
                         await App.Device_Monitor.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: 12 Lead ECG") {
                         pbuffer = new StringBuilder ();
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: 12 Lead ECG")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: 12 Lead ECG")
                             pbuffer.AppendLine (pline);
 
                         App.Device_ECG = new DeviceECG ();
@@ -709,7 +706,7 @@ namespace II_Simulator {
                         await App.Device_ECG.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Defibrillator") {
                         pbuffer = new StringBuilder ();
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Defibrillator")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Defibrillator")
                             pbuffer.AppendLine (pline);
 
                         App.Device_Defib = new DeviceDefib ();
@@ -717,7 +714,7 @@ namespace II_Simulator {
                         await App.Device_Defib.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Intra-aortic Balloon Pump") {
                         pbuffer = new StringBuilder ();
-                        while ((pline = sRead.ReadLine ()) != null && pline != "> End: Intra-aortic Balloon Pump")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Intra-aortic Balloon Pump")
                             pbuffer.AppendLine (pline);
 
                         App.Device_IABP = new DeviceIABP ();
@@ -756,7 +753,7 @@ namespace II_Simulator {
         }
 
         private async Task LoadOptions (string inc) {
-            StringReader sRead = new StringReader (inc);
+            using StringReader sRead = new (inc);
 
             try {
                 string? line;
@@ -834,7 +831,7 @@ namespace II_Simulator {
                 return;
             }
 
-            SaveFileDialog dlgSave = new SaveFileDialog ();
+            SaveFileDialog dlgSave = new ();
 
             dlgSave.DefaultExtension = "ii";
             dlgSave.Filters.Add (new FileDialogFilter () { Name = "Infirmary Integrated Simulations", Extensions = { "ii" } });
@@ -901,7 +898,7 @@ namespace II_Simulator {
         }
 
         private string SaveOptions () {
-            StringBuilder sWrite = new StringBuilder ();
+            StringBuilder sWrite = new ();
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "checkDefaultVitals", this.FindControl<CheckBox> ("checkDefaultVitals").IsChecked));
 
@@ -1044,7 +1041,7 @@ namespace II_Simulator {
             ComboBox comboUCIntensity = this.FindControl<ComboBox> ("comboUCIntensity");
             ListBox listFHRRhythms = this.FindControl<ListBox> ("listFHRRhythms");
 
-            List<FHRAccelDecels.Values> FHRRhythms = new List<FHRAccelDecels.Values> ();
+            List<FHRAccelDecels.Values> FHRRhythms = new ();
 
             foreach (ListBoxItem lbi in listFHRRhythms.SelectedItems) {
                 if (lbi.Tag != null)
@@ -1215,9 +1212,9 @@ namespace II_Simulator {
             => _ = ApplyPatientParameters ();
 
         private void OnActivated (object sender, EventArgs e) {
-            if (!uiLoadCompleted) {
+            if (!IsUILoadCompleted) {
                 this.Position = new PixelPoint (App.Settings.WindowPosition.X, App.Settings.WindowPosition.Y);
-                this.uiLoadCompleted = true;
+                this.IsUILoadCompleted = true;
             }
         }
 
@@ -1225,7 +1222,7 @@ namespace II_Simulator {
             => _ = Exit ();
 
         private void OnLayoutUpdated (object sender, EventArgs e) {
-            if (!uiLoadCompleted) {
+            if (!IsUILoadCompleted) {
                 this.Width = App.Settings.WindowSize.X;
                 this.Height = App.Settings.WindowSize.Y;
             } else {

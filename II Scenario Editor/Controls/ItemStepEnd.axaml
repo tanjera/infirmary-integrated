@@ -3,7 +3,7 @@
 						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 						 mc:Ignorable="d"
-						 x:Class="II_Scenario_Editor.Controls.ItemStepEnd"
+						 x:Class="IISE.Controls.ItemStepEnd"
 						 MinHeight="50"
              MinWidth="50"
              Background="Transparent">

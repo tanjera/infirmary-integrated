@@ -8,9 +8,16 @@ using Avalonia.Markup.Xaml;
 using II;
 using II.Localization;
 
-namespace II_Simulator {
+namespace IISIM {
 
     public partial class DialogUpgrade : Window {
+
+        public enum UpgradeOptions {
+            None,
+            Website,
+            Delay,
+            Mute
+        }
 
         public DialogUpgrade () {
             InitializeComponent ();
@@ -21,12 +28,12 @@ namespace II_Simulator {
             Init ();
         }
 
-        public event EventHandler<UpgradeEventArgs> OnUpgradeRoute;
+        public event EventHandler<UpgradeEventArgs>? OnUpgradeRoute;
 
         public class UpgradeEventArgs : EventArgs {
-            public Bootstrap.UpgradeRoute Route;
+            public UpgradeOptions Route;
 
-            public UpgradeEventArgs (Bootstrap.UpgradeRoute d)
+            public UpgradeEventArgs (UpgradeOptions d)
                 => Route = d;
         }
 
@@ -46,17 +53,17 @@ namespace II_Simulator {
         }
 
         private void btnWebsite_Click (object sender, RoutedEventArgs e) {
-            OnUpgradeRoute (this, new UpgradeEventArgs (Bootstrap.UpgradeRoute.WEBSITE));
+            OnUpgradeRoute?.Invoke (this, new UpgradeEventArgs (UpgradeOptions.Website));
             Close ();
         }
 
         private void btnDelay_Click (object sender, RoutedEventArgs e) {
-            OnUpgradeRoute (this, new UpgradeEventArgs (Bootstrap.UpgradeRoute.DELAY));
+            OnUpgradeRoute?.Invoke (this, new UpgradeEventArgs (UpgradeOptions.Delay));
             Close ();
         }
 
         private void btnMute_Click (object sender, RoutedEventArgs e) {
-            OnUpgradeRoute (this, new UpgradeEventArgs (Bootstrap.UpgradeRoute.MUTE));
+            OnUpgradeRoute?.Invoke (this, new UpgradeEventArgs (UpgradeOptions.Mute));
             Close ();
         }
     }

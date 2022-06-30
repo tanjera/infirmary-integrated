@@ -5,8 +5,9 @@ using Avalonia.Markup.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
-namespace II_Scenario_Editor.Controls {
+namespace IISE.Controls {
 
     public partial class PropertyCombo : UserControl {
         public Keys Key;
@@ -32,7 +33,7 @@ namespace II_Scenario_Editor.Controls {
             AvaloniaXamlLoader.Load (this);
         }
 
-        public void Init (Keys key, string [] values, List<string> readable) {
+        public Task Init (Keys key, string [] values, List<string> readable) {
             if (PropertyChanged != null) {              // In case of re-initiation, need to wipe all subscriptions
                 foreach (Delegate d in PropertyChanged.GetInvocationList ())
                     PropertyChanged -= (EventHandler<PropertyComboEventArgs>)d;
@@ -58,9 +59,11 @@ namespace II_Scenario_Editor.Controls {
             cmbEnumeration.Items = listItems;
             cmbEnumeration.SelectionChanged += SendPropertyChange;
             cmbEnumeration.LostFocus += SendPropertyChange;
+
+            return Task.CompletedTask;
         }
 
-        public void Update (List<string> values, List<string> readable, int index = 0) {
+        public Task Update (List<string> values, List<string> readable, int index = 0) {
             ComboBox cmbEnumeration = this.FindControl<ComboBox> ("cmbEnumeration");
 
             cmbEnumeration.SelectionChanged -= SendPropertyChange;
@@ -75,14 +78,18 @@ namespace II_Scenario_Editor.Controls {
             cmbEnumeration.SelectedIndex = index;
 
             cmbEnumeration.SelectionChanged += SendPropertyChange;
+
+            return Task.CompletedTask;
         }
 
-        public void Set (int index) {
+        public Task Set (int index) {
             ComboBox cmbEnumeration = this.FindControl<ComboBox> ("cmbEnumeration");
 
             cmbEnumeration.SelectionChanged -= SendPropertyChange;
             cmbEnumeration.SelectedIndex = index;
             cmbEnumeration.SelectionChanged += SendPropertyChange;
+
+            return Task.CompletedTask;
         }
 
         private void SendPropertyChange (object? sender, EventArgs e) {

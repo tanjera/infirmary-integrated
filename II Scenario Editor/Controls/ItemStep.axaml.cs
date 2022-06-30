@@ -21,7 +21,7 @@ using Avalonia.Threading;
 
 using II;
 
-namespace II_Scenario_Editor.Controls {
+namespace IISE.Controls {
 
     public partial class ItemStep : UserControl {
         /* Data structures */
@@ -50,8 +50,8 @@ namespace II_Scenario_Editor.Controls {
             set { Step.Patient = value; }
         }
 
-        public string Name {
-            get { return Step.Name; }
+        public new string Name {
+            get { return Step.Name ?? ""; }
             set {
                 Step.Name = value;
                 this.FindControl<Label> ("lblName").Content = value;
@@ -59,7 +59,7 @@ namespace II_Scenario_Editor.Controls {
         }
 
         public string Description {
-            get { return Step.Description; }
+            get { return Step.Description ?? ""; }
             set {
                 Step.Description = value;
                 this.FindControl<Label> ("lblDescription").Content = value;

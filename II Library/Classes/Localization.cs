@@ -7,7 +7,7 @@ namespace II.Localization {
         public Values Value;
 
         public Language (string s) {
-            object? lang = new object ();
+            object? lang = new();
             if (Enum.TryParse (typeof (Values), s, out lang))
                 Value = lang is not null ? (Values)lang : Values.ENG;
             else
@@ -61,7 +61,7 @@ namespace II.Localization {
             }
         }
 
-        public static List<string> Descriptions = new List<string> {
+        public static List<string> Descriptions = new () {
             "አማርኛ (Amharic)",
             "عربى (Arabic)",
             "Deutsche (German)",

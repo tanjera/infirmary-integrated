@@ -19,7 +19,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using Avalonia.Threading;
 
-namespace II_Scenario_Editor.Controls {
+namespace IISE.Controls {
 
     public partial class ItemStepEnd : UserControl {
         public ItemStep Step;

@@ -9,7 +9,7 @@ using Avalonia.Markup.Xaml;
 
 using II;
 
-namespace II_Scenario_Editor {
+namespace IISE {
 
     public partial class DialogAbout : Window {
 

@@ -2,9 +2,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		         xmlns:iic="clr-namespace:II_Scenario_Editor.Controls"
+		         xmlns:iic="clr-namespace:IISE.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="II_Scenario_Editor.Windows.PanelSimulation">
+             x:Class="IISE.Windows.PanelSimulation">
 
   <UserControl.Styles>
     <Style Selector="Label">
@@ -107,12 +107,21 @@
           </Expander.Header>
           <StackPanel>
 
-            <Expander Classes="exgrpf">
+            <Expander Classes="exgrpf"
+                  HorizontalContentAlignment="Stretch">
               <Expander.Header>
                 <Label Content="Cardiac Monitor" />
               </Expander.Header>
               <StackPanel>
                 <iic:PropertyCheck x:Name="pchkMonitorEnabled" />
+                <Expander Classes="exgrpf"
+                          HorizontalContentAlignment="Stretch">
+                  <Expander.Header>
+                    <Label Content="Alarm Options and Limits" />
+                  </Expander.Header>
+                  <StackPanel Name="spMonitorAlarms">
+                  </StackPanel>
+                </Expander>
               </StackPanel>
             </Expander>
 

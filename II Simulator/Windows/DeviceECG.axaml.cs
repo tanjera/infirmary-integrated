@@ -16,7 +16,7 @@ using II;
 using II.Rhythm;
 using II.Waveform;
 
-namespace II_Simulator {
+namespace IISIM {
 
     public partial class DeviceECG : Window {
         private bool isPaused = false;
@@ -83,7 +83,7 @@ namespace II_Simulator {
             gridBackground.Stretch = Stretch.Fill;
 
             /* 12 Lead ECG Interface layout */
-            List<Lead.Values> listLeads = new List<Lead.Values> ();
+            List<Lead.Values> listLeads = new ();
             foreach (Lead.Values v in Enum.GetValues (typeof (Lead.Values))) {
                 if (v.ToString ().StartsWith ("ECG"))
                     listLeads.Add (v);
@@ -111,7 +111,7 @@ namespace II_Simulator {
             }
 
             // Add Lead II running along bottom spanning all columns
-            Controls.ECGTracing leadII = new Controls.ECGTracing (new Strip (Lead.Values.ECG_II, 10f), colorScheme);
+            Controls.ECGTracing leadII = new (new Strip (Lead.Values.ECG_II, 10f), colorScheme);
             leadII.SetValue (Grid.ColumnProperty, 0);
             leadII.SetValue (Grid.RowProperty, 4);
             leadII.SetValue (Grid.ColumnSpanProperty, 4);
@@ -134,7 +134,7 @@ namespace II_Simulator {
         }
 
         public async Task Load_Process (string inc) {
-            StringReader sRead = new StringReader (inc);
+            using StringReader sRead = new (inc);
 
             try {
                 string? line;
@@ -156,7 +156,7 @@ namespace II_Simulator {
         }
 
         public string Save () {
-            StringBuilder sWrite = new StringBuilder ();
+            StringBuilder sWrite = new ();
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", isPaused));
             sWrite.AppendLine (String.Format ("{0}:{1}", "colorScheme", colorScheme));

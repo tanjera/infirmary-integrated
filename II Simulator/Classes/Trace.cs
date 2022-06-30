@@ -18,7 +18,7 @@ using II.Drawing;
 using II.Rhythm;
 using II.Waveform;
 
-namespace II_Simulator {
+namespace IISIM {
 
     public class Trace {
 

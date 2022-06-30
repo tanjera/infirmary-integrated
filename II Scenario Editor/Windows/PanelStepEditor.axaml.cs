@@ -21,9 +21,9 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 
 using II;
-using II_Scenario_Editor.Controls;
+using IISE.Controls;
 
-namespace II_Scenario_Editor.Windows {
+namespace IISE.Windows {
 
     public partial class PanelStepEditor : UserControl {
         /* Pointer to main data structure for the scenario, patient, devices, etc. */
@@ -64,8 +64,10 @@ namespace II_Scenario_Editor.Windows {
             AvaloniaXamlLoader.Load (this);
         }
 
-        public async Task InitReferences (WindowMain main) {
+        public Task InitReferences (WindowMain main) {
             IMain = main;
+
+            return Task.CompletedTask;
         }
 
         private async Task InitInterface () {
@@ -103,11 +105,11 @@ namespace II_Scenario_Editor.Windows {
 
             // Initiate controls for editing Scenario properties
 
-            pcmbProgressFrom.Init (PropertyCombo.Keys.DefaultSource, Array.Empty<string> (), new List<string> ());
-            pcmbProgressTo.Init (PropertyCombo.Keys.DefaultProgression, Array.Empty<string> (), new List<string> ());
-            pstrStepName.Init (PropertyString.Keys.StepName);
-            pstrStepDescription.Init (PropertyString.Keys.StepDescription);
-            pintProgressTimer.Init (PropertyInt.Keys.ProgressTimer, 1, -1, 1000);
+            await pcmbProgressFrom.Init (PropertyCombo.Keys.DefaultSource, Array.Empty<string> (), new List<string> ());
+            await pcmbProgressTo.Init (PropertyCombo.Keys.DefaultProgression, Array.Empty<string> (), new List<string> ());
+            await pstrStepName.Init (PropertyString.Keys.StepName);
+            await pstrStepDescription.Init (PropertyString.Keys.StepDescription);
+            await pintProgressTimer.Init (PropertyInt.Keys.ProgressTimer, 1, -1, 1000);
 
             pcmbProgressFrom.PropertyChanged += UpdateScenario;
             pcmbProgressTo.PropertyChanged += UpdateScenario;
@@ -196,7 +198,7 @@ namespace II_Scenario_Editor.Windows {
             return Task.CompletedTask;
         }
 
-        private Task UpdateStepViewModel () {
+        private async Task UpdateStepViewModel () {
             PropertyInt pintProgressTimer = this.FindControl<PropertyInt> ("pintProgressTimer");
             PropertyCombo pcmbProgressFrom = this.FindControl<PropertyCombo> ("pcmbProgressFrom");
             PropertyCombo pcmbProgressTo = this.FindControl<PropertyCombo> ("pcmbProgressTo");
@@ -225,20 +227,18 @@ namespace II_Scenario_Editor.Windows {
                 destNames.AddRange (destSteps.Select (s => s.Name ?? ""));
 
                 // Populate the actual ViewModel UserControls with the appropriate lists
-                pcmbProgressFrom.Update (srcUUIDs, srcNames,
+                await pcmbProgressFrom.Update (srcUUIDs, srcNames,
                     ISelectedStep.Step.DefaultSource == null
                         ? 0 : srcUUIDs.FindIndex (ds => ds == ISelectedStep.Step.DefaultSource));
 
-                pcmbProgressTo.Update (destUUIDs, destNames,
+                await pcmbProgressTo.Update (destUUIDs, destNames,
                     ISelectedStep.Step.DefaultProgression == null
                         ? 0 : destUUIDs.FindIndex (ds => ds == ISelectedStep.Step.DefaultProgression.DestinationUUID));
 
-                pintProgressTimer.Set (ISelectedStep.Step.ProgressTimer);
-                pstrStepName.Set (ISelectedStep?.Step?.Name ?? "");
-                pstrStepDescription.Set (ISelectedStep?.Step?.Description ?? "");
+                await pintProgressTimer.Set (ISelectedStep.Step.ProgressTimer);
+                await pstrStepName.Set (ISelectedStep?.Step?.Name ?? "");
+                await pstrStepDescription.Set (ISelectedStep?.Step?.Description ?? "");
             }
-
-            return Task.CompletedTask;
         }
 
         private Task ImportSteps () {
@@ -400,7 +400,7 @@ namespace II_Scenario_Editor.Windows {
             }
         }
 
-        private async Task DrawIProgressions () {
+        private Task DrawIProgressions () {
             /* Recalculate the positions of Progression Lines on the Canvas
              * To be called when visual elements have moved on the Canvas
              */
@@ -410,9 +410,11 @@ namespace II_Scenario_Editor.Windows {
                 ip.EndPoint = new Point (ip.StepTo.Bounds.Left, ip.StepTo.Bounds.Center.Y);
                 ip.InvalidateVisual ();
             }
+
+            return Task.CompletedTask;
         }
 
-        private async Task UpdateIProgressions () {
+        private Task UpdateIProgressions () {
             /* Re-iterate all Progressions and re-populate the list of Lines accordingly
              * To be called when the list of Progressions has changed
              */
@@ -437,6 +439,8 @@ namespace II_Scenario_Editor.Windows {
                     ICanvas.Children.Add (p);
                 }
             }
+
+            return Task.CompletedTask;
         }
 
         private async Task SelectIStep (ItemStep item, Avalonia.Input.Pointer? capture = null) {

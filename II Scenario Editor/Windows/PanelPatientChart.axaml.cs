@@ -21,9 +21,9 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 
 using II;
-using II_Scenario_Editor.Controls;
+using IISE.Controls;
 
-namespace II_Scenario_Editor.Windows {
+namespace IISE.Windows {
 
     public partial class PanelPatientChart : UserControl {
         /* Pointer to main data structure for the scenario, patient, devices, etc. */

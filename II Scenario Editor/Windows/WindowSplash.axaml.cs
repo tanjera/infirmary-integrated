@@ -2,7 +2,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace II_Scenario_Editor {
+namespace IISE {
 
     public partial class WindowSplash : Window {
 

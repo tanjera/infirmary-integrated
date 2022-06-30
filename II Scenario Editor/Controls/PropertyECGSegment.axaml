@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d"
-             x:Class="II_Scenario_Editor.Controls.PropertyECGSegment"
+             x:Class="IISE.Controls.PropertyECGSegment"
              HorizontalAlignment="Stretch"
              Margin="2">
 
@@ -20,6 +20,7 @@
       <Setter Property="Increment" Value="0.1" />
       <Setter Property="Minimum" Value="-1.0" />
       <Setter Property="Maximum"  Value="1.0" />
+      <Setter Property="FormatString" Value="{}{0:#0.0}" />
     </Style>
 
     <Style Selector="Label.ecg">
@@ -62,8 +63,7 @@
     <NumericUpDown Name="dblI"
                    Grid.Column="1"
                    Grid.Row="1"
-                   Classes="ecg"
-                   FormatString="{}{0:#0.0}" />
+                   Classes="ecg" />
 
     <Label Name="lblaVR"
            Grid.Column="2"
@@ -73,8 +73,7 @@
     <NumericUpDown Name="dblaVR"
                    Grid.Column="3"
                    Grid.Row="1"
-                   Classes="ecg"
-                   FormatString="{}{0:#0.0}" />
+                   Classes="ecg" />
 
     <Label Name="lblV1"
            Grid.Column="4"
@@ -84,8 +83,7 @@
     <NumericUpDown Name="dblV1"
                    Grid.Column="5"
                    Grid.Row="1"
-                   Classes="ecg"
-                   FormatString="{}{0:#0.0}" />
+                   Classes="ecg" />
 
     <Label Name="lblV4"
            Grid.Column="6"
@@ -95,8 +93,7 @@
     <NumericUpDown Name="dblV4"
                    Grid.Column="7"
                    Grid.Row="1"
-                   Classes="ecg"
-                   FormatString="{}{0:#0.0}" />
+                   Classes="ecg" />
 
     <!-- Middle row of segments -->
     <Label Name="lblII"
@@ -107,8 +104,7 @@
     <NumericUpDown Name="dblII"
                    Grid.Column="1"
                    Grid.Row="2"
-                   Classes="ecg"
-                   FormatString="{}{0:#0.0}" />
+                   Classes="ecg" />
 
     <Label Name="lblaVL"
            Grid.Column="2"
@@ -118,8 +114,7 @@
     <NumericUpDown Name="dblaVL"
                    Grid.Column="3"
                    Grid.Row="2"
-                   Classes="ecg"
-                   FormatString="{}{0:#0.0}" />
+                   Classes="ecg" />
 
     <Label Name="lblV2"
            Grid.Column="4"
@@ -129,8 +124,7 @@
     <NumericUpDown Name="dblV2"
                    Grid.Column="5"
                    Grid.Row="2"
-                   Classes="ecg"
-                   FormatString="{}{0:#0.0}" />
+                   Classes="ecg" />
 
     <Label Name="lblV5"
            Grid.Column="6"
@@ -140,8 +134,7 @@
     <NumericUpDown Name="dblV5"
                    Grid.Column="7"
                    Grid.Row="2"
-                   Classes="ecg"
-                   FormatString="{}{0:#0.0}" />
+                   Classes="ecg" />
 
     <!-- Bottom row of segments -->
     <Label Name="lblIII"
@@ -152,8 +145,7 @@
     <NumericUpDown Name="dblIII"
                    Grid.Column="1"
                    Grid.Row="3"
-                   Classes="ecg"
-                   FormatString="{}{0:#0.0}" />
+                   Classes="ecg" />
 
     <Label Name="lblaVF"
            Grid.Column="2"
@@ -163,8 +155,7 @@
     <NumericUpDown Name="dblaVF"
                    Grid.Column="3"
                    Grid.Row="3"
-                   Classes="ecg"
-                   FormatString="{}{0:#0.0}" />
+                   Classes="ecg" />
 
     <Label Name="lblV3"
            Grid.Column="4"
@@ -174,8 +165,7 @@
     <NumericUpDown Name="dblV3"
                    Grid.Column="5"
                    Grid.Row="3"
-                   Classes="ecg"
-                   FormatString="{}{0:#0.0}" />
+                   Classes="ecg" />
 
     <Label Name="lblV6"
            Grid.Column="6"
@@ -185,7 +175,6 @@
     <NumericUpDown Name="dblV6"
                    Grid.Column="7"
                    Grid.Row="3"
-                   Classes="ecg"
-                   FormatString="{}{0:#0.0}" />
+                   Classes="ecg" />
   </Grid>
 </UserControl>

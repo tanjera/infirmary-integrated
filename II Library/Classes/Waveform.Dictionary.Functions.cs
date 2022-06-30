@@ -24,11 +24,11 @@ namespace II.Waveform {
              * Note: IndexOffset and DrawResolution are only averaged; loss of accuracy possible
              */
 
-            Plot _Out = new Plot (
+            Plot _Out = new(
                 (_Plot1.DrawResolution + _Plot2.DrawResolution) / 2,
                 (_Plot1.IndexOffset + _Plot2.IndexOffset) / 2);
 
-            List<double> vertices = new List<double> ();
+            List<double> vertices = new();
 
             for (int i = 0; i < _Plot1.Vertices.Length || i < _Plot2.Vertices.Length; i++) {
                 if (i < _Plot1.Vertices.Length && i < _Plot2.Vertices.Length)

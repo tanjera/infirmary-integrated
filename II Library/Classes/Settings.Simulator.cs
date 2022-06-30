@@ -1,8 +1,8 @@
-﻿/* Settings.cs
+﻿/* Settings.Simulator.cs
  * Infirmary Integrated
  * By Ibi Keller (Tanjera)
  *
- * Stores program settings for persistence between sessions.
+ * Stores settings for persistence between sessions and for loading/saving simulations
  */
 
 using System;
@@ -10,9 +10,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
-namespace II {
-    public class Settings {
+namespace II.Settings {
+    public class Simulator {
         public string Language;
         public bool AutoApplyChanges;
         public Point WindowSize;
@@ -20,7 +21,7 @@ namespace II {
         public bool MuteUpgrade;
         public DateTime MuteUpgradeDate;
 
-        public Settings () {
+        public Simulator () {
             Language = "ENG";
             AutoApplyChanges = false;
             WindowSize = new Point (700, 560);
@@ -36,7 +37,7 @@ namespace II {
             if (!System.IO.File.Exists (File.GetConfigPath ()))
                 return;
 
-            StreamReader sr = new StreamReader (File.GetConfigPath ());
+            StreamReader sr = new (File.GetConfigPath ());
 
             string? line;
             bool parseBool;
@@ -85,7 +86,7 @@ namespace II {
         }
 
         public void Save () {
-            StreamWriter sw = new StreamWriter (File.GetConfigPath (), false);
+            StreamWriter sw = new (File.GetConfigPath (), false);
 
             sw.WriteLine ($"Language:{Language}");
             sw.WriteLine ($"AutoApplyChanges:{AutoApplyChanges}");

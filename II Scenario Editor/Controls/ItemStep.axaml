@@ -2,9 +2,9 @@
 						 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 						 xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 						 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		         xmlns:ii="clr-namespace:II_Scenario_Editor.Controls"
+		         xmlns:ii="clr-namespace:IISE.Controls"
 						 mc:Ignorable="d"
-						 x:Class="II_Scenario_Editor.Controls.ItemStep"
+						 x:Class="IISE.Controls.ItemStep"
 						 MinHeight="50"
              MinWidth="50"
              Background="Transparent">

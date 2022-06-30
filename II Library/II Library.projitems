@@ -13,8 +13,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\Bootstrap.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\DeviceSettings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Alarms.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Drawing.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Encryption.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\File.cs" />
@@ -23,7 +22,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Localization.Dictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Math.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Server.Mirror.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\Settings.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Settings.Device.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Settings.Simulator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Tracing.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Scales.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Scenario.cs" />

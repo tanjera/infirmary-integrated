@@ -11,7 +11,7 @@ using Avalonia.Threading;
 using II;
 using II.Localization;
 
-namespace II_Scenario_Editor {
+namespace IISE {
 
     public partial class App : Application {
         public static string []? Start_Args;

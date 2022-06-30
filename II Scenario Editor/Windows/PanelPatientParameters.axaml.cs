@@ -21,9 +21,9 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 
 using II;
-using II_Scenario_Editor.Controls;
+using IISE.Controls;
 
-namespace II_Scenario_Editor.Windows {
+namespace IISE.Windows {
 
     public partial class PanelPatientParameters : UserControl {
         /* Pointer to main data structure for the scenario, patient, devices, etc. */
@@ -390,35 +390,35 @@ namespace II_Scenario_Editor.Windows {
 
             if (Patient != null) {
                 // Update all controls with Patient values
-                pbpNBP.Set (Patient.VS_Settings.NSBP, Patient.VS_Settings.NDBP);
-                pbpABP.Set (Patient.VS_Settings.ASBP, Patient.VS_Settings.ADBP);
-                pbpPBP.Set (Patient.VS_Settings.PSP, Patient.VS_Settings.PDP);
+                await pbpNBP.Set (Patient.VS_Settings.NSBP, Patient.VS_Settings.NDBP);
+                await pbpABP.Set (Patient.VS_Settings.ASBP, Patient.VS_Settings.ADBP);
+                await pbpPBP.Set (Patient.VS_Settings.PSP, Patient.VS_Settings.PDP);
 
-                pchkMechanicallyVentilated.Set (Patient.Mechanically_Ventilated);
-                pchkPulsusParadoxus.Set (Patient.Pulsus_Paradoxus);
-                pchkPulsusAlternans.Set (Patient.Pulsus_Alternans);
+                await pchkMechanicallyVentilated.Set (Patient.Mechanically_Ventilated);
+                await pchkPulsusParadoxus.Set (Patient.Pulsus_Paradoxus);
+                await pchkPulsusAlternans.Set (Patient.Pulsus_Alternans);
 
-                pdblT.Set (Patient.VS_Settings.T);
-                pdblCO.Set (Patient.VS_Settings.CO);
-                pdblInspiratoryRatio.Set (Patient.VS_Settings.RR_IE_I);
-                pdblExpiratoryRatio.Set (Patient.VS_Settings.RR_IE_E);
+                await pdblT.Set (Patient.VS_Settings.T);
+                await pdblCO.Set (Patient.VS_Settings.CO);
+                await pdblInspiratoryRatio.Set (Patient.VS_Settings.RR_IE_I);
+                await pdblExpiratoryRatio.Set (Patient.VS_Settings.RR_IE_E);
 
-                pecgSTSegment.Set (Patient.ST_Elevation);
-                pecgTWave.Set (Patient.T_Elevation);
+                await pecgSTSegment.Set (Patient.ST_Elevation);
+                await pecgTWave.Set (Patient.T_Elevation);
 
-                penmCardiacRhythms.Set ((int)Patient.Cardiac_Rhythm.Value);
-                penmRespiratoryRhythms.Set ((int)Patient.Respiratory_Rhythm.Value);
-                penmPACatheterRhythm.Set ((int)Patient.PulmonaryArtery_Placement.Value);
-                penmCardiacAxis.Set ((int)Patient.Cardiac_Axis.Value);
+                await penmCardiacRhythms.Set ((int)Patient.Cardiac_Rhythm.Value);
+                await penmRespiratoryRhythms.Set ((int)Patient.Respiratory_Rhythm.Value);
+                await penmPACatheterRhythm.Set ((int)Patient.PulmonaryArtery_Placement.Value);
+                await penmCardiacAxis.Set ((int)Patient.Cardiac_Axis.Value);
 
-                pintHR.Set (Patient.VS_Settings.HR);
-                pintRR.Set (Patient.VS_Settings.RR);
-                pintSPO2.Set (Patient.VS_Settings.SPO2);
-                pintETCO2.Set (Patient.VS_Settings.ETCO2);
-                pintCVP.Set (Patient.VS_Settings.CVP);
-                pintICP.Set (Patient.VS_Settings.ICP);
-                pintIAP.Set (Patient.VS_Settings.IAP);
-                pintPacemakerThreshold.Set (Patient.Pacemaker_Threshold);
+                await pintHR.Set (Patient.VS_Settings.HR);
+                await pintRR.Set (Patient.VS_Settings.RR);
+                await pintSPO2.Set (Patient.VS_Settings.SPO2);
+                await pintETCO2.Set (Patient.VS_Settings.ETCO2);
+                await pintCVP.Set (Patient.VS_Settings.CVP);
+                await pintICP.Set (Patient.VS_Settings.ICP);
+                await pintIAP.Set (Patient.VS_Settings.IAP);
+                await pintPacemakerThreshold.Set (Patient.Pacemaker_Threshold);
             }
         }
 

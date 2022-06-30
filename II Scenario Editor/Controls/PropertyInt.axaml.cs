@@ -5,8 +5,9 @@ using Avalonia.Markup.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
-namespace II_Scenario_Editor.Controls {
+namespace IISE.Controls {
 
     public partial class PropertyInt : UserControl {
         public Keys Key;
@@ -34,7 +35,7 @@ namespace II_Scenario_Editor.Controls {
             AvaloniaXamlLoader.Load (this);
         }
 
-        public void Init (Keys key, int increment, int minvalue, int maxvalue) {
+        public Task Init (Keys key, int increment, int minvalue, int maxvalue) {
             if (PropertyChanged != null) {              // In case of re-initiation, need to wipe all subscriptions
                 foreach (Delegate d in PropertyChanged.GetInvocationList ())
                     PropertyChanged -= (EventHandler<PropertyIntEventArgs>)d;
@@ -62,14 +63,18 @@ namespace II_Scenario_Editor.Controls {
             numValue.Maximum = maxvalue;
             numValue.ValueChanged += SendPropertyChange;
             numValue.LostFocus += SendPropertyChange;
+
+            return Task.CompletedTask;
         }
 
-        public void Set (int value) {
+        public Task Set (int value) {
             NumericUpDown numValue = this.FindControl<NumericUpDown> ("numValue");
 
             numValue.ValueChanged -= SendPropertyChange;
             numValue.Value = value;
             numValue.ValueChanged += SendPropertyChange;
+
+            return Task.CompletedTask;
         }
 
         private void SendPropertyChange (object? sender, EventArgs e) {

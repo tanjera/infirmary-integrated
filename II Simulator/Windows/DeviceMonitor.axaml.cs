@@ -15,7 +15,7 @@ using II;
 using II.Rhythm;
 using II.Waveform;
 
-namespace II_Simulator {
+namespace IISIM {
 
     public partial class DeviceMonitor : Window {
         /* Device variables */
@@ -27,12 +27,12 @@ namespace II_Simulator {
         private bool isPaused = false;
         private Color.Schemes colorScheme = Color.Schemes.Dark;
 
-        private List<Controls.MonitorTracing> listTracings = new List<Controls.MonitorTracing> ();
-        private List<Controls.MonitorNumeric> listNumerics = new List<Controls.MonitorNumeric> ();
+        private List<Controls.MonitorTracing> listTracings = new ();
+        private List<Controls.MonitorNumeric> listNumerics = new ();
 
-        private Timer timerTracing = new Timer ();
-        private Timer timerVitals_Cardiac = new Timer ();
-        private Timer timerVitals_Respiratory = new Timer ();
+        private Timer timerTracing = new ();
+        private Timer timerVitals_Cardiac = new ();
+        private Timer timerVitals_Respiratory = new ();
 
         public DeviceMonitor () {
             InitializeComponent ();
@@ -117,7 +117,7 @@ namespace II_Simulator {
         }
 
         public async Task Load_Process (string inc) {
-            StringReader sRead = new (inc);
+            using StringReader sRead = new (inc);
             List<string> numericTypes = new (),
                          tracingTypes = new ();
 
@@ -145,14 +145,14 @@ namespace II_Simulator {
         }
 
         public string Save () {
-            StringBuilder sWrite = new StringBuilder ();
+            StringBuilder sWrite = new ();
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "rowsTracings", rowsTracings));
             sWrite.AppendLine (String.Format ("{0}:{1}", "rowsNumerics", rowsNumerics));
             sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", isPaused));
 
-            List<string> numericTypes = new List<string> (),
-                         tracingTypes = new List<string> ();
+            List<string> numericTypes = new (),
+                         tracingTypes = new ();
 
             listNumerics.ForEach (o => { numericTypes.Add (o.controlType.Value.ToString ()); });
             listTracings.ForEach (o => { tracingTypes.Add (o.Strip.Lead.Value.ToString ()); });
@@ -262,7 +262,7 @@ namespace II_Simulator {
             if (numericTypes == null || numericTypes.Count == 0)
                 numericTypes = new List<string> (new string [] { "ECG", "NIBP", "SPO2", "RR", "ETCO2", "ABP", "CVP", "T", "PA", "ICP", "IAP" });
             else if (numericTypes.Count < rowsNumerics) {
-                List<string> buffer = new List<string> (new string [] { "ECG", "NIBP", "SPO2", "RR", "ETCO2", "ABP", "CVP", "T", "PA", "ICP", "IAP" });
+                List<string> buffer = new (new string [] { "ECG", "NIBP", "SPO2", "RR", "ETCO2", "ABP", "CVP", "T", "PA", "ICP", "IAP" });
                 buffer.RemoveRange (0, numericTypes.Count);
                 numericTypes.AddRange (buffer);
             }
@@ -279,7 +279,7 @@ namespace II_Simulator {
             if (tracingTypes == null || tracingTypes.Count == 0)
                 tracingTypes = new List<string> (new string [] { "ECG_II", "ECG_III", "SPO2", "RR", "ETCO2", "ABP", "CVP", "PA", "ICP" });
             else if (tracingTypes.Count < rowsTracings) {
-                List<string> buffer = new List<string> (new string [] { "ECG_II", "ECG_III", "SPO2", "RR", "ETCO2", "ABP", "CVP", "PA", "ICP" });
+                List<string> buffer = new (new string [] { "ECG_II", "ECG_III", "SPO2", "RR", "ETCO2", "ABP", "CVP", "PA", "ICP" });
                 buffer.RemoveRange (0, tracingTypes.Count);
                 tracingTypes.AddRange (buffer);
             }
@@ -287,8 +287,8 @@ namespace II_Simulator {
             // Cap available amount of tracings
             rowsTracings = II.Math.Clamp (rowsTracings, 1, tracingTypes.Count);
             for (int i = listTracings.Count; i < rowsTracings && i < tracingTypes.Count; i++) {
-                Strip newStrip = new Strip ((Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]), 6f);
-                Controls.MonitorTracing newTracing = new Controls.MonitorTracing (newStrip, colorScheme);
+                Strip newStrip = new ((Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]), 6f);
+                Controls.MonitorTracing newTracing = new (newStrip, colorScheme);
                 listTracings.Add (newTracing);
             }
 

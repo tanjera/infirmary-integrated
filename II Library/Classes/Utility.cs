@@ -51,7 +51,7 @@ namespace II {
         }
 
         public static string RandomString (int length) {
-            Random r = new Random ();
+            Random r = new();
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return new string (Enumerable.Repeat (chars, length)
               .Select (s => s [r.Next (s.Length)]).ToArray ());

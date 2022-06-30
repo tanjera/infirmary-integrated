@@ -5,8 +5,9 @@ using Avalonia.Markup.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
-namespace II_Scenario_Editor.Controls {
+namespace IISE.Controls {
 
     public partial class PropertyECGSegment : UserControl {
         public Keys Key;
@@ -31,7 +32,7 @@ namespace II_Scenario_Editor.Controls {
             AvaloniaXamlLoader.Load (this);
         }
 
-        public void Init (Keys key) {
+        public Task Init (Keys key) {
             if (PropertyChanged != null) {              // In case of re-initiation, need to wipe all subscriptions
                 foreach (Delegate d in PropertyChanged.GetInvocationList ())
                     PropertyChanged -= (EventHandler<PropertyECGEventArgs>)d;
@@ -83,9 +84,11 @@ namespace II_Scenario_Editor.Controls {
             dblV4.LostFocus += SendPropertyChange;
             dblV5.LostFocus += SendPropertyChange;
             dblV6.LostFocus += SendPropertyChange;
+
+            return Task.CompletedTask;
         }
 
-        public void Set (double [] values) {
+        public Task Set (double [] values) {
             NumericUpDown dblI = this.FindControl<NumericUpDown> ("dblI");
             NumericUpDown dblII = this.FindControl<NumericUpDown> ("dblII");
             NumericUpDown dblIII = this.FindControl<NumericUpDown> ("dblIII");
@@ -137,6 +140,8 @@ namespace II_Scenario_Editor.Controls {
             dblV4.ValueChanged += SendPropertyChange;
             dblV5.ValueChanged += SendPropertyChange;
             dblV6.ValueChanged += SendPropertyChange;
+
+            return Task.CompletedTask;
         }
 
         private void SendPropertyChange (object? sender, EventArgs e) {

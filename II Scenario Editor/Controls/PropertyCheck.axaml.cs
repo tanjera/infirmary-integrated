@@ -5,8 +5,9 @@ using Avalonia.Markup.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
-namespace II_Scenario_Editor.Controls {
+namespace IISE.Controls {
 
     public partial class PropertyCheck : UserControl {
         public Keys Key;
@@ -37,7 +38,7 @@ namespace II_Scenario_Editor.Controls {
             AvaloniaXamlLoader.Load (this);
         }
 
-        public void Init (Keys key) {
+        public Task Init (Keys key) {
             if (PropertyChanged != null) {              // In case of re-initiation, need to wipe all subscriptions
                 foreach (Delegate d in PropertyChanged.GetInvocationList ())
                     PropertyChanged -= (EventHandler<PropertyCheckEventArgs>)d;
@@ -61,14 +62,22 @@ namespace II_Scenario_Editor.Controls {
             chkValue.Checked += SendPropertyChange;
             chkValue.Unchecked += SendPropertyChange;
             chkValue.LostFocus += SendPropertyChange;
+
+            return Task.CompletedTask;
         }
 
-        public void Set (bool value) {
+        public Task Set (bool value) {
             CheckBox chkValue = this.FindControl<CheckBox> ("chkValue");
 
             chkValue.Checked -= SendPropertyChange;
+            chkValue.Unchecked -= SendPropertyChange;
+
             chkValue.IsChecked = value;
+
             chkValue.Checked += SendPropertyChange;
+            chkValue.Unchecked += SendPropertyChange;
+
+            return Task.CompletedTask;
         }
 
         private void SendPropertyChange (object? sender, EventArgs e) {

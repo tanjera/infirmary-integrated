@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 
 namespace Dictionary_Builder {
+
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>

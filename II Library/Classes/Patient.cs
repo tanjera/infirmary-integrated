@@ -15,20 +15,19 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
-
     public class Patient {
         /* Mirroring variables */
         public DateTime Updated;                    // DateTime this Patient was last updated
 
         /* Parameters for patient simulation, e.g. vital signs */
 
-        public Vital_Signs VS_Settings = new Vital_Signs (),
-                            VS_Actual = new Vital_Signs ();
+        public Vital_Signs VS_Settings = new (),
+                            VS_Actual = new ();
 
         /* Basic vital signs and advanced hemodynamics (partial) */
-        public Cardiac_Rhythms Cardiac_Rhythm = new Cardiac_Rhythms ();
-        public Respiratory_Rhythms Respiratory_Rhythm = new Respiratory_Rhythms ();
-        public PulmonaryArtery_Rhythms PulmonaryArtery_Placement = new PulmonaryArtery_Rhythms ();
+        public Cardiac_Rhythms Cardiac_Rhythm = new ();
+        public Respiratory_Rhythms Respiratory_Rhythm = new ();
+        public PulmonaryArtery_Rhythms PulmonaryArtery_Placement = new ();
 
         /* Respiratory profile (partial) */
         public bool Mechanically_Ventilated = false;
@@ -40,20 +39,20 @@ namespace II {
         public bool Pulsus_Paradoxus = false,
                     Pulsus_Alternans = false;
 
-        public Cardiac_Axes Cardiac_Axis = new Cardiac_Axes ();
+        public Cardiac_Axes Cardiac_Axis = new ();
         public double []? ST_Elevation, T_Elevation;
 
         /* Obstetric profile */
 
-        public Scales.Intensity Contraction_Intensity = new Scales.Intensity (),
-                         FHR_Variability = new Scales.Intensity ();
+        public Scales.Intensity Contraction_Intensity = new (),
+                         FHR_Variability = new ();
 
         public double Contraction_Frequency;     // Frequency in seconds
 
         public int Contraction_Duration,         // Duration in seconds
                     FHR;                         // Baseline fetal heart rate
 
-        public FHRAccelDecels FHR_AccelDecels = new FHRAccelDecels ();
+        public FHRAccelDecels FHR_AccelDecels = new ();
         public bool Uterus_Contracted = true;
 
         /* General Device Settings */
@@ -387,7 +386,7 @@ namespace II {
         }
 
         public Task OnPatientEvent (PatientEventTypes e) {
-            PatientEventArgs ea = new PatientEventArgs (this, e);
+            PatientEventArgs ea = new (this, e);
 
             lock (lockListPatientEvents) {
                 ListPatientEvents.Add (ea);
@@ -493,7 +492,7 @@ namespace II {
         /* Process for loading Patient{} information from simulation file */
 
         public async Task Load_Process (string inc) {
-            StringReader sRead = new (inc);
+            using StringReader sRead = new (inc);
 
             try {
                 string? line;
@@ -611,7 +610,7 @@ namespace II {
 
         public string Save (int indent = 1) {
             string dent = Utility.Indent (indent);
-            StringBuilder sWrite = new StringBuilder ();
+            StringBuilder sWrite = new ();
 
             // File/scenario information
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Updated", Utility.DateTime_ToString (Updated)));
@@ -1056,7 +1055,7 @@ namespace II {
 
                     // Every 10-25 beats, sinus arrest
                     if (counterCardiac_Arrhythmia <= 0) {
-                        Random r = new Random ();
+                        Random r = new ();
                         counterCardiac_Arrhythmia = r.Next (10, 16);
                         VS_Actual.HR = VS_Settings.HR / 8;
                     } else {
@@ -1206,7 +1205,7 @@ namespace II {
                 await timerCardiac_Ventricular_Mechanical.ResetAuto (Default_Electromechanical_Delay);
 
             /* Flip the switch on pulsus alternans */
-            Cardiac_Rhythm.AlternansBeat = Pulsus_Alternans ? !Cardiac_Rhythm.AlternansBeat : false;
+            Cardiac_Rhythm.AlternansBeat = Pulsus_Alternans && !Cardiac_Rhythm.AlternansBeat;
 
             await timerCardiac_Ventricular_Electric.Stop ();
         }
