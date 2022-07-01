@@ -7,7 +7,7 @@ namespace II.Localization {
 
 	public partial class Language {
 
-		static Dictionary<string, string> ENG = new() {
+		static Dictionary<string, string> ENG = new Dictionary<string, string> () {
 			{"BUTTON:Continue",                                           "Continue"},
 			{"BUTTON:ApplyChanges",                                       "Apply Changes"},
 			{"BUTTON:ResetParameters",                                    "Reset Parameters"},
@@ -79,6 +79,7 @@ namespace II.Localization {
 			{"PE:MenuMirrorBroadcast",                                    "_Broadcast Simulation"},
 			{"PE:MenuMirrorReceive",                                      "_Receive Simulation"},
 			{"PE:MenuSettings",                                           "_Settings"},
+			{"PE:MenuToggleAudio",                                        "_Audio"},
 			{"PE:MenuSetLanguage",                                        "Set _Language"},
 			{"PE:MenuHelp",                                               "_Help"},
 			{"PE:MenuCheckUpdates",                                       "Check For _Updates"},
@@ -307,7 +308,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "Download in process. The installer will run when it is finished downloading."},
 		};
 
-		static Dictionary<string, string> AMH = new() {
+		static Dictionary<string, string> AMH = new Dictionary<string, string> () {
 			{"BUTTON:Continue",                                           "ቀጥል"},
 			{"BUTTON:ApplyChanges",                                       "ለውጦች ተግብር"},
 			{"BUTTON:ResetParameters",                                    "ዳግም አስጀምር መለኪያዎች"},
@@ -379,6 +380,7 @@ namespace II.Localization {
 			{"PE:MenuMirrorBroadcast",                                    "ውሂብ ያሰራጩ"},
 			{"PE:MenuMirrorReceive",                                      "ውሂብ ይቀበሉ"},
 			{"PE:MenuSettings",                                           "ቅንብሮች"},
+			{"PE:MenuToggleAudio",                                        "ድምፅ"},
 			{"PE:MenuSetLanguage",                                        "አዘጋጅ ቋንቋ"},
 			{"PE:MenuHelp",                                               "እርዳታ"},
 			{"PE:MenuCheckUpdates",                                       "ዝማኔዎችን ይመልከቱ"},
@@ -607,7 +609,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "ማውረዱ በሂደት ላይ ነው። ጫኝው መጫኑን ሲያጠናቅቅ ይሠራል።"},
 		};
 
-		static Dictionary<string, string> ARA = new() {
+		static Dictionary<string, string> ARA = new Dictionary<string, string> () {
 			{"BUTTON:Continue",                                           "استمر"},
 			{"BUTTON:ApplyChanges",                                       "تطبيق التغييرات"},
 			{"BUTTON:ResetParameters",                                    "معلمات إعادة تعيين"},
@@ -679,6 +681,7 @@ namespace II.Localization {
 			{"PE:MenuMirrorBroadcast",                                    "توزيع البيانات"},
 			{"PE:MenuMirrorReceive",                                      "استقبال البيانات"},
 			{"PE:MenuSettings",                                           "الإعدادات"},
+			{"PE:MenuToggleAudio",                                        "صوتي"},
 			{"PE:MenuSetLanguage",                                        "لغة مجموعة"},
 			{"PE:MenuHelp",                                               "مساعدة"},
 			{"PE:MenuCheckUpdates",                                       "تحقق من وجود تحديثات"},
@@ -907,7 +910,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "التنزيل قيد التنفيذ. سيتم تشغيل المثبت عند الانتهاء من التنزيل."},
 		};
 
-		static Dictionary<string, string> DEU = new() {
+		static Dictionary<string, string> DEU = new Dictionary<string, string> () {
 			{"BUTTON:Continue",                                           "Fortsetzen"},
 			{"BUTTON:ApplyChanges",                                       "Änderungen übernehmen"},
 			{"BUTTON:ResetParameters",                                    "Parameter zurücksetzen"},
@@ -979,6 +982,7 @@ namespace II.Localization {
 			{"PE:MenuMirrorBroadcast",                                    "Broadcast-Simulation"},
 			{"PE:MenuMirrorReceive",                                      "Simulation empfangen"},
 			{"PE:MenuSettings",                                           "die Einstellungen"},
+			{"PE:MenuToggleAudio",                                        "Klang"},
 			{"PE:MenuSetLanguage",                                        "Sprache wählen"},
 			{"PE:MenuHelp",                                               "Hilfe"},
 			{"PE:MenuCheckUpdates",                                       "Auf Updates prüfen"},
@@ -1207,7 +1211,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "Der herunterladen wird ausgeführt. Das Installationsprogramm wird ausgeführt, wenn der herunterladen abgeschlossen ist."},
 		};
 
-		static Dictionary<string, string> FAS = new() {
+		static Dictionary<string, string> FAS = new Dictionary<string, string> () {
 			{"BUTTON:Continue",                                           "ادامه هید"},
 			{"BUTTON:ApplyChanges",                                       "تغغیرات را اعمال کن"},
 			{"BUTTON:ResetParameters",                                    "پارامترهای تنظیم مجدد"},
@@ -1279,6 +1283,7 @@ namespace II.Localization {
 			{"PE:MenuMirrorBroadcast",                                    "توزیع داده ها"},
 			{"PE:MenuMirrorReceive",                                      "دریافت داده ها"},
 			{"PE:MenuSettings",                                           "تنظیمات"},
+			{"PE:MenuToggleAudio",                                        "صدا"},
 			{"PE:MenuSetLanguage",                                        "انتخاب زبان"},
 			{"PE:MenuHelp",                                               "کمک"},
 			{"PE:MenuCheckUpdates",                                       "برای بروزرسانی ها را بررسی کنید"},
@@ -1507,7 +1512,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "بارگیری در حال انجام است. پس از اتمام بارگیری ، نصب خواهد شد."},
 		};
 
-		static Dictionary<string, string> SPA = new() {
+		static Dictionary<string, string> SPA = new Dictionary<string, string> () {
 			{"BUTTON:Continue",                                           "Continuar"},
 			{"BUTTON:ApplyChanges",                                       "Aplicar cambios"},
 			{"BUTTON:ResetParameters",                                    "Restablecer parámetros"},
@@ -1579,6 +1584,7 @@ namespace II.Localization {
 			{"PE:MenuMirrorBroadcast",                                    "Simulación de transmisión"},
 			{"PE:MenuMirrorReceive",                                      "Recibir simulación"},
 			{"PE:MenuSettings",                                           "Configuraciones"},
+			{"PE:MenuToggleAudio",                                        "Sonido"},
 			{"PE:MenuSetLanguage",                                        "Elegir lenguaje"},
 			{"PE:MenuHelp",                                               "Ayuda"},
 			{"PE:MenuCheckUpdates",                                       "Buscar actualizaciones"},
@@ -1807,7 +1813,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "La descarga está en progreso. El instalador se ejecutará una vez que se complete la descarga."},
 		};
 
-		static Dictionary<string, string> FRA = new() {
+		static Dictionary<string, string> FRA = new Dictionary<string, string> () {
 			{"BUTTON:Continue",                                           "Continuer"},
 			{"BUTTON:ApplyChanges",                                       "Appliquer les modifications"},
 			{"BUTTON:ResetParameters",                                    "Réinitialiser les paramètres"},
@@ -1879,6 +1885,7 @@ namespace II.Localization {
 			{"PE:MenuMirrorBroadcast",                                    "Simulation de diffusion"},
 			{"PE:MenuMirrorReceive",                                      "Recevoir la simulation"},
 			{"PE:MenuSettings",                                           "Paramètres"},
+			{"PE:MenuToggleAudio",                                        "L'audio"},
 			{"PE:MenuSetLanguage",                                        "Définir la langue"},
 			{"PE:MenuHelp",                                               "Aidez-moi"},
 			{"PE:MenuCheckUpdates",                                       "Vérifier les mises à jour"},
@@ -2107,7 +2114,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "Le téléchargement est en cours. Le programme d'installation s'exécutera une fois le téléchargement terminé."},
 		};
 
-		static Dictionary<string, string> HEB = new() {
+		static Dictionary<string, string> HEB = new Dictionary<string, string> () {
 			{"BUTTON:Continue",                                           "המשך"},
 			{"BUTTON:ApplyChanges",                                       "החל שינויים"},
 			{"BUTTON:ResetParameters",                                    "פרמטרי איפוס"},
@@ -2179,6 +2186,7 @@ namespace II.Localization {
 			{"PE:MenuMirrorBroadcast",                                    "שידור סימולציה"},
 			{"PE:MenuMirrorReceive",                                      "קבל סימולציה"},
 			{"PE:MenuSettings",                                           "הגדרות"},
+			{"PE:MenuToggleAudio",                                        "שֶׁמַע"},
 			{"PE:MenuSetLanguage",                                        "הגדר שפה"},
 			{"PE:MenuHelp",                                               "עזרה"},
 			{"PE:MenuCheckUpdates",                                       "בדוק עדכונים"},
@@ -2407,7 +2415,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "ההורדה מתבצעת. המתקין יפעל לאחר סיום ההורדה."},
 		};
 
-		static Dictionary<string, string> HIN = new() {
+		static Dictionary<string, string> HIN = new Dictionary<string, string> () {
 			{"BUTTON:Continue",                                           "जारी रहना"},
 			{"BUTTON:ApplyChanges",                                       "परिवर्तन लागू करें"},
 			{"BUTTON:ResetParameters",                                    "रीसेट पैरामीटर"},
@@ -2479,6 +2487,7 @@ namespace II.Localization {
 			{"PE:MenuMirrorBroadcast",                                    "डेटा वितरण"},
 			{"PE:MenuMirrorReceive",                                      "डेटा मिल रहा है"},
 			{"PE:MenuSettings",                                           "सेटिंग्स"},
+			{"PE:MenuToggleAudio",                                        "ध्वनि"},
 			{"PE:MenuSetLanguage",                                        "भाषा सेट करें"},
 			{"PE:MenuHelp",                                               "मदद"},
 			{"PE:MenuCheckUpdates",                                       "अद्यतन के लिए जाँच"},
@@ -2707,7 +2716,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "डाउनलोड प्रगति पर है। डाउनलोड पूरा होने के बाद इंस्टॉलर चलेगा।"},
 		};
 
-		static Dictionary<string, string> ITA = new() {
+		static Dictionary<string, string> ITA = new Dictionary<string, string> () {
 			{"BUTTON:Continue",                                           "Continua"},
 			{"BUTTON:ApplyChanges",                                       "Applica i cambiamenti"},
 			{"BUTTON:ResetParameters",                                    "Ripristina i parametri"},
@@ -2779,6 +2788,7 @@ namespace II.Localization {
 			{"PE:MenuMirrorBroadcast",                                    "Simulazione di trasmissione"},
 			{"PE:MenuMirrorReceive",                                      "Ricevi simulazione"},
 			{"PE:MenuSettings",                                           "Impostazioni"},
+			{"PE:MenuToggleAudio",                                        "Suono"},
 			{"PE:MenuSetLanguage",                                        "Imposta lingua"},
 			{"PE:MenuHelp",                                               "Aiuto"},
 			{"PE:MenuCheckUpdates",                                       "Controlla gli aggiornamenti"},
@@ -3007,7 +3017,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "Il trasferimento è in corso. Il programma di installazione verrà eseguito al termine del trasferimento."},
 		};
 
-		static Dictionary<string, string> KOR = new() {
+		static Dictionary<string, string> KOR = new Dictionary<string, string> () {
 			{"BUTTON:Continue",                                           "잇다"},
 			{"BUTTON:ApplyChanges",                                       "변경 승인"},
 			{"BUTTON:ResetParameters",                                    "매개 변수 재설정"},
@@ -3079,6 +3089,7 @@ namespace II.Localization {
 			{"PE:MenuMirrorBroadcast",                                    "데이터 배포"},
 			{"PE:MenuMirrorReceive",                                      "데이터 수신"},
 			{"PE:MenuSettings",                                           "설정"},
+			{"PE:MenuToggleAudio",                                        "소리"},
 			{"PE:MenuSetLanguage",                                        "언어 설정"},
 			{"PE:MenuHelp",                                               "도움"},
 			{"PE:MenuCheckUpdates",                                       "업데이트 확인"},
@@ -3307,7 +3318,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "다운로드가 진행 중입니다. 다운로드가 완료되면 설치 관리자가 실행됩니다."},
 		};
 
-		static Dictionary<string, string> POR = new() {
+		static Dictionary<string, string> POR = new Dictionary<string, string> () {
 			{"BUTTON:Continue",                                           "Continuar"},
 			{"BUTTON:ApplyChanges",                                       "Aplicar mudanças"},
 			{"BUTTON:ResetParameters",                                    "Parâmetros de redefinição"},
@@ -3379,6 +3390,7 @@ namespace II.Localization {
 			{"PE:MenuMirrorBroadcast",                                    "Simulação de transmissão"},
 			{"PE:MenuMirrorReceive",                                      "Simulação de recebimento"},
 			{"PE:MenuSettings",                                           "Configurações"},
+			{"PE:MenuToggleAudio",                                        "Áudio"},
 			{"PE:MenuSetLanguage",                                        "Definir idioma"},
 			{"PE:MenuHelp",                                               "Socorro"},
 			{"PE:MenuCheckUpdates",                                       "Verifique se há atualizações"},
@@ -3607,7 +3619,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "A transferência está em processo. O instalador será executado quando terminar a transferência."},
 		};
 
-		static Dictionary<string, string> RUS = new() {
+		static Dictionary<string, string> RUS = new Dictionary<string, string> () {
 			{"BUTTON:Continue",                                           "Продолжать"},
 			{"BUTTON:ApplyChanges",                                       "Применить изменения"},
 			{"BUTTON:ResetParameters",                                    "Сбросить параметры"},
@@ -3679,6 +3691,7 @@ namespace II.Localization {
 			{"PE:MenuMirrorBroadcast",                                    "Моделирование трансляции"},
 			{"PE:MenuMirrorReceive",                                      "Получите симуляцию"},
 			{"PE:MenuSettings",                                           "настройки"},
+			{"PE:MenuToggleAudio",                                        "звук"},
 			{"PE:MenuSetLanguage",                                        "Установить язык"},
 			{"PE:MenuHelp",                                               "Помогите"},
 			{"PE:MenuCheckUpdates",                                       "Проверить обновления"},
@@ -3907,7 +3920,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "Загрузка продолжается. Когда загрузка будет завершена, установщик запустится."},
 		};
 
-		static Dictionary<string, string> SWK = new() {
+		static Dictionary<string, string> SWK = new Dictionary<string, string> () {
 			{"BUTTON:Continue",                                           "Endelea"},
 			{"BUTTON:ApplyChanges",                                       "Tumia Mabadiliko"},
 			{"BUTTON:ResetParameters",                                    "Weka upya Vipengele"},
@@ -3979,6 +3992,7 @@ namespace II.Localization {
 			{"PE:MenuMirrorBroadcast",                                    "Usambazaji wa data"},
 			{"PE:MenuMirrorReceive",                                      "Mapokezi ya data"},
 			{"PE:MenuSettings",                                           "Mipangilio"},
+			{"PE:MenuToggleAudio",                                        "Sauti"},
 			{"PE:MenuSetLanguage",                                        "Weka Lugha"},
 			{"PE:MenuHelp",                                               "Msaada"},
 			{"PE:MenuCheckUpdates",                                       "Angalia vilivyojiri vipya"},
@@ -4207,7 +4221,7 @@ namespace II.Localization {
 			{"UPGRADE:Downloading",                                       "Upakuaji unaendelea. Kisakinishi kitaendesha wakati imekamilika kupakua."},
 		};
 
-		static Dictionary<string, string> ZHO = new() {
+		static Dictionary<string, string> ZHO = new Dictionary<string, string> () {
 			{"BUTTON:Continue",                                           "继续"},
 			{"BUTTON:ApplyChanges",                                       "应用更改"},
 			{"BUTTON:ResetParameters",                                    "重新设置参数"},
@@ -4279,6 +4293,7 @@ namespace II.Localization {
 			{"PE:MenuMirrorBroadcast",                                    "广播模拟"},
 			{"PE:MenuMirrorReceive",                                      "接收模拟"},
 			{"PE:MenuSettings",                                           "设置"},
+			{"PE:MenuToggleAudio",                                        "声音"},
 			{"PE:MenuSetLanguage",                                        "设置语言"},
 			{"PE:MenuHelp",                                               "救命"},
 			{"PE:MenuCheckUpdates",                                       "检查更新"},

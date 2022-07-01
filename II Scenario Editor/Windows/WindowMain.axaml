@@ -53,12 +53,12 @@
     </TabItem>
 
     <TabItem Header="Physiologic Parameters">
-      <iiw:PanelPatientParameters x:Name="panelPatientParameters" />
+      <iiw:PanelParameters x:Name="panelParameters" />
     </TabItem>
 
     <TabItem Header="Patient Chart"
              IsVisible="False">
-      <iiw:PanelPatientChart x:Name="panelPatientChart" />
+      <iiw:PanelChart x:Name="panelChart" />
     </TabItem>
   </TabControl>
 </Window>

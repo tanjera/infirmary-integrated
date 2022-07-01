@@ -25,12 +25,12 @@ using IISE.Controls;
 
 namespace IISE.Windows {
 
-    public partial class PanelPatientChart : UserControl {
+    public partial class PanelChart : UserControl {
         /* Pointer to main data structure for the scenario, patient, devices, etc. */
         private Scenario Scenario;
         private WindowMain IMain;
 
-        public PanelPatientChart () {
+        public PanelChart () {
             InitializeComponent ();
         }
 

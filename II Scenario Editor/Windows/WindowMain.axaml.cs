@@ -35,8 +35,8 @@ namespace IISE {
         private TabControl ITabControl;
         private PanelSimulation IPanelSimulation;
         private PanelStepEditor IPanelStepEditor;
-        private PanelPatientParameters IPanelPatientParameters;
-        private PanelPatientChart IPanelPatientChart;
+        private PanelParameters IPanelParameters;
+        private PanelChart IPanelChart;
 
         /* Data structures for use */
         private string? SaveFilePath;
@@ -49,13 +49,13 @@ namespace IISE {
             ITabControl = this.FindControl<TabControl> ("tabControl");
             IPanelSimulation = this.FindControl<PanelSimulation> ("panelSimulation");
             IPanelStepEditor = this.FindControl<PanelStepEditor> ("panelStepEditor");
-            IPanelPatientParameters = this.FindControl<PanelPatientParameters> ("panelPatientParameters");
-            IPanelPatientChart = this.FindControl<PanelPatientChart> ("panelPatientChart");
+            IPanelParameters = this.FindControl<PanelParameters> ("panelParameters");
+            IPanelChart = this.FindControl<PanelChart> ("panelChart");
 
             _ = IPanelSimulation.InitReferences (this);
             _ = IPanelStepEditor.InitReferences (this);
-            _ = IPanelPatientParameters.InitReferences (this);
-            _ = IPanelPatientChart.InitReferences (this);
+            _ = IPanelParameters.InitReferences (this);
+            _ = IPanelChart.InitReferences (this);
 
             _ = InitScenario ();
             _ = InitHotkeys ();
@@ -125,13 +125,13 @@ namespace IISE {
 
             await IPanelSimulation.SetScenario (Scenario);
             await IPanelStepEditor.SetScenario (Scenario);
-            await IPanelPatientParameters.SetPatient (null);
+            await IPanelParameters.SetStep (null);
 
             ITabControl.SelectedIndex = 0;
         }
 
-        public async Task SetPatient (Patient? patient)
-            => await IPanelPatientParameters.SetPatient (patient);
+        public async Task SetStep (Scenario.Step? step)
+            => await IPanelParameters.SetStep (step);
 
         private async Task NewScenario () {
             if (await PromptUnsavedWork () == false)

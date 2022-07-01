@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
@@ -47,8 +49,6 @@ namespace IISIM {
             App.Language = new Language (App.Settings.Language);    // Load localization dictionary based on settings
         }
 
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-
         public override async void OnFrameworkInitializationCompleted () {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
                 Window_Splash = new ();
@@ -70,12 +70,13 @@ namespace IISIM {
                 Window_Splash.Close ();
 
                 Start_Args = desktop.Args;
+
+                if (OperatingSystem.IsMacOS ())
+                    _ = MacOSRegisterLaunchServices ();
             }
 
             base.OnFrameworkInitializationCompleted ();
         }
-
-#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
         public static void Exit () {
             Window_Splash?.Close ();
@@ -87,6 +88,30 @@ namespace IISIM {
             Device_EFM?.Close ();
 
             Window_Main?.Close ();
+        }
+
+        public static Task MacOSRegisterLaunchServices () {
+            /* Mac OS X Launch Services is a registration service that links the .app's Info.plist w/ file types.
+             * By registering with Launch Services, the OS should recognize the file extension (.ii) in the Info.plist
+             * and attempt to recognize the files as being associated with this app.
+             */
+
+            try {   // This function is a "fire and forget"- hopefully it works, possibly it won't; either way, it won't hang.
+                string execAssembly = Assembly.GetExecutingAssembly ().Location;
+                string execApp = execAssembly.Substring (0, execAssembly.IndexOf ("Infirmary Integrated.app") + "Infirmary Integrated.app".Length);
+                Process proc = new Process ();
+                proc.StartInfo.FileName = "/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister";
+                proc.StartInfo.Arguments = $"-R -f {execApp}";
+                proc.StartInfo.UseShellExecute = false;
+                proc.Start ();
+                proc.WaitForExit ();
+
+                Console.WriteLine ($"Registered {execApp} with Mac OS X Launch Services");
+
+                return Task.CompletedTask;
+            } catch {
+                return Task.CompletedTask;
+            }
         }
     }
 }

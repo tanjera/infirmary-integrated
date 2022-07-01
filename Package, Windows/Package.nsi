@@ -47,7 +47,7 @@ Section "" ;No components page, name is not important
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Infirmary Integrated" \
                  "QuietUninstallString" "$\"$INSTDIR\uninstall.exe$\" /S"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Infirmary Integrated" \
-                 "DisplayIcon" "$\"$INSTDIR\${NAME_SIMULATOR}\Icon_II.ico$\""                 
+                 "DisplayIcon" "$\"$INSTDIR\${NAME_SIMULATOR}\Icon_II.ico$\""
              
   ; Create application shortcut (first in installation dir to have the correct "start in" target)  
   CreateShortCut "$INSTDIR\${NAME_SIMULATOR}.lnk" "$INSTDIR\${NAME_SIMULATOR}\${NAME_SIMULATOR}.exe"
@@ -63,12 +63,21 @@ Section "" ;No components page, name is not important
   ; Register file association
   ${registerExtension} "$INSTDIR\${NAME_SIMULATOR}\${NAME_SIMULATOR}.exe" ".ii" "Infirmary Integrated Scenario"
 
+  ; Register icon for .ii files
+  WriteRegStr HKCR ".ii" "" "iiFile"
+  WriteRegStr HKCR "iiFile\DefaultIcon\" "" "$\"$INSTDIR\${NAME_SIMULATOR}\Icon_II.ico$\""
+
 SectionEnd
 
 ;--------------------------------
 
 Section "Uninstall"
+  ${unregisterExtension} ".ii" "Infirmary Integrated Scenario"
+  
   RMDir /r $INSTDIR
   RMDir /r "$SMPROGRAMS\${Name}"
+  
   DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Infirmary Integrated"
+  DeleteRegKey HKCR ".ii"
+  DeleteRegKey HKCR "iiFile"
 SectionEnd

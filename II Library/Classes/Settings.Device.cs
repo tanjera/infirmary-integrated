@@ -17,7 +17,7 @@ namespace II.Settings {
     public class Device {
         private Devices DeviceType;
 
-        public Alarms? Alarms;
+        public List<Alarm> Alarms;
         public bool IsEnabled { get; set; }
 
         public enum Devices {
@@ -31,8 +31,7 @@ namespace II.Settings {
             DeviceType = d;
 
             if (DeviceType == Devices.Monitor) {
-                Alarms = new ();
-                _ = Alarms.Import (Alarms.DefaultListing_Adult);
+                Alarms = new (Alarm.DefaultListing_Adult);
             }
         }
 
@@ -51,8 +50,7 @@ namespace II.Settings {
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Alarms")
                             pbuffer.AppendLine (pline);
 
-                        Alarms = new ();
-                        await Alarms.Load (pbuffer.ToString ());
+                        await LoadAlarms (pbuffer.ToString ());
                     } else if (line.Contains (":")) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
@@ -79,11 +77,43 @@ namespace II.Settings {
             /* Save() the Alarms */
             if (Alarms is not null) {
                 sw.AppendLine ($"{dent}> Begin: Alarms");
-                sw.Append (await Alarms.Save (indent + 1));
+                sw.Append (await SaveAlarms (indent + 1));
                 sw.AppendLine ($"{dent}> End: Alarms");
             }
 
             return sw.ToString ();
+        }
+
+        public async Task LoadAlarms (string inc) {
+            using StringReader sRead = new (inc);
+            string? line;
+
+            Alarms = new ();
+
+            try {
+                while (!String.IsNullOrEmpty (line = await sRead.ReadLineAsync ())) {
+                    Alarm? alarm = new ();
+                    await alarm.Load (line);
+                    if (alarm.Parameter is not null)
+                        Alarms.Add (alarm);
+                }
+            } catch {
+                /* If the load fails... just bail on the actual value parsing and continue the load process */
+            }
+
+            sRead.Close ();
+        }
+
+        public async Task<string> SaveAlarms (int indent = 1) {
+            StringBuilder sb = new ();
+            string? line;
+
+            foreach (Alarm l in Alarms) {
+                if (l is not null && l.IsSet && !String.IsNullOrEmpty (line = await l.Save (indent)))
+                    sb.AppendLine (line);
+            }
+
+            return sb.ToString ();
         }
     }
 }

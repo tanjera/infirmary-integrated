@@ -182,6 +182,8 @@
         </MenuItem>
 
         <MenuItem Name="menuSettings">
+          <MenuItem Name="menuToggleAudio" Click="MenuToggleAudio_Click" />
+          <Separator />
           <MenuItem Name="menuSetLanguage" Click="MenuSetLanguage_Click" />
         </MenuItem>
 

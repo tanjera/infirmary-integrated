@@ -74,7 +74,7 @@ namespace IISE.Windows {
             // Reset buffer parameters
             ISelectedStep = null;
             IsSelectedStepEnd = false;
-            await IMain.SetPatient (null);
+            await IMain.SetStep (null);
 
             PointerPosition = null;
 
@@ -128,6 +128,9 @@ namespace IISE.Windows {
                         ISelectedStep.Step.DefaultProgression = ISelectedStep.Step.Progressions.Find (p => p.UUID == e.Value);
                         break;
                 }
+
+                // Propogate changes to the Step to other panels as needed
+                _ = IMain.SetStep (ISelectedStep.Step);
             }
         }
 
@@ -138,6 +141,9 @@ namespace IISE.Windows {
                     case PropertyString.Keys.StepName: ISelectedStep.Name = e.Value ?? ""; break;
                     case PropertyString.Keys.StepDescription: ISelectedStep.Description = e.Value ?? ""; break;
                 }
+
+                // Propogate changes to the Step to other panels as needed
+                _ = IMain.SetStep (ISelectedStep.Step);
             }
         }
 
@@ -446,7 +452,7 @@ namespace IISE.Windows {
         private async Task SelectIStep (ItemStep item, Avalonia.Input.Pointer? capture = null) {
             ISelectedStep = item;
             IsSelectedStepEnd = false;
-            await IMain.SetPatient (ISelectedStep.Patient);
+            await IMain.SetStep (ISelectedStep.Step);
 
             if (capture != null) {
                 PointerCaptured = capture;
@@ -459,7 +465,7 @@ namespace IISE.Windows {
         private async Task SelectEndStep (ItemStepEnd end, Avalonia.Input.Pointer? capture = null) {
             ISelectedStep = end.Step;
             IsSelectedStepEnd = true;
-            await IMain.SetPatient (ISelectedStep.Patient);
+            await IMain.SetStep (ISelectedStep.Step);
 
             if (capture != null) {
                 PointerCaptured = capture;
@@ -472,7 +478,7 @@ namespace IISE.Windows {
         private async Task DeselectAll () {
             ISelectedStep = null;
             IsSelectedStepEnd = false;
-            await IMain.SetPatient (null);
+            await IMain.SetStep (null);
 
             PointerPosition = null;
 

@@ -98,6 +98,9 @@ namespace IISIM {
             this.FindControl<MenuItem> ("menuMirrorBroadcast").Header = App.Language.Localize ("PE:MenuMirrorBroadcast");
 
             this.FindControl<MenuItem> ("menuSettings").Header = App.Language.Localize ("PE:MenuSettings");
+            this.FindControl<MenuItem> ("menuToggleAudio").Header = String.Format ("{0}: {1}",
+                App.Language.Localize ("PE:MenuToggleAudio"),
+                App.Settings.AudioEnabled ? App.Language.Localize ("BOOLEAN:On") : App.Language.Localize ("BOOLEAN:Off"));
             this.FindControl<MenuItem> ("menuSetLanguage").Header = App.Language.Localize ("PE:MenuSetLanguage");
 
             this.FindControl<MenuItem> ("menuHelp").Header = App.Language.Localize ("PE:MenuHelp");
@@ -479,6 +482,18 @@ namespace IISIM {
             }
         }
 
+        private Task ToggleAudio () {
+            App.Settings.AudioEnabled = !App.Settings.AudioEnabled;
+
+            Dispatcher.UIThread.InvokeAsync (() => {
+                this.FindControl<MenuItem> ("menuToggleAudio").Header = String.Format ("{0}: {1}",
+                    App.Language.Localize ("PE:MenuToggleAudio"),
+                    App.Settings.AudioEnabled ? App.Language.Localize ("BOOLEAN:On") : App.Language.Localize ("BOOLEAN:Off"));
+            });
+
+            return Task.CompletedTask;
+        }
+
         private async Task CheckUpgrade () {
             // Check with server for updated version of Infirmary Integrated- notify user either way
 
@@ -523,22 +538,24 @@ namespace IISIM {
         }
 
         private Task UpdateMirrorStatus () {
-            MenuItem miStatus = this.FindControl<MenuItem> ("menuMirrorStatus");
+            Dispatcher.UIThread.InvokeAsync (() => {
+                MenuItem miStatus = this.FindControl<MenuItem> ("menuMirrorStatus");
 
-            switch (App.Mirror.Status) {
-                default:
-                case Mirror.Statuses.INACTIVE:
-                    miStatus.Header = $"{App.Language.Localize ("MIRROR:Status")}: {App.Language.Localize ("MIRROR:Inactive")}";
-                    break;
+                switch (App.Mirror.Status) {
+                    default:
+                    case Mirror.Statuses.INACTIVE:
+                        miStatus.Header = $"{App.Language.Localize ("MIRROR:Status")}: {App.Language.Localize ("MIRROR:Inactive")}";
+                        break;
 
-                case Mirror.Statuses.HOST:
-                    miStatus.Header = $"{App.Language.Localize ("MIRROR:Status")}: {App.Language.Localize ("MIRROR:Server")}";
-                    break;
+                    case Mirror.Statuses.HOST:
+                        miStatus.Header = $"{App.Language.Localize ("MIRROR:Status")}: {App.Language.Localize ("MIRROR:Server")}";
+                        break;
 
-                case Mirror.Statuses.CLIENT:
-                    miStatus.Header = $"{App.Language.Localize ("MIRROR:Status")}: {App.Language.Localize ("MIRROR:Client")}";
-                    break;
-            }
+                    case Mirror.Statuses.CLIENT:
+                        miStatus.Header = $"{App.Language.Localize ("MIRROR:Status")}: {App.Language.Localize ("MIRROR:Client")}";
+                        break;
+                }
+            });
 
             return Task.CompletedTask;
         }
@@ -547,14 +564,16 @@ namespace IISIM {
             => await UpdateExpanders (App.Scenario?.IsLoaded ?? false);
 
         private Task UpdateExpanders (bool isScene) {
-            this.FindControl<Border> ("brdScenarioPlayer").IsVisible = isScene;
-            this.FindControl<Expander> ("expScenarioPlayer").IsEnabled = isScene;
-            this.FindControl<Expander> ("expScenarioPlayer").IsExpanded = isScene;
-            this.FindControl<Expander> ("expVitalSigns").IsExpanded = !isScene;
-            this.FindControl<Expander> ("expHemodynamics").IsExpanded = !isScene;
-            this.FindControl<Expander> ("expRespiratoryProfile").IsExpanded = !isScene;
-            this.FindControl<Expander> ("expCardiacProfile").IsExpanded = !isScene;
-            this.FindControl<Expander> ("expObstetricProfile").IsExpanded = !isScene;
+            Dispatcher.UIThread.InvokeAsync (() => {
+                this.FindControl<Border> ("brdScenarioPlayer").IsVisible = isScene;
+                this.FindControl<Expander> ("expScenarioPlayer").IsEnabled = isScene;
+                this.FindControl<Expander> ("expScenarioPlayer").IsExpanded = isScene;
+                this.FindControl<Expander> ("expVitalSigns").IsExpanded = !isScene;
+                this.FindControl<Expander> ("expHemodynamics").IsExpanded = !isScene;
+                this.FindControl<Expander> ("expRespiratoryProfile").IsExpanded = !isScene;
+                this.FindControl<Expander> ("expCardiacProfile").IsExpanded = !isScene;
+                this.FindControl<Expander> ("expObstetricProfile").IsExpanded = !isScene;
+            });
 
             return Task.CompletedTask;
         }
@@ -579,14 +598,16 @@ namespace IISIM {
         }
 
         private Task UpdateParameterIndicators () {
-            Border brdPendingChangesIndicator = this.FindControl<Border> ("brdPendingChangesIndicator");
+            Dispatcher.UIThread.InvokeAsync (() => {
+                Border brdPendingChangesIndicator = this.FindControl<Border> ("brdPendingChangesIndicator");
 
-            brdPendingChangesIndicator.BorderBrush = ParameterStatus switch {
-                ParameterStatuses.ChangesPending => Brushes.Red,
-                ParameterStatuses.ChangesApplied => Brushes.Green,
-                ParameterStatuses.AutoApply => Brushes.Orange,
-                _ => Brushes.Transparent,
-            };
+                brdPendingChangesIndicator.BorderBrush = ParameterStatus switch {
+                    ParameterStatuses.ChangesPending => Brushes.Red,
+                    ParameterStatuses.ChangesApplied => Brushes.Green,
+                    ParameterStatuses.AutoApply => Brushes.Orange,
+                    _ => Brushes.Transparent,
+                };
+            });
             return Task.CompletedTask;
         }
 
@@ -1156,6 +1177,9 @@ namespace IISIM {
 
         private void MenuExit_Click (object s, RoutedEventArgs e)
             => _ = Exit ();
+
+        private void MenuToggleAudio_Click (object s, RoutedEventArgs e)
+            => _ = ToggleAudio ();
 
         private void MenuSetLanguage_Click (object s, RoutedEventArgs e)
             => _ = DialogLanguage (true);

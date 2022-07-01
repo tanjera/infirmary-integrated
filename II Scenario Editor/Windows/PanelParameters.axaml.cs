@@ -25,12 +25,13 @@ using IISE.Controls;
 
 namespace IISE.Windows {
 
-    public partial class PanelPatientParameters : UserControl {
+    public partial class PanelParameters : UserControl {
         /* Pointer to main data structure for the scenario, patient, devices, etc. */
+        public Scenario.Step? Step;
         public Patient? Patient;
         private WindowMain IMain;
 
-        public PanelPatientParameters () {
+        public PanelParameters () {
             InitializeComponent ();
 
             DataContext = this;
@@ -48,8 +49,9 @@ namespace IISE.Windows {
             return Task.CompletedTask;
         }
 
-        public async Task SetPatient (Patient? patient) {
-            Patient = patient;
+        public async Task SetStep (Scenario.Step? step) {
+            Step = step;
+            Patient = Step?.Patient;
 
             await UpdateViewModel ();
         }
@@ -323,6 +325,8 @@ namespace IISE.Windows {
         }
 
         private async Task UpdateViewModel () {
+            Label lblActiveStep = this.FindControl<Label> ("lblActiveStep");
+
             CheckBox chkClampVitals = this.FindControl<CheckBox> ("chkClampVitals");
 
             PropertyBP pbpNBP = this.FindControl<PropertyBP> ("pbpNBP");
@@ -354,6 +358,8 @@ namespace IISE.Windows {
             PropertyInt pintICP = this.FindControl<PropertyInt> ("pintICP");
             PropertyInt pintIAP = this.FindControl<PropertyInt> ("pintIAP");
             PropertyInt pintPacemakerThreshold = this.FindControl<PropertyInt> ("pintPacemakerThreshold");
+
+            lblActiveStep.Content = String.Format ("Editing Step: {0}", Step is null ? "N/A" : Step.Name);
 
             // Enable/Disable controls based on if Patient is null!
             chkClampVitals.IsEnabled = (Patient != null);

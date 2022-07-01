@@ -5,3 +5,4 @@ Exec=/usr/bin/infirmary-integrated
 Icon=infirmary-integrated
 Type=Application
 Categories=Education;Science;
+MimeType=application/infirmary-integrated

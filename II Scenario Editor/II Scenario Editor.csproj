@@ -7,7 +7,7 @@
     <TrimMode>copyused</TrimMode>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <AssemblyName>Infirmary Integrated Scenario Editor</AssemblyName>
-    <Version>0.9.3</Version>
+    <Version>0.9.4</Version>
     <Company>Infirmary Integrated</Company>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageProjectUrl>https://www.infirmary-integrated.com/</PackageProjectUrl>
@@ -121,11 +121,11 @@
     <Compile Update="Windows\DialogAbout.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Windows\PanelPatientChart.axaml.cs">
-      <DependentUpon>PanelPatientChart.axaml</DependentUpon>
+    <Compile Update="Windows\PanelChart.axaml.cs">
+      <DependentUpon>PanelChart.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Windows\PanelPatientParameters.axaml.cs">
-      <DependentUpon>PanelPatientParameters.axaml</DependentUpon>
+    <Compile Update="Windows\PanelParameters.axaml.cs">
+      <DependentUpon>PanelParameters.axaml</DependentUpon>
     </Compile>
     <Compile Update="Windows\PanelSimulation.axaml.cs">
       <DependentUpon>PanelSimulation.axaml</DependentUpon>

@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		         xmlns:iic="clr-namespace:IISE.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="IISE.Windows.PanelPatientParameters">
+             x:Class="IISE.Windows.PanelParameters">
 
   <UserControl.Styles>
     <Style Selector="Menu">
@@ -70,6 +70,16 @@
             Background="White">
 
       <StackPanel Background="White" Orientation="Vertical">
+
+        <!-- Information Pane -->
+
+        <StackPanel HorizontalAlignment="Stretch"
+                    Background="#f2f2f2">
+          <Label Name="lblActiveStep"
+                 Content="Editing Step: "
+                 FontSize="18"
+                 Margin="15 10" />
+        </StackPanel>
 
         <!-- Basic Vital Signs -->
 

@@ -63,8 +63,8 @@
 
     <StackPanel Grid.Column="4"
                 Orientation="Horizontal">
-      <Label Content="Severity:" />
-      <ComboBox Name="cmbSeverity" />
+      <Label Content="Priority:" />
+      <ComboBox Name="cmbPriority" />
     </StackPanel>
   </Grid>
 </UserControl>

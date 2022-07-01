@@ -15,9 +15,13 @@ using System.Threading.Tasks;
 namespace II.Settings {
     public class Simulator {
         public string Language;
+
+        public bool AudioEnabled;
         public bool AutoApplyChanges;
+
         public Point WindowSize;
         public Point WindowPosition;
+
         public bool MuteUpgrade;
         public DateTime MuteUpgradeDate;
 
@@ -51,6 +55,11 @@ namespace II.Settings {
                         default: break;
 
                         case "Language": Language = pValue; break;
+
+                        case "AudioEnabled":
+                            if (bool.TryParse (pValue, out parseBool))
+                                AudioEnabled = parseBool;
+                            break;
 
                         case "AutoApplyChanges":
                             if (bool.TryParse (pValue, out parseBool))
@@ -87,8 +96,8 @@ namespace II.Settings {
 
         public void Save () {
             StreamWriter sw = new (File.GetConfigPath (), false);
-
             sw.WriteLine ($"Language:{Language}");
+            sw.WriteLine ($"AudioEnabled:{AudioEnabled}");
             sw.WriteLine ($"AutoApplyChanges:{AutoApplyChanges}");
             sw.WriteLine ($"WindowSizeX:{WindowSize.X}");
             sw.WriteLine ($"WindowSizeY:{WindowSize.Y}");

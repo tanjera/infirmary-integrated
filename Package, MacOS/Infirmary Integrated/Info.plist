@@ -22,5 +22,23 @@
     <string>APPL</string>    
     <key>NSHighResolutionCapable</key>
     <true/>
+    <key>UTExportedTypeDeclarations </key>
+    <array>
+        <dict>
+            <key>UTTypeIdentifier</key>
+            <string>com.infirmary-integrated.ii</string>
+            <key>UTTypeTagSpecification</key>
+            <dict>
+                <key>public.filename-extension</key>
+                <array>
+                    <string>ii</string>
+                </array>
+            </dict>
+            <key>UTTypeDescription</key>
+            <string>Infirmary Integrated Simulation</string>
+            <key>UTTypeIconFile</key>
+            <string>Icon_II.icns</string>
+        </dict>
+    </array>
 </dict>
 </plist>

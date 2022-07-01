@@ -89,7 +89,7 @@ namespace IISE.Windows {
 
             // Populate PropertyAlarms into StackPanel and initiate
             listMonitorAlarms = new ();
-            foreach (Alarms.Alarm.Parameters param in Enum.GetValues (typeof (Alarms.Alarm.Parameters))) {
+            foreach (Alarm.Parameters param in Enum.GetValues (typeof (Alarm.Parameters))) {
                 PropertyAlarm pa = new ();
                 await pa.Init (PropertyAlarm.Devices.Monitor, param);
 
@@ -116,8 +116,16 @@ namespace IISE.Windows {
         }
 
         private void UpdateScenario (object? sender, PropertyAlarm.PropertyAlarmEventArgs e) {
-            if (sender is PropertyAlarm && listMonitorAlarms.Contains (sender))
-                _ = Scenario.DeviceMonitor.Alarms?.Set (e.Key, e.Value);
+            if (sender is PropertyAlarm) {
+                switch (e.Device) {
+                    default: break;
+                    case PropertyAlarm.Devices.Monitor:
+                        Alarm? alarm;
+                        if ((alarm = Scenario.DeviceMonitor.Alarms.Find (a => a.Parameter == e.Key)) is not null)
+                            alarm.Set (e.Key, e.Value?.Enabled, e.Value?.High, e.Value?.Low, e.Value?.Priority);
+                        break;
+                }
+            }
         }
 
         private void UpdateScenario (object? sender, PropertyCheck.PropertyCheckEventArgs e) {
@@ -152,7 +160,9 @@ namespace IISE.Windows {
             await vpstrScenarioDescription.Set (Scenario.Description ?? "");
 
             foreach (PropertyAlarm pa in listMonitorAlarms) {
-                await pa.Set (await Scenario.DeviceMonitor.Alarms?.Get (pa.Key));
+                Alarm? alarm;
+                if ((alarm = Scenario.DeviceMonitor.Alarms?.Find (a => a.Parameter == pa.Key)) is not null)
+                    await pa.Set (alarm);
             }
         }
 
