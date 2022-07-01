@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
+    <mime-type type="application/infirmary-integrated">
+    <comment>Infirmary Integrated Simulation</comment>
+    <glob pattern="*.ii"/>
+    </mime-type>
+</mime-info>

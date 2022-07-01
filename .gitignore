@@ -34,6 +34,7 @@ bld/
 
 # DON'T ignore Linux packaging binary files e.g. bin scripts
 !/Package, Linux/deb-fs/usr/bin
+!/Package, Linux/deb-fs/usr/share/mime/packages
 
 # VS Code build and debug files
 .vscode/*
