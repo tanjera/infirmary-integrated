@@ -32,7 +32,7 @@
 
   <Grid>
     <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="*" />
+      <ColumnDefinition />
       <ColumnDefinition />
       <ColumnDefinition />
       <ColumnDefinition />
@@ -51,14 +51,14 @@
 
     <StackPanel Grid.Column="2"
                 Orientation="Horizontal">
-      <Label Content="High:" />
-      <NumericUpDown Name="numHigh" />
+      <Label Content="Low:" />
+      <NumericUpDown Name="numLow" />
     </StackPanel>
 
     <StackPanel Grid.Column="3"
                 Orientation="Horizontal">
-      <Label Content="Low:" />
-      <NumericUpDown Name="numLow" />
+      <Label Content="High:" />
+      <NumericUpDown Name="numHigh" />
     </StackPanel>
 
     <StackPanel Grid.Column="4"

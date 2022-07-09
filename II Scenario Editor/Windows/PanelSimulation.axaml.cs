@@ -122,7 +122,7 @@ namespace IISE.Windows {
                     case PropertyAlarm.Devices.Monitor:
                         Alarm? alarm;
                         if ((alarm = Scenario.DeviceMonitor.Alarms.Find (a => a.Parameter == e.Key)) is not null)
-                            alarm.Set (e.Key, e.Value?.Enabled, e.Value?.High, e.Value?.Low, e.Value?.Priority);
+                            alarm.Set (e.Key, e.Value?.Enabled, e.Value?.Low, e.Value?.High, e.Value?.Priority);
                         break;
                 }
             }

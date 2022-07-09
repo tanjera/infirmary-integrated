@@ -660,8 +660,11 @@ namespace IISE.Windows {
                 double left = ISelectedStep.Bounds.Left + deltaPosition.X;
                 double top = ISelectedStep.Bounds.Top + deltaPosition.Y;
 
-                Canvas.SetLeft (ISelectedStep, left);
-                Canvas.SetTop (ISelectedStep, top);
+                if (left > 0 && (left < ICanvas.Bounds.Width - ISelectedStep.Bounds.Width))
+                    Canvas.SetLeft (ISelectedStep, left);
+
+                if (top > 0 && (top < ICanvas.Bounds.Height - ISelectedStep.Bounds.Height))
+                    Canvas.SetTop (ISelectedStep, top);
 
                 /* Set Step's metadata for saving/loading positioning data */
                 ISelectedStep.Step.IISEPositionX = (int)ISelectedStep.Bounds.Left;

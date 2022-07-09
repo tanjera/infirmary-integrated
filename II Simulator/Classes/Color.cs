@@ -88,6 +88,10 @@ namespace IISIM {
             return Lead [lead.GetHashCode ()] [scheme.GetHashCode ()];
         }
 
+        public static IBrush GetAlarm (Leads lead, Schemes scheme) {
+            return Lead [lead.GetHashCode ()] [scheme.GetHashCode ()].Equals (Brushes.Red) ? Brushes.Yellow : Brushes.Red;
+        }
+
         public static Leads SwitchLead (II.Lead.Values lead) => lead switch {
             II.Lead.Values.ECG_I => Leads.ECG,
             II.Lead.Values.ECG_II => Leads.ECG,

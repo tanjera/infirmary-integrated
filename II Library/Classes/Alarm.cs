@@ -81,19 +81,19 @@ namespace II {
             Enabled = false;
         }
 
-        public Alarm (Alarm.Parameters? param, bool? enabled, int? high, int? low, Priorities? priority) {
+        public Alarm (Alarm.Parameters? param, bool? enabled, int? low, int? high, Priorities? priority) {
             Parameter = param;
             Enabled = enabled ?? false;
-            High = high ?? 0;
             Low = low ?? 0;
+            High = high ?? 0;
             Priority = priority ?? Priorities.Low;
         }
 
-        public Task Set (Alarm.Parameters? param, bool? enabled, int? high, int? low, Priorities? priority) {
+        public Task Set (Alarm.Parameters? param, bool? enabled, int? low, int? high, Priorities? priority) {
             Parameter = param;
             Enabled = enabled ?? false;
-            High = high ?? 0;
             Low = low ?? 0;
+            High = high ?? 0;
             Priority = priority ?? Priorities.Low;
 
             return Task.CompletedTask;
@@ -106,8 +106,8 @@ namespace II {
                 if (parts.Length == 5) {
                     Parameter = String.IsNullOrEmpty (parts [0]) ? null : (Alarm.Parameters)Enum.Parse (typeof (Alarm.Parameters), parts [0]);
                     Enabled = String.IsNullOrEmpty (parts [1]) ? false : bool.Parse (parts [1]);
-                    High = String.IsNullOrEmpty (parts [2]) ? 0 : int.Parse (parts [2]);
                     Low = String.IsNullOrEmpty (parts [3]) ? 0 : int.Parse (parts [3]);
+                    High = String.IsNullOrEmpty (parts [2]) ? 0 : int.Parse (parts [2]);
                     Priority = String.IsNullOrEmpty (parts [4]) ? Priorities.Low : (Priorities)Enum.Parse (typeof (Priorities), parts [4]);
                 }
             } catch {
@@ -119,7 +119,7 @@ namespace II {
 
         public Task<string> Save (int indent = 1) {
             string dent = Utility.Indent (indent);
-            return Task.FromResult (String.Format ("{0} {1} {2} {3} {4} {5}", dent, Parameter.ToString (), Enabled, High, Low, Priority.ToString ()));
+            return Task.FromResult (String.Format ("{0} {1} {2} {3} {4} {5}", dent, Parameter.ToString (), Enabled, Low, High, Priority.ToString ()));
         }
     }
 }
