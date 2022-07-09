@@ -22,6 +22,8 @@ namespace IISIM.Controls {
         public ControlType? controlType;
         public Color.Schemes colorScheme;
 
+        public bool Closed { get; set; }
+
         private MenuItem? menuZeroTransducer;
 
         private Alarm? alarmRef;
@@ -78,6 +80,8 @@ namespace IISIM.Controls {
 
         public MonitorNumeric () {
             InitializeComponent ();
+
+            Closed = false;
         }
 
         public MonitorNumeric (ControlType.Values v, Color.Schemes cs) {
@@ -85,6 +89,7 @@ namespace IISIM.Controls {
 
             controlType = new ControlType (v);
             colorScheme = cs;
+            Closed = false;
 
             InitInterface ();
             _ = InitAlarm ();
@@ -163,7 +168,7 @@ namespace IISIM.Controls {
 
             bool flashIterator = false;
 
-            while (true) {
+            while (!Closed) {
                 flashIterator = !flashIterator;
 
                 var time = (alarmRef?.Priority ?? Alarm.Priorities.Low) switch {

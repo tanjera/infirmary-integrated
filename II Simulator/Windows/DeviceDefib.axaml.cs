@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -30,12 +31,13 @@ namespace IISIM {
                     PacerEnergy = 0,
                     PacerRate = 80;
 
+        public bool Paused { get; set; }
+
         private int rowsTracings = 1;
         private int colsNumerics = 4;
 
         private int autoScale_iter = Strip.DefaultAutoScale_Iterations;
 
-        private bool isPaused = false;
         private Color.Schemes colorScheme = Color.Schemes.Dark;
 
         private List<Controls.DefibTracing> listTracings = new ();
@@ -174,7 +176,7 @@ namespace IISIM {
                             default: break;
                             case "rowsTracings": rowsTracings = int.Parse (pValue); break;
                             case "colsNumerics": colsNumerics = int.Parse (pValue); break;
-                            case "isPaused": isPaused = bool.Parse (pValue); break;
+                            case "isPaused": Paused = bool.Parse (pValue); break;
 
                             case "numericTypes": numericTypes.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
                             case "tracingTypes": tracingTypes.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
@@ -199,7 +201,7 @@ namespace IISIM {
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "rowsTracings", rowsTracings));
             sWrite.AppendLine (String.Format ("{0}:{1}", "colsNumerics", colsNumerics));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", isPaused));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", Paused));
 
             List<string> numericTypes = new (),
                          tracingTypes = new ();
@@ -225,9 +227,9 @@ namespace IISIM {
         }
 
         private void TogglePause () {
-            isPaused = !isPaused;
+            Paused = !Paused;
 
-            if (!isPaused)
+            if (!Paused)
                 listTracings.ForEach (c => c.Strip.Unpause ());
         }
 
@@ -408,8 +410,16 @@ namespace IISIM {
         private void OnClosed (object? sender, EventArgs e)
             => this.Dispose ();
 
+        public void OnClosing (object? sender, CancelEventArgs e) {
+            if (sender is not null && sender == this) {
+                this.Hide ();
+                this.Paused = true;
+                e.Cancel = true;
+            }
+        }
+
         private void OnTick_Tracing (object? sender, EventArgs e) {
-            if (isPaused)
+            if (Paused)
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {
@@ -419,7 +429,7 @@ namespace IISIM {
         }
 
         private void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
-            if (isPaused)
+            if (Paused)
                 return;
 
             listNumerics
@@ -431,7 +441,7 @@ namespace IISIM {
         }
 
         private void OnTick_Vitals_Respiratory (object? sender, EventArgs e) {
-            if (isPaused)
+            if (Paused)
                 return;
 
             listNumerics

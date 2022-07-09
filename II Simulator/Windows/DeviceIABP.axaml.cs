@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -38,9 +39,10 @@ namespace IISIM {
 
         public Settings SelectedSetting = Settings.None;
 
+        public bool Paused { get; set; }
+
         private int autoScale_iter = Strip.DefaultAutoScale_Iterations;
 
-        private bool isPaused = false;
         private Color.Schemes colorScheme = Color.Schemes.Dark;
 
         private List<Controls.IABPTracing> listTracings = new ();
@@ -304,7 +306,7 @@ namespace IISIM {
                                 pValue = line.Substring (line.IndexOf (':') + 1);
                         switch (pName) {
                             default: break;
-                            case "isPaused": isPaused = bool.Parse (pValue); break;
+                            case "isPaused": Paused = bool.Parse (pValue); break;
 
                             case "Frequency": Frequency = int.Parse (pValue); break;
                             case "Augmentation": Augmentation = int.Parse (pValue); break;
@@ -325,7 +327,7 @@ namespace IISIM {
         public string Save () {
             StringBuilder sWrite = new ();
 
-            sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", isPaused));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", Paused));
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "Frequency", Frequency));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Augmentation", Augmentation));
@@ -344,9 +346,9 @@ namespace IISIM {
         }
 
         private void TogglePause () {
-            isPaused = !isPaused;
+            Paused = !Paused;
 
-            if (!isPaused)
+            if (!Paused)
                 listTracings.ForEach (c => c.Strip.Unpause ()); ;
         }
 
@@ -529,6 +531,14 @@ namespace IISIM {
         private void OnClosed (object sender, EventArgs e)
             => this.Dispose ();
 
+        public void OnClosing (object? sender, CancelEventArgs e) {
+            if (sender is not null && sender == this) {
+                this.Hide ();
+                this.Paused = true;
+                e.Cancel = true;
+            }
+        }
+
         private void OnTick_PrimingComplete (object? sender, EventArgs e) {
             timerAncillary_Delay.Stop ();
             timerAncillary_Delay.Unlock ();
@@ -546,7 +556,7 @@ namespace IISIM {
         }
 
         private void OnTick_Tracing (object? sender, EventArgs e) {
-            if (isPaused)
+            if (Paused)
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {
@@ -556,7 +566,7 @@ namespace IISIM {
         }
 
         private void OnTick_Vitals (object? sender, EventArgs e) {
-            if (isPaused)
+            if (Paused)
                 return;
 
             // Re-calculate IABP-specific vital signs (augmentation pressure and augmentation-assisted MAP)

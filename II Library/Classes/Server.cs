@@ -28,13 +28,10 @@ using System.Threading.Tasks;
 using II.Localization;
 
 namespace II.Server {
-
     public partial class Server {
         /* Variables for checking for updates, running bootstrapper */
         public string UpgradeVersion = String.Empty;
         public string UpgradeWebpage = String.Empty;
-        public string BootstrapExeUri = String.Empty;
-        public string BootstrapHashMd5 = String.Empty;
 
         private static string FormatForPHP (string inc)
             => inc.Replace ("#", "_").Replace ("$", "_");
@@ -255,7 +252,7 @@ namespace II.Server {
             HttpClient hc = new ();
 
             try {
-                StringBuilder excData = new();
+                StringBuilder excData = new ();
                 foreach (DictionaryEntry entry in e.Data)
                     excData.AppendLine (String.Format ("{0,-20} '{1}'", entry.Key.ToString (), entry.Value?.ToString ()));
 
@@ -278,7 +275,7 @@ namespace II.Server {
             }
         }
 
-        public async Task Get_LatestVersion_Windows () {
+        public async Task Get_LatestVersion () {
             HttpClient hc = new ();
 
             try {
@@ -287,8 +284,6 @@ namespace II.Server {
                 using (StringReader sr = new (resp)) {
                     UpgradeVersion = (await sr.ReadLineAsync ())?.Trim () ?? "0.0";
                     UpgradeWebpage = (await sr.ReadLineAsync ())?.Trim () ?? "";
-                    BootstrapExeUri = (await sr.ReadLineAsync ())?.Trim () ?? "";
-                    BootstrapHashMd5 = (await sr.ReadLineAsync ())?.Trim () ?? "";
                 }
 
                 hc.Dispose ();

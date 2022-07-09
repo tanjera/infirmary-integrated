@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
 using System.Threading;
@@ -81,11 +82,11 @@ namespace IISIM {
         public static void Exit () {
             Window_Splash?.Close ();
 
-            Device_Monitor?.Close ();
-            Device_Defib?.Close ();
-            Device_ECG?.Close ();
-            Device_IABP?.Close ();
-            Device_EFM?.Close ();
+            Device_Monitor?.OnClosing (null, new CancelEventArgs ());
+            Device_Defib?.OnClosing (null, new CancelEventArgs ());
+            Device_ECG?.OnClosing (null, new CancelEventArgs ());
+            Device_IABP?.OnClosing (null, new CancelEventArgs ());
+            Device_EFM?.OnClosing (null, new CancelEventArgs ());
 
             Window_Main?.Close ();
         }

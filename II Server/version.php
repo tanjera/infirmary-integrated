@@ -9,7 +9,7 @@ if ($conn->connect_error) {
 }
 
 try {
-    $sql = "SELECT version, upgradeuri_html, upgradeuri_win, upgradehash_win "
+    $sql = "SELECT version, upgradeuri_html "
             . "FROM versioning ORDER BY accession DESC LIMIT 1";
 
 
@@ -17,11 +17,9 @@ try {
 
     if ($result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
-            printf("%s\n%s\n%s\n%s",
+            printf("%s\n%s",
                     $row["version"],
-                    $row["upgradeuri_html"],
-                    $row["upgradeuri_win"],
-                    $row["upgradehash_win"]);
+                    $row["upgradeuri_html"]);
         }
     }
 } catch (Exception $e) {

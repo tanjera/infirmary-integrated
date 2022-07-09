@@ -215,7 +215,7 @@ namespace IISIM {
 
         private async Task InitUpgrade () {
             // Newer version available? Check Server, populate status bar, prompt user for upgrade
-            await App.Server.Get_LatestVersion_Windows ();
+            await App.Server.Get_LatestVersion ();
 
             string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
             if (Utility.IsNewerVersion (version, App.Server.UpgradeVersion)) {
@@ -329,6 +329,7 @@ namespace IISIM {
 
             App.Device_Monitor.Activate ();
             App.Device_Monitor.Show ();
+            App.Device_Monitor.Paused = false;
 
             if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_Monitor.OnPatientEvent;
@@ -345,6 +346,7 @@ namespace IISIM {
 
             App.Device_ECG.Activate ();
             App.Device_ECG.Show ();
+            App.Device_ECG.Paused = false;
 
             if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_ECG.OnPatientEvent;
@@ -361,6 +363,7 @@ namespace IISIM {
 
             App.Device_Defib.Activate ();
             App.Device_Defib.Show ();
+            App.Device_Defib.Paused = false;
 
             if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_Defib.OnPatientEvent;
@@ -377,6 +380,7 @@ namespace IISIM {
 
             App.Device_IABP.Activate ();
             App.Device_IABP.Show ();
+            App.Device_IABP.Paused = false;
 
             if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
@@ -393,6 +397,7 @@ namespace IISIM {
 
             App.Device_EFM.Activate ();
             App.Device_EFM.Show ();
+            App.Device_EFM.Paused = false;
 
             if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_EFM.OnPatientEvent;
@@ -497,7 +502,7 @@ namespace IISIM {
         private async Task CheckUpgrade () {
             // Check with server for updated version of Infirmary Integrated- notify user either way
 
-            await App.Server.Get_LatestVersion_Windows ();
+            await App.Server.Get_LatestVersion ();
 
             string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
             if (Utility.IsNewerVersion (version, App.Server.UpgradeVersion)) {
