@@ -18,7 +18,7 @@ using II.Waveform;
 
 namespace IISIM {
 
-    public partial class DeviceDefib : Window {
+    public partial class DeviceDefib : DeviceWindow {
 
         // Device settings
         public Modes Mode = Modes.DEFIB;
@@ -31,8 +31,6 @@ namespace IISIM {
                     PacerEnergy = 0,
                     PacerRate = 80;
 
-        public bool Paused { get; set; }
-
         private int rowsTracings = 1;
         private int colsNumerics = 4;
 
@@ -42,12 +40,6 @@ namespace IISIM {
 
         private List<Controls.DefibTracing> listTracings = new ();
         private List<Controls.DefibNumeric> listNumerics = new ();
-
-        private Timer
-            timerTracing = new (),
-            timerVitals_Cardiac = new (),
-            timerVitals_Respiratory = new (),
-            timerAncillary_Delay = new ();
 
         public enum Modes {
             DEFIB,
@@ -63,53 +55,12 @@ namespace IISIM {
 
             DataContext = this;
 
-            InitTimers ();
             InitInterface ();
-
             OnLayoutChange ();
         }
 
-        ~DeviceDefib () => Dispose ();
-
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
-        }
-
-        public void Dispose () {
-            /* Clean subscriptions from the Main Timer */
-            App.Timer_Main.Elapsed -= timerTracing.Process;
-            App.Timer_Main.Elapsed -= timerVitals_Cardiac.Process;
-            App.Timer_Main.Elapsed -= timerVitals_Respiratory.Process;
-            App.Timer_Main.Elapsed -= timerAncillary_Delay.Process;
-
-            /* Dispose of local Timers */
-            timerTracing.Dispose ();
-            timerVitals_Cardiac.Dispose ();
-            timerVitals_Respiratory.Dispose ();
-            timerAncillary_Delay.Dispose ();
-
-            /* Unsubscribe from the main Patient event listing */
-            if (App.Patient != null)
-                App.Patient.PatientEvent -= OnPatientEvent;
-        }
-
-        private void InitTimers () {
-            App.Timer_Main.Elapsed += timerTracing.Process;
-            App.Timer_Main.Elapsed += timerVitals_Cardiac.Process;
-            App.Timer_Main.Elapsed += timerVitals_Respiratory.Process;
-            App.Timer_Main.Elapsed += timerAncillary_Delay.Process;
-
-            timerTracing.Tick += OnTick_Tracing;
-            timerVitals_Cardiac.Tick += OnTick_Vitals_Cardiac;
-            timerVitals_Respiratory.Tick += OnTick_Vitals_Respiratory;
-
-            timerTracing.Set (Draw.RefreshTime);
-            timerVitals_Cardiac.Set (II.Math.Clamp ((int)(App.Patient.GetHR_Seconds * 1000 / 2), 2000, 6000));
-            timerVitals_Respiratory.Set (II.Math.Clamp ((int)(App.Patient.GetRR_Seconds * 1000 / 2), 2000, 8000));
-
-            timerTracing.Start ();
-            timerVitals_Cardiac.Start ();
-            timerVitals_Respiratory.Start ();
         }
 
         private void InitInterface () {
@@ -176,7 +127,6 @@ namespace IISIM {
                             default: break;
                             case "rowsTracings": rowsTracings = int.Parse (pValue); break;
                             case "colsNumerics": colsNumerics = int.Parse (pValue); break;
-                            case "isPaused": Paused = bool.Parse (pValue); break;
 
                             case "numericTypes": numericTypes.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
                             case "tracingTypes": tracingTypes.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
@@ -201,13 +151,12 @@ namespace IISIM {
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "rowsTracings", rowsTracings));
             sWrite.AppendLine (String.Format ("{0}:{1}", "colsNumerics", colsNumerics));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", Paused));
 
             List<string> numericTypes = new (),
                          tracingTypes = new ();
 
             listNumerics.ForEach (o => { numericTypes.Add (o.controlType.Value.ToString ()); });
-            listTracings.ForEach (o => { tracingTypes.Add (o.Strip.Lead.Value.ToString ()); });
+            listTracings.ForEach (o => { tracingTypes.Add (o.Strip?.Lead?.Value.ToString () ?? ""); });
             sWrite.AppendLine (String.Format ("{0}:{1}", "numericTypes", string.Join (",", numericTypes)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "tracingTypes", string.Join (",", tracingTypes)));
 
@@ -226,10 +175,10 @@ namespace IISIM {
             UpdateInterface ();
         }
 
-        private void TogglePause () {
-            Paused = !Paused;
+        public override void TogglePause () {
+            base.TogglePause ();
 
-            if (!Paused)
+            if (State == States.Running)
                 listTracings.ForEach (c => c.Strip.Unpause ());
         }
 
@@ -407,19 +356,8 @@ namespace IISIM {
             UpdateInterface ();
         }
 
-        private void OnClosed (object? sender, EventArgs e)
-            => this.Dispose ();
-
-        public void OnClosing (object? sender, CancelEventArgs e) {
-            if (sender is not null && sender == this) {
-                this.Hide ();
-                this.Paused = true;
-                e.Cancel = true;
-            }
-        }
-
-        private void OnTick_Tracing (object? sender, EventArgs e) {
-            if (Paused)
+        public override void OnTick_Tracing (object? sender, EventArgs e) {
+            if (State != States.Running)
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {
@@ -428,8 +366,8 @@ namespace IISIM {
             }
         }
 
-        private void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
-            if (Paused)
+        public override void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
+            if (State != States.Running)
                 return;
 
             listNumerics
@@ -440,8 +378,8 @@ namespace IISIM {
                 .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }
 
-        private void OnTick_Vitals_Respiratory (object? sender, EventArgs e) {
-            if (Paused)
+        public override void OnTick_Vitals_Respiratory (object? sender, EventArgs e) {
+            if (State != States.Running)
                 return;
 
             listNumerics
@@ -514,7 +452,7 @@ namespace IISIM {
             }
         }
 
-        public void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
+        public new void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
             switch (e.EventType) {
                 default: break;
 

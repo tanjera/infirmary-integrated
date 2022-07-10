@@ -19,7 +19,7 @@ using II.Waveform;
 
 namespace IISIM {
 
-    public partial class DeviceIABP : Window {
+    public partial class DeviceIABP : DeviceWindow {
 
         // Device settings
         public int Frequency = 1,
@@ -39,18 +39,12 @@ namespace IISIM {
 
         public Settings SelectedSetting = Settings.None;
 
-        public bool Paused { get; set; }
-
         private int autoScale_iter = Strip.DefaultAutoScale_Iterations;
 
         private Color.Schemes colorScheme = Color.Schemes.Dark;
 
         private List<Controls.IABPTracing> listTracings = new ();
         private List<Controls.IABPNumeric> listNumerics = new ();
-
-        private Timer timerTracing = new ();
-        private Timer timerVitals = new ();
-        private Timer timerAncillary_Delay = new ();
 
         public enum Settings {
             None,
@@ -107,7 +101,6 @@ namespace IISIM {
 #endif
             DataContext = this;
 
-            InitTimers ();
             InitInterface ();
         }
 
@@ -115,35 +108,6 @@ namespace IISIM {
 
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
-        }
-
-        public void Dispose () {
-            App.Timer_Main.Elapsed -= timerTracing.Process;
-            App.Timer_Main.Elapsed -= timerVitals.Process;
-            App.Timer_Main.Elapsed -= timerAncillary_Delay.Process;
-
-            /* Dispose of local Timers */
-            timerTracing.Dispose ();
-            timerVitals.Dispose ();
-            timerAncillary_Delay.Dispose ();
-
-            /* Unsubscribe from the main Patient event listing */
-            App.Patient.PatientEvent -= OnPatientEvent;
-        }
-
-        private void InitTimers () {
-            App.Timer_Main.Elapsed += timerVitals.Process;
-            App.Timer_Main.Elapsed += timerTracing.Process;
-            App.Timer_Main.Elapsed += timerAncillary_Delay.Process;
-
-            timerTracing.Set (Draw.RefreshTime);
-            timerVitals.Set ((int)(App.Patient.GetHR_Seconds * 1000));
-
-            timerTracing.Tick += OnTick_Tracing;
-            timerVitals.Tick += OnTick_Vitals;
-
-            timerTracing.Start ();
-            timerVitals.Start ();
         }
 
         private void InitInterface () {
@@ -306,8 +270,6 @@ namespace IISIM {
                                 pValue = line.Substring (line.IndexOf (':') + 1);
                         switch (pName) {
                             default: break;
-                            case "isPaused": Paused = bool.Parse (pValue); break;
-
                             case "Frequency": Frequency = int.Parse (pValue); break;
                             case "Augmentation": Augmentation = int.Parse (pValue); break;
                             case "AugmentationAlarm": AugmentationAlarm = int.Parse (pValue); break;
@@ -327,8 +289,6 @@ namespace IISIM {
         public string Save () {
             StringBuilder sWrite = new ();
 
-            sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", Paused));
-
             sWrite.AppendLine (String.Format ("{0}:{1}", "Frequency", Frequency));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Augmentation", Augmentation));
             sWrite.AppendLine (String.Format ("{0}:{1}", "AugmentationAlarm", AugmentationAlarm));
@@ -345,10 +305,10 @@ namespace IISIM {
             UpdateInterface ();
         }
 
-        private void TogglePause () {
-            Paused = !Paused;
+        public override void TogglePause () {
+            base.TogglePause ();
 
-            if (!Paused)
+            if (State == States.Running)
                 listTracings.ForEach (c => c.Strip.Unpause ()); ;
         }
 
@@ -528,17 +488,6 @@ namespace IISIM {
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Dark);
 
-        private void OnClosed (object sender, EventArgs e)
-            => this.Dispose ();
-
-        public void OnClosing (object? sender, CancelEventArgs e) {
-            if (sender is not null && sender == this) {
-                this.Hide ();
-                this.Paused = true;
-                e.Cancel = true;
-            }
-        }
-
         private void OnTick_PrimingComplete (object? sender, EventArgs e) {
             timerAncillary_Delay.Stop ();
             timerAncillary_Delay.Unlock ();
@@ -555,8 +504,8 @@ namespace IISIM {
             Dispatcher.UIThread.InvokeAsync (UpdateInterface);
         }
 
-        private void OnTick_Tracing (object? sender, EventArgs e) {
-            if (Paused)
+        public override void OnTick_Tracing (object? sender, EventArgs e) {
+            if (State != States.Running)
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {
@@ -565,8 +514,8 @@ namespace IISIM {
             }
         }
 
-        private void OnTick_Vitals (object? sender, EventArgs e) {
-            if (Paused)
+        public override void OnTick_Vitals (object? sender, EventArgs e) {
+            if (State != States.Running)
                 return;
 
             // Re-calculate IABP-specific vital signs (augmentation pressure and augmentation-assisted MAP)
@@ -585,7 +534,7 @@ namespace IISIM {
             listNumerics.ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }
 
-        public void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
+        public override void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
             switch (e.EventType) {
                 default: break;
                 case Patient.PatientEventTypes.Vitals_Change:

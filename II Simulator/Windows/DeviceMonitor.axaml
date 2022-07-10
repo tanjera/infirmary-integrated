@@ -11,8 +11,6 @@
 	d:DesignHeight="450"
 	d:DesignWidth="800"
 	Background="Black"
-	Closed="OnClosed"
-	Closing="OnClosing"
 	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
 	WindowStartupLocation="CenterScreen"
 	WindowState="Maximized"
@@ -29,6 +27,11 @@
         <MenuItem Name="menuAddTracing" Click="MenuAddTracing_Click" />
         <Separator />
         <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" />
+      </MenuItem>
+
+      <MenuItem Name="menuAlarms">
+        <MenuItem Name="menuAlarmsEnable" Click="MenuEnableAlarms" />
+        <MenuItem Name="menuAlarmsDisable" Click="MenuDisableAlarms" />
       </MenuItem>
 
       <MenuItem Name="menuColor">

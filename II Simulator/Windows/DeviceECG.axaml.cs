@@ -19,15 +19,11 @@ using II.Waveform;
 
 namespace IISIM {
 
-    public partial class DeviceECG : Window {
-        public bool Paused { get; set; }
-
+    public partial class DeviceECG : DeviceWindow {
         private Color.Schemes colorScheme = Color.Schemes.Dark;
         private ImageBrush? gridBackground;
 
         private List<Controls.ECGTracing> listTracings = new ();
-
-        private Timer timerTracing = new ();
 
         public DeviceECG () {
             InitializeComponent ();
@@ -37,33 +33,12 @@ namespace IISIM {
 
             DataContext = this;
 
-            InitTimers ();
             InitInterface ();
             SetColorScheme (colorScheme);
         }
 
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
-        }
-
-        ~DeviceECG () => Dispose ();
-
-        public void Dispose () {
-            /* Clean subscriptions from the Main Timer */
-            App.Timer_Main.Elapsed -= timerTracing.Process;
-
-            /* Dispose of local Timers */
-            timerTracing.Dispose ();
-
-            /* Unsubscribe from the main Patient event listing */
-            App.Patient.PatientEvent -= OnPatientEvent;
-        }
-
-        private void InitTimers () {
-            timerTracing.Set (Draw.RefreshTime);
-            App.Timer_Main.Elapsed += timerTracing.Process;
-            timerTracing.Tick += OnTick_Tracing;
-            timerTracing.Start ();
         }
 
         private void InitInterface () {
@@ -146,7 +121,6 @@ namespace IISIM {
                                 pValue = line.Substring (line.IndexOf (':') + 1);
                         switch (pName) {
                             default: break;
-                            case "isPaused": Paused = bool.Parse (pValue); break;
                             case "colorScheme": colorScheme = (Color.Schemes)Enum.Parse (typeof (Color.Schemes), pValue); break;
                         }
                     }
@@ -160,7 +134,6 @@ namespace IISIM {
         public string Save () {
             StringBuilder sWrite = new ();
 
-            sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", Paused));
             sWrite.AppendLine (String.Format ("{0}:{1}", "colorScheme", colorScheme));
 
             return sWrite.ToString ();
@@ -171,10 +144,10 @@ namespace IISIM {
             UpdateInterface ();
         }
 
-        private void TogglePause () {
-            Paused = !Paused;
+        public override void TogglePause () {
+            base.TogglePause ();
 
-            if (!Paused)
+            if (State == States.Running)
                 listTracings.ForEach (c => c.Strip.Unpause ());
         }
 
@@ -193,19 +166,8 @@ namespace IISIM {
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Dark);
 
-        private void OnClosed (object? sender, EventArgs e)
-            => this.Dispose ();
-
-        public void OnClosing (object? sender, CancelEventArgs e) {
-            if (sender is not null && sender == this) {
-                this.Hide ();
-                this.Paused = true;
-                e.Cancel = true;
-            }
-        }
-
-        private void OnTick_Tracing (object? sender, EventArgs e) {
-            if (Paused)
+        public override void OnTick_Tracing (object? sender, EventArgs e) {
+            if (State != States.Running)
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {
@@ -214,7 +176,7 @@ namespace IISIM {
             }
         }
 
-        public void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
+        public override void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
             switch (e.EventType) {
                 default: break;
                 case Patient.PatientEventTypes.Vitals_Change:

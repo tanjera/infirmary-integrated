@@ -18,14 +18,11 @@ using II.Waveform;
 
 namespace IISIM {
 
-    public partial class DeviceEFM : Window {
-        public bool Paused { get; set; }
-
+    public partial class DeviceEFM : DeviceWindow {
         private Color.Schemes colorScheme = Color.Schemes.Light;
 
         private List<Controls.EFMTracing> listTracings = new ();
 
-        private Timer timerTracing = new ();
         private ImageBrush gridFHR, gridToco;
 
         public DeviceEFM () {
@@ -36,32 +33,11 @@ namespace IISIM {
 
             DataContext = this;
 
-            InitTimers ();
             InitInterface ();
         }
 
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
-        }
-
-        ~DeviceEFM () => Dispose ();
-
-        public void Dispose () {
-            /* Clean subscriptions from the Main Timer */
-            App.Timer_Main.Elapsed -= timerTracing.Process;
-
-            /* Dispose of local Timers */
-            timerTracing.Dispose ();
-
-            /* Unsubscribe from the main Patient event listing */
-            App.Patient.PatientEvent -= OnPatientEvent;
-        }
-
-        private void InitTimers () {
-            timerTracing.Set (Draw.RefreshTime);
-            App.Timer_Main.Elapsed += timerTracing.Process;
-            timerTracing.Tick += OnTick_Tracing;
-            timerTracing.Start ();
         }
 
         private void InitInterface () {
@@ -124,7 +100,6 @@ namespace IISIM {
                                 pValue = line.Substring (line.IndexOf (':') + 1);
                         switch (pName) {
                             default: break;
-                            case "isPaused": Paused = bool.Parse (pValue); break;
                         }
                     }
                 }
@@ -136,8 +111,6 @@ namespace IISIM {
 
         public string Save () {
             StringBuilder sWrite = new ();
-
-            sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", Paused));
 
             return sWrite.ToString ();
         }
@@ -153,11 +126,11 @@ namespace IISIM {
             });
         }
 
-        private void TogglePause () {
-            Paused = !Paused;
+        public override void TogglePause () {
+            base.TogglePause ();
 
-            if (!Paused)
-                listTracings.ForEach (c => c.Strip.Unpause ());
+            if (State == States.Running)
+                listTracings.ForEach (c => c.Strip?.Unpause ());
         }
 
         private void MenuClose_Click (object s, RoutedEventArgs e)
@@ -178,42 +151,31 @@ namespace IISIM {
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Dark);
 
-        private void OnClosed (object? sender, EventArgs e)
-            => this.Dispose ();
-
-        public void OnClosing (object? sender, CancelEventArgs e) {
-            if (sender is not null && sender == this) {
-                this.Hide ();
-                this.Paused = true;
-                e.Cancel = true;
-            }
-        }
-
-        private void OnTick_Tracing (object? sender, EventArgs e) {
-            if (Paused)
+        public override void OnTick_Tracing (object? sender, EventArgs e) {
+            if (State != States.Running)
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {
-                listTracings [i].Strip.Scroll ();
+                listTracings [i].Strip?.Scroll ();
                 Dispatcher.UIThread.InvokeAsync (listTracings [i].DrawTracing);
             }
         }
 
-        public void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
+        public override void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
             switch (e.EventType) {
                 default: break;
                 case Patient.PatientEventTypes.Obstetric_Baseline:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Obstetric_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Baseline (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Obstetric_Contraction_Start:
-                    listTracings.ForEach (c => c.Strip.ClearFuture (App.Patient));
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Obstetric_Contraction_Start (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.ClearFuture (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Contraction_Start (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Obstetric_Contraction_End:
-                    listTracings.ForEach (c => c.Strip.ClearFuture (App.Patient));
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Obstetric_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.ClearFuture (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Baseline (App.Patient));
                     break;
             }
         }

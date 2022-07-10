@@ -22,7 +22,8 @@ namespace IISIM.Controls {
         public ControlType? controlType;
         public Color.Schemes colorScheme;
 
-        public bool Closed { get; set; }
+        private Timer timerAlarm = new ();
+        private bool iterAlarm = false;
 
         private MenuItem? menuZeroTransducer;
 
@@ -80,8 +81,6 @@ namespace IISIM.Controls {
 
         public MonitorNumeric () {
             InitializeComponent ();
-
-            Closed = false;
         }
 
         public MonitorNumeric (ControlType.Values v, Color.Schemes cs) {
@@ -89,12 +88,16 @@ namespace IISIM.Controls {
 
             controlType = new ControlType (v);
             colorScheme = cs;
-            Closed = false;
 
             InitInterface ();
-            _ = InitAlarm ();
+            InitTimers ();
+            InitAlarm ();
 
             UpdateInterface ();
+        }
+
+        ~MonitorNumeric () {
+            timerAlarm.Dispose ();
         }
 
         private void InitializeComponent () {
@@ -157,51 +160,58 @@ namespace IISIM.Controls {
             contextMenu.Items = menuitemsContext;
         }
 
-        private async Task InitAlarm () {
+        private void InitTimers () {
+            App.Timer_Main.Elapsed += timerAlarm.Process;
+
+            timerAlarm.Tick += (s, e) => { Dispatcher.UIThread.InvokeAsync (() => { OnTick_Alarm (s, e); }); };
+
+            timerAlarm.Set (1000);
+            timerAlarm.Start ();
+        }
+
+        private void InitAlarm () {
+            alarmLine1 = false;
+            alarmLine2 = false;
+            alarmLine3 = false;
+        }
+
+        private void OnTick_Alarm (object? sender, EventArgs e) {
             TextBlock lblLine1 = this.FindControl<TextBlock> ("lblLine1");
             TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
             TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
 
-            alarmLine1 = false;
-            alarmLine2 = false;
-            alarmLine3 = false;
+            iterAlarm = !iterAlarm;
 
-            bool flashIterator = false;
+            int time = (alarmRef?.Priority ?? Alarm.Priorities.Low) switch {
+                Alarm.Priorities.Low => 10000,
+                Alarm.Priorities.Medium => 5000,
+                Alarm.Priorities.High => 1000,
+                _ => 10000,
+            };
 
-            while (!Closed) {
-                flashIterator = !flashIterator;
+            _ = timerAlarm.ResetAuto (time);
 
-                var time = (alarmRef?.Priority ?? Alarm.Priorities.Low) switch {
-                    Alarm.Priorities.Low => 10000,
-                    Alarm.Priorities.Medium => 5000,
-                    Alarm.Priorities.High => 1000,
-                    _ => 10000,
-                };
+            if (controlType is not null) {
+                if (alarmLine1)
+                    lblLine1.Foreground = iterAlarm
+                        ? Color.GetLead (controlType.GetLead_Color, colorScheme)
+                        : Color.GetAlarm (controlType.GetLead_Color, colorScheme);
+                else
+                    lblLine1.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
 
-                await Task.Delay (time);
+                if (alarmLine2)
+                    lblLine2.Foreground = iterAlarm
+                        ? Color.GetLead (controlType.GetLead_Color, colorScheme)
+                        : Color.GetAlarm (controlType.GetLead_Color, colorScheme);
+                else
+                    lblLine2.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
 
-                if (controlType is not null) {
-                    if (alarmLine1)
-                        lblLine1.Foreground = flashIterator
-                            ? Color.GetLead (controlType.GetLead_Color, colorScheme)
-                            : Color.GetAlarm (controlType.GetLead_Color, colorScheme);
-                    else
-                        lblLine1.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-
-                    if (alarmLine2)
-                        lblLine2.Foreground = flashIterator
-                            ? Color.GetLead (controlType.GetLead_Color, colorScheme)
-                            : Color.GetAlarm (controlType.GetLead_Color, colorScheme);
-                    else
-                        lblLine2.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-
-                    if (alarmLine3)
-                        lblLine3.Foreground = flashIterator
-                            ? Color.GetLead (controlType.GetLead_Color, colorScheme)
-                            : Color.GetAlarm (controlType.GetLead_Color, colorScheme);
-                    else
-                        lblLine3.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-                }
+                if (alarmLine3)
+                    lblLine3.Foreground = iterAlarm
+                        ? Color.GetLead (controlType.GetLead_Color, colorScheme)
+                        : Color.GetAlarm (controlType.GetLead_Color, colorScheme);
+                else
+                    lblLine3.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
             }
         }
 

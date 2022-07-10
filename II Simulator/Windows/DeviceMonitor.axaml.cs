@@ -18,9 +18,7 @@ using II.Waveform;
 
 namespace IISIM {
 
-    public partial class DeviceMonitor : Window {
-        public bool Paused { get; set; }
-
+    public partial class DeviceMonitor : DeviceWindow {
         /* Device variables */
         private int rowsTracings = 3;
         private int rowsNumerics = 3;
@@ -31,10 +29,6 @@ namespace IISIM {
 
         private List<Controls.MonitorTracing> listTracings = new ();
         private List<Controls.MonitorNumeric> listNumerics = new ();
-
-        private Timer timerTracing = new ();
-        private Timer timerVitals_Cardiac = new ();
-        private Timer timerVitals_Respiratory = new ();
 
         public DeviceMonitor () {
             InitializeComponent ();
@@ -50,26 +44,8 @@ namespace IISIM {
             OnLayoutChange ();
         }
 
-        ~DeviceMonitor () => Dispose ();
-
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
-        }
-
-        public void Dispose () {
-            /* Clean subscriptions from the Main Timer */
-            App.Timer_Main.Elapsed -= timerTracing.Process;
-            App.Timer_Main.Elapsed -= timerVitals_Cardiac.Process;
-            App.Timer_Main.Elapsed -= timerVitals_Respiratory.Process;
-
-            /* Dispose of local Timers */
-            timerTracing.Dispose ();
-            timerVitals_Cardiac.Dispose ();
-            timerVitals_Respiratory.Dispose ();
-
-            /* Unsubscribe from the main Patient event listing */
-            if (App.Patient != null)
-                App.Patient.PatientEvent -= OnPatientEvent;
         }
 
         private void InitTimers () {
@@ -100,6 +76,11 @@ namespace IISIM {
             this.FindControl<MenuItem> ("menuAddNumeric").Header = App.Language.Localize ("MENU:MenuAddNumeric");
             this.FindControl<MenuItem> ("menuAddTracing").Header = App.Language.Localize ("MENU:MenuAddTracing");
             this.FindControl<MenuItem> ("menuCloseDevice").Header = App.Language.Localize ("MENU:MenuCloseDevice");
+
+            this.FindControl<MenuItem> ("menuAlarms").Header = App.Language.Localize ("MENU:MenuAlarms");
+            this.FindControl<MenuItem> ("menuAlarmsEnable").Header = App.Language.Localize ("MENU:MenuAlarmsEnable");
+            this.FindControl<MenuItem> ("menuAlarmsDisable").Header = App.Language.Localize ("MENU:MenuAlarmsDisable");
+
             this.FindControl<MenuItem> ("menuColor").Header = App.Language.Localize ("MENU:MenuColorScheme");
             this.FindControl<MenuItem> ("menuColorLight").Header = App.Language.Localize ("MENU:MenuColorSchemeLight");
             this.FindControl<MenuItem> ("menuColorDark").Header = App.Language.Localize ("MENU:MenuColorSchemeDark");
@@ -133,7 +114,6 @@ namespace IISIM {
                             default: break;
                             case "rowsTracings": rowsTracings = int.Parse (pValue); break;
                             case "rowsNumerics": rowsNumerics = int.Parse (pValue); break;
-                            case "isPaused": Paused = bool.Parse (pValue); break;
                             case "numericTypes": numericTypes.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
                             case "tracingTypes": tracingTypes.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
                         }
@@ -151,17 +131,21 @@ namespace IISIM {
 
             sWrite.AppendLine (String.Format ("{0}:{1}", "rowsTracings", rowsTracings));
             sWrite.AppendLine (String.Format ("{0}:{1}", "rowsNumerics", rowsNumerics));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "isPaused", Paused));
 
             List<string> numericTypes = new (),
                          tracingTypes = new ();
 
-            listNumerics.ForEach (o => { numericTypes.Add (o.controlType.Value.ToString ()); });
-            listTracings.ForEach (o => { tracingTypes.Add (o.Strip.Lead.Value.ToString ()); });
+            listNumerics.ForEach (o => { numericTypes.Add (o.controlType?.Value.ToString () ?? ""); });
+            listTracings.ForEach (o => { tracingTypes.Add (o.Strip?.Lead?.Value.ToString () ?? ""); });
             sWrite.AppendLine (String.Format ("{0}:{1}", "numericTypes", string.Join (",", numericTypes)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "tracingTypes", string.Join (",", tracingTypes)));
 
             return sWrite.ToString ();
+        }
+
+        public void SetAlarms (bool toEnable) {
+            foreach (Alarm a in App.Scenario?.DeviceMonitor.Alarms)
+                a.Enabled = toEnable;
         }
 
         public void SetColorScheme (Color.Schemes scheme) {
@@ -169,11 +153,11 @@ namespace IISIM {
             UpdateInterface ();
         }
 
-        private void TogglePause () {
-            Paused = !Paused;
+        public override void TogglePause () {
+            base.TogglePause ();
 
-            if (!Paused)
-                listTracings.ForEach (c => c.Strip.Unpause ());
+            if (State == States.Running)
+                listTracings.ForEach (c => c.Strip?.Unpause ());
         }
 
         public void AddTracing () {
@@ -213,27 +197,17 @@ namespace IISIM {
         private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Light);
 
+        private void MenuEnableAlarms (object sender, RoutedEventArgs e)
+            => SetAlarms (true);
+
+        private void MenuDisableAlarms (object sender, RoutedEventArgs e)
+            => SetAlarms (false);
+
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Dark);
 
-        private void OnClosed (object? sender, EventArgs e)
-            => this.Dispose ();
-
-        public void OnClosing (object? sender, CancelEventArgs e) {
-            if (sender is not null && sender == this) {
-                this.Hide ();
-                this.Paused = true;
-                e.Cancel = true;
-            }
-
-            foreach (Controls.MonitorNumeric n in listNumerics)
-                n.Closed = true;
-
-            Dispose ();
-        }
-
-        private void OnTick_Tracing (object? sender, EventArgs e) {
-            if (Paused)
+        public override void OnTick_Tracing (object? sender, EventArgs e) {
+            if (State != States.Running)
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {
@@ -242,26 +216,26 @@ namespace IISIM {
             }
         }
 
-        private void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
-            if (Paused)
+        public override void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
+            if (State != States.Running)
                 return;
 
             listNumerics
                 .Where (n
-                    => n.controlType.Value != Controls.MonitorNumeric.ControlType.Values.ETCO2
-                    && n.controlType.Value != Controls.MonitorNumeric.ControlType.Values.RR)
+                    => n.controlType?.Value != Controls.MonitorNumeric.ControlType.Values.ETCO2
+                    && n.controlType?.Value != Controls.MonitorNumeric.ControlType.Values.RR)
                 .ToList ()
                 .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }
 
-        private void OnTick_Vitals_Respiratory (object? sender, EventArgs e) {
-            if (Paused)
+        public override void OnTick_Vitals_Respiratory (object? sender, EventArgs e) {
+            if (State != States.Running)
                 return;
 
             listNumerics
                 .Where (n
-                    => n.controlType.Value == Controls.MonitorNumeric.ControlType.Values.ETCO2
-                    || n.controlType.Value == Controls.MonitorNumeric.ControlType.Values.RR)
+                    => n.controlType?.Value == Controls.MonitorNumeric.ControlType.Values.ETCO2
+                    || n.controlType?.Value == Controls.MonitorNumeric.ControlType.Values.RR)
                 .ToList ()
                 .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }
@@ -328,51 +302,51 @@ namespace IISIM {
             }
         }
 
-        public void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
+        public override void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
             switch (e.EventType) {
                 default: break;
                 case Patient.PatientEventTypes.Vitals_Change:
                     listTracings.ForEach (c => {
-                        c.Strip.ClearFuture (App.Patient);
-                        c.Strip.Add_Beat__Cardiac_Baseline (App.Patient);
+                        c.Strip?.ClearFuture (App.Patient);
+                        c.Strip?.Add_Beat__Cardiac_Baseline (App.Patient);
                     });
 
                     listNumerics.ForEach (n => n.UpdateVitals ());
                     break;
 
                 case Patient.PatientEventTypes.Defibrillation:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Defibrillation (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Pacermaker_Spike:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Pacemaker (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Baseline:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Atrial_Electric:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial_Electrical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Electrical (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular_Electric:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Electrical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Atrial_Mechanical:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial_Mechanical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Mechanical (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Mechanical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (App.Patient));
 
                     /* Iterations and trigger for auto-scaling pressure waveform strips */
 
                     autoScale_iter -= 1;
                     if (autoScale_iter <= 0) {
                         for (int i = 0; i < listTracings.Count; i++) {
-                            listTracings [i].Strip.SetAutoScale (App.Patient);
+                            listTracings [i].Strip?.SetAutoScale (App.Patient);
                             Dispatcher.UIThread.InvokeAsync (listTracings [i].UpdateScale);
                         }
 
@@ -381,15 +355,15 @@ namespace IISIM {
                     break;
 
                 case Patient.PatientEventTypes.Respiratory_Baseline:
-                    listTracings.ForEach (c => c.Strip.Add_Breath__Respiratory_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Baseline (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Respiratory_Inspiration:
-                    listTracings.ForEach (c => c.Strip.Add_Breath__Respiratory_Inspiration (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Inspiration (App.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Respiratory_Expiration:
-                    listTracings.ForEach (c => c.Strip.Add_Breath__Respiratory_Expiration (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Expiration (App.Patient));
                     break;
             }
         }

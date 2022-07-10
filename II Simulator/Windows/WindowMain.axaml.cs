@@ -324,12 +324,11 @@ namespace IISIM {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_Monitor is null)
+            if (App.Device_Monitor is null || App.Device_Monitor.State == DeviceWindow.States.Closed)
                 App.Device_Monitor = new DeviceMonitor ();
 
             App.Device_Monitor.Activate ();
             App.Device_Monitor.Show ();
-            App.Device_Monitor.Paused = false;
 
             if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_Monitor.OnPatientEvent;
@@ -341,12 +340,11 @@ namespace IISIM {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_ECG is null)
+            if (App.Device_ECG is null || App.Device_ECG.State == DeviceWindow.States.Closed)
                 App.Device_ECG = new DeviceECG ();
 
             App.Device_ECG.Activate ();
             App.Device_ECG.Show ();
-            App.Device_ECG.Paused = false;
 
             if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_ECG.OnPatientEvent;
@@ -358,12 +356,11 @@ namespace IISIM {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_Defib is null)
+            if (App.Device_Defib is null || App.Device_Defib.State == DeviceWindow.States.Closed)
                 App.Device_Defib = new DeviceDefib ();
 
             App.Device_Defib.Activate ();
             App.Device_Defib.Show ();
-            App.Device_Defib.Paused = false;
 
             if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_Defib.OnPatientEvent;
@@ -375,12 +372,11 @@ namespace IISIM {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_IABP is null)
+            if (App.Device_IABP is null || App.Device_IABP.State == DeviceWindow.States.Closed)
                 App.Device_IABP = new DeviceIABP ();
 
             App.Device_IABP.Activate ();
             App.Device_IABP.Show ();
-            App.Device_IABP.Paused = false;
 
             if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
@@ -392,12 +388,11 @@ namespace IISIM {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_EFM is null)
+            if (App.Device_EFM is null || App.Device_EFM.State == DeviceWindow.States.Closed)
                 App.Device_EFM = new DeviceEFM ();
 
             App.Device_EFM.Activate ();
             App.Device_EFM.Show ();
-            App.Device_EFM.Paused = false;
 
             if (App.Patient is not null)
                 App.Patient.PatientEvent += App.Device_EFM.OnPatientEvent;
