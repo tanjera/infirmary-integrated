@@ -35,12 +35,23 @@ namespace II {
             return ((current - min) / (max - min));
         }
 
-        public static double RandomDouble (double min, double max) {
-            Random r = new();
-            return (double)r.NextDouble () * (max - min) + min;
+        public static double RandomDouble (double? min, double? max) {
+            if (min is null)
+                min = 0;
+            if (max is null)
+                return (double)min;
+
+            Random r = new ();
+            return (double)(r.NextDouble () * (max - min) + min);
         }
 
-        public static double RandomPercentRange (double value, double percent) {
+        public static double RandomPercentRange (double? value, double? percent) {
+            if (value is null)
+                return 0d;
+
+            if (percent is null)
+                return (double)value;
+
             return RandomDouble ((value - (value * percent)), (value + (value * percent)));
         }
     }

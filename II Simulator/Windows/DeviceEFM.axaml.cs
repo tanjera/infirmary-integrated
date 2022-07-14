@@ -23,9 +23,13 @@ namespace IISIM {
 
         private List<Controls.EFMTracing> listTracings = new ();
 
-        private ImageBrush gridFHR, gridToco;
+        private ImageBrush? gridFHR, gridToco;
 
         public DeviceEFM () {
+            InitializeComponent ();
+        }
+
+        public DeviceEFM (App? app) : base (app) {
             InitializeComponent ();
 #if DEBUG
             this.AttachDevTools ();
@@ -42,16 +46,16 @@ namespace IISIM {
 
         private void InitInterface () {
             /* Populate UI strings per language selection */
-            this.FindControl<Window> ("wdwDeviceEFM").Title = App.Language.Localize ("EFM:WindowTitle");
-            this.FindControl<MenuItem> ("menuDevice").Header = App.Language.Localize ("MENU:MenuDeviceOptions");
-            this.FindControl<MenuItem> ("menuPauseDevice").Header = App.Language.Localize ("MENU:MenuPauseDevice");
-            this.FindControl<MenuItem> ("menuCloseDevice").Header = App.Language.Localize ("MENU:MenuCloseDevice");
-            this.FindControl<MenuItem> ("menuLength").Header = App.Language.Localize ("MENU:StripLength");
-            this.FindControl<MenuItem> ("menu1Min").Header = App.Language.Localize ("MENU:StripLength_1Min");
-            this.FindControl<MenuItem> ("menu10Min").Header = App.Language.Localize ("MENU:StripLength_10Min");
-            this.FindControl<MenuItem> ("menuColor").Header = App.Language.Localize ("MENU:MenuColorScheme");
-            this.FindControl<MenuItem> ("menuColorLight").Header = App.Language.Localize ("MENU:MenuColorSchemeLight");
-            this.FindControl<MenuItem> ("menuColorDark").Header = App.Language.Localize ("MENU:MenuColorSchemeDark");
+            this.FindControl<Window> ("wdwDeviceEFM").Title = Instance.Language.Localize ("EFM:WindowTitle");
+            this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
+            this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+            this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
+            this.FindControl<MenuItem> ("menuLength").Header = Instance.Language.Localize ("MENU:StripLength");
+            this.FindControl<MenuItem> ("menu1Min").Header = Instance.Language.Localize ("MENU:StripLength_1Min");
+            this.FindControl<MenuItem> ("menu10Min").Header = Instance.Language.Localize ("MENU:StripLength_10Min");
+            this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
+            this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
+            this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
 
             Grid displayGrid = this.FindControl<Grid> ("displayGrid");
 
@@ -64,14 +68,14 @@ namespace IISIM {
             gridToco.Stretch = Stretch.Fill;
 
             // Instantiate and add Tracings to UI
-            Controls.EFMTracing fhrTracing = new (new Strip (Lead.Values.FHR, 600d), colorScheme);
+            Controls.EFMTracing fhrTracing = new (Instance, new Strip (Lead.Values.FHR, 600d), colorScheme);
             fhrTracing.SetValue (Grid.RowProperty, 0);
             fhrTracing.SetValue (Grid.ColumnProperty, 0);
             fhrTracing.Background = gridFHR;
             listTracings.Add (fhrTracing);
             displayGrid.Children.Add (fhrTracing);
 
-            Controls.EFMTracing tocoTracing = new (new Strip (Lead.Values.TOCO, 600d), colorScheme);
+            Controls.EFMTracing tocoTracing = new (Instance, new Strip (Lead.Values.TOCO, 600d), colorScheme);
             tocoTracing.SetValue (Grid.RowProperty, 2);
             tocoTracing.SetValue (Grid.ColumnProperty, 0);
             tocoTracing.Background = gridToco;
@@ -93,7 +97,7 @@ namespace IISIM {
             using StringReader sRead = new (inc);
 
             try {
-                string line;
+                string? line;
                 while ((line = sRead.ReadLine ()) != null) {
                     if (line.Contains (":")) {
                         string pName = line.Substring (0, line.IndexOf (':')),
@@ -165,17 +169,17 @@ namespace IISIM {
             switch (e.EventType) {
                 default: break;
                 case Patient.PatientEventTypes.Obstetric_Baseline:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Baseline (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Obstetric_Contraction_Start:
-                    listTracings.ForEach (c => c.Strip?.ClearFuture (App.Patient));
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Contraction_Start (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.ClearFuture (Instance?.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Contraction_Start (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Obstetric_Contraction_End:
-                    listTracings.ForEach (c => c.Strip?.ClearFuture (App.Patient));
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.ClearFuture (Instance?.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Baseline (Instance?.Patient));
                     break;
             }
         }

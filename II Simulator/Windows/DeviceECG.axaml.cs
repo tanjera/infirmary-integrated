@@ -27,6 +27,10 @@ namespace IISIM {
 
         public DeviceECG () {
             InitializeComponent ();
+        }
+
+        public DeviceECG (App? app) : base (app) {
+            InitializeComponent ();
 #if DEBUG
             this.AttachDevTools ();
 #endif
@@ -45,14 +49,16 @@ namespace IISIM {
             Grid layoutGrid = this.FindControl<Grid> ("layoutGrid");
 
             /* Populate UI strings per language selection */
-            this.FindControl<Window> ("wdwDeviceECG").Title = App.Language.Localize ("ECG:WindowTitle");
-            this.FindControl<MenuItem> ("menuDevice").Header = App.Language.Localize ("MENU:MenuDeviceOptions");
-            this.FindControl<MenuItem> ("menuPauseDevice").Header = App.Language.Localize ("MENU:MenuPauseDevice");
-            this.FindControl<MenuItem> ("menuShowGrid").Header = App.Language.Localize ("MENU:MenuShowGrid");
-            this.FindControl<MenuItem> ("menuCloseDevice").Header = App.Language.Localize ("MENU:MenuCloseDevice");
-            this.FindControl<MenuItem> ("menuColor").Header = App.Language.Localize ("MENU:MenuColorScheme");
-            this.FindControl<MenuItem> ("menuColorLight").Header = App.Language.Localize ("MENU:MenuColorSchemeLight");
-            this.FindControl<MenuItem> ("menuColorDark").Header = App.Language.Localize ("MENU:MenuColorSchemeDark");
+            if (Instance?.Language is not null) {
+                this.FindControl<Window> ("wdwDeviceECG").Title = Instance.Language.Localize ("ECG:WindowTitle");
+                this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
+                this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+                this.FindControl<MenuItem> ("menuShowGrid").Header = Instance.Language.Localize ("MENU:MenuShowGrid");
+                this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
+                this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
+                this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
+                this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
+            }
 
             /* Set background image for grid lines */
             var assets = AvaloniaLocator.Current.GetService<Avalonia.Platform.IAssetLoader> ();
@@ -79,7 +85,7 @@ namespace IISIM {
             // Populate the grid with tracings for each lead
             for (int iColumns = 0; iColumns < amtColumns; iColumns++) {
                 for (int iRows = 0; iRows < amtRows && indexLeads < listLeads.Count; iRows++) {
-                    listTracings.Add (new Controls.ECGTracing (new Strip (listLeads [indexLeads], (4 - iColumns) * 2.5f, 2.5f), colorScheme));
+                    listTracings.Add (new Controls.ECGTracing (Instance, new Strip (listLeads [indexLeads], (4 - iColumns) * 2.5f, 2.5f), colorScheme));
                     listTracings [indexLeads].SetValue (Grid.ColumnProperty, iColumns);
                     listTracings [indexLeads].SetValue (Grid.RowProperty, iRows);
                     layoutGrid.Children.Add (listTracings [indexLeads]);
@@ -88,7 +94,7 @@ namespace IISIM {
             }
 
             // Add Lead II running along bottom spanning all columns
-            Controls.ECGTracing leadII = new (new Strip (Lead.Values.ECG_II, 10f), colorScheme);
+            Controls.ECGTracing leadII = new (Instance, new Strip (Lead.Values.ECG_II, 10f), colorScheme);
             leadII.SetValue (Grid.ColumnProperty, 0);
             leadII.SetValue (Grid.RowProperty, 4);
             leadII.SetValue (Grid.ColumnSpanProperty, 4);
@@ -116,7 +122,7 @@ namespace IISIM {
             try {
                 string? line;
                 while ((line = await sRead.ReadLineAsync ()) != null) {
-                    if (line.Contains (":")) {
+                    if (line.Contains (':')) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1);
                         switch (pName) {
@@ -148,7 +154,7 @@ namespace IISIM {
             base.TogglePause ();
 
             if (State == States.Running)
-                listTracings.ForEach (c => c.Strip.Unpause ());
+                listTracings.ForEach (c => c.Strip?.Unpause ());
         }
 
         private void MenuClose_Click (object s, RoutedEventArgs e)
@@ -171,7 +177,7 @@ namespace IISIM {
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {
-                listTracings [i].Strip.Scroll ();
+                listTracings [i].Strip?.Scroll ();
                 Dispatcher.UIThread.InvokeAsync (listTracings [i].DrawTracing);
             }
         }
@@ -181,38 +187,38 @@ namespace IISIM {
                 default: break;
                 case Patient.PatientEventTypes.Vitals_Change:
                     listTracings.ForEach (c => {
-                        c.Strip.ClearFuture (App.Patient);
-                        c.Strip.Add_Beat__Cardiac_Baseline (App.Patient);
+                        c.Strip?.ClearFuture (Instance?.Patient);
+                        c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Patient);
                     });
 
                     break;
 
                 case Patient.PatientEventTypes.Defibrillation:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Defibrillation (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Pacermaker_Spike:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Pacemaker (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Baseline:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Atrial_Electric:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial_Electrical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Electrical (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular_Electric:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Electrical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Atrial_Mechanical:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial_Mechanical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Mechanical (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Mechanical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Patient));
                     break;
             }
         }

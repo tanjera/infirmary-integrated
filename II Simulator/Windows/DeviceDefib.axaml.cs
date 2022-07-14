@@ -49,6 +49,10 @@ namespace IISIM {
 
         public DeviceDefib () {
             InitializeComponent ();
+        }
+
+        public DeviceDefib (App? app) : base (app) {
+            InitializeComponent ();
 #if DEBUG
             this.AttachDevTools ();
 #endif
@@ -65,40 +69,42 @@ namespace IISIM {
 
         private void InitInterface () {
             // Populate UI strings per language selection
-            this.FindControl<Window> ("wdwDeviceDefib").Title = App.Language.Localize ("DEFIB:WindowTitle");
-            this.FindControl<MenuItem> ("menuDevice").Header = App.Language.Localize ("MENU:MenuDeviceOptions");
-            this.FindControl<MenuItem> ("menuPauseDevice").Header = App.Language.Localize ("MENU:MenuPauseDevice");
-            this.FindControl<MenuItem> ("menuAddNumeric").Header = App.Language.Localize ("MENU:MenuAddNumeric");
-            this.FindControl<MenuItem> ("menuAddTracing").Header = App.Language.Localize ("MENU:MenuAddTracing");
-            this.FindControl<MenuItem> ("menuCloseDevice").Header = App.Language.Localize ("MENU:MenuCloseDevice");
-            this.FindControl<MenuItem> ("menuColor").Header = App.Language.Localize ("MENU:MenuColorScheme");
-            this.FindControl<MenuItem> ("menuColorLight").Header = App.Language.Localize ("MENU:MenuColorSchemeLight");
-            this.FindControl<MenuItem> ("menuColorDark").Header = App.Language.Localize ("MENU:MenuColorSchemeDark");
+            if (Instance?.Language is not null) {
+                this.FindControl<Window> ("wdwDeviceDefib").Title = Instance.Language.Localize ("DEFIB:WindowTitle");
+                this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
+                this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+                this.FindControl<MenuItem> ("menuAddNumeric").Header = Instance.Language.Localize ("MENU:MenuAddNumeric");
+                this.FindControl<MenuItem> ("menuAddTracing").Header = Instance.Language.Localize ("MENU:MenuAddTracing");
+                this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
+                this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
+                this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
+                this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
 
-            this.FindControl<TextBlock> ("btntxtDefib").Text = App.Language.Localize ("DEFIB:Defibrillator");
-            this.FindControl<TextBlock> ("txtEnergyAmount").Text = App.Language.Localize ("DEFIB:EnergyAmount");
-            this.FindControl<TextBlock> ("btntxtEnergyDecrease").Text = App.Language.Localize ("DEFIB:Decrease");
-            this.FindControl<TextBlock> ("btntxtEnergyIncrease").Text = App.Language.Localize ("DEFIB:Increase");
-            this.FindControl<TextBlock> ("btntxtCharge").Text = App.Language.Localize ("DEFIB:Charge");
-            this.FindControl<TextBlock> ("btntxtShock").Text = App.Language.Localize ("DEFIB:Shock");
-            this.FindControl<TextBlock> ("btntxtAnalyze").Text = App.Language.Localize ("DEFIB:Analyze");
-            this.FindControl<TextBlock> ("btntxtSync").Text = App.Language.Localize ("DEFIB:Sync");
+                this.FindControl<TextBlock> ("btntxtDefib").Text = Instance.Language.Localize ("DEFIB:Defibrillator");
+                this.FindControl<TextBlock> ("txtEnergyAmount").Text = Instance.Language.Localize ("DEFIB:EnergyAmount");
+                this.FindControl<TextBlock> ("btntxtEnergyDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
+                this.FindControl<TextBlock> ("btntxtEnergyIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
+                this.FindControl<TextBlock> ("btntxtCharge").Text = Instance.Language.Localize ("DEFIB:Charge");
+                this.FindControl<TextBlock> ("btntxtShock").Text = Instance.Language.Localize ("DEFIB:Shock");
+                this.FindControl<TextBlock> ("btntxtAnalyze").Text = Instance.Language.Localize ("DEFIB:Analyze");
+                this.FindControl<TextBlock> ("btntxtSync").Text = Instance.Language.Localize ("DEFIB:Sync");
 
-            this.FindControl<TextBlock> ("btntxtPacer").Text = App.Language.Localize ("DEFIB:Pacer");
-            this.FindControl<TextBlock> ("txtPaceRate").Text = App.Language.Localize ("DEFIB:Rate");
-            this.FindControl<TextBlock> ("btntxtPaceRateDecrease").Text = App.Language.Localize ("DEFIB:Decrease");
-            this.FindControl<TextBlock> ("btntxtPaceRateIncrease").Text = App.Language.Localize ("DEFIB:Increase");
-            this.FindControl<TextBlock> ("txtPaceEnergy").Text = App.Language.Localize ("DEFIB:EnergyAmount");
-            this.FindControl<TextBlock> ("btntxtPaceEnergyDecrease").Text = App.Language.Localize ("DEFIB:Decrease");
-            this.FindControl<TextBlock> ("btntxtPaceEnergyIncrease").Text = App.Language.Localize ("DEFIB:Increase");
-            this.FindControl<TextBlock> ("btntxtPacePause").Text = App.Language.Localize ("DEFIB:Pause");
+                this.FindControl<TextBlock> ("btntxtPacer").Text = Instance.Language.Localize ("DEFIB:Pacer");
+                this.FindControl<TextBlock> ("txtPaceRate").Text = Instance.Language.Localize ("DEFIB:Rate");
+                this.FindControl<TextBlock> ("btntxtPaceRateDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
+                this.FindControl<TextBlock> ("btntxtPaceRateIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
+                this.FindControl<TextBlock> ("txtPaceEnergy").Text = Instance.Language.Localize ("DEFIB:EnergyAmount");
+                this.FindControl<TextBlock> ("btntxtPaceEnergyDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
+                this.FindControl<TextBlock> ("btntxtPaceEnergyIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
+                this.FindControl<TextBlock> ("btntxtPacePause").Text = Instance.Language.Localize ("DEFIB:Pause");
+            }
         }
 
         private void UpdateInterface () {
-            Dispatcher.UIThread.InvokeAsync (() => {
+            Dispatcher.UIThread.InvokeAsync ((Action)(() => {
                 listNumerics
-                    .Where (n => n.controlType.Value == Controls.DefibNumeric.ControlType.Values.DEFIB)
-                    .ToList ()
+                    .Where<Controls.DefibNumeric> ((Func<Controls.DefibNumeric, bool>)(n => n.ControlType?.Value == Controls.DefibNumeric.ControlTypes.Values.DEFIB))
+                    .ToList<Controls.DefibNumeric> ()
                     .ForEach (n => n.UpdateVitals ());
 
                 for (int i = 0; i < listTracings.Count; i++)
@@ -109,7 +115,7 @@ namespace IISIM {
 
                 Window window = this.FindControl<Window> ("wdwDeviceDefib");
                 window.Background = Color.GetBackground (Color.Devices.DeviceDefib, colorScheme);
-            });
+            }));
         }
 
         public async Task Load_Process (string inc) {
@@ -155,7 +161,7 @@ namespace IISIM {
             List<string> numericTypes = new (),
                          tracingTypes = new ();
 
-            listNumerics.ForEach (o => { numericTypes.Add (o.controlType.Value.ToString ()); });
+            listNumerics.ForEach ((Action<Controls.DefibNumeric>)(o => { numericTypes.Add ((string)o.ControlType.Value.ToString ()); }));
             listTracings.ForEach (o => { tracingTypes.Add (o.Strip?.Lead?.Value.ToString () ?? ""); });
             sWrite.AppendLine (String.Format ("{0}:{1}", "numericTypes", string.Join (",", numericTypes)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "tracingTypes", string.Join (",", tracingTypes)));
@@ -205,7 +211,7 @@ namespace IISIM {
         }
 
         private void UpdatePacemaker () {
-            _ = App.Patient?.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            _ = Instance.Patient?.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
         }
 
         private void ButtonDefib_Click (object s, RoutedEventArgs e) {
@@ -237,16 +243,16 @@ namespace IISIM {
 
             Analyzed = false;
 
-            if (timerAncillary_Delay.IsLocked) {
+            if (TimerAncillary_Delay.IsLocked) {
                 Charging = false;
                 Charged = true;
             } else {
                 Charging = true;
                 Charged = false;
-                timerAncillary_Delay.Lock ();
-                timerAncillary_Delay.Tick += OnTick_ChargingComplete;
-                timerAncillary_Delay.Set (3000);
-                timerAncillary_Delay.Start ();
+                TimerAncillary_Delay.Lock ();
+                TimerAncillary_Delay.Tick += OnTick_ChargingComplete;
+                TimerAncillary_Delay.Set (3000);
+                TimerAncillary_Delay.Start ();
             }
 
             UpdateInterface ();
@@ -260,8 +266,8 @@ namespace IISIM {
 
             switch (Mode) {
                 default: break;
-                case Modes.DEFIB: _ = App.Patient?.Defibrillate (); break;
-                case Modes.SYNC: _ = App.Patient?.Cardiovert (); break;
+                case Modes.DEFIB: _ = Instance.Patient?.Defibrillate (); break;
+                case Modes.SYNC: _ = Instance.Patient?.Cardiovert (); break;
             }
 
             UpdateInterface ();
@@ -325,7 +331,7 @@ namespace IISIM {
         }
 
         private void ButtonPacePause_Click (object s, RoutedEventArgs e)
-            => _ = App.Patient?.PacemakerPause ();
+            => _ = Instance.Patient?.PacemakerPause ();
 
         private void MenuClose_Click (object s, RoutedEventArgs e)
             => this.Close ();
@@ -346,9 +352,9 @@ namespace IISIM {
             => SetColorScheme (Color.Schemes.Dark);
 
         private void OnTick_ChargingComplete (object? sender, EventArgs e) {
-            timerAncillary_Delay.Stop ();
-            timerAncillary_Delay.Unlock ();
-            timerAncillary_Delay.Tick -= OnTick_ChargingComplete;
+            TimerAncillary_Delay.Stop ();
+            TimerAncillary_Delay.Unlock ();
+            TimerAncillary_Delay.Tick -= OnTick_ChargingComplete;
 
             Charging = false;
             Charged = true;
@@ -372,8 +378,8 @@ namespace IISIM {
 
             listNumerics
                 .Where (n
-                    => n.controlType.Value != Controls.DefibNumeric.ControlType.Values.ETCO2
-                    && n.controlType.Value != Controls.DefibNumeric.ControlType.Values.RR)
+                    => n.ControlType?.Value != Controls.DefibNumeric.ControlTypes.Values.ETCO2
+                    && n.ControlType?.Value != Controls.DefibNumeric.ControlTypes.Values.RR)
                 .ToList ()
                 .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }
@@ -384,8 +390,8 @@ namespace IISIM {
 
             listNumerics
                 .Where (n
-                    => n.controlType.Value == Controls.DefibNumeric.ControlType.Values.ETCO2
-                    || n.controlType.Value == Controls.DefibNumeric.ControlType.Values.RR)
+                    => n.ControlType.Value == Controls.DefibNumeric.ControlTypes.Values.ETCO2
+                    || n.ControlType.Value == Controls.DefibNumeric.ControlTypes.Values.RR)
                 .ToList ()
                 .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }
@@ -410,7 +416,7 @@ namespace IISIM {
                 Controls.DefibNumeric newNum;
                 newNum = new Controls.DefibNumeric (
                     this,
-                    (Controls.DefibNumeric.ControlType.Values)Enum.Parse (typeof (Controls.DefibNumeric.ControlType.Values), numericTypes [i]),
+                    (Controls.DefibNumeric.ControlTypes.Values)Enum.Parse (typeof (Controls.DefibNumeric.ControlTypes.Values), numericTypes [i]),
                     colorScheme);
                 listNumerics.Add (newNum);
             }
@@ -426,7 +432,7 @@ namespace IISIM {
 
             for (int i = listTracings.Count; i < rowsTracings && i < tracingTypes.Count; i++) {
                 Strip newStrip = new ((Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]), 6f);
-                Controls.DefibTracing newTracing = new (newStrip, colorScheme);
+                Controls.DefibTracing newTracing = new (Instance, newStrip, colorScheme);
                 listTracings.Add (newTracing);
             }
 
@@ -458,45 +464,45 @@ namespace IISIM {
 
                 case Patient.PatientEventTypes.Vitals_Change:
                     listTracings.ForEach (c => {
-                        c.Strip.ClearFuture (App.Patient);
-                        c.Strip.Add_Beat__Cardiac_Baseline (App.Patient);
+                        c.Strip?.ClearFuture (Instance?.Patient);
+                        c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Patient);
                     });
 
                     listNumerics.ForEach ((n) => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
                     break;
 
                 case Patient.PatientEventTypes.Defibrillation:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Defibrillation (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Pacermaker_Spike:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Pacemaker (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Baseline:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Atrial_Electric:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial_Electrical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Electrical (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular_Electric:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Electrical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Atrial_Mechanical:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial_Mechanical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Mechanical (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Mechanical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Patient));
 
                     /* Iterations and trigger for auto-scaling pressure waveform strips */
                     autoScale_iter -= 1;
                     if (autoScale_iter <= 0) {
                         for (int i = 0; i < listTracings.Count; i++) {
-                            listTracings [i].Strip.SetAutoScale (App.Patient ?? new Patient ());
+                            listTracings [i].Strip?.SetAutoScale (Instance?.Patient ?? new Patient ());
                             Dispatcher.UIThread.InvokeAsync (listTracings [i].UpdateScale);
                         }
 
@@ -505,15 +511,15 @@ namespace IISIM {
                     break;
 
                 case Patient.PatientEventTypes.Respiratory_Baseline:
-                    listTracings.ForEach (c => c.Strip.Add_Breath__Respiratory_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Baseline (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Respiratory_Inspiration:
-                    listTracings.ForEach (c => c.Strip.Add_Breath__Respiratory_Inspiration (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Inspiration (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Respiratory_Expiration:
-                    listTracings.ForEach (c => c.Strip.Add_Breath__Respiratory_Expiration (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Expiration (Instance?.Patient));
                     break;
             }
         }

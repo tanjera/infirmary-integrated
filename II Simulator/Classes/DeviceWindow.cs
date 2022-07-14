@@ -19,14 +19,16 @@ using II.Waveform;
 namespace IISIM {
 
     public class DeviceWindow : Window {
+        public App? Instance { get; set; }
+
         public States State;
 
         public Timer
-            timerTracing = new (),
+            TimerTracing = new (),
             timerVitals = new (),
-            timerVitals_Cardiac = new (),
-            timerVitals_Respiratory = new (),
-            timerAncillary_Delay = new ();
+            TimerVitals_Cardiac = new (),
+            TimerVitals_Respiratory = new (),
+            TimerAncillary_Delay = new ();
 
         public enum States {
             Running,
@@ -35,6 +37,11 @@ namespace IISIM {
         }
 
         public DeviceWindow () {
+        }
+
+        public DeviceWindow (App? app) {
+            Instance = app;
+
             Closed += this.OnClosed;
             Closing += this.OnClosing;
 
@@ -49,48 +56,53 @@ namespace IISIM {
 
         public void Dispose () {
             /* Clean subscriptions from the Main Timer */
-            App.Timer_Main.Elapsed -= timerTracing.Process;
-            App.Timer_Main.Elapsed -= timerVitals.Process;
-            App.Timer_Main.Elapsed -= timerVitals_Cardiac.Process;
-            App.Timer_Main.Elapsed -= timerVitals_Respiratory.Process;
-            App.Timer_Main.Elapsed -= timerAncillary_Delay.Process;
+            if (Instance is not null) {
+                Instance.Timer_Main.Elapsed -= TimerTracing.Process;
+                Instance.Timer_Main.Elapsed -= timerVitals.Process;
+                Instance.Timer_Main.Elapsed -= TimerVitals_Cardiac.Process;
+                Instance.Timer_Main.Elapsed -= TimerVitals_Respiratory.Process;
+                Instance.Timer_Main.Elapsed -= TimerAncillary_Delay.Process;
+            }
 
             /* Dispose of local Timers */
-            timerTracing.Dispose ();
+            TimerTracing.Dispose ();
             timerVitals.Dispose ();
-            timerVitals_Cardiac.Dispose ();
-            timerVitals_Respiratory.Dispose ();
-            timerAncillary_Delay.Dispose ();
+            TimerVitals_Cardiac.Dispose ();
+            TimerVitals_Respiratory.Dispose ();
+            TimerAncillary_Delay.Dispose ();
 
             /* Unsubscribe from the main Patient event listing */
-            if (App.Patient != null)
-                App.Patient.PatientEvent -= OnPatientEvent;
+            if (Instance?.Patient != null)
+                Instance.Patient.PatientEvent -= OnPatientEvent;
         }
 
         private void InitTimers () {
-            App.Timer_Main.Elapsed += timerTracing.Process;
+            if (Instance is null)
+                return;
 
-            App.Timer_Main.Elapsed += timerVitals.Process;
-            App.Timer_Main.Elapsed += timerVitals_Cardiac.Process;
-            App.Timer_Main.Elapsed += timerVitals_Respiratory.Process;
+            Instance.Timer_Main.Elapsed += TimerTracing.Process;
 
-            App.Timer_Main.Elapsed += timerAncillary_Delay.Process;
+            Instance.Timer_Main.Elapsed += timerVitals.Process;
+            Instance.Timer_Main.Elapsed += TimerVitals_Cardiac.Process;
+            Instance.Timer_Main.Elapsed += TimerVitals_Respiratory.Process;
 
-            timerTracing.Tick += OnTick_Tracing;
+            Instance.Timer_Main.Elapsed += TimerAncillary_Delay.Process;
+
+            TimerTracing.Tick += OnTick_Tracing;
             timerVitals.Tick += OnTick_Vitals;
-            timerVitals_Cardiac.Tick += OnTick_Vitals_Cardiac;
-            timerVitals_Respiratory.Tick += OnTick_Vitals_Respiratory;
+            TimerVitals_Cardiac.Tick += OnTick_Vitals_Cardiac;
+            TimerVitals_Respiratory.Tick += OnTick_Vitals_Respiratory;
 
-            timerTracing.Set (Draw.RefreshTime);
+            TimerTracing.Set (Draw.RefreshTime);
 
-            timerVitals.Set ((int)((App.Patient?.GetHR_Seconds ?? 1) * 1000));
-            timerVitals_Cardiac.Set (II.Math.Clamp ((int)(App.Patient.GetHR_Seconds * 1000 / 2), 2000, 6000));
-            timerVitals_Respiratory.Set (II.Math.Clamp ((int)(App.Patient.GetRR_Seconds * 1000 / 2), 2000, 8000));
+            timerVitals.Set ((int)((Instance.Patient?.GetHR_Seconds ?? 1) * 1000));
+            TimerVitals_Cardiac.Set (II.Math.Clamp ((int)(Instance.Patient.GetHR_Seconds * 1000 / 2), 2000, 6000));
+            TimerVitals_Respiratory.Set (II.Math.Clamp ((int)(Instance.Patient.GetRR_Seconds * 1000 / 2), 2000, 8000));
 
-            timerTracing.Start ();
+            TimerTracing.Start ();
             timerVitals.Start ();
-            timerVitals_Cardiac.Start ();
-            timerVitals_Respiratory.Start ();
+            TimerVitals_Cardiac.Start ();
+            TimerVitals_Respiratory.Start ();
         }
 
         public virtual void TogglePause () {

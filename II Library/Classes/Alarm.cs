@@ -37,6 +37,7 @@ namespace II {
 
         public Parameters? Parameter { get; set; }
 
+        public bool? Alarming { get; set; }
         public bool? Enabled { get; set; }
 
         public int? High { get; set; }
@@ -72,8 +73,13 @@ namespace II {
             get { return IsSet && (Enabled ?? false); }
         }
 
-        public bool ShouldAlarm (int value) {
-            return IsSet && IsEnabled
+        public bool ActivateAlarm (int? value) {
+            Alarming = ShouldAlarm (value);
+            return Alarming ?? false;
+        }
+
+        public bool ShouldAlarm (int? value) {
+            return value is not null && IsSet && IsEnabled
                 && ((Low is not null && Low > 0 && value < Low) || (High is not null && High > 0 && value > High));
         }
 

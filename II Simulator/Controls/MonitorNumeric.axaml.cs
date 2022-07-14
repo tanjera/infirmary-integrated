@@ -18,24 +18,24 @@ using II.Rhythm;
 
 namespace IISIM.Controls {
 
-    public partial class MonitorNumeric : UserControl {
-        public ControlType? controlType;
-        public Color.Schemes colorScheme;
+    public partial class MonitorNumeric : DeviceNumeric {
+        public ControlTypes? ControlType;
 
-        private Timer timerAlarm = new ();
-        private bool iterAlarm = false;
+        private MenuItem? uiMenuZeroTransducer;
 
-        private MenuItem? menuZeroTransducer;
+        /* Variables controlling for visual alarms */
+        public Alarm? AlarmRef;
+        private Timer? AlarmTimer = new ();
+        private bool? AlarmIterator = false;
 
-        private Alarm? alarmRef;
-        private bool alarmLine1;
-        private bool alarmLine2;
-        private bool alarmLine3;
+        private bool? AlarmLine1;
+        private bool? AlarmLine2;
+        private bool? AlarmLine3;
 
-        public class ControlType {
+        public class ControlTypes {
             public Values Value;
 
-            public ControlType (Values v) {
+            public ControlTypes (Values v) {
                 Value = v;
             }
 
@@ -50,18 +50,18 @@ namespace IISIM.Controls {
             }
 
             private static Color.Leads SwitchLead_Color (Values value) => value switch {
-                ControlType.Values.ECG => Color.Leads.ECG,
-                ControlType.Values.T => Color.Leads.T,
-                ControlType.Values.RR => Color.Leads.RR,
-                ControlType.Values.ETCO2 => Color.Leads.ETCO2,
-                ControlType.Values.SPO2 => Color.Leads.SPO2,
-                ControlType.Values.NIBP => Color.Leads.NIBP,
-                ControlType.Values.ABP => Color.Leads.ABP,
-                ControlType.Values.CVP => Color.Leads.CVP,
-                ControlType.Values.CO => Color.Leads.CO,
-                ControlType.Values.PA => Color.Leads.PA,
-                ControlType.Values.ICP => Color.Leads.ICP,
-                ControlType.Values.IAP => Color.Leads.IAP,
+                ControlTypes.Values.ECG => Color.Leads.ECG,
+                ControlTypes.Values.T => Color.Leads.T,
+                ControlTypes.Values.RR => Color.Leads.RR,
+                ControlTypes.Values.ETCO2 => Color.Leads.ETCO2,
+                ControlTypes.Values.SPO2 => Color.Leads.SPO2,
+                ControlTypes.Values.NIBP => Color.Leads.NIBP,
+                ControlTypes.Values.ABP => Color.Leads.ABP,
+                ControlTypes.Values.CVP => Color.Leads.CVP,
+                ControlTypes.Values.CO => Color.Leads.CO,
+                ControlTypes.Values.PA => Color.Leads.PA,
+                ControlTypes.Values.ICP => Color.Leads.ICP,
+                ControlTypes.Values.IAP => Color.Leads.IAP,
                 _ => Color.Leads.ECG
             };
 
@@ -83,11 +83,12 @@ namespace IISIM.Controls {
             InitializeComponent ();
         }
 
-        public MonitorNumeric (ControlType.Values v, Color.Schemes cs) {
+        public MonitorNumeric (App? app, ControlTypes.Values v, Color.Schemes cs) {
             InitializeComponent ();
 
-            controlType = new ControlType (v);
-            colorScheme = cs;
+            Instance = app;
+            ControlType = new ControlTypes (v);
+            ColorScheme = cs;
 
             InitInterface ();
             InitTimers ();
@@ -97,7 +98,7 @@ namespace IISIM.Controls {
         }
 
         ~MonitorNumeric () {
-            timerAlarm.Dispose ();
+            AlarmTimer?.Dispose ();
         }
 
         private void InitializeComponent () {
@@ -118,22 +119,22 @@ namespace IISIM.Controls {
             this.FindControl<Viewbox> ("vbLine2").ContextMenu = contextMenu;
             this.FindControl<Viewbox> ("vbLine3").ContextMenu = contextMenu;
 
-            menuZeroTransducer = new ();
-            menuZeroTransducer.Header = App.Language.Localize ("MENU:MenuZeroTransducer");
-            menuZeroTransducer.Classes.Add ("item");
-            menuZeroTransducer.Click += MenuZeroTransducer_Click;
-            menuitemsContext.Add (menuZeroTransducer);
+            uiMenuZeroTransducer = new ();
+            uiMenuZeroTransducer.Header = Instance?.Language.Localize ("MENU:MenuZeroTransducer");
+            uiMenuZeroTransducer.Classes.Add ("item");
+            uiMenuZeroTransducer.Click += MenuZeroTransducer_Click;
+            menuitemsContext.Add (uiMenuZeroTransducer);
 
             menuitemsContext.Add (new Separator ());
 
             MenuItem menuAddNumeric = new ();
-            menuAddNumeric.Header = App.Language.Localize ("MENU:MenuAddNumeric");
+            menuAddNumeric.Header = Instance?.Language.Localize ("MENU:MenuAddNumeric");
             menuAddNumeric.Classes.Add ("item");
             menuAddNumeric.Click += MenuAddNumeric_Click;
             menuitemsContext.Add (menuAddNumeric);
 
             MenuItem menuRemoveNumeric = new ();
-            menuRemoveNumeric.Header = App.Language.Localize ("MENU:MenuRemoveNumeric");
+            menuRemoveNumeric.Header = Instance?.Language.Localize ("MENU:MenuRemoveNumeric");
             menuRemoveNumeric.Classes.Add ("item");
             menuRemoveNumeric.Click += MenuRemoveNumeric_Click;
             menuitemsContext.Add (menuRemoveNumeric);
@@ -142,12 +143,12 @@ namespace IISIM.Controls {
 
             MenuItem menuSelectInput = new ();
             List<object> menuitemsSelectInput = new ();
-            menuSelectInput.Header = App.Language.Localize ("MENU:MenuSelectInputSource");
+            menuSelectInput.Header = Instance?.Language.Localize ("MENU:MenuSelectInputSource");
             menuSelectInput.Classes.Add ("item");
 
-            foreach (ControlType.Values v in Enum.GetValues (typeof (ControlType.Values))) {
+            foreach (ControlTypes.Values v in Enum.GetValues (typeof (ControlTypes.Values))) {
                 MenuItem mi = new ();
-                mi.Header = App.Language.Localize (ControlType.LookupString (v));
+                mi.Header = Instance?.Language.Localize (ControlTypes.LookupString (v));
                 mi.Classes.Add ("item");
                 mi.Name = v.ToString ();
                 mi.Click += MenuSelectInputSource;
@@ -161,18 +162,21 @@ namespace IISIM.Controls {
         }
 
         private void InitTimers () {
-            App.Timer_Main.Elapsed += timerAlarm.Process;
+            if (Instance is null || AlarmTimer is null)
+                return;
 
-            timerAlarm.Tick += (s, e) => { Dispatcher.UIThread.InvokeAsync (() => { OnTick_Alarm (s, e); }); };
+            Instance.Timer_Main.Elapsed += AlarmTimer.Process;
 
-            timerAlarm.Set (1000);
-            timerAlarm.Start ();
+            AlarmTimer.Tick += (s, e) => { Dispatcher.UIThread.InvokeAsync (() => { OnTick_Alarm (s, e); }); };
+
+            AlarmTimer.Set (1000);
+            AlarmTimer.Start ();
         }
 
         private void InitAlarm () {
-            alarmLine1 = false;
-            alarmLine2 = false;
-            alarmLine3 = false;
+            AlarmLine1 = false;
+            AlarmLine2 = false;
+            AlarmLine3 = false;
         }
 
         private void OnTick_Alarm (object? sender, EventArgs e) {
@@ -180,48 +184,48 @@ namespace IISIM.Controls {
             TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
             TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
 
-            iterAlarm = !iterAlarm;
+            AlarmIterator = !AlarmIterator;
 
-            int time = (alarmRef?.Priority ?? Alarm.Priorities.Low) switch {
+            int time = (AlarmRef?.Priority ?? Alarm.Priorities.Low) switch {
                 Alarm.Priorities.Low => 10000,
                 Alarm.Priorities.Medium => 5000,
                 Alarm.Priorities.High => 1000,
                 _ => 10000,
             };
 
-            _ = timerAlarm.ResetAuto (time);
+            _ = AlarmTimer?.ResetAuto (time);
 
-            if (controlType is not null) {
-                if (alarmLine1)
-                    lblLine1.Foreground = iterAlarm
-                        ? Color.GetLead (controlType.GetLead_Color, colorScheme)
-                        : Color.GetAlarm (controlType.GetLead_Color, colorScheme);
+            if (ControlType is not null) {
+                if (AlarmLine1 ?? false)
+                    lblLine1.Foreground = AlarmIterator ?? false
+                        ? Color.GetLead (ControlType.GetLead_Color, ColorScheme)
+                        : Color.GetAlarm (ControlType.GetLead_Color, ColorScheme);
                 else
-                    lblLine1.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                    lblLine1.Foreground = Color.GetLead (ControlType.GetLead_Color, ColorScheme);
 
-                if (alarmLine2)
-                    lblLine2.Foreground = iterAlarm
-                        ? Color.GetLead (controlType.GetLead_Color, colorScheme)
-                        : Color.GetAlarm (controlType.GetLead_Color, colorScheme);
+                if (AlarmLine2 ?? false)
+                    lblLine2.Foreground = AlarmIterator ?? false
+                        ? Color.GetLead (ControlType.GetLead_Color, ColorScheme)
+                        : Color.GetAlarm (ControlType.GetLead_Color, ColorScheme);
                 else
-                    lblLine2.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                    lblLine2.Foreground = Color.GetLead (ControlType.GetLead_Color, ColorScheme);
 
-                if (alarmLine3)
-                    lblLine3.Foreground = iterAlarm
-                        ? Color.GetLead (controlType.GetLead_Color, colorScheme)
-                        : Color.GetAlarm (controlType.GetLead_Color, colorScheme);
+                if (AlarmLine3 ?? false)
+                    lblLine3.Foreground = AlarmIterator ?? false
+                        ? Color.GetLead (ControlType.GetLead_Color, ColorScheme)
+                        : Color.GetAlarm (ControlType.GetLead_Color, ColorScheme);
                 else
-                    lblLine3.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                    lblLine3.Foreground = Color.GetLead (ControlType.GetLead_Color, ColorScheme);
             }
         }
 
         public void SetColorScheme (Color.Schemes scheme) {
-            colorScheme = scheme;
+            ColorScheme = scheme;
             UpdateInterface ();
         }
 
         private void UpdateInterface () {
-            if (controlType is null)
+            if (ControlType is null)
                 return;
 
             Dispatcher.UIThread.InvokeAsync (() => {
@@ -231,272 +235,272 @@ namespace IISIM.Controls {
                 TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
                 TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
 
-                borderNumeric.BorderBrush = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                borderNumeric.BorderBrush = Color.GetLead (ControlType.GetLead_Color, ColorScheme);
 
-                lblNumType.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-                lblLine1.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-                lblLine2.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-                lblLine3.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                lblNumType.Foreground = Color.GetLead (ControlType.GetLead_Color, ColorScheme);
+                lblLine1.Foreground = Color.GetLead (ControlType.GetLead_Color, ColorScheme);
+                lblLine2.Foreground = Color.GetLead (ControlType.GetLead_Color, ColorScheme);
+                lblLine3.Foreground = Color.GetLead (ControlType.GetLead_Color, ColorScheme);
 
                 lblLine1.IsVisible = true;
                 lblLine2.IsVisible = true;
                 lblLine3.IsVisible = true;
 
-                lblNumType.Text = App.Language.Localize (ControlType.LookupString (controlType.Value));
+                lblNumType.Text = Instance?.Language.Localize (ControlTypes.LookupString (ControlType.Value));
 
                 /* Set lines to be visible/hidden as appropriate */
-                switch (controlType.Value) {
+                switch (ControlType.Value) {
                     default:
-                    case ControlType.Values.NIBP:
-                    case ControlType.Values.ABP:
-                    case ControlType.Values.PA:
+                    case ControlTypes.Values.NIBP:
+                    case ControlTypes.Values.ABP:
+                    case ControlTypes.Values.PA:
                         break;
 
-                    case ControlType.Values.SPO2:
-                    case ControlType.Values.ETCO2:
-                    case ControlType.Values.ICP:
+                    case ControlTypes.Values.SPO2:
+                    case ControlTypes.Values.ETCO2:
+                    case ControlTypes.Values.ICP:
                         lblLine3.IsVisible = false;
                         break;
 
-                    case ControlType.Values.ECG:
-                    case ControlType.Values.T:
-                    case ControlType.Values.RR:
-                    case ControlType.Values.CVP:
-                    case ControlType.Values.CO:
-                    case ControlType.Values.IAP:
+                    case ControlTypes.Values.ECG:
+                    case ControlTypes.Values.T:
+                    case ControlTypes.Values.RR:
+                    case ControlTypes.Values.CVP:
+                    case ControlTypes.Values.CO:
+                    case ControlTypes.Values.IAP:
                         lblLine2.IsVisible = false;
                         lblLine3.IsVisible = false;
                         break;
                 }
 
                 /* Set menu items enabled/disabled accordingly */
-                switch (controlType.Value) {
+                switch (ControlType.Value) {
                     default:
-                        if (menuZeroTransducer is not null)
-                            menuZeroTransducer.IsEnabled = false;
+                        if (uiMenuZeroTransducer is not null)
+                            uiMenuZeroTransducer.IsEnabled = false;
                         break;
 
-                    case ControlType.Values.ABP:
-                    case ControlType.Values.CVP:
-                    case ControlType.Values.IAP:
-                    case ControlType.Values.ICP:
-                    case ControlType.Values.PA:
-                        if (menuZeroTransducer is not null)
-                            menuZeroTransducer.IsEnabled = true;
+                    case ControlTypes.Values.ABP:
+                    case ControlTypes.Values.CVP:
+                    case ControlTypes.Values.IAP:
+                    case ControlTypes.Values.ICP:
+                    case ControlTypes.Values.PA:
+                        if (uiMenuZeroTransducer is not null)
+                            uiMenuZeroTransducer.IsEnabled = true;
                         break;
                 }
             });
         }
 
         public void UpdateVitals () {
-            if (App.Patient == null)
+            if (Instance?.Patient == null)
                 return;
 
             TextBlock lblLine1 = this.FindControl<TextBlock> ("lblLine1");
             TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
             TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
 
-            switch (controlType?.Value) {
+            switch (ControlType?.Value) {
                 default:
-                case ControlType.Values.ECG:
-                    int hr = App.Patient.MeasureHR_ECG (Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength);
+                case ControlTypes.Values.ECG:
+                    int? hr = Instance?.Patient.MeasureHR_ECG (Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength);
                     lblLine1.Text = String.Format ("{0:0}", hr);
 
-                    alarmRef = App.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.HR);
-                    alarmLine1 = (alarmRef is not null && alarmRef.IsSet && alarmRef.IsEnabled && alarmRef.ShouldAlarm (hr));
+                    AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.HR);
+                    AlarmLine1 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (hr));
                     break;
 
-                case ControlType.Values.T:
-                    lblLine1.Text = String.Format ("{0:0.0}", App.Patient.T);
+                case ControlTypes.Values.T:
+                    lblLine1.Text = String.Format ("{0:0.0}", Instance?.Patient.T);
                     break;
 
-                case ControlType.Values.SPO2:
-                    int spo2 = (int)II.Math.RandomPercentRange (App.Patient.SPO2, 0.01f);
+                case ControlTypes.Values.SPO2:
+                    int? spo2 = (int)II.Math.RandomPercentRange (Instance?.Patient?.SPO2 ?? 0, 0.01f);
                     lblLine1.Text = String.Format ("{0:0}", spo2);
-                    lblLine2.Text = String.Format ("@ {0:0}", App.Patient.MeasureHR_SPO2 (
+                    lblLine2.Text = String.Format ("@ {0:0}", Instance?.Patient.MeasureHR_SPO2 (
                         Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
 
-                    alarmRef = App.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.SPO2);
-                    alarmLine1 = (alarmRef is not null && alarmRef.IsSet && alarmRef.IsEnabled && alarmRef.ShouldAlarm (spo2));
+                    AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.SPO2);
+                    AlarmLine1 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (spo2));
                     break;
 
-                case ControlType.Values.RR:
-                    int rr = App.Patient.MeasureRR (
+                case ControlTypes.Values.RR:
+                    int? rr = Instance?.Patient.MeasureRR (
                         Strip.DefaultLength * Strip.DefaultRespiratoryCoefficient, Strip.DefaultLength * Strip.DefaultBufferLength);
 
                     lblLine1.Text = String.Format ("{0:0}", rr);
 
-                    alarmRef = App.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.RR);
-                    alarmLine1 = (alarmRef is not null && alarmRef.IsSet && alarmRef.IsEnabled && alarmRef.ShouldAlarm (rr));
+                    AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.RR);
+                    AlarmLine1 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (rr ?? 0));
                     break;
 
-                case ControlType.Values.ETCO2:
-                    int etco2 = (int)II.Math.RandomPercentRange (App.Patient.ETCO2, 0.02f);
+                case ControlTypes.Values.ETCO2:
+                    int? etco2 = (int)II.Math.RandomPercentRange (Instance?.Patient?.ETCO2 ?? 0, 0.02f);
 
                     lblLine1.Text = String.Format ("{0:0}", etco2);
-                    lblLine2.Text = String.Format ("@ {0:0}", App.Patient.MeasureRR (
+                    lblLine2.Text = String.Format ("@ {0:0}", Instance?.Patient.MeasureRR (
                         Strip.DefaultLength * Strip.DefaultRespiratoryCoefficient, Strip.DefaultLength * Strip.DefaultBufferLength));
 
-                    alarmRef = App.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.ETCO2);
-                    alarmLine1 = (alarmRef is not null && alarmRef.IsSet && alarmRef.IsEnabled && alarmRef.ShouldAlarm (etco2));
+                    AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.ETCO2);
+                    AlarmLine1 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (etco2));
                     break;
 
-                case ControlType.Values.NIBP:
-                    lblLine1.Text = String.Format ("{0:0}", App.Patient.NSBP);
-                    lblLine2.Text = String.Format ("/ {0:0}", App.Patient.NDBP);
-                    lblLine3.Text = String.Format ("({0:0})", App.Patient.NMAP);
+                case ControlTypes.Values.NIBP:
+                    lblLine1.Text = String.Format ("{0:0}", Instance?.Patient.NSBP);
+                    lblLine2.Text = String.Format ("/ {0:0}", Instance?.Patient.NDBP);
+                    lblLine3.Text = String.Format ("({0:0})", Instance?.Patient.NMAP);
 
-                    alarmRef = App.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.NSBP);
-                    alarmLine1 = (alarmRef is not null && alarmRef.IsSet && alarmRef.IsEnabled && alarmRef.ShouldAlarm (App.Patient.NSBP));
+                    AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.NSBP);
+                    AlarmLine1 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (Instance?.Patient.NSBP));
 
-                    alarmRef = App.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.NDBP);
-                    alarmLine2 = (alarmRef is not null && alarmRef.IsSet && alarmRef.IsEnabled && alarmRef.ShouldAlarm (App.Patient.NDBP));
+                    AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.NDBP);
+                    AlarmLine2 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (Instance?.Patient.NDBP));
 
-                    alarmRef = App.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.NMAP);
-                    alarmLine3 = (alarmRef is not null && alarmRef.IsSet && alarmRef.IsEnabled && alarmRef.ShouldAlarm (App.Patient.NMAP));
+                    AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.NMAP);
+                    AlarmLine3 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (Instance?.Patient.NMAP));
                     break;
 
-                case ControlType.Values.ABP:
-                    if (App.Patient.TransducerZeroed_ABP) {
-                        int asbp = (int)II.Math.RandomPercentRange (App.Patient.ASBP, 0.02f);
-                        int adbp = (int)II.Math.RandomPercentRange ((App.Patient.IABP_Active ? App.Patient.IABP_DBP : App.Patient.ADBP), 0.02f);
-                        int amap = (int)II.Math.RandomPercentRange (App.Patient.AMAP, 0.02f);
+                case ControlTypes.Values.ABP:
+                    if (Instance?.Patient.TransducerZeroed_ABP ?? false) {
+                        int asbp = (int)II.Math.RandomPercentRange (Instance?.Patient?.ASBP, 0.02f);
+                        int adbp = (int)II.Math.RandomPercentRange ((Instance?.Patient?.IABP_Active ?? false ? Instance?.Patient.IABP_DBP : Instance?.Patient.ADBP), 0.02f);
+                        int amap = (int)II.Math.RandomPercentRange (Instance?.Patient?.AMAP, 0.02f);
 
                         lblLine1.Text = String.Format ("{0:0}", asbp);
                         lblLine2.Text = String.Format ("/ {0:0}", adbp);
                         lblLine3.Text = String.Format ("({0:0})", amap);
 
-                        alarmRef = App.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.ASBP);
-                        alarmLine1 = (alarmRef is not null && alarmRef.IsSet && alarmRef.IsEnabled && alarmRef.ShouldAlarm (asbp));
+                        AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.ASBP);
+                        AlarmLine1 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (asbp));
 
-                        alarmRef = App.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.ADBP);
-                        alarmLine2 = (alarmRef is not null && alarmRef.IsSet && alarmRef.IsEnabled && alarmRef.ShouldAlarm (adbp));
+                        AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.ADBP);
+                        AlarmLine2 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (adbp));
 
-                        alarmRef = App.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.AMAP);
-                        alarmLine3 = (alarmRef is not null && alarmRef.IsSet && alarmRef.IsEnabled && alarmRef.ShouldAlarm (amap));
+                        AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.AMAP);
+                        AlarmLine3 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (amap));
                     } else {
-                        lblLine1.Text = Utility.WrapString (App.Language.Localize ("NUMERIC:ZeroTransducer"));
+                        lblLine1.Text = Utility.WrapString (Instance?.Language.Localize ("NUMERIC:ZeroTransducer"));
                         lblLine2.Text = "";
                         lblLine3.Text = "";
 
-                        alarmLine1 = false;
-                        alarmLine2 = false;
-                        alarmLine3 = false;
+                        AlarmLine1 = false;
+                        AlarmLine2 = false;
+                        AlarmLine3 = false;
                     }
                     break;
 
-                case ControlType.Values.CVP:
-                    if (App.Patient.TransducerZeroed_CVP) {
-                        int cvp = (int)II.Math.RandomPercentRange (App.Patient.CVP, 0.02f);
+                case ControlTypes.Values.CVP:
+                    if (Instance?.Patient.TransducerZeroed_CVP ?? false) {
+                        int cvp = (int)II.Math.RandomPercentRange (Instance?.Patient.CVP, 0.02f);
 
                         lblLine1.Text = String.Format ("{0:0}", cvp);
 
-                        alarmRef = App.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.CVP);
-                        alarmLine1 = (alarmRef is not null && alarmRef.IsSet && alarmRef.IsEnabled && alarmRef.ShouldAlarm (cvp));
+                        AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.CVP);
+                        AlarmLine1 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (cvp));
                     } else {
-                        lblLine1.Text = App.Language.Localize ("NUMERIC:ZeroTransducer");
+                        lblLine1.Text = Instance?.Language.Localize ("NUMERIC:ZeroTransducer");
 
-                        alarmLine1 = false;
+                        AlarmLine1 = false;
                     }
                     break;
 
-                case ControlType.Values.CO:
-                    lblLine1.Text = String.Format ("{0:0.0}", App.Patient.CO);
+                case ControlTypes.Values.CO:
+                    lblLine1.Text = String.Format ("{0:0.0}", Instance?.Patient.CO);
                     break;
 
-                case ControlType.Values.PA:
-                    if (App.Patient.TransducerZeroed_PA) {
-                        int psp = (int)II.Math.RandomPercentRange (App.Patient.PSP, 0.02f);
-                        int pdp = (int)II.Math.RandomPercentRange (App.Patient.PDP, 0.02f);
-                        int pmp = (int)II.Math.RandomPercentRange (App.Patient.PMP, 0.02f);
+                case ControlTypes.Values.PA:
+                    if (Instance?.Patient.TransducerZeroed_PA ?? false) {
+                        int psp = (int)II.Math.RandomPercentRange (Instance?.Patient.PSP, 0.02f);
+                        int pdp = (int)II.Math.RandomPercentRange (Instance?.Patient.PDP, 0.02f);
+                        int pmp = (int)II.Math.RandomPercentRange (Instance?.Patient.PMP, 0.02f);
 
                         lblLine1.Text = String.Format ("{0:0}", psp);
                         lblLine2.Text = String.Format ("/ {0:0}", pdp);
                         lblLine3.Text = String.Format ("({0:0})", pmp);
 
-                        alarmRef = App.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.PSP);
-                        alarmLine1 = (alarmRef is not null && alarmRef.IsSet && alarmRef.IsEnabled && alarmRef.ShouldAlarm (psp));
+                        AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.PSP);
+                        AlarmLine1 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (psp));
 
-                        alarmRef = App.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.PDP);
-                        alarmLine2 = (alarmRef is not null && alarmRef.IsSet && alarmRef.IsEnabled && alarmRef.ShouldAlarm (pdp));
+                        AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.PDP);
+                        AlarmLine2 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (pdp));
 
-                        alarmRef = App.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.PMP);
-                        alarmLine3 = (alarmRef is not null && alarmRef.IsSet && alarmRef.IsEnabled && alarmRef.ShouldAlarm (pmp));
+                        AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.PMP);
+                        AlarmLine3 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (pmp));
                     } else {
-                        lblLine1.Text = App.Language.Localize ("NUMERIC:ZeroTransducer");
+                        lblLine1.Text = Instance?.Language.Localize ("NUMERIC:ZeroTransducer");
                         lblLine2.Text = "";
                         lblLine3.Text = "";
 
-                        alarmLine1 = false;
-                        alarmLine2 = false;
-                        alarmLine3 = false;
+                        AlarmLine1 = false;
+                        AlarmLine2 = false;
+                        AlarmLine3 = false;
                     }
                     break;
 
-                case ControlType.Values.ICP:
-                    if (App.Patient.TransducerZeroed_ICP) {
-                        int icp = (int)II.Math.RandomPercentRange (App.Patient.ICP, 0.02f);
+                case ControlTypes.Values.ICP:
+                    if (Instance?.Patient.TransducerZeroed_ICP ?? false) {
+                        int icp = (int)II.Math.RandomPercentRange (Instance?.Patient.ICP, 0.02f);
 
                         lblLine1.Text = String.Format ("{0:0}", icp);
-                        lblLine2.Text = String.Format ("({0:0})", Patient.CalculateCPP (App.Patient.ICP, App.Patient.AMAP));
+                        lblLine2.Text = String.Format ("({0:0})", Patient.CalculateCPP (Instance?.Patient.ICP, Instance?.Patient.AMAP));
 
-                        alarmRef = App.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.ICP);
-                        alarmLine1 = (alarmRef is not null && alarmRef.IsSet && alarmRef.IsEnabled && alarmRef.ShouldAlarm (icp));
+                        AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.ICP);
+                        AlarmLine1 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (icp));
                     } else {
-                        lblLine1.Text = App.Language.Localize ("NUMERIC:ZeroTransducer");
+                        lblLine1.Text = Instance?.Language.Localize ("NUMERIC:ZeroTransducer");
                         lblLine2.Text = "";
 
-                        alarmLine1 = false;
+                        AlarmLine1 = false;
                     }
                     break;
 
-                case ControlType.Values.IAP:
-                    if (App.Patient.TransducerZeroed_IAP) {
-                        int iap = (int)II.Math.RandomPercentRange (App.Patient.IAP, 0.02f);
+                case ControlTypes.Values.IAP:
+                    if (Instance?.Patient.TransducerZeroed_IAP ?? false) {
+                        int iap = (int)II.Math.RandomPercentRange (Instance?.Patient.IAP, 0.02f);
 
                         lblLine1.Text = String.Format ("{0:0}", iap);
 
-                        alarmRef = App.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.IAP);
-                        alarmLine1 = (alarmRef is not null && alarmRef.IsSet && alarmRef.IsEnabled && alarmRef.ShouldAlarm (iap));
+                        AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.IAP);
+                        AlarmLine1 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (iap));
                     } else {
-                        lblLine1.Text = App.Language.Localize ("NUMERIC:ZeroTransducer");
+                        lblLine1.Text = Instance?.Language.Localize ("NUMERIC:ZeroTransducer");
 
-                        alarmLine1 = false;
+                        AlarmLine1 = false;
                     }
                     break;
             }
         }
 
         private void MenuZeroTransducer_Click (object? sender, RoutedEventArgs e) {
-            if (App.Patient is null)
+            if (Instance?.Patient is null)
                 return;
 
-            switch (controlType?.Value) {
-                case ControlType.Values.ABP: App.Patient.TransducerZeroed_ABP = true; return;
-                case ControlType.Values.CVP: App.Patient.TransducerZeroed_CVP = true; return;
-                case ControlType.Values.PA: App.Patient.TransducerZeroed_PA = true; return;
-                case ControlType.Values.ICP: App.Patient.TransducerZeroed_ICP = true; return;
-                case ControlType.Values.IAP: App.Patient.TransducerZeroed_IAP = true; return;
+            switch (ControlType?.Value) {
+                case ControlTypes.Values.ABP: Instance.Patient.TransducerZeroed_ABP = true; return;
+                case ControlTypes.Values.CVP: Instance.Patient.TransducerZeroed_CVP = true; return;
+                case ControlTypes.Values.PA: Instance.Patient.TransducerZeroed_PA = true; return;
+                case ControlTypes.Values.ICP: Instance.Patient.TransducerZeroed_ICP = true; return;
+                case ControlTypes.Values.IAP: Instance.Patient.TransducerZeroed_IAP = true; return;
             }
         }
 
         private void MenuAddNumeric_Click (object? sender, RoutedEventArgs e)
-            => App.Device_Monitor?.AddNumeric ();
+            => Instance?.Device_Monitor?.AddNumeric ();
 
         private void MenuRemoveNumeric_Click (object? sender, RoutedEventArgs e)
-            => App.Device_Monitor?.RemoveNumeric (this);
+            => Instance?.Device_Monitor?.RemoveNumeric (this);
 
         private void MenuSelectInputSource (object? sender, RoutedEventArgs e) {
             if (sender is not MenuItem)
                 return;
 
-            if (!Enum.TryParse<ControlType.Values> (((MenuItem)sender).Name, out ControlType.Values selectedValue))
+            if (!Enum.TryParse<ControlTypes.Values> (((MenuItem)sender).Name, out ControlTypes.Values selectedValue))
                 return;
 
-            if (controlType is null)
-                controlType = new (selectedValue);
+            if (ControlType is null)
+                ControlType = new (selectedValue);
             else
-                controlType.Value = selectedValue;
+                ControlType.Value = selectedValue;
 
             UpdateInterface ();
             UpdateVitals ();

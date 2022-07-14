@@ -76,23 +76,23 @@ namespace IISIM {
             new IBrush[] { Brushes.Black, Brushes.White, Brushes.Black}, // EFM
         };
 
-        public static IBrush GetBackground (Devices device, Schemes scheme) {
-            return Background [device.GetHashCode ()] [scheme.GetHashCode ()];
+        public static IBrush GetBackground (Devices? device, Schemes? scheme) {
+            return Background [device?.GetHashCode () ?? 0] [scheme?.GetHashCode () ?? 0];
         }
 
-        public static IBrush GetLead (II.Lead.Values lead, Schemes scheme) {
-            return GetLead (SwitchLead (lead), scheme);
+        public static IBrush GetLead (II.Lead.Values? lead, Schemes? scheme) {
+            return GetLead (SwitchLead (lead ?? II.Lead.Values.ECG_I), scheme ?? Schemes.Light);
         }
 
-        public static IBrush GetLead (Leads lead, Schemes scheme) {
-            return Lead [lead.GetHashCode ()] [scheme.GetHashCode ()];
+        public static IBrush GetLead (Leads? lead, Schemes? scheme) {
+            return Lead [lead?.GetHashCode () ?? 0] [scheme?.GetHashCode () ?? 0];
         }
 
-        public static IBrush GetAlarm (Leads lead, Schemes scheme) {
-            return Lead [lead.GetHashCode ()] [scheme.GetHashCode ()].Equals (Brushes.Red) ? Brushes.Yellow : Brushes.Red;
+        public static IBrush GetAlarm (Leads? lead, Schemes? scheme) {
+            return Lead [lead?.GetHashCode () ?? 0] [scheme?.GetHashCode () ?? 0].Equals (Brushes.Red) ? Brushes.Yellow : Brushes.Red;
         }
 
-        public static Leads SwitchLead (II.Lead.Values lead) => lead switch {
+        public static Leads SwitchLead (II.Lead.Values? lead) => lead switch {
             II.Lead.Values.ECG_I => Leads.ECG,
             II.Lead.Values.ECG_II => Leads.ECG,
             II.Lead.Values.ECG_III => Leads.ECG,

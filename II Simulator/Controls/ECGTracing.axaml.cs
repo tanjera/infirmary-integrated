@@ -21,29 +21,19 @@ using II.Rhythm;
 
 namespace IISIM.Controls {
 
-    public partial class ECGTracing : UserControl {
-        public Strip Strip;
-        public Lead Lead { get { return Strip.Lead; } }
-        public RenderTargetBitmap Tracing;
-
-        /* Drawing variables, offsets and multipliers */
-        public Color.Schemes colorScheme;
-        private Pen tracingPen = new();
-        private IBrush tracingBrush = Brushes.Green;
-
-        private PointD drawOffset;
-        private PointD drawMultiplier;
+    public partial class ECGTracing : DeviceTracing {
 
         public ECGTracing () {
             InitializeComponent ();
         }
 
-        public ECGTracing (Strip strip, Color.Schemes cs) {
+        public ECGTracing (App? app, Strip? strip, Color.Schemes? cs) {
             InitializeComponent ();
             DataContext = this;
 
+            Instance = app;
             Strip = strip;
-            colorScheme = cs;
+            ColorScheme = cs;
 
             UpdateInterface ();
         }
@@ -53,7 +43,7 @@ namespace IISIM.Controls {
         }
 
         public void SetColorScheme (Color.Schemes scheme) {
-            colorScheme = scheme;
+            ColorScheme = scheme;
             UpdateInterface ();
         }
 
@@ -62,45 +52,15 @@ namespace IISIM.Controls {
 
         private void UpdateInterface (object sender, EventArgs e) {
             Dispatcher.UIThread.InvokeAsync (() => {
-                tracingBrush = Color.GetLead (Lead.Value, colorScheme);
+                TracingBrush = Color.GetLead (Lead?.Value ?? Lead.Values.ECG_I, ColorScheme ?? Color.Schemes.Light);
 
                 Label lblLead = this.FindControl<Label> ("lblLead");
 
-                lblLead.Foreground = tracingBrush;
-                lblLead.Content = App.Language.Localize (Lead.LookupString (Lead.Value, true));
+                lblLead.Foreground = TracingBrush;
+                lblLead.Content = Instance?.Language.Localize (Lead.LookupString (Lead?.Value ?? Lead.Values.ECG_I, true));
 
                 CalculateOffsets ();
             });
-        }
-
-        public void CalculateOffsets () {
-            Image imgTracing = this.FindControl<Image> ("imgTracing");
-
-            II.Rhythm.Tracing.CalculateOffsets (Strip,
-               imgTracing.Bounds.Width, imgTracing.Bounds.Height,
-               ref drawOffset, ref drawMultiplier);
-        }
-
-        public async Task DrawTracing ()
-            => await Draw (Strip, tracingBrush, 1);
-
-        public Task Draw (Strip _Strip, IBrush _Brush, double _Thickness) {
-            Image imgTracing = this.FindControl<Image> ("imgTracing");
-
-            PixelSize size = new(    // Must use a size > 0
-                imgTracing.Bounds.Width > 0 ? (int)imgTracing.Bounds.Width : 100,
-                imgTracing.Bounds.Height > 0 ? (int)imgTracing.Bounds.Height : 100);
-
-            Tracing = new RenderTargetBitmap (size);
-
-            tracingPen.Brush = _Brush;
-            tracingPen.Thickness = _Thickness;
-
-            Trace.DrawPath (_Strip, Tracing, tracingPen, drawOffset, drawMultiplier);
-
-            imgTracing.Source = Tracing;
-
-            return Task.CompletedTask;
         }
     }
 }

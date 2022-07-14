@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,29 +16,37 @@ using II;
 using II.Localization;
 using II.Server;
 
+using LibVLCSharp.Shared;
+
 namespace IISIM {
 
     public class App : Application {
-        public static string []? Start_Args;
+        public string []? Start_Args;
 
-        public static II.Settings.Simulator Settings = new ();
-        public static Server Server = new ();
-        public static Mirror Mirror = new ();
-        public static Language Language = new ();
+        public II.Settings.Simulator Settings = new ();
+        public Server Server = new ();
+        public Mirror Mirror = new ();
+        public Language Language = new ();
 
-        public static Scenario? Scenario;
-        public static Patient? Patient;
+        public Scenario? Scenario;
+        public Patient? Patient;
 
-        public static WindowSplash? Window_Splash;
-        public static WindowMain? Window_Main;
+        public WindowSplash? Window_Splash;
+        public WindowMain? Window_Main;
 
-        public static DeviceMonitor? Device_Monitor;
-        public static DeviceECG? Device_ECG;
-        public static DeviceDefib? Device_Defib;
-        public static DeviceIABP? Device_IABP;
-        public static DeviceEFM? Device_EFM;
+        public DeviceMonitor? Device_Monitor;
+        public DeviceECG? Device_ECG;
+        public DeviceDefib? Device_Defib;
+        public DeviceIABP? Device_IABP;
+        public DeviceEFM? Device_EFM;
 
-        public static System.Timers.Timer Timer_Main = new ();
+        public System.Timers.Timer Timer_Main = new ();
+
+        /* For temporary unpacking of files on runtime e.g. audio */
+        public string PathTemporary = Path.Combine (Path.GetTempPath (), Guid.NewGuid ().ToString ());
+
+        /* Audio Engine */
+        public LibVLC? AudioLib;
 
         public override void Initialize () {
             AvaloniaXamlLoader.Load (this);
@@ -45,15 +54,17 @@ namespace IISIM {
             Timer_Main.Interval = 10; // q 10 milliseconds
             Timer_Main.Start ();
 
-            II.File.Init ();                                        // Init file structure (for config file, temp files)
-            App.Settings.Load ();                                   // Load config file
-            App.Language = new Language (App.Settings.Language);    // Load localization dictionary based on settings
+            II.File.Init ();                                            // Init file structure (for config file, temp files)
+            Settings.Load ();                                           // Load config file
+            Language = new (Settings.Language);                         // Load localization dictionary based on settings
+
+            AudioLib = new ();                                          // Init audio engine library
         }
 
-        public override async void OnFrameworkInitializationCompleted () {
+        public override void OnFrameworkInitializationCompleted () {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
                 Window_Splash = new ();
-                Window_Main = new ();
+                Window_Main = new (this);
 
                 // Show the splash screen for 2 seconds, then swap out to the main window
                 desktop.MainWindow = Window_Splash;
@@ -79,7 +90,7 @@ namespace IISIM {
             base.OnFrameworkInitializationCompleted ();
         }
 
-        public static void Exit () {
+        public void Exit () {
             Window_Splash?.Close ();
 
             Device_Monitor?.Close ();
@@ -89,6 +100,8 @@ namespace IISIM {
             Device_EFM?.Close ();
 
             Window_Main?.Close ();
+
+            AudioLib.Dispose ();
         }
 
         public static Task MacOSRegisterLaunchServices () {

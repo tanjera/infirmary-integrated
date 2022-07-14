@@ -17,17 +17,15 @@ using II.Rhythm;
 
 namespace IISIM.Controls {
 
-    public partial class DefibNumeric : UserControl {
-        public DeviceDefib deviceParent;
-        public ControlType controlType;
-        public Color.Schemes colorScheme;
+    public partial class DefibNumeric : DeviceNumeric {
+        public ControlTypes? ControlType;
 
-        private MenuItem menuZeroTransducer;
+        private MenuItem? uiMenuZeroTransducer;
 
-        public class ControlType {
+        public class ControlTypes {
             public Values Value;
 
-            public ControlType (Values v) {
+            public ControlTypes (Values v) {
                 Value = v;
             }
 
@@ -42,16 +40,16 @@ namespace IISIM.Controls {
             }
 
             private static Color.Leads SwitchLead_Color (Values value) => value switch {
-                ControlType.Values.ECG => Color.Leads.ECG,
-                ControlType.Values.T => Color.Leads.T,
-                ControlType.Values.RR => Color.Leads.RR,
-                ControlType.Values.ETCO2 => Color.Leads.ETCO2,
-                ControlType.Values.SPO2 => Color.Leads.SPO2,
-                ControlType.Values.NIBP => Color.Leads.NIBP,
-                ControlType.Values.ABP => Color.Leads.ABP,
-                ControlType.Values.CVP => Color.Leads.CVP,
-                ControlType.Values.PA => Color.Leads.PA,
-                ControlType.Values.DEFIB => Color.Leads.DEFIB,
+                ControlTypes.Values.ECG => Color.Leads.ECG,
+                ControlTypes.Values.T => Color.Leads.T,
+                ControlTypes.Values.RR => Color.Leads.RR,
+                ControlTypes.Values.ETCO2 => Color.Leads.ETCO2,
+                ControlTypes.Values.SPO2 => Color.Leads.SPO2,
+                ControlTypes.Values.NIBP => Color.Leads.NIBP,
+                ControlTypes.Values.ABP => Color.Leads.ABP,
+                ControlTypes.Values.CVP => Color.Leads.CVP,
+                ControlTypes.Values.PA => Color.Leads.PA,
+                ControlTypes.Values.DEFIB => Color.Leads.DEFIB,
                 _ => Color.Leads.ECG
             };
 
@@ -61,7 +59,7 @@ namespace IISIM.Controls {
 
             public static List<string> MenuItem_Formats {
                 get {
-                    List<string> o = new();
+                    List<string> o = new ();
                     foreach (Values v in Enum.GetValues (typeof (Values)))
                         o.Add (String.Format ("{0}: {1}", v.ToString (), LookupString (v)));
                     return o;
@@ -73,15 +71,15 @@ namespace IISIM.Controls {
             InitializeComponent ();
         }
 
-        public DefibNumeric (DeviceDefib parent, ControlType.Values v, Color.Schemes cs) {
+        public DefibNumeric (DeviceDefib parent, ControlTypes.Values v, Color.Schemes cs) {
             InitializeComponent ();
 
+            DeviceParent = parent;
+            Instance = ((DeviceDefib)DeviceParent).Instance;
+            ControlType = new ControlTypes (v);
+            ColorScheme = cs;
+
             InitInterface ();
-
-            deviceParent = parent;
-            controlType = new ControlType (v);
-            colorScheme = cs;
-
             UpdateInterface ();
         }
 
@@ -91,8 +89,8 @@ namespace IISIM.Controls {
 
         private void InitInterface () {
             // Context Menu (right-click menu!)
-            ContextMenu contextMenu = new();
-            List<object> menuitemsContext = new();
+            ContextMenu contextMenu = new ();
+            List<object> menuitemsContext = new ();
 
             this.FindControl<Grid> ("layoutGrid").ContextMenu = contextMenu;
             this.FindControl<TextBlock> ("lblNumType").ContextMenu = contextMenu;
@@ -103,36 +101,36 @@ namespace IISIM.Controls {
             this.FindControl<Viewbox> ("vbLine2").ContextMenu = contextMenu;
             this.FindControl<Viewbox> ("vbLine3").ContextMenu = contextMenu;
 
-            menuZeroTransducer = new MenuItem ();
-            menuZeroTransducer.Header = App.Language.Localize ("MENU:MenuZeroTransducer");
-            menuZeroTransducer.Classes.Add ("item");
-            menuZeroTransducer.Click += MenuZeroTransducer_Click;
-            menuitemsContext.Add (menuZeroTransducer);
+            uiMenuZeroTransducer = new MenuItem ();
+            uiMenuZeroTransducer.Header = Instance?.Language.Localize ("MENU:MenuZeroTransducer");
+            uiMenuZeroTransducer.Classes.Add ("item");
+            uiMenuZeroTransducer.Click += MenuZeroTransducer_Click;
+            menuitemsContext.Add (uiMenuZeroTransducer);
 
             menuitemsContext.Add (new Separator ());
 
-            MenuItem menuAddNumeric = new();
-            menuAddNumeric.Header = App.Language.Localize ("MENU:MenuAddNumeric");
+            MenuItem menuAddNumeric = new ();
+            menuAddNumeric.Header = Instance?.Language.Localize ("MENU:MenuAddNumeric");
             menuAddNumeric.Classes.Add ("item");
             menuAddNumeric.Click += MenuAddNumeric_Click;
             menuitemsContext.Add (menuAddNumeric);
 
-            MenuItem menuRemoveNumeric = new();
-            menuRemoveNumeric.Header = App.Language.Localize ("MENU:MenuRemoveNumeric");
+            MenuItem menuRemoveNumeric = new ();
+            menuRemoveNumeric.Header = Instance?.Language.Localize ("MENU:MenuRemoveNumeric");
             menuRemoveNumeric.Classes.Add ("item");
             menuRemoveNumeric.Click += MenuRemoveNumeric_Click;
             menuitemsContext.Add (menuRemoveNumeric);
 
             menuitemsContext.Add (new Separator ());
 
-            MenuItem menuSelectInput = new();
-            List<object> menuitemsSelectInput = new();
-            menuSelectInput.Header = App.Language.Localize ("MENU:MenuSelectInputSource");
+            MenuItem menuSelectInput = new ();
+            List<object> menuitemsSelectInput = new ();
+            menuSelectInput.Header = Instance?.Language.Localize ("MENU:MenuSelectInputSource");
             menuSelectInput.Classes.Add ("item");
 
-            foreach (ControlType.Values v in Enum.GetValues (typeof (ControlType.Values))) {
-                MenuItem mi = new();
-                mi.Header = App.Language.Localize (ControlType.LookupString (v));
+            foreach (ControlTypes.Values v in Enum.GetValues (typeof (ControlTypes.Values))) {
+                MenuItem mi = new ();
+                mi.Header = Instance?.Language.Localize (ControlTypes.LookupString (v));
                 mi.Classes.Add ("item");
                 mi.Name = v.ToString ();
                 mi.Click += MenuSelectInputSource;
@@ -146,7 +144,7 @@ namespace IISIM.Controls {
         }
 
         public void SetColorScheme (Color.Schemes scheme) {
-            colorScheme = scheme;
+            ColorScheme = scheme;
             UpdateInterface ();
         }
 
@@ -161,197 +159,203 @@ namespace IISIM.Controls {
                 TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
                 TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
 
-                borderNumeric.BorderBrush = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                borderNumeric.BorderBrush = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
 
-                lblNumType.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-                lblLine1.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-                lblLine2.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-                lblLine3.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                lblNumType.Foreground = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
+                lblLine1.Foreground = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
+                lblLine2.Foreground = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
+                lblLine3.Foreground = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
 
                 lblLine1.IsVisible = true;
                 lblLine2.IsVisible = true;
                 lblLine3.IsVisible = true;
 
-                lblNumType.Text = App.Language.Localize (ControlType.LookupString (controlType.Value));
+                lblNumType.Text = Instance?.Language.Localize (ControlTypes.LookupString (ControlType.Value));
 
                 /* Set lines to be visible/hidden as appropriate */
-                switch (controlType.Value) {
+                switch (ControlType?.Value) {
                     default:
-                    case ControlType.Values.NIBP:
-                    case ControlType.Values.ABP:
-                    case ControlType.Values.PA:
-                    case ControlType.Values.DEFIB:
+                    case ControlTypes.Values.NIBP:
+                    case ControlTypes.Values.ABP:
+                    case ControlTypes.Values.PA:
+                    case ControlTypes.Values.DEFIB:
                         break;
 
-                    case ControlType.Values.ECG:
-                    case ControlType.Values.T:
-                    case ControlType.Values.RR:
-                    case ControlType.Values.CVP:
+                    case ControlTypes.Values.ECG:
+                    case ControlTypes.Values.T:
+                    case ControlTypes.Values.RR:
+                    case ControlTypes.Values.CVP:
                         lblLine3.IsVisible = false;
                         break;
 
-                    case ControlType.Values.SPO2:
-                    case ControlType.Values.ETCO2:
+                    case ControlTypes.Values.SPO2:
+                    case ControlTypes.Values.ETCO2:
                         lblLine2.IsVisible = false;
                         lblLine3.IsVisible = false;
                         break;
                 }
 
                 /* Set menu items enabled/disabled accordingly */
-                switch (controlType.Value) {
+                switch (ControlType?.Value) {
                     default:
-                        menuZeroTransducer.IsEnabled = false;
+                        if (uiMenuZeroTransducer is not null)
+                            uiMenuZeroTransducer.IsEnabled = false;
                         break;
 
-                    case ControlType.Values.ABP:
-                    case ControlType.Values.CVP:
-                    case ControlType.Values.PA:
-                        menuZeroTransducer.IsEnabled = true;
+                    case ControlTypes.Values.ABP:
+                    case ControlTypes.Values.CVP:
+                    case ControlTypes.Values.PA:
+                        if (uiMenuZeroTransducer is not null)
+                            uiMenuZeroTransducer.IsEnabled = true;
                         break;
                 }
             });
         }
 
         public void UpdateVitals () {
-            if (App.Patient == null)
+            if (Instance?.Patient == null)
                 return;
 
             TextBlock lblLine1 = this.FindControl<TextBlock> ("lblLine1");
             TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
             TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
 
-            switch (controlType.Value) {
+            switch (ControlType?.Value) {
                 default:
-                case ControlType.Values.ECG:
-                    lblLine1.Text = String.Format ("{0:0}", App.Patient.MeasureHR_ECG (
+                case ControlTypes.Values.ECG:
+                    lblLine1.Text = String.Format ("{0:0}", Instance.Patient.MeasureHR_ECG (
                         Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
                     break;
 
-                case ControlType.Values.T:
-                    lblLine1.Text = String.Format ("{0:0.0}", App.Patient.T);
+                case ControlTypes.Values.T:
+                    lblLine1.Text = String.Format ("{0:0.0}", Instance.Patient.T);
                     break;
 
-                case ControlType.Values.SPO2:
-                    lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (App.Patient.SPO2, 0.01f));
-                    lblLine2.Text = String.Format ("@ {0:0}", App.Patient.MeasureHR_SPO2 (
+                case ControlTypes.Values.SPO2:
+                    lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Patient.SPO2, 0.01f));
+                    lblLine2.Text = String.Format ("@ {0:0}", Instance.Patient.MeasureHR_SPO2 (
                         Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
                     break;
 
-                case ControlType.Values.RR:
-                    lblLine1.Text = String.Format ("{0:0}", App.Patient.MeasureRR (
+                case ControlTypes.Values.RR:
+                    lblLine1.Text = String.Format ("{0:0}", Instance.Patient.MeasureRR (
                         Strip.DefaultLength * Strip.DefaultRespiratoryCoefficient, Strip.DefaultLength * Strip.DefaultBufferLength));
                     break;
 
-                case ControlType.Values.ETCO2:
-                    lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (App.Patient.ETCO2, 0.02f));
-                    lblLine2.Text = String.Format ("@ {0:0}", App.Patient.MeasureRR (
+                case ControlTypes.Values.ETCO2:
+                    lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Patient.ETCO2, 0.02f));
+                    lblLine2.Text = String.Format ("@ {0:0}", Instance.Patient.MeasureRR (
                         Strip.DefaultLength * Strip.DefaultRespiratoryCoefficient, Strip.DefaultLength * Strip.DefaultBufferLength));
                     break;
 
-                case ControlType.Values.NIBP:
-                    lblLine1.Text = String.Format ("{0:0}", App.Patient.NSBP);
-                    lblLine2.Text = String.Format ("/ {0:0}", App.Patient.NDBP);
-                    lblLine3.Text = String.Format ("({0:0})", App.Patient.NMAP);
+                case ControlTypes.Values.NIBP:
+                    lblLine1.Text = String.Format ("{0:0}", Instance.Patient.NSBP);
+                    lblLine2.Text = String.Format ("/ {0:0}", Instance.Patient.NDBP);
+                    lblLine3.Text = String.Format ("({0:0})", Instance.Patient.NMAP);
                     break;
 
-                case ControlType.Values.ABP:
-                    if (App.Patient.TransducerZeroed_ABP) {
-                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (App.Patient.ASBP, 0.02f));
+                case ControlTypes.Values.ABP:
+                    if (Instance.Patient.TransducerZeroed_ABP) {
+                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Patient.ASBP, 0.02f));
                         lblLine2.Text = String.Format ("/ {0:0}", II.Math.RandomPercentRange (
-                            (App.Patient.IABP_Active ? App.Patient.IABP_DBP : App.Patient.ADBP), 0.02f));
-                        lblLine3.Text = String.Format ("({0:0})", II.Math.RandomPercentRange (App.Patient.AMAP, 0.02f));
+                            (Instance.Patient.IABP_Active ? Instance.Patient.IABP_DBP : Instance.Patient.ADBP), 0.02f));
+                        lblLine3.Text = String.Format ("({0:0})", II.Math.RandomPercentRange (Instance.Patient.AMAP, 0.02f));
                     } else {
-                        lblLine1.Text = Utility.WrapString (App.Language.Localize ("NUMERIC:ZeroTransducer"));
+                        lblLine1.Text = Utility.WrapString (Instance.Language.Localize ("NUMERIC:ZeroTransducer"));
                         lblLine2.Text = "";
                         lblLine3.Text = "";
                     }
                     break;
 
-                case ControlType.Values.CVP:
-                    if (App.Patient.TransducerZeroed_CVP)
-                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (App.Patient.CVP, 0.02f));
+                case ControlTypes.Values.CVP:
+                    if (Instance.Patient.TransducerZeroed_CVP)
+                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Patient.CVP, 0.02f));
                     else
-                        lblLine1.Text = App.Language.Localize ("NUMERIC:ZeroTransducer");
+                        lblLine1.Text = Instance.Language.Localize ("NUMERIC:ZeroTransducer");
                     break;
 
-                case ControlType.Values.PA:
-                    if (App.Patient.TransducerZeroed_PA) {
-                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (App.Patient.PSP, 0.02f));
-                        lblLine2.Text = String.Format ("/ {0:0}", II.Math.RandomPercentRange (App.Patient.PDP, 0.02f));
-                        lblLine3.Text = String.Format ("({0:0})", II.Math.RandomPercentRange (App.Patient.PMP, 0.02f));
+                case ControlTypes.Values.PA:
+                    if (Instance.Patient.TransducerZeroed_PA) {
+                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Patient.PSP, 0.02f));
+                        lblLine2.Text = String.Format ("/ {0:0}", II.Math.RandomPercentRange (Instance.Patient.PDP, 0.02f));
+                        lblLine3.Text = String.Format ("({0:0})", II.Math.RandomPercentRange (Instance.Patient.PMP, 0.02f));
                     } else {
-                        lblLine1.Text = App.Language.Localize ("NUMERIC:ZeroTransducer");
+                        lblLine1.Text = Instance.Language.Localize ("NUMERIC:ZeroTransducer");
                         lblLine2.Text = "";
                         lblLine3.Text = "";
                     }
                     break;
 
-                case ControlType.Values.DEFIB:
+                case ControlTypes.Values.DEFIB:
+                    if (DeviceParent is not null && DeviceParent is DeviceDefib device) {
+                        switch (device.Mode) {
+                            default:
+                            case DeviceDefib.Modes.DEFIB:
 
-                    switch (deviceParent.Mode) {
-                        default:
-                        case DeviceDefib.Modes.DEFIB:
+                                lblLine1.Text = Instance.Language.Localize ("DEFIB:Defibrillation");
+                                lblLine2.Text = String.Format ("{0:0} {1}", device.Energy, Instance.Language.Localize ("DEFIB:Joules"));
+                                if (device.Charging)
+                                    lblLine3.Text = Instance.Language.Localize ("DEFIB:Charging");
+                                else if (device.Charged)
+                                    lblLine3.Text = Instance.Language.Localize ("DEFIB:Charged");
+                                else if (device.Analyzed) {
+                                    switch (Instance.Patient.Cardiac_Rhythm.Value) {
+                                        default:
+                                            lblLine3.Text = Instance.Language.Localize ("DEFIB:NoShockAdvised");
+                                            break;
 
-                            lblLine1.Text = App.Language.Localize ("DEFIB:Defibrillation");
-                            lblLine2.Text = String.Format ("{0:0} {1}", deviceParent.Energy, App.Language.Localize ("DEFIB:Joules"));
-                            if (deviceParent.Charging)
-                                lblLine3.Text = App.Language.Localize ("DEFIB:Charging");
-                            else if (deviceParent.Charged)
-                                lblLine3.Text = App.Language.Localize ("DEFIB:Charged");
-                            else if (deviceParent.Analyzed) {
-                                switch (App.Patient.Cardiac_Rhythm.Value) {
-                                    default:
-                                        lblLine3.Text = App.Language.Localize ("DEFIB:NoShockAdvised");
-                                        break;
+                                        case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Coarse:
+                                        case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Fine:
+                                        case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
+                                        case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
+                                        case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Polymorphic:
+                                            lblLine3.Text = Instance.Language.Localize ("DEFIB:ShockAdvised");
+                                            break;
+                                    }
+                                } else
+                                    lblLine3.Text = "";
+                                break;
 
-                                    case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Coarse:
-                                    case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Fine:
-                                    case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
-                                    case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
-                                    case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Polymorphic:
-                                        lblLine3.Text = App.Language.Localize ("DEFIB:ShockAdvised");
-                                        break;
-                                }
-                            } else
-                                lblLine3.Text = "";
-                            break;
+                            case DeviceDefib.Modes.SYNC:
+                                lblLine1.Text = Instance.Language.Localize ("DEFIB:Synchronized");
+                                lblLine2.Text = String.Format ("{0:0} {1}", device.Energy, Instance.Language.Localize ("DEFIB:Joules"));
+                                lblLine3.Text = device.Charged ? Instance.Language.Localize ("DEFIB:Charged") : "";
+                                break;
 
-                        case DeviceDefib.Modes.SYNC:
-                            lblLine1.Text = App.Language.Localize ("DEFIB:Synchronized");
-                            lblLine2.Text = String.Format ("{0:0} {1}", deviceParent.Energy, App.Language.Localize ("DEFIB:Joules"));
-                            lblLine3.Text = deviceParent.Charged ? App.Language.Localize ("DEFIB:Charged") : "";
-                            break;
-
-                        case DeviceDefib.Modes.PACER:
-                            lblLine1.Text = App.Language.Localize ("DEFIB:Pacing");
-                            lblLine2.Text = String.Format ("{0:0} {1}", deviceParent.PacerEnergy, App.Language.Localize ("DEFIB:Milliamps"));
-                            lblLine3.Text = String.Format ("{0}: {1:0}", App.Language.Localize ("DEFIB:Rate"), deviceParent.PacerRate);
-                            break;
+                            case DeviceDefib.Modes.PACER:
+                                lblLine1.Text = Instance.Language.Localize ("DEFIB:Pacing");
+                                lblLine2.Text = String.Format ("{0:0} {1}", device.PacerEnergy, Instance.Language.Localize ("DEFIB:Milliamps"));
+                                lblLine3.Text = String.Format ("{0}: {1:0}", Instance.Language.Localize ("DEFIB:Rate"), device.PacerRate);
+                                break;
+                        }
                     }
                     break;
             }
         }
 
         private void MenuZeroTransducer_Click (object? sender, RoutedEventArgs e) {
-            switch (controlType.Value) {
-                case ControlType.Values.ABP: App.Patient.TransducerZeroed_ABP = true; return;
-                case ControlType.Values.CVP: App.Patient.TransducerZeroed_CVP = true; return;
-                case ControlType.Values.PA: App.Patient.TransducerZeroed_PA = true; return;
+            if (Instance?.Patient is not null) {
+                switch (ControlType?.Value) {
+                    case ControlTypes.Values.ABP: Instance.Patient.TransducerZeroed_ABP = true; return;
+                    case ControlTypes.Values.CVP: Instance.Patient.TransducerZeroed_CVP = true; return;
+                    case ControlTypes.Values.PA: Instance.Patient.TransducerZeroed_PA = true; return;
+                }
             }
         }
 
         private void MenuAddNumeric_Click (object? sender, RoutedEventArgs e)
-            => App.Device_Defib.AddNumeric ();
+            => Instance?.Device_Defib?.AddNumeric ();
 
         private void MenuRemoveNumeric_Click (object? sender, RoutedEventArgs e)
-            => App.Device_Defib.RemoveNumeric (this);
+            => Instance?.Device_Defib?.RemoveNumeric (this);
 
         private void MenuSelectInputSource (object? sender, RoutedEventArgs e) {
-            ControlType.Values selectedValue;
-            if (!Enum.TryParse<ControlType.Values> ((sender as MenuItem)?.Name, out selectedValue))
+            ControlTypes.Values selectedValue;
+            if (!Enum.TryParse<ControlTypes.Values> ((sender as MenuItem)?.Name, out selectedValue))
                 return;
 
-            controlType.Value = selectedValue;
+            if (ControlType is not null)
+                ControlType.Value = selectedValue;
 
             UpdateInterface ();
             UpdateVitals ();

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,8 @@ using II;
 using II.Rhythm;
 using II.Waveform;
 
+using LibVLCSharp.Shared;
+
 namespace IISIM {
 
     public partial class DeviceMonitor : DeviceWindow {
@@ -30,60 +33,98 @@ namespace IISIM {
         private List<Controls.MonitorTracing> listTracings = new ();
         private List<Controls.MonitorNumeric> listNumerics = new ();
 
+        /* Variables controlling for audio alarms */
+        private Timer AlarmTimer = new ();
+        private Alarm.Priorities? AlarmActive;
+        private List<Alarm> AlarmRefs = new ();
+        private MediaPlayer? AlarmPlayer;
+        private List<StreamMediaInput> AlarmMedia;
+
         public DeviceMonitor () {
+            InitializeComponent ();
+        }
+
+        public DeviceMonitor (App? app) : base (app) {
             InitializeComponent ();
 #if DEBUG
             this.AttachDevTools ();
 #endif
 
             DataContext = this;
-
+            InitAudio ();
             InitTimers ();
             InitInterface ();
 
             OnLayoutChange ();
         }
 
+        ~DeviceMonitor () {
+            AlarmTimer?.Dispose ();
+            AlarmPlayer?.Dispose ();
+        }
+
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
         }
 
+        private void InitAudio () {
+            if (Instance?.AudioLib is null)
+                return;
+
+            AlarmPlayer = new MediaPlayer (Instance.AudioLib);
+
+            var assets = AvaloniaLocator.Current.GetService<Avalonia.Platform.IAssetLoader> ();
+            AlarmMedia = new () {
+                new (assets.Open (new Uri ("avares://Infirmary Integrated/Resources/Alarm_Low_Priority.wav"))),
+                new (assets.Open (new Uri ("avares://Infirmary Integrated/Resources/Alarm_Medium_Priority.wav"))),
+                new (assets.Open (new Uri ("avares://Infirmary Integrated/Resources/Alarm_High_Priority.wav")))
+            };
+        }
+
         private void InitTimers () {
-            timerTracing.Set (Draw.RefreshTime);
-            App.Timer_Main.Elapsed += timerTracing.Process;
-            timerTracing.Tick += OnTick_Tracing;
-            timerTracing.Start ();
+            if (Instance is null)
+                return;
 
-            timerVitals_Cardiac.Set (3000);
-            timerVitals_Respiratory.Set (5000);
+            Instance.Timer_Main.Elapsed += AlarmTimer.Process;
+            Instance.Timer_Main.Elapsed += TimerTracing.Process;
+            Instance.Timer_Main.Elapsed += TimerVitals_Cardiac.Process;
+            Instance.Timer_Main.Elapsed += TimerVitals_Respiratory.Process;
 
-            App.Timer_Main.Elapsed += timerVitals_Cardiac.Process;
-            App.Timer_Main.Elapsed += timerVitals_Respiratory.Process;
+            AlarmTimer.Set (2500);
+            TimerTracing.Set (Draw.RefreshTime);
+            TimerVitals_Cardiac.Set (3000);
+            TimerVitals_Respiratory.Set (5000);
 
-            timerVitals_Cardiac.Tick += OnTick_Vitals_Cardiac;
-            timerVitals_Respiratory.Tick += OnTick_Vitals_Respiratory;
+            AlarmTimer.Tick += OnTick_Alarm;
+            TimerTracing.Tick += OnTick_Tracing;
+            TimerVitals_Cardiac.Tick += OnTick_Vitals_Cardiac;
+            TimerVitals_Respiratory.Tick += OnTick_Vitals_Respiratory;
 
-            timerVitals_Cardiac.Start ();
-            timerVitals_Respiratory.Start ();
+            AlarmTimer.Start ();
+            TimerTracing.Start ();
+            TimerVitals_Cardiac.Start ();
+            TimerVitals_Respiratory.Start ();
         }
 
         private void InitInterface () {
             // Populate UI strings per language selection
 
-            this.FindControl<Window> ("wdwDeviceMonitor").Title = App.Language.Localize ("CM:WindowTitle");
-            this.FindControl<MenuItem> ("menuDevice").Header = App.Language.Localize ("MENU:MenuDeviceOptions");
-            this.FindControl<MenuItem> ("menuPauseDevice").Header = App.Language.Localize ("MENU:MenuPauseDevice");
-            this.FindControl<MenuItem> ("menuAddNumeric").Header = App.Language.Localize ("MENU:MenuAddNumeric");
-            this.FindControl<MenuItem> ("menuAddTracing").Header = App.Language.Localize ("MENU:MenuAddTracing");
-            this.FindControl<MenuItem> ("menuCloseDevice").Header = App.Language.Localize ("MENU:MenuCloseDevice");
+            if (Instance is not null) {
+                this.FindControl<Window> ("wdwDeviceMonitor").Title = Instance.Language.Localize ("CM:WindowTitle");
+                this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
+                this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+                this.FindControl<MenuItem> ("menuAddNumeric").Header = Instance.Language.Localize ("MENU:MenuAddNumeric");
+                this.FindControl<MenuItem> ("menuAddTracing").Header = Instance.Language.Localize ("MENU:MenuAddTracing");
+                this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
 
-            this.FindControl<MenuItem> ("menuAlarms").Header = App.Language.Localize ("MENU:MenuAlarms");
-            this.FindControl<MenuItem> ("menuAlarmsEnable").Header = App.Language.Localize ("MENU:MenuAlarmsEnable");
-            this.FindControl<MenuItem> ("menuAlarmsDisable").Header = App.Language.Localize ("MENU:MenuAlarmsDisable");
+                this.FindControl<MenuItem> ("menuAlarms").Header = Instance.Language.Localize ("MENU:MenuAlarms");
+                this.FindControl<MenuItem> ("menuAlarmsEnable").Header = Instance.Language.Localize ("MENU:MenuAlarmsEnable");
+                this.FindControl<MenuItem> ("menuAlarmsDisable").Header = Instance.Language.Localize ("MENU:MenuAlarmsDisable");
 
-            this.FindControl<MenuItem> ("menuColor").Header = App.Language.Localize ("MENU:MenuColorScheme");
-            this.FindControl<MenuItem> ("menuColorLight").Header = App.Language.Localize ("MENU:MenuColorSchemeLight");
-            this.FindControl<MenuItem> ("menuColorDark").Header = App.Language.Localize ("MENU:MenuColorSchemeDark");
+                this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
+                this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
+                this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
+            }
         }
 
         private void UpdateInterface () {
@@ -135,7 +176,7 @@ namespace IISIM {
             List<string> numericTypes = new (),
                          tracingTypes = new ();
 
-            listNumerics.ForEach (o => { numericTypes.Add (o.controlType?.Value.ToString () ?? ""); });
+            listNumerics.ForEach (o => { numericTypes.Add (o.ControlType?.Value.ToString () ?? ""); });
             listTracings.ForEach (o => { tracingTypes.Add (o.Strip?.Lead?.Value.ToString () ?? ""); });
             sWrite.AppendLine (String.Format ("{0}:{1}", "numericTypes", string.Join (",", numericTypes)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "tracingTypes", string.Join (",", tracingTypes)));
@@ -144,7 +185,7 @@ namespace IISIM {
         }
 
         public void SetAlarms (bool toEnable) {
-            foreach (Alarm a in App.Scenario?.DeviceMonitor.Alarms)
+            foreach (Alarm a in Instance?.Scenario?.DeviceMonitor.Alarms ?? new List<Alarm> ())
                 a.Enabled = toEnable;
         }
 
@@ -206,6 +247,44 @@ namespace IISIM {
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Dark);
 
+        private void OnTick_Alarm (object? sender, EventArgs e) {
+            if (AlarmPlayer is null || Instance?.AudioLib is null)
+                return;
+
+            AlarmRefs.Clear ();
+
+            foreach (Controls.MonitorNumeric n in listNumerics) {
+                if (n.AlarmRef is not null)
+                    AlarmRefs.Add (n.AlarmRef);
+            }
+
+            Alarm? alarm = AlarmRefs.Find (a => a.Alarming ?? false && a.Priority == Alarm.Priorities.High);
+            if (alarm is null)
+                alarm = AlarmRefs.Find (a => a.Alarming ?? false && a.Priority == Alarm.Priorities.Medium);
+            if (alarm is null)
+                alarm = AlarmRefs.Find (a => a.Alarming ?? false && a.Priority == Alarm.Priorities.Low);
+
+            if (alarm is null) {
+                AlarmPlayer.Stop ();
+                AlarmActive = null;
+                return;
+            } else if (alarm.Priority == AlarmActive) {
+                if (!AlarmPlayer.IsPlaying) {
+                    AlarmPlayer.Media = new Media (Instance.AudioLib, AlarmMedia [alarm.Priority.GetHashCode ()]);
+                    AlarmPlayer.Play ();
+                }
+
+                return;
+            } else if (alarm.Priority != AlarmActive) {
+                AlarmPlayer.Stop ();
+                AlarmPlayer.Media = new Media (Instance.AudioLib, AlarmMedia [alarm.Priority.GetHashCode ()]);
+                AlarmPlayer.Play ();
+
+                AlarmActive = alarm.Priority;
+                return;
+            }
+        }
+
         public override void OnTick_Tracing (object? sender, EventArgs e) {
             if (State != States.Running)
                 return;
@@ -222,8 +301,8 @@ namespace IISIM {
 
             listNumerics
                 .Where (n
-                    => n.controlType?.Value != Controls.MonitorNumeric.ControlType.Values.ETCO2
-                    && n.controlType?.Value != Controls.MonitorNumeric.ControlType.Values.RR)
+                    => n.ControlType?.Value != Controls.MonitorNumeric.ControlTypes.Values.ETCO2
+                    && n.ControlType?.Value != Controls.MonitorNumeric.ControlTypes.Values.RR)
                 .ToList ()
                 .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }
@@ -234,8 +313,8 @@ namespace IISIM {
 
             listNumerics
                 .Where (n
-                    => n.controlType?.Value == Controls.MonitorNumeric.ControlType.Values.ETCO2
-                    || n.controlType?.Value == Controls.MonitorNumeric.ControlType.Values.RR)
+                    => n.ControlType?.Value == Controls.MonitorNumeric.ControlTypes.Values.ETCO2
+                    || n.ControlType?.Value == Controls.MonitorNumeric.ControlTypes.Values.RR)
                 .ToList ()
                 .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }
@@ -260,7 +339,10 @@ namespace IISIM {
             rowsNumerics = II.Math.Clamp (rowsNumerics, 1, numericTypes.Count);
             for (int i = listNumerics.Count; i < rowsNumerics && i < numericTypes.Count; i++) {
                 Controls.MonitorNumeric newNum;
-                newNum = new Controls.MonitorNumeric ((Controls.MonitorNumeric.ControlType.Values)Enum.Parse (typeof (Controls.MonitorNumeric.ControlType.Values), numericTypes [i]), colorScheme);
+                newNum = new Controls.MonitorNumeric (
+                    Instance,
+                    (Controls.MonitorNumeric.ControlTypes.Values)Enum.Parse (typeof (Controls.MonitorNumeric.ControlTypes.Values),
+                    numericTypes [i]), colorScheme);
                 listNumerics.Add (newNum);
             }
 
@@ -277,7 +359,7 @@ namespace IISIM {
             rowsTracings = II.Math.Clamp (rowsTracings, 1, tracingTypes.Count);
             for (int i = listTracings.Count; i < rowsTracings && i < tracingTypes.Count; i++) {
                 Strip newStrip = new ((Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]), 6f);
-                Controls.MonitorTracing newTracing = new (newStrip, colorScheme);
+                Controls.MonitorTracing newTracing = new (Instance, newStrip, colorScheme);
                 listTracings.Add (newTracing);
             }
 
@@ -307,46 +389,46 @@ namespace IISIM {
                 default: break;
                 case Patient.PatientEventTypes.Vitals_Change:
                     listTracings.ForEach (c => {
-                        c.Strip?.ClearFuture (App.Patient);
-                        c.Strip?.Add_Beat__Cardiac_Baseline (App.Patient);
+                        c.Strip?.ClearFuture (Instance?.Patient);
+                        c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Patient);
                     });
 
                     listNumerics.ForEach (n => n.UpdateVitals ());
                     break;
 
                 case Patient.PatientEventTypes.Defibrillation:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Pacermaker_Spike:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Baseline:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Atrial_Electric:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Electrical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Electrical (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular_Electric:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Atrial_Mechanical:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Mechanical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Mechanical (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Patient));
 
                     /* Iterations and trigger for auto-scaling pressure waveform strips */
 
                     autoScale_iter -= 1;
                     if (autoScale_iter <= 0) {
                         for (int i = 0; i < listTracings.Count; i++) {
-                            listTracings [i].Strip?.SetAutoScale (App.Patient);
+                            listTracings [i].Strip?.SetAutoScale (Instance?.Patient);
                             Dispatcher.UIThread.InvokeAsync (listTracings [i].UpdateScale);
                         }
 
@@ -355,15 +437,15 @@ namespace IISIM {
                     break;
 
                 case Patient.PatientEventTypes.Respiratory_Baseline:
-                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Baseline (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Respiratory_Inspiration:
-                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Inspiration (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Inspiration (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Respiratory_Expiration:
-                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Expiration (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Expiration (Instance?.Patient));
                     break;
             }
         }

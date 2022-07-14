@@ -15,13 +15,19 @@ using II.Localization;
 namespace IISIM {
 
     public partial class DialogMirrorReceive : Window {
+        public App? Instance;
 
         public DialogMirrorReceive () {
+            InitializeComponent ();
+        }
+
+        public DialogMirrorReceive (App? app) {
             InitializeComponent ();
 #if DEBUG
             this.AttachDevTools ();
 #endif
-
+            DataContext = this;
+            Instance = app;
             Init ();
         }
 
@@ -30,25 +36,23 @@ namespace IISIM {
         }
 
         private void Init () {
-            DataContext = this;
-
             // Populate UI strings per language selection
-            this.FindControl<Window> ("dlgMirrorReceive").Title = App.Language.Localize ("MIRROR:ReceiveTitle");
-            this.FindControl<TextBlock> ("txtMessage").Text = App.Language.Localize ("MIRROR:EnterSettings");
+            this.FindControl<Window> ("dlgMirrorReceive").Title = Instance.Language.Localize ("MIRROR:ReceiveTitle");
+            this.FindControl<TextBlock> ("txtMessage").Text = Instance.Language.Localize ("MIRROR:EnterSettings");
 
-            this.FindControl<TextBlock> ("txtAccessionKey").Text = App.Language.Localize ("MIRROR:AccessionKey");
-            this.FindControl<TextBlock> ("txtAccessPassword").Text = App.Language.Localize ("MIRROR:AccessPassword");
+            this.FindControl<TextBlock> ("txtAccessionKey").Text = Instance.Language.Localize ("MIRROR:AccessionKey");
+            this.FindControl<TextBlock> ("txtAccessPassword").Text = Instance.Language.Localize ("MIRROR:AccessPassword");
 
-            this.FindControl<Button> ("btnContinue").Content = App.Language.Localize ("BUTTON:Continue");
+            this.FindControl<Button> ("btnContinue").Content = Instance.Language.Localize ("BUTTON:Continue");
         }
 
         private void OnClick_Continue (object sender, RoutedEventArgs e) {
-            Regex regex = new("^[a-zA-Z0-9]*$");
+            Regex regex = new ("^[a-zA-Z0-9]*$");
             if ((this.FindControl<TextBox> ("tbAccessionKey").Text ?? "").Length > 0
                     && regex.IsMatch (this.FindControl<TextBox> ("tbAccessionKey").Text)) {
-                App.Mirror.Status = II.Server.Mirror.Statuses.CLIENT;
-                App.Mirror.Accession = this.FindControl<TextBox> ("tbAccessionKey").Text ?? "";
-                App.Mirror.PasswordAccess = this.FindControl<TextBox> ("tbAccessPassword").Text ?? "";
+                Instance.Mirror.Status = II.Server.Mirror.Statuses.CLIENT;
+                Instance.Mirror.Accession = this.FindControl<TextBox> ("tbAccessionKey").Text ?? "";
+                Instance.Mirror.PasswordAccess = this.FindControl<TextBox> ("tbAccessPassword").Text ?? "";
 
                 this.Close ();
             } else {
@@ -63,8 +67,8 @@ namespace IISIM {
                                 Type = MessageBox.Avalonia.Enums.ButtonType.Default,
                                 IsCancel=true}
                         },
-                        ContentTitle = App.Language.Localize ("MIRROR:ReceiveTitle"),
-                        ContentMessage = App.Language.Localize ("MIRROR:SettingsInvalid"),
+                        ContentTitle = Instance.Language.Localize ("MIRROR:ReceiveTitle"),
+                        ContentMessage = Instance.Language.Localize ("MIRROR:SettingsInvalid"),
                         Icon = icon,
                         Style = MessageBox.Avalonia.Enums.Style.None,
                         WindowStartupLocation = WindowStartupLocation.CenterScreen,

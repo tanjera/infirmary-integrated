@@ -96,6 +96,10 @@ namespace IISIM {
 
         public DeviceIABP () {
             InitializeComponent ();
+        }
+
+        public DeviceIABP (App? app) : base (app) {
+            InitializeComponent ();
 #if DEBUG
             this.AttachDevTools ();
 #endif
@@ -111,39 +115,43 @@ namespace IISIM {
         }
 
         private void InitInterface () {
-            // Populate UI strings per language selection
-            this.FindControl<Window> ("wdwDeviceIABP").Title = App.Language.Localize ("IABP:WindowTitle");
-            this.FindControl<MenuItem> ("menuDevice").Header = App.Language.Localize ("MENU:MenuDeviceOptions");
-            this.FindControl<MenuItem> ("menuPauseDevice").Header = App.Language.Localize ("MENU:MenuPauseDevice");
-            this.FindControl<MenuItem> ("menuCloseDevice").Header = App.Language.Localize ("MENU:MenuCloseDevice");
-            this.FindControl<MenuItem> ("menuColor").Header = App.Language.Localize ("MENU:MenuColorScheme");
-            this.FindControl<MenuItem> ("menuColorLight").Header = App.Language.Localize ("MENU:MenuColorSchemeLight");
-            this.FindControl<MenuItem> ("menuColorDark").Header = App.Language.Localize ("MENU:MenuColorSchemeDark");
+            if (Instance is null)
+                return;
 
-            this.FindControl<TextBlock> ("buttonModeAuto").Text = App.Language.Localize ("IABPMODE:Auto");
-            this.FindControl<TextBlock> ("buttonModeSemiAuto").Text = App.Language.Localize ("IABPMODE:SemiAuto");
-            this.FindControl<TextBlock> ("buttonZero").Text = Utility.WrapString (App.Language.Localize ("IABPBUTTON:ZeroPressure"));
-            this.FindControl<TextBlock> ("buttonStart").Text = App.Language.Localize ("IABPBUTTON:Start");
-            this.FindControl<TextBlock> ("buttonPause").Text = App.Language.Localize ("IABPBUTTON:Pause");
-            this.FindControl<TextBlock> ("btntxtTrigger").Text = Utility.WrapString (App.Language.Localize ("IABPBUTTON:Trigger"));
-            this.FindControl<TextBlock> ("btntxtFrequency").Text = Utility.WrapString (App.Language.Localize ("IABPBUTTON:Frequency"));
-            this.FindControl<TextBlock> ("buttonPrimeBalloon").Text = Utility.WrapString (App.Language.Localize ("IABPBUTTON:PrimeBalloon"));
-            this.FindControl<TextBlock> ("btntxtAugmentationPressure").Text = Utility.WrapString (App.Language.Localize ("IABP:AugmentationPressure"));
-            this.FindControl<TextBlock> ("btntxtAugmentationAlarm").Text = Utility.WrapString (App.Language.Localize ("IABP:AugmentationAlarm"));
-            this.FindControl<TextBlock> ("btntxtIncrease").Text = Utility.WrapString (App.Language.Localize ("IABPBUTTON:Increase"));
-            this.FindControl<TextBlock> ("btntxtDecrease").Text = Utility.WrapString (App.Language.Localize ("IABPBUTTON:Decrease"));
+            // Populate UI strings per language selection
+
+            this.FindControl<Window> ("wdwDeviceIABP").Title = Instance.Language.Localize ("IABP:WindowTitle");
+            this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
+            this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+            this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
+            this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
+            this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
+            this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
+
+            this.FindControl<TextBlock> ("buttonModeAuto").Text = Instance.Language.Localize ("IABPMODE:Auto");
+            this.FindControl<TextBlock> ("buttonModeSemiAuto").Text = Instance.Language.Localize ("IABPMODE:SemiAuto");
+            this.FindControl<TextBlock> ("buttonZero").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:ZeroPressure"));
+            this.FindControl<TextBlock> ("buttonStart").Text = Instance.Language.Localize ("IABPBUTTON:Start");
+            this.FindControl<TextBlock> ("buttonPause").Text = Instance.Language.Localize ("IABPBUTTON:Pause");
+            this.FindControl<TextBlock> ("btntxtTrigger").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:Trigger"));
+            this.FindControl<TextBlock> ("btntxtFrequency").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:Frequency"));
+            this.FindControl<TextBlock> ("buttonPrimeBalloon").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:PrimeBalloon"));
+            this.FindControl<TextBlock> ("btntxtAugmentationPressure").Text = Utility.WrapString (Instance.Language.Localize ("IABP:AugmentationPressure"));
+            this.FindControl<TextBlock> ("btntxtAugmentationAlarm").Text = Utility.WrapString (Instance.Language.Localize ("IABP:AugmentationAlarm"));
+            this.FindControl<TextBlock> ("btntxtIncrease").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:Increase"));
+            this.FindControl<TextBlock> ("btntxtDecrease").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:Decrease"));
 
             // Random helium tank remaining amount... it's for show!
             this.FindControl<TextBlock> ("lblHelium").Text = String.Format ("{0}: {1:0}%",
-                Utility.WrapString (App.Language.Localize ("IABP:Helium")),
+                Utility.WrapString (Instance.Language.Localize ("IABP:Helium")),
                 II.Math.RandomDouble (20, 80));
 
             Grid displayGrid = this.FindControl<Grid> ("displayGrid");
 
             // Instantiate and add Tracings to UI
-            listTracings.Add (new Controls.IABPTracing (new Strip (Lead.Values.ECG_II, 6f), colorScheme));
-            listTracings.Add (new Controls.IABPTracing (new Strip (Lead.Values.ABP, 6f), colorScheme));
-            listTracings.Add (new Controls.IABPTracing (new Strip (Lead.Values.IABP, 6f), colorScheme));
+            listTracings.Add (new Controls.IABPTracing (Instance, new Strip (Lead.Values.ECG_II, 6f), colorScheme));
+            listTracings.Add (new Controls.IABPTracing (Instance, new Strip (Lead.Values.ABP, 6f), colorScheme));
+            listTracings.Add (new Controls.IABPTracing (Instance, new Strip (Lead.Values.IABP, 6f), colorScheme));
             for (int i = 0; i < listTracings.Count; i++) {
                 listTracings [i].SetValue (Grid.RowProperty, i);
                 listTracings [i].SetValue (Grid.ColumnProperty, 1);
@@ -151,9 +159,9 @@ namespace IISIM {
             }
 
             // Instantiate and add Numerics to UI
-            listNumerics.Add (new Controls.IABPNumeric (Controls.IABPNumeric.ControlType.Values.ECG, colorScheme));
-            listNumerics.Add (new Controls.IABPNumeric (Controls.IABPNumeric.ControlType.Values.ABP, colorScheme));
-            listNumerics.Add (new Controls.IABPNumeric (Controls.IABPNumeric.ControlType.Values.IABP_AP, colorScheme));
+            listNumerics.Add (new Controls.IABPNumeric (this, Controls.IABPNumeric.ControlTypes.Values.ECG, colorScheme));
+            listNumerics.Add (new Controls.IABPNumeric (this, Controls.IABPNumeric.ControlTypes.Values.ABP, colorScheme));
+            listNumerics.Add (new Controls.IABPNumeric (this, Controls.IABPNumeric.ControlTypes.Values.IABP_AP, colorScheme));
             for (int i = 0; i < listNumerics.Count; i++) {
                 listNumerics [i].SetValue (Grid.RowProperty, i);
                 listNumerics [i].SetValue (Grid.ColumnProperty, 2);
@@ -198,7 +206,7 @@ namespace IISIM {
                 lblOperationMode.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Aqua : Brushes.Black;
                 brdOperationMode.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Aqua : Brushes.Black;
 
-                lblTriggerSource.Text = App.Language.Localize (Trigger.LookupString ());
+                lblTriggerSource.Text = Instance?.Language.Localize (Trigger.LookupString ());
                 switch (Trigger.Value) {
                     default:
                     case Triggering.Values.ECG:
@@ -212,7 +220,7 @@ namespace IISIM {
                         break;
                 }
 
-                lblOperationMode.Text = App.Language.Localize (Mode.LookupString ());
+                lblOperationMode.Text = Instance?.Language.Localize (Mode.LookupString ());
 
                 lblFrequency.Text = String.Format ("1 : {0}", Frequency);
                 switch (Frequency) {
@@ -234,25 +242,25 @@ namespace IISIM {
                 }
 
                 if (Running) {
-                    lblMachineStatus.Text = App.Language.Localize ("IABP:Running");
+                    lblMachineStatus.Text = Instance?.Language.Localize ("IABP:Running");
                     lblMachineStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
                     brdMachineStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
                 } else {
-                    lblMachineStatus.Text = App.Language.Localize ("IABP:Paused");
+                    lblMachineStatus.Text = Instance?.Language.Localize ("IABP:Paused");
                     lblMachineStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
                     brdMachineStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
                 }
 
                 if (Priming) {
-                    lblTubingStatus.Text = App.Language.Localize ("IABP:Priming");
+                    lblTubingStatus.Text = Instance?.Language.Localize ("IABP:Priming");
                     lblTubingStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
                     brdTubingStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.Yellow : Brushes.Black;
                 } else if (Primed) {
-                    lblTubingStatus.Text = App.Language.Localize ("IABP:Primed");
+                    lblTubingStatus.Text = Instance?.Language.Localize ("IABP:Primed");
                     lblTubingStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
                     brdTubingStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.LightGreen : Brushes.Black;
                 } else {
-                    lblTubingStatus.Text = App.Language.Localize ("IABP:NotPrimed");
+                    lblTubingStatus.Text = Instance?.Language.Localize ("IABP:NotPrimed");
                     lblTubingStatus.Foreground = colorScheme == Color.Schemes.Dark ? Brushes.OrangeRed : Brushes.Black;
                     brdTubingStatus.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.OrangeRed : Brushes.Black;
                 }
@@ -309,7 +317,7 @@ namespace IISIM {
             base.TogglePause ();
 
             if (State == States.Running)
-                listTracings.ForEach (c => c.Strip.Unpause ()); ;
+                listTracings.ForEach (c => c.Strip?.Unpause ()); ;
         }
 
         private void StartDevice () {
@@ -329,7 +337,7 @@ namespace IISIM {
         }
 
         private void PrimeBalloon () {
-            if (timerAncillary_Delay.IsLocked) {
+            if (TimerAncillary_Delay.IsLocked) {
                 Priming = false;
                 Primed = true;
                 if (Prime_ThenStart) {
@@ -340,10 +348,10 @@ namespace IISIM {
                 Priming = true;
                 Primed = false;
 
-                timerAncillary_Delay.Lock ();
-                timerAncillary_Delay.Tick += OnTick_PrimingComplete;
-                timerAncillary_Delay.Set (5000);
-                timerAncillary_Delay.Start ();
+                TimerAncillary_Delay.Lock ();
+                TimerAncillary_Delay.Tick += OnTick_PrimingComplete;
+                TimerAncillary_Delay.Set (5000);
+                TimerAncillary_Delay.Start ();
             }
 
             UpdateInterface ();
@@ -391,7 +399,8 @@ namespace IISIM {
         }
 
         private void ButtonZeroABP_Click (object s, RoutedEventArgs e) {
-            App.Patient.TransducerZeroed_ABP = true;
+            if (Instance?.Patient is not null)
+                Instance.Patient.TransducerZeroed_ABP = true;
             UpdateInterface ();
         }
 
@@ -412,12 +421,12 @@ namespace IISIM {
 
                 case Settings.AugmentationPressure:
                     Augmentation = II.Math.Clamp (Augmentation + 10, 0, 100);
-                    listNumerics.Find (o => o.controlType.Value == Controls.IABPNumeric.ControlType.Values.IABP_AP).UpdateVitals ();
+                    listNumerics.Find (o => o.ControlType.Value == Controls.IABPNumeric.ControlTypes.Values.IABP_AP)?.UpdateVitals ();
                     return;
 
                 case Settings.AugmentationAlarm:
                     AugmentationAlarm = II.Math.Clamp (AugmentationAlarm + 5, 0, 300);
-                    listNumerics.Find (o => o.controlType.Value == Controls.IABPNumeric.ControlType.Values.IABP_AP).UpdateVitals ();
+                    listNumerics.Find (o => o.ControlType.Value == Controls.IABPNumeric.ControlTypes.Values.IABP_AP)?.UpdateVitals ();
                     return;
             }
         }
@@ -439,12 +448,12 @@ namespace IISIM {
 
                 case Settings.AugmentationPressure:
                     Augmentation = II.Math.Clamp (Augmentation - 10, 0, 100);
-                    listNumerics.Find (o => o.controlType.Value == Controls.IABPNumeric.ControlType.Values.IABP_AP).UpdateVitals ();
+                    listNumerics.Find (o => o.ControlType?.Value == Controls.IABPNumeric.ControlTypes.Values.IABP_AP)?.UpdateVitals ();
                     return;
 
                 case Settings.AugmentationAlarm:
                     AugmentationAlarm = II.Math.Clamp (AugmentationAlarm - 5, 0, 300);
-                    listNumerics.Find (o => o.controlType.Value == Controls.IABPNumeric.ControlType.Values.IABP_AP).UpdateVitals ();
+                    listNumerics.Find (o => o.ControlType?.Value == Controls.IABPNumeric.ControlTypes.Values.IABP_AP)?.UpdateVitals ();
                     return;
             }
         }
@@ -489,9 +498,9 @@ namespace IISIM {
             => SetColorScheme (Color.Schemes.Dark);
 
         private void OnTick_PrimingComplete (object? sender, EventArgs e) {
-            timerAncillary_Delay.Stop ();
-            timerAncillary_Delay.Unlock ();
-            timerAncillary_Delay.Tick -= OnTick_PrimingComplete;
+            TimerAncillary_Delay.Stop ();
+            TimerAncillary_Delay.Unlock ();
+            TimerAncillary_Delay.Tick -= OnTick_PrimingComplete;
 
             Priming = false;
             Primed = true;
@@ -509,24 +518,24 @@ namespace IISIM {
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {
-                listTracings [i].Strip.Scroll ();
+                listTracings [i].Strip?.Scroll ();
                 Dispatcher.UIThread.InvokeAsync (listTracings [i].DrawTracing);
             }
         }
 
         public override void OnTick_Vitals (object? sender, EventArgs e) {
-            if (State != States.Running)
+            if (State != States.Running || Instance?.Patient is null)
                 return;
 
             // Re-calculate IABP-specific vital signs (augmentation pressure and augmentation-assisted MAP)
             if (Running) {
-                App.Patient.IABP_DBP = II.Math.Clamp (App.Patient.ADBP - 7, 0, 1000);
-                App.Patient.IABP_AP = (int)(App.Patient.ASBP + (App.Patient.ASBP * 0.3f * (Augmentation * 0.01f)));
-                App.Patient.IABP_MAP = App.Patient.IABP_DBP + ((App.Patient.IABP_AP - App.Patient.IABP_DBP) / 2);
+                Instance.Patient.IABP_DBP = II.Math.Clamp (Instance.Patient.ADBP - 7, 0, 1000);
+                Instance.Patient.IABP_AP = (int)(Instance.Patient.ASBP + (Instance.Patient.ASBP * 0.3f * (Augmentation * 0.01f)));
+                Instance.Patient.IABP_MAP = Instance.Patient.IABP_DBP + ((Instance.Patient.IABP_AP - Instance.Patient.IABP_DBP) / 2);
             } else {    // Use arterial line pressures if the balloon isn't actively pumping
-                App.Patient.IABP_DBP = App.Patient.ADBP;
-                App.Patient.IABP_AP = 0;
-                App.Patient.IABP_MAP = App.Patient.AMAP;
+                Instance.Patient.IABP_DBP = Instance.Patient.ADBP;
+                Instance.Patient.IABP_AP = 0;
+                Instance.Patient.IABP_MAP = Instance.Patient.AMAP;
             }
 
             Dispatcher.UIThread.InvokeAsync (UpdateInterface);
@@ -539,51 +548,53 @@ namespace IISIM {
                 default: break;
                 case Patient.PatientEventTypes.Vitals_Change:
                     listTracings.ForEach (c => {
-                        c.Strip.ClearFuture (App.Patient);
-                        c.Strip.Add_Beat__Cardiac_Baseline (App.Patient);
+                        c.Strip?.ClearFuture (Instance?.Patient);
+                        c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Patient);
                     });
                     break;
 
                 case Patient.PatientEventTypes.Defibrillation:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Defibrillation (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Pacermaker_Spike:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Pacemaker (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Baseline:
-                    App.Patient.IABP_Active = Running && (Frequency_Iter % Frequency == 0)
-                        && ((Trigger.Value == Triggering.Values.ECG && App.Patient.Cardiac_Rhythm.HasWaveform_Ventricular)
-                        || (Trigger.Value == Triggering.Values.Pressure && App.Patient.Cardiac_Rhythm.HasPulse_Ventricular));
-                    App.Patient.IABP_Trigger = Trigger.Value.ToString ();
+                    if (Instance?.Patient is not null) {
+                        Instance.Patient.IABP_Active = Running && (Frequency_Iter % Frequency == 0)
+                            && ((Trigger.Value == Triggering.Values.ECG && Instance.Patient.Cardiac_Rhythm.HasWaveform_Ventricular)
+                            || (Trigger.Value == Triggering.Values.Pressure && Instance.Patient.Cardiac_Rhythm.HasPulse_Ventricular));
+                        Instance.Patient.IABP_Trigger = Trigger.Value.ToString ();
+                    }
 
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Baseline (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Atrial_Electric:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial_Electrical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Electrical (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular_Electric:
                     if (Running)
                         Frequency_Iter++;
 
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Electrical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Atrial_Mechanical:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Atrial_Mechanical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Mechanical (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__Cardiac_Ventricular_Mechanical (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Patient));
 
                     /* Iterations and trigger for auto-scaling pressure waveform strips */
                     autoScale_iter -= 1;
                     if (autoScale_iter <= 0) {
                         for (int i = 0; i < listTracings.Count; i++) {
-                            listTracings [i].Strip.SetAutoScale (App.Patient);
+                            listTracings [i].Strip?.SetAutoScale (Instance?.Patient);
                             Dispatcher.UIThread.InvokeAsync (listTracings [i].UpdateScale);
                         }
 
@@ -592,7 +603,7 @@ namespace IISIM {
                     break;
 
                 case Patient.PatientEventTypes.IABP_Balloon_Inflation:
-                    listTracings.ForEach (c => c.Strip.Add_Beat__IABP_Balloon (App.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__IABP_Balloon (Instance?.Patient));
                     break;
             }
         }

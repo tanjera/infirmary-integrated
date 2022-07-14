@@ -11,6 +11,7 @@ using II.Localization;
 namespace IISIM {
 
     public partial class DialogUpgrade : Window {
+        public App? Instance;
 
         public enum UpgradeOptions {
             None,
@@ -21,9 +22,16 @@ namespace IISIM {
 
         public DialogUpgrade () {
             InitializeComponent ();
+        }
+
+        public DialogUpgrade (App? app) {
+            InitializeComponent ();
 #if DEBUG
             this.AttachDevTools ();
 #endif
+
+            DataContext = this;
+            Instance = app;
 
             Init ();
         }
@@ -42,14 +50,14 @@ namespace IISIM {
         }
 
         public void Init () {
-            DataContext = this;
-
             // Populate UI strings per language selection
-            this.FindControl<Window> ("dlgUpgrade").Title = App.Language.Localize ("UPGRADE:Upgrade");
-            this.FindControl<Label> ("lblUpdateAvailable").Content = App.Language.Localize ("UPGRADE:UpdateAvailable");
-            this.FindControl<Label> ("lblWebsite").Content = App.Language.Localize ("UPGRADE:OpenDownloadPage");
-            this.FindControl<Label> ("lblDelay").Content = App.Language.Localize ("UPGRADE:Later");
-            this.FindControl<Label> ("lblMute").Content = App.Language.Localize ("UPGRADE:Mute");
+            if (Instance is not null) {
+                this.FindControl<Window> ("dlgUpgrade").Title = Instance.Language.Localize ("UPGRADE:Upgrade");
+                this.FindControl<Label> ("lblUpdateAvailable").Content = Instance.Language.Localize ("UPGRADE:UpdateAvailable");
+                this.FindControl<Label> ("lblWebsite").Content = Instance.Language.Localize ("UPGRADE:OpenDownloadPage");
+                this.FindControl<Label> ("lblDelay").Content = Instance.Language.Localize ("UPGRADE:Later");
+                this.FindControl<Label> ("lblMute").Content = Instance.Language.Localize ("UPGRADE:Mute");
+            }
         }
 
         private void btnWebsite_Click (object sender, RoutedEventArgs e) {

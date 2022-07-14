@@ -11,12 +11,20 @@ using II.Localization;
 namespace IISIM {
 
     public partial class DialogLanguage : Window {
+        public App? Instance;
 
         public DialogLanguage () {
+            InitializeComponent ();
+        }
+
+        public DialogLanguage (App? app) {
             InitializeComponent ();
 #if DEBUG
             this.AttachDevTools ();
 #endif
+
+            DataContext = this;
+            Instance = app;
 
             Init ();
         }
@@ -26,22 +34,26 @@ namespace IISIM {
         }
 
         private void Init () {
-            DataContext = this;
-
             // Populate UI strings per language selection
-            this.FindControl<Window> ("dlgLanguage").Title = App.Language.Localize ("LANGUAGE:Title");
-            this.FindControl<Label> ("lblChooseLanguage").Content = App.Language.Localize ("LANGUAGE:Select");
-            this.FindControl<Button> ("btnContinue").Content = App.Language.Localize ("BUTTON:Continue");
+            if (Instance is not null) {
+                this.FindControl<Window> ("dlgLanguage").Title = Instance.Language.Localize ("LANGUAGE:Title");
+                this.FindControl<Label> ("lblChooseLanguage").Content = Instance.Language.Localize ("LANGUAGE:Select");
+                this.FindControl<Button> ("btnContinue").Content = Instance.Language.Localize ("BUTTON:Continue");
 
-            this.FindControl<ComboBox> ("cmbLanguages").Items = II.Localization.Language.Descriptions;
-            this.FindControl<ComboBox> ("cmbLanguages").SelectedIndex = (int)II.Localization.Language.Values.ENG;
+                this.FindControl<ComboBox> ("cmbLanguages").Items = II.Localization.Language.Descriptions;
+                this.FindControl<ComboBox> ("cmbLanguages").SelectedIndex = (int)II.Localization.Language.Values.ENG;
+            }
         }
 
         private void OnClick_Continue (object sender, RoutedEventArgs e) {
-            App.Language.Value = Enum.GetValues<Language.Values> () [this.FindControl<ComboBox> ("cmbLanguages").SelectedIndex];
+            if (Instance is null)
+                return;
 
-            App.Settings.Language = App.Language.Value.ToString ();
-            App.Settings.Save ();
+            Instance.Language.Value = Enum.GetValues<Language.Values> () [this.FindControl<ComboBox> ("cmbLanguages").SelectedIndex];
+
+            Instance.Settings.Language = Instance.Language.Value.ToString ();
+            Instance.Settings.Save ();
+
             this.Close ();
         }
     }

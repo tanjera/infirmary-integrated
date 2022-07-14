@@ -12,13 +12,20 @@ using II.Localization;
 namespace IISIM {
 
     public partial class DialogAbout : Window {
+        public App? Instance;
 
         public DialogAbout () {
+            InitializeComponent ();
+        }
+
+        public DialogAbout (App? app) {
             InitializeComponent ();
 #if DEBUG
             this.AttachDevTools ();
 #endif
 
+            DataContext = this;
+            Instance = app;
             Init ();
         }
 
@@ -27,13 +34,13 @@ namespace IISIM {
         }
 
         public void Init () {
-            DataContext = this;
-
-            this.FindControl<Window> ("dlgAbout").Title = App.Language.Localize ("ABOUT:AboutProgram");
-            this.FindControl<Label> ("lblInfirmaryIntegrated").Content = App.Language.Localize ("II:InfirmaryIntegrated");
-            this.FindControl<Label> ("lblVersion").Content = String.Format (App.Language.Localize ("ABOUT:Version"),
-                Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0");
-            this.FindControl<TextBlock> ("tblDescription").Text = App.Language.Localize ("ABOUT:Description");
+            if (Instance is not null) {
+                this.FindControl<Window> ("dlgAbout").Title = Instance.Language.Localize ("ABOUT:AboutProgram");
+                this.FindControl<Label> ("lblInfirmaryIntegrated").Content = Instance.Language.Localize ("II:InfirmaryIntegrated");
+                this.FindControl<Label> ("lblVersion").Content = String.Format (Instance.Language.Localize ("ABOUT:Version"),
+                    Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0");
+                this.FindControl<TextBlock> ("tblDescription").Text = Instance.Language.Localize ("ABOUT:Description");
+            }
         }
 
         private void Hyperlink_Website (object sender, RoutedEventArgs e)

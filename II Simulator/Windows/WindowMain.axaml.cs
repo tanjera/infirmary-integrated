@@ -25,6 +25,8 @@ using II.Server;
 namespace IISIM {
 
     public partial class WindowMain : Window {
+        public App? Instance;
+
         /* Variables for UI loading */
         private bool IsUILoadCompleted = false;
 
@@ -38,9 +40,16 @@ namespace IISIM {
             ChangesApplied
         }
 
+        public WindowMain (App? app) {
+            Instance = app;
+
+            InitializeComponent ();
+
+            _ = Init ();
+        }
+
         public WindowMain () {
             InitializeComponent ();
-            _ = Init ();
         }
 
         private void InitializeComponent () {
@@ -48,9 +57,12 @@ namespace IISIM {
         }
 
         private async Task Init () {
+            if (Instance is null)
+                return;
+
             DataContext = this;
 
-            App.Window_Main = this;
+            Instance.Window_Main = this;
 
             await InitInitialRun ();
 
@@ -63,175 +75,177 @@ namespace IISIM {
             await InitMirroring ();
             await InitScenario (true);
 
-            if (App.Start_Args?.Length > 0)
-                await LoadOpen (App.Start_Args [0]);
+            if (Instance.Start_Args?.Length > 0)
+                await LoadOpen (Instance.Start_Args [0]);
 
-            await SetParameterStatus (App.Settings.AutoApplyChanges);
+            await SetParameterStatus (Instance.Settings.AutoApplyChanges);
         }
 
         private async Task InitInitialRun () {
-            if (!II.Settings.Simulator.Exists ()) {
+            if (!global::II.Settings.Simulator.Exists ()) {
                 await DialogEULA ();
             }
         }
 
-        private static async Task InitUsageStatistics () {
+        private async Task InitUsageStatistics () {
             Server.UsageStat stat = new ();
-            await stat.Init (App.Language);
+            await stat.Init (Instance?.Language ?? new Language ());
 
             /* Send usage statistics to server in background */
-            _ = App.Server.Run_UsageStats (stat);
+            _ = Instance?.Server.Run_UsageStats (stat);
         }
 
         private void InitInterface () {
             /* Populate UI strings per language selection */
-            this.FindControl<Window> ("wdwMain").Title = App.Language.Localize ("PE:WindowTitle");
-            this.FindControl<MenuItem> ("menuNew").Header = App.Language.Localize ("PE:MenuNewFile");
-            this.FindControl<MenuItem> ("menuFile").Header = App.Language.Localize ("PE:MenuFile");
-            this.FindControl<MenuItem> ("menuLoad").Header = App.Language.Localize ("PE:MenuLoadSimulation");
-            this.FindControl<MenuItem> ("menuSave").Header = App.Language.Localize ("PE:MenuSaveSimulation");
-            this.FindControl<MenuItem> ("menuExit").Header = App.Language.Localize ("PE:MenuExitProgram");
+            if (Instance is not null) {
+                this.FindControl<Window> ("wdwMain").Title = Instance.Language.Localize ("PE:WindowTitle");
+                this.FindControl<MenuItem> ("menuNew").Header = Instance.Language.Localize ("PE:MenuNewFile");
+                this.FindControl<MenuItem> ("menuFile").Header = Instance.Language.Localize ("PE:MenuFile");
+                this.FindControl<MenuItem> ("menuLoad").Header = Instance.Language.Localize ("PE:MenuLoadSimulation");
+                this.FindControl<MenuItem> ("menuSave").Header = Instance.Language.Localize ("PE:MenuSaveSimulation");
+                this.FindControl<MenuItem> ("menuExit").Header = Instance.Language.Localize ("PE:MenuExitProgram");
 
-            this.FindControl<MenuItem> ("menuMirror").Header = App.Language.Localize ("PE:MenuMirror");
-            this.FindControl<MenuItem> ("menuMirrorDeactivate").Header = App.Language.Localize ("PE:MenuMirrorDeactivate");
-            this.FindControl<MenuItem> ("menuMirrorReceive").Header = App.Language.Localize ("PE:MenuMirrorReceive");
-            this.FindControl<MenuItem> ("menuMirrorBroadcast").Header = App.Language.Localize ("PE:MenuMirrorBroadcast");
+                this.FindControl<MenuItem> ("menuMirror").Header = Instance.Language.Localize ("PE:MenuMirror");
+                this.FindControl<MenuItem> ("menuMirrorDeactivate").Header = Instance.Language.Localize ("PE:MenuMirrorDeactivate");
+                this.FindControl<MenuItem> ("menuMirrorReceive").Header = Instance.Language.Localize ("PE:MenuMirrorReceive");
+                this.FindControl<MenuItem> ("menuMirrorBroadcast").Header = Instance.Language.Localize ("PE:MenuMirrorBroadcast");
 
-            this.FindControl<MenuItem> ("menuSettings").Header = App.Language.Localize ("PE:MenuSettings");
-            this.FindControl<MenuItem> ("menuToggleAudio").Header = String.Format ("{0}: {1}",
-                App.Language.Localize ("PE:MenuToggleAudio"),
-                App.Settings.AudioEnabled ? App.Language.Localize ("BOOLEAN:On") : App.Language.Localize ("BOOLEAN:Off"));
-            this.FindControl<MenuItem> ("menuSetLanguage").Header = App.Language.Localize ("PE:MenuSetLanguage");
+                this.FindControl<MenuItem> ("menuSettings").Header = Instance.Language.Localize ("PE:MenuSettings");
+                this.FindControl<MenuItem> ("menuToggleAudio").Header = String.Format ("{0}: {1}",
+                    Instance.Language.Localize ("PE:MenuToggleAudio"),
+                    Instance.Settings.AudioEnabled ? Instance.Language.Localize ("BOOLEAN:On") : Instance.Language.Localize ("BOOLEAN:Off"));
+                this.FindControl<MenuItem> ("menuSetLanguage").Header = Instance.Language.Localize ("PE:MenuSetLanguage");
 
-            this.FindControl<MenuItem> ("menuHelp").Header = App.Language.Localize ("PE:MenuHelp");
-            this.FindControl<MenuItem> ("menuCheckUpdate").Header = App.Language.Localize ("PE:MenuCheckUpdates");
-            this.FindControl<MenuItem> ("menuAbout").Header = App.Language.Localize ("PE:MenuAboutProgram");
+                this.FindControl<MenuItem> ("menuHelp").Header = Instance.Language.Localize ("PE:MenuHelp");
+                this.FindControl<MenuItem> ("menuCheckUpdate").Header = Instance.Language.Localize ("PE:MenuCheckUpdates");
+                this.FindControl<MenuItem> ("menuAbout").Header = Instance.Language.Localize ("PE:MenuAboutProgram");
 
-            this.FindControl<HeaderedContentControl> ("lblGroupDevices").Header = App.Language.Localize ("PE:Devices");
-            this.FindControl<Label> ("lblDeviceMonitor").Content = App.Language.Localize ("PE:CardiacMonitor");
-            this.FindControl<Label> ("lblDevice12LeadECG").Content = App.Language.Localize ("PE:12LeadECG");
-            this.FindControl<Label> ("lblDeviceDefibrillator").Content = App.Language.Localize ("PE:Defibrillator");
-            this.FindControl<Label> ("lblDeviceIABP").Content = App.Language.Localize ("PE:IABP");
-            this.FindControl<Label> ("lblDeviceEFM").Content = App.Language.Localize ("PE:EFM");
+                this.FindControl<HeaderedContentControl> ("lblGroupDevices").Header = Instance.Language.Localize ("PE:Devices");
+                this.FindControl<Label> ("lblDeviceMonitor").Content = Instance.Language.Localize ("PE:CardiacMonitor");
+                this.FindControl<Label> ("lblDevice12LeadECG").Content = Instance.Language.Localize ("PE:12LeadECG");
+                this.FindControl<Label> ("lblDeviceDefibrillator").Content = Instance.Language.Localize ("PE:Defibrillator");
+                this.FindControl<Label> ("lblDeviceIABP").Content = Instance.Language.Localize ("PE:IABP");
+                this.FindControl<Label> ("lblDeviceEFM").Content = Instance.Language.Localize ("PE:EFM");
 
-            this.FindControl<Label> ("lblGroupScenarioPlayer").Content = App.Language.Localize ("PE:ScenarioPlayer");
-            this.FindControl<HeaderedContentControl> ("lblProgressionOptions").Header = App.Language.Localize ("PE:ProgressionOptions");
+                this.FindControl<Label> ("lblGroupScenarioPlayer").Content = Instance.Language.Localize ("PE:ScenarioPlayer");
+                this.FindControl<HeaderedContentControl> ("lblProgressionOptions").Header = Instance.Language.Localize ("PE:ProgressionOptions");
 
-            this.FindControl<Label> ("lblGroupVitalSigns").Content = App.Language.Localize ("PE:VitalSigns");
-            this.FindControl<Label> ("lblHR").Content = $"{App.Language.Localize ("PE:HeartRate")}:";
-            this.FindControl<Label> ("lblNIBP").Content = $"{App.Language.Localize ("PE:BloodPressure")}:";
-            this.FindControl<Label> ("lblRR").Content = $"{App.Language.Localize ("PE:RespiratoryRate")}:";
-            this.FindControl<Label> ("lblSPO2").Content = $"{App.Language.Localize ("PE:PulseOximetry")}:";
-            this.FindControl<Label> ("lblT").Content = $"{App.Language.Localize ("PE:Temperature")}:";
-            this.FindControl<Label> ("lblCardiacRhythm").Content = $"{App.Language.Localize ("PE:CardiacRhythm")}:";
-            this.FindControl<CheckBox> ("checkDefaultVitals").Content = App.Language.Localize ("PE:UseDefaultVitalSignRanges");
+                this.FindControl<Label> ("lblGroupVitalSigns").Content = Instance.Language.Localize ("PE:VitalSigns");
+                this.FindControl<Label> ("lblHR").Content = $"{Instance.Language.Localize ("PE:HeartRate")}:";
+                this.FindControl<Label> ("lblNIBP").Content = $"{Instance.Language.Localize ("PE:BloodPressure")}:";
+                this.FindControl<Label> ("lblRR").Content = $"{Instance.Language.Localize ("PE:RespiratoryRate")}:";
+                this.FindControl<Label> ("lblSPO2").Content = $"{Instance.Language.Localize ("PE:PulseOximetry")}:";
+                this.FindControl<Label> ("lblT").Content = $"{Instance.Language.Localize ("PE:Temperature")}:";
+                this.FindControl<Label> ("lblCardiacRhythm").Content = $"{Instance.Language.Localize ("PE:CardiacRhythm")}:";
+                this.FindControl<CheckBox> ("checkDefaultVitals").Content = Instance.Language.Localize ("PE:UseDefaultVitalSignRanges");
 
-            this.FindControl<Label> ("lblGroupHemodynamics").Content = App.Language.Localize ("PE:AdvancedHemodynamics");
-            this.FindControl<Label> ("lblETCO2").Content = $"{App.Language.Localize ("PE:EndTidalCO2")}:";
-            this.FindControl<Label> ("lblCVP").Content = $"{App.Language.Localize ("PE:CentralVenousPressure")}:";
-            this.FindControl<Label> ("lblASBP").Content = $"{App.Language.Localize ("PE:ArterialBloodPressure")}:";
-            this.FindControl<Label> ("lblPACatheterPlacement").Content = $"{App.Language.Localize ("PE:PulmonaryArteryCatheterPlacement")}:";
-            this.FindControl<Label> ("lblCO").Content = $"{App.Language.Localize ("PE:CardiacOutput")}:";
-            this.FindControl<Label> ("lblPSP").Content = $"{App.Language.Localize ("PE:PulmonaryArteryPressure")}:";
-            this.FindControl<Label> ("lblICP").Content = $"{App.Language.Localize ("PE:IntracranialPressure")}:";
-            this.FindControl<Label> ("lblIAP").Content = $"{App.Language.Localize ("PE:IntraabdominalPressure")}:";
+                this.FindControl<Label> ("lblGroupHemodynamics").Content = Instance.Language.Localize ("PE:AdvancedHemodynamics");
+                this.FindControl<Label> ("lblETCO2").Content = $"{Instance.Language.Localize ("PE:EndTidalCO2")}:";
+                this.FindControl<Label> ("lblCVP").Content = $"{Instance.Language.Localize ("PE:CentralVenousPressure")}:";
+                this.FindControl<Label> ("lblASBP").Content = $"{Instance.Language.Localize ("PE:ArterialBloodPressure")}:";
+                this.FindControl<Label> ("lblPACatheterPlacement").Content = $"{Instance.Language.Localize ("PE:PulmonaryArteryCatheterPlacement")}:";
+                this.FindControl<Label> ("lblCO").Content = $"{Instance.Language.Localize ("PE:CardiacOutput")}:";
+                this.FindControl<Label> ("lblPSP").Content = $"{Instance.Language.Localize ("PE:PulmonaryArteryPressure")}:";
+                this.FindControl<Label> ("lblICP").Content = $"{Instance.Language.Localize ("PE:IntracranialPressure")}:";
+                this.FindControl<Label> ("lblIAP").Content = $"{Instance.Language.Localize ("PE:IntraabdominalPressure")}:";
 
-            this.FindControl<Label> ("lblGroupRespiratoryProfile").Content = App.Language.Localize ("PE:RespiratoryProfile");
-            this.FindControl<Label> ("lblRespiratoryRhythm").Content = $"{App.Language.Localize ("PE:RespiratoryRhythm")}:";
-            this.FindControl<Label> ("lblMechanicallyVentilated").Content = $"{App.Language.Localize ("PE:MechanicallyVentilated")}:";
-            this.FindControl<Label> ("lblInspiratoryRatio").Content = $"{App.Language.Localize ("PE:InspiratoryExpiratoryRatio")}:";
+                this.FindControl<Label> ("lblGroupRespiratoryProfile").Content = Instance.Language.Localize ("PE:RespiratoryProfile");
+                this.FindControl<Label> ("lblRespiratoryRhythm").Content = $"{Instance.Language.Localize ("PE:RespiratoryRhythm")}:";
+                this.FindControl<Label> ("lblMechanicallyVentilated").Content = $"{Instance.Language.Localize ("PE:MechanicallyVentilated")}:";
+                this.FindControl<Label> ("lblInspiratoryRatio").Content = $"{Instance.Language.Localize ("PE:InspiratoryExpiratoryRatio")}:";
 
-            this.FindControl<Label> ("lblGroupCardiacProfile").Content = App.Language.Localize ("PE:CardiacProfile");
-            this.FindControl<Label> ("lblPacemakerCaptureThreshold").Content = $"{App.Language.Localize ("PE:PacemakerCaptureThreshold")}:";
-            this.FindControl<Label> ("lblPulsusParadoxus").Content = $"{App.Language.Localize ("PE:PulsusParadoxus")}:";
-            this.FindControl<Label> ("lblPulsusAlternans").Content = $"{App.Language.Localize ("PE:PulsusAlternans")}:";
-            this.FindControl<Label> ("lblCardiacAxis").Content = $"{App.Language.Localize ("PE:CardiacAxis")}:";
-            this.FindControl<HeaderedContentControl> ("grpSTSegmentElevation").Header = App.Language.Localize ("PE:STSegmentElevation");
-            this.FindControl<HeaderedContentControl> ("grpTWaveElevation").Header = App.Language.Localize ("PE:TWaveElevation");
+                this.FindControl<Label> ("lblGroupCardiacProfile").Content = Instance.Language.Localize ("PE:CardiacProfile");
+                this.FindControl<Label> ("lblPacemakerCaptureThreshold").Content = $"{Instance.Language.Localize ("PE:PacemakerCaptureThreshold")}:";
+                this.FindControl<Label> ("lblPulsusParadoxus").Content = $"{Instance.Language.Localize ("PE:PulsusParadoxus")}:";
+                this.FindControl<Label> ("lblPulsusAlternans").Content = $"{Instance.Language.Localize ("PE:PulsusAlternans")}:";
+                this.FindControl<Label> ("lblCardiacAxis").Content = $"{Instance.Language.Localize ("PE:CardiacAxis")}:";
+                this.FindControl<HeaderedContentControl> ("grpSTSegmentElevation").Header = Instance.Language.Localize ("PE:STSegmentElevation");
+                this.FindControl<HeaderedContentControl> ("grpTWaveElevation").Header = Instance.Language.Localize ("PE:TWaveElevation");
 
-            this.FindControl<Label> ("lblGroupObstetricProfile").Content = App.Language.Localize ("PE:ObstetricProfile");
-            this.FindControl<Label> ("lblFHR").Content = $"{App.Language.Localize ("PE:FetalHeartRate")}:";
-            this.FindControl<Label> ("lblFHRRhythms").Content = $"{App.Language.Localize ("PE:FetalHeartRhythms")}:";
-            this.FindControl<Label> ("lblFHRVariability").Content = $"{App.Language.Localize ("PE:FetalHeartVariability")}:";
-            this.FindControl<Label> ("lblUCFrequency").Content = $"{App.Language.Localize ("PE:UterineContractionFrequency")}:";
-            this.FindControl<Label> ("lblUCDuration").Content = $"{App.Language.Localize ("PE:UterineContractionDuration")}:";
-            this.FindControl<Label> ("lblUCIntensity").Content = $"{App.Language.Localize ("PE:UterineContractionIntensity")}:";
+                this.FindControl<Label> ("lblGroupObstetricProfile").Content = Instance.Language.Localize ("PE:ObstetricProfile");
+                this.FindControl<Label> ("lblFHR").Content = $"{Instance.Language.Localize ("PE:FetalHeartRate")}:";
+                this.FindControl<Label> ("lblFHRRhythms").Content = $"{Instance.Language.Localize ("PE:FetalHeartRhythms")}:";
+                this.FindControl<Label> ("lblFHRVariability").Content = $"{Instance.Language.Localize ("PE:FetalHeartVariability")}:";
+                this.FindControl<Label> ("lblUCFrequency").Content = $"{Instance.Language.Localize ("PE:UterineContractionFrequency")}:";
+                this.FindControl<Label> ("lblUCDuration").Content = $"{Instance.Language.Localize ("PE:UterineContractionDuration")}:";
+                this.FindControl<Label> ("lblUCIntensity").Content = $"{Instance.Language.Localize ("PE:UterineContractionIntensity")}:";
 
-            this.FindControl<CheckBox> ("chkAutoApplyChanges").Content = App.Language.Localize ("BUTTON:AutoApplyChanges");
-            this.FindControl<Label> ("lblParametersApply").Content = App.Language.Localize ("BUTTON:ApplyChanges");
-            this.FindControl<Label> ("lblParametersReset").Content = App.Language.Localize ("BUTTON:ResetParameters");
+                this.FindControl<CheckBox> ("chkAutoApplyChanges").Content = Instance.Language.Localize ("BUTTON:AutoApplyChanges");
+                this.FindControl<Label> ("lblParametersApply").Content = Instance.Language.Localize ("BUTTON:ApplyChanges");
+                this.FindControl<Label> ("lblParametersReset").Content = Instance.Language.Localize ("BUTTON:ResetParameters");
 
-            this.FindControl<CheckBox> ("chkAutoApplyChanges").IsChecked = App.Settings.AutoApplyChanges;
+                this.FindControl<CheckBox> ("chkAutoApplyChanges").IsChecked = Instance.Settings.AutoApplyChanges;
 
-            List<ComboBoxItem> cardiacRhythms = new (),
-                respiratoryRhythms = new (),
-                pulmonaryArteryRhythms = new (),
-                cardiacAxes = new (),
-                intensityScale = new ();
-            List<ListBoxItem> fetalHeartRhythms = new ();
+                List<ComboBoxItem> cardiacRhythms = new (),
+                    respiratoryRhythms = new (),
+                    pulmonaryArteryRhythms = new (),
+                    cardiacAxes = new (),
+                    intensityScale = new ();
+                List<ListBoxItem> fetalHeartRhythms = new ();
 
-            foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
-                cardiacRhythms.Add (new ComboBoxItem () {
-                    Content = App.Language.Localize (Cardiac_Rhythms.LookupString (v))
-                });
-            this.FindControl<ComboBox> ("comboCardiacRhythm").Items = cardiacRhythms;
+                foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
+                    cardiacRhythms.Add (new ComboBoxItem () {
+                        Content = Instance.Language.Localize (Cardiac_Rhythms.LookupString (v))
+                    });
+                this.FindControl<ComboBox> ("comboCardiacRhythm").Items = cardiacRhythms;
 
-            foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
-                respiratoryRhythms.Add (new ComboBoxItem () {
-                    Tag = v.ToString (),
-                    Content = App.Language.Localize (Respiratory_Rhythms.LookupString (v))
-                }); ;
-            this.FindControl<ComboBox> ("comboRespiratoryRhythm").Items = respiratoryRhythms;
+                foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
+                    respiratoryRhythms.Add (new ComboBoxItem () {
+                        Tag = v.ToString (),
+                        Content = Instance.Language.Localize (Respiratory_Rhythms.LookupString (v))
+                    }); ;
+                this.FindControl<ComboBox> ("comboRespiratoryRhythm").Items = respiratoryRhythms;
 
-            foreach (PulmonaryArtery_Rhythms.Values v in Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)))
-                pulmonaryArteryRhythms.Add (new ComboBoxItem () {
-                    Tag = v.ToString (),
-                    Content = App.Language.Localize (PulmonaryArtery_Rhythms.LookupString (v))
-                });
-            this.FindControl<ComboBox> ("comboPACatheterPlacement").Items = pulmonaryArteryRhythms;
+                foreach (PulmonaryArtery_Rhythms.Values v in Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)))
+                    pulmonaryArteryRhythms.Add (new ComboBoxItem () {
+                        Tag = v.ToString (),
+                        Content = Instance.Language.Localize (PulmonaryArtery_Rhythms.LookupString (v))
+                    });
+                this.FindControl<ComboBox> ("comboPACatheterPlacement").Items = pulmonaryArteryRhythms;
 
-            foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
-                cardiacAxes.Add (new ComboBoxItem () {
-                    Tag = v.ToString (),
-                    Content = App.Language.Localize (Cardiac_Axes.LookupString (v))
-                });
-            this.FindControl<ComboBox> ("comboCardiacAxis").Items = cardiacAxes;
+                foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
+                    cardiacAxes.Add (new ComboBoxItem () {
+                        Tag = v.ToString (),
+                        Content = Instance.Language.Localize (Cardiac_Axes.LookupString (v))
+                    });
+                this.FindControl<ComboBox> ("comboCardiacAxis").Items = cardiacAxes;
 
-            foreach (Scales.Intensity.Values v in Enum.GetValues (typeof (Scales.Intensity.Values)))
-                intensityScale.Add (new ComboBoxItem () {
-                    Tag = v.ToString (),
-                    Content = App.Language.Localize (Scales.Intensity.LookupString (v))
-                });
-            this.FindControl<ComboBox> ("comboFHRVariability").Items = intensityScale;
-            this.FindControl<ComboBox> ("comboUCIntensity").Items = intensityScale;
+                foreach (Scales.Intensity.Values v in Enum.GetValues (typeof (Scales.Intensity.Values)))
+                    intensityScale.Add (new ComboBoxItem () {
+                        Tag = v.ToString (),
+                        Content = Instance.Language.Localize (Scales.Intensity.LookupString (v))
+                    });
+                this.FindControl<ComboBox> ("comboFHRVariability").Items = intensityScale;
+                this.FindControl<ComboBox> ("comboUCIntensity").Items = intensityScale;
 
-            foreach (FHRAccelDecels.Values v in Enum.GetValues (typeof (FHRAccelDecels.Values)))
-                fetalHeartRhythms.Add (new ListBoxItem () {
-                    Tag = v.ToString (),
-                    Content = App.Language.Localize (FHRAccelDecels.LookupString (v))
-                });
-            this.FindControl<ListBox> ("listFHRRhythms").Items = fetalHeartRhythms;
+                foreach (FHRAccelDecels.Values v in Enum.GetValues (typeof (FHRAccelDecels.Values)))
+                    fetalHeartRhythms.Add (new ListBoxItem () {
+                        Tag = v.ToString (),
+                        Content = Instance.Language.Localize (FHRAccelDecels.LookupString (v))
+                    });
+                this.FindControl<ListBox> ("listFHRRhythms").Items = fetalHeartRhythms;
+            }
         }
 
         private async Task InitUpgrade () {
             // Newer version available? Check Server, populate status bar, prompt user for upgrade
-            await App.Server.Get_LatestVersion ();
+            await Instance.Server.Get_LatestVersion ();
 
             string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
-            if (Utility.IsNewerVersion (version, App.Server.UpgradeVersion)) {
+            if (Utility.IsNewerVersion (version, Instance.Server.UpgradeVersion)) {
                 MenuItem miUpdate = this.FindControl<MenuItem> ("menuUpdate");
-                miUpdate.Header = App.Language.Localize ("STATUS:UpdateAvailable");
+                miUpdate.Header = Instance.Language.Localize ("STATUS:UpdateAvailable");
                 miUpdate.IsVisible = true;
             } else {            // If no update available, no status update; remove any notification muting
-                App.Settings.MuteUpgrade = false;
-                App.Settings.Save ();
+                Instance.Settings.MuteUpgrade = false;
+                Instance.Settings.Save ();
                 return;
             }
 
-            if (App.Settings.MuteUpgrade) {
-                if (DateTime.Compare (App.Settings.MuteUpgradeDate, DateTime.Now - new TimeSpan (30, 0, 0, 0)) < 0) {
-                    App.Settings.MuteUpgrade = false;                       // Reset the notification mute every 30 days
-                    App.Settings.Save ();
+            if (Instance.Settings.MuteUpgrade) {
+                if (DateTime.Compare (Instance.Settings.MuteUpgradeDate, DateTime.Now - new TimeSpan (30, 0, 0, 0)) < 0) {
+                    Instance.Settings.MuteUpgrade = false;                       // Reset the notification mute every 30 days
+                    Instance.Settings.Save ();
                 } else {        // Mutes update popup notification
                     return;
                 }
@@ -241,27 +255,36 @@ namespace IISIM {
         }
 
         private async Task InitMirroring () {
-            App.Timer_Main.Elapsed += App.Mirror.ProcessTimer;
-            App.Mirror.timerUpdate.Tick += OnMirrorTick;
-            await App.Mirror.timerUpdate.ResetAuto (5000);
+            if (Instance is null)
+                return;
+
+            Instance.Timer_Main.Elapsed += Instance.Mirror.ProcessTimer;
+            Instance.Mirror.timerUpdate.Tick += OnMirrorTick;
+            await Instance.Mirror.timerUpdate.ResetAuto (5000);
 
             await UpdateMirrorStatus ();
         }
 
         private async Task InitScenario (bool toInit) {
-            App.Scenario = new Scenario (toInit);
-            App.Scenario.StepChangeRequest += OnStepChangeRequest;    // Allows unlinking of Timers immediately prior to Step change
-            App.Scenario.StepChanged += OnStepChanged;                  // Updates App.Patient, allows PatientEditor UI to update
-            App.Timer_Main.Elapsed += App.Scenario.ProcessTimer;
+            if (Instance is null)
+                return;
+
+            Instance.Scenario = new Scenario (toInit);
+            Instance.Scenario.StepChangeRequest += OnStepChangeRequest;    // Allows unlinking of Timers immediately prior to Step change
+            Instance.Scenario.StepChanged += OnStepChanged;                  // Updates IIApp.Patient, allows PatientEditor UI to update
+            Instance.Timer_Main.Elapsed += Instance.Scenario.ProcessTimer;
 
             if (toInit)         // If toInit is false, Patient is null- InitPatient() will need to be called manually
                 await InitPatient ();
         }
 
         private async Task UnloadScenario () {
-            if (App.Scenario != null) {
-                App.Timer_Main.Elapsed -= App.Scenario.ProcessTimer;   // Unlink Scenario from App/Main Timer
-                await App.Scenario.Dispose ();        // Disposes Scenario's events and timer, and all Patients' events and timers
+            if (Instance is null)
+                return;
+
+            if (Instance.Scenario != null) {
+                Instance.Timer_Main.Elapsed -= Instance.Scenario.ProcessTimer;   // Unlink Scenario from App/Main Timer
+                await Instance.Scenario.Dispose ();        // Disposes Scenario's events and timer, and all Patients' events and timers
             }
         }
 
@@ -273,129 +296,153 @@ namespace IISIM {
         }
 
         private async Task InitPatient () {
-            if (App.Scenario != null)
-                App.Patient = App.Scenario.Patient;
+            if (Instance?.Scenario != null)
+                Instance.Patient = Instance.Scenario.Patient;
 
             await InitPatientEvents ();
             await InitStep ();
         }
 
         private async Task RefreshPatient () {
+            if (Instance is null)
+                return;
+
             await UnloadPatientEvents ();
 
-            if (App.Patient != null)
-                await App.Patient.Dispose ();
-            App.Patient = new Patient ();
+            if (Instance?.Patient != null)
+                await Instance.Patient.Dispose ();
+            Instance.Patient = new Patient ();
 
             await InitPatient ();
         }
 
         private Task InitPatientEvents () {
+            if (Instance is null)
+                return Task.CompletedTask;
+
             /* Tie the Patient's Timer to the Main Timer */
-            App.Timer_Main.Elapsed += App.Patient.ProcessTimers;
+            Instance.Timer_Main.Elapsed += Instance.Patient.ProcessTimers;
 
             /* Tie PatientEvents to the PatientEditor UI! And trigger. */
-            App.Patient.PatientEvent += FormUpdateFields;
-            FormUpdateFields (this, new Patient.PatientEventArgs (App.Patient, Patient.PatientEventTypes.Vitals_Change));
+            Instance.Patient.PatientEvent += FormUpdateFields;
+            FormUpdateFields (this, new Patient.PatientEventArgs (Instance.Patient, Patient.PatientEventTypes.Vitals_Change));
 
-            if (App.Device_Monitor is not null)
-                App.Patient.PatientEvent += App.Device_Monitor.OnPatientEvent;
-            if (App.Device_ECG is not null)
-                App.Patient.PatientEvent += App.Device_ECG.OnPatientEvent;
-            if (App.Device_Defib is not null)
-                App.Patient.PatientEvent += App.Device_Defib.OnPatientEvent;
-            if (App.Device_IABP is not null)
-                App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
+            if (Instance.Device_Monitor is not null)
+                Instance.Patient.PatientEvent += Instance.Device_Monitor.OnPatientEvent;
+            if (Instance.Device_ECG is not null)
+                Instance.Patient.PatientEvent += Instance.Device_ECG.OnPatientEvent;
+            if (Instance.Device_Defib is not null)
+                Instance.Patient.PatientEvent += Instance.Device_Defib.OnPatientEvent;
+            if (Instance.Device_IABP is not null)
+                Instance.Patient.PatientEvent += Instance.Device_IABP.OnPatientEvent;
 
             return Task.CompletedTask;
         }
 
         private async Task UnloadPatientEvents () {
+            if (Instance is null)
+                return;
+
             /* Unloading the Patient from the Main Timer also stops all the Patient's Timers
             /* and results in that Patient not triggering PatientEvent's */
-            App.Timer_Main.Elapsed -= App.Patient.ProcessTimers;
+            Instance.Timer_Main.Elapsed -= Instance.Patient.ProcessTimers;
 
             /* But it's still important to clear PatientEvent subscriptions so they're not adding
             /* as duplicates when InitPatientEvents() is called!! */
-            await App.Patient.UnsubscribePatientEvent ();
+            await Instance.Patient.UnsubscribePatientEvent ();
         }
 
         private Task InitDeviceMonitor () {
+            if (Instance is null)
+                return Task.CompletedTask;
+
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_Monitor is null || App.Device_Monitor.State == DeviceWindow.States.Closed)
-                App.Device_Monitor = new DeviceMonitor ();
+            if (Instance.Device_Monitor is null || Instance.Device_Monitor.State == DeviceWindow.States.Closed)
+                Instance.Device_Monitor = new DeviceMonitor (Instance);
 
-            App.Device_Monitor.Activate ();
-            App.Device_Monitor.Show ();
+            Instance.Device_Monitor.Activate ();
+            Instance.Device_Monitor.Show ();
 
-            if (App.Patient is not null)
-                App.Patient.PatientEvent += App.Device_Monitor.OnPatientEvent;
+            if (Instance.Patient is not null)
+                Instance.Patient.PatientEvent += Instance.Device_Monitor.OnPatientEvent;
 
             return Task.CompletedTask;
         }
 
         private Task InitDeviceECG () {
+            if (Instance is null)
+                return Task.CompletedTask;
+
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_ECG is null || App.Device_ECG.State == DeviceWindow.States.Closed)
-                App.Device_ECG = new DeviceECG ();
+            if (Instance.Device_ECG is null || Instance.Device_ECG.State == DeviceWindow.States.Closed)
+                Instance.Device_ECG = new DeviceECG (Instance);
 
-            App.Device_ECG.Activate ();
-            App.Device_ECG.Show ();
+            Instance.Device_ECG.Activate ();
+            Instance.Device_ECG.Show ();
 
-            if (App.Patient is not null)
-                App.Patient.PatientEvent += App.Device_ECG.OnPatientEvent;
+            if (Instance.Patient is not null)
+                Instance.Patient.PatientEvent += Instance.Device_ECG.OnPatientEvent;
 
             return Task.CompletedTask;
         }
 
         private Task InitDeviceDefib () {
+            if (Instance is null)
+                return Task.CompletedTask;
+
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_Defib is null || App.Device_Defib.State == DeviceWindow.States.Closed)
-                App.Device_Defib = new DeviceDefib ();
+            if (Instance.Device_Defib is null || Instance.Device_Defib.State == DeviceWindow.States.Closed)
+                Instance.Device_Defib = new DeviceDefib (Instance);
 
-            App.Device_Defib.Activate ();
-            App.Device_Defib.Show ();
+            Instance.Device_Defib.Activate ();
+            Instance.Device_Defib.Show ();
 
-            if (App.Patient is not null)
-                App.Patient.PatientEvent += App.Device_Defib.OnPatientEvent;
+            if (Instance.Patient is not null)
+                Instance.Patient.PatientEvent += Instance.Device_Defib.OnPatientEvent;
 
             return Task.CompletedTask;
         }
 
         private Task InitDeviceIABP () {
+            if (Instance is null)
+                return Task.CompletedTask;
+
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_IABP is null || App.Device_IABP.State == DeviceWindow.States.Closed)
-                App.Device_IABP = new DeviceIABP ();
+            if (Instance.Device_IABP is null || Instance.Device_IABP.State == DeviceWindow.States.Closed)
+                Instance.Device_IABP = new DeviceIABP (Instance);
 
-            App.Device_IABP.Activate ();
-            App.Device_IABP.Show ();
+            Instance.Device_IABP.Activate ();
+            Instance.Device_IABP.Show ();
 
-            if (App.Patient is not null)
-                App.Patient.PatientEvent += App.Device_IABP.OnPatientEvent;
+            if (Instance.Patient is not null)
+                Instance.Patient.PatientEvent += Instance.Device_IABP.OnPatientEvent;
 
             return Task.CompletedTask;
         }
 
         private Task InitDeviceEFM () {
+            if (Instance is null)
+                return Task.CompletedTask;
+
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (App.Device_EFM is null || App.Device_EFM.State == DeviceWindow.States.Closed)
-                App.Device_EFM = new DeviceEFM ();
+            if (Instance.Device_EFM is null || Instance.Device_EFM.State == DeviceWindow.States.Closed)
+                Instance.Device_EFM = new DeviceEFM (Instance);
 
-            App.Device_EFM.Activate ();
-            App.Device_EFM.Show ();
+            Instance.Device_EFM.Activate ();
+            Instance.Device_EFM.Show ();
 
-            if (App.Patient is not null)
-                App.Patient.PatientEvent += App.Device_EFM.OnPatientEvent;
+            if (Instance.Patient is not null)
+                Instance.Patient.PatientEvent += Instance.Device_EFM.OnPatientEvent;
 
             return Task.CompletedTask;
         }
@@ -404,7 +451,7 @@ namespace IISIM {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            DialogEULA dlg = new ();
+            DialogEULA dlg = new (Instance);
             dlg.Activate ();
             await dlg.ShowDialog (this);
         }
@@ -413,12 +460,12 @@ namespace IISIM {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            var oldLang = App.Language.Value;
-            DialogLanguage dlg = new ();
+            var oldLang = Instance?.Language.Value;
+            DialogLanguage dlg = new (Instance);
             dlg.Activate ();
             await dlg.ShowDialog (this);
 
-            reloadUI = oldLang != App.Language.Value;
+            reloadUI = oldLang != Instance?.Language.Value;
 
             if (reloadUI)
                 InitInterface ();
@@ -428,18 +475,19 @@ namespace IISIM {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            DialogMirrorBroadcast dlg = new ();
+            DialogMirrorBroadcast dlg = new (Instance);
             dlg.Activate ();
             await dlg.ShowDialog (this);
 
-            await App.Mirror.PostPatient (App.Patient, App.Server);
+            if (Instance is not null)
+                await Instance.Mirror.PostPatient (Instance.Patient, Instance.Server);
         }
 
         private async Task DialogMirrorReceive () {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            DialogMirrorReceive dlg = new ();
+            DialogMirrorReceive dlg = new (Instance);
             dlg.Activate ();
             await dlg.ShowDialog (this);
         }
@@ -448,7 +496,7 @@ namespace IISIM {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            DialogAbout dlg = new ();
+            DialogAbout dlg = new (Instance);
             dlg.Activate ();
             await dlg.ShowDialog (this);
         }
@@ -456,7 +504,7 @@ namespace IISIM {
         private async Task DialogUpgrade () {
             DialogUpgrade.UpgradeOptions decision = IISIM.DialogUpgrade.UpgradeOptions.None;
 
-            DialogUpgrade dlg = new ();
+            DialogUpgrade dlg = new (Instance);
             dlg.Activate ();
 
             dlg.OnUpgradeRoute += (s, ea) => decision = ea.Route;
@@ -470,54 +518,62 @@ namespace IISIM {
                     return;
 
                 case IISIM.DialogUpgrade.UpgradeOptions.Mute:
-                    App.Settings.MuteUpgrade = true;
-                    App.Settings.MuteUpgradeDate = DateTime.Now;
-                    App.Settings.Save ();
+                    Instance.Settings.MuteUpgrade = true;
+                    Instance.Settings.MuteUpgradeDate = DateTime.Now;
+                    Instance.Settings.Save ();
                     return;
 
                 case IISIM.DialogUpgrade.UpgradeOptions.Website:
-                    if (!String.IsNullOrEmpty (App.Server.UpgradeWebpage))
-                        InterOp.OpenBrowser (App.Server.UpgradeWebpage);
+                    if (!String.IsNullOrEmpty (Instance?.Server.UpgradeWebpage))
+                        InterOp.OpenBrowser (Instance.Server.UpgradeWebpage);
                     return;
             }
         }
 
         private Task ToggleAudio () {
-            App.Settings.AudioEnabled = !App.Settings.AudioEnabled;
+            if (Instance is null)
+                return Task.CompletedTask;
+
+            Instance.Settings.AudioEnabled = !Instance.Settings.AudioEnabled;
 
             Dispatcher.UIThread.InvokeAsync (() => {
                 this.FindControl<MenuItem> ("menuToggleAudio").Header = String.Format ("{0}: {1}",
-                    App.Language.Localize ("PE:MenuToggleAudio"),
-                    App.Settings.AudioEnabled ? App.Language.Localize ("BOOLEAN:On") : App.Language.Localize ("BOOLEAN:Off"));
+                    Instance.Language.Localize ("PE:MenuToggleAudio"),
+                    Instance.Settings.AudioEnabled ? Instance.Language.Localize ("BOOLEAN:On") : Instance.Language.Localize ("BOOLEAN:Off"));
             });
 
             return Task.CompletedTask;
         }
 
         private async Task CheckUpgrade () {
-            // Check with server for updated version of Infirmary Integrated- notify user either way
+            if (Instance is null)
+                return;
 
-            await App.Server.Get_LatestVersion ();
+            // Check with server for updated version of Infirmary Integrated- notify user either way
+            await Instance.Server.Get_LatestVersion ();
 
             string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
-            if (Utility.IsNewerVersion (version, App.Server.UpgradeVersion)) {
+            if (Utility.IsNewerVersion (version, Instance.Server.UpgradeVersion)) {
                 await DialogUpgrade ();
             } else {
-                DialogUpgradeCurrent dlg = new ();
+                DialogUpgradeCurrent dlg = new (Instance);
                 dlg.Activate ();
                 await dlg.ShowDialog (this);
             }
         }
 
         private Task OpenUpgrade () {
-            if (!String.IsNullOrEmpty (App.Server.UpgradeWebpage))
-                InterOp.OpenBrowser (App.Server.UpgradeWebpage);
+            if (!String.IsNullOrEmpty (Instance?.Server.UpgradeWebpage))
+                InterOp.OpenBrowser (Instance.Server.UpgradeWebpage);
 
             return Task.CompletedTask;
         }
 
         private async Task MirrorDeactivate () {
-            App.Mirror.Status = Mirror.Statuses.INACTIVE;
+            if (Instance is null)
+                return;
+
+            Instance.Mirror.Status = Mirror.Statuses.INACTIVE;
 
             await UpdateMirrorStatus ();
             await UpdateExpanders (false);
@@ -541,18 +597,18 @@ namespace IISIM {
             Dispatcher.UIThread.InvokeAsync (() => {
                 MenuItem miStatus = this.FindControl<MenuItem> ("menuMirrorStatus");
 
-                switch (App.Mirror.Status) {
+                switch (Instance?.Mirror.Status) {
                     default:
                     case Mirror.Statuses.INACTIVE:
-                        miStatus.Header = $"{App.Language.Localize ("MIRROR:Status")}: {App.Language.Localize ("MIRROR:Inactive")}";
+                        miStatus.Header = $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Inactive")}";
                         break;
 
                     case Mirror.Statuses.HOST:
-                        miStatus.Header = $"{App.Language.Localize ("MIRROR:Status")}: {App.Language.Localize ("MIRROR:Server")}";
+                        miStatus.Header = $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Server")}";
                         break;
 
                     case Mirror.Statuses.CLIENT:
-                        miStatus.Header = $"{App.Language.Localize ("MIRROR:Status")}: {App.Language.Localize ("MIRROR:Client")}";
+                        miStatus.Header = $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Client")}";
                         break;
                 }
             });
@@ -561,7 +617,7 @@ namespace IISIM {
         }
 
         private async Task UpdateExpanders ()
-            => await UpdateExpanders (App.Scenario?.IsLoaded ?? false);
+            => await UpdateExpanders (Instance?.Scenario?.IsLoaded ?? false);
 
         private Task UpdateExpanders (bool isScene) {
             Dispatcher.UIThread.InvokeAsync (() => {
@@ -631,7 +687,7 @@ namespace IISIM {
                 await LoadFail ();
             }
 
-            FormUpdateFields (this, new Patient.PatientEventArgs (App.Patient, Patient.PatientEventTypes.Vitals_Change));
+            FormUpdateFields (this, new Patient.PatientEventArgs (Instance?.Patient, Patient.PatientEventTypes.Vitals_Change));
         }
 
         private async Task LoadInit (string incFile) {
@@ -677,10 +733,10 @@ namespace IISIM {
         }
 
         private async Task LoadProcess (string incFile) {
-            if (App.Patient is null)
-                App.Patient = new ();
-            if (App.Scenario is null)
-                App.Scenario = new ();
+            if (Instance.Patient is null)
+                Instance.Patient = new ();
+            if (Instance.Scenario is null)
+                Instance.Scenario = new ();
 
             using StringReader sRead = new (incFile);
             string? line, pline;
@@ -694,14 +750,14 @@ namespace IISIM {
                             pbuffer.AppendLine (pline);
 
                         await RefreshScenario (true);
-                        await App.Patient.Load_Process (pbuffer.ToString ());
+                        await Instance.Patient.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Scenario") {   // Load files saved by Infirmary Integrated Scenario Editor
                         pbuffer = new StringBuilder ();
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Scenario")
                             pbuffer.AppendLine (pline);
 
                         await RefreshScenario (false);
-                        await App.Scenario.Load (pbuffer.ToString ());
+                        await Instance.Scenario.Load (pbuffer.ToString ());
                         await InitPatient ();     // Needs to be called manually since InitScenario(false) doesn't init a Patient
                     } else if (line == "> Begin: Editor") {
                         pbuffer = new StringBuilder ();
@@ -714,33 +770,33 @@ namespace IISIM {
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Cardiac Monitor")
                             pbuffer.AppendLine (pline);
 
-                        App.Device_Monitor = new DeviceMonitor ();
+                        Instance.Device_Monitor = new DeviceMonitor (Instance) { };
                         await InitDeviceMonitor ();
-                        await App.Device_Monitor.Load_Process (pbuffer.ToString ());
+                        await Instance.Device_Monitor.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: 12 Lead ECG") {
                         pbuffer = new StringBuilder ();
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: 12 Lead ECG")
                             pbuffer.AppendLine (pline);
 
-                        App.Device_ECG = new DeviceECG ();
+                        Instance.Device_ECG = new DeviceECG (Instance);
                         await InitDeviceECG ();
-                        await App.Device_ECG.Load_Process (pbuffer.ToString ());
+                        await Instance.Device_ECG.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Defibrillator") {
                         pbuffer = new StringBuilder ();
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Defibrillator")
                             pbuffer.AppendLine (pline);
 
-                        App.Device_Defib = new DeviceDefib ();
+                        Instance.Device_Defib = new DeviceDefib (Instance);
                         await InitDeviceDefib ();
-                        await App.Device_Defib.Load_Process (pbuffer.ToString ());
+                        await Instance.Device_Defib.Load_Process (pbuffer.ToString ());
                     } else if (line == "> Begin: Intra-aortic Balloon Pump") {
                         pbuffer = new StringBuilder ();
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Intra-aortic Balloon Pump")
                             pbuffer.AppendLine (pline);
 
-                        App.Device_IABP = new DeviceIABP ();
+                        Instance.Device_IABP = new DeviceIABP (Instance);
                         await InitDeviceIABP ();
-                        await App.Device_IABP.Load_Process (pbuffer.ToString ());
+                        await Instance.Device_IABP.Load_Process (pbuffer.ToString ());
                     }
                 }
             } catch {
@@ -750,22 +806,22 @@ namespace IISIM {
             }
 
             // On loading a file, ensure Mirroring is not in Client mode! Will conflict...
-            if (App.Mirror.Status == Mirror.Statuses.CLIENT) {
-                App.Mirror.Status = Mirror.Statuses.INACTIVE;
-                App.Mirror.CancelOperation ();      // Attempt to cancel any possible Mirror downloads
+            if (Instance.Mirror.Status == Mirror.Statuses.CLIENT) {
+                Instance.Mirror.Status = Mirror.Statuses.INACTIVE;
+                Instance.Mirror.CancelOperation ();      // Attempt to cancel any possible Mirror downloads
             }
 
             // Initialize the first step of the scenario
-            if (App.Scenario.IsLoaded) {
+            if (Instance.Scenario.IsLoaded) {
                 await InitStep ();
 
-                if (App.Scenario.DeviceMonitor.IsEnabled)
+                if (Instance.Scenario.DeviceMonitor.IsEnabled)
                     await InitDeviceMonitor ();
-                if (App.Scenario.DeviceDefib.IsEnabled)
+                if (Instance.Scenario.DeviceDefib.IsEnabled)
                     await InitDeviceDefib ();
-                if (App.Scenario.DeviceECG.IsEnabled)
+                if (Instance.Scenario.DeviceECG.IsEnabled)
                     await InitDeviceECG ();
-                if (App.Scenario.DeviceIABP.IsEnabled)
+                if (Instance.Scenario.DeviceIABP.IsEnabled)
                     await InitDeviceIABP ();
             }
 
@@ -808,8 +864,8 @@ namespace IISIM {
                         Type = MessageBox.Avalonia.Enums.ButtonType.Default,
                         IsCancel=true}
                 },
-                ContentTitle = App.Language.Localize ("PE:LoadFailTitle"),
-                ContentMessage = App.Language.Localize ("PE:LoadFailMessage"),
+                ContentTitle = Instance.Language.Localize ("PE:LoadFailTitle"),
+                ContentMessage = Instance.Language.Localize ("PE:LoadFailMessage"),
                 Icon = icon,
                 Style = MessageBox.Avalonia.Enums.Style.None,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
@@ -825,7 +881,7 @@ namespace IISIM {
             // Only save single Patient files in base Infirmary Integrated!
             // Scenario files should be created/edited/saved via II Scenario Editor!
 
-            if (App.Scenario?.IsLoaded ?? false) {
+            if (Instance.Scenario?.IsLoaded ?? false) {
                 var assets = AvaloniaLocator.Current.GetService<Avalonia.Platform.IAssetLoader> ();
                 var icon = new Bitmap (assets.Open (new Uri ("avares://Infirmary Integrated/Third_Party/Icon_DeviceMonitor_48.png")));
 
@@ -838,7 +894,7 @@ namespace IISIM {
                         IsCancel=true}
                     },
                     ContentTitle = ("PE:SaveFailScenarioTitle"),
-                    ContentMessage = App.Language.Localize ("PE:SaveFailScenarioMessage"),
+                    ContentMessage = Instance.Language.Localize ("PE:SaveFailScenarioMessage"),
                     Icon = icon,
                     Style = MessageBox.Avalonia.Enums.Style.None,
                     WindowStartupLocation = WindowStartupLocation.CenterScreen,
@@ -872,7 +928,7 @@ namespace IISIM {
             using FileStream s = new (filename, FileMode.OpenOrCreate, FileAccess.Write);
 
             // Ensure only saving Patient file, not Scenario file; is screened in SaveFile()
-            if (App.Scenario != null && App.Scenario.IsLoaded) {
+            if (Instance?.Scenario != null && Instance.Scenario.IsLoaded) {
                 s.Close ();
                 return;
             }
@@ -880,31 +936,31 @@ namespace IISIM {
             StringBuilder sb = new ();
 
             sb.AppendLine ("> Begin: Patient");
-            sb.Append (App.Patient?.Save ());
+            sb.Append (Instance.Patient?.Save ());
             sb.AppendLine ("> End: Patient");
 
             sb.AppendLine ("> Begin: Editor");
             sb.Append (this.SaveOptions ());
             sb.AppendLine ("> End: Editor");
 
-            if (App.Device_Monitor is not null) {
+            if (Instance.Device_Monitor is not null) {
                 sb.AppendLine ("> Begin: Cardiac Monitor");
-                sb.Append (App.Device_Monitor.Save ());
+                sb.Append (Instance.Device_Monitor.Save ());
                 sb.AppendLine ("> End: Cardiac Monitor");
             }
-            if (App.Device_ECG is not null) {
+            if (Instance.Device_ECG is not null) {
                 sb.AppendLine ("> Begin: 12 Lead ECG");
-                sb.Append (App.Device_ECG.Save ());
+                sb.Append (Instance.Device_ECG.Save ());
                 sb.AppendLine ("> End: 12 Lead ECG");
             }
-            if (App.Device_Defib is not null) {
+            if (Instance.Device_Defib is not null) {
                 sb.AppendLine ("> Begin: Defibrillator");
-                sb.Append (App.Device_Defib.Save ());
+                sb.Append (Instance.Device_Defib.Save ());
                 sb.AppendLine ("> End: Defibrillator");
             }
-            if (App.Device_IABP is not null) {
+            if (Instance.Device_IABP is not null) {
                 sb.AppendLine ("> Begin: Intra-aortic Balloon Pump");
-                sb.Append (App.Device_IABP.Save ());
+                sb.Append (Instance.Device_IABP.Save ());
                 sb.AppendLine ("> End: Intra-aortic Balloon Pump");
             }
 
@@ -927,17 +983,17 @@ namespace IISIM {
         }
 
         public Task Exit () {
-            App.Settings.Save ();
-            App.Exit ();
+            Instance?.Settings.Save ();
+            Instance?.Exit ();
 
             return Task.CompletedTask;
         }
 
         private void OnMirrorTick (object? sender, EventArgs e) {
-            App.Mirror.TimerTick (App.Patient, App.Server);
+            Instance?.Mirror.TimerTick (Instance.Patient, Instance.Server);
 
-            if (App.Mirror.Status == Mirror.Statuses.CLIENT) {
-                ForceUpdateFields (App.Patient);
+            if (Instance?.Mirror.Status == Mirror.Statuses.CLIENT) {
+                ForceUpdateFields (Instance.Patient);
             }
         }
 
@@ -945,16 +1001,16 @@ namespace IISIM {
             => _ = UnloadPatientEvents ();
 
         private void OnStepChanged (object? sender, EventArgs e) {
-            App.Patient = App.Scenario?.Patient;
+            Instance.Patient = Instance.Scenario?.Patient;
 
             _ = InitPatientEvents ();
             _ = InitStep ();
 
-            ForceUpdateFields (App.Patient);
+            ForceUpdateFields (Instance.Patient);
         }
 
         private Task InitStep () {
-            Scenario.Step s = App.Scenario.Current ?? new Scenario.Step ();
+            Scenario.Step s = Instance?.Scenario?.Current ?? new Scenario.Step ();
 
             Label lblScenarioStep = this.FindControl<Label> ("lblScenarioStep");
             Label lblTimerStep = this.FindControl<Label> ("lblTimerStep");
@@ -967,16 +1023,16 @@ namespace IISIM {
             this.FindControl<Button> ("btnPlayStep").IsEnabled = false;
 
             // Display Scenario's Step count
-            lblScenarioStep.Content = $"{App.Language.Localize ("PE:ProgressionStep")}: {s.Name}";
+            lblScenarioStep.Content = $"{Instance?.Language.Localize ("PE:ProgressionStep")}: {s.Name}";
 
             // Display Progress Timer if applicable, otherwise instruct that the Step requires manual progression
             if (s.ProgressTimer == -1)
-                lblTimerStep.Content = App.Language.Localize ("PE:ProgressionManual");
+                lblTimerStep.Content = Instance?.Language.Localize ("PE:ProgressionManual");
             else
                 lblTimerStep.Content = String.Format ("{0} {1} {2}",
-                    App.Language.Localize ("PE:ProgressionAutomatic"),
+                    Instance?.Language.Localize ("PE:ProgressionAutomatic"),
                     s.ProgressTimer,
-                    App.Language.Localize ("PE:ProgressionSeconds"));
+                    Instance?.Language.Localize ("PE:ProgressionSeconds"));
 
             // Re-populate a StackPanel with RadioButtons for Progression options, including "Default Option"
             stackProgressions.Children.Clear ();
@@ -984,7 +1040,7 @@ namespace IISIM {
             stackProgressions.Children.Add (new RadioButton () {
                 IsChecked = true,
                 Name = "radioProgression_Default",
-                Content = App.Language.Localize ("PE:ProgressionDefault"),
+                Content = Instance?.Language.Localize ("PE:ProgressionDefault"),
                 GroupName = "ProgressionOptions",
                 Margin = new Thickness (10, 10, 10, 5)
             });
@@ -1007,46 +1063,46 @@ namespace IISIM {
         private async Task NextStep () {
             StackPanel stackProgressions = this.FindControl<StackPanel> ("stackProgressions");
 
-            if (App.Scenario?.Current.Progressions.Count == 0)
-                await App.Scenario.NextStep ();
+            if (Instance?.Scenario?.Current?.Progressions.Count == 0)
+                await Instance.Scenario.NextStep ();
             else {
                 foreach (RadioButton rb in stackProgressions.Children)
                     if (rb.IsChecked ?? false && rb.Name.Contains ("_")) {
-                        string prog = rb.Name.Substring (rb.Name.IndexOf ("_") + 1);
-                        await App.Scenario.NextStep (prog == "Default" ? null : prog);
+                        string? prog = rb.Name?.Substring (rb.Name.IndexOf ("_") + 1);
+                        await Instance.Scenario.NextStep (prog == "Default" ? null : prog);
                         break;
                     }
             }
         }
 
         private async Task PreviousStep () {
-            await App.Scenario?.LastStep ();
+            await Instance.Scenario?.LastStep ();
         }
 
         private async Task PauseStep () {
             this.FindControl<Button> ("btnPauseStep").IsEnabled = false;
             this.FindControl<Button> ("btnPlayStep").IsEnabled = true;
 
-            await App.Scenario?.PauseStep ();
+            await Instance.Scenario?.PauseStep ();
 
-            this.FindControl<Label> ("lblTimerStep").Content = App.Language.Localize ("PE:ProgressionPaused");
+            this.FindControl<Label> ("lblTimerStep").Content = Instance.Language.Localize ("PE:ProgressionPaused");
         }
 
         private async Task PlayStep () {
             this.FindControl<Button> ("btnPauseStep").IsEnabled = true;
             this.FindControl<Button> ("btnPlayStep").IsEnabled = false;
 
-            await App.Scenario?.PlayStep ();
+            await Instance.Scenario?.PlayStep ();
 
             Label lblTimerStep = this.FindControl<Label> ("lblTimerStep");
 
-            if (App.Scenario?.Current?.ProgressTimer == -1)
-                lblTimerStep.Content = App.Language.Localize ("PE:ProgressionManual");
+            if (Instance.Scenario?.Current?.ProgressTimer == -1)
+                lblTimerStep.Content = Instance.Language.Localize ("PE:ProgressionManual");
             else
                 lblTimerStep.Content = String.Format ("{0} {1} {2}",
-                    App.Language.Localize ("PE:ProgressionAutomatic"),
-                    App.Scenario?.Current?.ProgressTimer - (App.Scenario?.ProgressTimer.Elapsed / 1000),
-                    App.Language.Localize ("PE:ProgressionSeconds"));
+                    Instance.Language.Localize ("PE:ProgressionAutomatic"),
+                    Instance.Scenario?.Current?.ProgressTimer - (Instance.Scenario?.ProgressTimer.Elapsed / 1000),
+                    Instance.Language.Localize ("PE:ProgressionSeconds"));
         }
 
         private async Task ResetPatientParameters () {
@@ -1069,7 +1125,7 @@ namespace IISIM {
                     FHRRhythms.Add ((FHRAccelDecels.Values)Enum.Parse (typeof (FHRAccelDecels.Values), (string)lbi.Tag));
             }
 
-            await App.Patient.UpdateParameters (
+            await Instance.Patient.UpdateParameters (
 
                 // Basic vital signs
                 (int)(this.FindControl<NumericUpDown> ("numHR")?.Value ?? 0),
@@ -1082,10 +1138,12 @@ namespace IISIM {
                 (int)(this.FindControl<NumericUpDown> ("numSPO2")?.Value ?? 0),
                 (double)(this.FindControl<NumericUpDown> ("numT")?.Value ?? 0),
 
-                (Cardiac_Rhythms.Values)Enum.GetValues (typeof (Cardiac_Rhythms.Values)).GetValue (
-                    comboCardiacRhythm.SelectedIndex < 0 ? 0 : comboCardiacRhythm.SelectedIndex),
-                (Respiratory_Rhythms.Values)Enum.GetValues (typeof (Respiratory_Rhythms.Values)).GetValue (
-                    comboRespiratoryRhythm.SelectedIndex < 0 ? 0 : comboRespiratoryRhythm.SelectedIndex),
+                (Cardiac_Rhythms.Values)(Enum.GetValues (typeof (Cardiac_Rhythms.Values)).GetValue (
+                    comboCardiacRhythm.SelectedIndex < 0 ? 0 : comboCardiacRhythm.SelectedIndex)
+                    ?? Cardiac_Rhythms.Values.Sinus_Rhythm),
+                (Respiratory_Rhythms.Values)(Enum.GetValues (typeof (Respiratory_Rhythms.Values)).GetValue (
+                    comboRespiratoryRhythm.SelectedIndex < 0 ? 0 : comboRespiratoryRhythm.SelectedIndex)
+                    ?? Respiratory_Rhythms.Values.Regular),
 
                 // Advanced hemodynamics
                 (int)(this.FindControl<NumericUpDown> ("numETCO2")?.Value ?? 0),
@@ -1097,12 +1155,14 @@ namespace IISIM {
 
                 (float)(this.FindControl<NumericUpDown> ("numCO")?.Value ?? 0),
 
-                (PulmonaryArtery_Rhythms.Values)Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)).GetValue (
-                    comboPACatheterPlacement.SelectedIndex < 0 ? 0 : comboPACatheterPlacement.SelectedIndex),
+                (PulmonaryArtery_Rhythms.Values)(Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)).GetValue (
+                    comboPACatheterPlacement.SelectedIndex < 0 ? 0 : comboPACatheterPlacement.SelectedIndex)
+                    ?? PulmonaryArtery_Rhythms.Values.Right_Atrium),
 
                 (int)(this.FindControl<NumericUpDown> ("numPSP")?.Value ?? 0),
                 (int)(this.FindControl<NumericUpDown> ("numPDP")?.Value ?? 0),
-                Patient.CalculateMAP ((int)(this.FindControl<NumericUpDown> ("numPSP")?.Value ?? 0), (int)(this.FindControl<NumericUpDown> ("numPDP")?.Value ?? 0)),
+                Patient.CalculateMAP ((int)(this.FindControl<NumericUpDown> ("numPSP")?.Value ?? 0),
+                (int)(this.FindControl<NumericUpDown> ("numPDP")?.Value ?? 0)),
 
                 (int)(this.FindControl<NumericUpDown> ("numICP")?.Value ?? 0),
                 (int)(this.FindControl<NumericUpDown> ("numIAP")?.Value ?? 0),
@@ -1118,8 +1178,9 @@ namespace IISIM {
                 this.FindControl<CheckBox> ("chkPulsusParadoxus").IsChecked ?? false,
                 this.FindControl<CheckBox> ("chkPulsusAlternans").IsChecked ?? false,
 
-                (Cardiac_Axes.Values)Enum.GetValues (typeof (Cardiac_Axes.Values)).GetValue (
-                    comboCardiacAxis.SelectedIndex < 0 ? 0 : comboCardiacAxis.SelectedIndex),
+                (Cardiac_Axes.Values)(Enum.GetValues (typeof (Cardiac_Axes.Values)).GetValue (
+                    comboCardiacAxis.SelectedIndex < 0 ? 0 : comboCardiacAxis.SelectedIndex)
+                    ?? Cardiac_Axes.Values.Normal),
 
                 new double [] {
                     (double)(this.FindControl<NumericUpDown>("numSTE_I")?.Value ?? 0),
@@ -1152,16 +1213,18 @@ namespace IISIM {
 
                 // Obstetric profile
                 (int)(this.FindControl<NumericUpDown> ("numFHR")?.Value ?? 0),
-                (Scales.Intensity.Values)Enum.GetValues (typeof (Scales.Intensity.Values)).GetValue (
-                    comboFHRVariability.SelectedIndex < 0 ? 0 : comboFHRVariability.SelectedIndex),
+                (Scales.Intensity.Values)(Enum.GetValues (typeof (Scales.Intensity.Values)).GetValue (
+                    comboFHRVariability.SelectedIndex < 0 ? 0 : comboFHRVariability.SelectedIndex)
+                    ?? Scales.Intensity.Values.Absent),
                 FHRRhythms,
                 (float)(this.FindControl<NumericUpDown> ("numUCFrequency")?.Value ?? 0),
                 (int)(this.FindControl<NumericUpDown> ("numUCDuration")?.Value ?? 0),
-                (Scales.Intensity.Values)Enum.GetValues (typeof (Scales.Intensity.Values)).GetValue (
+                (Scales.Intensity.Values)(Enum.GetValues (typeof (Scales.Intensity.Values)).GetValue (
                     comboUCIntensity.SelectedIndex < 0 ? 0 : comboUCIntensity.SelectedIndex)
+                    ?? Scales.Intensity.Values.Absent)
             );
 
-            await App.Mirror.PostPatient (App.Patient, App.Server);
+            await Instance.Mirror.PostPatient (Instance.Patient, Instance.Server);
 
             await AdvanceParameterStatus (ParameterStatuses.ChangesApplied);
         }
@@ -1237,7 +1300,7 @@ namespace IISIM {
 
         private void OnActivated (object sender, EventArgs e) {
             if (!IsUILoadCompleted) {
-                this.Position = new PixelPoint (App.Settings.WindowPosition.X, App.Settings.WindowPosition.Y);
+                this.Position = new PixelPoint (Instance?.Settings.WindowPosition.X ?? 0, Instance?.Settings.WindowPosition.Y ?? 0);
                 this.IsUILoadCompleted = true;
             }
         }
@@ -1247,22 +1310,22 @@ namespace IISIM {
 
         private void OnLayoutUpdated (object sender, EventArgs e) {
             if (!IsUILoadCompleted) {
-                this.Width = App.Settings.WindowSize.X;
-                this.Height = App.Settings.WindowSize.Y;
-            } else {
-                App.Settings.WindowSize.X = (int)this.Width;
-                App.Settings.WindowSize.Y = (int)this.Height;
+                this.Width = Instance?.Settings.WindowSize.X ?? 0;
+                this.Height = Instance?.Settings.WindowSize.Y ?? 0;
+            } else if (Instance is not null) {
+                Instance.Settings.WindowSize.X = (int)this.Width;
+                Instance.Settings.WindowSize.Y = (int)this.Height;
             }
         }
 
         private void OnAutoApplyChanges_Changed (object sender, RoutedEventArgs e) {
-            if (ParameterStatus == ParameterStatuses.Loading)
+            if (ParameterStatus == ParameterStatuses.Loading || Instance is null)
                 return;
 
-            App.Settings.AutoApplyChanges = this.FindControl<CheckBox> ("chkAutoApplyChanges").IsChecked ?? true;
-            App.Settings.Save ();
+            Instance.Settings.AutoApplyChanges = this.FindControl<CheckBox> ("chkAutoApplyChanges").IsChecked ?? true;
+            Instance.Settings.Save ();
 
-            _ = SetParameterStatus (App.Settings.AutoApplyChanges);
+            _ = SetParameterStatus (Instance.Settings.AutoApplyChanges);
         }
 
         private void OnUIPatientParameter_KeyDown (object sender, KeyEventArgs e) {
@@ -1301,7 +1364,7 @@ namespace IISIM {
         }
 
         private void OnCardiacRhythm_Selected (object sender, SelectionChangedEventArgs e) {
-            if (!this.FindControl<CheckBox> ("checkDefaultVitals").IsChecked ?? false || App.Patient == null)
+            if (!this.FindControl<CheckBox> ("checkDefaultVitals").IsChecked ?? false || Instance.Patient == null)
                 return;
 
             int si = this.FindControl<ComboBox> ("comboCardiacRhythm").SelectedIndex;
@@ -1310,24 +1373,24 @@ namespace IISIM {
                 return;
 
             Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
-                (Cardiac_Rhythms.Values)ev.GetValue (si));
+                (Cardiac_Rhythms.Values)(ev.GetValue (si) ?? Cardiac_Rhythms.Values.Sinus_Rhythm));
 
-            this.FindControl<NumericUpDown> ("numHR").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numHR")?.Value ?? 0), v.HRMin, v.HRMax);
-            this.FindControl<NumericUpDown> ("numNSBP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numNSBP")?.Value ?? 0), v.SBPMin, v.SBPMax);
-            this.FindControl<NumericUpDown> ("numNDBP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numNDBP")?.Value ?? 0), v.DBPMin, v.DBPMax);
-            this.FindControl<NumericUpDown> ("numRR").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numRR")?.Value ?? 0), v.RRMin, v.RRMax);
-            this.FindControl<NumericUpDown> ("numSPO2").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numSPO2")?.Value ?? 0), v.SPO2Min, v.SPO2Max);
-            this.FindControl<NumericUpDown> ("numETCO2").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numETCO2")?.Value ?? 0), v.ETCO2Min, v.ETCO2Max);
-            this.FindControl<NumericUpDown> ("numASBP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numASBP")?.Value ?? 0), v.SBPMin, v.SBPMax);
-            this.FindControl<NumericUpDown> ("numADBP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numADBP")?.Value ?? 0), v.DBPMin, v.DBPMax);
-            this.FindControl<NumericUpDown> ("numPSP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numPSP")?.Value ?? 0), v.PSPMin, v.PSPMax);
-            this.FindControl<NumericUpDown> ("numPDP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numPDP")?.Value ?? 0), v.PDPMin, v.PDPMax);
+            this.FindControl<NumericUpDown> ("numHR").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numHR")?.Value ?? 0), v.HRMin, v.HRMax);
+            this.FindControl<NumericUpDown> ("numNSBP").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numNSBP")?.Value ?? 0), v.SBPMin, v.SBPMax);
+            this.FindControl<NumericUpDown> ("numNDBP").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numNDBP")?.Value ?? 0), v.DBPMin, v.DBPMax);
+            this.FindControl<NumericUpDown> ("numRR").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numRR")?.Value ?? 0), v.RRMin, v.RRMax);
+            this.FindControl<NumericUpDown> ("numSPO2").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numSPO2")?.Value ?? 0), v.SPO2Min, v.SPO2Max);
+            this.FindControl<NumericUpDown> ("numETCO2").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numETCO2")?.Value ?? 0), v.ETCO2Min, v.ETCO2Max);
+            this.FindControl<NumericUpDown> ("numASBP").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numASBP")?.Value ?? 0), v.SBPMin, v.SBPMax);
+            this.FindControl<NumericUpDown> ("numADBP").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numADBP")?.Value ?? 0), v.DBPMin, v.DBPMax);
+            this.FindControl<NumericUpDown> ("numPSP").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numPSP")?.Value ?? 0), v.PSPMin, v.PSPMax);
+            this.FindControl<NumericUpDown> ("numPDP").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numPDP")?.Value ?? 0), v.PDPMin, v.PDPMax);
 
             OnUIPatientParameter_Process (sender, e);
         }
 
         private void OnRespiratoryRhythm_Selected (object sender, SelectionChangedEventArgs e) {
-            if (!this.FindControl<CheckBox> ("checkDefaultVitals")?.IsChecked ?? false || App.Patient == null)
+            if (!this.FindControl<CheckBox> ("checkDefaultVitals")?.IsChecked ?? false || Instance?.Patient == null)
                 return;
 
             int si = this.FindControl<ComboBox> ("comboRespiratoryRhythm").SelectedIndex;
@@ -1336,21 +1399,21 @@ namespace IISIM {
                 return;
 
             Respiratory_Rhythms.Default_Vitals v = Respiratory_Rhythms.DefaultVitals (
-                (Respiratory_Rhythms.Values)ev.GetValue (si));
+                (Respiratory_Rhythms.Values)(ev.GetValue (si) ?? Respiratory_Rhythms.Values.Regular));
 
             NumericUpDown numRR = this.FindControl<NumericUpDown> ("numRR");
             NumericUpDown numInspiratoryRatio = this.FindControl<NumericUpDown> ("numInspiratoryRatio");
             NumericUpDown numExpiratoryRatio = this.FindControl<NumericUpDown> ("numExpiratoryRatio");
 
-            numRR.Value = (int)II.Math.Clamp ((double)(numRR?.Value ?? 0), v.RRMin, v.RRMax);
-            numInspiratoryRatio.Value = (int)II.Math.Clamp ((double)(numInspiratoryRatio?.Value ?? 0), v.RR_IE_I_Min, v.RR_IE_I_Max);
-            numExpiratoryRatio.Value = (int)II.Math.Clamp ((double)(numExpiratoryRatio?.Value ?? 0), v.RR_IE_E_Min, v.RR_IE_E_Max);
+            numRR.Value = (int)global::II.Math.Clamp ((double)(numRR?.Value ?? 0), v.RRMin, v.RRMax);
+            numInspiratoryRatio.Value = (int)global::II.Math.Clamp ((double)(numInspiratoryRatio?.Value ?? 0), v.RR_IE_I_Min, v.RR_IE_I_Max);
+            numExpiratoryRatio.Value = (int)global::II.Math.Clamp ((double)(numExpiratoryRatio?.Value ?? 0), v.RR_IE_E_Min, v.RR_IE_E_Max);
 
             OnUIPatientParameter_Process (sender, e);
         }
 
         private void OnPulmonaryArteryRhythm_Selected (object sender, SelectionChangedEventArgs e) {
-            if (App.Patient == null)
+            if (Instance?.Patient is null)
                 return;
 
             int si = this.FindControl<ComboBox> ("comboPACatheterPlacement").SelectedIndex;
@@ -1359,13 +1422,13 @@ namespace IISIM {
                 return;
 
             PulmonaryArtery_Rhythms.Default_Vitals v = PulmonaryArtery_Rhythms.DefaultVitals (
-                (PulmonaryArtery_Rhythms.Values)ev.GetValue (si));
+                (PulmonaryArtery_Rhythms.Values)(ev.GetValue (si) ?? PulmonaryArtery_Rhythms.Values.Right_Atrium));
 
             NumericUpDown numPSP = this.FindControl<NumericUpDown> ("numPSP");
             NumericUpDown numPDP = this.FindControl<NumericUpDown> ("numPDP");
 
-            numPSP.Value = (int)II.Math.Clamp ((double)(numPSP?.Value ?? 0), v.PSPMin, v.PSPMax);
-            numPDP.Value = (int)II.Math.Clamp ((double)(numPDP?.Value ?? 0), v.PDPMin, v.PDPMax);
+            numPSP.Value = (int)global::II.Math.Clamp ((double)(numPSP?.Value ?? 0), v.PSPMin, v.PSPMax);
+            numPDP.Value = (int)global::II.Math.Clamp ((double)(numPDP?.Value ?? 0), v.PDPMin, v.PDPMax);
 
             OnUIPatientParameter_Process (sender, e);
         }
@@ -1373,8 +1436,8 @@ namespace IISIM {
         private void ForceUpdateFields (Patient? p) {
             Dispatcher.UIThread.InvokeAsync (() => {                        // Updating the UI requires being on the proper thread
                 ParameterStatus = ParameterStatuses.Loading;                // To prevent each form update from auto-applying back to Patient
-                FormUpdateFields (this, new Patient.PatientEventArgs (App.Patient, Patient.PatientEventTypes.Vitals_Change));
-                _ = SetParameterStatus (App.Settings.AutoApplyChanges);     // Re-establish parameter status
+                FormUpdateFields (this, new Patient.PatientEventArgs (Instance?.Patient, Patient.PatientEventTypes.Vitals_Change));
+                _ = SetParameterStatus (Instance?.Settings.AutoApplyChanges ?? false);     // Re-establish parameter status
             });
         }
 

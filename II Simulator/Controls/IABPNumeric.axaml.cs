@@ -17,15 +17,13 @@ using II.Rhythm;
 
 namespace IISIM.Controls {
 
-    public partial class IABPNumeric : UserControl {
-        public DeviceDefib? deviceParent;
-        public ControlType? controlType;
-        public Color.Schemes colorScheme;
+    public partial class IABPNumeric : DeviceNumeric {
+        public ControlTypes? ControlType;
 
-        public class ControlType {
+        public class ControlTypes {
             public Values Value;
 
-            public ControlType (Values v) {
+            public ControlTypes (Values v) {
                 Value = v;
             }
 
@@ -38,9 +36,9 @@ namespace IISIM.Controls {
             }
 
             private static Color.Leads SwitchLead_Color (Values value) => value switch {
-                ControlType.Values.ECG => Color.Leads.ECG,
-                ControlType.Values.ABP => Color.Leads.ABP,
-                ControlType.Values.IABP_AP => Color.Leads.IABP,
+                ControlTypes.Values.ECG => Color.Leads.ECG,
+                ControlTypes.Values.ABP => Color.Leads.ABP,
+                ControlTypes.Values.IABP_AP => Color.Leads.IABP,
                 _ => Color.Leads.ECG
             };
 
@@ -62,11 +60,13 @@ namespace IISIM.Controls {
             InitializeComponent ();
         }
 
-        public IABPNumeric (ControlType.Values v, Color.Schemes cs) {
+        public IABPNumeric (DeviceIABP parent, ControlTypes.Values v, Color.Schemes cs) {
             InitializeComponent ();
 
-            controlType = new ControlType (v);
-            colorScheme = cs;
+            DeviceParent = parent;
+            Instance = ((DeviceIABP)parent).Instance;
+            ControlType = new ControlTypes (v);
+            ColorScheme = cs;
 
             UpdateInterface ();
         }
@@ -76,7 +76,7 @@ namespace IISIM.Controls {
         }
 
         public void SetColorScheme (Color.Schemes scheme) {
-            colorScheme = scheme;
+            ColorScheme = scheme;
             UpdateInterface ();
         }
 
@@ -88,27 +88,27 @@ namespace IISIM.Controls {
                 TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
                 TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
 
-                borderNumeric.BorderBrush = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                borderNumeric.BorderBrush = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
 
-                lblNumType.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-                lblLine1.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-                lblLine2.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
-                lblLine3.Foreground = Color.GetLead (controlType.GetLead_Color, colorScheme);
+                lblNumType.Foreground = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
+                lblLine1.Foreground = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
+                lblLine2.Foreground = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
+                lblLine3.Foreground = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
 
                 lblLine1.IsVisible = true;
                 lblLine2.IsVisible = true;
                 lblLine3.IsVisible = true;
 
-                lblNumType.Text = App.Language.Localize (ControlType.LookupString (controlType.Value));
+                lblNumType.Text = Instance?.Language.Localize (ControlTypes.LookupString (ControlType?.Value ?? ControlTypes.Values.ECG));
 
                 /* Set lines to be visible/hidden as appropriate */
-                switch (controlType.Value) {
+                switch (ControlType?.Value) {
                     default:
-                    case ControlType.Values.ABP:
-                    case ControlType.Values.IABP_AP:
+                    case ControlTypes.Values.ABP:
+                    case ControlTypes.Values.IABP_AP:
                         break;
 
-                    case ControlType.Values.ECG:
+                    case ControlTypes.Values.ECG:
                         lblLine2.IsVisible = false;
                         lblLine3.IsVisible = false;
                         break;
@@ -117,47 +117,51 @@ namespace IISIM.Controls {
         }
 
         public void UpdateVitals () {
-            if (App.Patient == null)
+            if (Instance?.Patient == null)
                 return;
 
             TextBlock lblLine1 = this.FindControl<TextBlock> ("lblLine1");
             TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
             TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
 
-            switch (controlType?.Value) {
+            switch (ControlType?.Value) {
                 default:
-                case ControlType.Values.ECG:
-                    lblLine1.Text = String.Format ("{0:0}", App.Patient.MeasureHR_ECG (
+                case ControlTypes.Values.ECG:
+                    lblLine1.Text = String.Format ("{0:0}", Instance?.Patient.MeasureHR_ECG (
                         Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
                     break;
 
-                case ControlType.Values.ABP:
-                    if (App.Patient.TransducerZeroed_ABP) {
-                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (App.Patient.ASBP, 0.02f));
+                case ControlTypes.Values.ABP:
+                    if (Instance.Patient.TransducerZeroed_ABP) {
+                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Patient.ASBP, 0.02f));
                         lblLine2.Text = String.Format ("/ {0:0}", II.Math.RandomPercentRange (
-                            (!App.Device_IABP.Running ? App.Patient.ADBP : App.Patient.IABP_DBP), 0.02f));
+                            (!Instance?.Device_IABP?.Running ?? false
+                            ? Instance?.Patient?.ADBP ?? 0
+                            : Instance?.Patient?.IABP_DBP ?? 0)
+                            , 0.02f));
 
                         // IABP shows MAP calculated by IABP!! Different from how monitors calculate MAP...
-                        lblLine3.Text = String.Format ("({0:0})", II.Math.RandomPercentRange (App.Patient.IABP_MAP, 0.02f));
+                        lblLine3.Text = String.Format ("({0:0})", II.Math.RandomPercentRange (Instance?.Patient?.IABP_MAP ?? 0, 0.02f));
                     } else {
-                        lblLine1.Text = Utility.WrapString (App.Language.Localize ("NUMERIC:ZeroTransducer"));
+                        lblLine1.Text = Utility.WrapString (Instance?.Language.Localize ("NUMERIC:ZeroTransducer") ?? "");
                         lblLine2.Text = "";
                         lblLine3.Text = "";
                     }
                     break;
 
-                case ControlType.Values.IABP_AP:
+                case ControlTypes.Values.IABP_AP:
 
                     // Flash augmentation pressure reading if below alarm limit
-                    lblLine1.Foreground = App.Patient.IABP_AP < App.Device_IABP.AugmentationAlarm
+                    lblLine1.Foreground = Instance?.Patient.IABP_AP < Instance?.Device_IABP?.AugmentationAlarm
                         ? (lblLine1.Foreground == Brushes.Red ? Brushes.SkyBlue : Brushes.Red)
                         : Brushes.SkyBlue;
 
-                    lblLine1.Text = App.Device_IABP.Running ? String.Format ("{0:0}", App.Patient.IABP_AP) : "";
+                    lblLine1.Text = Instance?.Device_IABP?.Running ?? false
+                        ? String.Format ("{0:0}", Instance?.Patient.IABP_AP) : "";
 
-                    lblLine2.Text = String.Format ("{0:0}%", App.Device_IABP.Augmentation);
-                    lblLine3.Text = String.Format ("{0}: {1:0}", App.Language.Localize ("IABP:Alarm"),
-                        App.Device_IABP.AugmentationAlarm);
+                    lblLine2.Text = String.Format ("{0:0}%", Instance?.Device_IABP?.Augmentation);
+                    lblLine3.Text = String.Format ("{0}: {1:0}", Instance?.Language.Localize ("IABP:Alarm"),
+                        Instance?.Device_IABP?.AugmentationAlarm);
                     break;
             }
         }

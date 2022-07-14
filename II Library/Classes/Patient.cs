@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
+
     public class Patient {
         /* Mirroring variables */
         public DateTime Updated;                    // DateTime this Patient was last updated
@@ -414,8 +415,11 @@ namespace II {
             return dbp + ((sbp - dbp) / 3);
         }
 
-        public static int CalculateCPP (int icp, int map) {
-            return map - icp;
+        public static int CalculateCPP (int? icp, int? map) {
+            if (icp is null || map is null)
+                return 0;
+
+            return (int)(map - icp);
         }
 
         public double GetHR_Seconds { get { return 60d / System.Math.Max (1, VS_Actual.HR); } }
