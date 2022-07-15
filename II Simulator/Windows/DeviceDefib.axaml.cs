@@ -367,7 +367,7 @@ namespace IISIM {
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {
-                listTracings [i].Strip.Scroll ();
+                listTracings [i].Strip?.Scroll ();
                 Dispatcher.UIThread.InvokeAsync (listTracings [i].DrawTracing);
             }
         }
@@ -390,8 +390,8 @@ namespace IISIM {
 
             listNumerics
                 .Where (n
-                    => n.ControlType.Value == Controls.DefibNumeric.ControlTypes.Values.ETCO2
-                    || n.ControlType.Value == Controls.DefibNumeric.ControlTypes.Values.RR)
+                    => n.ControlType?.Value == Controls.DefibNumeric.ControlTypes.Values.ETCO2
+                    || n.ControlType?.Value == Controls.DefibNumeric.ControlTypes.Values.RR)
                 .ToList ()
                 .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }

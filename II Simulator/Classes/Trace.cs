@@ -24,7 +24,7 @@ namespace IISIM {
 
         public static void DrawPath (Strip? strip, RenderTargetBitmap bitmap,
                 Pen pen, PointD? offset, PointD? multiplier) {
-            if (strip is null || strip.Points.Count < 2)
+            if (strip is null || strip?.Points is null || strip?.Points?.Count < 2)
                 return;
 
             if (bitmap == null)     // Can't initiate Bitmap here; don't have width/height

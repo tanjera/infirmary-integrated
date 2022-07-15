@@ -28,10 +28,10 @@ if ! command -v uuidgen &> /dev/null; then
     exit
 fi
 
-ZIPFILE=$( ls "$RELEASE_PATH/"_linux-x64*zip )
+ZIPFILE=$( ls "$RELEASE_PATH/"_linux-x64*tar.gz )
 
 if ! test -f "$ZIPFILE" ; then
-    echo "Error: _linux-x64.[version].zip missing from Infirmary Integrated/Release publish folder"
+    echo "Error: _linux-x64.[version].tar.gz missing from Infirmary Integrated/Release publish folder"
     exit
 fi
 
@@ -52,14 +52,14 @@ echo -e "Extracting package and setting file permissions\n"
 
 cd "$PROCESS_PATH"
 
-ZIPFILE=$( ls _linux-x64*zip )
-tar -xf "$ZIPFILE"
+ZIPFILE=$( ls _linux-x64*tar.gz )
+tar -xzf "$ZIPFILE"
 rm "$ZIPFILE"
 chmod +x "$PUB_SIMEXE"
 chmod +x "$PUB_SCENEDEXE"
 
 len1=`echo $ZIPFILE | wc -c`
-len2=$(expr $len1 - 5)
+len2=$(expr $len1 - 8)
 OUTNAME=$(echo $ZIPFILE | cut -c 1-$len2)
 VERSION=$(echo $OUTNAME | cut -c 12-)
 

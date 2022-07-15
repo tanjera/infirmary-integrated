@@ -8,6 +8,8 @@ namespace II.Localization {
 	public partial class Language {
 
 		static Dictionary<string, string> ENG = new Dictionary<string, string> () {
+			{"BUTTON:Yes",                                                "Yes"},
+			{"BUTTON:No",                                                 "No"},
 			{"BUTTON:Continue",                                           "Continue"},
 			{"BUTTON:ApplyChanges",                                       "Apply Changes"},
 			{"BUTTON:ResetParameters",                                    "Reset Parameters"},
@@ -279,6 +281,8 @@ namespace II.Localization {
 			{"INTENSITY:Moderate",                                        "Moderate"},
 			{"INTENSITY:Severe",                                          "Severe"},
 			{"STATUS:UpdateAvailable",                                    "Update"},
+			{"MESSAGE:AudioUnavailableTitle",                             "Audio Unavailable"},
+			{"MESSAGE:AudioUnavailableMessage",                           "Unable to load necessary files for activating audio. Please ensure to follow all installation instructions on the website."},
 			{"ABOUT:AboutProgram",                                        "About Infirmary Integrated"},
 			{"ABOUT:Version",                                             "Version {0}"},
 			{"ABOUT:Description",                                         "Infirmary Integrated is free and open-source software developed to advance healthcare education for medical and nursing professionals and students. Developed as in-depth, accurate, and accessible educational tools, Infirmary Integrated can meet the needs of clinical simulators in emergency, critical care, and many other medical and nursing specialties."},
@@ -312,6 +316,8 @@ namespace II.Localization {
 		};
 
 		static Dictionary<string, string> AMH = new Dictionary<string, string> () {
+			{"BUTTON:Yes",                                                "አዎ"},
+			{"BUTTON:No",                                                 "አይ"},
 			{"BUTTON:Continue",                                           "ቀጥል"},
 			{"BUTTON:ApplyChanges",                                       "ለውጦች ተግብር"},
 			{"BUTTON:ResetParameters",                                    "ዳግም አስጀምር መለኪያዎች"},
@@ -583,6 +589,8 @@ namespace II.Localization {
 			{"INTENSITY:Moderate",                                        "መጠነኛ"},
 			{"INTENSITY:Severe",                                          "ጥብቅ"},
 			{"STATUS:UpdateAvailable",                                    "አዘምን"},
+			{"MESSAGE:AudioUnavailableTitle",                             "ኦዲዮ አይገኝም"},
+			{"MESSAGE:AudioUnavailableMessage",                           "ኦዲዮን ለማንቃት አስፈላጊ የሆኑ ፋይሎችን መጫን አልተቻለም። እባክዎ በድር ጣቢያው ላይ ያሉትን ሁሉንም የመጫኛ መመሪያዎች መከተልዎን ያረጋግጡ።"},
 			{"ABOUT:AboutProgram",                                        "ክሊኒክ የተቀናጀ ስለ"},
 			{"ABOUT:Version",                                             "ስሪት {0}"},
 			{"ABOUT:Description",                                         "ክሊኒክ ውስጥ የተቀናጀ ለህክምና እና ለነርሲ ባለሙያዎች እና ተማሪዎችን የጤና አገልግሎት ትምህርት ለማሻሻል የተዘጋጁ ነጻ እና ክፍት ምንጭ ሶፍትዌር ነው. እንደ ጥልቀት, ትክክለኛ እና ተደራሽ የሆነ የመሳሪያ መሳሪያዎች ተብለው የተገነቡ, የተጠናከረ የእግር ኳስ ክሊኒክ በአስቸኳይ ጊዜ, ወሳኝ እንክብካቤ እና ሌሎች በርካታ የሕክምና እና የነርሶች ልዩ ልዩ ክሊኒካዊ ማስመሰያዎች ፍላጎቶችን ሊያሟላ ይችላል."},
@@ -616,6 +624,8 @@ namespace II.Localization {
 		};
 
 		static Dictionary<string, string> ARA = new Dictionary<string, string> () {
+			{"BUTTON:Yes",                                                "نعم"},
+			{"BUTTON:No",                                                 "لا"},
 			{"BUTTON:Continue",                                           "استمر"},
 			{"BUTTON:ApplyChanges",                                       "تطبيق التغييرات"},
 			{"BUTTON:ResetParameters",                                    "معلمات إعادة تعيين"},
@@ -887,6 +897,8 @@ namespace II.Localization {
 			{"INTENSITY:Moderate",                                        "معتدل"},
 			{"INTENSITY:Severe",                                          "شديدة"},
 			{"STATUS:UpdateAvailable",                                    "تحديث"},
+			{"MESSAGE:AudioUnavailableTitle",                             "الصوت غير متوفر"},
+			{"MESSAGE:AudioUnavailableMessage",                           "تعذر تحميل الملفات الضرورية لتمكين الصوت. يرجى التأكد من اتباع جميع تعليمات التثبيت على الموقع."},
 			{"ABOUT:AboutProgram",                                        "معلومات عن المستوصف المتكاملة"},
 			{"ABOUT:Version",                                             "صفحة {0}"},
 			{"ABOUT:Description",                                         "عيادة المتكاملة هي برمجيات مجانية ومفتوحة المصدر تم تطويرها لتعزيز تعليم الرعاية الصحية للمهنيين والطلاب في مجال التمريض والتمريض. من خلال تطويرها كأدوات تعليمية متعمقة ودقيقة ويمكن الوصول إليها ، تستطيع عيادة المتكاملة تلبية احتياجات أجهزة المحاكاة السريرية في حالات الطوارئ والرعاية الحرجة والعديد من التخصصات الطبية والتمريضية الأخرى."},
@@ -920,6 +932,8 @@ namespace II.Localization {
 		};
 
 		static Dictionary<string, string> DEU = new Dictionary<string, string> () {
+			{"BUTTON:Yes",                                                "Ja"},
+			{"BUTTON:No",                                                 "Nein"},
 			{"BUTTON:Continue",                                           "Fortsetzen"},
 			{"BUTTON:ApplyChanges",                                       "Änderungen übernehmen"},
 			{"BUTTON:ResetParameters",                                    "Parameter zurücksetzen"},
@@ -1191,6 +1205,8 @@ namespace II.Localization {
 			{"INTENSITY:Moderate",                                        "Mäßig"},
 			{"INTENSITY:Severe",                                          "Schwer"},
 			{"STATUS:UpdateAvailable",                                    "Aktualisieren"},
+			{"MESSAGE:AudioUnavailableTitle",                             "Audio nicht verfügbar"},
+			{"MESSAGE:AudioUnavailableMessage",                           "Notwendige Dateien zum Aktivieren von Audio können nicht geladen werden. Bitte stellen Sie sicher, dass Sie alle Installationsanweisungen auf der Website befolgen."},
 			{"ABOUT:AboutProgram",                                        "Über Krankenstation integriert"},
 			{"ABOUT:Version",                                             "Version {0}"},
 			{"ABOUT:Description",                                         "Infirmary Integrated ist eine kostenlose und Open-Source-Software, die entwickelt wurde, um die medizinische Ausbildung von Medizinern, Pflegekräften und Studenten zu fördern. Infirmary Integrated wurde als umfassendes, genaues und zugängliches pädagogisches Werkzeug entwickelt und kann die Anforderungen von klinischen Simulatoren in Notfall-, Intensivpflege- und vielen anderen medizinischen und pflegerischen Bereichen erfüllen."},
@@ -1224,6 +1240,8 @@ namespace II.Localization {
 		};
 
 		static Dictionary<string, string> FAS = new Dictionary<string, string> () {
+			{"BUTTON:Yes",                                                "آره"},
+			{"BUTTON:No",                                                 "خیر"},
 			{"BUTTON:Continue",                                           "ادامه هید"},
 			{"BUTTON:ApplyChanges",                                       "تغغیرات را اعمال کن"},
 			{"BUTTON:ResetParameters",                                    "پارامترهای تنظیم مجدد"},
@@ -1495,6 +1513,8 @@ namespace II.Localization {
 			{"INTENSITY:Moderate",                                        "در حد متوسط"},
 			{"INTENSITY:Severe",                                          "شدید"},
 			{"STATUS:UpdateAvailable",                                    "به روز رسانی"},
+			{"MESSAGE:AudioUnavailableTitle",                             "صدا در دسترس نیست"},
+			{"MESSAGE:AudioUnavailableMessage",                           "فایل های لازم برای فعال سازی صدا بارگیری نمی شوند. لطفاً مطمئن شوید که تمام دستورالعمل های نصب در وب سایت را دنبال کنید."},
 			{"ABOUT:AboutProgram",                                        "درباره درمانگاه مجتمع"},
 			{"ABOUT:Version",                                             "نسخه {0}"},
 			{"ABOUT:Description",                                         "درمانگاه مجتمع رایگان و نرم افزار منبع باز است که برای پیشبرد آموزش و پرورش مراقبت های بهداشتی برای متخصصین و دانشجویان پزشکی و پرستاری طراحی شده است. درمانگاه مجتمع که به عنوان ابزار آموزشی عمیق، دقیق و قابل دسترس در دسترس است، می تواند نیازهای شبیه ساز بالینی در اورژانس، مراقبت های ویژه و بسیاری دیگر از تخصص های پزشکی و پرستاری را برآورده کند."},
@@ -1528,6 +1548,8 @@ namespace II.Localization {
 		};
 
 		static Dictionary<string, string> SPA = new Dictionary<string, string> () {
+			{"BUTTON:Yes",                                                "Sí"},
+			{"BUTTON:No",                                                 "No"},
 			{"BUTTON:Continue",                                           "Continuar"},
 			{"BUTTON:ApplyChanges",                                       "Aplicar cambios"},
 			{"BUTTON:ResetParameters",                                    "Restablecer parámetros"},
@@ -1799,6 +1821,8 @@ namespace II.Localization {
 			{"INTENSITY:Moderate",                                        "Moderado"},
 			{"INTENSITY:Severe",                                          "Grave"},
 			{"STATUS:UpdateAvailable",                                    "Actualizar"},
+			{"MESSAGE:AudioUnavailableTitle",                             "Audio no disponible"},
+			{"MESSAGE:AudioUnavailableMessage",                           "No se pueden cargar los archivos necesarios para activar el audio. Asegúrese de seguir todas las instrucciones de instalación en el sitio web."},
 			{"ABOUT:AboutProgram",                                        "Acerca de Infirmary Integrated"},
 			{"ABOUT:Version",                                             "Versión {0}"},
 			{"ABOUT:Description",                                         "Infirmary Integrated es un software gratuito y de código abierto desarrollado para promover la educación sanitaria para profesionales y estudiantes de medicina y enfermería. Desarrollado como herramientas educativas profundas, precisas y accesibles, Infirmary Integrated puede satisfacer las necesidades de los simuladores clínicos en emergencias, cuidados intensivos y muchas otras especialidades médicas y de enfermería."},
@@ -1832,6 +1856,8 @@ namespace II.Localization {
 		};
 
 		static Dictionary<string, string> FRA = new Dictionary<string, string> () {
+			{"BUTTON:Yes",                                                "Oui"},
+			{"BUTTON:No",                                                 "Non"},
 			{"BUTTON:Continue",                                           "Continuer"},
 			{"BUTTON:ApplyChanges",                                       "Appliquer les modifications"},
 			{"BUTTON:ResetParameters",                                    "Réinitialiser les paramètres"},
@@ -2103,6 +2129,8 @@ namespace II.Localization {
 			{"INTENSITY:Moderate",                                        "Modéré"},
 			{"INTENSITY:Severe",                                          "Sévère"},
 			{"STATUS:UpdateAvailable",                                    "Mettre à jour"},
+			{"MESSAGE:AudioUnavailableTitle",                             "Audio indisponible"},
+			{"MESSAGE:AudioUnavailableMessage",                           "Impossible de charger les fichiers nécessaires à l'activation de l'audio. Veuillez vous assurer de suivre toutes les instructions d'installation sur le site Web."},
 			{"ABOUT:AboutProgram",                                        "À propos d'Infirmary Integrated"},
 			{"ABOUT:Version",                                             "Version {0}"},
 			{"ABOUT:Description",                                         "Infirmary Integrated est un logiciel gratuit et open-source développé pour faire progresser l'éducation sanitaire pour les professionnels médicaux et infirmiers et les étudiants. Développé comme des outils éducatifs approfondis, précis et accessibles, Infirmary Integrated peut répondre aux besoins des simulateurs cliniques en urgence, en soins intensifs et dans de nombreuses autres spécialités médicales et infirmières."},
@@ -2136,6 +2164,8 @@ namespace II.Localization {
 		};
 
 		static Dictionary<string, string> HEB = new Dictionary<string, string> () {
+			{"BUTTON:Yes",                                                "כן"},
+			{"BUTTON:No",                                                 "לא"},
 			{"BUTTON:Continue",                                           "המשך"},
 			{"BUTTON:ApplyChanges",                                       "החל שינויים"},
 			{"BUTTON:ResetParameters",                                    "פרמטרי איפוס"},
@@ -2407,6 +2437,8 @@ namespace II.Localization {
 			{"INTENSITY:Moderate",                                        "מתון"},
 			{"INTENSITY:Severe",                                          "חמור"},
 			{"STATUS:UpdateAvailable",                                    "עדכון"},
+			{"MESSAGE:AudioUnavailableTitle",                             "אודיו לא זמין"},
+			{"MESSAGE:AudioUnavailableMessage",                           "לא ניתן לטעון קבצים הדרושים להפעלת אודיו. אנא הקפד לעקוב אחר כל הוראות ההתקנה באתר."},
 			{"ABOUT:AboutProgram",                                        "אודות המרפאה המשולבת"},
 			{"ABOUT:Version",                                             "גרסת {0}"},
 			{"ABOUT:Description",                                         "המרפאה משולבת היא תוכנה חופשית וקוד פתוח שפותחה כדי לקדם את החינוך לבריאות עבור אנשי מקצוע רפואיים וסיעוד וסטודנטים. פותח ככלי חינוכי מעמיק, מדויק ונגיש, המרפאה משולבת יכול לענות על הצרכים של סימולטורים קליניים חירום, טיפול קריטי, ועוד רבים אחרים התמחויות רפואיות וסיעוד."},
@@ -2440,6 +2472,8 @@ namespace II.Localization {
 		};
 
 		static Dictionary<string, string> HIN = new Dictionary<string, string> () {
+			{"BUTTON:Yes",                                                "हाँ"},
+			{"BUTTON:No",                                                 "नहीं"},
 			{"BUTTON:Continue",                                           "जारी रहना"},
 			{"BUTTON:ApplyChanges",                                       "परिवर्तन लागू करें"},
 			{"BUTTON:ResetParameters",                                    "रीसेट पैरामीटर"},
@@ -2711,6 +2745,8 @@ namespace II.Localization {
 			{"INTENSITY:Moderate",                                        "मध्यम"},
 			{"INTENSITY:Severe",                                          "कठोर"},
 			{"STATUS:UpdateAvailable",                                    "अद्यतन"},
+			{"MESSAGE:AudioUnavailableTitle",                             "ऑडियो अनुपलब्ध"},
+			{"MESSAGE:AudioUnavailableMessage",                           "ऑडियो चलाने के लिए आवश्यक फ़ाइलें लोड नहीं की जा सकतीं। कृपया साइट पर सभी इंस्टॉलेशन निर्देशों का पालन करना सुनिश्चित करें।"},
 			{"ABOUT:AboutProgram",                                        "के बारे में अस्पताल सिम्युलेटर"},
 			{"ABOUT:Version",                                             "संस्करण {0}"},
 			{"ABOUT:Description",                                         "अस्पताल सिम्युलेटर चिकित्सा और नर्सिंग पेशेवरों और छात्रों के लिए स्वास्थ्य देखभाल शिक्षा को आगे बढ़ाने के लिए विकसित मुफ्त और ओपन-सोर्स सॉफ़्टवेयर है। इन-डेप्थ, सटीक और सुलभ शैक्षिक उपकरणों के रूप में विकसित, अस्पताल सिम्युलेटर आपातकालीन, महत्वपूर्ण देखभाल और कई अन्य चिकित्सा और नर्सिंग विशिष्टताओं में नैदानिक ​​सिमुलेटर की जरूरतों को पूरा कर सकता है।"},
@@ -2744,6 +2780,8 @@ namespace II.Localization {
 		};
 
 		static Dictionary<string, string> ITA = new Dictionary<string, string> () {
+			{"BUTTON:Yes",                                                "Sì"},
+			{"BUTTON:No",                                                 "No"},
 			{"BUTTON:Continue",                                           "Continua"},
 			{"BUTTON:ApplyChanges",                                       "Applica i cambiamenti"},
 			{"BUTTON:ResetParameters",                                    "Ripristina i parametri"},
@@ -3015,6 +3053,8 @@ namespace II.Localization {
 			{"INTENSITY:Moderate",                                        "Moderato"},
 			{"INTENSITY:Severe",                                          "Grave"},
 			{"STATUS:UpdateAvailable",                                    "Aggiornare"},
+			{"MESSAGE:AudioUnavailableTitle",                             "Audio non disponibile"},
+			{"MESSAGE:AudioUnavailableMessage",                           "Impossibile caricare i file necessari per attivare l'audio. Assicurati di seguire tutte le istruzioni di installazione sul sito web."},
 			{"ABOUT:AboutProgram",                                        "Informazioni sull'infermeria integrata"},
 			{"ABOUT:Version",                                             "Versione {0}"},
 			{"ABOUT:Description",                                         "Infermary Integrated è un software gratuito e open source sviluppato per promuovere la formazione sanitaria per medici e infermieri e studenti. Sviluppato come strumenti educativi approfonditi, accurati e accessibili, l'infermeria integrata è in grado di soddisfare le esigenze dei simulatori clinici in emergenza, terapia intensiva e molte altre specialità mediche e infermieristiche."},
@@ -3048,6 +3088,8 @@ namespace II.Localization {
 		};
 
 		static Dictionary<string, string> KOR = new Dictionary<string, string> () {
+			{"BUTTON:Yes",                                                "예"},
+			{"BUTTON:No",                                                 "아니"},
 			{"BUTTON:Continue",                                           "잇다"},
 			{"BUTTON:ApplyChanges",                                       "변경 승인"},
 			{"BUTTON:ResetParameters",                                    "매개 변수 재설정"},
@@ -3319,6 +3361,8 @@ namespace II.Localization {
 			{"INTENSITY:Moderate",                                        "절제있는"},
 			{"INTENSITY:Severe",                                          "심한"},
 			{"STATUS:UpdateAvailable",                                    "업데이트"},
+			{"MESSAGE:AudioUnavailableTitle",                             "오디오를 사용할 수 없음"},
+			{"MESSAGE:AudioUnavailableMessage",                           "오디오를 활성화하는 데 필요한 파일을 로드할 수 없습니다. 웹사이트의 모든 설치 지침을 따르십시오."},
 			{"ABOUT:AboutProgram",                                        "의무실 통합에 관하여"},
 			{"ABOUT:Version",                                             "버전 {0}"},
 			{"ABOUT:Description",                                         "의무실 통합은 의료 및 간호 전문가 및 학생을위한 의료 교육을 발전시키기 위해 개발 된 무료 및 오픈 소스 소프트웨어입니다. 심층적이고 정확하며 접근 가능한 교육 도구로 개발 된 Infirmary Integrated는 응급, 중환자 치료 및 기타 여러 의학 및 간호 전문 분야에서 임상 시뮬레이터의 요구를 충족시킬 수 있습니다."},
@@ -3352,6 +3396,8 @@ namespace II.Localization {
 		};
 
 		static Dictionary<string, string> POR = new Dictionary<string, string> () {
+			{"BUTTON:Yes",                                                "Sim"},
+			{"BUTTON:No",                                                 "Não"},
 			{"BUTTON:Continue",                                           "Continuar"},
 			{"BUTTON:ApplyChanges",                                       "Aplicar mudanças"},
 			{"BUTTON:ResetParameters",                                    "Parâmetros de redefinição"},
@@ -3623,6 +3669,8 @@ namespace II.Localization {
 			{"INTENSITY:Moderate",                                        "Moderado"},
 			{"INTENSITY:Severe",                                          "Grave"},
 			{"STATUS:UpdateAvailable",                                    "Atualizar"},
+			{"MESSAGE:AudioUnavailableTitle",                             "Áudio indisponível"},
+			{"MESSAGE:AudioUnavailableMessage",                           "Não foi possível carregar os arquivos necessários para ativar o áudio. Certifique-se de seguir todas as instruções de instalação no site."},
 			{"ABOUT:AboutProgram",                                        "Sobre Infirmary Integrated"},
 			{"ABOUT:Version",                                             "Versão {0}"},
 			{"ABOUT:Description",                                         "Infirmary Integrated é um software livre e de código aberto desenvolvido para promover a educação em saúde para profissionais e estudantes de medicina e enfermagem. Desenvolvido como ferramentas educacionais detalhadas, precisas e acessíveis, a Infirmary Integrated pode atender às necessidades de simuladores clínicos em atendimento urgente, crítico e muitas outras especialidades médicas e de enfermagem."},
@@ -3656,6 +3704,8 @@ namespace II.Localization {
 		};
 
 		static Dictionary<string, string> RUS = new Dictionary<string, string> () {
+			{"BUTTON:Yes",                                                "Да"},
+			{"BUTTON:No",                                                 "Нет"},
 			{"BUTTON:Continue",                                           "Продолжать"},
 			{"BUTTON:ApplyChanges",                                       "Применить изменения"},
 			{"BUTTON:ResetParameters",                                    "Сбросить параметры"},
@@ -3927,6 +3977,8 @@ namespace II.Localization {
 			{"INTENSITY:Moderate",                                        "умеренный"},
 			{"INTENSITY:Severe",                                          "Серьезный"},
 			{"STATUS:UpdateAvailable",                                    "Обновлять"},
+			{"MESSAGE:AudioUnavailableTitle",                             "Аудио недоступно"},
+			{"MESSAGE:AudioUnavailableMessage",                           "Не удалось загрузить файл, необходимый для включения звука. Следуйте всем инструкциям по установке на сайте."},
 			{"ABOUT:AboutProgram",                                        "О комплексе"},
 			{"ABOUT:Version",                                             "Версия {0}"},
 			{"ABOUT:Description",                                         "Infirmary Integrated - бесплатное программное обеспечение с открытым исходным кодом, разработанное для продвижения медицинского образования для медицинских и сестринских специалистов и студентов. Разработанный как углубленный, точный и доступный образовательный инструмент, Infirmary Integrated может удовлетворить потребности клинических тренажеров в неотложной, критической медицинской помощи и многих других медицинских и сестринских специальностях."},
@@ -3960,6 +4012,8 @@ namespace II.Localization {
 		};
 
 		static Dictionary<string, string> SWK = new Dictionary<string, string> () {
+			{"BUTTON:Yes",                                                "Ndiyo"},
+			{"BUTTON:No",                                                 "Hapana"},
 			{"BUTTON:Continue",                                           "Endelea"},
 			{"BUTTON:ApplyChanges",                                       "Tumia Mabadiliko"},
 			{"BUTTON:ResetParameters",                                    "Weka upya Vipengele"},
@@ -4231,6 +4285,8 @@ namespace II.Localization {
 			{"INTENSITY:Moderate",                                        "Wastani"},
 			{"INTENSITY:Severe",                                          "Wazi"},
 			{"STATUS:UpdateAvailable",                                    "Sasisha"},
+			{"MESSAGE:AudioUnavailableTitle",                             "Sauti Haipatikani"},
+			{"MESSAGE:AudioUnavailableMessage",                           "Imeshindwa kupakia faili inayohitajika ili kuwezesha sauti. Fuata maagizo yote ya ufungaji kwenye tovuti."},
 			{"ABOUT:AboutProgram",                                        "Kuhusu Uwezeshaji Uliounganishwa"},
 			{"ABOUT:Version",                                             "Toleo {0}"},
 			{"ABOUT:Description",                                         "Infirmary Integrated ni programu ya bure na ya chanzo kilichopangwa ili kuendeleza elimu ya afya kwa wataalamu wa matibabu na uuguzi na wanafunzi. Iliyoundwa kama zana za kina, sahihi, na zinazoweza kupatikana, elimu ya kuambukizwa inaweza kuzuia mahitaji ya simulators za kliniki kwa dharura, huduma muhimu, na vitu vingine vya matibabu na uuguzi."},
@@ -4264,6 +4320,8 @@ namespace II.Localization {
 		};
 
 		static Dictionary<string, string> ZHO = new Dictionary<string, string> () {
+			{"BUTTON:Yes",                                                "是的"},
+			{"BUTTON:No",                                                 "不是"},
 			{"BUTTON:Continue",                                           "继续"},
 			{"BUTTON:ApplyChanges",                                       "应用更改"},
 			{"BUTTON:ResetParameters",                                    "重新设置参数"},
@@ -4535,6 +4593,8 @@ namespace II.Localization {
 			{"INTENSITY:Moderate",                                        "中等"},
 			{"INTENSITY:Severe",                                          "严重"},
 			{"STATUS:UpdateAvailable",                                    "更新"},
+			{"MESSAGE:AudioUnavailableTitle",                             "音频不可用"},
+			{"MESSAGE:AudioUnavailableMessage",                           "无法加载启用声音所需的文件。 按照网站上的所有安装说明进行操作。"},
 			{"ABOUT:AboutProgram",                                        "关于医院模拟器"},
 			{"ABOUT:Version",                                             "版本{0}"},
 			{"ABOUT:Description",                                         "医院模拟器是免费的开源软件，旨在促进医疗和护理专业人员和学生的医疗保健教育。医院模拟器是作为深入，准确和可访问的教育工具开发的，可满足临床模拟器在急诊，重症监护和许多其他医疗和护理专业中的需求。"},

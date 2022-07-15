@@ -523,7 +523,7 @@ namespace IISIM {
             }
         }
 
-        public override void OnTick_Vitals (object? sender, EventArgs e) {
+        public override void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
             if (State != States.Running || Instance?.Patient is null)
                 return;
 

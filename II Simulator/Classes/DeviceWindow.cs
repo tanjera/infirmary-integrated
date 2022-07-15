@@ -25,7 +25,6 @@ namespace IISIM {
 
         public Timer
             TimerTracing = new (),
-            timerVitals = new (),
             TimerVitals_Cardiac = new (),
             TimerVitals_Respiratory = new (),
             TimerAncillary_Delay = new ();
@@ -58,7 +57,6 @@ namespace IISIM {
             /* Clean subscriptions from the Main Timer */
             if (Instance is not null) {
                 Instance.Timer_Main.Elapsed -= TimerTracing.Process;
-                Instance.Timer_Main.Elapsed -= timerVitals.Process;
                 Instance.Timer_Main.Elapsed -= TimerVitals_Cardiac.Process;
                 Instance.Timer_Main.Elapsed -= TimerVitals_Respiratory.Process;
                 Instance.Timer_Main.Elapsed -= TimerAncillary_Delay.Process;
@@ -66,7 +64,6 @@ namespace IISIM {
 
             /* Dispose of local Timers */
             TimerTracing.Dispose ();
-            timerVitals.Dispose ();
             TimerVitals_Cardiac.Dispose ();
             TimerVitals_Respiratory.Dispose ();
             TimerAncillary_Delay.Dispose ();
@@ -76,31 +73,29 @@ namespace IISIM {
                 Instance.Patient.PatientEvent -= OnPatientEvent;
         }
 
-        private void InitTimers () {
+        public virtual void InitTimers () {
             if (Instance is null)
                 return;
 
-            Instance.Timer_Main.Elapsed += TimerTracing.Process;
+            /* TimerAncillary_Delay is attached/detached to events in the Devices for their
+             * specific uses (e.g. IABP priming, Defib charging, etc.) ... only want to link it
+             * to Timer_Main, otherwise do not set, start, or link to any events here!
+             */
+            Instance.Timer_Main.Elapsed += TimerAncillary_Delay.Process;
 
-            Instance.Timer_Main.Elapsed += timerVitals.Process;
+            Instance.Timer_Main.Elapsed += TimerTracing.Process;
             Instance.Timer_Main.Elapsed += TimerVitals_Cardiac.Process;
             Instance.Timer_Main.Elapsed += TimerVitals_Respiratory.Process;
 
-            Instance.Timer_Main.Elapsed += TimerAncillary_Delay.Process;
-
             TimerTracing.Tick += OnTick_Tracing;
-            timerVitals.Tick += OnTick_Vitals;
             TimerVitals_Cardiac.Tick += OnTick_Vitals_Cardiac;
             TimerVitals_Respiratory.Tick += OnTick_Vitals_Respiratory;
 
             TimerTracing.Set (Draw.RefreshTime);
-
-            timerVitals.Set ((int)((Instance.Patient?.GetHR_Seconds ?? 1) * 1000));
-            TimerVitals_Cardiac.Set (II.Math.Clamp ((int)(Instance.Patient.GetHR_Seconds * 1000 / 2), 2000, 6000));
-            TimerVitals_Respiratory.Set (II.Math.Clamp ((int)(Instance.Patient.GetRR_Seconds * 1000 / 2), 2000, 8000));
+            TimerVitals_Cardiac.Set (3000);
+            TimerVitals_Respiratory.Set (5000);
 
             TimerTracing.Start ();
-            timerVitals.Start ();
             TimerVitals_Cardiac.Start ();
             TimerVitals_Respiratory.Start ();
         }
@@ -112,22 +107,19 @@ namespace IISIM {
                 State = States.Running;
         }
 
-        public void OnClosed (object? sender, EventArgs e) {
+        public virtual void OnClosed (object? sender, EventArgs e) {
             State = States.Closed;
 
             Dispose ();
         }
 
-        public void OnClosing (object? sender, CancelEventArgs e) {
+        public virtual void OnClosing (object? sender, CancelEventArgs e) {
         }
 
         public virtual void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
         }
 
         public virtual void OnTick_Tracing (object? sender, EventArgs e) {
-        }
-
-        public virtual void OnTick_Vitals (object? sender, EventArgs e) {
         }
 
         public virtual void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {

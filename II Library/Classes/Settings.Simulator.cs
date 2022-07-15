@@ -26,9 +26,15 @@ namespace II.Settings {
         public DateTime MuteUpgradeDate;
 
         public Simulator () {
+            /* Note: These are the DEFAULT settings on 1st run (or Load() failure to parse)! */
+
             Language = "ENG";
+
+            AudioEnabled = true;
             AutoApplyChanges = false;
-            WindowSize = new Point (700, 560);
+
+            WindowSize = new Point (800, 600);
+
             MuteUpgrade = false;
             MuteUpgradeDate = new DateTime (2000, 1, 1);
         }

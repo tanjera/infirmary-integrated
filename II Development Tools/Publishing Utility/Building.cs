@@ -83,7 +83,9 @@ namespace Publishing {
             proc.WaitForExit ();
         }
 
-        public static void Pack (Program.Variables progVar,
+        public static void Pack (
+                Program.Variables.PackageType packType,
+                Program.Variables progVar,
                 string dirSimulatorBin, string dirScenarioEditorBin,
                 string dirRelease, string release, string verNumber) {
             Process proc = new Process ();
@@ -111,30 +113,44 @@ namespace Publishing {
             Console.WriteLine (Environment.NewLine);
             Console.ForegroundColor = ConsoleColor.Yellow;
 
-            // Tar the directories/files into a tarball (.zip file)
+            // Package the directories/files into a tarball or zip
             Console.WriteLine ($"Packing build: {release}-{verNumber}");
-            string tarName = $"_{release}-{verNumber}.zip";
-            arguments = $"-c -f {tarName} \"Infirmary Integrated\"";
+            string packName = "";
 
-            Console.WriteLine ($"- Executing tar {arguments}");
+            if (packType == Program.Variables.PackageType.Tar) {
+                packName = $"_{release}-{verNumber}.tar.gz";
+                arguments = $"-czf {packName} \"Infirmary Integrated\"";
+
+                Console.WriteLine ($"- Executing tar {arguments}");
+
+                proc.StartInfo.FileName = progVar.pathTar;
+                proc.StartInfo.Arguments = arguments;
+            } else if (packType == Program.Variables.PackageType.Zip) {
+                packName = $"_{release}-{verNumber}.zip";
+                arguments = $"a -tzip {packName} \"Infirmary Integrated\"";
+
+                Console.WriteLine ($"- Executing 7z {arguments}");
+
+                proc.StartInfo.FileName = progVar.path7Zip;
+                proc.StartInfo.Arguments = arguments;
+            }
+
             Console.WriteLine (Environment.NewLine);
 
-            proc.StartInfo.FileName = progVar.pathTar;
-            proc.StartInfo.Arguments = arguments;
             proc.StartInfo.UseShellExecute = false;
             proc.StartInfo.WorkingDirectory = progVar.dirTemporary;
             proc.Start ();
             proc.WaitForExit ();
 
-            string tarFile = Path.Combine (progVar.dirTemporary, tarName);
-            string tarRelease = Path.Combine (dirRelease, tarName);
+            string packFile = Path.Combine (progVar.dirTemporary, packName);
+            string packRelease = Path.Combine (dirRelease, packName);
 
-            // Move the .tar file to the Infirmary Integrated/Release folder
-            if (File.Exists (tarFile)) {
-                Console.WriteLine ($"- Moving tar file to {dirRelease}");
-                File.Move (tarFile, tarRelease, true);
+            // Move the package to the Infirmary Integrated/Release folder
+            if (File.Exists (packFile)) {
+                Console.WriteLine ($"- Moving package file to {dirRelease}");
+                File.Move (packFile, packRelease, true);
             } else {
-                Console.WriteLine ($"Error: Unable to locate {tarFile}");
+                Console.WriteLine ($"Error: Unable to locate {packFile}");
             }
 
             // Clean the temporary directory

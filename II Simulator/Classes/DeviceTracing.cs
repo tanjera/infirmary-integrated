@@ -82,10 +82,12 @@ namespace IISIM {
 
             Tracing = new RenderTargetBitmap (size);
 
-            TracingPen.Brush = _Brush ?? Brushes.Black;
-            TracingPen.Thickness = _Thickness ?? 1d;
+            if (TracingPen is not null) {
+                TracingPen.Brush = _Brush ?? Brushes.Black;
+                TracingPen.Thickness = _Thickness ?? 1d;
 
-            Trace.DrawPath (_Strip, Tracing, TracingPen, DrawOffset, DrawMultiplier);
+                Trace.DrawPath (_Strip, Tracing, TracingPen, DrawOffset, DrawMultiplier);
+            }
 
             imgTracing.Source = Tracing;
 

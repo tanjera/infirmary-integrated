@@ -25,10 +25,10 @@ if ! command -v uuidgen &> /dev/null; then
     exit
 fi
 
-ZIPFILE=$( ls "$RELEASE_PATH/"_osx-x64*zip )
+ZIPFILE=$( ls "$RELEASE_PATH/"_osx-x64*tar.gz )
 
 if ! test -f "$ZIPFILE" ; then
-    echo "Error: _osx-x64.[version].zip missing from Infirmary Integrated/Release publish folder"
+    echo "Error: _osx-x64.[version].tar.gz missing from Infirmary Integrated/Release publish folder"
     exit
 fi
 
@@ -82,8 +82,8 @@ echo -e "Extracting package contents\n"
 
 cd "$PROCESS_PATH"
 
-ZIPFILE=$( ls _osx-x64*zip )
-tar -xf "$ZIPFILE"
+ZIPFILE=$( ls _osx-x64*tar.gz )
+tar -xzf "$ZIPFILE"
 rm "$ZIPFILE"
 
 mv "$SIM_PUB_FOLDER"/* "$SIM_APP_NAME/Contents/MacOS"
@@ -96,7 +96,13 @@ echo -e "Settings permissions\n"
 chmod +x "$SIM_APP_NAME/Contents/MacOS/$SIM_EXE_FILE"
 chmod +x "$SCENED_APP_NAME/Contents/MacOS/$SCENED_EXE_FILE"
 
-OUTFILE="_osx-64-app-package.tar.gz"
+len1=`echo $ZIPFILE | wc -c`
+len2=$(expr $len1 - 8)
+OUTNAME=$(echo $ZIPFILE | cut -c 1-$len2)
+VERSION=$(echo $OUTNAME | cut -c 10-)
+
+
+OUTFILE="infirmary-integrated-$VERSION-macos.tar.gz"
 echo -e "Packaging tarball $OUTFILE\n"
 
 rmdir "$BASE_PUB_FOLDER"

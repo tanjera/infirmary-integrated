@@ -8,7 +8,7 @@
     <AssemblyName>Infirmary Integrated</AssemblyName>
     <Copyright>© 2017-2022, Ibi Keller</Copyright>
     <Authors>Ibi Keller</Authors>
-    <Version>2.1.3</Version>
+    <Version>2.2.0</Version>
     <Company>Infirmary Integrated</Company>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageProjectUrl>https://www.infirmary-integrated.com/</PackageProjectUrl>
@@ -51,6 +51,9 @@
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\DialogMessage.axaml.cs">
+      <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
     <Compile Update="Windows\DialogMirrorReceive.axaml.cs">
       <DependentUpon>DialogMirrorReceive.axaml</DependentUpon>

@@ -11,6 +11,7 @@ namespace Publishing {
             public string versionDotnet;
             public string pathDotnet;
             public string pathTar;
+            public string path7Zip;
             public string pathNSIS;
             public string pathSigntool;
             public string pathCert;
@@ -24,6 +25,7 @@ namespace Publishing {
                 if (OperatingSystem.IsWindows ()) {
                     pathDotnet = @"C:\Program Files\dotnet\dotnet.exe";
                     pathTar = @"C:\Windows\System32\tar.exe";
+                    path7Zip = @"C:\Program Files\7-Zip\7z.exe";
                     pathNSIS = @"C:\Program Files (x86)\NSIS\makensis.exe";
                     pathSigntool = @"C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe";
                     pathCert = @"C:\Users\Ibi\Documents\Code Signing Certificate, Sectigo.pfx";
@@ -34,6 +36,11 @@ namespace Publishing {
                     pathTar = "tar";
                     dirSolution = @"/home/ibi/Documents/Infirmary Integrated";
                 }
+            }
+
+            public enum PackageType {
+                Tar,
+                Zip
             }
         }
 
@@ -86,7 +93,10 @@ namespace Publishing {
                     Building.Publish (progVar, dirSimulator, release);
                     Building.Publish (progVar, dirScenarioEditor, release);
 
-                    Building.Pack (progVar, dirSimulatorBin, dirScenarioEditorBin, dirRelease, release, verNumber);
+                    if (release.StartsWith ("win"))
+                        Building.Pack (Variables.PackageType.Zip, progVar, dirSimulatorBin, dirScenarioEditorBin, dirRelease, release, verNumber);
+                    else
+                        Building.Pack (Variables.PackageType.Tar, progVar, dirSimulatorBin, dirScenarioEditorBin, dirRelease, release, verNumber);
                 }
             }
 

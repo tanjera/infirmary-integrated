@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -78,7 +79,10 @@ namespace IISIM {
             if (Instance.Start_Args?.Length > 0)
                 await LoadOpen (Instance.Start_Args [0]);
 
-            await SetParameterStatus (Instance.Settings.AutoApplyChanges);
+            if (Instance?.AudioLib is null)
+                await MessageAudioUnavailable ();
+
+            await SetParameterStatus (Instance?.Settings.AutoApplyChanges ?? false);
         }
 
         private async Task InitInitialRun () {
@@ -317,7 +321,7 @@ namespace IISIM {
         }
 
         private Task InitPatientEvents () {
-            if (Instance is null)
+            if (Instance?.Patient is null)
                 return Task.CompletedTask;
 
             /* Tie the Patient's Timer to the Main Timer */
@@ -340,7 +344,7 @@ namespace IISIM {
         }
 
         private async Task UnloadPatientEvents () {
-            if (Instance is null)
+            if (Instance?.Patient is null)
                 return;
 
             /* Unloading the Patient from the Main Timer also stops all the Patient's Timers
@@ -445,6 +449,23 @@ namespace IISIM {
                 Instance.Patient.PatientEvent += Instance.Device_EFM.OnPatientEvent;
 
             return Task.CompletedTask;
+        }
+
+        private async Task MessageAudioUnavailable () {
+            if (Instance is null)
+                return;
+
+            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                this.Show ();
+
+            DialogMessage dlg = new (Instance) {
+                Message = Instance.Language.Localize ("MESSAGE:AudioUnavailableMessage"),
+                Title = Instance.Language.Localize ("MESSAGE:AudioUnavailableTitle"),
+                Indicator = DialogMessage.Indicators.InfirmaryIntegrated,
+                Option = DialogMessage.Options.OK,
+            };
+
+            await dlg.AsyncShow (this);
         }
 
         private async Task DialogEULA () {

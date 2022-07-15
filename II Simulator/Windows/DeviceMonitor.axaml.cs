@@ -38,7 +38,7 @@ namespace IISIM {
         private Alarm.Priorities? AlarmActive;
         private List<Alarm> AlarmRefs = new ();
         private MediaPlayer? AlarmPlayer;
-        private List<StreamMediaInput> AlarmMedia;
+        private List<StreamMediaInput>? AlarmMedia;
 
         public DeviceMonitor () {
             InitializeComponent ();
@@ -58,9 +58,11 @@ namespace IISIM {
             OnLayoutChange ();
         }
 
-        ~DeviceMonitor () {
+        public override void OnClosing (object? sender, CancelEventArgs e) {
+            base.OnClosing (sender, e);
+
             AlarmTimer?.Dispose ();
-            AlarmPlayer?.Dispose ();
+            DisposeAudio ();
         }
 
         private void InitializeComponent () {
@@ -81,29 +83,39 @@ namespace IISIM {
             };
         }
 
-        private void InitTimers () {
+        private void DisposeAudio () {
+            /* Note: It's important to nullify objects after Disposing them because this function may
+             * be triggered multiple times (e.g. on Window.Close() and on Application.Exit()).
+             * Since LibVLC wraps a C++ library, nullifying and null checking prevents accessing
+             * released/reassigned memory blocks (a Memory Exception)
+             */
+
+            if (AlarmPlayer is not null) {
+                if (AlarmPlayer.IsPlaying)
+                    AlarmPlayer.Stop ();
+                AlarmPlayer.Dispose ();
+            }
+            AlarmPlayer = null;
+
+            if (AlarmMedia is not null) {
+                foreach (StreamMediaInput smi in AlarmMedia) {
+                    smi.Close ();
+                    smi.Dispose ();
+                }
+            }
+            AlarmMedia = null;
+        }
+
+        public override void InitTimers () {
             if (Instance is null)
                 return;
 
+            base.InitTimers ();                 // Init all other base Timers!
+
             Instance.Timer_Main.Elapsed += AlarmTimer.Process;
-            Instance.Timer_Main.Elapsed += TimerTracing.Process;
-            Instance.Timer_Main.Elapsed += TimerVitals_Cardiac.Process;
-            Instance.Timer_Main.Elapsed += TimerVitals_Respiratory.Process;
-
-            AlarmTimer.Set (2500);
-            TimerTracing.Set (Draw.RefreshTime);
-            TimerVitals_Cardiac.Set (3000);
-            TimerVitals_Respiratory.Set (5000);
-
             AlarmTimer.Tick += OnTick_Alarm;
-            TimerTracing.Tick += OnTick_Tracing;
-            TimerVitals_Cardiac.Tick += OnTick_Vitals_Cardiac;
-            TimerVitals_Respiratory.Tick += OnTick_Vitals_Respiratory;
-
+            AlarmTimer.Set (2500);
             AlarmTimer.Start ();
-            TimerTracing.Start ();
-            TimerVitals_Cardiac.Start ();
-            TimerVitals_Respiratory.Start ();
         }
 
         private void InitInterface () {
@@ -185,8 +197,15 @@ namespace IISIM {
         }
 
         public void SetAlarms (bool toEnable) {
-            foreach (Alarm a in Instance?.Scenario?.DeviceMonitor.Alarms ?? new List<Alarm> ())
+            foreach (Alarm a in Instance?.Scenario?.DeviceMonitor.Alarms ?? new List<Alarm> ()) {
                 a.Enabled = toEnable;
+
+                if (toEnable == false && a.Alarming == true)
+                    a.Alarming = false;
+            }
+
+            if (toEnable == false && (AlarmPlayer?.IsPlaying ?? false))
+                AlarmPlayer.Stop ();
         }
 
         public void SetColorScheme (Color.Schemes scheme) {
@@ -248,8 +267,14 @@ namespace IISIM {
             => SetColorScheme (Color.Schemes.Dark);
 
         private void OnTick_Alarm (object? sender, EventArgs e) {
-            if (AlarmPlayer is null || Instance?.AudioLib is null)
+            if (AlarmPlayer is null || Instance?.AudioLib is null || AlarmMedia is null)
                 return;
+
+            if (Instance.Settings.AudioEnabled == false) {
+                AlarmPlayer.Stop ();
+                AlarmActive = null;
+                return;
+            }
 
             AlarmRefs.Clear ();
 

@@ -58,20 +58,28 @@ namespace IISIM {
             Settings.Load ();                                           // Load config file
             Language = new (Settings.Language);                         // Load localization dictionary based on settings
 
-            AudioLib = new ();                                          // Init audio engine library
+            try {                                                       // try/catch in case LibVLC is not installed, fails, etc.
+                AudioLib = new ();                                      // Init audio engine library
+            } catch {
+                AudioLib = null;
+            }
         }
 
-        public override void OnFrameworkInitializationCompleted () {
+        public override async void OnFrameworkInitializationCompleted () {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
                 Window_Splash = new ();
                 Window_Main = new (this);
 
-                // Show the splash screen for 2 seconds, then swap out to the main window
+                /* Show the splash screen for 2 seconds, then swap out to the main window
+                 * Note: Still run through Window_Splash logic for testing, even if Task.Delay(0)
+                 */
                 desktop.MainWindow = Window_Splash;
                 Window_Splash.Show ();
 
-#if !DEBUG
+#if RELEASE     // Splash screen for 2 seconds for Release version
                 await Task.Delay (2000);
+#else           // Otherwise (Debug version) immediately close splash screen
+                await Task.Delay (0);
 #endif
 
                 Window_Splash.Hide ();
@@ -101,7 +109,7 @@ namespace IISIM {
 
             Window_Main?.Close ();
 
-            AudioLib.Dispose ();
+            AudioLib?.Dispose ();
         }
 
         public static Task MacOSRegisterLaunchServices () {
