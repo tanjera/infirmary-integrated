@@ -114,11 +114,22 @@ namespace Publishing {
             Console.ForegroundColor = ConsoleColor.Yellow;
 
             // Package the directories/files into a tarball or zip
+
+            string packName = "", packTitle = "", osName = "";
+
             Console.WriteLine ($"Packing build: {release}-{verNumber}");
-            string packName = "";
+
+            osName = release switch {
+                "win-x64" => "windows",
+                "linux-x64" => "linux",
+                "osx-x64" => "macos",
+                _ => ""
+            };
+
+            packTitle = $"infirmary-integrated-{verNumber}-{osName}";
 
             if (packType == Program.Variables.PackageType.Tar) {
-                packName = $"_{release}-{verNumber}.tar.gz";
+                packName = $"{packTitle}.tar.gz";
                 arguments = $"-czf {packName} \"Infirmary Integrated\"";
 
                 Console.WriteLine ($"- Executing tar {arguments}");
@@ -126,7 +137,7 @@ namespace Publishing {
                 proc.StartInfo.FileName = progVar.pathTar;
                 proc.StartInfo.Arguments = arguments;
             } else if (packType == Program.Variables.PackageType.Zip) {
-                packName = $"_{release}-{verNumber}.zip";
+                packName = $"{packTitle}.zip";
                 arguments = $"a -tzip {packName} \"Infirmary Integrated\"";
 
                 Console.WriteLine ($"- Executing 7z {arguments}");

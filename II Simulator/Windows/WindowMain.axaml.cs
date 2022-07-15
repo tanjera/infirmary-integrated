@@ -633,11 +633,6 @@ namespace IISIM {
                 this.FindControl<Border> ("brdScenarioPlayer").IsVisible = isScene;
                 this.FindControl<Expander> ("expScenarioPlayer").IsEnabled = isScene;
                 this.FindControl<Expander> ("expScenarioPlayer").IsExpanded = isScene;
-                this.FindControl<Expander> ("expVitalSigns").IsExpanded = !isScene;
-                this.FindControl<Expander> ("expHemodynamics").IsExpanded = !isScene;
-                this.FindControl<Expander> ("expRespiratoryProfile").IsExpanded = !isScene;
-                this.FindControl<Expander> ("expCardiacProfile").IsExpanded = !isScene;
-                this.FindControl<Expander> ("expObstetricProfile").IsExpanded = !isScene;
             });
 
             return Task.CompletedTask;

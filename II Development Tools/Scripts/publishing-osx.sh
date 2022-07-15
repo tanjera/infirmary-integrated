@@ -25,12 +25,16 @@ if ! command -v uuidgen &> /dev/null; then
     exit
 fi
 
-ZIPFILE=$( ls "$RELEASE_PATH/"_osx-x64*tar.gz )
+ZIPFILE=$( ls "$RELEASE_PATH/"infirmary-integrated-*-macos.tar.gz )
 
 if ! test -f "$ZIPFILE" ; then
-    echo "Error: _osx-x64.[version].tar.gz missing from Infirmary Integrated/Release publish folder"
+    echo "Error: infirmary-integrated-[version]-macos.tar.gz missing from Infirmary Integrated/Release publish folder"
     exit
 fi
+
+# ####
+# Define items necessary for creating .app directory structures
+# ####
 
 UUID=$(uuidgen)
 PROCESS_PATH="/tmp/$UUID"
@@ -49,6 +53,9 @@ SCENED_EXE_FILE="Infirmary Integrated Scenario Editor"
 
 DESTINATION_PATH="$SOLUTION_PATH/Release"
 
+# ####
+# Create .app directory structures
+# ####
 
 rm -rf "$PROCESS_PATH"
 mkdir "$PROCESS_PATH"
@@ -67,6 +74,10 @@ mkdir -p "$SCENED_APP_NAME/Contents"
 mkdir -p "$SCENED_APP_NAME/Contents/MacOS"
 mkdir -p "$SCENED_APP_NAME/Contents/Resources"
 
+# ####
+# Move MacOS-specific package files into .app structure
+# ####
+
 echo -e "Copying package contents\n"
 
 cp "$SIM_INFO_PLIST" "$SIM_APP_NAME/Contents/Info.plist"
@@ -75,6 +86,12 @@ cp "$SIM_ICON_PATH" "$SIM_APP_NAME/Contents/Resources/$SIM_ICON_FILE"
 cp "$SCENED_INFO_PLIST" "$SCENED_APP_NAME/Contents/Info.plist"
 cp "$SCENED_ICON_PATH" "$SCENED_APP_NAME/Contents/Resources/$SCENED_ICON_FILE"
 
+# ####
+# Move the Infirmary Integrated MacOS release build into the processing folder and extract
+# ####
+
+echo -e "Moving package for processing from $RELEASE_PATH\n"
+
 cp "$ZIPFILE" "$PROCESS_PATH"
 rm "$ZIPFILE"
 
@@ -82,35 +99,36 @@ echo -e "Extracting package contents\n"
 
 cd "$PROCESS_PATH"
 
-ZIPFILE=$( ls _osx-x64*tar.gz )
+ZIPFILE=$( ls infirmary-integrated-*-macos.tar.gz )
 tar -xzf "$ZIPFILE"
 rm "$ZIPFILE"
+
+# ####
+# Move the Infirmary Integrated into the MacOS .app directory structure
+# ####
 
 mv "$SIM_PUB_FOLDER"/* "$SIM_APP_NAME/Contents/MacOS"
 mv "$SCENED_PUB_FOLDER"/* "$SCENED_APP_NAME/Contents/MacOS"
 rmdir "$SIM_PUB_FOLDER"
 rmdir "$SCENED_PUB_FOLDER"
 
-echo -e "Settings permissions\n"
+echo -e "Setting permissions\n"
 
 chmod +x "$SIM_APP_NAME/Contents/MacOS/$SIM_EXE_FILE"
 chmod +x "$SCENED_APP_NAME/Contents/MacOS/$SCENED_EXE_FILE"
 
-len1=`echo $ZIPFILE | wc -c`
-len2=$(expr $len1 - 8)
-OUTNAME=$(echo $ZIPFILE | cut -c 1-$len2)
-VERSION=$(echo $OUTNAME | cut -c 10-)
+# ####
+# Pack the .app's into a tarball and move back to Release folder
+# ####
 
-
-OUTFILE="infirmary-integrated-$VERSION-macos.tar.gz"
-echo -e "Packaging tarball $OUTFILE\n"
+echo -e "Packaging tarball $ZIPFILE\n"
 
 rmdir "$BASE_PUB_FOLDER"
 
-tar -czf "$OUTFILE" *
+tar -czf "$ZIPFILE" *
 
 echo -e "Moving package to $DESTINATION_PATH\n"
 
-cp -a "$OUTFILE" "$DESTINATION_PATH"
+cp -a "$ZIPFILE" "$DESTINATION_PATH"
 
 echo -e "Packaging complete!\n"

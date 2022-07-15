@@ -28,10 +28,10 @@ if ! command -v uuidgen &> /dev/null; then
     exit
 fi
 
-ZIPFILE=$( ls "$RELEASE_PATH/"_linux-x64*tar.gz )
+ZIPFILE=$( ls "$RELEASE_PATH/"infirmary-integrated-*-linux.tar.gz )
 
 if ! test -f "$ZIPFILE" ; then
-    echo "Error: _linux-x64.[version].tar.gz missing from Infirmary Integrated/Release publish folder"
+    echo "Error: infirmary-integrated-[version].tar.gz missing from Infirmary Integrated/Release publish folder"
     exit
 fi
 
@@ -43,7 +43,7 @@ echo -e "Creating temp directory $PROCESS_PATH\n"
 
 mkdir "$PROCESS_PATH"
 
-echo -e "Copying package from $RELEASE_PATH\n"
+echo -e "Moving package for processing from $RELEASE_PATH\n"
 
 cp "$ZIPFILE" "$PROCESS_PATH"
 rm "$ZIPFILE"
@@ -52,32 +52,31 @@ echo -e "Extracting package and setting file permissions\n"
 
 cd "$PROCESS_PATH"
 
-ZIPFILE=$( ls _linux-x64*tar.gz )
+ZIPFILE=$( ls infirmary-integrated-*-linux.tar.gz )
 tar -xzf "$ZIPFILE"
 rm "$ZIPFILE"
 chmod +x "$PUB_SIMEXE"
 chmod +x "$PUB_SCENEDEXE"
 
-len1=`echo $ZIPFILE | wc -c`
-len2=$(expr $len1 - 8)
-OUTNAME=$(echo $ZIPFILE | cut -c 1-$len2)
-VERSION=$(echo $OUTNAME | cut -c 12-)
-
 # ####
 # Package into .tar.gz
 # ####
 
-OUTFILE="infirmary-integrated-$VERSION-linux.tar.gz"
-
-echo -e "Rebuilding package to $OUTFILE\n"
-tar -czf "$OUTFILE" "$PUB_FOLDER"
+echo -e "Rebuilding package to $ZIPFILE\n"
+tar -czf "$ZIPFILE" "$PUB_FOLDER"
 
 echo -e "Moving package to $RELEASE_PATH\n"
-mv "$OUTFILE" "$RELEASE_PATH"
+mv "$ZIPFILE" "$RELEASE_PATH"
 
 # ####
 # Package into .deb
 # ####
+
+
+len1=`echo $ZIPFILE | wc -c`
+len2=$(expr $len1 - 13)
+PACKPREFIX=$(echo $ZIPFILE | cut -c 1-$len2)
+VERSION=$(echo $ZIPFILE | cut -c 22-$( expr $len1 - 14 ))
 
 if ! command -v dpkg-deb &> /dev/null; 
 then
@@ -94,7 +93,7 @@ else
     echo -e "Packing .deb package\n"
     dpkg-deb --build "$DEB_FS" >> /dev/null
     
-    DEB_PACKAGE=$(printf "infirmary-integrated_%s_amd64.deb" $VERSION)    
+    DEB_PACKAGE=$(printf "%samd64.deb" $PACKPREFIX)    
 
     echo -e "Moving .deb package to $RELEASE_PATH/$DEB_PACKAGE\n"
     mv "$PROCESS_PATH/infirmary-integrated.deb" "$RELEASE_PATH/$DEB_PACKAGE"
