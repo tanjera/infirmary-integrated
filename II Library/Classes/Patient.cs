@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -965,9 +966,9 @@ namespace II {
                 await OnPatientEvent (PatientEventTypes.Pacermaker_Spike);
 
             if (Pacemaker_Energy >= Pacemaker_Threshold)
-                await timerPacemaker_Spike.ResetAuto (40);        // Adds an interval between the spike and the QRS complex
+                await timerPacemaker_Spike.ResetAuto (40);          // Adds an interval between the spike and the QRS complex
 
-            await StartPacemaker ();                          // In case pacemaker was paused... updates .Interval
+            await StartPacemaker ();                                // In case pacemaker was paused... updates .Interval
         }
 
         private async Task OnPacemaker_Spike () {
@@ -978,7 +979,9 @@ namespace II {
                 Cardiac_Rhythm.AberrantBeat = true;
                 await OnCardiac_Ventricular_Electric ();
                 Cardiac_Rhythm.AberrantBeat = false;
-                await timerCardiac_Baseline.ResetAuto ();
+
+                await OnPatientEvent (PatientEventTypes.Cardiac_Baseline);  // Triggers drawing isoelectric lines (important for a-fib/flutter)
+                await timerCardiac_Baseline.ResetAuto ();                   // Resets heart's intrinsic timer, allows pacemaker overdrive modeling
             }
         }
 

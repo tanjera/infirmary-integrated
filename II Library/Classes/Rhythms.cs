@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 using II.Waveform;
 
@@ -67,7 +68,17 @@ namespace II {
 
         public bool CanBe_Paced {
             get {
-                return HasPulse_Ventricular;
+                switch (Value) {
+                    // This is unrealistic, but fits the modeling
+                    case Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
+                    case Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
+                        return true;
+
+                    case Values.CPR_Artifact:
+                        return false;
+
+                    default: return HasPulse_Ventricular;
+                }
             }
         }
 

@@ -16,7 +16,6 @@ using II.Rhythm;
 using II.Drawing;
 
 namespace II.Waveform {
-
     public static class Draw {
         public const int ResolutionTime = 10;           // Tracing resolution milliseconds per drawing point
         public const int RefreshTime = 17;              // Tracing draw refresh time in milliseconds (60 fps = ~17ms)
@@ -228,11 +227,12 @@ namespace II.Waveform {
             if (_P is null || _L is null)
                 return new ();
 
-            int Flutters = (int)System.Math.Ceiling (_P.GetHR_Seconds / 0.16d);
+            int Flutters = (int)Math.Clamp (System.Math.Ceiling (60 / _P.GetHR_Seconds * 4), 3, 6);
+            double lengthFlutter = _P.GetHR_Seconds / Flutters;
 
             List<PointD> thisBeat = new ();
             for (int i = 1; i < Flutters; i++)
-                thisBeat = Plotting.Concatenate (thisBeat, ECG_P (_P, _L, 0.16d, .08d, 0d, Plotting.Last (thisBeat)));
+                thisBeat = Plotting.Concatenate (thisBeat, ECG_P (_P, _L, lengthFlutter, .08d, 0d, Plotting.Last (thisBeat)));
             return thisBeat;
         }
 

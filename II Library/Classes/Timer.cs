@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 
 namespace II {
-
     public class Timer {
         private int _Interval = 0;
         private bool _Locked = false;
@@ -80,6 +79,11 @@ namespace II {
 
         public async Task ResetAuto (float interval)
             => await ResetAuto ((int)interval);
+
+        public Task Trigger () {
+            Tick?.Invoke (this, new EventArgs ());
+            return Task.CompletedTask;
+        }
 
         public void Process () {
             if (!Running)

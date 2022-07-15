@@ -179,6 +179,7 @@ namespace IISIM {
                 this.FindControl<Label> ("lblParametersReset").Content = Instance.Language.Localize ("BUTTON:ResetParameters");
 
                 this.FindControl<CheckBox> ("chkAutoApplyChanges").IsChecked = Instance.Settings.AutoApplyChanges;
+                this.FindControl<Button> ("btnParametersReset").IsEnabled = !Instance.Settings.AutoApplyChanges;
 
                 List<ComboBoxItem> cardiacRhythms = new (),
                     respiratoryRhythms = new (),
@@ -300,24 +301,11 @@ namespace IISIM {
         }
 
         private async Task InitPatient () {
-            if (Instance?.Scenario != null)
+            if (Instance?.Scenario is not null)
                 Instance.Patient = Instance.Scenario.Patient;
 
             await InitPatientEvents ();
             await InitStep ();
-        }
-
-        private async Task RefreshPatient () {
-            if (Instance is null)
-                return;
-
-            await UnloadPatientEvents ();
-
-            if (Instance?.Patient != null)
-                await Instance.Patient.Dispose ();
-            Instance.Patient = new Patient ();
-
-            await InitPatient ();
         }
 
         private Task InitPatientEvents () {
@@ -1126,8 +1114,9 @@ namespace IISIM {
                     Instance.Language.Localize ("PE:ProgressionSeconds"));
         }
 
-        private async Task ResetPatientParameters () {
-            await RefreshPatient ();
+        private Task ResetPatientParameters () {
+            ForceUpdateFields (Instance?.Patient);
+            return Task.CompletedTask;
         }
 
         private async Task ApplyPatientParameters () {
@@ -1344,6 +1333,7 @@ namespace IISIM {
                 return;
 
             Instance.Settings.AutoApplyChanges = this.FindControl<CheckBox> ("chkAutoApplyChanges").IsChecked ?? true;
+            this.FindControl<Button> ("btnParametersReset").IsEnabled = !Instance.Settings.AutoApplyChanges;
             Instance.Settings.Save ();
 
             _ = SetParameterStatus (Instance.Settings.AutoApplyChanges);
