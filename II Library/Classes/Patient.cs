@@ -39,9 +39,11 @@ namespace II {
         public int Pacemaker_Threshold;            // Patient's threshold for electrical capture to pacemaker spike
 
         public bool Pulsus_Paradoxus = false,
-                    Pulsus_Alternans = false;
+                    Pulsus_Alternans = false,
+                    Electrical_Alternans = false;
 
         public Cardiac_Axes Cardiac_Axis = new ();
+        public double QRS_Interval, QTc_Interval;
         public double []? ST_Elevation, T_Elevation;
 
         /* Obstetric profile */
@@ -162,6 +164,73 @@ namespace II {
             }
         }
 
+        public Patient () {
+            Task.Run (async () => await UpdateParameters_Cardiac (
+                            // Basic cardiac vital signs
+                            80,
+                            120, 80, 95,
+                            98,
+                            38.0d,
+                            Cardiac_Rhythms.Values.Sinus_Rhythm,
+
+                            // Advanced hemodynamics
+                            6,
+                            120, 80, 95,
+                            6d,
+                            PulmonaryArtery_Rhythms.Values.Pulmonary_Artery,
+                            22, 12, 16,
+                            8,
+                            1,
+
+                            // Cardiac profile
+                            50,
+                            false, false, false,
+                            Cardiac_Axes.Values.Normal,
+                            0.08d, 0.4d,
+                            new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                            new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }
+                            ));
+
+            Task.Run (async () => await UpdateParameters_Respiratory (
+                            16,
+                            Respiratory_Rhythms.Values.Regular,
+                            40,
+                            false,
+                            1d, 2d));
+
+            Task.Run (async () => await UpdateParameters_Obstetric (
+                            150,
+                            Scales.Intensity.Values.Mild,
+                            new List<FHRAccelDecels.Values> (),
+                            300,
+                            60,
+                            Scales.Intensity.Values.Moderate));
+
+            Task.Run (async () => await InitTimers ());
+            Task.Run (async () => await ResetStartTimers ());
+        }
+
+        ~Patient () => Task.Run (async () => await Dispose ());
+
+        public async Task Dispose () {
+            await UnsubscribePatientEvent ();
+
+            timerCardiac_Baseline.Dispose ();
+            timerCardiac_Atrial_Electric.Dispose ();
+            timerCardiac_Ventricular_Electric.Dispose ();
+            timerCardiac_Atrial_Mechanical.Dispose ();
+            timerCardiac_Ventricular_Mechanical.Dispose ();
+            timerIABP_Balloon_Trigger.Dispose ();
+            timerDefibrillation.Dispose ();
+            timerPacemaker_Baseline.Dispose ();
+            timerPacemaker_Spike.Dispose ();
+            timerRespiratory_Baseline.Dispose ();
+            timerRespiratory_Inspiration.Dispose ();
+            timerRespiratory_Expiration.Dispose ();
+            timerObstetric_Baseline.Dispose ();
+            timerObstetric_Contraction.Dispose ();
+        }
+
         public int HR {
             get { return VS_Actual.HR; }
             set { VS_Settings.HR = value; }
@@ -262,70 +331,71 @@ namespace II {
             set { VS_Settings.RR_IE_E = value; }
         }
 
-        public Patient () {
-            Task.Run (async () => await UpdateParameters_Cardiac (
-                            // Basic cardiac vital signs
-                            80,
-                            120, 80, 95,
-                            98,
-                            38.0d,
-                            Cardiac_Rhythms.Values.Sinus_Rhythm,
+        /* Methods for counting, calculating, and measuring vital signs, timing re: vital signs, etc. */
 
-                            // Advanced hemodynamics
-                            6,
-                            120, 80, 95,
-                            6d,
-                            PulmonaryArtery_Rhythms.Values.Pulmonary_Artery,
-                            22, 12, 16,
-                            8,
-                            1,
-
-                            // Cardiac profile
-                            50,
-                            false, false,
-                            Cardiac_Axes.Values.Normal,
-                            new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d },
-                            new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }
-                            ));
-
-            Task.Run (async () => await UpdateParameters_Respiratory (
-                            16,
-                            Respiratory_Rhythms.Values.Regular,
-                            40,
-                            false,
-                            1d, 2d));
-
-            Task.Run (async () => await UpdateParameters_Obstetric (
-                            150,
-                            Scales.Intensity.Values.Mild,
-                            new List<FHRAccelDecels.Values> (),
-                            300,
-                            60,
-                            Scales.Intensity.Values.Moderate));
-
-            Task.Run (async () => await InitTimers ());
-            Task.Run (async () => await ResetStartTimers ());
+        public static int CalculateMAP (int sbp, int dbp) {
+            return dbp + ((sbp - dbp) / 3);
         }
 
-        ~Patient () => Task.Run (async () => await Dispose ());
+        public static int CalculateCPP (int? icp, int? map) {
+            if (icp is null || map is null)
+                return 0;
 
-        public async Task Dispose () {
-            await UnsubscribePatientEvent ();
+            return (int)(map - icp);
+        }
 
-            timerCardiac_Baseline.Dispose ();
-            timerCardiac_Atrial_Electric.Dispose ();
-            timerCardiac_Ventricular_Electric.Dispose ();
-            timerCardiac_Atrial_Mechanical.Dispose ();
-            timerCardiac_Ventricular_Mechanical.Dispose ();
-            timerIABP_Balloon_Trigger.Dispose ();
-            timerDefibrillation.Dispose ();
-            timerPacemaker_Baseline.Dispose ();
-            timerPacemaker_Spike.Dispose ();
-            timerRespiratory_Baseline.Dispose ();
-            timerRespiratory_Inspiration.Dispose ();
-            timerRespiratory_Expiration.Dispose ();
-            timerObstetric_Baseline.Dispose ();
-            timerObstetric_Contraction.Dispose ();
+        public double GetHR_Seconds { get { return 60d / System.Math.Max (1, VS_Actual.HR); } }
+        public double GetRR_Seconds { get { return 60d / System.Math.Max (1, VS_Actual.RR); } }
+        public double GetRR_Seconds_I { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_I; } }
+        public double GetRR_Seconds_E { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_E; } }
+        public double GetPulsatility_Seconds { get { return System.Math.Min (GetHR_Seconds * 0.75d, 0.75d); } }
+
+        // Using Fridericia Formula for QT <-> QTc calculation
+        public double GetQTInterval { get { return System.Math.Pow ((60d / System.Math.Max (1, VS_Actual.HR)), (1 / 3)) * QTc_Interval; } }
+
+        public double GetSTInterval { get { return GetQTInterval - QRS_Interval; } }
+        public double GetSTSegment { get { return GetSTInterval * (1d / 3d); } }
+        public double GetTInterval { get { return GetSTInterval * (2d / 3d); } }
+
+        public int MeasureHR_ECG (double lengthSeconds, double offsetSeconds)
+            => MeasureHR (lengthSeconds, offsetSeconds, false);
+
+        public int MeasureHR_SPO2 (double lengthSeconds, double offsetSeconds)
+            => MeasureHR (lengthSeconds, offsetSeconds, true);
+
+        public int MeasureHR (double lengthSeconds, double offsetSeconds, bool isPulse = false) {
+            _ = Task.Run (async () => { await CleanListPatientEvents (); });
+
+            if (isPulse && !Cardiac_Rhythm.HasPulse_Ventricular)
+                return 0;
+
+            int counter = 0;
+
+            lock (lockListPatientEvents) {
+                foreach (PatientEventArgs ea in ListPatientEvents)
+                    if (ea.EventType == PatientEventTypes.Cardiac_Ventricular_Electric
+                        && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-(lengthSeconds + offsetSeconds))) >= 0
+                        && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-offsetSeconds)) <= 0)
+                        counter++;
+            }
+
+            return (int)(counter / (lengthSeconds / 60d));
+        }
+
+        public int MeasureRR (double lengthSeconds, double offsetSeconds) {
+            _ = Task.Run (async () => { await CleanListPatientEvents (); });
+
+            int counter = 0;
+
+            lock (lockListPatientEvents) {
+                foreach (PatientEventArgs ea in ListPatientEvents)
+                    if (ea.EventType == PatientEventTypes.Respiratory_Inspiration
+                        && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-(lengthSeconds + offsetSeconds))) >= 0
+                        && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-offsetSeconds)) <= 0)
+                        counter++;
+            }
+
+            return (int)(counter / (lengthSeconds / 60));
         }
 
         public async Task Activate () {
@@ -410,66 +480,6 @@ namespace II {
             return Task.CompletedTask;
         }
 
-        /* Methods for counting, calculating, and measuring vital signs, timing re: vital signs, etc. */
-
-        public static int CalculateMAP (int sbp, int dbp) {
-            return dbp + ((sbp - dbp) / 3);
-        }
-
-        public static int CalculateCPP (int? icp, int? map) {
-            if (icp is null || map is null)
-                return 0;
-
-            return (int)(map - icp);
-        }
-
-        public double GetHR_Seconds { get { return 60d / System.Math.Max (1, VS_Actual.HR); } }
-        public double GetRR_Seconds { get { return 60d / System.Math.Max (1, VS_Actual.RR); } }
-        public double GetRR_Seconds_I { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_I; } }
-        public double GetRR_Seconds_E { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_E; } }
-        public double GetPulsatility_Seconds { get { return System.Math.Min (GetHR_Seconds * 0.75d, 0.75d); } }
-
-        public int MeasureHR_ECG (double lengthSeconds, double offsetSeconds)
-            => MeasureHR (lengthSeconds, offsetSeconds, false);
-
-        public int MeasureHR_SPO2 (double lengthSeconds, double offsetSeconds)
-            => MeasureHR (lengthSeconds, offsetSeconds, true);
-
-        public int MeasureHR (double lengthSeconds, double offsetSeconds, bool isPulse = false) {
-            _ = Task.Run (async () => { await CleanListPatientEvents (); });
-
-            if (isPulse && !Cardiac_Rhythm.HasPulse_Ventricular)
-                return 0;
-
-            int counter = 0;
-
-            lock (lockListPatientEvents) {
-                foreach (PatientEventArgs ea in ListPatientEvents)
-                    if (ea.EventType == PatientEventTypes.Cardiac_Ventricular_Electric
-                        && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-(lengthSeconds + offsetSeconds))) >= 0
-                        && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-offsetSeconds)) <= 0)
-                        counter++;
-            }
-
-            return (int)(counter / (lengthSeconds / 60d));
-        }
-
-        public int MeasureRR (double lengthSeconds, double offsetSeconds) {
-            _ = Task.Run (async () => { await CleanListPatientEvents (); });
-
-            int counter = 0;
-
-            lock (lockListPatientEvents) {
-                foreach (PatientEventArgs ea in ListPatientEvents)
-                    if (ea.EventType == PatientEventTypes.Respiratory_Inspiration
-                        && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-(lengthSeconds + offsetSeconds))) >= 0
-                        && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-offsetSeconds)) <= 0)
-                        counter++;
-            }
-
-            return (int)(counter / (lengthSeconds / 60));
-        }
-
         /* Process all timers for patient modeling */
 
         public void ProcessTimers (object? sender, EventArgs e) {
@@ -548,19 +558,22 @@ namespace II {
 
                             // Cardiac profile
                             case "Pacemaker_Threshold": Pacemaker_Threshold = int.Parse (pValue); break;
-                            case "PulsusParadoxus": Pulsus_Paradoxus = bool.Parse (pValue); break;
-                            case "PulsusAlternans": Pulsus_Alternans = bool.Parse (pValue); break;
+                            case "Pulsus_Paradoxus": Pulsus_Paradoxus = bool.Parse (pValue); break;
+                            case "Pulsus_Alternans": Pulsus_Alternans = bool.Parse (pValue); break;
+                            case "Electrical_Alternans": Electrical_Alternans = bool.Parse (pValue); break;
                             case "Cardiac_Axis": Cardiac_Axis.Value = (Cardiac_Axes.Values)Enum.Parse (typeof (Cardiac_Axes.Values), pValue); break;
+                            case "QRS_Interval": QRS_Interval = double.Parse (pValue); break;
+                            case "QTc_Interval": QTc_Interval = double.Parse (pValue); break;
 
                             case "ST_Elevation":
                                 string [] e_st = pValue.Split (',').Where ((o) => o != "").ToArray ();
-                                for (int i = 0; i < e_st.Length && i < ST_Elevation.Length; i++)
+                                for (int i = 0; i < e_st.Length && i < ST_Elevation?.Length; i++)
                                     ST_Elevation [i] = double.Parse (e_st [i]);
                                 break;
 
                             case "T_Elevation":
                                 string [] e_t = pValue.Split (',').Where ((o) => o != "").ToArray ();
-                                for (int i = 0; i < e_t.Length && i < T_Elevation.Length; i++)
+                                for (int i = 0; i < e_t.Length && i < T_Elevation?.Length; i++)
                                     T_Elevation [i] = double.Parse (e_t [i]);
                                 break;
 
@@ -655,9 +668,12 @@ namespace II {
 
             // Cardiac profile
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Pacemaker_Threshold", Pacemaker_Threshold));
-            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "PulsusParadoxus", Pulsus_Paradoxus));
-            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "PulsusAlternans", Pulsus_Alternans));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Pulsus_Paradoxus", Pulsus_Paradoxus));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Pulsus_Alternans", Pulsus_Alternans));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Electrical_Alternans", Electrical_Alternans));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Cardiac_Axis", Cardiac_Axis.Value));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "QRS_Interval", QRS_Interval));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "QTc_Interval", QTc_Interval));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ST_Elevation", string.Join (",", ST_Elevation ?? new double [12])));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "T_Elevation", string.Join (",", T_Elevation ?? new double [12])));
 
@@ -707,8 +723,9 @@ namespace II {
 
                     // Cardiac profile
                     int pacer_threshold,
-                    bool puls_paradoxus, bool puls_alternans,
+                    bool puls_paradoxus, bool puls_alternans, bool elec_alternans,
                     Cardiac_Axes.Values card_axis,
+                    double qrs_int, double qtc_int,
                     double []? st_elev, double []? t_elev) {
             await UpdateParametersSilent_Cardiac (
                 hr,
@@ -725,8 +742,9 @@ namespace II {
                 icp, iap,
 
                 pacer_threshold,
-                puls_paradoxus, puls_alternans,
+                puls_paradoxus, puls_alternans, elec_alternans,
                 card_axis,
+                qrs_int, qtc_int,
                 st_elev, t_elev);
 
             await OnCardiac_Baseline ();
@@ -751,8 +769,9 @@ namespace II {
 
                 // Cardiac profile
                 int pacer_threshold,
-                bool puls_paradoxus, bool puls_alternans,
+                bool puls_paradoxus, bool puls_alternans, bool elec_alternans,
                 Cardiac_Axes.Values card_axis,
+                double qrs_int, double qtc_int,
                 double []? st_elev, double []? t_elev) {
             Updated = DateTime.UtcNow;
 
@@ -798,6 +817,10 @@ namespace II {
             switchParadoxus = false;
             Pulsus_Paradoxus = puls_paradoxus;
             Pulsus_Alternans = puls_alternans;
+            Electrical_Alternans = elec_alternans;
+
+            QRS_Interval = qrs_int;
+            QTc_Interval = qtc_int;
 
             Cardiac_Axis.Value = card_axis;
             ST_Elevation = st_elev;
@@ -1312,8 +1335,8 @@ namespace II {
             if (Cardiac_Rhythm.HasPulse_Ventricular)
                 await timerCardiac_Ventricular_Mechanical.ResetStart (Default_Electromechanical_Delay);
 
-            /* Flip the switch on pulsus alternans */
-            Cardiac_Rhythm.AlternansBeat = Pulsus_Alternans && !Cardiac_Rhythm.AlternansBeat;
+            /* Flip the switch on pulsus alternans or electrical alternans */
+            Cardiac_Rhythm.AlternansBeat = (Pulsus_Alternans || Electrical_Alternans) && !Cardiac_Rhythm.AlternansBeat;
 
             await timerCardiac_Ventricular_Electric.Stop ();
         }
@@ -1329,6 +1352,18 @@ namespace II {
 
             if (IABP_Active)
                 await timerIABP_Balloon_Trigger.ResetStart ((int)(GetHR_Seconds * 1000d * 0.35d));
+
+            if (Pulsus_Alternans) {
+                VS_Actual.ASBP += Cardiac_Rhythm.AlternansBeat ? (int)(VS_Settings.ASBP * 0.15d) : -(int)(VS_Settings.ASBP * 0.15d);
+                VS_Actual.ADBP += Cardiac_Rhythm.AlternansBeat ? (int)(VS_Settings.ADBP * 0.15d) : -(int)(VS_Settings.ADBP * 0.15d);
+                VS_Actual.AMAP += Cardiac_Rhythm.AlternansBeat ? (int)(VS_Settings.AMAP * 0.15d) : -(int)(VS_Settings.AMAP * 0.15d);
+                IABP_AP += Cardiac_Rhythm.AlternansBeat ? -(int)(VS_Settings.ASBP * 0.05d) : (int)(VS_Settings.ASBP * 0.05d);
+
+                VS_Actual.CVP += Cardiac_Rhythm.AlternansBeat ? -(int)(VS_Settings.CVP * 0.15d) : (int)(VS_Settings.CVP * 0.15d);
+                VS_Actual.PSP += Cardiac_Rhythm.AlternansBeat ? (int)(VS_Settings.PSP * 0.15d) : -(int)(VS_Settings.PSP * 0.15d);
+                VS_Actual.PDP += Cardiac_Rhythm.AlternansBeat ? (int)(VS_Settings.PDP * 0.15d) : -(int)(VS_Settings.PDP * 0.15d);
+                VS_Actual.PMP += Cardiac_Rhythm.AlternansBeat ? (int)(VS_Settings.PMP * 0.15d) : -(int)(VS_Settings.PMP * 0.15d);
+            }
 
             await timerCardiac_Ventricular_Mechanical.Stop ();
         }
@@ -1416,13 +1451,17 @@ namespace II {
             if (Pulsus_Paradoxus && Respiratory_Rhythm.Value != Respiratory_Rhythms.Values.Apnea
                 && (Mechanically_Ventilated || switchParadoxus)) {
                 switchParadoxus = true;
-                VS_Actual.ASBP += Mechanically_Ventilated
-                    ? -(int)(VS_Settings.ASBP * 0.15d)
-                    : (int)(VS_Settings.ASBP * 0.15d);
-                IABP_AP += Mechanically_Ventilated
-                    ? -(int)(VS_Settings.ASBP * 0.05d)
-                    : (int)(VS_Settings.ASBP * 0.05d);
+                VS_Actual.ASBP += Mechanically_Ventilated ? -(int)(VS_Settings.ASBP * 0.15d) : (int)(VS_Settings.ASBP * 0.15d);
+                VS_Actual.ADBP += Mechanically_Ventilated ? -(int)(VS_Settings.ADBP * 0.15d) : (int)(VS_Settings.ADBP * 0.15d);
+                VS_Actual.AMAP += Mechanically_Ventilated ? -(int)(VS_Settings.AMAP * 0.15d) : (int)(VS_Settings.AMAP * 0.15d);
+                IABP_AP += Mechanically_Ventilated ? -(int)(VS_Settings.ASBP * 0.05d) : (int)(VS_Settings.ASBP * 0.05d);
             }
+
+            // Process pressure responses to increased intrathoracic pressure
+            VS_Actual.CVP += Mechanically_Ventilated ? (int)(VS_Settings.CVP * 0.1d) : -(int)(VS_Settings.CVP * 0.1d);
+            VS_Actual.PSP += Mechanically_Ventilated ? -(int)(VS_Settings.PSP * 0.1d) : (int)(VS_Settings.PSP * 0.1d);
+            VS_Actual.PDP += Mechanically_Ventilated ? -(int)(VS_Settings.PDP * 0.1d) : (int)(VS_Settings.PDP * 0.1d);
+            VS_Actual.PMP += Mechanically_Ventilated ? -(int)(VS_Settings.PMP * 0.1d) : (int)(VS_Settings.PMP * 0.1d);
 
             switch (Respiratory_Rhythm.Value) {
                 default:
@@ -1450,13 +1489,17 @@ namespace II {
             if (Pulsus_Paradoxus && Respiratory_Rhythm.Value != Respiratory_Rhythms.Values.Apnea
                 && (!Mechanically_Ventilated || switchParadoxus)) {
                 switchParadoxus = true;
-                VS_Actual.ASBP += Mechanically_Ventilated
-                    ? (int)(VS_Settings.ASBP * 0.15d)
-                    : -(int)(VS_Settings.ASBP * 0.15d);
-                IABP_AP += Mechanically_Ventilated
-                    ? (int)(VS_Settings.ASBP * 0.05d)
-                    : -(int)(VS_Settings.ASBP * 0.05d);
+                VS_Actual.ASBP += Mechanically_Ventilated ? (int)(VS_Settings.ASBP * 0.15d) : -(int)(VS_Settings.ASBP * 0.15d);
+                VS_Actual.ADBP += Mechanically_Ventilated ? (int)(VS_Settings.ADBP * 0.15d) : -(int)(VS_Settings.ADBP * 0.15d);
+                VS_Actual.AMAP += Mechanically_Ventilated ? (int)(VS_Settings.AMAP * 0.15d) : -(int)(VS_Settings.AMAP * 0.15d);
+                IABP_AP += Mechanically_Ventilated ? (int)(VS_Settings.ASBP * 0.05d) : -(int)(VS_Settings.ASBP * 0.05d);
             }
+
+            // Process pressure responses to increased intrathoracic pressure
+            VS_Actual.CVP += Mechanically_Ventilated ? -(int)(VS_Settings.CVP * 0.1d) : (int)(VS_Settings.CVP * 0.1d);
+            VS_Actual.PSP += Mechanically_Ventilated ? (int)(VS_Settings.PSP * 0.1d) : -(int)(VS_Settings.PSP * 0.1d);
+            VS_Actual.PDP += Mechanically_Ventilated ? (int)(VS_Settings.PDP * 0.1d) : -(int)(VS_Settings.PDP * 0.1d);
+            VS_Actual.PMP += Mechanically_Ventilated ? (int)(VS_Settings.PMP * 0.1d) : -(int)(VS_Settings.PMP * 0.1d);
         }
 
         private async Task OnObstetric_Baseline () {

@@ -15,6 +15,7 @@ namespace IISE.Controls {
         public enum Keys {
             PulsusParadoxus,
             PulsusAlternans,
+            ElectricalAlternans,
             MechanicallyVentilated,
 
             MonitorIsEnabled,
@@ -51,6 +52,7 @@ namespace IISE.Controls {
                 default: break;
                 case Keys.PulsusParadoxus: chkValue.Content = "Pulsus Paradoxus"; break;
                 case Keys.PulsusAlternans: chkValue.Content = "Pulsus Alternans"; break;
+                case Keys.ElectricalAlternans: chkValue.Content = "Electrical Alternans"; break;
                 case Keys.MechanicallyVentilated: chkValue.Content = "Mechanically ventilated?"; break;
 
                 case Keys.MonitorIsEnabled: chkValue.Content = "Enable Cardiac Monitor?"; break;

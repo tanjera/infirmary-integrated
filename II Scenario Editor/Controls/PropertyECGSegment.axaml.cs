@@ -88,7 +88,10 @@ namespace IISE.Controls {
             return Task.CompletedTask;
         }
 
-        public Task Set (double [] values) {
+        public Task Set (double []? values) {
+            if (values is null || values.Length != 12)
+                return Task.CompletedTask;
+
             NumericUpDown dblI = this.FindControl<NumericUpDown> ("dblI");
             NumericUpDown dblII = this.FindControl<NumericUpDown> ("dblII");
             NumericUpDown dblIII = this.FindControl<NumericUpDown> ("dblIII");

@@ -149,7 +149,10 @@
             <iic:PropertyInt x:Name="pintPacemakerThreshold" />
             <iic:PropertyCheck x:Name="pchkPulsusParadoxus" />
             <iic:PropertyCheck x:Name="pchkPulsusAlternans" />
+            <iic:PropertyCheck x:Name="pchkElectricalAlternans" />
             <iic:PropertyEnum x:Name="penmCardiacAxis" />
+            <iic:PropertyDouble x:Name="pdblQRSInterval" />
+            <iic:PropertyDouble x:Name="pdblQTcInterval" />
             <iic:PropertyECGSegment x:Name="pecgSTSegment" />
             <iic:PropertyECGSegment x:Name="pecgTWave" />
           </StackPanel>

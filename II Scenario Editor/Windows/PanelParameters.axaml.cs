@@ -87,9 +87,12 @@ namespace IISE.Windows {
             PropertyCheck pchkMechanicallyVentilated = this.FindControl<PropertyCheck> ("pchkMechanicallyVentilated");
             PropertyCheck pchkPulsusParadoxus = this.FindControl<PropertyCheck> ("pchkPulsusParadoxus");
             PropertyCheck pchkPulsusAlternans = this.FindControl<PropertyCheck> ("pchkPulsusAlternans");
+            PropertyCheck pchkElectricalAlternans = this.FindControl<PropertyCheck> ("pchkElectricalAlternans");
 
             PropertyDouble pdblT = this.FindControl<PropertyDouble> ("pdblT");
             PropertyDouble pdblCO = this.FindControl<PropertyDouble> ("pdblCO");
+            PropertyDouble pdblQRSInterval = this.FindControl<PropertyDouble> ("pdblQRSInterval");
+            PropertyDouble pdblQTcInterval = this.FindControl<PropertyDouble> ("pdblQTcInterval");
             PropertyDouble pdblInspiratoryRatio = this.FindControl<PropertyDouble> ("pdblInspiratoryRatio");
             PropertyDouble pdblExpiratoryRatio = this.FindControl<PropertyDouble> ("pdblExpiratoryRatio");
 
@@ -118,9 +121,12 @@ namespace IISE.Windows {
             pchkMechanicallyVentilated.Init (PropertyCheck.Keys.MechanicallyVentilated);
             pchkPulsusParadoxus.Init (PropertyCheck.Keys.PulsusParadoxus);
             pchkPulsusAlternans.Init (PropertyCheck.Keys.PulsusAlternans);
+            pchkElectricalAlternans.Init (PropertyCheck.Keys.ElectricalAlternans);
 
             pdblT.Init (PropertyDouble.Keys.T, 0.2, 0, 100);
             pdblCO.Init (PropertyDouble.Keys.CO, 0.1, 0, 20);
+            pdblQRSInterval.Init (PropertyDouble.Keys.QRSInterval, 0.02, 0.04, 0.4);
+            pdblQTcInterval.Init (PropertyDouble.Keys.QTcInterval, 0.02, 0.2, 0.8);
             pdblInspiratoryRatio.Init (PropertyDouble.Keys.RRInspiratoryRatio, 0.1, 0.1, 10);
             pdblExpiratoryRatio.Init (PropertyDouble.Keys.RRExpiratoryRatio, 0.1, 0.1, 10);
 
@@ -153,9 +159,12 @@ namespace IISE.Windows {
             pchkMechanicallyVentilated.PropertyChanged += UpdatePatient;
             pchkPulsusParadoxus.PropertyChanged += UpdatePatient;
             pchkPulsusAlternans.PropertyChanged += UpdatePatient;
+            pchkElectricalAlternans.PropertyChanged += UpdatePatient;
 
             pdblT.PropertyChanged += UpdatePatient;
             pdblCO.PropertyChanged += UpdatePatient;
+            pdblQRSInterval.PropertyChanged += UpdatePatient;
+            pdblQTcInterval.PropertyChanged += UpdatePatient;
             pdblInspiratoryRatio.PropertyChanged += UpdatePatient;
             pdblExpiratoryRatio.PropertyChanged += UpdatePatient;
 
@@ -205,6 +214,8 @@ namespace IISE.Windows {
                     default: break;
                     case PropertyDouble.Keys.T: Patient.T = e.Value ?? 0d; break;
                     case PropertyDouble.Keys.CO: Patient.CO = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.QRSInterval: Patient.QRS_Interval = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.QTcInterval: Patient.QTc_Interval = e.Value ?? 0d; break;
                     case PropertyDouble.Keys.RRInspiratoryRatio: Patient.RR_IE_I = e.Value ?? 0d; break;
                     case PropertyDouble.Keys.RRExpiratoryRatio: Patient.RR_IE_E = e.Value ?? 0d; break;
                 }
@@ -258,6 +269,7 @@ namespace IISE.Windows {
                     default: break;
                     case PropertyCheck.Keys.PulsusParadoxus: Patient.Pulsus_Paradoxus = e.Value; break;
                     case PropertyCheck.Keys.PulsusAlternans: Patient.Pulsus_Alternans = e.Value; break;
+                    case PropertyCheck.Keys.ElectricalAlternans: Patient.Electrical_Alternans = e.Value; break;
                     case PropertyCheck.Keys.MechanicallyVentilated: Patient.Mechanically_Ventilated = e.Value; break;
                 }
             }
@@ -291,6 +303,8 @@ namespace IISE.Windows {
             Patient.ADBP = (int)II.Math.Clamp ((double)Patient.VS_Settings.ADBP, v.DBPMin, v.DBPMax);
             Patient.PSP = (int)II.Math.Clamp ((double)Patient.VS_Settings.PSP, v.PSPMin, v.PSPMax);
             Patient.PDP = (int)II.Math.Clamp ((double)Patient.VS_Settings.PDP, v.PDPMin, v.PDPMax);
+            Patient.QRS_Interval = (double)II.Math.Clamp ((double)Patient.QRS_Interval, v.QRSIntervalMin, v.QRSIntervalMax);
+            Patient.QTc_Interval = (double)II.Math.Clamp ((double)Patient.QTc_Interval, v.QTCIntervalMin, v.QTCIntervalMax);
 
             _ = UpdateViewModel ();
         }
@@ -336,9 +350,12 @@ namespace IISE.Windows {
             PropertyCheck pchkMechanicallyVentilated = this.FindControl<PropertyCheck> ("pchkMechanicallyVentilated");
             PropertyCheck pchkPulsusParadoxus = this.FindControl<PropertyCheck> ("pchkPulsusParadoxus");
             PropertyCheck pchkPulsusAlternans = this.FindControl<PropertyCheck> ("pchkPulsusAlternans");
+            PropertyCheck pchkElectricalAlternans = this.FindControl<PropertyCheck> ("pchkElectricalAlternans");
 
             PropertyDouble pdblT = this.FindControl<PropertyDouble> ("pdblT");
             PropertyDouble pdblCO = this.FindControl<PropertyDouble> ("pdblCO");
+            PropertyDouble pdblQRSInterval = this.FindControl<PropertyDouble> ("pdblQRSInterval");
+            PropertyDouble pdblQTcInterval = this.FindControl<PropertyDouble> ("pdblQTcInterval");
             PropertyDouble pdblInspiratoryRatio = this.FindControl<PropertyDouble> ("pdblInspiratoryRatio");
             PropertyDouble pdblExpiratoryRatio = this.FindControl<PropertyDouble> ("pdblExpiratoryRatio");
 
@@ -371,9 +388,12 @@ namespace IISE.Windows {
             pchkMechanicallyVentilated.IsEnabled = (Patient != null);
             pchkPulsusParadoxus.IsEnabled = (Patient != null);
             pchkPulsusAlternans.IsEnabled = (Patient != null);
+            pchkElectricalAlternans.IsEnabled = (Patient != null);
 
             pdblT.IsEnabled = (Patient != null);
             pdblCO.IsEnabled = (Patient != null);
+            pdblQRSInterval.IsEnabled = (Patient != null);
+            pdblQTcInterval.IsEnabled = (Patient != null);
             pdblInspiratoryRatio.IsEnabled = (Patient != null);
             pdblExpiratoryRatio.IsEnabled = (Patient != null);
 
@@ -403,9 +423,12 @@ namespace IISE.Windows {
                 await pchkMechanicallyVentilated.Set (Patient.Mechanically_Ventilated);
                 await pchkPulsusParadoxus.Set (Patient.Pulsus_Paradoxus);
                 await pchkPulsusAlternans.Set (Patient.Pulsus_Alternans);
+                await pchkElectricalAlternans.Set (Patient.Electrical_Alternans);
 
                 await pdblT.Set (Patient.VS_Settings.T);
                 await pdblCO.Set (Patient.VS_Settings.CO);
+                await pdblQRSInterval.Set (Patient.QRS_Interval);
+                await pdblQTcInterval.Set (Patient.QTc_Interval);
                 await pdblInspiratoryRatio.Set (Patient.VS_Settings.RR_IE_I);
                 await pdblExpiratoryRatio.Set (Patient.VS_Settings.RR_IE_E);
 

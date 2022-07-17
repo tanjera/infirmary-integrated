@@ -174,6 +174,9 @@ namespace IISIM {
                 this.FindControl<Label> ("lblPacemakerCaptureThreshold").Content = $"{Instance.Language.Localize ("PE:PacemakerCaptureThreshold")}:";
                 this.FindControl<Label> ("lblPulsusParadoxus").Content = $"{Instance.Language.Localize ("PE:PulsusParadoxus")}:";
                 this.FindControl<Label> ("lblPulsusAlternans").Content = $"{Instance.Language.Localize ("PE:PulsusAlternans")}:";
+                this.FindControl<Label> ("lblElectricalAlternans").Content = $"{Instance.Language.Localize ("PE:ElectricalAlternans")}:";
+                this.FindControl<Label> ("lblQRSInterval").Content = $"{Instance.Language.Localize ("PE:QRSInterval")}:";
+                this.FindControl<Label> ("lblQTcInterval").Content = $"{Instance.Language.Localize ("PE:QTcInterval")}:";
                 this.FindControl<Label> ("lblCardiacAxis").Content = $"{Instance.Language.Localize ("PE:CardiacAxis")}:";
                 this.FindControl<HeaderedContentControl> ("grpSTSegmentElevation").Header = Instance.Language.Localize ("PE:STSegmentElevation");
                 this.FindControl<HeaderedContentControl> ("grpTWaveElevation").Header = Instance.Language.Localize ("PE:TWaveElevation");
@@ -197,7 +200,8 @@ namespace IISIM {
                     respiratoryRhythms = new (),
                     pulmonaryArteryRhythms = new (),
                     cardiacAxes = new (),
-                    intensityScale = new ();
+                    intensityFHRVariability = new (),
+                    intensityUterineContractions = new ();
                 List<ListBoxItem> fetalHeartRhythms = new ();
 
                 foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
@@ -228,12 +232,18 @@ namespace IISIM {
                 this.FindControl<ComboBox> ("comboCardiacAxis").Items = cardiacAxes;
 
                 foreach (Scales.Intensity.Values v in Enum.GetValues (typeof (Scales.Intensity.Values)))
-                    intensityScale.Add (new ComboBoxItem () {
+                    intensityFHRVariability.Add (new ComboBoxItem () {
                         Tag = v.ToString (),
                         Content = Instance.Language.Localize (Scales.Intensity.LookupString (v))
                     });
-                this.FindControl<ComboBox> ("comboFHRVariability").Items = intensityScale;
-                this.FindControl<ComboBox> ("comboUCIntensity").Items = intensityScale;
+                this.FindControl<ComboBox> ("comboFHRVariability").Items = intensityFHRVariability;
+
+                foreach (Scales.Intensity.Values v in Enum.GetValues (typeof (Scales.Intensity.Values)))
+                    intensityUterineContractions.Add (new ComboBoxItem () {
+                        Tag = v.ToString (),
+                        Content = Instance.Language.Localize (Scales.Intensity.LookupString (v))
+                    });
+                this.FindControl<ComboBox> ("comboUCIntensity").Items = intensityUterineContractions;
 
                 foreach (FHRAccelDecels.Values v in Enum.GetValues (typeof (FHRAccelDecels.Values)))
                     fetalHeartRhythms.Add (new ListBoxItem () {
@@ -1039,12 +1049,13 @@ namespace IISIM {
             => _ = UnloadPatientEvents ();
 
         private void OnStepChanged (object? sender, EventArgs e) {
-            Instance.Patient = Instance.Scenario?.Patient;
+            if (Instance?.Patient is not null)
+                Instance.Patient = Instance.Scenario?.Patient;
 
             _ = InitPatientEvents ();
             _ = InitStep ();
 
-            UpdateView (Instance.Patient);
+            UpdateView (Instance?.Patient);
         }
 
         private Task InitStep () {
@@ -1222,10 +1233,14 @@ namespace IISIM {
                 (int)(this.FindControl<NumericUpDown> ("numPacemakerCaptureThreshold")?.Value ?? 0),
                 this.FindControl<CheckBox> ("chkPulsusParadoxus").IsChecked ?? false,
                 this.FindControl<CheckBox> ("chkPulsusAlternans").IsChecked ?? false,
+                this.FindControl<CheckBox> ("chkElectricalAlternans").IsChecked ?? false,
 
                 (Cardiac_Axes.Values)(Enum.GetValues (typeof (Cardiac_Axes.Values)).GetValue (
                     comboCardiacAxis.SelectedIndex < 0 ? 0 : comboCardiacAxis.SelectedIndex)
                     ?? Cardiac_Axes.Values.Normal),
+
+                (double)(this.FindControl<NumericUpDown> ("numQRSInterval")?.Value ?? 0),
+                (double)(this.FindControl<NumericUpDown> ("numQTcInterval")?.Value ?? 0),
 
                 new double [] {
                     (double)(this.FindControl<NumericUpDown>("numSTE_I")?.Value ?? 0),
@@ -1310,8 +1325,10 @@ namespace IISIM {
                     ApplyBuffer.Pacemaker_Threshold,
                     ApplyBuffer.Pulsus_Paradoxus,
                     ApplyBuffer.Pulsus_Alternans,
+                    ApplyBuffer.Electrical_Alternans,
 
                     ApplyBuffer.Cardiac_Axis.Value,
+                    ApplyBuffer.QRS_Interval, ApplyBuffer.QTc_Interval,
                     ApplyBuffer.ST_Elevation, ApplyBuffer.T_Elevation);
             }
 
@@ -1395,7 +1412,11 @@ namespace IISIM {
                 this.FindControl<NumericUpDown> ("numPacemakerCaptureThreshold").Value = p.Pacemaker_Threshold;
                 this.FindControl<CheckBox> ("chkPulsusParadoxus").IsChecked = p.Pulsus_Paradoxus;
                 this.FindControl<CheckBox> ("chkPulsusAlternans").IsChecked = p.Pulsus_Alternans;
+                this.FindControl<CheckBox> ("chkElectricalAlternans").IsChecked = p.Electrical_Alternans;
                 this.FindControl<ComboBox> ("comboCardiacAxis").SelectedIndex = (int)p.Cardiac_Axis.Value;
+
+                this.FindControl<NumericUpDown> ("numQRSInterval").Value = p.QRS_Interval;
+                this.FindControl<NumericUpDown> ("numQTcInterval").Value = p.QTc_Interval;
 
                 if (p.ST_Elevation is not null) {
                     this.FindControl<NumericUpDown> ("numSTE_I").Value = (double)p.ST_Elevation [(int)Lead.Values.ECG_I];
@@ -1583,7 +1604,7 @@ namespace IISIM {
         }
 
         private void OnCardiacRhythm_Selected (object sender, SelectionChangedEventArgs e) {
-            if (!this.FindControl<CheckBox> ("checkDefaultVitals").IsChecked ?? false || Instance.Patient == null)
+            if (!this.FindControl<CheckBox> ("checkDefaultVitals").IsChecked ?? false || Instance?.Patient == null)
                 return;
 
             int si = this.FindControl<ComboBox> ("comboCardiacRhythm").SelectedIndex;
@@ -1594,16 +1615,18 @@ namespace IISIM {
             Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
                 (Cardiac_Rhythms.Values)(ev.GetValue (si) ?? Cardiac_Rhythms.Values.Sinus_Rhythm));
 
-            this.FindControl<NumericUpDown> ("numHR").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numHR")?.Value ?? 0), v.HRMin, v.HRMax);
-            this.FindControl<NumericUpDown> ("numNSBP").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numNSBP")?.Value ?? 0), v.SBPMin, v.SBPMax);
-            this.FindControl<NumericUpDown> ("numNDBP").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numNDBP")?.Value ?? 0), v.DBPMin, v.DBPMax);
-            this.FindControl<NumericUpDown> ("numRR").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numRR")?.Value ?? 0), v.RRMin, v.RRMax);
-            this.FindControl<NumericUpDown> ("numSPO2").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numSPO2")?.Value ?? 0), v.SPO2Min, v.SPO2Max);
-            this.FindControl<NumericUpDown> ("numETCO2").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numETCO2")?.Value ?? 0), v.ETCO2Min, v.ETCO2Max);
-            this.FindControl<NumericUpDown> ("numASBP").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numASBP")?.Value ?? 0), v.SBPMin, v.SBPMax);
-            this.FindControl<NumericUpDown> ("numADBP").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numADBP")?.Value ?? 0), v.DBPMin, v.DBPMax);
-            this.FindControl<NumericUpDown> ("numPSP").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numPSP")?.Value ?? 0), v.PSPMin, v.PSPMax);
-            this.FindControl<NumericUpDown> ("numPDP").Value = (int)global::II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numPDP")?.Value ?? 0), v.PDPMin, v.PDPMax);
+            this.FindControl<NumericUpDown> ("numHR").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numHR")?.Value ?? 0), v.HRMin, v.HRMax);
+            this.FindControl<NumericUpDown> ("numNSBP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numNSBP")?.Value ?? 0), v.SBPMin, v.SBPMax);
+            this.FindControl<NumericUpDown> ("numNDBP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numNDBP")?.Value ?? 0), v.DBPMin, v.DBPMax);
+            this.FindControl<NumericUpDown> ("numRR").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numRR")?.Value ?? 0), v.RRMin, v.RRMax);
+            this.FindControl<NumericUpDown> ("numSPO2").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numSPO2")?.Value ?? 0), v.SPO2Min, v.SPO2Max);
+            this.FindControl<NumericUpDown> ("numETCO2").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numETCO2")?.Value ?? 0), v.ETCO2Min, v.ETCO2Max);
+            this.FindControl<NumericUpDown> ("numASBP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numASBP")?.Value ?? 0), v.SBPMin, v.SBPMax);
+            this.FindControl<NumericUpDown> ("numADBP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numADBP")?.Value ?? 0), v.DBPMin, v.DBPMax);
+            this.FindControl<NumericUpDown> ("numPSP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numPSP")?.Value ?? 0), v.PSPMin, v.PSPMax);
+            this.FindControl<NumericUpDown> ("numPDP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numPDP")?.Value ?? 0), v.PDPMin, v.PDPMax);
+            this.FindControl<NumericUpDown> ("numQRSInterval").Value = (double)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numQRSInterval")?.Value ?? 0), v.QRSIntervalMin, v.QRSIntervalMax);
+            this.FindControl<NumericUpDown> ("numQTcInterval").Value = (double)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numQTcInterval")?.Value ?? 0), v.QTCIntervalMin, v.QTCIntervalMax);
 
             OnUIPatientParameter_Process (sender, e);
         }

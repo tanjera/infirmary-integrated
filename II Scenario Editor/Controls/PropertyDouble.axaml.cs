@@ -15,6 +15,8 @@ namespace IISE.Controls {
         public enum Keys {
             T,
             CO,
+            QRSInterval,
+            QTcInterval,
             RRInspiratoryRatio,
             RRExpiratoryRatio
         }
@@ -46,10 +48,20 @@ namespace IISE.Controls {
             Key = key;
             switch (Key) {
                 default: break;
+                case Keys.T: lblKey.Content = "Temperature: "; break;
                 case Keys.CO: lblKey.Content = "Cardiac Output: "; break;
+
+                case Keys.QRSInterval:
+                    lblKey.Content = "QRS Interval: ";
+                    numValue.FormatString = "0.00";
+                    break;
+
+                case Keys.QTcInterval:
+                    lblKey.Content = "QTc Interval: ";
+                    numValue.FormatString = "0.00"; break;
+
                 case Keys.RRExpiratoryRatio: lblKey.Content = "Expiratory Ratio: "; break;
                 case Keys.RRInspiratoryRatio: lblKey.Content = "Inspiratory Ratio: "; break;
-                case Keys.T: lblKey.Content = "Temperature: "; break;
             }
 
             numValue.Increment = increment;
