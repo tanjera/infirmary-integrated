@@ -263,19 +263,15 @@ namespace II {
         }
 
         public Patient () {
-            Task.Run (async () => await UpdateParameters (
-
-                            // Basic vital signs
+            Task.Run (async () => await UpdateParameters_Cardiac (
+                            // Basic cardiac vital signs
                             80,
                             120, 80, 95,
-                            18,
                             98,
                             38.0d,
                             Cardiac_Rhythms.Values.Sinus_Rhythm,
-                            Respiratory_Rhythms.Values.Regular,
 
                             // Advanced hemodynamics
-                            40,
                             6,
                             120, 80, 95,
                             6d,
@@ -284,18 +280,22 @@ namespace II {
                             8,
                             1,
 
-                            // Respiratory profile
-                            false,
-                            1d, 2d,
-
                             // Cardiac profile
                             50,
                             false, false,
                             Cardiac_Axes.Values.Normal,
                             new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d },
-                            new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                            new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }
+                            ));
 
-                            // Obstetric profile
+            Task.Run (async () => await UpdateParameters_Respiratory (
+                            16,
+                            Respiratory_Rhythms.Values.Regular,
+                            40,
+                            false,
+                            1d, 2d));
+
+            Task.Run (async () => await UpdateParameters_Obstetric (
                             150,
                             Scales.Intensity.Values.Mild,
                             new List<FHRAccelDecels.Values> (),
@@ -304,7 +304,7 @@ namespace II {
                             Scales.Intensity.Values.Moderate));
 
             Task.Run (async () => await InitTimers ());
-            Task.Run (async () => await SetTimers ());
+            Task.Run (async () => await ResetStartTimers ());
         }
 
         ~Patient () => Task.Run (async () => await Dispose ());
@@ -329,7 +329,7 @@ namespace II {
         }
 
         public async Task Activate () {
-            await SetTimers ();
+            await ResetStartTimers ();
         }
 
         public async Task Deactivate () {
@@ -604,7 +604,7 @@ namespace II {
             // Reset measurements to set parameters
             await VS_Actual.Set (VS_Settings);
 
-            await SetTimers ();
+            await ResetStartTimers ();
             await OnCardiac_Baseline ();
             await OnRespiratory_Baseline ();
 
@@ -689,19 +689,15 @@ namespace II {
             return sWrite.ToString ();
         }
 
-        public async Task UpdateParameters (
-
+        public async Task UpdateParameters_Cardiac (
                     // Basic vital signs
                     int hr,
                     int nsbp, int ndbp, int nmap,
-                    int rr,
                     int spo2,
                     double t,
                     Cardiac_Rhythms.Values card_rhythm,
-                    Respiratory_Rhythms.Values resp_rhythm,
 
                     // Advanced hemodynamics
-                    int etco2,
                     int cvp,
                     int asbp, int adbp, int amap,
                     double co,
@@ -709,19 +705,55 @@ namespace II {
                     int psp, int pdp, int pmp,
                     int icp, int iap,
 
-                    // Respiratory profile
-                    bool mech_vent,
-                    double resp_ier_i, double resp_ier_e,
-
                     // Cardiac profile
                     int pacer_threshold,
                     bool puls_paradoxus, bool puls_alternans,
                     Cardiac_Axes.Values card_axis,
-                    double [] st_elev, double [] t_elev,
+                    double []? st_elev, double []? t_elev) {
+            await UpdateParametersSilent_Cardiac (
+                hr,
+                nsbp, ndbp, nmap,
+                spo2,
+                t,
+                card_rhythm,
 
-                    // Obstetric profile
-                    int fhr, Scales.Intensity.Values fhr_var, List<FHRAccelDecels.Values> fhr_rhythms,
-                    double uc_freq, int uc_duration, Scales.Intensity.Values uc_intensity) {
+                cvp,
+                asbp, adbp, amap,
+                co,
+                pa_placement,
+                psp, pdp, pmp,
+                icp, iap,
+
+                pacer_threshold,
+                puls_paradoxus, puls_alternans,
+                card_axis,
+                st_elev, t_elev);
+
+            await OnCardiac_Baseline ();
+            await OnPatientEvent (PatientEventTypes.Vitals_Change);
+        }
+
+        public async Task UpdateParametersSilent_Cardiac (
+                // Basic vital signs
+                int hr,
+                int nsbp, int ndbp, int nmap,
+                int spo2,
+                double t,
+                Cardiac_Rhythms.Values card_rhythm,
+
+                // Advanced hemodynamics
+                int cvp,
+                int asbp, int adbp, int amap,
+                double co,
+                PulmonaryArtery_Rhythms.Values pa_placement,
+                int psp, int pdp, int pmp,
+                int icp, int iap,
+
+                // Cardiac profile
+                int pacer_threshold,
+                bool puls_paradoxus, bool puls_alternans,
+                Cardiac_Axes.Values card_axis,
+                double []? st_elev, double []? t_elev) {
             Updated = DateTime.UtcNow;
 
             // Basic vital signs
@@ -729,7 +761,6 @@ namespace II {
             VS_Settings.NSBP = nsbp;
             VS_Settings.NDBP = ndbp;
             VS_Settings.NMAP = nmap;
-            VS_Settings.RR = rr;
             VS_Settings.SPO2 = spo2;
             VS_Settings.T = t;
 
@@ -741,17 +772,10 @@ namespace II {
                 Cardiac_Rhythm.AberrantBeat = false;
                 Cardiac_Rhythm.AlternansBeat = false;
             }
-            if (Respiratory_Rhythm.Value != resp_rhythm) {
-                Respiration_Inflated = false;
-                counterRespiratory_Arrhythmia = 0;
-                switchRespiratory_Arrhythmia = false;
-            }
 
             Cardiac_Rhythm.Value = card_rhythm;
-            Respiratory_Rhythm.Value = resp_rhythm;
 
             // Advanced hemodynamics
-            VS_Settings.ETCO2 = etco2;
             VS_Settings.CVP = cvp;
             VS_Settings.ASBP = asbp;
             VS_Settings.ADBP = adbp;
@@ -767,11 +791,6 @@ namespace II {
             VS_Settings.ICP = icp;
             VS_Settings.IAP = iap;
 
-            // Respiratory profile
-            Mechanically_Ventilated = mech_vent;
-            VS_Settings.RR_IE_I = resp_ier_i;
-            VS_Settings.RR_IE_E = resp_ier_e;
-
             // Cardiac profile
             Pacemaker_Threshold = pacer_threshold;
 
@@ -784,6 +803,75 @@ namespace II {
             ST_Elevation = st_elev;
             T_Elevation = t_elev;
 
+            // Reset actual vital signs to set parameters
+            await VS_Actual.Set (VS_Settings);
+        }
+
+        public async Task UpdateParameters_Respiratory (
+                    int rr,
+                    Respiratory_Rhythms.Values resp_rhythm,
+                    int etco2,
+                    bool mech_vent,
+                    double resp_ier_i, double resp_ier_e) {
+            await UpdateParametersSilent_Respiratory (
+                rr,
+                resp_rhythm,
+                etco2,
+                mech_vent,
+                resp_ier_i, resp_ier_e);
+
+            await OnRespiratory_Baseline ();
+            await OnPatientEvent (PatientEventTypes.Vitals_Change);
+        }
+
+        public async Task UpdateParametersSilent_Respiratory (
+                int rr,
+                Respiratory_Rhythms.Values resp_rhythm,
+                int etco2,
+                bool mech_vent,
+                double resp_ier_i, double resp_ier_e) {
+            Updated = DateTime.UtcNow;
+
+            VS_Settings.RR = rr;
+
+            // Change in cardiac or respiratory rhythm? Reset all buffer counters and switches
+
+            if (Respiratory_Rhythm.Value != resp_rhythm) {
+                Respiration_Inflated = false;
+                counterRespiratory_Arrhythmia = 0;
+                switchRespiratory_Arrhythmia = false;
+            }
+
+            Respiratory_Rhythm.Value = resp_rhythm;
+
+            // Advanced hemodynamics
+            VS_Settings.ETCO2 = etco2;
+
+            // Respiratory profile
+            Mechanically_Ventilated = mech_vent;
+            VS_Settings.RR_IE_I = resp_ier_i;
+            VS_Settings.RR_IE_E = resp_ier_e;
+
+            // Reset actual vital signs to set parameters
+            await VS_Actual.Set (VS_Settings);
+        }
+
+        public async Task UpdateParameters_Obstetric (
+                    int fhr, Scales.Intensity.Values fhr_var, List<FHRAccelDecels.Values> fhr_rhythms,
+                    double uc_freq, int uc_duration, Scales.Intensity.Values uc_intensity) {
+            await UpdateParametersSilent_Obstetric (
+                fhr, fhr_var, fhr_rhythms,
+                uc_freq, uc_duration, uc_intensity);
+
+            await OnObstetric_Baseline ();
+            await OnPatientEvent (PatientEventTypes.Vitals_Change);
+        }
+
+        public Task UpdateParametersSilent_Obstetric (
+                int fhr, Scales.Intensity.Values fhr_var, List<FHRAccelDecels.Values> fhr_rhythms,
+                double uc_freq, int uc_duration, Scales.Intensity.Values uc_intensity) {
+            Updated = DateTime.UtcNow;
+
             // Obstetric profile
             FHR = fhr;
             FHR_Variability.Value = fhr_var;
@@ -792,14 +880,7 @@ namespace II {
             Contraction_Duration = uc_duration;
             Contraction_Intensity.Value = uc_intensity;
 
-            // Reset actual vital signs to set parameters
-            await VS_Actual.Set (VS_Settings);
-
-            await SetTimers ();
-            await OnCardiac_Baseline ();
-            await OnRespiratory_Baseline ();
-
-            await OnPatientEvent (PatientEventTypes.Vitals_Change);
+            return Task.CompletedTask;
         }
 
         public async Task ClampVitals (
@@ -825,7 +906,7 @@ namespace II {
 
             switchParadoxus = false;
 
-            await SetTimers ();
+            await ResetStartTimers ();
             await OnCardiac_Baseline ();
             await OnRespiratory_Baseline ();
             await OnObstetric_Baseline ();
@@ -854,30 +935,46 @@ namespace II {
             return Task.CompletedTask;
         }
 
-        private async Task SetTimers () {
-            await timerCardiac_Baseline.ResetAuto ((int)(GetHR_Seconds * 1000d));
+        private async Task ResetStartTimers () {
+            await ResetStartTimers_Cardiac ();
+            await ResetStartTimers_Respiratory ();
+            await ResetStartTimers_Obstetric ();
+        }
+
+        private async Task ResetStartTimers_Cardiac () {
+            await timerCardiac_Baseline.ResetStart ((int)(GetHR_Seconds * 1000d));
             await timerCardiac_Atrial_Electric.Stop ();
             await timerCardiac_Ventricular_Electric.Stop ();
             await timerCardiac_Atrial_Mechanical.Stop ();
             await timerCardiac_Ventricular_Mechanical.Stop ();
             await timerIABP_Balloon_Trigger.Stop ();
 
-            await timerDefibrillation.ResetAuto ();
+            await timerDefibrillation.ResetStart ();
             if (timerPacemaker_Baseline.IsRunning)
-                await timerPacemaker_Baseline.ResetAuto ();
+                await timerPacemaker_Baseline.ResetStart ();
             else
                 await timerPacemaker_Baseline.Reset ();
             await timerPacemaker_Spike.Stop ();
+        }
 
-            await timerRespiratory_Baseline.ResetAuto ((int)(GetRR_Seconds * 1000d));
+        private async Task ResetStartTimers_Respiratory () {
+            await timerRespiratory_Baseline.ResetStart ((int)(GetRR_Seconds * 1000d));
             await timerRespiratory_Inspiration.Stop ();
             await timerRespiratory_Expiration.Stop ();
+        }
 
-            await timerObstetric_Baseline.ResetAuto (1);
+        private async Task ResetStartTimers_Obstetric () {
+            await timerObstetric_Baseline.ResetStart (1);
             await timerObstetric_Contraction.Stop ();
         }
 
         private async Task StopTimers () {
+            await StopTimers_Cardiac ();
+            await StopTimers_Respiratory ();
+            await StopTimers_Obstetric ();
+        }
+
+        private async Task StopTimers_Cardiac () {
             await timerCardiac_Baseline.Stop ();
             await timerCardiac_Atrial_Electric.Stop ();
             await timerCardiac_Ventricular_Electric.Stop ();
@@ -887,11 +984,15 @@ namespace II {
             await timerDefibrillation.Stop ();
             await timerPacemaker_Baseline.Stop ();
             await timerPacemaker_Spike.Stop ();
+        }
 
+        private async Task StopTimers_Respiratory () {
             await timerRespiratory_Baseline.Stop ();
             await timerRespiratory_Inspiration.Stop ();
             await timerRespiratory_Expiration.Stop ();
+        }
 
+        private async Task StopTimers_Obstetric () {
             await timerObstetric_Baseline.Stop ();
             await timerObstetric_Contraction.Stop ();
         }
@@ -932,7 +1033,7 @@ namespace II {
         }
 
         private async Task StartPacemaker ()
-            => await timerPacemaker_Baseline.ResetAuto ((int)((60d / Pacemaker_Rate) * 1000));
+            => await timerPacemaker_Baseline.ResetStart ((int)((60d / Pacemaker_Rate) * 1000));
 
         private async Task StopPacemaker () {
             await timerPacemaker_Baseline.Stop ();
@@ -945,7 +1046,7 @@ namespace II {
             await timerCardiac_Ventricular_Electric.Stop ();
             await timerCardiac_Atrial_Mechanical.Stop ();
             await timerCardiac_Ventricular_Mechanical.Stop ();
-            await timerDefibrillation.ResetAuto (20);
+            await timerDefibrillation.ResetStart (20);
 
             // Invoke the defibrillation event *after* starting the timer- IsDefibrillating() checks the timer!
             await OnPatientEvent (PatientEventTypes.Defibrillation);
@@ -953,7 +1054,7 @@ namespace II {
 
         private async Task OnDefibrillation_End () {
             await timerDefibrillation.Stop ();
-            await timerCardiac_Baseline.ResetAuto ();
+            await timerCardiac_Baseline.ResetStart ();
         }
 
         private void OnCardioversion (object? sender, EventArgs e) {
@@ -966,7 +1067,7 @@ namespace II {
                 await OnPatientEvent (PatientEventTypes.Pacermaker_Spike);
 
             if (Pacemaker_Energy >= Pacemaker_Threshold)
-                await timerPacemaker_Spike.ResetAuto (40);          // Adds an interval between the spike and the QRS complex
+                await timerPacemaker_Spike.ResetStart (40);          // Adds an interval between the spike and the QRS complex
 
             await StartPacemaker ();                                // In case pacemaker was paused... updates .Interval
         }
@@ -981,7 +1082,7 @@ namespace II {
                 Cardiac_Rhythm.AberrantBeat = false;
 
                 await OnPatientEvent (PatientEventTypes.Cardiac_Baseline);  // Triggers drawing isoelectric lines (important for a-fib/flutter)
-                await timerCardiac_Baseline.ResetAuto ();                   // Resets heart's intrinsic timer, allows pacemaker overdrive modeling
+                await timerCardiac_Baseline.ResetStart ();                   // Resets heart's intrinsic timer, allows pacemaker overdrive modeling
             }
         }
 
@@ -1005,7 +1106,7 @@ namespace II {
                 case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Polymorphic:
                 case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Coarse:
                 case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Fine:
-                    await timerCardiac_Ventricular_Electric.ResetAuto (1);
+                    await timerCardiac_Ventricular_Electric.ResetStart (1);
                     break;
 
                 // Traced as "regular A" or "regular A -> V" Rhythms
@@ -1016,20 +1117,20 @@ namespace II {
                 case Cardiac_Rhythms.Values.Sinus_Rhythm:
                 case Cardiac_Rhythms.Values.Pulseless_Electrical_Activity:
                 case Cardiac_Rhythms.Values.Ventricular_Standstill:
-                    await timerCardiac_Atrial_Electric.ResetAuto (1);
+                    await timerCardiac_Atrial_Electric.ResetStart (1);
                     break;
 
                 // Traced as "irregular V" rhythms
                 case Cardiac_Rhythms.Values.Atrial_Fibrillation:
                     VS_Actual.HR = (int)(VS_Settings.HR * II.Math.RandomDouble (0.6, 1.4));
-                    await timerCardiac_Ventricular_Electric.ResetAuto (1);
+                    await timerCardiac_Ventricular_Electric.ResetStart (1);
                     break;
 
                 /* Special Cases */
                 case Cardiac_Rhythms.Values.AV_Block__3rd_Degree:
                     if (!timerCardiac_Atrial_Electric.IsRunning)
-                        await timerCardiac_Atrial_Electric.ResetAuto ((int)(timerCardiac_Baseline.Interval * 0.6d));
-                    await timerCardiac_Ventricular_Electric.ResetAuto (160);
+                        await timerCardiac_Atrial_Electric.ResetStart ((int)(timerCardiac_Baseline.Interval * 0.6d));
+                    await timerCardiac_Ventricular_Electric.ResetStart (160);
                     break;
 
                 case Cardiac_Rhythms.Values.Sick_Sinus_Syndrome:
@@ -1046,7 +1147,7 @@ namespace II {
                     } else
                         counterCardiac_Arrhythmia--;
 
-                    await timerCardiac_Atrial_Electric.ResetAuto (1);
+                    await timerCardiac_Atrial_Electric.ResetStart (1);
                     break;
 
                 case Cardiac_Rhythms.Values.Sinus_Arrhythmia:
@@ -1055,7 +1156,7 @@ namespace II {
                     else
                         VS_Actual.HR = (int)(VS_Settings.HR * 0.925d);
 
-                    await timerCardiac_Atrial_Electric.ResetAuto (1);
+                    await timerCardiac_Atrial_Electric.ResetStart (1);
                     break;
 
                 case Cardiac_Rhythms.Values.Sinus_Rhythm_with_Arrest:
@@ -1070,7 +1171,7 @@ namespace II {
                         counterCardiac_Arrhythmia--;
                     }
 
-                    await timerCardiac_Atrial_Electric.ResetAuto (1);
+                    await timerCardiac_Atrial_Electric.ResetStart (1);
                     break;
 
                 case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PACs:
@@ -1082,7 +1183,7 @@ namespace II {
                     } else {
                         VS_Actual.HR = VS_Settings.HR;
                     }
-                    await timerCardiac_Atrial_Electric.ResetAuto (1);
+                    await timerCardiac_Atrial_Electric.ResetStart (1);
                     break;
 
                 case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PJCs:
@@ -1090,11 +1191,11 @@ namespace II {
                     VS_Actual.HR = VS_Settings.HR;
                     if (counterCardiac_Aberrancy <= 0) {
                         counterCardiac_Aberrancy = new Random ().Next (4, 8);
-                        await timerCardiac_Ventricular_Electric.ResetAuto (1);
+                        await timerCardiac_Ventricular_Electric.ResetStart (1);
                     } else {
                         if (counterCardiac_Aberrancy == 1)
                             VS_Actual.HR = (int)(VS_Settings.HR * II.Math.RandomDouble (0.7d, 0.9d));
-                        await timerCardiac_Atrial_Electric.ResetAuto (1);
+                        await timerCardiac_Atrial_Electric.ResetStart (1);
                     }
                     break;
 
@@ -1109,10 +1210,10 @@ namespace II {
                         else if (Cardiac_Rhythm.Value == Cardiac_Rhythms.Values.Sinus_Rhythm_with_Trigeminy)
                             counterCardiac_Aberrancy = 2;
                         Cardiac_Rhythm.AberrantBeat = true;
-                        await timerCardiac_Ventricular_Electric.ResetAuto (1);
+                        await timerCardiac_Ventricular_Electric.ResetStart (1);
                         break;
                     }
-                    await timerCardiac_Atrial_Electric.ResetAuto (1);
+                    await timerCardiac_Atrial_Electric.ResetStart (1);
                     Cardiac_Rhythm.AberrantBeat = false;
                     break;
 
@@ -1125,11 +1226,11 @@ namespace II {
                     } else if (counterCardiac_Aberrancy < 0) {   // Then throw the PVC and reset the counters
                         counterCardiac_Aberrancy = new Random ().Next (4, 9);
                         Cardiac_Rhythm.AberrantBeat = true;
-                        await timerCardiac_Ventricular_Electric.ResetAuto (1);
+                        await timerCardiac_Ventricular_Electric.ResetStart (1);
                         break;
                     }
                     Cardiac_Rhythm.AberrantBeat = false;
-                    await timerCardiac_Atrial_Electric.ResetAuto (1);
+                    await timerCardiac_Atrial_Electric.ResetStart (1);
                     break;
             }
         }
@@ -1138,7 +1239,7 @@ namespace II {
             await OnPatientEvent (PatientEventTypes.Cardiac_Atrial_Electric);
 
             if (Cardiac_Rhythm.HasPulse_Atrial)
-                await timerCardiac_Atrial_Mechanical.ResetAuto (Default_Electromechanical_Delay);
+                await timerCardiac_Atrial_Mechanical.ResetStart (Default_Electromechanical_Delay);
 
             switch (Cardiac_Rhythm.Value) {
                 default:
@@ -1164,14 +1265,14 @@ namespace II {
                 case Cardiac_Rhythms.Values.Sinus_Rhythm_with_PVCs_Multifocal:
                 case Cardiac_Rhythms.Values.Pulseless_Electrical_Activity:
                     await timerCardiac_Atrial_Electric.Stop ();
-                    await timerCardiac_Ventricular_Electric.ResetAuto (160);
+                    await timerCardiac_Ventricular_Electric.ResetStart (160);
                     break;
 
                 /* Special cases */
 
                 case Cardiac_Rhythms.Values.AV_Block__1st_Degree:
                     await timerCardiac_Atrial_Electric.Stop ();
-                    await timerCardiac_Ventricular_Electric.ResetAuto (240);
+                    await timerCardiac_Ventricular_Electric.ResetStart (240);
                     break;
 
                 case Cardiac_Rhythms.Values.AV_Block__Mobitz_II:
@@ -1181,7 +1282,7 @@ namespace II {
                         counterCardiac_Aberrancy = 2;
                         Cardiac_Rhythm.AberrantBeat = true;
                     } else {
-                        await timerCardiac_Ventricular_Electric.ResetAuto (160);
+                        await timerCardiac_Ventricular_Electric.ResetStart (160);
                         Cardiac_Rhythm.AberrantBeat = false;
                     }
                     break;
@@ -1194,7 +1295,7 @@ namespace II {
                         Cardiac_Rhythm.AberrantBeat = true;
                     } else {
                         await timerCardiac_Baseline.Set ((int)(timerCardiac_Baseline.Interval + (160d * (3d - counterCardiac_Aberrancy))));
-                        await timerCardiac_Ventricular_Electric.ResetAuto ((int)(160d * (3d - counterCardiac_Aberrancy)));
+                        await timerCardiac_Ventricular_Electric.ResetStart ((int)(160d * (3d - counterCardiac_Aberrancy)));
                         Cardiac_Rhythm.AberrantBeat = false;
                     }
                     break;
@@ -1209,7 +1310,7 @@ namespace II {
             await OnPatientEvent (PatientEventTypes.Cardiac_Ventricular_Electric);
 
             if (Cardiac_Rhythm.HasPulse_Ventricular)
-                await timerCardiac_Ventricular_Mechanical.ResetAuto (Default_Electromechanical_Delay);
+                await timerCardiac_Ventricular_Mechanical.ResetStart (Default_Electromechanical_Delay);
 
             /* Flip the switch on pulsus alternans */
             Cardiac_Rhythm.AlternansBeat = Pulsus_Alternans && !Cardiac_Rhythm.AlternansBeat;
@@ -1227,7 +1328,7 @@ namespace II {
             await OnPatientEvent (PatientEventTypes.Cardiac_Ventricular_Mechanical);
 
             if (IABP_Active)
-                await timerIABP_Balloon_Trigger.ResetAuto ((int)(GetHR_Seconds * 1000d * 0.35d));
+                await timerIABP_Balloon_Trigger.ResetStart ((int)(GetHR_Seconds * 1000d * 0.35d));
 
             await timerCardiac_Ventricular_Mechanical.Stop ();
         }
@@ -1302,7 +1403,7 @@ namespace II {
                     break;
             }
 
-            await timerRespiratory_Inspiration.ResetAuto (1);
+            await timerRespiratory_Inspiration.ResetStart (1);
         }
 
         private async Task OnRespiratory_Inspiration () {
@@ -1334,7 +1435,7 @@ namespace II {
                 case Respiratory_Rhythms.Values.Biot:
                 case Respiratory_Rhythms.Values.Cheyne_Stokes:
                 case Respiratory_Rhythms.Values.Regular:
-                    await timerRespiratory_Expiration.ResetAuto ((int)(GetRR_Seconds_I * 1000d));     // Expiration.Interval marks end inspiration
+                    await timerRespiratory_Expiration.ResetStart ((int)(GetRR_Seconds_I * 1000d));     // Expiration.Interval marks end inspiration
                     break;
             }
         }
@@ -1360,7 +1461,7 @@ namespace II {
 
         private async Task OnObstetric_Baseline () {
             await OnPatientEvent (PatientEventTypes.Obstetric_Baseline);
-            await timerObstetric_Baseline.ResetAuto (1000);
+            await timerObstetric_Baseline.ResetStart (1000);
 
             await OnObstetric_RunTimers ();
         }
@@ -1380,12 +1481,12 @@ namespace II {
         private async Task OnObstetric_Contraction () {
             if (!Uterus_Contracted) {       // Contraction onset
                 Uterus_Contracted = true;
-                await timerObstetric_Contraction.ResetAuto ((int)(Contraction_Duration * 1000d));
+                await timerObstetric_Contraction.ResetStart ((int)(Contraction_Duration * 1000d));
 
                 await OnPatientEvent (PatientEventTypes.Obstetric_Contraction_Start);
             } else {                        // Contraction ending
                 Uterus_Contracted = false;
-                await timerObstetric_Contraction.ResetAuto ((int)(Contraction_Frequency * 1000d));
+                await timerObstetric_Contraction.ResetStart ((int)(Contraction_Frequency * 1000d));
 
                 await OnPatientEvent (PatientEventTypes.Obstetric_Contraction_End);
             }

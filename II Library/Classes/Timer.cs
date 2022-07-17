@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 
 namespace II {
+
     public class Timer {
         private int _Interval = 0;
         private bool _Locked = false;
@@ -32,12 +33,35 @@ namespace II {
 
         public void Unlock () => _Locked = false;
 
+        /// <summary>
+        /// Starts a Timer (or continues a running Timer).
+        /// Does not alter time since last tick.
+        /// </summary>
+        /// <returns></returns>
         public Task Start () {
             Running = true;
 
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Adjusts Timer Interval without starting/stopping/resetting Timer.
+        /// Does not alter time since last tick.
+        /// </summary>
+        /// <param name="interval"></param>
+        /// <returns></returns>
+        public Task Adjust (int interval) {
+            _Interval = interval;
+
+            return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Adjusts Timer Interval while continuing a running Timer (or starting a stopped Timer!)
+        /// Does not alter time since last tick.
+        /// </summary>
+        /// <param name="interval"></param>
+        /// <returns></returns>
         public Task Continue (int interval) {
             _Interval = interval;
             Running = true;
@@ -45,12 +69,22 @@ namespace II {
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Stops a Timer.
+        /// Does not alter time since last tick.
+        /// </summary>
+        /// <returns></returns>
         public Task Stop () {
             Running = false;
 
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Sets a Timer's Interval and resets time since last tick.
+        /// </summary>
+        /// <param name="interval"></param>
+        /// <returns></returns>
         public Task Set (int interval) {
             _Interval = interval;
             Last = DateTime.Now;
@@ -58,33 +92,91 @@ namespace II {
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Resets a Timer's time since last tick. Otherwise does not alter Timer state.
+        /// </summary>
+        /// <returns></returns>
         public Task Reset () {
             Last = DateTime.Now;
 
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// Sets a Timer's Interval and resets time since last tick.
+        /// </summary>
+        /// <param name="interval"></param>
+        /// <returns></returns>
         public async Task Reset (int interval)
             => await Set (interval);
 
-        public async Task ResetAuto () {
+        /// <summary>
+        /// Macro for Reset() and Start()
+        /// </summary>
+        /// <returns></returns>
+        public async Task ResetStart () {
             await Reset ();
             await Start ();
         }
 
-        public async Task ResetAuto (int interval) {
+        /// <summary>
+        /// Macro for Reset(interval) and Start()
+        /// </summary>
+        /// <param name="interval"></param>
+        /// <returns></returns>
+        public async Task ResetStart (int interval) {
             await Reset (interval);
             await Start ();
         }
 
-        public async Task ResetAuto (float interval)
-            => await ResetAuto ((int)interval);
+        /// <summary>
+        /// Overload for Reset(int interval) and Start()
+        /// </summary>
+        /// <param name="interval"></param>
+        /// <returns></returns>
+        public async Task ResetStart (float interval)
+            => await ResetStart ((int)interval);
 
+        /// <summary>
+        /// Macro for Reset() and Stop()
+        /// </summary>
+        /// <returns></returns>
+        public async Task ResetStop () {
+            await Reset ();
+            await Stop ();
+        }
+
+        /// <summary>
+        /// Macro for Reset(interval) and Stop()
+        /// </summary>
+        /// <param name="interval"></param>
+        /// <returns></returns>
+        public async Task ResetStop (int interval) {
+            await Reset (interval);
+            await Stop ();
+        }
+
+        /// <summary>
+        /// Overload for Reset(int interval) and Stop()
+        /// </summary>
+        /// <param name="interval"></param>
+        /// <returns></returns>
+        public async Task ResetStop (float interval)
+            => await ResetStop ((int)interval);
+
+        /// <summary>
+        /// Invokes the Timer's Tick event
+        /// </summary>
+        /// <returns></returns>
         public Task Trigger () {
             Tick?.Invoke (this, new EventArgs ());
             return Task.CompletedTask;
         }
 
+        /// <summary>
+        /// "Runs" the Timer: checks time since last Tick and, if greater than Interval, invokes the
+        /// Tick event and then resets time since the last tick.
+        /// </summary>
         public void Process () {
             if (!Running)
                 return;
@@ -95,6 +187,11 @@ namespace II {
             }
         }
 
+        /// <summary>
+        /// Overload for Process()
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         public void Process (object? sender, EventArgs e)
             => Process ();
     }

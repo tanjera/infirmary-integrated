@@ -309,7 +309,7 @@ namespace II {
                 return;
 
             if (Current.ProgressTimer > 0)
-                await ProgressTimer.ResetAuto (Current.ProgressTimer * 1000);
+                await ProgressTimer.ResetStart (Current.ProgressTimer * 1000);
             else
                 await ProgressTimer.Stop ();
         }

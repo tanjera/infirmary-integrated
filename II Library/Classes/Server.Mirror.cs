@@ -41,7 +41,7 @@ namespace II.Server {
         }
 
         public void TimerTick (Patient? p, Server s) {
-            _ = timerUpdate.ResetAuto (5000);
+            _ = timerUpdate.ResetStart (5000);
             _ = GetPatient (p, s);
         }
 

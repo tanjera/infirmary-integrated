@@ -276,7 +276,7 @@ namespace II.Rhythm {
 
         public Task Reset () {
             lock (lockPoints)
-                Points.Clear ();
+                Points?.Clear ();
 
             return Task.CompletedTask;
         }
@@ -522,8 +522,20 @@ namespace II.Rhythm {
             return addition;
         }
 
-        public void Add_Beat__Cardiac_Baseline (Patient? p) {
+        public void Add_Baseline (Patient? p) {
             if (p is null || Lead is null)
+                return;
+
+            if (IsCardiac)
+                Add_Beat__Cardiac_Baseline (p);
+            else if (IsRespiratory)
+                Add_Breath__Respiratory_Baseline (p);
+            else if (IsObstetric)
+                Add_Beat__Obstetric_Baseline (p);
+        }
+
+        public void Add_Beat__Cardiac_Baseline (Patient? p) {
+            if (p is null || Lead is null || !IsCardiac)
                 return;
 
             SetForwardBuffer (p);
@@ -656,14 +668,11 @@ namespace II.Rhythm {
         }
 
         public void Add_Breath__Respiratory_Baseline (Patient? p) {
-            if (p is null || Lead is null)
+            if (p is null || Lead is null || !IsRespiratory)
                 return;
 
             SetForwardBuffer (p);
             TrimPoints ();
-
-            if (Lead?.Value != Lead.Values.RR && Lead?.Value != Lead.Values.ETCO2)
-                return;
 
             /* Fill waveform through to future buffer with flatline */
             double fill = (Length * forwardBuffer) - Last (Points).X;
@@ -699,14 +708,11 @@ namespace II.Rhythm {
         }
 
         public void Add_Beat__Obstetric_Baseline (Patient? p) {
-            if (p is null || Lead is null)
+            if (p is null || Lead is null || !IsObstetric)
                 return;
 
             SetForwardBuffer (p);
             TrimPoints ();
-
-            if (Lead?.Value != Lead.Values.FHR && Lead?.Value != Lead.Values.TOCO)
-                return;
 
             /* Fill waveform through to future buffer with flatline */
             double fill = (Length * forwardBuffer) - Last (Points).X;

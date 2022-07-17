@@ -193,7 +193,7 @@ namespace IISIM.Controls {
                 _ => 10000,
             };
 
-            _ = AlarmTimer?.ResetAuto (time);
+            _ = AlarmTimer?.ResetStart (time);
 
             if (ControlType is not null) {
                 if (AlarmLine1 ?? false)
