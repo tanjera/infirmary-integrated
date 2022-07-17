@@ -19,6 +19,7 @@ Main features in Infirmary Integrated include:
   - Intrathoracic pressure, depending on mechanical or spontaneous ventilation
 - Able to pause devices to better analyze waveforms or create screenshots
 - Visual and audio alarms realistically simulate devices for enhanced clinical realism
+- Advanced modeling algorithms allow for on-the-fly changes to hemodynamic parameters with a smooth and responsive simulation
 - Able to create and play scenarios where the patient's condition changes and progresses
   - Students can react to changing patient conditions with pre-made scenario options
   - Instructors can guide students through simple or complex pre-made patient presentations and disease progressions
@@ -47,7 +48,8 @@ And Infirmary Integrated can simulate hemodynamic and other readings including:
 - Intracranial pressure (ICP) factoring compliance in the waveform
 - Intra-abdominal pressure (IAP, bladder pressure)
 - Intra-aortic balloon pump augmentation pressures
-- Cardiac axis deviation, pulsus paradoxus, and pulsus alternans on waveforms
+- Cardiac axis deviation, pulsus paradoxus, pulsus alternans, and electrical alternans on waveforms
+- QRS interval adjustment and QTc interval adjustment for simulating various waveform morphologies
 - ST-segment elevation/depression and T-wave elevation/depression on all 12 ECG leads
 - Defibrillation, cardioversion, and transcutaneous pacing
 
