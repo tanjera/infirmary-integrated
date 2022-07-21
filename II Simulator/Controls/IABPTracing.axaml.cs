@@ -65,6 +65,10 @@ namespace IISIM.Controls {
                 lblLead.Foreground = TracingBrush;
                 lblLead.Content = Instance?.Language.Localize (Lead.LookupString (Lead.Value));
 
+                lblScaleAuto.IsVisible = Strip?.CanScale ?? false;
+                lblScaleMin.IsVisible = Strip?.CanScale ?? false;
+                lblScaleMax.IsVisible = Strip?.CanScale ?? false;
+
                 if (Strip?.CanScale ?? false) {
                     lblScaleAuto.Foreground = TracingBrush;
                     lblScaleMin.Foreground = TracingBrush;

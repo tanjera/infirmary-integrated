@@ -376,7 +376,9 @@ namespace IISE.Windows {
             PropertyInt pintIAP = this.FindControl<PropertyInt> ("pintIAP");
             PropertyInt pintPacemakerThreshold = this.FindControl<PropertyInt> ("pintPacemakerThreshold");
 
-            lblActiveStep.Content = String.Format ("Editing Step: {0}", Step is null ? "N/A" : Step.Name);
+            lblActiveStep.Content = String.Format ("Editing Step: {0} ({1})",
+                Step is null ? "N/A" : Step.Name,
+                Step is null ? "N/A" : Step.Description);
 
             // Enable/Disable controls based on if Patient is null!
             chkClampVitals.IsEnabled = (Patient != null);

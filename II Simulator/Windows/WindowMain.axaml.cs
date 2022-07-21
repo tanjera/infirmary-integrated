@@ -1059,50 +1059,45 @@ namespace IISIM {
         }
 
         private Task InitStep () {
-            Scenario.Step s = Instance?.Scenario?.Current ?? new Scenario.Step ();
+            Scenario.Step step = Instance?.Scenario?.Current ?? new Scenario.Step ();
 
             Label lblScenarioStep = this.FindControl<Label> ("lblScenarioStep");
             Label lblTimerStep = this.FindControl<Label> ("lblTimerStep");
             StackPanel stackProgressions = this.FindControl<StackPanel> ("stackProgressions");
 
             // Set Previous, Next, Pause, and Play buttons .IsEnabled based on Step properties
-            this.FindControl<Button> ("btnPreviousStep").IsEnabled = (!String.IsNullOrEmpty (s.DefaultSource));
-            this.FindControl<Button> ("btnNextStep").IsEnabled = (!String.IsNullOrEmpty (s.DefaultProgression?.UUID) || s.Progressions.Count > 0);
-            this.FindControl<Button> ("btnPauseStep").IsEnabled = (s.ProgressTimer > 0);
+            this.FindControl<Button> ("btnPreviousStep").IsEnabled = (!String.IsNullOrEmpty (step.DefaultSource));
+            this.FindControl<Button> ("btnNextStep").IsEnabled = (!String.IsNullOrEmpty (step.DefaultProgression?.UUID) || step.Progressions.Count > 0);
+            this.FindControl<Button> ("btnPauseStep").IsEnabled = (step.ProgressTimer > 0);
             this.FindControl<Button> ("btnPlayStep").IsEnabled = false;
 
             // Display Scenario's Step count
-            lblScenarioStep.Content = $"{Instance?.Language.Localize ("PE:ProgressionStep")}: {s.Name}";
+            lblScenarioStep.Content = $"{Instance?.Language.Localize ("PE:ProgressionStep")}: {step.Name}";
 
             // Display Progress Timer if applicable, otherwise instruct that the Step requires manual progression
-            if (s.ProgressTimer == -1)
+            if (step.ProgressTimer == -1)
                 lblTimerStep.Content = Instance?.Language.Localize ("PE:ProgressionManual");
             else
                 lblTimerStep.Content = String.Format ("{0} {1} {2}",
                     Instance?.Language.Localize ("PE:ProgressionAutomatic"),
-                    s.ProgressTimer,
+                    step.ProgressTimer,
                     Instance?.Language.Localize ("PE:ProgressionSeconds"));
 
             // Re-populate a StackPanel with RadioButtons for Progression options, including "Default Option"
             stackProgressions.Children.Clear ();
 
-            stackProgressions.Children.Add (new RadioButton () {
-                IsChecked = true,
-                Name = "radioProgression_Default",
-                Content = Instance?.Language.Localize ("PE:ProgressionDefault"),
-                GroupName = "ProgressionOptions",
-                Margin = new Thickness (10, 10, 10, 5)
-            });
-
-            for (int i = 0; i < s.Progressions.Count; i++) {
-                Scenario.Step.Progression p = s.Progressions [i];
+            for (int i = 0; i < step.Progressions.Count; i++) {
+                Scenario.Step.Progression prog = step.Progressions [i];
+                Scenario.Step? stepTo = Instance?.Scenario?.Steps?.Find (s => s.UUID == prog.DestinationUUID);
 
                 stackProgressions.Children.Add (new RadioButton () {
-                    IsChecked = false,
-                    Content = p.Description,
-                    Name = String.Format ("radioProgression_{0}", p.DestinationUUID),
+                    IsChecked = (step.DefaultProgression?.UUID == prog.UUID),
+                    Content = String.Format ("{0}{1}",
+                        ((step.DefaultProgression?.UUID == prog.UUID) ? $"{Instance?.Language.Localize ("PE:ProgressionDefault")}: " : ""),
+                        !String.IsNullOrEmpty (prog.Description) ? prog.Description : stepTo?.Name),
+                    Name = String.Format ("radioProgression_{0}", prog.DestinationUUID),
                     GroupName = "ProgressionOptions",
-                    Margin = (i == s.Progressions.Count - 1 ? new Thickness (10, 5, 10, 10) : new Thickness (10, 5))
+                    Margin = (i == step.Progressions.Count - 1 ? new Thickness (10, 5, 10, 10) : new Thickness (10, 5))
                 });
             }
 

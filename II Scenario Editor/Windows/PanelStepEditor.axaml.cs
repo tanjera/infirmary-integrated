@@ -330,10 +330,13 @@ namespace IISE.Windows {
 
                 // Remove all progressions targeting the Step being removed
                 for (int i = s.Step.Progressions.Count - 1; i >= 0; i--) {
-                    if (s.Step.Progressions [i].DestinationUUID == item.UUID)
-                        s.Step.Progressions.RemoveAt (i);
+                    if (s.Step?.Progressions [i].DestinationUUID == item.UUID)
+                        s.Step?.Progressions.RemoveAt (i);
                 }
             }
+
+            // Remove the Step from the Scenario model
+            Scenario.Steps.RemoveAll (s => s.UUID == item.UUID);
 
             await UpdateIProgressions ();
             await DrawIProgressions ();

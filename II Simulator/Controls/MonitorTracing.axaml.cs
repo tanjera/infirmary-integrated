@@ -164,6 +164,10 @@ namespace IISIM.Controls {
                 if (uiMenuToggleAutoScale is not null)
                     uiMenuToggleAutoScale.IsEnabled = Strip?.CanScale ?? false;
 
+                lblScaleAuto.IsVisible = Strip?.CanScale ?? false;
+                lblScaleMin.IsVisible = Strip?.CanScale ?? false;
+                lblScaleMax.IsVisible = Strip?.CanScale ?? false;
+
                 if (Strip?.CanScale ?? false) {
                     lblScaleAuto.Foreground = TracingBrush;
                     lblScaleMin.Foreground = TracingBrush;
