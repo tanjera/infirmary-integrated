@@ -45,6 +45,11 @@ namespace II.Rhythm {
         public double Length = 6.0d;                      // Strip length in seconds
         public double DisplayLength = 6.0d;
 
+        /* Coefficients for decreasing tracing resolution (performance vs quality) */
+        public int Resolution_Cardiac = 1;
+        public int Resolution_Respiratory = 3;
+        public int Resolution_Obstetric = 100;
+
         private double forwardBuffer = 1.0d;              // Coefficient of Length to draw into future as "now" for buffer
         private DateTime scrolledLast = DateTime.UtcNow;
         private bool scrollingUnpausing = false;
@@ -70,16 +75,19 @@ namespace II.Rhythm {
 
         public Strip (Lead.Values lead) {
             double length = IsRespiratory ? DefaultLength * DefaultRespiratoryCoefficient : DefaultLength;
-            Initialize (lead, length, length);
+            Initialize (lead, length, length, 1.0d);
         }
 
         public Strip (Lead.Values lead, double length)
-            => Initialize (lead, length, length);
+            => Initialize (lead, length, length, 1.0d);
 
         public Strip (Lead.Values lead, double length, double displayLength)
-            => Initialize (lead, length, displayLength);
+            => Initialize (lead, length, displayLength, 1.0d);
 
-        public void Initialize (Lead.Values lead, double length, double displayLength) {
+        public Strip (Lead.Values lead, double length, double displayLength, double resolution)
+            => Initialize (lead, length, displayLength, resolution);
+
+        public void Initialize (Lead.Values lead, double length, double displayLength, double resolution) {
             Lead = new Lead (lead);
 
             Length = length;
@@ -166,7 +174,7 @@ namespace II.Rhythm {
         }
 
         private void SetScale () {
-            switch (Lead.Value) {
+            switch (Lead?.Value) {
                 default: break;
                 case Lead.Values.ABP:
                     ScaleAuto = true;
@@ -224,7 +232,7 @@ namespace II.Rhythm {
 
         private void SetOffset () {
             /* Define yOffset based on lead type; pressure waveforms offset down, electric remains centered */
-            switch (Lead.Value) {
+            switch (Lead?.Value) {
                 default:
                     Offset = Offsets.Center;
                     Amplitude = 1f;
@@ -264,7 +272,7 @@ namespace II.Rhythm {
                 forwardBuffer = System.Math.Max (1 + (2 * ((double)patient.GetRR_Seconds / Length)),
                     (onClear ? 1.1f : forwardBuffer));
             else if (IsObstetric)
-                forwardBuffer = System.Math.Max (1 + (2 * ((double)patient.Contraction_Frequency / Length)),
+                forwardBuffer = System.Math.Max (1 + (2 * ((double)patient.ObstetricContractionFrequency / Length)),
                     (onClear ? 1.1f : forwardBuffer));
         }
 
@@ -463,7 +471,7 @@ namespace II.Rhythm {
             }
         }
 
-        public void Scroll () {
+        public void Scroll (int? multiplier = 1) {
             if (Points is null)
                 return;
 
@@ -473,7 +481,10 @@ namespace II.Rhythm {
                 return;
             }
 
-            double scrollBy = (double)((DateTime.UtcNow - scrolledLast).TotalMilliseconds / 1000);
+            if (multiplier is null)
+                multiplier = 1;
+
+            double scrollBy = (double)(((DateTime.UtcNow - scrolledLast).TotalMilliseconds / 1000) * multiplier);
             scrolledLast = DateTime.UtcNow;
 
             lock (lockPoints) {
@@ -676,7 +687,7 @@ namespace II.Rhythm {
 
             /* Fill waveform through to future buffer with flatline */
             double fill = (Length * forwardBuffer) - Last (Points).X;
-            Concatenate (Draw.Flat_Line (fill > (double)p.GetRR_Seconds ? fill : (double)p.GetRR_Seconds, 0d));
+            Concatenate (Draw.Flat_Line (fill > (double)p.GetRR_Seconds ? fill : (double)p.GetRR_Seconds, 0d, Resolution_Respiratory));
 
             SortPoints ();
         }
@@ -687,7 +698,7 @@ namespace II.Rhythm {
 
             switch (Lead?.Value) {
                 default: return;
-                case Lead.Values.RR: Replace (Draw.RR_Rhythm (p, true)); break;
+                case Lead.Values.RR: Replace (Draw.RR_Rhythm (p, true, Resolution_Respiratory)); break;
                 case Lead.Values.ETCO2: break;    // End-tidal waveform is only present on expiration!! Is flatline on inspiration.
             }
 
@@ -700,7 +711,7 @@ namespace II.Rhythm {
 
             switch (Lead?.Value) {
                 default: break;
-                case Lead.Values.RR: Replace (Draw.RR_Rhythm (p, false)); break;
+                case Lead.Values.RR: Replace (Draw.RR_Rhythm (p, false, Resolution_Respiratory)); break;
                 case Lead.Values.ETCO2: Replace (Draw.ETCO2_Rhythm (p)); break;
             }
 
@@ -720,11 +731,11 @@ namespace II.Rhythm {
             switch (Lead.Value) {
                 default: break;
                 case Lead.Values.FHR:
-                    Concatenate (Draw.Flat_Line (fill, 0d));
+                    Concatenate (Draw.Flat_Line (fill, 0d, Resolution_Obstetric));
                     break;
 
                 case Lead.Values.TOCO:
-                    Concatenate (Draw.Flat_Line (fill, 0d));
+                    Concatenate (Draw.Flat_Line (fill, 0d, Resolution_Obstetric));
                     break;
             }
 
@@ -736,7 +747,7 @@ namespace II.Rhythm {
                 return;
             switch (Lead?.Value) {
                 default: break;
-                case Lead.Values.TOCO: Replace (Draw.TOCO_Rhythm (p, p.Uterus_Contracted)); break;
+                case Lead.Values.TOCO: Replace (Draw.TOCO_Rhythm (p, p.ObstetricUterusContracted, Resolution_Obstetric)); break;
             }
 
             SortPoints ();

@@ -1360,12 +1360,12 @@ namespace IISIM {
 
             if (Instance?.Patient is not null) {
                 _ = Instance.Patient.UpdateParameters_Obstetric (
-                    ApplyBuffer.FHR,
-                    ApplyBuffer.FHR_Variability.Value,
-                    ApplyBuffer.FetalHeartRhythm.ValueList,
-                    ApplyBuffer.Contraction_Frequency,
-                    ApplyBuffer.Contraction_Duration,
-                    ApplyBuffer.Contraction_Intensity.Value);
+                    ApplyBuffer.ObstetricFetalHeartRate,
+                    ApplyBuffer.ObstetricFetalVariabilityIntensity.Value,
+                    ApplyBuffer.ObstetricFetalHeartRhythm.ValueList,
+                    ApplyBuffer.ObstetricContractionFrequency,
+                    ApplyBuffer.ObstetricContractionDuration,
+                    ApplyBuffer.ObstetricContractionIntensity.Value);
             }
 
             if (Instance?.Mirror is not null && Instance?.Server is not null)
@@ -1444,15 +1444,15 @@ namespace IISIM {
                 }
 
                 // Obstetric profile
-                this.FindControl<NumericUpDown> ("numFHR").Value = p.FHR;
-                this.FindControl<NumericUpDown> ("numUCFrequency").Value = (double)p.Contraction_Frequency;
-                this.FindControl<NumericUpDown> ("numUCDuration").Value = p.Contraction_Duration;
-                this.FindControl<ComboBox> ("comboFHRVariability").SelectedIndex = (int)p.FHR_Variability.Value;
-                this.FindControl<ComboBox> ("comboUCIntensity").SelectedIndex = (int)p.Contraction_Intensity.Value;
+                this.FindControl<NumericUpDown> ("numFHR").Value = p.ObstetricFetalHeartRate;
+                this.FindControl<NumericUpDown> ("numUCFrequency").Value = (double)p.ObstetricContractionFrequency;
+                this.FindControl<NumericUpDown> ("numUCDuration").Value = p.ObstetricContractionDuration;
+                this.FindControl<ComboBox> ("comboFHRVariability").SelectedIndex = (int)p.ObstetricFetalVariabilityIntensity.Value;
+                this.FindControl<ComboBox> ("comboUCIntensity").SelectedIndex = (int)p.ObstetricContractionIntensity.Value;
 
                 ListBox listFHRRhythms = this.FindControl<ListBox> ("listFHRRhythms");
                 listFHRRhythms.SelectedItems.Clear ();
-                foreach (FetalHeartRhythms.Values fhr_rhythm in p.FetalHeartRhythm.ValueList) {
+                foreach (FetalHeartRhythms.Values fhr_rhythm in p.ObstetricFetalHeartRhythm.ValueList) {
                     foreach (ListBoxItem lbi in listFHRRhythms.Items) {
                         if (lbi.Tag != null && (string)lbi.Tag == fhr_rhythm.ToString ())
                             listFHRRhythms.SelectedItems.Add (lbi);

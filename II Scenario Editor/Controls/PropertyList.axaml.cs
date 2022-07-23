@@ -104,6 +104,7 @@ namespace IISE.Controls {
 
             listBox.SelectionChanged -= SendPropertyChange;
 
+            listBox.SelectedItems.Clear ();
             foreach (ListBoxItem i in listBox.Items) {
                 if (selected.Contains (i.Tag?.ToString () ?? ""))
                     listBox.SelectedItems.Add (i);

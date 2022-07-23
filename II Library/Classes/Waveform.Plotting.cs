@@ -54,7 +54,7 @@ namespace II.Waveform {
             int lengthAddition = (_Addition.Vertices.Length - 1) * _Addition.DrawResolution;
             double lengthCoeff = (_Length * 1000) / lengthAddition;
 
-            List<PointD> _Output = new();
+            List<PointD> _Output = new ();
             for (int i = 0; i < _Addition.Vertices.Length; i++)
                 _Output.Add (new PointD (
                     (double)_Addition.DrawResolution / 1000 * i * lengthCoeff,
@@ -77,7 +77,7 @@ namespace II.Waveform {
             }
 
             // Rescale (min-max normalization) of vertex set
-            List<PointD> _Output = new();
+            List<PointD> _Output = new ();
             for (int i = 0; i < _Addition.Count; i++) {
                 _Output.Add (new PointD (
                     _Addition [i].X,
@@ -88,7 +88,7 @@ namespace II.Waveform {
         }
 
         public static List<PointD> Convert (Dictionary.Plot _Addition) {
-            List<PointD> _Output = new();
+            List<PointD> _Output = new ();
             for (int i = 0; i < _Addition.Vertices.Length; i++)
                 _Output.Add (new PointD (
                     (double)_Addition.DrawResolution / 1000 * i,
@@ -113,7 +113,7 @@ namespace II.Waveform {
 
             int i;
             double x;
-            List<PointD> _Out = new();
+            List<PointD> _Out = new ();
             double Resolution = (2 * (DrawResolution / 1000d)) / _Length;
 
             for (i = 1; (x = i * Resolution) <= 1; i++)
@@ -133,7 +133,7 @@ namespace II.Waveform {
 
             int i;
             double x;
-            List<PointD> _Out = new();
+            List<PointD> _Out = new ();
             double Resolution = (2 * (DrawResolution / 1000d)) / _Length;
 
             for (i = 1; (x = i * Resolution) <= 1; i++)
@@ -151,9 +151,9 @@ namespace II.Waveform {
             if (_Length < 0)
                 return new List<PointD> ();
 
-            List<PointD> Out = new();
-            PointD Start = new(0, _Start.Y);
-            PointD End = new(_Length, _mV);
+            List<PointD> Out = new ();
+            PointD Start = new (0, _Start.Y);
+            PointD End = new (_Length, _mV);
 
             for (double x = 0; x <= _Length; x += (DrawResolution / 1000d))
                 Out.Add (PointD.Lerp (Start, End, x / _Length));

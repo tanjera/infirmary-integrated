@@ -231,9 +231,9 @@ namespace IISE.Windows {
                     case PropertyInt.Keys.ICP: Patient.ICP = e.Value; break;
                     case PropertyInt.Keys.IAP: Patient.IAP = e.Value; break;
                     case PropertyInt.Keys.PacemakerThreshold: Patient.Pacemaker_Threshold = e.Value; break;
-                    case PropertyInt.Keys.FHR: Patient.FHR = e.Value; break;
-                    case PropertyInt.Keys.UCFrequency: Patient.Contraction_Frequency = e.Value; break;
-                    case PropertyInt.Keys.UCDuration: Patient.Contraction_Duration = e.Value; break;
+                    case PropertyInt.Keys.FHR: Patient.ObstetricFetalHeartRate = e.Value; break;
+                    case PropertyInt.Keys.UCFrequency: Patient.ObstetricContractionFrequency = e.Value; break;
+                    case PropertyInt.Keys.UCDuration: Patient.ObstetricContractionDuration = e.Value; break;
                 }
             }
         }
@@ -291,11 +291,11 @@ namespace IISE.Windows {
                         break;
 
                     case PropertyEnum.Keys.FetalRhythmVariability:
-                        Patient.FHR_Variability.Value = (Scales.Intensity.Values)Enum.Parse (typeof (Scales.Intensity.Values), e.Value);
+                        Patient.ObstetricFetalVariabilityIntensity.Value = (Scales.Intensity.Values)Enum.Parse (typeof (Scales.Intensity.Values), e.Value);
                         break;
 
                     case PropertyEnum.Keys.UterineContractionIntensity:
-                        Patient.Contraction_Intensity.Value = (Scales.Intensity.Values)Enum.Parse (typeof (Scales.Intensity.Values), e.Value);
+                        Patient.ObstetricContractionIntensity.Value = (Scales.Intensity.Values)Enum.Parse (typeof (Scales.Intensity.Values), e.Value);
                         break;
                 }
             }
@@ -307,13 +307,13 @@ namespace IISE.Windows {
                     default: break;
 
                     case PropertyList.Keys.FetalHeartRhythms:
-                        if (Patient.FetalHeartRhythm.ValueList is null)
-                            Patient.FetalHeartRhythm.ValueList = new ();
+                        if (Patient.ObstetricFetalHeartRhythm.ValueList is null)
+                            Patient.ObstetricFetalHeartRhythm.ValueList = new ();
                         else
-                            Patient.FetalHeartRhythm.ValueList.Clear ();
+                            Patient.ObstetricFetalHeartRhythm.ValueList.Clear ();
 
                         foreach (string s in e.Values)
-                            Patient.FetalHeartRhythm.ValueList.Add ((FetalHeartRhythms.Values)Enum.Parse (typeof (FetalHeartRhythms.Values), s));
+                            Patient.ObstetricFetalHeartRhythm.ValueList.Add ((FetalHeartRhythms.Values)Enum.Parse (typeof (FetalHeartRhythms.Values), s));
                         break;
                 }
             }
@@ -510,9 +510,9 @@ namespace IISE.Windows {
                 await penmRespiratoryRhythms.Set ((int)Patient.Respiratory_Rhythm.Value);
                 await penmPACatheterRhythm.Set ((int)Patient.PulmonaryArtery_Placement.Value);
                 await penmCardiacAxis.Set ((int)Patient.Cardiac_Axis.Value);
-                await penmFHRVariability.Set ((int)Patient.FHR_Variability.Value);
-                await penmUCIntensity.Set ((int)Patient.Contraction_Intensity.Value);
-                await plistFetalHeartRhythm.Set (new List<string> (Patient.FetalHeartRhythm.ValueList.Select (s => s.ToString ())));
+                await penmFHRVariability.Set ((int)Patient.ObstetricFetalVariabilityIntensity.Value);
+                await penmUCIntensity.Set ((int)Patient.ObstetricContractionIntensity.Value);
+                await plistFetalHeartRhythm.Set (new List<string> (Patient.ObstetricFetalHeartRhythm.ValueList.Select (s => s.ToString ())));
 
                 await pintHR.Set (Patient.VS_Settings.HR);
                 await pintRR.Set (Patient.VS_Settings.RR);
@@ -522,9 +522,9 @@ namespace IISE.Windows {
                 await pintICP.Set (Patient.VS_Settings.ICP);
                 await pintIAP.Set (Patient.VS_Settings.IAP);
                 await pintPacemakerThreshold.Set (Patient.Pacemaker_Threshold);
-                await pintFHR.Set (Patient.FHR);
-                await pintUCFreq.Set (Patient.Contraction_Frequency);
-                await pintUCDur.Set (Patient.Contraction_Duration);
+                await pintFHR.Set (Patient.ObstetricFetalHeartRate);
+                await pintUCFreq.Set (Patient.ObstetricContractionFrequency);
+                await pintUCDur.Set (Patient.ObstetricContractionDuration);
             }
         }
 
