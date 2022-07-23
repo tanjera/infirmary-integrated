@@ -273,7 +273,7 @@
             <Button
 							Name="btnDeviceEFM"
 							Classes="device"
-							Click="ButtonDeviceEFM_Click" IsVisible="False">
+							Click="ButtonDeviceEFM_Click">
               <StackPanel Orientation="Horizontal">
                 <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceEFM_48.png" />
                 <Label Name="lblDeviceEFM" Classes="device" />

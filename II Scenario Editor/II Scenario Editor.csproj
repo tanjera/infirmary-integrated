@@ -109,6 +109,9 @@
     <Compile Update="Controls\ItemStepEnd.axaml.cs">
       <DependentUpon>ItemStepEnd.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Controls\PropertyList.axaml.cs">
+      <DependentUpon>PropertyList.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Controls\PropertyCombo.axaml.cs">
       <DependentUpon>PropertyCombo.axaml</DependentUpon>
     </Compile>

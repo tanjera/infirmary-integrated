@@ -532,14 +532,14 @@ namespace II {
         }
     }
 
-    public class FHRAccelDecels {
+    public class FetalHeartRhythms {
         public List<Values> ValueList;
 
-        public FHRAccelDecels (List<Values> v) {
+        public FetalHeartRhythms (List<Values> v) {
             ValueList = v;
         }
 
-        public FHRAccelDecels () {
+        public FetalHeartRhythms () {
             ValueList = new List<Values> ();
         }
 

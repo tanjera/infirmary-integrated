@@ -16,7 +16,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
-
     public class Patient {
         /* Mirroring variables */
         public DateTime Updated;                    // DateTime this Patient was last updated
@@ -51,12 +50,11 @@ namespace II {
         public Scales.Intensity Contraction_Intensity = new (),
                          FHR_Variability = new ();
 
-        public double Contraction_Frequency;     // Frequency in seconds
+        public int Contraction_Frequency,     // Frequency in seconds
+                    Contraction_Duration,     // Duration in seconds
+                    FHR;                      // Baseline fetal heart rate
 
-        public int Contraction_Duration,         // Duration in seconds
-                    FHR;                         // Baseline fetal heart rate
-
-        public FHRAccelDecels FHR_AccelDecels = new ();
+        public FetalHeartRhythms FetalHeartRhythm = new ();
         public bool Uterus_Contracted = true;
 
         /* General Device Settings */
@@ -201,7 +199,7 @@ namespace II {
             Task.Run (async () => await UpdateParameters_Obstetric (
                             150,
                             Scales.Intensity.Values.Mild,
-                            new List<FHRAccelDecels.Values> (),
+                            new List<FetalHeartRhythms.Values> (),
                             300,
                             60,
                             Scales.Intensity.Values.Moderate));
@@ -582,10 +580,10 @@ namespace II {
                             case "FHR_Variability": FHR_Variability.Value = (Scales.Intensity.Values)Enum.Parse (typeof (Scales.Intensity.Values), pValue); break;
                             case "FHR_Rhythms":
                                 foreach (string fhr_rhythm in pValue.Split (',').Where ((o) => o != ""))
-                                    FHR_AccelDecels.ValueList.Add ((FHRAccelDecels.Values)Enum.Parse (typeof (FHRAccelDecels.Values), fhr_rhythm));
+                                    FetalHeartRhythm.ValueList.Add ((FetalHeartRhythms.Values)Enum.Parse (typeof (FetalHeartRhythms.Values), fhr_rhythm));
                                 break;
 
-                            case "UterineContraction_Frequency": Contraction_Frequency = double.Parse (pValue); break;
+                            case "UterineContraction_Frequency": Contraction_Frequency = int.Parse (pValue); break;
                             case "UterineContraction_Duration": Contraction_Duration = int.Parse (pValue); break;
                             case "UterineContraction_Intensity": Contraction_Intensity.Value = (Scales.Intensity.Values)Enum.Parse (typeof (Scales.Intensity.Values), pValue); break;
                             case "Uterus_Contracted": Uterus_Contracted = bool.Parse (pValue); break;
@@ -680,7 +678,7 @@ namespace II {
             // Obstetric profile
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "FHR", FHR));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "FHR_Variability", FHR_Variability.Value));
-            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "FHR_Rhythms", string.Join (",", FHR_AccelDecels.ValueList)));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "FHR_Rhythms", string.Join (",", FetalHeartRhythm.ValueList)));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "UterineContraction_Frequency", Contraction_Frequency));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "UterineContraction_Duration", Contraction_Duration));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "UterineContraction_Intensity", Contraction_Intensity.Value));
@@ -880,8 +878,8 @@ namespace II {
         }
 
         public async Task UpdateParameters_Obstetric (
-                    int fhr, Scales.Intensity.Values fhr_var, List<FHRAccelDecels.Values> fhr_rhythms,
-                    double uc_freq, int uc_duration, Scales.Intensity.Values uc_intensity) {
+                    int fhr, Scales.Intensity.Values fhr_var, List<FetalHeartRhythms.Values> fhr_rhythms,
+                    int uc_freq, int uc_duration, Scales.Intensity.Values uc_intensity) {
             await UpdateParametersSilent_Obstetric (
                 fhr, fhr_var, fhr_rhythms,
                 uc_freq, uc_duration, uc_intensity);
@@ -891,14 +889,14 @@ namespace II {
         }
 
         public Task UpdateParametersSilent_Obstetric (
-                int fhr, Scales.Intensity.Values fhr_var, List<FHRAccelDecels.Values> fhr_rhythms,
-                double uc_freq, int uc_duration, Scales.Intensity.Values uc_intensity) {
+                int fhr, Scales.Intensity.Values fhr_var, List<FetalHeartRhythms.Values> fhr_rhythms,
+                int uc_freq, int uc_duration, Scales.Intensity.Values uc_intensity) {
             Updated = DateTime.UtcNow;
 
             // Obstetric profile
             FHR = fhr;
             FHR_Variability.Value = fhr_var;
-            FHR_AccelDecels.ValueList = fhr_rhythms;
+            FetalHeartRhythm.ValueList = fhr_rhythms;
             Contraction_Frequency = uc_freq;
             Contraction_Duration = uc_duration;
             Contraction_Intensity.Value = uc_intensity;
