@@ -18,7 +18,6 @@ using II.Drawing;
 using II.Waveform;
 
 namespace II.Rhythm {
-
     public class Strip {
         /* Default variables for easy modification of multiple measurement/tracing functions */
         public const double DefaultLength = 6.0d;

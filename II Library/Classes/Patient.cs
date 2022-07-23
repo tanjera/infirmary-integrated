@@ -53,6 +53,7 @@ namespace II {
                     ObstetricContractionDuration;     // Duration in seconds
 
         public double ObstetricContractionIntensity;    // % of Tocograph
+
         public FetalHeartRhythms ObstetricFetalHeartRhythm = new ();
         public bool ObstetricUterusContracted = true;
 
@@ -918,6 +919,7 @@ namespace II {
             ObstetricContractionFrequency = uc_freq;
             ObstetricContractionDuration = uc_duration;
             ObstetricContractionIntensity = uc_intensity;
+
 
             // Reset actual vital signs to set parameters
             await VS_Actual.Set (VS_Settings);
