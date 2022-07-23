@@ -62,7 +62,6 @@ namespace IISE.Controls {
 
             cmbEnumeration.Items = listItems;
             cmbEnumeration.SelectionChanged += SendPropertyChange;
-            cmbEnumeration.LostFocus += SendPropertyChange;
 
             return Task.CompletedTask;
         }
