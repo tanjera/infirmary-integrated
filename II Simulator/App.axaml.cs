@@ -109,7 +109,9 @@ namespace IISIM {
 
             Window_Main?.Close ();
 
-            AudioLib?.Dispose ();
+            try {               // If not fully initialized, may throw an exception... since exiting, just abort.
+                AudioLib?.Dispose ();
+            } catch { }
         }
 
         public static Task MacOSRegisterLaunchServices () {
