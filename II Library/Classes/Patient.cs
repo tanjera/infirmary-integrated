@@ -48,12 +48,11 @@ namespace II {
 
         /* Obstetric profile */
 
-        public Scales.Intensity ObstetricContractionIntensity = new (),
-                                ObstetricFetalVariabilityIntensity = new ();
+        public int ObstetricFetalVariability,
+                    ObstetricContractionFrequency,     // Frequency in seconds
+                    ObstetricContractionDuration;     // Duration in seconds
 
-        public int ObstetricContractionFrequency,     // Frequency in seconds
-                    ObstetricContractionDuration,     // Duration in seconds
-                    ObstetricFetalHeartRate;          // Baseline fetal heart rate
+        public double ObstetricContractionIntensity;    // % of Tocograph
 
         public FetalHeartRhythms ObstetricFetalHeartRhythm = new ();
         public bool ObstetricUterusContracted = true;
@@ -93,6 +92,7 @@ namespace II {
                         TimerRespiratory_Inspiration = new (),
                         TimerRespiratory_Expiration = new (),
                         TimerObstetric_Baseline = new (),
+                        TimerObstetric_Fetal_Baseline = new (),
                         TimerObstetric_Contraction = new ();
 
         private static int Default_Electromechanical_Delay = 180;   // Delay in electrical to mechanical capture in milliseconds
@@ -133,6 +133,8 @@ namespace II {
             public double RR_IE_I,               // Inspiratory to expiratory ratio
                          RR_IE_E;
 
+            public int FetalHR;          // Baseline fetal heart rate
+
             public Vital_Signs () {
             }
 
@@ -160,6 +162,7 @@ namespace II {
                 T = v.T;
                 RR_IE_I = v.RR_IE_I;
                 RR_IE_E = v.RR_IE_E;
+                FetalHR = v.FetalHR;
 
                 return Task.CompletedTask;
             }
@@ -201,11 +204,11 @@ namespace II {
 
             Task.Run (async () => await UpdateParameters_Obstetric (
                             150,
-                            Scales.Intensity.Values.Mild,
+                            10,
                             new List<FetalHeartRhythms.Values> (),
-                            300,
-                            60,
-                            Scales.Intensity.Values.Moderate));
+                            120,
+                            30,
+                            0.8d));
 
             Task.Run (async () => await InitTimers ());
             Task.Run (async () => await ResetStartTimers ());
@@ -229,6 +232,7 @@ namespace II {
             TimerRespiratory_Inspiration.Dispose ();
             TimerRespiratory_Expiration.Dispose ();
             TimerObstetric_Baseline.Dispose ();
+            TimerObstetric_Fetal_Baseline.Dispose ();
             TimerObstetric_Contraction.Dispose ();
         }
 
@@ -330,6 +334,11 @@ namespace II {
         public double RR_IE_E {
             get { return VS_Actual.RR_IE_E; }
             set { VS_Settings.RR_IE_E = value; }
+        }
+
+        public int Fetal_HR {
+            get { return VS_Actual.FetalHR; }
+            set { VS_Settings.FetalHR = value; }
         }
 
         /* Methods for counting, calculating, and measuring vital signs, timing re: vital signs, etc. */
@@ -454,6 +463,7 @@ namespace II {
             Respiratory_Inspiration,
             Respiratory_Expiration,
             Obstetric_Baseline,
+            Obstetric_Fetal_Baseline,
             Obstetric_Contraction_Start,
             Obstetric_Contraction_End
         }
@@ -502,6 +512,7 @@ namespace II {
             TimerRespiratory_Inspiration.Process ();
             TimerRespiratory_Expiration.Process ();
             TimerObstetric_Baseline.Process ();
+            TimerObstetric_Fetal_Baseline.Process ();
             TimerObstetric_Contraction.Process ();
         }
 
@@ -578,8 +589,8 @@ namespace II {
                                 break;
 
                             // Obstetric profile
-                            case "ObstetricFetalHeartRate": ObstetricFetalHeartRate = int.Parse (pValue); break;
-                            case "ObstetricFetalVariabilityIntensity": ObstetricFetalVariabilityIntensity.Value = (Scales.Intensity.Values)Enum.Parse (typeof (Scales.Intensity.Values), pValue); break;
+                            case "ObstetricFetalHeartRate": VS_Settings.FetalHR = int.Parse (pValue); break;
+                            case "ObstetricFetalVariability": ObstetricFetalVariability = int.Parse (pValue); break;
                             case "ObstetricFetalHeartRhythm":
                                 foreach (string fhr_rhythm in pValue.Split (',').Where ((o) => o != ""))
                                     ObstetricFetalHeartRhythm.ValueList.Add ((FetalHeartRhythms.Values)Enum.Parse (typeof (FetalHeartRhythms.Values), fhr_rhythm));
@@ -587,7 +598,7 @@ namespace II {
 
                             case "ObstetricContractionFrequency": ObstetricContractionFrequency = int.Parse (pValue); break;
                             case "ObstetricContractionDuration": ObstetricContractionDuration = int.Parse (pValue); break;
-                            case "ObstetricContractionIntensity": ObstetricContractionIntensity.Value = (Scales.Intensity.Values)Enum.Parse (typeof (Scales.Intensity.Values), pValue); break;
+                            case "ObstetricContractionIntensity": ObstetricContractionIntensity = double.Parse (pValue); break;
 
                             // Flags specific for Patient modeling
                             case "Respiration_Inflated": Respiration_Inflated = bool.Parse (pValue); break;
@@ -680,12 +691,12 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "T_Elevation", string.Join (",", T_Elevation ?? new double [12])));
 
             // Obstetric profile
-            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricFetalHeartRate", ObstetricFetalHeartRate));
-            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricFetalVariabilityIntensity", ObstetricFetalVariabilityIntensity.Value));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricFetalHeartRate", VS_Settings.FetalHR));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricFetalVariability", ObstetricFetalVariability));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricFetalHeartRhythm", string.Join (",", ObstetricFetalHeartRhythm.ValueList)));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricContractionFrequency", ObstetricContractionFrequency));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricContractionDuration", ObstetricContractionDuration));
-            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricContractionIntensity", ObstetricContractionIntensity.Value));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricContractionIntensity", ObstetricContractionIntensity));
 
             // Flags for Patient modeling
 
@@ -886,8 +897,8 @@ namespace II {
         }
 
         public async Task UpdateParameters_Obstetric (
-                    int fhr, Scales.Intensity.Values fhr_var, List<FetalHeartRhythms.Values> fhr_rhythms,
-                    int uc_freq, int uc_duration, Scales.Intensity.Values uc_intensity) {
+                    int fhr, int fhr_var, List<FetalHeartRhythms.Values> fhr_rhythms,
+                    int uc_freq, int uc_duration, double uc_intensity) {
             await UpdateParametersSilent_Obstetric (
                 fhr, fhr_var, fhr_rhythms,
                 uc_freq, uc_duration, uc_intensity);
@@ -896,20 +907,22 @@ namespace II {
             await OnPatientEvent (PatientEventTypes.Vitals_Change);
         }
 
-        public Task UpdateParametersSilent_Obstetric (
-                int fhr, Scales.Intensity.Values fhr_var, List<FetalHeartRhythms.Values> fhr_rhythms,
-                int uc_freq, int uc_duration, Scales.Intensity.Values uc_intensity) {
+        public async Task UpdateParametersSilent_Obstetric (
+                int fhr, int fhr_var, List<FetalHeartRhythms.Values> fhr_rhythms,
+                int uc_freq, int uc_duration, double uc_intensity) {
             Updated = DateTime.UtcNow;
 
             // Obstetric profile
-            ObstetricFetalHeartRate = fhr;
-            ObstetricFetalVariabilityIntensity.Value = fhr_var;
+            VS_Settings.FetalHR = fhr;
+            ObstetricFetalVariability = fhr_var;
             ObstetricFetalHeartRhythm.ValueList = fhr_rhythms;
             ObstetricContractionFrequency = uc_freq;
             ObstetricContractionDuration = uc_duration;
-            ObstetricContractionIntensity.Value = uc_intensity;
+            ObstetricContractionIntensity = uc_intensity;
 
-            return Task.CompletedTask;
+
+            // Reset actual vital signs to set parameters
+            await VS_Actual.Set (VS_Settings);
         }
 
         public async Task ClampVitals (
@@ -959,6 +972,7 @@ namespace II {
             TimerRespiratory_Expiration.Tick += async delegate { await OnRespiratory_Expiration (); };
 
             TimerObstetric_Baseline.Tick += async delegate { await OnObstetric_Baseline (); };
+            TimerObstetric_Fetal_Baseline.Tick += async delegate { await OnObstetric_Fetal_Baseline (); };
             TimerObstetric_Contraction.Tick += async delegate { await OnObstetric_Contraction (); };
 
             return Task.CompletedTask;
@@ -994,6 +1008,7 @@ namespace II {
 
         private async Task ResetStartTimers_Obstetric () {
             await TimerObstetric_Baseline.ResetStart (1);
+            await TimerObstetric_Fetal_Baseline.ResetStart (1);
             await TimerObstetric_Contraction.Stop ();
         }
 
@@ -1023,6 +1038,7 @@ namespace II {
 
         private async Task StopTimers_Obstetric () {
             await TimerObstetric_Baseline.Stop ();
+            await TimerObstetric_Fetal_Baseline.Stop ();
             await TimerObstetric_Contraction.Stop ();
         }
 
@@ -1520,8 +1536,17 @@ namespace II {
             await OnObstetric_RunTimers ();
         }
 
+        private async Task OnObstetric_Fetal_Baseline () {
+            await OnPatientEvent (PatientEventTypes.Obstetric_Fetal_Baseline);
+
+            // Must be divided by the TimerObstetric_Multiplier or else the speed multiplier effects the actual waveform drawing
+            await TimerObstetric_Fetal_Baseline.ResetStart (5000 / TimerObstetric_Multiplier);
+
+            // Implementation of fetal heart rate variability
+        }
+
         private async Task OnObstetric_RunTimers () {
-            if (ObstetricContractionFrequency <= 0 || ObstetricContractionIntensity.Value == Scales.Intensity.Values.Absent) {
+            if (ObstetricContractionFrequency <= 0 || ObstetricContractionIntensity == 0d) {
                 // No active labor (no contraciton frequency or contraction intensity is absent
                 await TimerObstetric_Contraction.Stop ();
                 ObstetricUterusContracted = false;

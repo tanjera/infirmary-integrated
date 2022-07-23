@@ -273,7 +273,7 @@
             <Button
 							Name="btnDeviceEFM"
 							Classes="device"
-							Click="ButtonDeviceEFM_Click" IsVisible="False">
+							Click="ButtonDeviceEFM_Click">
               <StackPanel Orientation="Horizontal">
                 <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceEFM_48.png" />
                 <Label Name="lblDeviceEFM" Classes="device" />
@@ -1397,14 +1397,18 @@
 										Name="lblFHRVariability"
 										Grid.Row="2"
 										Grid.Column="0" />
-                  <ComboBox
-										Name="comboFHRVariability"
+                  <NumericUpDown
+										Name="numFHRVariability"
 										Grid.Row="2"
 										Grid.Column="1"
 										Classes="vitals"
+										FormatString="{}{0:#0}"
+										Increment="5"
 										KeyDown="OnUIPatientParameter_KeyDown"
 										LostFocus="OnUIPatientParameter_LostFocus"
-										SelectionChanged="OnUIPatientParameter_Changed" />
+										Maximum="80"
+										Minimum="0"
+										ValueChanged="OnUIPatientParameter_Changed" />
 
                   <Label
 										Name="lblUCFrequency"
@@ -1443,14 +1447,18 @@
 										Name="lblUCIntensity"
 										Grid.Row="5"
 										Grid.Column="0" />
-                  <ComboBox
-										Name="comboUCIntensity"
+                  <NumericUpDown
+										Name="numUCIntensity"
 										Grid.Row="5"
 										Grid.Column="1"
 										Classes="vitals"
+										FormatString="{}{0:#0.0}"
+										Increment="0.1"
 										KeyDown="OnUIPatientParameter_KeyDown"
 										LostFocus="OnUIPatientParameter_LostFocus"
-										SelectionChanged="OnUIPatientParameter_Changed" />
+										Maximum="1"
+										Minimum="0"
+										ValueChanged="OnUIPatientParameter_Changed" />
                 </Grid>
               </Expander>
             </Border>
