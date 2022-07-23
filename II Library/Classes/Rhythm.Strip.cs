@@ -17,7 +17,6 @@ using II.Drawing;
 using II.Waveform;
 
 namespace II.Rhythm {
-
     public class Strip {
         /* Default variables for easy modification of multiple measurement/tracing functions */
         public const double DefaultLength = 6.0d;
@@ -75,19 +74,16 @@ namespace II.Rhythm {
 
         public Strip (Lead.Values lead) {
             double length = IsRespiratory ? DefaultLength * DefaultRespiratoryCoefficient : DefaultLength;
-            Initialize (lead, length, length, 1.0d);
+            Initialize (lead, length, length);
         }
 
         public Strip (Lead.Values lead, double length)
-            => Initialize (lead, length, length, 1.0d);
+            => Initialize (lead, length, length);
 
         public Strip (Lead.Values lead, double length, double displayLength)
-            => Initialize (lead, length, displayLength, 1.0d);
+            => Initialize (lead, length, displayLength);
 
-        public Strip (Lead.Values lead, double length, double displayLength, double resolution)
-            => Initialize (lead, length, displayLength, resolution);
-
-        public void Initialize (Lead.Values lead, double length, double displayLength, double resolution) {
+        public void Initialize (Lead.Values lead, double length, double displayLength) {
             Lead = new Lead (lead);
 
             Length = length;
