@@ -77,6 +77,12 @@ namespace IISE.Windows {
 
                 foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
                     cardiacAxes.Add (App.Language.Dictionary [Cardiac_Axes.LookupString (v)]);
+
+                foreach (Scales.Intensity.Values v in Enum.GetValues (typeof (Scales.Intensity.Values)))
+                    intensityScale.Add (App.Language.Dictionary [Scales.Intensity.LookupString (v)]);
+
+                foreach (FetalHeartRhythms.Values v in Enum.GetValues (typeof (FetalHeartRhythms.Values)))
+                    fetalHeartRhythms.Add (App.Language.Dictionary [FetalHeartRhythms.LookupString (v)]);
             }
 
             // Find all controls and attach to reference
@@ -103,6 +109,10 @@ namespace IISE.Windows {
             PropertyEnum penmRespiratoryRhythms = this.FindControl<PropertyEnum> ("penmRespiratoryRhythms");
             PropertyEnum penmCardiacAxis = this.FindControl<PropertyEnum> ("penmCardiacAxis");
             PropertyEnum penmPACatheterRhythm = this.FindControl<PropertyEnum> ("penmPACatheterRhythm");
+            PropertyEnum penmFHRVariability = this.FindControl<PropertyEnum> ("penmFHRVariability");
+            PropertyEnum penmUCIntensity = this.FindControl<PropertyEnum> ("penmUCIntensity");
+
+            PropertyList plistFetalHeartRhythm = this.FindControl<PropertyList> ("plistFetalHeartRhythm");
 
             PropertyInt pintHR = this.FindControl<PropertyInt> ("pintHR");
             PropertyInt pintRR = this.FindControl<PropertyInt> ("pintRR");
@@ -112,6 +122,9 @@ namespace IISE.Windows {
             PropertyInt pintICP = this.FindControl<PropertyInt> ("pintICP");
             PropertyInt pintIAP = this.FindControl<PropertyInt> ("pintIAP");
             PropertyInt pintPacemakerThreshold = this.FindControl<PropertyInt> ("pintPacemakerThreshold");
+            PropertyInt pintFHR = this.FindControl<PropertyInt> ("pintFHR");
+            PropertyInt pintUCFreq = this.FindControl<PropertyInt> ("pintUCFreq");
+            PropertyInt pintUCDur = this.FindControl<PropertyInt> ("pintUCDur");
 
             // Initiate controls for editing Patient values
             pbpNBP.Init (PropertyBP.Keys.NSBP, 5, 0, 300, 5, 0, 200);
@@ -141,6 +154,12 @@ namespace IISE.Windows {
                 Enum.GetNames (typeof (PulmonaryArtery_Rhythms.Values)), pulmonaryRhythms);
             penmCardiacAxis.Init (PropertyEnum.Keys.Cardiac_Axis,
                 Enum.GetNames (typeof (Cardiac_Axes.Values)), cardiacAxes);
+            penmFHRVariability.Init (PropertyEnum.Keys.FetalRhythmVariability,
+                Enum.GetNames (typeof (Scales.Intensity.Values)), intensityScale);
+            penmUCIntensity.Init (PropertyEnum.Keys.UterineContractionIntensity,
+                Enum.GetNames (typeof (Scales.Intensity.Values)), intensityScale);
+            plistFetalHeartRhythm.Init (PropertyList.Keys.FetalHeartRhythms,
+                Enum.GetNames (typeof (FetalHeartRhythms.Values)), fetalHeartRhythms);
 
             pintHR.Init (PropertyInt.Keys.HR, 5, 0, 500);
             pintRR.Init (PropertyInt.Keys.RR, 2, 0, 100);
@@ -148,9 +167,11 @@ namespace IISE.Windows {
             pintICP.Init (PropertyInt.Keys.ICP, 1, -100, 100);
             pintIAP.Init (PropertyInt.Keys.IAP, 1, -100, 100);
             pintPacemakerThreshold.Init (PropertyInt.Keys.PacemakerThreshold, 5, 0, 200);
-
             pintETCO2.Init (PropertyInt.Keys.ETCO2, 2, 0, 100);
             pintCVP.Init (PropertyInt.Keys.CVP, 1, -100, 100);
+            pintFHR.Init (PropertyInt.Keys.FHR, 5, 0, 500);
+            pintUCFreq.Init (PropertyInt.Keys.UCFrequency, 30, 60, 600);
+            pintUCDur.Init (PropertyInt.Keys.UCDuration, 10, 30, 600);
 
             pbpNBP.PropertyChanged += UpdatePatient;
             pbpABP.PropertyChanged += UpdatePatient;
@@ -175,6 +196,9 @@ namespace IISE.Windows {
             penmRespiratoryRhythms.PropertyChanged += UpdatePatient;
             penmPACatheterRhythm.PropertyChanged += UpdatePatient;
             penmCardiacAxis.PropertyChanged += UpdatePatient;
+            penmFHRVariability.PropertyChanged += UpdatePatient;
+            penmUCIntensity.PropertyChanged += UpdatePatient;
+            plistFetalHeartRhythm.PropertyChanged += UpdatePatient;
 
             penmCardiacRhythms.PropertyChanged += UpdateCardiacRhythm;
             penmRespiratoryRhythms.PropertyChanged += UpdateRespiratoryRhythm;
@@ -188,6 +212,9 @@ namespace IISE.Windows {
             pintETCO2.PropertyChanged += UpdatePatient;
             pintCVP.PropertyChanged += UpdatePatient;
             pintPacemakerThreshold.PropertyChanged += UpdatePatient;
+            pintFHR.PropertyChanged += UpdatePatient;
+            pintUCFreq.PropertyChanged += UpdatePatient;
+            pintUCDur.PropertyChanged += UpdatePatient;
 
             return Task.CompletedTask;
         }
@@ -204,6 +231,9 @@ namespace IISE.Windows {
                     case PropertyInt.Keys.ICP: Patient.ICP = e.Value; break;
                     case PropertyInt.Keys.IAP: Patient.IAP = e.Value; break;
                     case PropertyInt.Keys.PacemakerThreshold: Patient.Pacemaker_Threshold = e.Value; break;
+                    case PropertyInt.Keys.FHR: Patient.ObstetricFetalHeartRate = e.Value; break;
+                    case PropertyInt.Keys.UCFrequency: Patient.ObstetricContractionFrequency = e.Value; break;
+                    case PropertyInt.Keys.UCDuration: Patient.ObstetricContractionDuration = e.Value; break;
                 }
             }
         }
@@ -258,6 +288,32 @@ namespace IISE.Windows {
 
                     case PropertyEnum.Keys.PACatheter_Rhythms:
                         Patient.PulmonaryArtery_Placement.Value = (PulmonaryArtery_Rhythms.Values)Enum.Parse (typeof (PulmonaryArtery_Rhythms.Values), e.Value);
+                        break;
+
+                    case PropertyEnum.Keys.FetalRhythmVariability:
+                        Patient.ObstetricFetalVariabilityIntensity.Value = (Scales.Intensity.Values)Enum.Parse (typeof (Scales.Intensity.Values), e.Value);
+                        break;
+
+                    case PropertyEnum.Keys.UterineContractionIntensity:
+                        Patient.ObstetricContractionIntensity.Value = (Scales.Intensity.Values)Enum.Parse (typeof (Scales.Intensity.Values), e.Value);
+                        break;
+                }
+            }
+        }
+
+        private void UpdatePatient (object? sender, PropertyList.PropertyListEventArgs e) {
+            if (e.Values != null && Patient != null) {
+                switch (e.Key) {
+                    default: break;
+
+                    case PropertyList.Keys.FetalHeartRhythms:
+                        if (Patient.ObstetricFetalHeartRhythm.ValueList is null)
+                            Patient.ObstetricFetalHeartRhythm.ValueList = new ();
+                        else
+                            Patient.ObstetricFetalHeartRhythm.ValueList.Clear ();
+
+                        foreach (string s in e.Values)
+                            Patient.ObstetricFetalHeartRhythm.ValueList.Add ((FetalHeartRhythms.Values)Enum.Parse (typeof (FetalHeartRhythms.Values), s));
                         break;
                 }
             }
@@ -366,6 +422,10 @@ namespace IISE.Windows {
             PropertyEnum penmRespiratoryRhythms = this.FindControl<PropertyEnum> ("penmRespiratoryRhythms");
             PropertyEnum penmCardiacAxis = this.FindControl<PropertyEnum> ("penmCardiacAxis");
             PropertyEnum penmPACatheterRhythm = this.FindControl<PropertyEnum> ("penmPACatheterRhythm");
+            PropertyEnum penmFHRVariability = this.FindControl<PropertyEnum> ("penmFHRVariability");
+            PropertyEnum penmUCIntensity = this.FindControl<PropertyEnum> ("penmUCIntensity");
+
+            PropertyList plistFetalHeartRhythm = this.FindControl<PropertyList> ("plistFetalHeartRhythm");
 
             PropertyInt pintHR = this.FindControl<PropertyInt> ("pintHR");
             PropertyInt pintRR = this.FindControl<PropertyInt> ("pintRR");
@@ -375,6 +435,9 @@ namespace IISE.Windows {
             PropertyInt pintICP = this.FindControl<PropertyInt> ("pintICP");
             PropertyInt pintIAP = this.FindControl<PropertyInt> ("pintIAP");
             PropertyInt pintPacemakerThreshold = this.FindControl<PropertyInt> ("pintPacemakerThreshold");
+            PropertyInt pintFHR = this.FindControl<PropertyInt> ("pintFHR");
+            PropertyInt pintUCFreq = this.FindControl<PropertyInt> ("pintUCFreq");
+            PropertyInt pintUCDur = this.FindControl<PropertyInt> ("pintUCDur");
 
             lblActiveStep.Content = String.Format ("Editing Step: {0} ({1})",
                 Step is null ? "N/A" : Step.Name,
@@ -406,6 +469,9 @@ namespace IISE.Windows {
             penmRespiratoryRhythms.IsEnabled = (Patient != null);
             penmPACatheterRhythm.IsEnabled = (Patient != null);
             penmCardiacAxis.IsEnabled = (Patient != null);
+            penmFHRVariability.IsEnabled = (Patient != null);
+            penmUCIntensity.IsEnabled = (Patient != null);
+            plistFetalHeartRhythm.IsEnabled = (Patient != null);
 
             pintHR.IsEnabled = (Patient != null);
             pintRR.IsEnabled = (Patient != null);
@@ -415,6 +481,9 @@ namespace IISE.Windows {
             pintICP.IsEnabled = (Patient != null);
             pintIAP.IsEnabled = (Patient != null);
             pintPacemakerThreshold.IsEnabled = (Patient != null);
+            pintFHR.IsEnabled = (Patient != null);
+            pintUCFreq.IsEnabled = (Patient != null);
+            pintUCDur.IsEnabled = (Patient != null);
 
             if (Patient != null) {
                 // Update all controls with Patient values
@@ -441,6 +510,9 @@ namespace IISE.Windows {
                 await penmRespiratoryRhythms.Set ((int)Patient.Respiratory_Rhythm.Value);
                 await penmPACatheterRhythm.Set ((int)Patient.PulmonaryArtery_Placement.Value);
                 await penmCardiacAxis.Set ((int)Patient.Cardiac_Axis.Value);
+                await penmFHRVariability.Set ((int)Patient.ObstetricFetalVariabilityIntensity.Value);
+                await penmUCIntensity.Set ((int)Patient.ObstetricContractionIntensity.Value);
+                await plistFetalHeartRhythm.Set (new List<string> (Patient.ObstetricFetalHeartRhythm.ValueList.Select (s => s.ToString ())));
 
                 await pintHR.Set (Patient.VS_Settings.HR);
                 await pintRR.Set (Patient.VS_Settings.RR);
@@ -450,6 +522,9 @@ namespace IISE.Windows {
                 await pintICP.Set (Patient.VS_Settings.ICP);
                 await pintIAP.Set (Patient.VS_Settings.IAP);
                 await pintPacemakerThreshold.Set (Patient.Pacemaker_Threshold);
+                await pintFHR.Set (Patient.ObstetricFetalHeartRate);
+                await pintUCFreq.Set (Patient.ObstetricContractionFrequency);
+                await pintUCDur.Set (Patient.ObstetricContractionDuration);
             }
         }
 

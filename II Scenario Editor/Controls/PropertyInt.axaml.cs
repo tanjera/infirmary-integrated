@@ -17,6 +17,10 @@ namespace IISE.Controls {
             CVP,                            // Central venous pressure,
             ICP, IAP,                       // Intracranial pressure, intra-abdominal pressure
             PacemakerThreshold,
+
+            FHR,                            // Fetal heart rate
+            UCFrequency, UCDuration,        // Uterine contraction parameters
+
             ProgressTimer
         }
 
@@ -55,6 +59,9 @@ namespace IISE.Controls {
                 case Keys.ICP: lblKey.Content = "Intra-cranial Pressure: "; break;
                 case Keys.IAP: lblKey.Content = "Intra-abdominal Pressure: "; break;
                 case Keys.PacemakerThreshold: lblKey.Content = "Pacemaker Capture Threshold: "; break;
+                case Keys.FHR: lblKey.Content = "Fetal Heart Rate: "; break;
+                case Keys.UCFrequency: lblKey.Content = "Uterine Contraction Frequency (in seconds): "; break;
+                case Keys.UCDuration: lblKey.Content = "Uterine Contraction Duration (in seconds): "; break;
                 case Keys.ProgressTimer: lblKey.Content = "Time (in seconds) until next step: "; break;
             }
 

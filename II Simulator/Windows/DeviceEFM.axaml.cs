@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 using Avalonia;
 using Avalonia.Controls;
@@ -46,16 +47,19 @@ namespace IISIM {
 
         private void InitInterface () {
             /* Populate UI strings per language selection */
-            this.FindControl<Window> ("wdwDeviceEFM").Title = Instance.Language.Localize ("EFM:WindowTitle");
-            this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
-            this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
-            this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
-            this.FindControl<MenuItem> ("menuLength").Header = Instance.Language.Localize ("MENU:StripLength");
-            this.FindControl<MenuItem> ("menu1Min").Header = Instance.Language.Localize ("MENU:StripLength_1Min");
-            this.FindControl<MenuItem> ("menu10Min").Header = Instance.Language.Localize ("MENU:StripLength_10Min");
-            this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
-            this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
-            this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
+            if (Instance is not null) {
+                this.FindControl<Window> ("wdwDeviceEFM").Title = Instance.Language.Localize ("EFM:WindowTitle");
+                this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
+                this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+                this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
+                this.FindControl<MenuItem> ("menuStripSpeed").Header = Instance.Language.Localize ("MENU:StripSpeed");
+                this.FindControl<MenuItem> ("menuStripSpeedx1").Header = Instance.Language.Localize ("MENU:StripSpeedx1");
+                this.FindControl<MenuItem> ("menuStripxSpeedx10").Header = Instance.Language.Localize ("MENU:StripSpeedx10");
+                this.FindControl<MenuItem> ("menuStripxSpeedx25").Header = Instance.Language.Localize ("MENU:StripSpeedx25");
+                this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
+                this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
+                this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
+            }
 
             Grid displayGrid = this.FindControl<Grid> ("displayGrid");
 
@@ -99,7 +103,7 @@ namespace IISIM {
             try {
                 string? line;
                 while ((line = sRead.ReadLine ()) != null) {
-                    if (line.Contains (":")) {
+                    if (line.Contains (':')) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1);
                         switch (pName) {
@@ -124,10 +128,8 @@ namespace IISIM {
             UpdateInterface ();
         }
 
-        private void SetStripLength (int seconds) {
-            listTracings.ForEach (c => {
-                c.Strip = new Strip (c.Strip.Lead.Value, seconds);
-            });
+        private void SetStripSpeed (int multiplier) {
+            _ = Instance?.Patient?.SetTimerMultiplier_Obstetric (multiplier);
         }
 
         public override void TogglePause () {
@@ -143,11 +145,14 @@ namespace IISIM {
         private void MenuTogglePause_Click (object s, RoutedEventArgs e)
             => TogglePause ();
 
-        private void MenuLength_1m (object sender, RoutedEventArgs e)
-            => SetStripLength (60);
+        private void MenuStripSpeed_x1 (object sender, RoutedEventArgs e)
+            => SetStripSpeed (1);
 
-        private void MenuLength_10m (object sender, RoutedEventArgs e)
-            => SetStripLength (600);
+        private void MenuStripSpeed_x10 (object sender, RoutedEventArgs e)
+            => SetStripSpeed (10);
+
+        private void MenuStripSpeed_x25 (object sender, RoutedEventArgs e)
+            => SetStripSpeed (25);
 
         private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Light);
@@ -160,7 +165,7 @@ namespace IISIM {
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {
-                listTracings [i].Strip?.Scroll ();
+                listTracings [i].Strip?.Scroll (Instance?.Patient?.TimerObstetric_Multiplier);
                 Dispatcher.UIThread.InvokeAsync (listTracings [i].DrawTracing);
             }
         }

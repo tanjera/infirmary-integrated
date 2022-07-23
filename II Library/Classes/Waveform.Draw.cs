@@ -68,8 +68,8 @@ namespace II.Waveform {
          * Generic flat-line
          */
 
-        public static List<PointD> Flat_Line (double _Length, double _Isoelectric) {
-            return Plotting.Line (ResolutionTime, _Length, _Isoelectric, new PointD (0, _Isoelectric));
+        public static List<PointD> Flat_Line (double _Length, double _Isoelectric, int _Resolution = 1) {
+            return Plotting.Line ((int)(ResolutionTime * _Resolution), _Length, _Isoelectric, new PointD (0, _Isoelectric));
         }
 
         /*
@@ -87,12 +87,12 @@ namespace II.Waveform {
                 _Amplitude);
         }
 
-        public static List<PointD> RR_Rhythm (Patient _P, bool _Inspire) {
+        public static List<PointD> RR_Rhythm (Patient _P, bool _Inspire, int _Resolution) {
             double _Portion = 0.1d;
 
             List<PointD> thisBeat = new ();
-            Plotting.Concatenate (ref thisBeat, Plotting.Line (ResolutionTime, _Portion, 0.3d * (_Inspire ? 1 : -1), Plotting.Last (thisBeat)));
-            Plotting.Concatenate (ref thisBeat, Plotting.Line (ResolutionTime, _Portion, 0d, Plotting.Last (thisBeat)));
+            Plotting.Concatenate (ref thisBeat, Plotting.Line (ResolutionTime * _Resolution, _Portion, 0.3d * (_Inspire ? 1 : -1), Plotting.Last (thisBeat)));
+            Plotting.Concatenate (ref thisBeat, Plotting.Line (ResolutionTime * _Resolution, _Portion, 0d, Plotting.Last (thisBeat)));
             return thisBeat;
         }
 
@@ -206,7 +206,7 @@ namespace II.Waveform {
         public static List<PointD> FHR_Rhythm (Patient _P, bool isContraction) {
             //if (!isContraction) {               // Baseline FHR tracing
             double fhrAmplitude;
-            switch (_P.FHR_Variability.Value) {
+            switch (_P.ObstetricFetalVariabilityIntensity.Value) {
                 default:
                 case Scales.Intensity.Values.Absent: fhrAmplitude = 0.005d; break;
                 case Scales.Intensity.Values.Mild: fhrAmplitude = 0.02d; break;
@@ -214,7 +214,7 @@ namespace II.Waveform {
                 case Scales.Intensity.Values.Severe: fhrAmplitude = 0.075d; break;
             }
 
-            double iLerp = Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMin_FHR, Strip.DefaultScaleMax_FHR, _P.FHR));
+            double iLerp = Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMin_FHR, Strip.DefaultScaleMax_FHR, _P.ObstetricFetalHeartRate));
 
             return Plotting.Normalize (
                 Plotting.Stretch (Dictionary.EFM_Variability, 10f),
@@ -223,12 +223,12 @@ namespace II.Waveform {
             //}
         }
 
-        public static List<PointD> TOCO_Rhythm (Patient _P, bool isContraction) {
+        public static List<PointD> TOCO_Rhythm (Patient _P, bool isContraction, int _Resolution) {
             if (!isContraction) {               // Baseline TOCO tracing
-                return Flat_Line (60, 0d);
+                return Flat_Line (60, 0d, _Resolution);
             } else {
                 double tocoAmplitude;
-                switch (_P.Contraction_Intensity.Value) {
+                switch (_P.ObstetricContractionIntensity.Value) {
                     default:
                     case Scales.Intensity.Values.Absent: tocoAmplitude = 0d; break;
                     case Scales.Intensity.Values.Mild: tocoAmplitude = 0.33d; break;
@@ -237,7 +237,7 @@ namespace II.Waveform {
                 }
 
                 return Plotting.Concatenate (new List<PointD> (),
-                    Plotting.Stretch (Dictionary.EFM_Contraction, _P.Contraction_Duration),
+                    Plotting.Stretch (Dictionary.EFM_Contraction, _P.ObstetricContractionDuration),
                     tocoAmplitude);
             }
         }

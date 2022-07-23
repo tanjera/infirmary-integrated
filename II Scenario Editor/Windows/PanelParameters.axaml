@@ -157,6 +157,23 @@
             <iic:PropertyECGSegment x:Name="pecgTWave" />
           </StackPanel>
         </Expander>
+
+        <!-- Obstetric Profile -->
+
+        <Expander Classes="exgrp">
+          <Expander.Header>
+            <Label Content="Obstetric Profile" />
+          </Expander.Header>
+
+          <StackPanel Classes="spgrp">
+            <iic:PropertyInt x:Name="pintFHR" />
+            <iic:PropertyList x:Name="plistFetalHeartRhythm" />
+            <iic:PropertyEnum x:Name="penmFHRVariability" />
+            <iic:PropertyInt x:Name="pintUCFreq" />
+            <iic:PropertyInt x:Name="pintUCDur" />
+            <iic:PropertyEnum x:Name="penmUCIntensity" />
+          </StackPanel>
+        </Expander>
       </StackPanel>
     </ScrollViewer>
   </DockPanel>
