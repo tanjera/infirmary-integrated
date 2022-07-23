@@ -375,7 +375,7 @@ namespace II.Waveform {
 
             double _Length = (double)_P.GetHR_Seconds,
                     _Wave = (double)_P.GetHR_Seconds / 2d,
-                    _Amplitude = (double)(Math.RandomDouble (0.3d, 0.6d) * _Amp);
+                    _Amplitude = (double)(Math.RandomDbl (0.3d, 0.6d) * _Amp);
 
             List<PointD> thisBeat = new ();
             while (_Length > 0f) {
@@ -383,7 +383,7 @@ namespace II.Waveform {
 
                 // Flip the sign of amplitude and randomly crawl larger/smaller, models the
                 // flippant waves in v-fib.
-                _Amplitude = 0 - (double)Math.Clamp (Math.RandomDouble (_Amplitude - 0.1d, _Amplitude + 0.1d), -1d, 1d);
+                _Amplitude = 0 - (double)Math.Clamp (Math.RandomDbl (_Amplitude - 0.1d, _Amplitude + 0.1d), -1d, 1d);
                 _Length -= _Wave;
             }
             return thisBeat;

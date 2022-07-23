@@ -19,7 +19,8 @@ namespace IISE.Controls {
             PacemakerThreshold,
 
             FHR,                            // Fetal heart rate
-            UCFrequency, UCDuration,        // Uterine contraction parameters
+            ObstetricFetalVariability,                 // Fetal heart rate variability
+            ObstetricContractionFrequency, ObstetricContractionDuration,        // Uterine contraction parameters
 
             ProgressTimer
         }
@@ -60,8 +61,9 @@ namespace IISE.Controls {
                 case Keys.IAP: lblKey.Content = "Intra-abdominal Pressure: "; break;
                 case Keys.PacemakerThreshold: lblKey.Content = "Pacemaker Capture Threshold: "; break;
                 case Keys.FHR: lblKey.Content = "Fetal Heart Rate: "; break;
-                case Keys.UCFrequency: lblKey.Content = "Uterine Contraction Frequency (in seconds): "; break;
-                case Keys.UCDuration: lblKey.Content = "Uterine Contraction Duration (in seconds): "; break;
+                case Keys.ObstetricFetalVariability: lblKey.Content = "Fetal Heart Rate Variability: "; break;
+                case Keys.ObstetricContractionFrequency: lblKey.Content = "Uterine Contraction Frequency (in seconds): "; break;
+                case Keys.ObstetricContractionDuration: lblKey.Content = "Uterine Contraction Duration (in seconds): "; break;
                 case Keys.ProgressTimer: lblKey.Content = "Time (in seconds) until next step: "; break;
             }
 

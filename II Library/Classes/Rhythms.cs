@@ -553,5 +553,11 @@ namespace II {
             DecelerationLate,
             DecelerationVariable
         }
+
+        public enum States {
+            Accelerating,
+            Decelerating,
+            Interval
+        }
     }
 }

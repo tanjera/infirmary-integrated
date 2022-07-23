@@ -144,7 +144,7 @@ namespace IISIM {
             // Random helium tank remaining amount... it's for show!
             this.FindControl<TextBlock> ("lblHelium").Text = String.Format ("{0}: {1:0}%",
                 Utility.WrapString (Instance.Language.Localize ("IABP:Helium")),
-                II.Math.RandomDouble (20, 80));
+                II.Math.RandomInt (20, 80));
 
             Grid displayGrid = this.FindControl<Grid> ("displayGrid");
 

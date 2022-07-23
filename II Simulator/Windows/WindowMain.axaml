@@ -1403,10 +1403,10 @@
 										Grid.Column="1"
 										Classes="vitals"
 										FormatString="{}{0:#0}"
-										Increment="5"
+										Increment="2"
 										KeyDown="OnUIPatientParameter_KeyDown"
 										LostFocus="OnUIPatientParameter_LostFocus"
-										Maximum="80"
+										Maximum="30"
 										Minimum="0"
 										ValueChanged="OnUIPatientParameter_Changed" />
 

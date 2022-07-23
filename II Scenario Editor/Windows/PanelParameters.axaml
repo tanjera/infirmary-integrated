@@ -168,10 +168,10 @@
           <StackPanel Classes="spgrp">
             <iic:PropertyInt x:Name="pintFHR" />
             <iic:PropertyList x:Name="plistFetalHeartRhythm" />
-            <iic:PropertyEnum x:Name="penmFHRVariability" />
+            <iic:PropertyInt x:Name="pintFHRVariability" />
             <iic:PropertyInt x:Name="pintUCFreq" />
             <iic:PropertyInt x:Name="pintUCDur" />
-            <iic:PropertyEnum x:Name="penmUCIntensity" />
+            <iic:PropertyDouble x:Name="pdblUCIntensity" />
           </StackPanel>
         </Expander>
       </StackPanel>

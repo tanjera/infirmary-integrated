@@ -93,11 +93,13 @@ namespace II {
                         TimerRespiratory_Expiration = new (),
                         TimerObstetric_Baseline = new (),
                         TimerObstetric_Fetal_Baseline = new (),
+                        TimerObstetric_Fetal_Acceleration = new (),
+                        TimerObstetric_Fetal_Deceleration = new (),
                         TimerObstetric_Contraction = new ();
 
         private static int Default_Electromechanical_Delay = 180;   // Delay in electrical to mechanical capture in milliseconds
 
-        /* Internal counters and buffers for propogating aberrancies */
+        /* Internal counters, flags, buffers for propogating aberrancies and rhythms*/
 
         private int counterCardiac_Aberrancy = 0,
                     counterCardiac_Arrhythmia = 0,
@@ -106,6 +108,8 @@ namespace II {
         private bool switchParadoxus = false,
                      switchCardiac_Arrhythmia = false,
                      switchRespiratory_Arrhythmia = false;
+
+        private FetalHeartRhythms.States stateFetalHeartRhythm = FetalHeartRhythms.States.Interval;
 
         /* Definitions for Vital_Signs class */
 
@@ -203,11 +207,11 @@ namespace II {
                             1d, 2d));
 
             Task.Run (async () => await UpdateParameters_Obstetric (
-                            150,
-                            10,
+                            145,
+                            8,
                             new List<FetalHeartRhythms.Values> (),
                             120,
-                            30,
+                            45,
                             0.8d));
 
             Task.Run (async () => await InitTimers ());
@@ -233,6 +237,8 @@ namespace II {
             TimerRespiratory_Expiration.Dispose ();
             TimerObstetric_Baseline.Dispose ();
             TimerObstetric_Fetal_Baseline.Dispose ();
+            TimerObstetric_Fetal_Acceleration.Dispose ();
+            TimerObstetric_Fetal_Deceleration.Dispose ();
             TimerObstetric_Contraction.Dispose ();
         }
 
@@ -513,6 +519,8 @@ namespace II {
             TimerRespiratory_Expiration.Process ();
             TimerObstetric_Baseline.Process ();
             TimerObstetric_Fetal_Baseline.Process ();
+            TimerObstetric_Fetal_Acceleration.Process ();
+            TimerObstetric_Fetal_Deceleration.Process ();
             TimerObstetric_Contraction.Process ();
         }
 
@@ -920,7 +928,6 @@ namespace II {
             ObstetricContractionDuration = uc_duration;
             ObstetricContractionIntensity = uc_intensity;
 
-
             // Reset actual vital signs to set parameters
             await VS_Actual.Set (VS_Settings);
         }
@@ -973,6 +980,8 @@ namespace II {
 
             TimerObstetric_Baseline.Tick += async delegate { await OnObstetric_Baseline (); };
             TimerObstetric_Fetal_Baseline.Tick += async delegate { await OnObstetric_Fetal_Baseline (); };
+            TimerObstetric_Fetal_Acceleration.Tick += async delegate { await OnObstetric_Fetal_Acceleration (); };
+            TimerObstetric_Fetal_Deceleration.Tick += async delegate { await OnObstetric_Fetal_Deceleration (); };
             TimerObstetric_Contraction.Tick += async delegate { await OnObstetric_Contraction (); };
 
             return Task.CompletedTask;
@@ -1009,6 +1018,9 @@ namespace II {
         private async Task ResetStartTimers_Obstetric () {
             await TimerObstetric_Baseline.ResetStart (1);
             await TimerObstetric_Fetal_Baseline.ResetStart (1);
+
+            await TimerObstetric_Fetal_Acceleration.Stop ();
+            await TimerObstetric_Fetal_Deceleration.Stop ();
             await TimerObstetric_Contraction.Stop ();
         }
 
@@ -1039,6 +1051,8 @@ namespace II {
         private async Task StopTimers_Obstetric () {
             await TimerObstetric_Baseline.Stop ();
             await TimerObstetric_Fetal_Baseline.Stop ();
+            await TimerObstetric_Fetal_Acceleration.Stop ();
+            await TimerObstetric_Fetal_Deceleration.Stop ();
             await TimerObstetric_Contraction.Stop ();
         }
 
@@ -1172,7 +1186,7 @@ namespace II {
 
                 // Traced as "irregular V" rhythms
                 case Cardiac_Rhythms.Values.Atrial_Fibrillation:
-                    VS_Actual.HR = (int)(VS_Settings.HR * II.Math.RandomDouble (0.6, 1.4));
+                    VS_Actual.HR = (int)(VS_Settings.HR * II.Math.RandomDbl (0.6, 1.4));
                     await TimerCardiac_Ventricular_Electric.ResetStart (1);
                     break;
 
@@ -1229,7 +1243,7 @@ namespace II {
                     VS_Actual.HR = VS_Settings.HR;
                     if (counterCardiac_Aberrancy <= 0) {
                         counterCardiac_Aberrancy = new Random ().Next (4, 8);
-                        VS_Actual.HR = (int)(VS_Settings.HR * II.Math.RandomDouble (0.6d, 0.8d));
+                        VS_Actual.HR = (int)(VS_Settings.HR * II.Math.RandomDbl (0.6d, 0.8d));
                     } else {
                         VS_Actual.HR = VS_Settings.HR;
                     }
@@ -1244,7 +1258,7 @@ namespace II {
                         await TimerCardiac_Ventricular_Electric.ResetStart (1);
                     } else {
                         if (counterCardiac_Aberrancy == 1)
-                            VS_Actual.HR = (int)(VS_Settings.HR * II.Math.RandomDouble (0.7d, 0.9d));
+                            VS_Actual.HR = (int)(VS_Settings.HR * II.Math.RandomDbl (0.7d, 0.9d));
                         await TimerCardiac_Atrial_Electric.ResetStart (1);
                     }
                     break;
@@ -1413,19 +1427,19 @@ namespace II {
                     return;
 
                 case Respiratory_Rhythms.Values.Agonal:
-                    c = II.Math.RandomDouble (0.8d, 1.2d);
+                    c = II.Math.RandomDbl (0.8d, 1.2d);
                     VS_Actual.RR = (int)(c * VS_Settings.RR);
                     break;
 
                 case Respiratory_Rhythms.Values.Apneustic:
-                    VS_Actual.RR = (II.Math.RandomDouble (0, 1d) < 0.1d) ? 6 : VS_Settings.RR;
+                    VS_Actual.RR = (II.Math.RandomDbl (0, 1d) < 0.1d) ? 6 : VS_Settings.RR;
                     break;
 
                 case Respiratory_Rhythms.Values.Ataxic:
-                    if (II.Math.RandomDouble (0, 1) < 0.1)
+                    if (II.Math.RandomDbl (0, 1) < 0.1)
                         VS_Actual.RR = 4;
                     else {
-                        c = II.Math.RandomDouble (0.8d, 1.2d);
+                        c = II.Math.RandomDbl (0.8d, 1.2d);
                         VS_Actual.RR = (int)(c * VS_Settings.RR);
                         VS_Actual.RR_IE_E = (int)(c * VS_Settings.RR_IE_E);
                     }
@@ -1542,7 +1556,60 @@ namespace II {
             // Must be divided by the TimerObstetric_Multiplier or else the speed multiplier effects the actual waveform drawing
             await TimerObstetric_Fetal_Baseline.ResetStart (5000 / TimerObstetric_Multiplier);
 
-            // Implementation of fetal heart rate variability
+            /* Baseline adjusting/walking of the vitals/waveforms *****
+             */
+
+            switch (stateFetalHeartRhythm) {
+                default: break;
+
+                case FetalHeartRhythms.States.Interval:
+                    // Add baseline variability to the fetal heart rate, based on the variability parameter, using a random "walk"
+                    // If the fetal heart rate "walks" out of its set min/max for variability, boucne it towarsd "center"
+                    int fvar = System.Math.Max (1, Math.RandomInt (0, ObstetricFetalVariability / 2));
+
+                    if (VS_Actual.FetalHR > VS_Settings.FetalHR + ObstetricFetalVariability)
+                        VS_Actual.FetalHR -= fvar;
+                    else if (VS_Actual.FetalHR < VS_Settings.FetalHR - ObstetricFetalVariability)
+                        VS_Actual.FetalHR += fvar;
+                    else
+                        VS_Actual.FetalHR += (int)Math.RandomDbl (-fvar, fvar);
+                    break;
+
+                case FetalHeartRhythms.States.Accelerating:
+                    // Walk the heart rate upwards towards a normal acceleration of >15 bpm increase
+                    if (VS_Actual.FetalHR < VS_Settings.FetalHR + Math.RandomInt (15, 30))
+                        VS_Actual.FetalHR += Math.RandomInt (2, 5);
+                    break;
+            }
+
+            /* Triggering of events *****
+             */
+
+            /* Trigger accelerations if: rhythm is in interval and meets % chance
+             * This prevents repeat triggering, triggering too often...
+            */
+            if (ObstetricFetalHeartRhythm.ValueList.Contains (FetalHeartRhythms.Values.Acceleration)
+                && stateFetalHeartRhythm == FetalHeartRhythms.States.Interval
+                && Math.RandomDbl (0, 1) < 0.05) {
+                stateFetalHeartRhythm = FetalHeartRhythms.States.Accelerating;
+
+                /* Acceleration duration in seconds. Hardcoded physiologic timing for normal duration per:
+                 * https://www.perinatology.com/Fetal%20Monitoring/Intrapartum%20Monitoring.htm
+                 */
+                int duration = (int)Math.RandomInt (15, 120);
+
+                await TimerObstetric_Fetal_Acceleration.ResetStart (duration * 1000 / TimerObstetric_Multiplier);
+            }
+        }
+
+        private async Task OnObstetric_Fetal_Acceleration () {
+            stateFetalHeartRhythm = FetalHeartRhythms.States.Interval;
+
+            await TimerObstetric_Fetal_Acceleration.Stop ();
+        }
+
+        private Task OnObstetric_Fetal_Deceleration () {
+            return Task.CompletedTask;
         }
 
         private async Task OnObstetric_RunTimers () {

@@ -40,6 +40,7 @@ namespace IISIM {
             DataContext = this;
 
             InitInterface ();
+            SetStripSpeed (10);                         // Set default Strip Speed
         }
 
         private void InitializeComponent () {
@@ -175,12 +176,10 @@ namespace IISIM {
             switch (e.EventType) {
                 default: break;
                 case Patient.PatientEventTypes.Obstetric_Baseline:
-                    Debug.WriteLine ("Obstetric_Baseline");
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Baseline (Instance?.Patient));
                     break;
 
                 case Patient.PatientEventTypes.Obstetric_Fetal_Baseline:
-                    Debug.WriteLine ("Obstetric_Fetal_Baseline");
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Fetal_Baseline (Instance?.Patient));
                     break;
 
