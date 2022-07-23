@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -17,6 +18,7 @@ using II.Drawing;
 using II.Waveform;
 
 namespace II.Rhythm {
+
     public class Strip {
         /* Default variables for easy modification of multiple measurement/tracing functions */
         public const double DefaultLength = 6.0d;
@@ -64,7 +66,7 @@ namespace II.Rhythm {
         /* Data structures for tracing information */
         public Lead? Lead;
         public readonly object lockPoints = new ();
-        public List<PointD>? Points;                        // Clinical waveform tracing points
+        public List<PointD>? Points;                      // Clinical waveform tracing points
 
         public enum Offsets {
             Center,
@@ -268,7 +270,7 @@ namespace II.Rhythm {
                 forwardBuffer = System.Math.Max (1 + (2 * ((double)patient.GetRR_Seconds / Length)),
                     (onClear ? 1.1f : forwardBuffer));
             else if (IsObstetric)
-                forwardBuffer = System.Math.Max (1 + (2 * ((double)patient.ObstetricContractionFrequency / Length)),
+                forwardBuffer = System.Math.Max (1 + ((double)patient.ObstetricContractionFrequency / Length),
                     (onClear ? 1.1f : forwardBuffer));
         }
 
@@ -715,6 +717,7 @@ namespace II.Rhythm {
         }
 
         public void Add_Beat__Obstetric_Baseline (Patient? p) {
+            /* Only TOCO needs to be drawn at baseline, in DeviceEFM */
             if (p is null || Lead is null || !IsObstetric)
                 return;
 
@@ -726,8 +729,10 @@ namespace II.Rhythm {
 
             switch (Lead.Value) {
                 default: break;
+
                 case Lead.Values.FHR:
-                    Concatenate (Draw.Flat_Line (fill, 0d, Resolution_Obstetric));
+                    double lerp = Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMin_FHR, Strip.DefaultScaleMax_FHR, p.VS_Actual.FetalHR));
+                    Concatenate (Draw.Flat_Line (fill, lerp, Resolution_Obstetric));
                     break;
 
                 case Lead.Values.TOCO:
@@ -738,13 +743,30 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__Obstetric_Contraction_Start (Patient? p) {
-            if (p is null || Lead is null)
+        public void Add_Beat__Obstetric_Fetal_Baseline (Patient? p) {
+            /* Only FHR needs to be drawn at baseline, in DeviceEFM */
+            if (p is null || Lead is null || !IsObstetric || Lead.Value != Lead.Values.FHR)
                 return;
-            switch (Lead?.Value) {
-                default: break;
-                case Lead.Values.TOCO: Replace (Draw.TOCO_Rhythm (p, p.ObstetricUterusContracted, Resolution_Obstetric)); break;
-            }
+
+            SetForwardBuffer (p);
+            TrimPoints ();
+
+            /* Fill waveform through to future buffer with flatline */
+            double fill = (Length * forwardBuffer) - Last (Points).X;
+
+            // Calculate fetal heart rate variability in amplitude, then draw fetal heart rate line for next period of time
+            double fvar = (double)p.ObstetricFetalVariability / (DefaultScaleMax_FHR - DefaultScaleMin_FHR);
+            Replace (Draw.FHR_Rhythm (p, fvar));
+
+            SortPoints ();
+        }
+
+        public void Add_Beat__Obstetric_Contraction_Start (Patient? p) {
+            /* Only TOCO needs to be drawn on ContractionStart, in DeviceEFM */
+            if (p is null || Lead is null || Lead.Value != Lead.Values.TOCO)
+                return;
+
+            Replace (Draw.TOCO_Rhythm (p, p.ObstetricUterusContracted, Resolution_Obstetric));
 
             SortPoints ();
         }

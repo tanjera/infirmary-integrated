@@ -203,42 +203,21 @@ namespace II.Waveform {
                     _Amplitude);
         }
 
-        public static List<PointD> FHR_Rhythm (Patient _P, bool isContraction) {
-            //if (!isContraction) {               // Baseline FHR tracing
-            double fhrAmplitude;
-            switch (_P.ObstetricFetalVariabilityIntensity.Value) {
-                default:
-                case Scales.Intensity.Values.Absent: fhrAmplitude = 0.005d; break;
-                case Scales.Intensity.Values.Mild: fhrAmplitude = 0.02d; break;
-                case Scales.Intensity.Values.Moderate: fhrAmplitude = 0.04d; break;
-                case Scales.Intensity.Values.Severe: fhrAmplitude = 0.075d; break;
-            }
-
-            double iLerp = Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMin_FHR, Strip.DefaultScaleMax_FHR, _P.ObstetricFetalHeartRate));
+        public static List<PointD> FHR_Rhythm (Patient _P, double fvar) {
+            double lerp = Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMin_FHR, Strip.DefaultScaleMax_FHR, _P.VS_Actual.FetalHR));
 
             return Plotting.Normalize (
                 Plotting.Stretch (Dictionary.EFM_Variability, 10f),
-                iLerp - fhrAmplitude, iLerp + fhrAmplitude);
-
-            //}
+                lerp - (fvar / 2), lerp + (fvar / 2));
         }
 
         public static List<PointD> TOCO_Rhythm (Patient _P, bool isContraction, int _Resolution) {
             if (!isContraction) {               // Baseline TOCO tracing
                 return Flat_Line (60, 0d, _Resolution);
             } else {
-                double tocoAmplitude;
-                switch (_P.ObstetricContractionIntensity.Value) {
-                    default:
-                    case Scales.Intensity.Values.Absent: tocoAmplitude = 0d; break;
-                    case Scales.Intensity.Values.Mild: tocoAmplitude = 0.33d; break;
-                    case Scales.Intensity.Values.Moderate: tocoAmplitude = 0.66d; break;
-                    case Scales.Intensity.Values.Severe: tocoAmplitude = 1d; break;
-                }
-
                 return Plotting.Concatenate (new List<PointD> (),
                     Plotting.Stretch (Dictionary.EFM_Contraction, _P.ObstetricContractionDuration),
-                    tocoAmplitude);
+                    _P.ObstetricContractionIntensity);
             }
         }
 

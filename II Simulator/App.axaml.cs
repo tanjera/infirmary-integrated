@@ -110,7 +110,7 @@ namespace IISIM {
             Window_Main?.Close ();
 
             try {               // If not fully initialized, may throw an exception... since exiting, just abort.
-                AudioLib?.Dispose ();
+                //AudioLib?.Dispose ();
             } catch { }
         }
 
