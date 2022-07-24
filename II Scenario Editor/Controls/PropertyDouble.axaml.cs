@@ -19,7 +19,6 @@ namespace IISE.Controls {
             QTcInterval,
             RRInspiratoryRatio,
             RRExpiratoryRatio,
-            ObstetricContractionIntensity,
         }
 
         public new event EventHandler<PropertyDoubleEventArgs>? PropertyChanged;
@@ -63,8 +62,6 @@ namespace IISE.Controls {
 
                 case Keys.RRExpiratoryRatio: lblKey.Content = "Expiratory Ratio: "; break;
                 case Keys.RRInspiratoryRatio: lblKey.Content = "Inspiratory Ratio: "; break;
-
-                case Keys.ObstetricContractionIntensity: lblKey.Content = "Uterine Contraction Intensity: "; break;
             }
 
             numValue.Increment = increment;

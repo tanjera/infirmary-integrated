@@ -18,9 +18,12 @@ namespace IISE.Controls {
             ICP, IAP,                       // Intracranial pressure, intra-abdominal pressure
             PacemakerThreshold,
 
-            FHR,                            // Fetal heart rate
-            ObstetricFetalVariability,                 // Fetal heart rate variability
-            ObstetricContractionFrequency, ObstetricContractionDuration,        // Uterine contraction parameters
+            FHR,                                    // Fetal heart rate
+            ObstetricFHRVariability,                // Fetal heart rate variability
+            ObstetricContractionFrequency,          // Uterine contraction parameters
+            ObstetricContractionDuration,
+            ObstetricContractionIntensity,
+            ObstetricUterineRestingTone,
 
             ProgressTimer
         }
@@ -61,9 +64,11 @@ namespace IISE.Controls {
                 case Keys.IAP: lblKey.Content = "Intra-abdominal Pressure: "; break;
                 case Keys.PacemakerThreshold: lblKey.Content = "Pacemaker Capture Threshold: "; break;
                 case Keys.FHR: lblKey.Content = "Fetal Heart Rate: "; break;
-                case Keys.ObstetricFetalVariability: lblKey.Content = "Fetal Heart Rate Variability: "; break;
+                case Keys.ObstetricFHRVariability: lblKey.Content = "Fetal Heart Rate Variability: "; break;
                 case Keys.ObstetricContractionFrequency: lblKey.Content = "Uterine Contraction Frequency (in seconds): "; break;
                 case Keys.ObstetricContractionDuration: lblKey.Content = "Uterine Contraction Duration (in seconds): "; break;
+                case Keys.ObstetricContractionIntensity: lblKey.Content = "Uterine Contraction Intensity: "; break;
+                case Keys.ObstetricUterineRestingTone: lblKey.Content = "Uterine Resting Tone: "; break;
                 case Keys.ProgressTimer: lblKey.Content = "Time (in seconds) until next step: "; break;
             }
 

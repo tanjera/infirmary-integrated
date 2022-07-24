@@ -1357,6 +1357,7 @@
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
+                    <RowDefinition />
                   </Grid.RowDefinitions>
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition />
@@ -1401,10 +1402,10 @@
 										Grid.Column="1"
 										Classes="vitals"
 										FormatString="{}{0:#0}"
-										Increment="2"
+										Increment="5"
 										KeyDown="OnUIPatientParameter_KeyDown"
 										LostFocus="OnUIPatientParameter_LostFocus"
-										Maximum="30"
+										Maximum="80"
 										Minimum="0"
 										ValueChanged="OnUIPatientParameter_Changed" />
 
@@ -1441,6 +1442,7 @@
 										Maximum="600"
 										Minimum="30"
 										ValueChanged="OnUIPatientParameter_Changed" />
+
                   <Label
 										Name="lblUCIntensity"
 										Grid.Row="5"
@@ -1450,11 +1452,28 @@
 										Grid.Row="5"
 										Grid.Column="1"
 										Classes="vitals"
-										FormatString="{}{0:#0.0}"
-										Increment="0.1"
+										FormatString="{}{0:#0}"
+										Increment="5"
 										KeyDown="OnUIPatientParameter_KeyDown"
 										LostFocus="OnUIPatientParameter_LostFocus"
-										Maximum="1"
+										Maximum="100"
+										Minimum="0"
+										ValueChanged="OnUIPatientParameter_Changed" />
+
+                  <Label
+										Name="lblUCResting"
+										Grid.Row="6"
+										Grid.Column="0" />
+                  <NumericUpDown
+										Name="numUCResting"
+										Grid.Row="6"
+										Grid.Column="1"
+										Classes="vitals"
+										FormatString="{}{0:#0}"
+										Increment="5"
+										KeyDown="OnUIPatientParameter_KeyDown"
+										LostFocus="OnUIPatientParameter_LostFocus"
+										Maximum="100"
 										Minimum="0"
 										ValueChanged="OnUIPatientParameter_Changed" />
                 </Grid>

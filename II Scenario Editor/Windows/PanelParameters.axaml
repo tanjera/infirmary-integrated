@@ -171,7 +171,8 @@
             <iic:PropertyInt x:Name="pintFHRVariability" />
             <iic:PropertyInt x:Name="pintUCFreq" />
             <iic:PropertyInt x:Name="pintUCDur" />
-            <iic:PropertyDouble x:Name="pdblUCIntensity" />
+            <iic:PropertyInt x:Name="pintUCIntensity" />
+            <iic:PropertyInt x:Name="pintUCResting" />
           </StackPanel>
         </Expander>
       </StackPanel>

@@ -184,10 +184,11 @@ namespace IISIM {
                 this.FindControl<Label> ("lblGroupObstetricProfile").Content = Instance.Language.Localize ("PE:ObstetricProfile");
                 this.FindControl<Label> ("lblFHR").Content = $"{Instance.Language.Localize ("PE:FetalHeartRate")}:";
                 this.FindControl<Label> ("lblFHRRhythms").Content = $"{Instance.Language.Localize ("PE:FetalHeartRhythms")}:";
-                this.FindControl<Label> ("lblFHRVariability").Content = $"{Instance.Language.Localize ("PE:FetalHeartVariability")}:";
+                this.FindControl<Label> ("lblFHRVariability").Content = $"{Instance.Language.Localize ("PE:FetalHeartRateVariability")}:";
                 this.FindControl<Label> ("lblUCFrequency").Content = $"{Instance.Language.Localize ("PE:UterineContractionFrequency")}:";
                 this.FindControl<Label> ("lblUCDuration").Content = $"{Instance.Language.Localize ("PE:UterineContractionDuration")}:";
                 this.FindControl<Label> ("lblUCIntensity").Content = $"{Instance.Language.Localize ("PE:UterineContractionIntensity")}:";
+                this.FindControl<Label> ("lblUCResting").Content = $"{Instance.Language.Localize ("PE:UterineRestingTone")}:";
 
                 this.FindControl<CheckBox> ("chkAutoApplyChanges").Content = Instance.Language.Localize ("BUTTON:AutoApplyChanges");
                 this.FindControl<Label> ("lblParametersApply").Content = Instance.Language.Localize ("BUTTON:ApplyChanges");
@@ -1266,7 +1267,8 @@ namespace IISIM {
 
                 (int)(this.FindControl<NumericUpDown> ("numUCFrequency")?.Value ?? 0),
                 (int)(this.FindControl<NumericUpDown> ("numUCDuration")?.Value ?? 0),
-                (double)(this.FindControl<NumericUpDown> ("numUCIntensity")?.Value ?? 0));
+                (int)(this.FindControl<NumericUpDown> ("numUCIntensity")?.Value ?? 0),
+                (int)(this.FindControl<NumericUpDown> ("numUCResting")?.Value ?? 0));
         }
 
         private void ApplyPatientParameters_Cardiac (object? sender, EventArgs e) {
@@ -1338,11 +1340,12 @@ namespace IISIM {
             if (Instance?.Patient is not null) {
                 _ = Instance.Patient.UpdateParameters_Obstetric (
                     ApplyBuffer.Fetal_HR,
-                    ApplyBuffer.ObstetricFetalVariability,
+                    ApplyBuffer.ObstetricFetalRateVariability,
                     ApplyBuffer.ObstetricFetalHeartRhythm.Value,
                     ApplyBuffer.ObstetricContractionFrequency,
                     ApplyBuffer.ObstetricContractionDuration,
-                    ApplyBuffer.ObstetricContractionIntensity);
+                    ApplyBuffer.ObstetricContractionIntensity,
+                    ApplyBuffer.ObstetricUterineRestingTone);
             }
 
             if (Instance?.Mirror is not null && Instance?.Server is not null)
@@ -1427,10 +1430,11 @@ namespace IISIM {
                 if (!ApplyPending_Obstetric) {
                     // Obstetric profile
                     this.FindControl<NumericUpDown> ("numFHR").Value = p.VS_Settings.FetalHR;
-                    this.FindControl<NumericUpDown> ("numFHRVariability").Value = p.ObstetricFetalVariability;
+                    this.FindControl<NumericUpDown> ("numFHRVariability").Value = p.ObstetricFetalRateVariability;
                     this.FindControl<NumericUpDown> ("numUCFrequency").Value = (double)p.ObstetricContractionFrequency;
                     this.FindControl<NumericUpDown> ("numUCDuration").Value = p.ObstetricContractionDuration;
                     this.FindControl<NumericUpDown> ("numUCIntensity").Value = p.ObstetricContractionIntensity;
+                    this.FindControl<NumericUpDown> ("numUCResting").Value = p.ObstetricUterineRestingTone;
                     this.FindControl<ComboBox> ("comboFHRRhythm").SelectedIndex = (int)p.ObstetricFetalHeartRhythm.Value;
                 }
 

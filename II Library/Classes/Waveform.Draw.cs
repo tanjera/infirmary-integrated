@@ -203,20 +203,21 @@ namespace II.Waveform {
                     _Amplitude);
         }
 
-        public static List<PointD> FHR_Rhythm (Patient _P, double fvar) {
+        public static List<PointD> FHR_Rhythm (Patient _P) {
             double lerp = Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMin_FHR, Strip.DefaultScaleMax_FHR, _P.VS_Actual.FetalHR));
+            double amplitude = 0.0025d;       // Minimal amplitude; can increase this for sawtooth pattern in future feature implementation
 
             return Plotting.Normalize (
                 Plotting.Stretch (Dictionary.EFM_Variability, 10f),
-                lerp - (fvar / 2), lerp + (fvar / 2));
+                lerp - (amplitude / 2), lerp + (amplitude / 2));
         }
 
-        public static List<PointD> TOCO_Rhythm (Patient _P, int _Resolution) {
+        public static List<PointD> TOCO_Rhythm (Patient _P) {
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Normalize (
                     Plotting.Stretch (Dictionary.EFM_Contraction, _P.ObstetricContractionDuration),
-                    0.075d, 1.0d),
-                _P.ObstetricContractionIntensity);
+                    Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMin_TOCO, Strip.DefaultScaleMax_TOCO, _P.ObstetricUterineRestingTone)),
+                    Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMin_TOCO, Strip.DefaultScaleMax_TOCO, _P.ObstetricContractionIntensity))));
         }
 
         /* ********************************************************************

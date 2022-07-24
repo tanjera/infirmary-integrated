@@ -97,7 +97,6 @@ namespace IISE.Windows {
             PropertyDouble pdblQTcInterval = this.FindControl<PropertyDouble> ("pdblQTcInterval");
             PropertyDouble pdblInspiratoryRatio = this.FindControl<PropertyDouble> ("pdblInspiratoryRatio");
             PropertyDouble pdblExpiratoryRatio = this.FindControl<PropertyDouble> ("pdblExpiratoryRatio");
-            PropertyDouble pdblUCIntensity = this.FindControl<PropertyDouble> ("pdblUCIntensity");
 
             PropertyECGSegment pecgSTSegment = this.FindControl<PropertyECGSegment> ("pecgSTSegment");
             PropertyECGSegment pecgTWave = this.FindControl<PropertyECGSegment> ("pecgTWave");
@@ -120,6 +119,8 @@ namespace IISE.Windows {
             PropertyInt pintFHRVariability = this.FindControl<PropertyInt> ("pintFHRVariability");
             PropertyInt pintUCFreq = this.FindControl<PropertyInt> ("pintUCFreq");
             PropertyInt pintUCDur = this.FindControl<PropertyInt> ("pintUCDur");
+            PropertyInt pintUCIntensity = this.FindControl<PropertyInt> ("pintUCIntensity");
+            PropertyInt pintUCResting = this.FindControl<PropertyInt> ("pintUCResting");
 
             // Initiate controls for editing Patient values
             pbpNBP.Init (PropertyBP.Keys.NSBP, 5, 0, 300, 5, 0, 200);
@@ -137,7 +138,6 @@ namespace IISE.Windows {
             pdblQTcInterval.Init (PropertyDouble.Keys.QTcInterval, 0.02, 0.2, 0.8);
             pdblInspiratoryRatio.Init (PropertyDouble.Keys.RRInspiratoryRatio, 0.1, 0.1, 10);
             pdblExpiratoryRatio.Init (PropertyDouble.Keys.RRExpiratoryRatio, 0.1, 0.1, 10);
-            pdblUCIntensity.Init (PropertyDouble.Keys.ObstetricContractionIntensity, 0.1, 0, 1.0);
 
             pecgSTSegment.Init (PropertyECGSegment.Keys.STElevation);
             pecgTWave.Init (PropertyECGSegment.Keys.TWave);
@@ -162,9 +162,11 @@ namespace IISE.Windows {
             pintETCO2.Init (PropertyInt.Keys.ETCO2, 2, 0, 100);
             pintCVP.Init (PropertyInt.Keys.CVP, 1, -100, 100);
             pintFHR.Init (PropertyInt.Keys.FHR, 5, 0, 500);
-            pintFHRVariability.Init (PropertyInt.Keys.ObstetricFetalVariability, 2, 0, 40);
+            pintFHRVariability.Init (PropertyInt.Keys.ObstetricFHRVariability, 5, 0, 80);
             pintUCFreq.Init (PropertyInt.Keys.ObstetricContractionFrequency, 30, 60, 600);
             pintUCDur.Init (PropertyInt.Keys.ObstetricContractionDuration, 10, 30, 600);
+            pintUCIntensity.Init (PropertyInt.Keys.ObstetricContractionIntensity, 5, 0, 100);
+            pintUCResting.Init (PropertyInt.Keys.ObstetricUterineRestingTone, 5, 0, 100);
 
             pbpNBP.PropertyChanged += UpdatePatient;
             pbpABP.PropertyChanged += UpdatePatient;
@@ -181,7 +183,6 @@ namespace IISE.Windows {
             pdblQTcInterval.PropertyChanged += UpdatePatient;
             pdblInspiratoryRatio.PropertyChanged += UpdatePatient;
             pdblExpiratoryRatio.PropertyChanged += UpdatePatient;
-            pdblUCIntensity.PropertyChanged += UpdatePatient;
 
             pecgSTSegment.PropertyChanged += UpdatePatient;
             pecgTWave.PropertyChanged += UpdatePatient;
@@ -208,6 +209,8 @@ namespace IISE.Windows {
             pintFHRVariability.PropertyChanged += UpdatePatient;
             pintUCFreq.PropertyChanged += UpdatePatient;
             pintUCDur.PropertyChanged += UpdatePatient;
+            pintUCIntensity.PropertyChanged += UpdatePatient;
+            pintUCResting.PropertyChanged += UpdatePatient;
 
             return Task.CompletedTask;
         }
@@ -225,9 +228,11 @@ namespace IISE.Windows {
                     case PropertyInt.Keys.IAP: Patient.IAP = e.Value; break;
                     case PropertyInt.Keys.PacemakerThreshold: Patient.Pacemaker_Threshold = e.Value; break;
                     case PropertyInt.Keys.FHR: Patient.Fetal_HR = e.Value; break;
-                    case PropertyInt.Keys.ObstetricFetalVariability: Patient.ObstetricFetalVariability = e.Value; break;
+                    case PropertyInt.Keys.ObstetricFHRVariability: Patient.ObstetricFetalRateVariability = e.Value; break;
                     case PropertyInt.Keys.ObstetricContractionFrequency: Patient.ObstetricContractionFrequency = e.Value; break;
                     case PropertyInt.Keys.ObstetricContractionDuration: Patient.ObstetricContractionDuration = e.Value; break;
+                    case PropertyInt.Keys.ObstetricContractionIntensity: Patient.ObstetricContractionIntensity = e.Value; break;
+                    case PropertyInt.Keys.ObstetricUterineRestingTone: Patient.ObstetricUterineRestingTone = e.Value; break;
                 }
             }
         }
@@ -242,7 +247,6 @@ namespace IISE.Windows {
                     case PropertyDouble.Keys.QTcInterval: Patient.QTc_Interval = e.Value ?? 0d; break;
                     case PropertyDouble.Keys.RRInspiratoryRatio: Patient.RR_IE_I = e.Value ?? 0d; break;
                     case PropertyDouble.Keys.RRExpiratoryRatio: Patient.RR_IE_E = e.Value ?? 0d; break;
-                    case PropertyDouble.Keys.ObstetricContractionIntensity: Patient.ObstetricContractionIntensity = e.Value ?? 0d; break;
                 }
             }
         }
@@ -395,7 +399,6 @@ namespace IISE.Windows {
             PropertyDouble pdblQTcInterval = this.FindControl<PropertyDouble> ("pdblQTcInterval");
             PropertyDouble pdblInspiratoryRatio = this.FindControl<PropertyDouble> ("pdblInspiratoryRatio");
             PropertyDouble pdblExpiratoryRatio = this.FindControl<PropertyDouble> ("pdblExpiratoryRatio");
-            PropertyDouble pdblUCIntensity = this.FindControl<PropertyDouble> ("pdblUCIntensity");
 
             PropertyECGSegment pecgSTSegment = this.FindControl<PropertyECGSegment> ("pecgSTSegment");
             PropertyECGSegment pecgTWave = this.FindControl<PropertyECGSegment> ("pecgTWave");
@@ -418,6 +421,8 @@ namespace IISE.Windows {
             PropertyInt pintFHRVariability = this.FindControl<PropertyInt> ("pintFHRVariability");
             PropertyInt pintUCFreq = this.FindControl<PropertyInt> ("pintUCFreq");
             PropertyInt pintUCDur = this.FindControl<PropertyInt> ("pintUCDur");
+            PropertyInt pintUCIntensity = this.FindControl<PropertyInt> ("pintUCIntensity");
+            PropertyInt pintUCResting = this.FindControl<PropertyInt> ("pintUCResting");
 
             lblActiveStep.Content = String.Format ("Editing Step: {0} ({1})",
                 Step is null ? "N/A" : Step.Name,
@@ -441,7 +446,6 @@ namespace IISE.Windows {
             pdblQTcInterval.IsEnabled = (Patient != null);
             pdblInspiratoryRatio.IsEnabled = (Patient != null);
             pdblExpiratoryRatio.IsEnabled = (Patient != null);
-            pdblUCIntensity.IsEnabled = (Patient != null);
 
             pecgSTSegment.IsEnabled = (Patient != null);
             pecgTWave.IsEnabled = (Patient != null);
@@ -464,6 +468,8 @@ namespace IISE.Windows {
             pintFHRVariability.IsEnabled = (Patient != null);
             pintUCFreq.IsEnabled = (Patient != null);
             pintUCDur.IsEnabled = (Patient != null);
+            pintUCIntensity.IsEnabled = (Patient != null);
+            pintUCResting.IsEnabled = (Patient != null);
 
             if (Patient != null) {
                 // Update all controls with Patient values
@@ -482,7 +488,6 @@ namespace IISE.Windows {
                 await pdblQTcInterval.Set (Patient.QTc_Interval);
                 await pdblInspiratoryRatio.Set (Patient.VS_Settings.RR_IE_I);
                 await pdblExpiratoryRatio.Set (Patient.VS_Settings.RR_IE_E);
-                await pdblUCIntensity.Set (Patient.ObstetricContractionIntensity);
 
                 await pecgSTSegment.Set (Patient.ST_Elevation);
                 await pecgTWave.Set (Patient.T_Elevation);
@@ -502,9 +507,11 @@ namespace IISE.Windows {
                 await pintIAP.Set (Patient.VS_Settings.IAP);
                 await pintPacemakerThreshold.Set (Patient.Pacemaker_Threshold);
                 await pintFHR.Set (Patient.VS_Settings.FetalHR);
-                await pintFHRVariability.Set (Patient.ObstetricFetalVariability);
+                await pintFHRVariability.Set (Patient.ObstetricFetalRateVariability);
                 await pintUCFreq.Set (Patient.ObstetricContractionFrequency);
                 await pintUCDur.Set (Patient.ObstetricContractionDuration);
+                await pintUCIntensity.Set (Patient.ObstetricContractionIntensity);
+                await pintUCResting.Set (Patient.ObstetricUterineRestingTone);
             }
         }
 

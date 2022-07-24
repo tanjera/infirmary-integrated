@@ -730,12 +730,16 @@ namespace II.Rhythm {
                 default: break;
 
                 case Lead.Values.FHR:
-                    double lerp = Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMin_FHR, Strip.DefaultScaleMax_FHR, p.VS_Actual.FetalHR));
-                    Concatenate (Draw.Flat_Line (fill, lerp, Resolution_Obstetric));
+
+                    Concatenate (Draw.Flat_Line (fill,
+                        Math.Clamp (Math.InverseLerp (DefaultScaleMin_FHR, DefaultScaleMax_FHR, p.VS_Actual.FetalHR)),
+                        Resolution_Obstetric));
                     break;
 
                 case Lead.Values.TOCO:
-                    Concatenate (Draw.Flat_Line (fill, 0.05d, Resolution_Obstetric));
+                    Concatenate (Draw.Flat_Line (fill,
+                        Math.Clamp (Math.InverseLerp (DefaultScaleMin_TOCO, DefaultScaleMax_TOCO, p.ObstetricUterineRestingTone)),
+                         Resolution_Obstetric));
                     break;
             }
 
@@ -754,8 +758,7 @@ namespace II.Rhythm {
             double fill = (Length * forwardBuffer) - Last (Points).X;
 
             // Calculate fetal heart rate variability in amplitude, then draw fetal heart rate line for next period of time
-            double fvar = (double)p.ObstetricFetalVariability / (DefaultScaleMax_FHR - DefaultScaleMin_FHR);
-            Replace (Draw.FHR_Rhythm (p, fvar));
+            Replace (Draw.FHR_Rhythm (p));
 
             SortPoints ();
         }
@@ -765,7 +768,7 @@ namespace II.Rhythm {
             if (p is null || Lead is null || Lead.Value != Lead.Values.TOCO)
                 return;
 
-            Replace (Draw.TOCO_Rhythm (p, Resolution_Obstetric));
+            Replace (Draw.TOCO_Rhythm (p));
 
             SortPoints ();
         }
