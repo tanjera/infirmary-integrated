@@ -16,6 +16,8 @@ using II;
 using II.Rhythm;
 using II.Waveform;
 
+using LibVLCSharp.Shared;
+
 namespace IISIM {
 
     public class DeviceWindow : Window {
@@ -24,10 +26,14 @@ namespace IISIM {
         public States State;
 
         public Timer
+            TimerAlarm = new (),
             TimerTracing = new (),
             TimerNumerics_Cardiac = new (),
             TimerNumerics_Respiratory = new (),
             TimerAncillary_Delay = new ();
+
+        /* Variables controlling for audio alarms */
+        public MediaPlayer? AudioPlayer;
 
         public enum States {
             Running,
@@ -44,6 +50,7 @@ namespace IISIM {
             Closed += this.OnClosed;
             Closing += this.OnClosing;
 
+            InitAudio ();
             InitTimers ();
 
             State = States.Running;
@@ -53,7 +60,7 @@ namespace IISIM {
             Dispose ();
         }
 
-        public void Dispose () {
+        public virtual void Dispose () {
             /* Clean subscriptions from the Main Timer */
             if (Instance is not null) {
                 Instance.Timer_Main.Elapsed -= TimerTracing.Process;
@@ -73,6 +80,28 @@ namespace IISIM {
                 Instance.Patient.PatientEvent -= OnPatientEvent;
         }
 
+        public virtual void InitAudio () {
+            if (Instance?.AudioLib is null)
+                return;
+
+            AudioPlayer = new MediaPlayer (Instance.AudioLib);
+        }
+
+        public virtual void DisposeAudio () {
+            /* Note: It's important to nullify objects after Disposing them because this function may
+             * be triggered multiple times (e.g. on Window.Close() and on Application.Exit()).
+             * Since LibVLC wraps a C++ library, nullifying and null checking prevents accessing
+             * released/reassigned memory blocks (a Memory Exception)
+             */
+
+            if (AudioPlayer is not null) {
+                if (AudioPlayer.IsPlaying)
+                    AudioPlayer.Stop ();
+                AudioPlayer.Dispose ();
+            }
+            AudioPlayer = null;
+        }
+
         public virtual void InitTimers () {
             if (Instance is null)
                 return;
@@ -83,18 +112,22 @@ namespace IISIM {
              */
             Instance.Timer_Main.Elapsed += TimerAncillary_Delay.Process;
 
+            Instance.Timer_Main.Elapsed += TimerAlarm.Process;
             Instance.Timer_Main.Elapsed += TimerTracing.Process;
             Instance.Timer_Main.Elapsed += TimerNumerics_Cardiac.Process;
             Instance.Timer_Main.Elapsed += TimerNumerics_Respiratory.Process;
 
+            TimerAlarm.Tick += OnTick_Alarm;
             TimerTracing.Tick += OnTick_Tracing;
             TimerNumerics_Cardiac.Tick += OnTick_Vitals_Cardiac;
             TimerNumerics_Respiratory.Tick += OnTick_Vitals_Respiratory;
 
+            TimerAlarm.Set (2500);
             TimerTracing.Set (Draw.RefreshTime);
             TimerNumerics_Cardiac.Set (3000);
             TimerNumerics_Respiratory.Set (5000);
 
+            TimerAlarm.Start ();
             TimerTracing.Start ();
             TimerNumerics_Cardiac.Start ();
             TimerNumerics_Respiratory.Start ();
@@ -114,9 +147,14 @@ namespace IISIM {
         }
 
         public virtual void OnClosing (object? sender, CancelEventArgs e) {
+            TimerAlarm?.Dispose ();
+            DisposeAudio ();
         }
 
         public virtual void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
+        }
+
+        public virtual void OnTick_Alarm (object? sender, EventArgs e) {
         }
 
         public virtual void OnTick_Tracing (object? sender, EventArgs e) {

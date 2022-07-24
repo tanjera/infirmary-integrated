@@ -25,12 +25,6 @@ namespace IISIM.Controls {
 
         /* Variables controlling for visual alarms */
         public Alarm? AlarmRef;
-        private Timer? AlarmTimer = new ();
-        private bool? AlarmIterator = false;
-
-        private bool? AlarmLine1;
-        private bool? AlarmLine2;
-        private bool? AlarmLine3;
 
         public class ControlTypes {
             public Values Value;
@@ -83,22 +77,15 @@ namespace IISIM.Controls {
             InitializeComponent ();
         }
 
-        public MonitorNumeric (App? app, ControlTypes.Values v, Color.Schemes cs) {
+        public MonitorNumeric (App? app, ControlTypes.Values v, Color.Schemes cs) : base (app) {
             InitializeComponent ();
 
-            Instance = app;
             ControlType = new ControlTypes (v);
             ColorScheme = cs;
 
             InitInterface ();
-            InitTimers ();
-            InitAlarm ();
 
             UpdateInterface ();
-        }
-
-        ~MonitorNumeric () {
-            AlarmTimer?.Dispose ();
         }
 
         private void InitializeComponent () {
@@ -159,64 +146,6 @@ namespace IISIM.Controls {
 
             menuitemsContext.Add (menuSelectInput);
             contextMenu.Items = menuitemsContext;
-        }
-
-        private void InitTimers () {
-            if (Instance is null || AlarmTimer is null)
-                return;
-
-            Instance.Timer_Main.Elapsed += AlarmTimer.Process;
-
-            AlarmTimer.Tick += (s, e) => { Dispatcher.UIThread.InvokeAsync (() => { OnTick_Alarm (s, e); }); };
-
-            AlarmTimer.Set (1000);
-            AlarmTimer.Start ();
-        }
-
-        private void InitAlarm () {
-            AlarmLine1 = false;
-            AlarmLine2 = false;
-            AlarmLine3 = false;
-        }
-
-        private void OnTick_Alarm (object? sender, EventArgs e) {
-            TextBlock lblLine1 = this.FindControl<TextBlock> ("lblLine1");
-            TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
-            TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
-
-            AlarmIterator = !AlarmIterator;
-
-            int time = (AlarmRef?.Priority ?? Alarm.Priorities.Low) switch {
-                Alarm.Priorities.Low => 10000,
-                Alarm.Priorities.Medium => 5000,
-                Alarm.Priorities.High => 1000,
-                _ => 10000,
-            };
-
-            _ = AlarmTimer?.ResetStart (time);
-
-            if (ControlType is not null) {
-                if (AlarmLine1 ?? false)
-                    lblLine1.Foreground = AlarmIterator ?? false
-                        ? Color.GetLead (ControlType.GetLead_Color, ColorScheme)
-                        : Color.GetAlarm (ControlType.GetLead_Color, ColorScheme);
-                else
-                    lblLine1.Foreground = Color.GetLead (ControlType.GetLead_Color, ColorScheme);
-
-                if (AlarmLine2 ?? false)
-                    lblLine2.Foreground = AlarmIterator ?? false
-                        ? Color.GetLead (ControlType.GetLead_Color, ColorScheme)
-                        : Color.GetAlarm (ControlType.GetLead_Color, ColorScheme);
-                else
-                    lblLine2.Foreground = Color.GetLead (ControlType.GetLead_Color, ColorScheme);
-
-                if (AlarmLine3 ?? false)
-                    lblLine3.Foreground = AlarmIterator ?? false
-                        ? Color.GetLead (ControlType.GetLead_Color, ColorScheme)
-                        : Color.GetAlarm (ControlType.GetLead_Color, ColorScheme);
-                else
-                    lblLine3.Foreground = Color.GetLead (ControlType.GetLead_Color, ColorScheme);
-            }
         }
 
         public void SetColorScheme (Color.Schemes scheme) {
@@ -468,6 +397,46 @@ namespace IISIM.Controls {
                         AlarmLine1 = false;
                     }
                     break;
+            }
+        }
+
+        public override void OnTick_Alarm (object? sender, EventArgs e) {
+            TextBlock lblLine1 = this.FindControl<TextBlock> ("lblLine1");
+            TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
+            TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
+
+            AlarmIterator = !AlarmIterator;
+
+            int time = (AlarmRef?.Priority ?? Alarm.Priorities.Low) switch {
+                Alarm.Priorities.Low => 10000,
+                Alarm.Priorities.Medium => 5000,
+                Alarm.Priorities.High => 1000,
+                _ => 10000,
+            };
+
+            _ = AlarmTimer?.ResetStart (time);
+
+            if (ControlType is not null) {
+                if (AlarmLine1 ?? false)
+                    lblLine1.Foreground = AlarmIterator ?? false
+                        ? Color.GetLead (ControlType.GetLead_Color, ColorScheme)
+                        : Color.GetAlarm (ControlType.GetLead_Color, ColorScheme);
+                else
+                    lblLine1.Foreground = Color.GetLead (ControlType.GetLead_Color, ColorScheme);
+
+                if (AlarmLine2 ?? false)
+                    lblLine2.Foreground = AlarmIterator ?? false
+                        ? Color.GetLead (ControlType.GetLead_Color, ColorScheme)
+                        : Color.GetAlarm (ControlType.GetLead_Color, ColorScheme);
+                else
+                    lblLine2.Foreground = Color.GetLead (ControlType.GetLead_Color, ColorScheme);
+
+                if (AlarmLine3 ?? false)
+                    lblLine3.Foreground = AlarmIterator ?? false
+                        ? Color.GetLead (ControlType.GetLead_Color, ColorScheme)
+                        : Color.GetAlarm (ControlType.GetLead_Color, ColorScheme);
+                else
+                    lblLine3.Foreground = Color.GetLead (ControlType.GetLead_Color, ColorScheme);
             }
         }
 

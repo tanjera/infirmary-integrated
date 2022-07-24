@@ -415,7 +415,7 @@ namespace IISIM {
             for (int i = listNumerics.Count; i < colsNumerics && i < numericTypes.Count; i++) {
                 Controls.DefibNumeric newNum;
                 newNum = new Controls.DefibNumeric (
-                    this,
+                    Instance, this,
                     (Controls.DefibNumeric.ControlTypes.Values)Enum.Parse (typeof (Controls.DefibNumeric.ControlTypes.Values), numericTypes [i]),
                     colorScheme);
                 listNumerics.Add (newNum);

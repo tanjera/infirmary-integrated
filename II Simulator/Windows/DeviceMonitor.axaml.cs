@@ -34,10 +34,8 @@ namespace IISIM {
         private List<Controls.MonitorNumeric> listNumerics = new ();
 
         /* Variables controlling for audio alarms */
-        private Timer AlarmTimer = new ();
         private Alarm.Priorities? AlarmActive;
         private List<Alarm> AlarmRefs = new ();
-        private MediaPlayer? AlarmPlayer;
         private List<StreamMediaInput>? AlarmMedia;
 
         public DeviceMonitor () {
@@ -51,29 +49,20 @@ namespace IISIM {
 #endif
 
             DataContext = this;
-            InitAudio ();
-            InitTimers ();
             InitInterface ();
 
             OnLayoutChange ();
-        }
-
-        public override void OnClosing (object? sender, CancelEventArgs e) {
-            base.OnClosing (sender, e);
-
-            AlarmTimer?.Dispose ();
-            DisposeAudio ();
         }
 
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
         }
 
-        private void InitAudio () {
+        public override void InitAudio () {
             if (Instance?.AudioLib is null)
                 return;
 
-            AlarmPlayer = new MediaPlayer (Instance.AudioLib);
+            base.InitAudio ();
 
             var assets = AvaloniaLocator.Current.GetService<Avalonia.Platform.IAssetLoader> ();
             AlarmMedia = new () {
@@ -83,19 +72,14 @@ namespace IISIM {
             };
         }
 
-        private void DisposeAudio () {
+        public override void DisposeAudio () {
             /* Note: It's important to nullify objects after Disposing them because this function may
              * be triggered multiple times (e.g. on Window.Close() and on Application.Exit()).
              * Since LibVLC wraps a C++ library, nullifying and null checking prevents accessing
              * released/reassigned memory blocks (a Memory Exception)
              */
 
-            if (AlarmPlayer is not null) {
-                if (AlarmPlayer.IsPlaying)
-                    AlarmPlayer.Stop ();
-                AlarmPlayer.Dispose ();
-            }
-            AlarmPlayer = null;
+            base.DisposeAudio ();
 
             if (AlarmMedia is not null) {
                 foreach (StreamMediaInput smi in AlarmMedia) {
@@ -104,18 +88,6 @@ namespace IISIM {
                 }
             }
             AlarmMedia = null;
-        }
-
-        public override void InitTimers () {
-            if (Instance is null)
-                return;
-
-            base.InitTimers ();                 // Init all other base Timers!
-
-            Instance.Timer_Main.Elapsed += AlarmTimer.Process;
-            AlarmTimer.Tick += OnTick_Alarm;
-            AlarmTimer.Set (2500);
-            AlarmTimer.Start ();
         }
 
         private void InitInterface () {
@@ -204,8 +176,8 @@ namespace IISIM {
                     a.Alarming = false;
             }
 
-            if (toEnable == false && (AlarmPlayer?.IsPlaying ?? false))
-                AlarmPlayer.Stop ();
+            if (toEnable == false && (AudioPlayer?.IsPlaying ?? false))
+                AudioPlayer.Stop ();
         }
 
         public void SetColorScheme (Color.Schemes scheme) {
@@ -266,12 +238,12 @@ namespace IISIM {
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Dark);
 
-        private void OnTick_Alarm (object? sender, EventArgs e) {
-            if (AlarmPlayer is null || Instance?.AudioLib is null || AlarmMedia is null)
+        public override void OnTick_Alarm (object? sender, EventArgs e) {
+            if (AudioPlayer is null || Instance?.AudioLib is null || AlarmMedia is null)
                 return;
 
-            if (Instance.Settings.AudioEnabled == false) {
-                AlarmPlayer.Stop ();
+            if (Instance?.Settings.AudioEnabled == false) {
+                AudioPlayer.Stop ();
                 AlarmActive = null;
                 return;
             }
@@ -290,20 +262,20 @@ namespace IISIM {
                 alarm = AlarmRefs.Find (a => a.Alarming ?? false && a.Priority == Alarm.Priorities.Low);
 
             if (alarm is null) {
-                AlarmPlayer.Stop ();
+                AudioPlayer.Stop ();
                 AlarmActive = null;
                 return;
             } else if (alarm.Priority == AlarmActive) {
-                if (!AlarmPlayer.IsPlaying) {
-                    AlarmPlayer.Media = new Media (Instance.AudioLib, AlarmMedia [alarm.Priority.GetHashCode ()]);
-                    AlarmPlayer.Play ();
+                if (!AudioPlayer.IsPlaying) {
+                    AudioPlayer.Media = new Media (Instance.AudioLib, AlarmMedia [alarm.Priority.GetHashCode ()]);
+                    AudioPlayer.Play ();
                 }
 
                 return;
             } else if (alarm.Priority != AlarmActive) {
-                AlarmPlayer.Stop ();
-                AlarmPlayer.Media = new Media (Instance.AudioLib, AlarmMedia [alarm.Priority.GetHashCode ()]);
-                AlarmPlayer.Play ();
+                AudioPlayer.Stop ();
+                AudioPlayer.Media = new Media (Instance.AudioLib, AlarmMedia [alarm.Priority.GetHashCode ()]);
+                AudioPlayer.Play ();
 
                 AlarmActive = alarm.Priority;
                 return;

@@ -71,7 +71,7 @@ namespace IISIM.Controls {
             InitializeComponent ();
         }
 
-        public DefibNumeric (DeviceDefib parent, ControlTypes.Values v, Color.Schemes cs) {
+        public DefibNumeric (App? app, DeviceDefib parent, ControlTypes.Values v, Color.Schemes cs) : base (app) {
             InitializeComponent ();
 
             DeviceParent = parent;

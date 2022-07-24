@@ -17,6 +17,8 @@ using II;
 using II.Rhythm;
 using II.Waveform;
 
+using LibVLCSharp.Shared;
+
 namespace IISIM {
 
     public partial class DeviceIABP : DeviceWindow {
@@ -104,12 +106,22 @@ namespace IISIM {
             this.AttachDevTools ();
 #endif
             DataContext = this;
-
             InitInterface ();
         }
 
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
+        }
+
+        public override void InitAudio () {
+            if (Instance?.AudioLib is null)
+                return;
+
+            base.InitAudio ();
+
+            var assets = AvaloniaLocator.Current.GetService<Avalonia.Platform.IAssetLoader> ();
+            if (AudioPlayer is not null)
+                AudioPlayer.Media = new Media (Instance.AudioLib, new StreamMediaInput (assets.Open (new Uri ("avares://Infirmary Integrated/Resources/Alarm_IABP_Augmentation.wav"))));
         }
 
         private void InitInterface () {
@@ -157,9 +169,9 @@ namespace IISIM {
             }
 
             // Instantiate and add Numerics to UI
-            listNumerics.Add (new Controls.IABPNumeric (this, Controls.IABPNumeric.ControlTypes.Values.ECG, colorScheme));
-            listNumerics.Add (new Controls.IABPNumeric (this, Controls.IABPNumeric.ControlTypes.Values.ABP, colorScheme));
-            listNumerics.Add (new Controls.IABPNumeric (this, Controls.IABPNumeric.ControlTypes.Values.IABP_AP, colorScheme));
+            listNumerics.Add (new Controls.IABPNumeric (Instance, this, Controls.IABPNumeric.ControlTypes.Values.ECG, colorScheme));
+            listNumerics.Add (new Controls.IABPNumeric (Instance, this, Controls.IABPNumeric.ControlTypes.Values.ABP, colorScheme));
+            listNumerics.Add (new Controls.IABPNumeric (Instance, this, Controls.IABPNumeric.ControlTypes.Values.IABP_AP, colorScheme));
             for (int i = 0; i < listNumerics.Count; i++) {
                 listNumerics [i].SetValue (Grid.RowProperty, i);
                 listNumerics [i].SetValue (Grid.ColumnProperty, 2);
@@ -271,7 +283,7 @@ namespace IISIM {
             try {
                 string? line;
                 while ((line = await sRead.ReadLineAsync ()) != null) {
-                    if (line.Contains (":")) {
+                    if (line.Contains (':')) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1);
                         switch (pName) {
@@ -412,19 +424,19 @@ namespace IISIM {
 
                 case Settings.Trigger:
                     Array enumValues = Enum.GetValues (typeof (Triggering.Values));
-                    Trigger.Value = (Triggering.Values)enumValues.GetValue (II.Math.Clamp ((int)Trigger.Value + 1, 0, enumValues.Length - 1));
+                    Trigger.Value = (Triggering.Values)(enumValues.GetValue (II.Math.Clamp ((int)Trigger.Value + 1, 0, enumValues.Length - 1)) ?? Triggering.Values.ECG);
                     PauseDevice ();
                     UpdateInterface ();
                     return;
 
                 case Settings.AugmentationPressure:
-                    Augmentation = II.Math.Clamp (Augmentation + 10, 0, 100);
-                    listNumerics.Find (o => o.ControlType.Value == Controls.IABPNumeric.ControlTypes.Values.IABP_AP)?.UpdateVitals ();
+                    Augmentation = II.Math.Clamp (Augmentation + 10, 10, 100);
+                    listNumerics.Find (o => o.ControlType?.Value == Controls.IABPNumeric.ControlTypes.Values.IABP_AP)?.UpdateVitals ();
                     return;
 
                 case Settings.AugmentationAlarm:
                     AugmentationAlarm = II.Math.Clamp (AugmentationAlarm + 5, 0, 300);
-                    listNumerics.Find (o => o.ControlType.Value == Controls.IABPNumeric.ControlTypes.Values.IABP_AP)?.UpdateVitals ();
+                    listNumerics.Find (o => o.ControlType?.Value == Controls.IABPNumeric.ControlTypes.Values.IABP_AP)?.UpdateVitals ();
                     return;
             }
         }
@@ -439,13 +451,13 @@ namespace IISIM {
 
                 case Settings.Trigger:
                     Array enumValues = Enum.GetValues (typeof (Triggering.Values));
-                    Trigger.Value = (Triggering.Values)enumValues.GetValue (II.Math.Clamp ((int)Trigger.Value - 1, 0, enumValues.Length - 1));
+                    Trigger.Value = (Triggering.Values)(enumValues.GetValue (II.Math.Clamp ((int)Trigger.Value - 1, 0, enumValues.Length - 1)) ?? Triggering.Values.ECG);
                     PauseDevice ();
                     UpdateInterface ();
                     return;
 
                 case Settings.AugmentationPressure:
-                    Augmentation = II.Math.Clamp (Augmentation - 10, 0, 100);
+                    Augmentation = II.Math.Clamp (Augmentation - 10, 10, 100);
                     listNumerics.Find (o => o.ControlType?.Value == Controls.IABPNumeric.ControlTypes.Values.IABP_AP)?.UpdateVitals ();
                     return;
 
@@ -509,6 +521,25 @@ namespace IISIM {
             }
 
             Dispatcher.UIThread.InvokeAsync (UpdateInterface);
+        }
+
+        public override void OnTick_Alarm (object? sender, EventArgs e) {
+            if (AudioPlayer is null || Instance?.AudioLib is null)
+                return;
+
+            if (Instance?.Settings.AudioEnabled == false) {
+                AudioPlayer.Stop ();
+                return;
+            }
+
+            if (Running && Instance?.Patient?.IABP_AP < AugmentationAlarm) {
+                if (!AudioPlayer.IsPlaying) {
+                    AudioPlayer.Play ();
+                }
+            } else {
+                AudioPlayer.Stop ();
+                return;
+            }
         }
 
         public override void OnTick_Tracing (object? sender, EventArgs e) {

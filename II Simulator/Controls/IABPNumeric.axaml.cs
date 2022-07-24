@@ -60,11 +60,10 @@ namespace IISIM.Controls {
             InitializeComponent ();
         }
 
-        public IABPNumeric (DeviceIABP parent, ControlTypes.Values v, Color.Schemes cs) {
+        public IABPNumeric (App? app, DeviceIABP parent, ControlTypes.Values v, Color.Schemes cs) : base (app) {
             InitializeComponent ();
 
             DeviceParent = parent;
-            Instance = ((DeviceIABP)parent).Instance;
             ControlType = new ControlTypes (v);
             ColorScheme = cs;
 
@@ -150,11 +149,9 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.IABP_AP:
-
                     // Flash augmentation pressure reading if below alarm limit
-                    lblLine1.Foreground = Instance?.Patient.IABP_AP < Instance?.Device_IABP?.AugmentationAlarm
-                        ? (lblLine1.Foreground == Brushes.Red ? Brushes.SkyBlue : Brushes.Red)
-                        : Brushes.SkyBlue;
+                    lblLine1.Foreground = (AlarmLine1 ?? false) && (AlarmIterator ?? false)
+                        ? Brushes.Red : Brushes.SkyBlue;
 
                     lblLine1.Text = Instance?.Device_IABP?.Running ?? false
                         ? String.Format ("{0:0}", Instance?.Patient.IABP_AP) : "";
@@ -162,6 +159,25 @@ namespace IISIM.Controls {
                     lblLine2.Text = String.Format ("{0:0}%", Instance?.Device_IABP?.Augmentation);
                     lblLine3.Text = String.Format ("{0}: {1:0}", Instance?.Language.Localize ("IABP:Alarm"),
                         Instance?.Device_IABP?.AugmentationAlarm);
+                    break;
+            }
+        }
+
+        public override void OnTick_Alarm (object? sender, EventArgs e) {
+            AlarmIterator = !AlarmIterator;
+            _ = AlarmTimer?.ResetStart (1000);
+
+            switch (ControlType?.Value) {
+                default: break;
+
+                case ControlTypes.Values.IABP_AP:
+                    if ((Instance?.Device_IABP?.Running ?? false)
+                            && Instance?.Patient?.IABP_AP < Instance?.Device_IABP?.AugmentationAlarm) {
+                        AlarmLine1 = true;
+                        this.FindControl<TextBlock> ("lblLine1").Foreground = (AlarmIterator ?? false) ? Brushes.Red : Brushes.SkyBlue;
+                    } else {
+                        AlarmLine1 = false;
+                    }
                     break;
             }
         }

@@ -46,18 +46,22 @@ namespace Tone_Generator {
             double ampl = 10000;
 
             for (int k = 0; k < 2; k++) {
-                for (int j = 0; j < 2; j++) {
-                    for (int i = 0; i < (samplesTotal / seconds) * .75; i++) {
-                        double t = (double)i / (double)samplesPerSecond;
-                        short s = (short)(ampl * (System.Math.Sin (t * 330 * 2.0 * System.Math.PI)));
-                        writer.Write (s);
-                    }
+                for (int i = 0; i < (samplesTotal / seconds) * .75; i++) {
+                    double t = (double)i / (double)samplesPerSecond;
+                    short s = (short)(ampl * (System.Math.Sin (t * 330 * 2.0 * System.Math.PI)));
+                    writer.Write (s);
+                }
 
-                    for (int i = 0; i < (samplesTotal / seconds) * .25; i++) {
-                        double t = (double)i / (double)samplesPerSecond;
-                        short s = (short)(0 * (System.Math.Sin (t * 220 * 2.0 * System.Math.PI)));
-                        writer.Write (s);
-                    }
+                for (int i = 0; i < (samplesTotal / seconds) * .25; i++) {
+                    double t = (double)i / (double)samplesPerSecond;
+                    short s = (short)(0 * (System.Math.Sin (t * 220 * 2.0 * System.Math.PI)));
+                    writer.Write (s);
+                }
+
+                for (int i = 0; i < (samplesTotal / seconds) * 1; i++) {
+                    double t = (double)i / (double)samplesPerSecond;
+                    short s = (short)(ampl * (System.Math.Sin (t * 220 * 2.0 * System.Math.PI)));
+                    writer.Write (s);
                 }
 
                 for (int i = 0; i < (samplesTotal / seconds) * 3; i++) {
