@@ -14,7 +14,6 @@ namespace IISE.Controls {
         public List<string>? Values;
 
         public enum Keys {
-            FetalHeartRhythms
         }
 
         public new event EventHandler<PropertyListEventArgs>? PropertyChanged;
@@ -49,7 +48,6 @@ namespace IISE.Controls {
 
             switch (Key) {
                 default: break;
-                case Keys.FetalHeartRhythms: lblKey.Content = "Fetal Heart Rhythms: "; break;
             }
 
             List<ListBoxItem> listItems = new ();

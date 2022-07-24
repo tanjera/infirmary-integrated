@@ -18,6 +18,7 @@ namespace IISE.Controls {
             Cardiac_Rhythms,
             Respiratory_Rhythms,
             PACatheter_Rhythms,
+            FetalHeart_Rhythms
         }
 
         public new event EventHandler<PropertyEnumEventArgs>? PropertyChanged;
@@ -53,6 +54,7 @@ namespace IISE.Controls {
                 case Keys.Cardiac_Rhythms: lblKey.Content = "Cardiac Rhythm: "; break;
                 case Keys.Respiratory_Rhythms: lblKey.Content = "Respiratory Rhythm: "; break;
                 case Keys.PACatheter_Rhythms: lblKey.Content = "Pulmonary Artery Catheter Placement: "; break;
+                case Keys.FetalHeart_Rhythms: lblKey.Content = "Fetal Heart Rhythm: "; break;
             }
 
             List<ComboBoxItem> listItems = new List<ComboBoxItem> ();

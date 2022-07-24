@@ -167,7 +167,7 @@
 
           <StackPanel Classes="spgrp">
             <iic:PropertyInt x:Name="pintFHR" />
-            <iic:PropertyList x:Name="plistFetalHeartRhythm" />
+            <iic:PropertyEnum x:Name="penmFetalHeartRhythm" />
             <iic:PropertyInt x:Name="pintFHRVariability" />
             <iic:PropertyInt x:Name="pintUCFreq" />
             <iic:PropertyInt x:Name="pintUCDur" />

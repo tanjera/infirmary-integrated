@@ -25,8 +25,8 @@ namespace IISIM {
 
         public Timer
             TimerTracing = new (),
-            TimerVitals_Cardiac = new (),
-            TimerVitals_Respiratory = new (),
+            TimerNumerics_Cardiac = new (),
+            TimerNumerics_Respiratory = new (),
             TimerAncillary_Delay = new ();
 
         public enum States {
@@ -57,15 +57,15 @@ namespace IISIM {
             /* Clean subscriptions from the Main Timer */
             if (Instance is not null) {
                 Instance.Timer_Main.Elapsed -= TimerTracing.Process;
-                Instance.Timer_Main.Elapsed -= TimerVitals_Cardiac.Process;
-                Instance.Timer_Main.Elapsed -= TimerVitals_Respiratory.Process;
+                Instance.Timer_Main.Elapsed -= TimerNumerics_Cardiac.Process;
+                Instance.Timer_Main.Elapsed -= TimerNumerics_Respiratory.Process;
                 Instance.Timer_Main.Elapsed -= TimerAncillary_Delay.Process;
             }
 
             /* Dispose of local Timers */
             TimerTracing.Dispose ();
-            TimerVitals_Cardiac.Dispose ();
-            TimerVitals_Respiratory.Dispose ();
+            TimerNumerics_Cardiac.Dispose ();
+            TimerNumerics_Respiratory.Dispose ();
             TimerAncillary_Delay.Dispose ();
 
             /* Unsubscribe from the main Patient event listing */
@@ -84,20 +84,20 @@ namespace IISIM {
             Instance.Timer_Main.Elapsed += TimerAncillary_Delay.Process;
 
             Instance.Timer_Main.Elapsed += TimerTracing.Process;
-            Instance.Timer_Main.Elapsed += TimerVitals_Cardiac.Process;
-            Instance.Timer_Main.Elapsed += TimerVitals_Respiratory.Process;
+            Instance.Timer_Main.Elapsed += TimerNumerics_Cardiac.Process;
+            Instance.Timer_Main.Elapsed += TimerNumerics_Respiratory.Process;
 
             TimerTracing.Tick += OnTick_Tracing;
-            TimerVitals_Cardiac.Tick += OnTick_Vitals_Cardiac;
-            TimerVitals_Respiratory.Tick += OnTick_Vitals_Respiratory;
+            TimerNumerics_Cardiac.Tick += OnTick_Vitals_Cardiac;
+            TimerNumerics_Respiratory.Tick += OnTick_Vitals_Respiratory;
 
             TimerTracing.Set (Draw.RefreshTime);
-            TimerVitals_Cardiac.Set (3000);
-            TimerVitals_Respiratory.Set (5000);
+            TimerNumerics_Cardiac.Set (3000);
+            TimerNumerics_Respiratory.Set (5000);
 
             TimerTracing.Start ();
-            TimerVitals_Cardiac.Start ();
-            TimerVitals_Respiratory.Start ();
+            TimerNumerics_Cardiac.Start ();
+            TimerNumerics_Respiratory.Start ();
         }
 
         public virtual void TogglePause () {

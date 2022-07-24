@@ -108,8 +108,6 @@ namespace IISIM {
             InitInterface ();
         }
 
-        ~DeviceIABP () => Dispose ();
-
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
         }

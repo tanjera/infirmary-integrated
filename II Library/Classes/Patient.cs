@@ -54,8 +54,7 @@ namespace II {
 
         public double ObstetricContractionIntensity;    // % of Tocograph
 
-        public FetalHeartRhythms ObstetricFetalHeartRhythm = new ();
-        public bool ObstetricUterusContracted = true;
+        public FetalHeart_Rhythms ObstetricFetalHeartRhythm = new ();
 
         /* General Device Settings */
 
@@ -93,8 +92,7 @@ namespace II {
                         TimerRespiratory_Expiration = new (),
                         TimerObstetric_Baseline = new (),
                         TimerObstetric_Fetal_Baseline = new (),
-                        TimerObstetric_Fetal_Acceleration = new (),
-                        TimerObstetric_Fetal_Deceleration = new (),
+                        TimerObstetric_Fetal_Variability = new (),
                         TimerObstetric_Contraction = new ();
 
         private static int Default_Electromechanical_Delay = 180;   // Delay in electrical to mechanical capture in milliseconds
@@ -109,7 +107,9 @@ namespace II {
                      switchCardiac_Arrhythmia = false,
                      switchRespiratory_Arrhythmia = false;
 
-        private FetalHeartRhythms.States stateFetalHeartRhythm = FetalHeartRhythms.States.Interval;
+        private bool flagObstetricContraction = false;
+        private int bufferFetalHeartRhythmWander = 1;
+        private FetalHeart_Rhythms.States stateFetalHeartRhythm = FetalHeart_Rhythms.States.Interval;
 
         /* Definitions for Vital_Signs class */
 
@@ -209,9 +209,9 @@ namespace II {
             Task.Run (async () => await UpdateParameters_Obstetric (
                             145,
                             8,
-                            new List<FetalHeartRhythms.Values> (),
+                            FetalHeart_Rhythms.Values.Baseline,
                             120,
-                            45,
+                            60,
                             0.8d));
 
             Task.Run (async () => await InitTimers ());
@@ -237,8 +237,7 @@ namespace II {
             TimerRespiratory_Expiration.Dispose ();
             TimerObstetric_Baseline.Dispose ();
             TimerObstetric_Fetal_Baseline.Dispose ();
-            TimerObstetric_Fetal_Acceleration.Dispose ();
-            TimerObstetric_Fetal_Deceleration.Dispose ();
+            TimerObstetric_Fetal_Variability.Dispose ();
             TimerObstetric_Contraction.Dispose ();
         }
 
@@ -519,8 +518,7 @@ namespace II {
             TimerRespiratory_Expiration.Process ();
             TimerObstetric_Baseline.Process ();
             TimerObstetric_Fetal_Baseline.Process ();
-            TimerObstetric_Fetal_Acceleration.Process ();
-            TimerObstetric_Fetal_Deceleration.Process ();
+            TimerObstetric_Fetal_Variability.Process ();
             TimerObstetric_Contraction.Process ();
         }
 
@@ -599,18 +597,10 @@ namespace II {
                             // Obstetric profile
                             case "ObstetricFetalHeartRate": VS_Settings.FetalHR = int.Parse (pValue); break;
                             case "ObstetricFetalVariability": ObstetricFetalVariability = int.Parse (pValue); break;
-                            case "ObstetricFetalHeartRhythm":
-                                foreach (string fhr_rhythm in pValue.Split (',').Where ((o) => o != ""))
-                                    ObstetricFetalHeartRhythm.ValueList.Add ((FetalHeartRhythms.Values)Enum.Parse (typeof (FetalHeartRhythms.Values), fhr_rhythm));
-                                break;
-
+                            case "ObstetricFetalHeartRhythm": ObstetricFetalHeartRhythm.Value = (FetalHeart_Rhythms.Values)Enum.Parse (typeof (FetalHeart_Rhythms.Values), pValue); break;
                             case "ObstetricContractionFrequency": ObstetricContractionFrequency = int.Parse (pValue); break;
                             case "ObstetricContractionDuration": ObstetricContractionDuration = int.Parse (pValue); break;
                             case "ObstetricContractionIntensity": ObstetricContractionIntensity = double.Parse (pValue); break;
-
-                            // Flags specific for Patient modeling
-                            case "Respiration_Inflated": Respiration_Inflated = bool.Parse (pValue); break;
-                            case "ObstetricUterusContracted": ObstetricUterusContracted = bool.Parse (pValue); break;
 
                             // Device settings
                             case "TransducerZeroed_ABP": TransducerZeroed_ABP = bool.Parse (pValue); break;
@@ -701,15 +691,10 @@ namespace II {
             // Obstetric profile
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricFetalHeartRate", VS_Settings.FetalHR));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricFetalVariability", ObstetricFetalVariability));
-            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricFetalHeartRhythm", string.Join (",", ObstetricFetalHeartRhythm.ValueList)));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricFetalHeartRhythm", ObstetricFetalHeartRhythm.Value));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricContractionFrequency", ObstetricContractionFrequency));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricContractionDuration", ObstetricContractionDuration));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricContractionIntensity", ObstetricContractionIntensity));
-
-            // Flags for Patient modeling
-
-            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Respiration_Inflated", Respiration_Inflated));
-            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricUterusContracted", ObstetricUterusContracted));
 
             // Device settings
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "TransducerZeroed_ABP", TransducerZeroed_ABP));
@@ -905,10 +890,10 @@ namespace II {
         }
 
         public async Task UpdateParameters_Obstetric (
-                    int fhr, int fhr_var, List<FetalHeartRhythms.Values> fhr_rhythms,
+                    int fhr, int fhr_var, FetalHeart_Rhythms.Values fhr_rhythm,
                     int uc_freq, int uc_duration, double uc_intensity) {
             await UpdateParametersSilent_Obstetric (
-                fhr, fhr_var, fhr_rhythms,
+                fhr, fhr_var, fhr_rhythm,
                 uc_freq, uc_duration, uc_intensity);
 
             await OnObstetric_Baseline ();
@@ -916,14 +901,14 @@ namespace II {
         }
 
         public async Task UpdateParametersSilent_Obstetric (
-                int fhr, int fhr_var, List<FetalHeartRhythms.Values> fhr_rhythms,
+                int fhr, int fhr_var, FetalHeart_Rhythms.Values fhr_rhythm,
                 int uc_freq, int uc_duration, double uc_intensity) {
             Updated = DateTime.UtcNow;
 
             // Obstetric profile
             VS_Settings.FetalHR = fhr;
             ObstetricFetalVariability = fhr_var;
-            ObstetricFetalHeartRhythm.ValueList = fhr_rhythms;
+            ObstetricFetalHeartRhythm.Value = fhr_rhythm;
             ObstetricContractionFrequency = uc_freq;
             ObstetricContractionDuration = uc_duration;
             ObstetricContractionIntensity = uc_intensity;
@@ -980,8 +965,7 @@ namespace II {
 
             TimerObstetric_Baseline.Tick += async delegate { await OnObstetric_Baseline (); };
             TimerObstetric_Fetal_Baseline.Tick += async delegate { await OnObstetric_Fetal_Baseline (); };
-            TimerObstetric_Fetal_Acceleration.Tick += async delegate { await OnObstetric_Fetal_Acceleration (); };
-            TimerObstetric_Fetal_Deceleration.Tick += async delegate { await OnObstetric_Fetal_Deceleration (); };
+            TimerObstetric_Fetal_Variability.Tick += async delegate { await OnObstetric_Fetal_Variability (); };
             TimerObstetric_Contraction.Tick += async delegate { await OnObstetric_Contraction (); };
 
             return Task.CompletedTask;
@@ -1019,8 +1003,7 @@ namespace II {
             await TimerObstetric_Baseline.ResetStart (1);
             await TimerObstetric_Fetal_Baseline.ResetStart (1);
 
-            await TimerObstetric_Fetal_Acceleration.Stop ();
-            await TimerObstetric_Fetal_Deceleration.Stop ();
+            await TimerObstetric_Fetal_Variability.Stop ();
             await TimerObstetric_Contraction.Stop ();
         }
 
@@ -1051,8 +1034,7 @@ namespace II {
         private async Task StopTimers_Obstetric () {
             await TimerObstetric_Baseline.Stop ();
             await TimerObstetric_Fetal_Baseline.Stop ();
-            await TimerObstetric_Fetal_Acceleration.Stop ();
-            await TimerObstetric_Fetal_Deceleration.Stop ();
+            await TimerObstetric_Fetal_Variability.Stop ();
             await TimerObstetric_Contraction.Stop ();
         }
 
@@ -1562,78 +1544,156 @@ namespace II {
             switch (stateFetalHeartRhythm) {
                 default: break;
 
-                case FetalHeartRhythms.States.Interval:
+                case FetalHeart_Rhythms.States.Interval:
+                case FetalHeart_Rhythms.States.Refractory:
                     // Add baseline variability to the fetal heart rate, based on the variability parameter, using a random "walk"
                     // If the fetal heart rate "walks" out of its set min/max for variability, boucne it towarsd "center"
                     int fvar = System.Math.Max (1, Math.RandomInt (0, ObstetricFetalVariability / 2));
 
                     if (VS_Actual.FetalHR > VS_Settings.FetalHR + ObstetricFetalVariability)
-                        VS_Actual.FetalHR -= fvar;
+                        VS_Actual.FetalHR = System.Math.Max (0, VS_Actual.FetalHR - fvar);
                     else if (VS_Actual.FetalHR < VS_Settings.FetalHR - ObstetricFetalVariability)
-                        VS_Actual.FetalHR += fvar;
+                        VS_Actual.FetalHR = System.Math.Max (0, VS_Actual.FetalHR + fvar);
                     else
-                        VS_Actual.FetalHR += (int)Math.RandomDbl (-fvar, fvar);
+                        VS_Actual.FetalHR = System.Math.Max (0, VS_Actual.FetalHR + (int)Math.RandomDbl (-fvar, fvar));
                     break;
 
-                case FetalHeartRhythms.States.Accelerating:
+                case FetalHeart_Rhythms.States.Accelerating:
                     // Walk the heart rate upwards towards a normal acceleration of >15 bpm increase
                     if (VS_Actual.FetalHR < VS_Settings.FetalHR + Math.RandomInt (15, 30))
-                        VS_Actual.FetalHR += Math.RandomInt (2, 5);
+                        VS_Actual.FetalHR = System.Math.Max (0, VS_Actual.FetalHR + bufferFetalHeartRhythmWander);
+                    break;
+
+                case FetalHeart_Rhythms.States.Decelerating:
+                    // Walk the heart rate upwards towards a normal deceleration of >15 bpm increase
+                    if (VS_Actual.FetalHR > System.Math.Max (0, VS_Settings.FetalHR - Math.RandomInt (15, 30)))
+                        VS_Actual.FetalHR = System.Math.Max (0, VS_Actual.FetalHR - bufferFetalHeartRhythmWander);
                     break;
             }
 
             /* Triggering of events *****
+             * Trigger variable/random accelerations/decelerations if: rhythm is in interval and is not refractory
+             * This prevents repeat triggering, triggering too often...
+             * Note: Early and Late Decelerations are triggered by uterine contractions (OnObstetric_Contraction)
+             *
+             * Acceleration durations in seconds are hardcoded physiologic timing for normal duration per:
+             * https://www.perinatology.com/Fetal%20Monitoring/Intrapartum%20Monitoring.htm
              */
 
-            /* Trigger accelerations if: rhythm is in interval and meets % chance
-             * This prevents repeat triggering, triggering too often...
-            */
-            if (ObstetricFetalHeartRhythm.ValueList.Contains (FetalHeartRhythms.Values.Acceleration)
-                && stateFetalHeartRhythm == FetalHeartRhythms.States.Interval
-                && Math.RandomDbl (0, 1) < 0.05) {
-                stateFetalHeartRhythm = FetalHeartRhythms.States.Accelerating;
+            if (stateFetalHeartRhythm == FetalHeart_Rhythms.States.Interval) {
+                switch (ObstetricFetalHeartRhythm.Value) {
+                    default: break;
 
-                /* Acceleration duration in seconds. Hardcoded physiologic timing for normal duration per:
-                 * https://www.perinatology.com/Fetal%20Monitoring/Intrapartum%20Monitoring.htm
-                 */
-                int duration = (int)Math.RandomInt (15, 120);
+                    case FetalHeart_Rhythms.Values.Acceleration:                // Accelerations
+                        stateFetalHeartRhythm = FetalHeart_Rhythms.States.Accelerating;
+                        bufferFetalHeartRhythmWander = Math.RandomInt (2, 5);
+                        await TimerObstetric_Fetal_Variability.ResetStart (Math.RandomInt (15, 120) * 1000 / TimerObstetric_Multiplier);
+                        break;
 
-                await TimerObstetric_Fetal_Acceleration.ResetStart (duration * 1000 / TimerObstetric_Multiplier);
+                    case FetalHeart_Rhythms.Values.DecelerationVariable:        // Variable Deceleration
+                        stateFetalHeartRhythm = FetalHeart_Rhythms.States.Decelerating;
+                        bufferFetalHeartRhythmWander = Math.RandomInt (2, 5);
+                        await TimerObstetric_Fetal_Variability.ResetStart (Math.RandomInt (15, 120) * 1000 / TimerObstetric_Multiplier);
+                        break;
+                }
             }
         }
 
-        private async Task OnObstetric_Fetal_Acceleration () {
-            stateFetalHeartRhythm = FetalHeartRhythms.States.Interval;
+        private async Task OnObstetric_Fetal_Variability () {
+            switch (ObstetricFetalHeartRhythm.Value) {
+                default:
+                case FetalHeart_Rhythms.Values.Baseline:
+                    // This is the "fall-through" location if the user makes a change that needs to stop the variability cycle
+                    stateFetalHeartRhythm = FetalHeart_Rhythms.States.Interval;
+                    await TimerObstetric_Fetal_Variability.Stop ();
+                    break;
 
-            await TimerObstetric_Fetal_Acceleration.Stop ();
-        }
+                case FetalHeart_Rhythms.Values.Acceleration:
+                case FetalHeart_Rhythms.Values.DecelerationVariable:
+                    // Variability triggered w/ refractory lockout mechanism
+                    switch (stateFetalHeartRhythm) {
+                        case FetalHeart_Rhythms.States.Accelerating:
+                        case FetalHeart_Rhythms.States.Decelerating:
 
-        private Task OnObstetric_Fetal_Deceleration () {
-            return Task.CompletedTask;
+                            // Entering a refractory period to prevent repeated triggering of variability
+                            stateFetalHeartRhythm = FetalHeart_Rhythms.States.Refractory;
+                            await TimerObstetric_Fetal_Variability.ResetStart (Math.RandomInt (60, 600) * 1000 / TimerObstetric_Multiplier);
+                            break;
+
+                        case FetalHeart_Rhythms.States.Refractory:
+                            stateFetalHeartRhythm = FetalHeart_Rhythms.States.Interval;
+                            await TimerObstetric_Fetal_Variability.Stop ();
+                            break;
+                    }
+                    break;
+
+                case FetalHeart_Rhythms.Values.DecelerationEarly:
+                    // Variability triggered by contractions- skip the refractory lockout mechanism
+                    stateFetalHeartRhythm = FetalHeart_Rhythms.States.Interval;
+                    await TimerObstetric_Fetal_Variability.Stop ();
+                    break;
+
+                case FetalHeart_Rhythms.Values.DecelerationLate:
+                    switch (stateFetalHeartRhythm) {
+                        default:
+                        case FetalHeart_Rhythms.States.Interval:
+                            // Start the late deceleration, reset the timer for the second half
+                            stateFetalHeartRhythm = FetalHeart_Rhythms.States.Decelerating;
+                            bufferFetalHeartRhythmWander = Math.RandomInt (2, 5);
+                            await TimerObstetric_Fetal_Variability.ResetStart ((int)((ObstetricContractionDuration / 5 * 3) * 1000d / TimerObstetric_Multiplier));
+                            break;
+
+                        case FetalHeart_Rhythms.States.Decelerating:
+                            // Ending of the late deceleration, return to baseline
+                            stateFetalHeartRhythm = FetalHeart_Rhythms.States.Interval;
+                            await TimerObstetric_Fetal_Variability.Stop ();
+                            break;
+                    }
+                    break;
+            }
         }
 
         private async Task OnObstetric_RunTimers () {
             if (ObstetricContractionFrequency <= 0 || ObstetricContractionIntensity == 0d) {
-                // No active labor (no contraciton frequency or contraction intensity is absent
+                // No active labor (no contraction frequency or contraction intensity is absent
+                flagObstetricContraction = false;
                 await TimerObstetric_Contraction.Stop ();
-                ObstetricUterusContracted = false;
             } else {
                 // Active labor (frequency and intensity)
-                if (!ObstetricUterusContracted)
+                if (!flagObstetricContraction)
                     await TimerObstetric_Contraction.Continue ((int)(ObstetricContractionFrequency * 1000d / TimerObstetric_Multiplier));
-                else if (ObstetricUterusContracted)
+                else if (flagObstetricContraction)
                     await TimerObstetric_Contraction.Continue ((int)(ObstetricContractionDuration * 1000d / TimerObstetric_Multiplier));
             }
         }
 
         private async Task OnObstetric_Contraction () {
-            if (!ObstetricUterusContracted) {       // Contraction onset
-                ObstetricUterusContracted = true;
+            if (!flagObstetricContraction) {
+                // Contraction onset
+                flagObstetricContraction = true;
                 await TimerObstetric_Contraction.ResetStart ((int)(ObstetricContractionDuration * 1000d / TimerObstetric_Multiplier));
 
                 await OnPatientEvent (PatientEventTypes.Obstetric_Contraction_Start);
-            } else {                        // Contraction ending
-                ObstetricUterusContracted = false;
+
+                // No need for triggering lockouts (e.g. Refractory state) when triggering based on contractions
+                switch (ObstetricFetalHeartRhythm.Value) {
+                    default: break;
+
+                    case FetalHeart_Rhythms.Values.DecelerationEarly:
+                        stateFetalHeartRhythm = FetalHeart_Rhythms.States.Decelerating;
+                        bufferFetalHeartRhythmWander = Math.RandomInt (2, 5);
+                        await TimerObstetric_Fetal_Variability.ResetStart ((int)((ObstetricContractionDuration / 5 * 3) * 1000d / TimerObstetric_Multiplier));
+                        break;
+
+                    case FetalHeart_Rhythms.Values.DecelerationLate:
+                        // Use the variability timer to wait out 2/3 the contraction, then trigger the late deceleration
+                        stateFetalHeartRhythm = FetalHeart_Rhythms.States.Interval;
+                        await TimerObstetric_Fetal_Variability.ResetStart ((int)((ObstetricContractionDuration / 5 * 3) * 1000d / TimerObstetric_Multiplier));
+                        break;
+                }
+            } else {
+                // Contraction ending
+                flagObstetricContraction = false;
                 await TimerObstetric_Contraction.ResetStart ((int)(ObstetricContractionFrequency * 1000d / TimerObstetric_Multiplier));
 
                 await OnPatientEvent (PatientEventTypes.Obstetric_Contraction_End);

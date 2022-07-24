@@ -44,6 +44,7 @@ namespace IISIM {
         }
 
         ~DeviceTracing () {
+            Strip?.Points?.Clear ();
         }
 
         public void UpdateScale () {

@@ -532,15 +532,15 @@ namespace II {
         }
     }
 
-    public class FetalHeartRhythms {
-        public List<Values> ValueList;
+    public class FetalHeart_Rhythms {
+        public Values Value;
 
-        public FetalHeartRhythms (List<Values> v) {
-            ValueList = v;
+        public FetalHeart_Rhythms (Values v) {
+            Value = v;
         }
 
-        public FetalHeartRhythms () {
-            ValueList = new List<Values> ();
+        public FetalHeart_Rhythms () {
+            Value = Values.Baseline;
         }
 
         public static string LookupString (Values v) {
@@ -548,6 +548,7 @@ namespace II {
         }
 
         public enum Values {
+            Baseline,
             Acceleration,
             DecelerationEarly,
             DecelerationLate,
@@ -555,9 +556,10 @@ namespace II {
         }
 
         public enum States {
+            Interval,
             Accelerating,
             Decelerating,
-            Interval
+            Refractory
         }
     }
 }

@@ -40,7 +40,11 @@ namespace IISIM {
             DataContext = this;
 
             InitInterface ();
-            SetStripSpeed (10);                         // Set default Strip Speed
+#if DEBUG
+            SetStripSpeed (25);                         // Debug default Strip speed
+#else
+            SetStripSpeed (10);                         // Set default Strip speed
+#endif
         }
 
         private void InitializeComponent () {

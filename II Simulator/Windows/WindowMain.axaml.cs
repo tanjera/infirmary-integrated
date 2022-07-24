@@ -229,12 +229,12 @@ namespace IISIM {
                     });
                 this.FindControl<ComboBox> ("comboCardiacAxis").Items = cardiacAxes;
 
-                foreach (FetalHeartRhythms.Values v in Enum.GetValues (typeof (FetalHeartRhythms.Values)))
-                    fetalHeartRhythms.Add (new ListBoxItem () {
+                foreach (FetalHeart_Rhythms.Values v in Enum.GetValues (typeof (FetalHeart_Rhythms.Values)))
+                    fetalHeartRhythms.Add (new ComboBoxItem () {
                         Tag = v.ToString (),
-                        Content = Instance.Language.Localize (FetalHeartRhythms.LookupString (v))
+                        Content = Instance.Language.Localize (FetalHeart_Rhythms.LookupString (v))
                     });
-                this.FindControl<ListBox> ("listFHRRhythms").Items = fetalHeartRhythms;
+                this.FindControl<ComboBox> ("comboFHRRhythm").Items = fetalHeartRhythms;
             }
         }
 
@@ -1166,16 +1166,7 @@ namespace IISIM {
             ComboBox comboRespiratoryRhythm = this.FindControl<ComboBox> ("comboRespiratoryRhythm");
             ComboBox comboPACatheterPlacement = this.FindControl<ComboBox> ("comboPACatheterPlacement");
             ComboBox comboCardiacAxis = this.FindControl<ComboBox> ("comboCardiacAxis");
-            ComboBox comboFHRVariability = this.FindControl<ComboBox> ("comboFHRVariability");
-            ComboBox comboUCIntensity = this.FindControl<ComboBox> ("comboUCIntensity");
-            ListBox listFHRRhythms = this.FindControl<ListBox> ("listFHRRhythms");
-
-            List<FetalHeartRhythms.Values> FHRRhythms = new ();
-
-            foreach (ListBoxItem lbi in listFHRRhythms.SelectedItems) {
-                if (lbi.Tag != null)
-                    FHRRhythms.Add ((FetalHeartRhythms.Values)Enum.Parse (typeof (FetalHeartRhythms.Values), (string)lbi.Tag));
-            }
+            ComboBox comboFHRRhythm = this.FindControl<ComboBox> ("comboFHRRhythm");
 
             await p.UpdateParameters_Cardiac (
                 // Basic vital signs
@@ -1268,7 +1259,11 @@ namespace IISIM {
             await p.UpdateParameters_Obstetric (
                 (int)(this.FindControl<NumericUpDown> ("numFHR")?.Value ?? 0),
                 (int)(this.FindControl<NumericUpDown> ("numFHRVariability")?.Value ?? 0),
-                FHRRhythms,
+
+                (FetalHeart_Rhythms.Values)(Enum.GetValues (typeof (FetalHeart_Rhythms.Values)).GetValue (
+                    comboFHRRhythm.SelectedIndex < 0 ? 0 : comboFHRRhythm.SelectedIndex)
+                    ?? FetalHeart_Rhythms.Values.Baseline),
+
                 (int)(this.FindControl<NumericUpDown> ("numUCFrequency")?.Value ?? 0),
                 (int)(this.FindControl<NumericUpDown> ("numUCDuration")?.Value ?? 0),
                 (double)(this.FindControl<NumericUpDown> ("numUCIntensity")?.Value ?? 0));
@@ -1344,7 +1339,7 @@ namespace IISIM {
                 _ = Instance.Patient.UpdateParameters_Obstetric (
                     ApplyBuffer.Fetal_HR,
                     ApplyBuffer.ObstetricFetalVariability,
-                    ApplyBuffer.ObstetricFetalHeartRhythm.ValueList,
+                    ApplyBuffer.ObstetricFetalHeartRhythm.Value,
                     ApplyBuffer.ObstetricContractionFrequency,
                     ApplyBuffer.ObstetricContractionDuration,
                     ApplyBuffer.ObstetricContractionIntensity);
@@ -1436,15 +1431,7 @@ namespace IISIM {
                     this.FindControl<NumericUpDown> ("numUCFrequency").Value = (double)p.ObstetricContractionFrequency;
                     this.FindControl<NumericUpDown> ("numUCDuration").Value = p.ObstetricContractionDuration;
                     this.FindControl<NumericUpDown> ("numUCIntensity").Value = p.ObstetricContractionIntensity;
-
-                    ListBox listFHRRhythms = this.FindControl<ListBox> ("listFHRRhythms");
-                    listFHRRhythms.SelectedItems.Clear ();
-                    foreach (FetalHeartRhythms.Values fhr_rhythm in p.ObstetricFetalHeartRhythm.ValueList) {
-                        foreach (ListBoxItem lbi in listFHRRhythms.Items) {
-                            if (lbi.Tag != null && (string)lbi.Tag == fhr_rhythm.ToString ())
-                                listFHRRhythms.SelectedItems.Add (lbi);
-                        }
-                    }
+                    this.FindControl<ComboBox> ("comboFHRRhythm").SelectedIndex = (int)p.ObstetricFetalHeartRhythm.Value;
                 }
 
                 _ = SetParameterStatus (Instance?.Settings.AutoApplyChanges ?? false);     // Re-establish parameter status

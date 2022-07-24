@@ -735,7 +735,7 @@ namespace II.Rhythm {
                     break;
 
                 case Lead.Values.TOCO:
-                    Concatenate (Draw.Flat_Line (fill, 0d, Resolution_Obstetric));
+                    Concatenate (Draw.Flat_Line (fill, 0.05d, Resolution_Obstetric));
                     break;
             }
 
@@ -765,7 +765,7 @@ namespace II.Rhythm {
             if (p is null || Lead is null || Lead.Value != Lead.Values.TOCO)
                 return;
 
-            Replace (Draw.TOCO_Rhythm (p, p.ObstetricUterusContracted, Resolution_Obstetric));
+            Replace (Draw.TOCO_Rhythm (p, Resolution_Obstetric));
 
             SortPoints ();
         }

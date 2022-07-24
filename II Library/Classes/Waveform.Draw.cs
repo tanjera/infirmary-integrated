@@ -211,14 +211,12 @@ namespace II.Waveform {
                 lerp - (fvar / 2), lerp + (fvar / 2));
         }
 
-        public static List<PointD> TOCO_Rhythm (Patient _P, bool isContraction, int _Resolution) {
-            if (!isContraction) {               // Baseline TOCO tracing
-                return Flat_Line (60, 0d, _Resolution);
-            } else {
-                return Plotting.Concatenate (new List<PointD> (),
+        public static List<PointD> TOCO_Rhythm (Patient _P, int _Resolution) {
+            return Plotting.Concatenate (new List<PointD> (),
+                Plotting.Normalize (
                     Plotting.Stretch (Dictionary.EFM_Contraction, _P.ObstetricContractionDuration),
-                    _P.ObstetricContractionIntensity);
-            }
+                    0.075d, 1.0d),
+                _P.ObstetricContractionIntensity);
         }
 
         /* ********************************************************************

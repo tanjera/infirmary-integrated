@@ -77,8 +77,8 @@ namespace IISE.Windows {
                 foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
                     cardiacAxes.Add (App.Language.Dictionary [Cardiac_Axes.LookupString (v)]);
 
-                foreach (FetalHeartRhythms.Values v in Enum.GetValues (typeof (FetalHeartRhythms.Values)))
-                    fetalHeartRhythms.Add (App.Language.Dictionary [FetalHeartRhythms.LookupString (v)]);
+                foreach (FetalHeart_Rhythms.Values v in Enum.GetValues (typeof (FetalHeart_Rhythms.Values)))
+                    fetalHeartRhythms.Add (App.Language.Dictionary [FetalHeart_Rhythms.LookupString (v)]);
             }
 
             // Find all controls and attach to reference
@@ -106,8 +106,7 @@ namespace IISE.Windows {
             PropertyEnum penmRespiratoryRhythms = this.FindControl<PropertyEnum> ("penmRespiratoryRhythms");
             PropertyEnum penmCardiacAxis = this.FindControl<PropertyEnum> ("penmCardiacAxis");
             PropertyEnum penmPACatheterRhythm = this.FindControl<PropertyEnum> ("penmPACatheterRhythm");
-
-            PropertyList plistFetalHeartRhythm = this.FindControl<PropertyList> ("plistFetalHeartRhythm");
+            PropertyEnum penmFetalHeartRhythm = this.FindControl<PropertyEnum> ("penmFetalHeartRhythm");
 
             PropertyInt pintHR = this.FindControl<PropertyInt> ("pintHR");
             PropertyInt pintRR = this.FindControl<PropertyInt> ("pintRR");
@@ -151,8 +150,8 @@ namespace IISE.Windows {
                 Enum.GetNames (typeof (PulmonaryArtery_Rhythms.Values)), pulmonaryRhythms);
             penmCardiacAxis.Init (PropertyEnum.Keys.Cardiac_Axis,
                 Enum.GetNames (typeof (Cardiac_Axes.Values)), cardiacAxes);
-            plistFetalHeartRhythm.Init (PropertyList.Keys.FetalHeartRhythms,
-                Enum.GetNames (typeof (FetalHeartRhythms.Values)), fetalHeartRhythms);
+            penmFetalHeartRhythm.Init (PropertyEnum.Keys.FetalHeart_Rhythms,
+                Enum.GetNames (typeof (FetalHeart_Rhythms.Values)), fetalHeartRhythms);
 
             pintHR.Init (PropertyInt.Keys.HR, 5, 0, 500);
             pintRR.Init (PropertyInt.Keys.RR, 2, 0, 100);
@@ -191,7 +190,7 @@ namespace IISE.Windows {
             penmRespiratoryRhythms.PropertyChanged += UpdatePatient;
             penmPACatheterRhythm.PropertyChanged += UpdatePatient;
             penmCardiacAxis.PropertyChanged += UpdatePatient;
-            plistFetalHeartRhythm.PropertyChanged += UpdatePatient;
+            penmFetalHeartRhythm.PropertyChanged += UpdatePatient;
 
             penmCardiacRhythms.PropertyChanged += UpdateCardiacRhythm;
             penmRespiratoryRhythms.PropertyChanged += UpdateRespiratoryRhythm;
@@ -285,6 +284,10 @@ namespace IISE.Windows {
                     case PropertyEnum.Keys.PACatheter_Rhythms:
                         Patient.PulmonaryArtery_Placement.Value = (PulmonaryArtery_Rhythms.Values)Enum.Parse (typeof (PulmonaryArtery_Rhythms.Values), e.Value);
                         break;
+
+                    case PropertyEnum.Keys.FetalHeart_Rhythms:
+                        Patient.ObstetricFetalHeartRhythm.Value = (FetalHeart_Rhythms.Values)Enum.Parse (typeof (FetalHeart_Rhythms.Values), e.Value);
+                        break;
                 }
             }
         }
@@ -293,16 +296,6 @@ namespace IISE.Windows {
             if (e.Values != null && Patient != null) {
                 switch (e.Key) {
                     default: break;
-
-                    case PropertyList.Keys.FetalHeartRhythms:
-                        if (Patient.ObstetricFetalHeartRhythm.ValueList is null)
-                            Patient.ObstetricFetalHeartRhythm.ValueList = new ();
-                        else
-                            Patient.ObstetricFetalHeartRhythm.ValueList.Clear ();
-
-                        foreach (string s in e.Values)
-                            Patient.ObstetricFetalHeartRhythm.ValueList.Add ((FetalHeartRhythms.Values)Enum.Parse (typeof (FetalHeartRhythms.Values), s));
-                        break;
                 }
             }
         }
@@ -411,8 +404,7 @@ namespace IISE.Windows {
             PropertyEnum penmRespiratoryRhythms = this.FindControl<PropertyEnum> ("penmRespiratoryRhythms");
             PropertyEnum penmCardiacAxis = this.FindControl<PropertyEnum> ("penmCardiacAxis");
             PropertyEnum penmPACatheterRhythm = this.FindControl<PropertyEnum> ("penmPACatheterRhythm");
-
-            PropertyList plistFetalHeartRhythm = this.FindControl<PropertyList> ("plistFetalHeartRhythm");
+            PropertyEnum penmFetalHeartRhythm = this.FindControl<PropertyEnum> ("penmFetalHeartRhythm");
 
             PropertyInt pintHR = this.FindControl<PropertyInt> ("pintHR");
             PropertyInt pintRR = this.FindControl<PropertyInt> ("pintRR");
@@ -458,7 +450,7 @@ namespace IISE.Windows {
             penmRespiratoryRhythms.IsEnabled = (Patient != null);
             penmPACatheterRhythm.IsEnabled = (Patient != null);
             penmCardiacAxis.IsEnabled = (Patient != null);
-            plistFetalHeartRhythm.IsEnabled = (Patient != null);
+            penmFetalHeartRhythm.IsEnabled = (Patient != null);
 
             pintHR.IsEnabled = (Patient != null);
             pintRR.IsEnabled = (Patient != null);
@@ -499,7 +491,7 @@ namespace IISE.Windows {
                 await penmRespiratoryRhythms.Set ((int)Patient.Respiratory_Rhythm.Value);
                 await penmPACatheterRhythm.Set ((int)Patient.PulmonaryArtery_Placement.Value);
                 await penmCardiacAxis.Set ((int)Patient.Cardiac_Axis.Value);
-                await plistFetalHeartRhythm.Set (new List<string> (Patient.ObstetricFetalHeartRhythm.ValueList.Select (s => s.ToString ())));
+                await penmFetalHeartRhythm.Set ((int)Patient.ObstetricFetalHeartRhythm.Value);
 
                 await pintHR.Set (Patient.VS_Settings.HR);
                 await pintRR.Set (Patient.VS_Settings.RR);
