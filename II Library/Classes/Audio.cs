@@ -5,10 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
+
     public class Audio {
-        private static Task<MemoryStream> ToneGenerator (double seconds = 1, double frequency = 220) {
+
+        public static Task<MemoryStream> ToneGenerator (double seconds = 0.1, double frequency = 220, bool fixpop = true) {
             MemoryStream stream = new ();
-            BinaryWriter writer = new BinaryWriter (stream);
+            BinaryWriter writer = new BinaryWriter (stream, Encoding.Default, true);
 
             int RIFF = 0x46464952;
             int WAVE = 0x45564157;
@@ -46,11 +48,17 @@ namespace II {
             for (int i = 0; i < samplesTotal; i++) {
                 double t = (double)i / (double)samplesPerSecond;
                 short s = (short)(ampl * (System.Math.Sin (t * frequency * 2.0 * System.Math.PI)));
+
+                if (fixpop && i > samplesTotal - 1000) {
+                    double c = Math.InverseLerp (samplesTotal, samplesTotal - 1000, i);
+                    s = Convert.ToInt16 (s * c);
+                }
+
                 writer.Write (s);
             }
 
             writer.Close ();
-            stream.Close ();
+            writer.Dispose ();
 
             return Task.FromResult (stream);
         }

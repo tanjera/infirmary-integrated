@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -15,6 +16,8 @@ using Avalonia.Threading;
 using II;
 using II.Rhythm;
 using II.Waveform;
+
+using LibVLCSharp.Shared;
 
 namespace IISIM {
 
@@ -41,11 +44,22 @@ namespace IISIM {
         private List<Controls.DefibTracing> listTracings = new ();
         private List<Controls.DefibNumeric> listNumerics = new ();
 
+        /* Variables for audio tones (QRS or SPO2 beeps)*/
+        private ToneSources ToneSource = ToneSources.None;
+        public MediaPlayer? TonePlayer;
+        private MemoryStream? ToneMedia;
+
         public enum Modes {
             DEFIB,
             SYNC,
             PACER
         };
+
+        public enum ToneSources {
+            None,
+            ECG,
+            SPO2
+        }
 
         public DeviceDefib () {
             InitializeComponent ();
@@ -67,6 +81,31 @@ namespace IISIM {
             AvaloniaXamlLoader.Load (this);
         }
 
+        public override void InitAudio () {
+            if (Instance?.AudioLib is null)
+                return;
+
+            base.InitAudio ();
+
+            TonePlayer = new MediaPlayer (Instance.AudioLib);
+        }
+
+        public override void DisposeAudio () {
+            base.DisposeAudio ();
+
+            if (TonePlayer is not null) {
+                TonePlayer.Stop ();
+                TonePlayer.Dispose ();
+                TonePlayer = null;
+            }
+
+            if (ToneMedia is not null) {
+                ToneMedia.Close ();
+                ToneMedia.Dispose ();
+                ToneMedia = null;
+            }
+        }
+
         private void InitInterface () {
             // Populate UI strings per language selection
             if (Instance?.Language is not null) {
@@ -76,6 +115,12 @@ namespace IISIM {
                 this.FindControl<MenuItem> ("menuAddNumeric").Header = Instance.Language.Localize ("MENU:MenuAddNumeric");
                 this.FindControl<MenuItem> ("menuAddTracing").Header = Instance.Language.Localize ("MENU:MenuAddTracing");
                 this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
+
+                this.FindControl<MenuItem> ("menuAudio").Header = Instance.Language.Localize ("MENU:MenuAudio");
+                this.FindControl<MenuItem> ("menuAudioOff").Header = Instance.Language.Localize ("MENU:MenuAudioOff");
+                this.FindControl<MenuItem> ("menuAudioECG").Header = Instance.Language.Localize ("MENU:MenuAudioECG");
+                this.FindControl<MenuItem> ("menuAlarmsSPO2").Header = Instance.Language.Localize ("MENU:MenuAudioSPO2");
+
                 this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
                 this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
                 this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
@@ -126,7 +171,7 @@ namespace IISIM {
             try {
                 string? line;
                 while ((line = await sRead.ReadLineAsync ()) != null) {
-                    if (line.Contains (":")) {
+                    if (line.Contains (':')) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1);
                         switch (pName) {
@@ -176,6 +221,62 @@ namespace IISIM {
             return sWrite.ToString ();
         }
 
+        public async Task SetAudioTone (ToneSources source) {
+            ToneSource = source;
+
+            if (TonePlayer is not null && Instance?.AudioLib is not null) {
+                switch (ToneSource) {
+                    default:
+                    case ToneSources.SPO2:
+                        await ReleaseAudioTone ();
+                        break;
+
+                    case ToneSources.ECG:
+                        await ReleaseAudioTone ();
+                        ToneMedia = await Audio.ToneGenerator (0.15, 330, true);
+                        TonePlayer.Media = new Media (Instance.AudioLib, new StreamMediaInput (ToneMedia));
+                        break;
+                }
+            }
+
+            return;
+        }
+
+        public async Task PlayAudioTone (ToneSources trigger, Patient? p) {
+            if (TonePlayer is null || Instance?.AudioLib is null)
+                return;
+
+            if (ToneSource == trigger && (Instance?.Settings.AudioEnabled ?? false)) {
+                switch (ToneSource) {
+                    default: break;
+
+                    case ToneSources.ECG:           // Plays a fixed tone each QRS complex
+                        TonePlayer.Stop ();
+                        TonePlayer.Play ();
+                        break;
+
+                    case ToneSources.SPO2:          // Plays a variable tone depending on SpO2
+                        TonePlayer.Stop ();
+                        await ReleaseAudioTone ();
+                        ToneMedia = await Audio.ToneGenerator (0.15, II.Math.Lerp (110, 330, (double)(p?.SPO2 ?? 100) / 100), true);
+                        TonePlayer.Media = new Media (Instance.AudioLib, new StreamMediaInput (ToneMedia));
+                        TonePlayer.Play ();
+                        break;
+                }
+            }
+        }
+
+        private Task ReleaseAudioTone () {
+            TonePlayer?.Stop ();
+            if (TonePlayer is not null)
+                TonePlayer.Media = null;
+
+            ToneMedia?.Close ();
+            ToneMedia?.Dispose ();
+
+            return Task.CompletedTask;
+        }
+
         public void SetColorScheme (Color.Schemes scheme) {
             colorScheme = scheme;
             UpdateInterface ();
@@ -185,7 +286,7 @@ namespace IISIM {
             base.TogglePause ();
 
             if (State == States.Running)
-                listTracings.ForEach (c => c.Strip.Unpause ());
+                listTracings.ForEach (c => c?.Strip?.Unpause ());
         }
 
         public void AddTracing () {
@@ -211,7 +312,7 @@ namespace IISIM {
         }
 
         private void UpdatePacemaker () {
-            _ = Instance.Patient?.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
+            _ = Instance?.Patient?.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
         }
 
         private void ButtonDefib_Click (object s, RoutedEventArgs e) {
@@ -331,7 +432,7 @@ namespace IISIM {
         }
 
         private void ButtonPacePause_Click (object s, RoutedEventArgs e)
-            => _ = Instance.Patient?.PacemakerPause ();
+            => _ = Instance?.Patient?.PacemakerPause ();
 
         private void MenuClose_Click (object s, RoutedEventArgs e)
             => this.Close ();
@@ -344,6 +445,15 @@ namespace IISIM {
 
         private void MenuTogglePause_Click (object s, RoutedEventArgs e)
             => TogglePause ();
+
+        private void MenuAudioOff (object sender, RoutedEventArgs e)
+            => _ = SetAudioTone (ToneSources.None);
+
+        private void MenuAudioECG (object sender, RoutedEventArgs e)
+            => _ = SetAudioTone (ToneSources.ECG);
+
+        private void MenuAudioSPO2 (object sender, RoutedEventArgs e)
+            => _ = SetAudioTone (ToneSources.SPO2);
 
         private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Light);
@@ -488,6 +598,9 @@ namespace IISIM {
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular_Electric:
+                    // QRS audio tone is only triggered by rhythms w/ a ventricular electrical (QRS complex) action
+                    _ = PlayAudioTone (ToneSources.ECG, e.Patient);
+
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Patient));
                     break;
 
@@ -496,6 +609,9 @@ namespace IISIM {
                     break;
 
                 case Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical:
+                    // SPO2 audio tone is only triggered  by rhythms w/ a ventricular mechanical action (systole)
+                    _ = PlayAudioTone (ToneSources.SPO2, e.Patient);
+
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Patient));
 
                     /* Iterations and trigger for auto-scaling pressure waveform strips */

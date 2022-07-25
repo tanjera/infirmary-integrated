@@ -49,6 +49,12 @@
         <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" />
       </MenuItem>
 
+      <MenuItem Name="menuAudio">
+        <MenuItem Name="menuAudioOff" Click="MenuAudioOff" />
+        <MenuItem Name="menuAudioECG" Click="MenuAudioECG" />
+        <MenuItem Name="menuAlarmsSPO2" Click="MenuAudioSPO2" />
+      </MenuItem>
+
       <MenuItem Name="menuColor">
         <MenuItem Name="menuColorLight" Click="MenuColorScheme_Light" />
         <MenuItem Name="menuColorDark" Click="MenuColorScheme_Dark" />
