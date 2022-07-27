@@ -140,6 +140,7 @@ else
 
     echo -e "Moving .rpm package to $RELEASE_PATH/\n"
     mv "$RPMBUILD_DIR/RPMS/x86_64/"* "$RELEASE_PATH"
+    rm -rf "$RPMBUILD_DIR"
 fi
 
 # ####
