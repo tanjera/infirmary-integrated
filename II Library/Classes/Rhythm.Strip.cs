@@ -18,6 +18,7 @@ using II.Drawing;
 using II.Waveform;
 
 namespace II.Rhythm {
+
     public class Strip {
         /* Default variables for easy modification of multiple measurement/tracing functions */
         public const double DefaultLength = 6.0d;
@@ -727,13 +728,8 @@ namespace II.Rhythm {
             double fill = (Length * forwardBuffer) - Last (Points).X;
 
             switch (Lead.Value) {
-                default: break;
-
+                default:
                 case Lead.Values.FHR:
-
-                    Concatenate (Draw.Flat_Line (fill,
-                        Math.Clamp (Math.InverseLerp (DefaultScaleMin_FHR, DefaultScaleMax_FHR, p.VS_Actual.FetalHR)),
-                        Resolution_Obstetric));
                     break;
 
                 case Lead.Values.TOCO:
