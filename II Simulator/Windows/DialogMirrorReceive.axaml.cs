@@ -57,7 +57,7 @@ namespace IISIM {
                 this.Close ();
             } else {
                 var assets = AvaloniaLocator.Current.GetService<Avalonia.Platform.IAssetLoader> ();
-                var icon = new Bitmap (assets.Open (new Uri ("avares://Infirmary Integrated/Third_Party/Icon_DeviceMonitor_48.png")));
+                var icon = new Bitmap (assets.Open (new Uri ("avares://Infirmary Integrated/Third_Party/Icon_DeviceMonitor_128.png")));
 
                 var msBoxStandardWindow = MessageBox.Avalonia.MessageBoxManager
                     .GetMessageBoxCustomWindow (new MessageBox.Avalonia.DTO.MessageBoxCustomParamsWithImage {

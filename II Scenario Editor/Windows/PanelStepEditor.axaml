@@ -20,6 +20,8 @@
     <Style Selector="Button.imgbtn">
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="Background" Value="Transparent" />
+      <Setter Property="Height" Value="64" />
+      <Setter Property="Width" Value="64" />
     </Style>
   </UserControl.Styles>
 
@@ -164,18 +166,18 @@
           <Button Name="btnAddStep"
                   Click="ButtonAddStep_Click"
                   Classes="imgbtn">
-            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_PlayerAdd_48.png" />
+            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_PlayerAdd_128.png" />
           </Button>
           <Button Name="btnDuplicateStep"
                   Click="ButtonDuplicateStep_Click"
                   Classes="imgbtn">
-            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_Stack_48.png" />
+            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_Stack_128.png" />
           </Button>
 
           <Button Name="btnDeleteStep"
                   Click="BtnDeleteStep_Click"
                   Classes="imgbtn">
-            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_TrashBin_48.png" />
+            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_TrashBin_128.png" />
           </Button>
 
           <Separator Margin="3, 10" />
@@ -183,13 +185,13 @@
           <Button Name="btnCopyPatient"
                   Click="BtnCopyPatient_Click"
                   Classes="imgbtn">
-            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_CopyData_48.png" />
+            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_CopyData_128.png" />
           </Button>
           <Button Name="btnPastePatient"
                   Click="BtnPastePatient_Click"
                   Classes="imgbtn">
 
-            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_PasteData_48.png" />
+            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_PasteData_128.png" />
           </Button>
         </StackPanel>
 

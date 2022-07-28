@@ -235,7 +235,7 @@
 							Classes="device"
 							Click="ButtonDeviceMonitor_Click">
               <StackPanel Orientation="Horizontal">
-                <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceMonitor_48.png" />
+                <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceMonitor_128.png" />
                 <Label Name="lblDeviceMonitor" Classes="device" />
               </StackPanel>
             </Button>
@@ -245,7 +245,7 @@
 							Classes="device"
 							Click="ButtonDeviceDefib_Click">
               <StackPanel Orientation="Horizontal">
-                <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceDefibrillator_48.png" />
+                <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceDefibrillator_128.png" />
                 <Label Name="lblDeviceDefibrillator" Classes="device" />
               </StackPanel>
             </Button>
@@ -255,7 +255,7 @@
 							Classes="device"
 							Click="ButtonDeviceECG_Click">
               <StackPanel Orientation="Horizontal">
-                <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_Device12LeadECG_48.png" />
+                <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_Device12LeadECG_128.png" />
                 <Label Name="lblDevice12LeadECG" Classes="device" />
               </StackPanel>
             </Button>
@@ -265,7 +265,7 @@
 							Classes="device"
 							Click="ButtonDeviceIABP_Click">
               <StackPanel Orientation="Horizontal">
-                <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceIABP_48.png" />
+                <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceIABP_128.png" />
                 <Label Name="lblDeviceIABP" Classes="device" />
               </StackPanel>
             </Button>
@@ -275,7 +275,7 @@
 							Classes="device"
 							Click="ButtonDeviceEFM_Click">
               <StackPanel Orientation="Horizontal">
-                <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceEFM_48.png" />
+                <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceEFM_128.png" />
                 <Label Name="lblDeviceEFM" Classes="device" />
               </StackPanel>
             </Button>
@@ -331,7 +331,7 @@
 										Grid.Column="0"
 										Classes="scenario"
 										Click="ButtonPreviousStep_Click">
-                    <Image Classes="scenario" Source="avares://Infirmary Integrated/Third_Party/Icon_PlayerArrowBack_48.png" />
+                    <Image Classes="scenario" Source="avares://Infirmary Integrated/Third_Party/Icon_PlayerArrowBack_128.png" />
                   </Button>
                   <Button
 										Name="btnPauseStep"
@@ -340,7 +340,7 @@
 										Classes="scenario"
 										Click="ButtonPauseStep_Click"
 										IsEnabled="False">
-                    <Image Classes="scenario" Source="avares://Infirmary Integrated/Third_Party/Icon_PlayerPause_48.png" />
+                    <Image Classes="scenario" Source="avares://Infirmary Integrated/Third_Party/Icon_PlayerPause_128.png" />
                   </Button>
                   <Button
 										Name="btnPlayStep"
@@ -349,7 +349,7 @@
 										Classes="scenario"
 										Click="ButtonPlayStep_Click"
 										IsEnabled="False">
-                    <Image Classes="scenario" Source="avares://Infirmary Integrated/Third_Party/Icon_PlayerArrowPlay_48.png" />
+                    <Image Classes="scenario" Source="avares://Infirmary Integrated/Third_Party/Icon_PlayerArrowPlay_128.png" />
                   </Button>
                   <Button
 										Name="btnNextStep"
@@ -357,7 +357,7 @@
 										Grid.Column="3"
 										Classes="scenario"
 										Click="ButtonNextStep_Click">
-                    <Image Classes="scenario" Source="avares://Infirmary Integrated/Third_Party/Icon_PlayerArrowNext_48.png" />
+                    <Image Classes="scenario" Source="avares://Infirmary Integrated/Third_Party/Icon_PlayerArrowNext_128.png" />
                   </Button>
 
                   <Label
@@ -1496,7 +1496,7 @@
 								Classes="apply"
 								Click="ButtonResetParameters_Click">
                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
-                  <Image Classes="apply" Source="avares://Infirmary Integrated/Resources/Icon_Cross_32.png" />
+                  <Image Classes="apply" Source="avares://Infirmary Integrated/Third_Party/Icon_TrashBin_128.png" />
                   <Label Name="lblParametersReset" Classes="apply" />
                 </StackPanel>
               </Button>
@@ -1507,7 +1507,7 @@
 								Click="ButtonApplyParameters_Click">
                 <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
                   <Label Name="lblParametersApply" Classes="apply" />
-                  <Image Classes="apply" Source="avares://Infirmary Integrated/Resources/Icon_Check_32.png" />
+                  <Image Classes="apply" Source="avares://Infirmary Integrated/Third_Party/Icon_PasteData_128.png" />
                 </StackPanel>
               </Button>
             </Grid>

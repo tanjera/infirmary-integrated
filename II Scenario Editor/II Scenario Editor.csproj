@@ -17,80 +17,7 @@
     <Description>Medical device simulator for training healthcare professionals.</Description>
     <ApplicationIcon>Icon_IISE.ico</ApplicationIcon>
     <PlatformTarget>AnyCPU</PlatformTarget>
-  </PropertyGroup>
-  <ItemGroup>
-    <None Remove=".gitignore" />
-    <None Remove="Icon_IISE.ico" />
-    <None Remove="Resources\Icon_IISE.ico" />
-    <None Remove="Resources\SplashScreen_Infirmary_800x480.png" />
-    <None Remove="Third_Party\Icon_ArrowDown_128.png" />
-    <None Remove="Third_Party\Icon_ArrowLeft_128.png" />
-    <None Remove="Third_Party\Icon_ArrowRight_128.png" />
-    <None Remove="Third_Party\Icon_ArrowUp_128.png" />
-    <None Remove="Third_Party\Icon_ArrowUp_48.png" />
-    <None Remove="Third_Party\Icon_CopyData_48.png" />
-    <None Remove="Third_Party\Icon_Device12LeadECG_48.png" />
-    <None Remove="Third_Party\Icon_DeviceDefibrillator_48.png" />
-    <None Remove="Third_Party\Icon_DeviceEFM_48.png" />
-    <None Remove="Third_Party\Icon_DeviceIABP_48.png" />
-    <None Remove="Third_Party\Icon_DeviceIVPump_48.png" />
-    <None Remove="Third_Party\Icon_DeviceLabResults_48.png" />
-    <None Remove="Third_Party\Icon_DeviceMonitor_48.png" />
-    <None Remove="Third_Party\Icon_DeviceVentilator_48.png" />
-    <None Remove="Third_Party\Icon_Error_48.png" />
-    <None Remove="Third_Party\Icon_Folder_48.png" />
-    <None Remove="Third_Party\Icon_List_48.png" />
-    <None Remove="Third_Party\Icon_PasteData_48.png" />
-    <None Remove="Third_Party\Icon_PlayerAddNext_48.png" />
-    <None Remove="Third_Party\Icon_PlayerAdd_48.png" />
-    <None Remove="Third_Party\Icon_PlayerArrowBack_48.png" />
-    <None Remove="Third_Party\Icon_PlayerArrowNext_48.png" />
-    <None Remove="Third_Party\Icon_PlayerArrowPlay_48.png" />
-    <None Remove="Third_Party\Icon_PlayerPause_48.png" />
-    <None Remove="Third_Party\Icon_Progression_48.png" />
-    <None Remove="Third_Party\Icon_Stack_48.png" />
-    <None Remove="Third_Party\Icon_TrashBin_48.png" />
-    <None Remove="Third_Party\Icon_UpgradeBootstrap_48.png" />
-    <None Remove="Third_Party\Icon_UpgradeLater_48.png" />
-    <None Remove="Third_Party\Icon_UpgradeMute_48.png" />
-    <None Remove="Third_Party\Icon_UpgradeWebsite_48.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <AvaloniaResource Include="Icon_IISE.ico" />
-    <AvaloniaResource Include="Resources\Icon_IISE.ico" />
-    <AvaloniaResource Include="Resources\SplashScreen_Infirmary_800x480.png" />
-    <AvaloniaResource Include="Third_Party\Icon_ArrowDown_128.png" />
-    <AvaloniaResource Include="Third_Party\Icon_ArrowLeft_128.png" />
-    <AvaloniaResource Include="Third_Party\Icon_ArrowRight_128.png" />
-    <AvaloniaResource Include="Third_Party\Icon_ArrowUp_128.png" />
-    <AvaloniaResource Include="Third_Party\Icon_ArrowUp_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_CopyData_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_Device12LeadECG_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_DeviceDefibrillator_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_DeviceEFM_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_DeviceIABP_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_DeviceIVPump_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_DeviceLabResults_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_DeviceMonitor_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_DeviceVentilator_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_Error_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_Folder_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_List_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_PasteData_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_PlayerAddNext_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_PlayerAdd_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_PlayerArrowBack_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_PlayerArrowNext_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_PlayerArrowPlay_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_PlayerPause_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_Progression_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_Stack_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_TrashBin_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_UpgradeBootstrap_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_UpgradeLater_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_UpgradeMute_48.png" />
-    <AvaloniaResource Include="Third_Party\Icon_UpgradeWebsite_48.png" />
-  </ItemGroup>
+  </PropertyGroup>  
   <ItemGroup>
     <!--This helps with theme dll-s trimming.
 	If you will publish your application in self-contained mode with p:PublishTrimmed=true and it will use Fluent theme Default theme will be trimmed from the output and vice versa.
@@ -144,6 +71,10 @@
     </Compile>
   </ItemGroup>
   <Import Project="..\II Library\II Library.projitems" Label="Shared" />
+  <ItemGroup>
+    <AvaloniaResource Include="Resources\**" />
+    <AvaloniaResource Include="Third_Party\**" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="..\Assets\Icon_InfirmaryScenarioEditor_64.png">
       <Pack>True</Pack>

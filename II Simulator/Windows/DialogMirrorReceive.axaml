@@ -46,7 +46,7 @@
 			Height="48"
 			Margin="5"
 			VerticalAlignment="Center"
-			Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceLabResults_48.png" />
+			Source="avares://Infirmary Integrated/Third_Party/Icon_Clipboard_128.png" />
 
     <TextBlock
 			Name="txtMessage"

@@ -72,7 +72,7 @@
         <Image
 					Grid.Column="0"
 					Classes="btn"
-					Source="avares://Infirmary Integrated/Third_Party/Icon_UpgradeWebsite_48.png" />
+					Source="avares://Infirmary Integrated/Third_Party/Icon_UpgradeWebsite_128.png" />
         <Label
 					Name="lblWebsite"
 					Grid.Column="1"
@@ -98,7 +98,7 @@
         <Image
 					Grid.Column="0"
 					Classes="btn"
-					Source="avares://Infirmary Integrated/Third_Party/Icon_UpgradeLater_48.png" />
+					Source="avares://Infirmary Integrated/Third_Party/Icon_UpgradeLater_128.png" />
         <Label
 					Name="lblDelay"
 					Grid.Column="1"
@@ -124,7 +124,7 @@
         <Image
 					Grid.Column="0"
 					Classes="btn"
-					Source="avares://Infirmary Integrated/Third_Party/Icon_UpgradeMute_48.png" />
+					Source="avares://Infirmary Integrated/Third_Party/Icon_UpgradeMute_128.png" />
         <Label
 					Name="lblMute"
 					Grid.Column="1"
