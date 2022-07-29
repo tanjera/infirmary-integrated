@@ -53,7 +53,7 @@ namespace IISE.Windows {
             ICanvas = this.FindControl<Canvas> ("cnvsDesigner");
             ICanvas.PointerPressed += Item_PointerPressed;
 
-            _ = InitViewModel ();
+            _ = InitView ();
 
             _ = DrawISteps ();
             _ = UpdateIProgressions ();
@@ -96,7 +96,7 @@ namespace IISE.Windows {
             await DrawIProgressions ();
         }
 
-        private async Task InitViewModel () {
+        private async Task InitView () {
             PropertyCombo pcmbProgressFrom = this.FindControl<PropertyCombo> ("pcmbProgressFrom");
             PropertyCombo pcmbProgressTo = this.FindControl<PropertyCombo> ("pcmbProgressTo");
             PropertyString pstrStepName = this.FindControl<PropertyString> ("pstrStepName");

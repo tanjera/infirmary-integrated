@@ -17,6 +17,7 @@
     <Description>Medical device simulator for training healthcare professionals.</Description>
     <ApplicationIcon>Icon_IISE.ico</ApplicationIcon>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <RootNamespace>IISE</RootNamespace>
   </PropertyGroup>  
   <ItemGroup>
     <!--This helps with theme dll-s trimming.

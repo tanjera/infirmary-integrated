@@ -46,7 +46,7 @@ namespace IISE.Windows {
 
             DataContext = this;
 
-            _ = InitViewModel ();
+            _ = InitView ();
         }
 
         private void InitializeComponent () {
@@ -65,8 +65,23 @@ namespace IISE.Windows {
             await UpdateViewModel ();
         }
 
-        private async Task InitViewModel () {
-            await ReferenceViewModel ();
+        private Task ReferenceView () {
+            vpstrScenarioAuthor = this.FindControl<PropertyString> ("pstrScenarioAuthor");
+            vpstrScenarioName = this.FindControl<PropertyString> ("pstrScenarioName");
+            vpstrScenarioDescription = this.FindControl<PropertyString> ("pstrScenarioDescription");
+
+            vpchkMonitorEnabled = this.FindControl<PropertyCheck> ("pchkMonitorEnabled");
+            vpchkDefibEnabled = this.FindControl<PropertyCheck> ("pchkDefibEnabled");
+            vpchkECGEnabled = this.FindControl<PropertyCheck> ("pchkECGEnabled");
+            vpchkIABPEnabled = this.FindControl<PropertyCheck> ("pchkIABPEnabled");
+
+            vspMonitorAlarms = this.FindControl<StackPanel> ("spMonitorAlarms");
+
+            return Task.CompletedTask;
+        }
+
+        private async Task InitView () {
+            await ReferenceView ();
 
             // Initiate controls
             await vpchkMonitorEnabled.Init (PropertyCheck.Keys.MonitorIsEnabled);
@@ -98,21 +113,6 @@ namespace IISE.Windows {
                 vspMonitorAlarms.Children.Add (pa);
                 listMonitorAlarms.Add (pa);
             }
-        }
-
-        private Task ReferenceViewModel () {
-            vpstrScenarioAuthor = this.FindControl<PropertyString> ("pstrScenarioAuthor");
-            vpstrScenarioName = this.FindControl<PropertyString> ("pstrScenarioName");
-            vpstrScenarioDescription = this.FindControl<PropertyString> ("pstrScenarioDescription");
-
-            vpchkMonitorEnabled = this.FindControl<PropertyCheck> ("pchkMonitorEnabled");
-            vpchkDefibEnabled = this.FindControl<PropertyCheck> ("pchkDefibEnabled");
-            vpchkECGEnabled = this.FindControl<PropertyCheck> ("pchkECGEnabled");
-            vpchkIABPEnabled = this.FindControl<PropertyCheck> ("pchkIABPEnabled");
-
-            vspMonitorAlarms = this.FindControl<StackPanel> ("spMonitorAlarms");
-
-            return Task.CompletedTask;
         }
 
         private void UpdateScenario (object? sender, PropertyAlarm.PropertyAlarmEventArgs e) {
@@ -148,7 +148,7 @@ namespace IISE.Windows {
         }
 
         private async Task UpdateViewModel () {
-            await ReferenceViewModel ();
+            await ReferenceView ();
 
             await vpchkMonitorEnabled.Set (Scenario.DeviceMonitor.IsEnabled);
             await vpchkDefibEnabled.Set (Scenario.DeviceDefib.IsEnabled);

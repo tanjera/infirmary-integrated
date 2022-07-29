@@ -45,13 +45,23 @@ namespace IISE.Controls {
             AvaloniaXamlLoader.Load (this);
         }
 
+        private Task ReferenceView () {
+            plblKey = this.FindControl<Label> ("lblKey");
+            pnumHigh = this.FindControl<NumericUpDown> ("numHigh");
+            pnumLow = this.FindControl<NumericUpDown> ("numLow");
+            pchkEnabled = this.FindControl<CheckBox> ("chkEnabled");
+            pcmbPriority = this.FindControl<ComboBox> ("cmbPriority");
+
+            return Task.CompletedTask;
+        }
+
         public async Task Init (Devices device, Alarm.Parameters key) {
             if (PropertyChanged != null) {              // In case of re-initiation, need to wipe all subscriptions
                 foreach (Delegate d in PropertyChanged.GetInvocationList ())
                     PropertyChanged -= (EventHandler<PropertyAlarmEventArgs>)d;
             }
 
-            await ReferenceViewModel ();
+            await ReferenceView ();
 
             Device = device;
             Key = key;
@@ -101,21 +111,11 @@ namespace IISE.Controls {
             }
         }
 
-        private Task ReferenceViewModel () {
-            plblKey = this.FindControl<Label> ("lblKey");
-            pnumHigh = this.FindControl<NumericUpDown> ("numHigh");
-            pnumLow = this.FindControl<NumericUpDown> ("numLow");
-            pchkEnabled = this.FindControl<CheckBox> ("chkEnabled");
-            pcmbPriority = this.FindControl<ComboBox> ("cmbPriority");
-
-            return Task.CompletedTask;
-        }
-
         public async Task Set (Alarm? alarm) {
             if (alarm is null)
                 return;
 
-            await ReferenceViewModel ();
+            await ReferenceView ();
 
             if (pnumHigh is not null && pnumLow is not null && pchkEnabled is not null && pcmbPriority is not null) {
                 pchkEnabled.Checked -= SendPropertyChange;

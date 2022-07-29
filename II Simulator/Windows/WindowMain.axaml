@@ -212,7 +212,7 @@
         <RowDefinition Height="*" />
       </Grid.RowDefinitions>
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="350" />
+        <ColumnDefinition Width="400" />
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
 
@@ -222,65 +222,86 @@
 				Grid.Column="0"
 				VerticalAlignment="Top"
 				HorizontalScrollBarVisibility="Auto"
-				VerticalScrollBarVisibility="Visible">
+				VerticalScrollBarVisibility="Auto">
 
-        <HeaderedContentControl
-					Name="lblGroupDevices"
-					Background="White"
-					Classes="groupbox"
-					Header="Header">
-          <StackPanel Margin="3">
-            <Button
-							Name="btnDeviceMonitor"
-							Classes="device"
-							Click="ButtonDeviceMonitor_Click">
-              <StackPanel Orientation="Horizontal">
-                <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceMonitor_128.png" />
-                <Label Name="lblDeviceMonitor" Classes="device" />
-              </StackPanel>
-            </Button>
+        <StackPanel Orientation="Vertical">
 
-            <Button
-							Name="btnDeviceDefibrillator"
-							Classes="device"
-							Click="ButtonDeviceDefib_Click">
-              <StackPanel Orientation="Horizontal">
-                <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceDefibrillator_128.png" />
-                <Label Name="lblDeviceDefibrillator" Classes="device" />
-              </StackPanel>
-            </Button>
+          <HeaderedContentControl
+            Name="lblGroupDevices"
+            Background="White"
+            Classes="groupbox"
+            Header="Header">
+            <StackPanel Margin="3">
+              <Button
+                Name="btnDeviceMonitor"
+                Classes="device"
+                Click="ButtonDeviceMonitor_Click">
+                <StackPanel Orientation="Horizontal">
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceMonitor_128.png" />
+                  <Label Name="lblDeviceMonitor" Classes="device" />
+                </StackPanel>
+              </Button>
 
-            <Button
-							Name="btnDevice12LeadECG"
-							Classes="device"
-							Click="ButtonDeviceECG_Click">
-              <StackPanel Orientation="Horizontal">
-                <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_Device12LeadECG_128.png" />
-                <Label Name="lblDevice12LeadECG" Classes="device" />
-              </StackPanel>
-            </Button>
+              <Button
+                Name="btnDeviceDefibrillator"
+                Classes="device"
+                Click="ButtonDeviceDefib_Click">
+                <StackPanel Orientation="Horizontal">
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceDefibrillator_128.png" />
+                  <Label Name="lblDeviceDefibrillator" Classes="device" />
+                </StackPanel>
+              </Button>
 
-            <Button
-							Name="btnDeviceIABP"
-							Classes="device"
-							Click="ButtonDeviceIABP_Click">
-              <StackPanel Orientation="Horizontal">
-                <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceIABP_128.png" />
-                <Label Name="lblDeviceIABP" Classes="device" />
-              </StackPanel>
-            </Button>
+              <Button
+                Name="btnDevice12LeadECG"
+                Classes="device"
+                Click="ButtonDeviceECG_Click">
+                <StackPanel Orientation="Horizontal">
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_Device12LeadECG_128.png" />
+                  <Label Name="lblDevice12LeadECG" Classes="device" />
+                </StackPanel>
+              </Button>
 
-            <Button
-							Name="btnDeviceEFM"
-							Classes="device"
-							Click="ButtonDeviceEFM_Click">
-              <StackPanel Orientation="Horizontal">
-                <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceEFM_128.png" />
-                <Label Name="lblDeviceEFM" Classes="device" />
-              </StackPanel>
-            </Button>
-          </StackPanel>
-        </HeaderedContentControl>
+              <Button
+                Name="btnDeviceIABP"
+                Classes="device"
+                Click="ButtonDeviceIABP_Click">
+                <StackPanel Orientation="Horizontal">
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceIABP_128.png" />
+                  <Label Name="lblDeviceIABP" Classes="device" />
+                </StackPanel>
+              </Button>
+
+              <Button
+                Name="btnDeviceEFM"
+                Classes="device"
+                Click="ButtonDeviceEFM_Click">
+                <StackPanel Orientation="Horizontal">
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceEFM_128.png" />
+                  <Label Name="lblDeviceEFM" Classes="device" />
+                </StackPanel>
+              </Button>
+            </StackPanel>
+          </HeaderedContentControl>
+
+          <HeaderedContentControl
+            Name="lblGroupEHR"
+            Background="White"
+            Classes="groupbox"
+            Header="Header">
+            <StackPanel Margin="3">
+              <Button
+                Name="btnChartMAR"
+                Classes="device"
+                Click="ButtonChartMAR_Click">
+                <StackPanel Orientation="Horizontal">
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_ChartMAR_128.png" />
+                  <Label Name="lblChartMAR" Classes="device" />
+                </StackPanel>
+              </Button>
+            </StackPanel>
+          </HeaderedContentControl>
+        </StackPanel>
       </ScrollViewer>
 
       <!--  Column for Patient Editor  -->

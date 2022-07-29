@@ -13,6 +13,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Chart.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Chart.Order.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Alarm.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Audio.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Drawing.cs" />

@@ -36,7 +36,7 @@ namespace IISE.Windows {
 
             DataContext = this;
 
-            _ = InitViewModel ();
+            _ = InitView ();
         }
 
         private void InitializeComponent () {
@@ -56,7 +56,7 @@ namespace IISE.Windows {
             await UpdateViewModel ();
         }
 
-        private Task InitViewModel () {
+        private Task InitView () {
             // Populate enum string lists for readable display
             List<string> cardiacRhythms = new List<string> (),
                 respiratoryRhythms = new List<string> (),

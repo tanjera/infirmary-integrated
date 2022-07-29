@@ -143,6 +143,9 @@ namespace IISIM {
                 this.FindControl<Label> ("lblDeviceIABP").Content = Instance.Language.Localize ("PE:IABP");
                 this.FindControl<Label> ("lblDeviceEFM").Content = Instance.Language.Localize ("PE:EFM");
 
+                this.FindControl<HeaderedContentControl> ("lblGroupEHR").Header = Instance.Language.Localize ("PE:EHR");
+                this.FindControl<Label> ("lblChartMAR").Content = Instance.Language.Localize ("PE:MAR");
+
                 this.FindControl<Label> ("lblGroupScenarioPlayer").Content = Instance.Language.Localize ("PE:ScenarioPlayer");
                 this.FindControl<HeaderedContentControl> ("lblProgressionOptions").Header = Instance.Language.Localize ("PE:ProgressionOptions");
 
@@ -459,6 +462,22 @@ namespace IISIM {
 
             if (Instance.Patient is not null)
                 Instance.Patient.PatientEvent += Instance.Device_EFM.OnPatientEvent;
+
+            return Task.CompletedTask;
+        }
+
+        private Task InitChartMAR () {
+            if (Instance is null)
+                return Task.CompletedTask;
+
+            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                this.Show ();
+
+            if (Instance.Chart_MAR is null || Instance.Chart_MAR.State == ChartWindow.States.Closed)
+                Instance.Chart_MAR = new ChartMAR (Instance);
+
+            Instance.Chart_MAR.Activate ();
+            Instance.Chart_MAR.Show ();
 
             return Task.CompletedTask;
         }
@@ -1492,6 +1511,9 @@ namespace IISIM {
 
         private void ButtonDeviceEFM_Click (object s, RoutedEventArgs e)
             => _ = InitDeviceEFM ();
+
+        private void ButtonChartMAR_Click (object s, RoutedEventArgs e)
+            => _ = InitChartMAR ();
 
         private void ButtonPreviousStep_Click (object s, RoutedEventArgs e)
             => _ = PreviousStep ();

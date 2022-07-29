@@ -8,7 +8,7 @@
     <AssemblyName>Infirmary Integrated</AssemblyName>
     <Copyright>© 2017-2022, Ibi Keller</Copyright>
     <Authors>Ibi Keller</Authors>
-    <Version>2.3.0</Version>
+    <Version>2.3.1</Version>
     <Company>Infirmary Integrated</Company>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageProjectUrl>https://www.infirmary-integrated.com/</PackageProjectUrl>
@@ -18,6 +18,7 @@
     <Description>Medical device simulator for training healthcare professionals.</Description>
     <ApplicationIcon>Icon_II.ico</ApplicationIcon>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <RootNamespace>IISIM</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.7" />
@@ -47,10 +48,19 @@
     <Compile Update="Controls\IABPTracing.axaml.cs">
       <DependentUpon>IABPTracing.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Controls\MARDose.axaml.cs">
+      <DependentUpon>MARDose.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\MARDrug.axaml.cs">
+      <DependentUpon>MARDrug.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\ChartMAR.axaml.cs">
+      <DependentUpon>ChartMAR.axaml</DependentUpon>
     </Compile>
     <Compile Update="Windows\DialogMessage.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>

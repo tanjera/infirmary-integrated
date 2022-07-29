@@ -1,0 +1,83 @@
+<Window
+	x:Class="IISIM.ChartMAR"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	Name="wdwChartMAR"
+	Title="ChartMAR"
+	Width="1200"
+	Height="800"
+	d:DesignHeight="720"
+	d:DesignWidth="1200"
+	Background="White"
+	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
+	WindowStartupLocation="CenterScreen"
+	WindowState="Maximized"
+	mc:Ignorable="d">
+
+  <Window.Styles>
+    <Style Selector="Label.timeheader">
+      <Setter Property="Margin" Value="20, 5" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+  </Window.Styles>
+
+  <DockPanel LastChildFill="True">
+
+    <!--  Main Menu  -->
+    <Menu Background="White" DockPanel.Dock="Top">
+
+      <MenuItem Name="menuOptions">
+        <MenuItem Name="menuClose" Click="MenuClose_Click" />
+      </MenuItem>
+    </Menu>
+
+    <ScrollViewer
+				HorizontalScrollBarVisibility="Auto"
+				VerticalScrollBarVisibility="Auto">
+
+      <!--  Hourly "calendar" grid  -->
+      <Grid Name="gridMain"
+            ShowGridLines="True">
+
+        <!-- 1 column per hour -->
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" MinWidth="300" />
+
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+      </Grid>
+    </ScrollViewer>
+  </DockPanel>
+</Window>

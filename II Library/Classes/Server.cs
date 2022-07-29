@@ -91,7 +91,7 @@ namespace II.Server {
 
                 Hash_Username = Encryption.HashSHA256 (Environment.UserName);
 
-                NetworkInterface nInterface = NetworkInterface.GetAllNetworkInterfaces ().Where (
+                NetworkInterface? nInterface = NetworkInterface.GetAllNetworkInterfaces ().Where (
                     (o) => (o.NetworkInterfaceType == NetworkInterfaceType.Ethernet || o.NetworkInterfaceType == NetworkInterfaceType.Wireless80211)
                         && o.OperationalStatus == OperationalStatus.Up)
                     .First ();
