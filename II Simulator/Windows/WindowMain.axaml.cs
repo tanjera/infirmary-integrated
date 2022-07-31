@@ -328,8 +328,10 @@ namespace IISIM {
         }
 
         private async Task InitPatient () {
-            if (Instance?.Scenario is not null)
+            if (Instance?.Scenario is not null) {
                 Instance.Patient = Instance.Scenario.Patient;
+                Instance.Chart = Instance.Scenario.Chart;
+            }
 
             await InitPatientEvents ();
             await InitStep ();
@@ -1053,8 +1055,10 @@ namespace IISIM {
             => _ = UnloadPatientEvents ();
 
         private void OnStepChanged (object? sender, EventArgs e) {
-            if (Instance?.Patient is not null)
+            if (Instance is not null) {
                 Instance.Patient = Instance.Scenario?.Patient;
+                Instance.Chart = Instance.Scenario?.Chart;
+            }
 
             _ = InitPatientEvents ();
             _ = InitStep ();

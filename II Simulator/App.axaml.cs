@@ -30,6 +30,7 @@ namespace IISIM {
 
         public Scenario? Scenario;
         public Patient? Patient;
+        public Chart? Chart;
 
         public WindowSplash? Window_Splash;
         public WindowMain? Window_Main;

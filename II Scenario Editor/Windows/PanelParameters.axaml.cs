@@ -29,7 +29,7 @@ namespace IISE.Windows {
         /* Pointer to main data structure for the scenario, patient, devices, etc. */
         public Scenario.Step? Step;
         public Patient? Patient;
-        private WindowMain IMain;
+        private WindowMain? IMain;
 
         public PanelParameters () {
             InitializeComponent ();
@@ -518,21 +518,21 @@ namespace IISE.Windows {
         /* Generic Menu Items (across all Panels) */
 
         private void MenuFileNew_Click (object sender, RoutedEventArgs e)
-            => IMain.MenuFileNew_Click (sender, e);
+            => IMain?.MenuFileNew_Click (sender, e);
 
         private void MenuFileLoad_Click (object sender, RoutedEventArgs e)
-            => IMain.MenuFileLoad_Click (sender, e);
+            => IMain?.MenuFileLoad_Click (sender, e);
 
         private void MenuFileSave_Click (object sender, RoutedEventArgs e)
-            => IMain.MenuFileSave_Click (sender, e);
+            => IMain?.MenuFileSave_Click (sender, e);
 
         private void MenuFileSaveAs_Click (object sender, RoutedEventArgs e)
-            => IMain.MenuFileSaveAs_Click (sender, e);
+            => IMain?.MenuFileSaveAs_Click (sender, e);
 
         private void MenuFileExit_Click (object sender, RoutedEventArgs e)
-            => IMain.MenuFileExit_Click (sender, e);
+            => IMain?.MenuFileExit_Click (sender, e);
 
         private void MenuHelpAbout_Click (object sender, RoutedEventArgs e)
-            => IMain.MenuHelpAbout_Click (sender, e);
+            => IMain?.MenuHelpAbout_Click (sender, e);
     }
 }

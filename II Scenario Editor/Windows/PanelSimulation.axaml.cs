@@ -27,8 +27,8 @@ namespace IISE.Windows {
 
     public partial class PanelSimulation : UserControl {
         /* Pointer to main data structure for the scenario, patient, devices, etc. */
-        private Scenario Scenario;
-        private WindowMain IMain;
+        private Scenario? Scenario;
+        private WindowMain? IMain;
 
         /* View Controls for referencing by ViewModel */
         private PropertyCheck vpchkMonitorEnabled;
@@ -169,33 +169,33 @@ namespace IISE.Windows {
         /* Generic Menu Items (across all Panels) */
 
         private void MenuFileNew_Click (object sender, RoutedEventArgs e)
-            => IMain.MenuFileNew_Click (sender, e);
+            => IMain?.MenuFileNew_Click (sender, e);
 
         private void MenuFileLoad_Click (object sender, RoutedEventArgs e)
-            => IMain.MenuFileLoad_Click (sender, e);
+            => IMain?.MenuFileLoad_Click (sender, e);
 
         private void MenuFileSave_Click (object sender, RoutedEventArgs e)
-            => IMain.MenuFileSave_Click (sender, e);
+            => IMain?.MenuFileSave_Click (sender, e);
 
         private void MenuFileSaveAs_Click (object sender, RoutedEventArgs e)
-            => IMain.MenuFileSaveAs_Click (sender, e);
+            => IMain?.MenuFileSaveAs_Click (sender, e);
 
         private void MenuFileExit_Click (object sender, RoutedEventArgs e)
-            => IMain.MenuFileExit_Click (sender, e);
+            => IMain?.MenuFileExit_Click (sender, e);
 
         private void MenuHelpAbout_Click (object sender, RoutedEventArgs e)
-            => IMain.MenuHelpAbout_Click (sender, e);
+            => IMain?.MenuHelpAbout_Click (sender, e);
 
         /* Menu Commands: For HotKey support!! */
 
         private void MenuFileNew_Command ()
-            => IMain.MenuFileNew_Click (this, new RoutedEventArgs ());
+            => IMain?.MenuFileNew_Click (this, new RoutedEventArgs ());
 
         private void MenuFileLoad_Command ()
-            => IMain.MenuFileLoad_Click (this, new RoutedEventArgs ());
+            => IMain?.MenuFileLoad_Click (this, new RoutedEventArgs ());
 
         private void MenuFileSave_Command ()
-            => IMain.MenuFileSave_Click (this, new RoutedEventArgs ());
+            => IMain?.MenuFileSave_Click (this, new RoutedEventArgs ());
 
         /* Menu Items specific to this Panel */
 

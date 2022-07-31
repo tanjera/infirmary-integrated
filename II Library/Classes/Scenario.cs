@@ -94,6 +94,11 @@ namespace II {
             set { if (Current != null) Current.Patient = value; }
         }
 
+        public Chart? Chart {
+            get { return Current?.Chart; }
+            set { if (Current != null) Current.Chart = value; }
+        }
+
         public async Task Load (string inc) {
             using StringReader sRead = new (inc);
             string? line, pline;
@@ -326,6 +331,7 @@ namespace II {
 
         public class Step {
             public string? UUID = null;
+            public Chart Chart;
             public Patient Patient;
             public string? Name, Description;
 
@@ -340,6 +346,8 @@ namespace II {
 
             public Step () {
                 UUID = Guid.NewGuid ().ToString ();
+
+                Chart = new Chart ();
                 Patient = new Patient ();
             }
 

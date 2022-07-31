@@ -34,37 +34,7 @@ namespace IISIM {
             DataContext = this;
 
             _ = InitInterface ();
-
-#if DEBUG
-            List<Chart.Order.Drug> testDrugs = new List<Chart.Order.Drug> () {
-                new Chart.Order.Drug() {
-                    DrugName = "Cefazolin",
-                    DoseAmount = 1,
-                    DoseUnit = Chart.Order.Drug.DoseUnits.G,
-                    Route = Chart.Order.Drug.Routes.Intravenous,
-                    PeriodType = Chart.Order.Drug.PeriodTypes.Repeats,
-                    PeriodAmount = 6,
-                    PeriodUnit = Chart.Order.Drug.PeriodUnits.Hour,
-                    TotalDoses = 6,
-                    Priority = Chart.Order.Drug.Priorities.Routine,
-                    Notes = "Mix in 100 mL D5W, Adminster over 30 min"
-                    },
-
-                new Chart.Order.Drug() {
-                    DrugName = "Morphine",
-                    DoseAmount = 2,
-                    DoseUnit = Chart.Order.Drug.DoseUnits.MG,
-                    Route = Chart.Order.Drug.Routes.Intravenous,
-                    PeriodType = Chart.Order.Drug.PeriodTypes.PRN,
-                    PeriodAmount = 6,
-                    PeriodUnit = Chart.Order.Drug.PeriodUnits.Hour,
-                    TotalDoses = 6,
-                    Priority = Chart.Order.Drug.Priorities.Routine
-                    }
-                };
-
-            _ = InitDrugs (testDrugs, 8);
-#endif
+            _ = InitDrugs ();
         }
 
         private void InitializeComponent () {
@@ -110,7 +80,10 @@ namespace IISIM {
             }
         }
 
-        private async Task InitDrugs (List<Chart.Order.Drug> listDrugs, int currentHour) {
+        private async Task InitDrugs () {
+            if (Instance?.Chart is null)
+                return;
+
             await ReferenceView ();
 
             if (gridMain is null)
@@ -124,19 +97,21 @@ namespace IISIM {
             SolidColorBrush colorPRN = new (Avalonia.Media.Color.Parse ("#DEFFD1"));
 
             /* The main drug information (along the left-hand column */
-            for (int i = 0; i < listDrugs.Count; i++) {
+            for (int i = 0; i < Instance.Chart.MedicationOrders.Count; i++) {
                 gridMain?.RowDefinitions.Add (new RowDefinition () {
                     Height = GridLength.Auto,
                     MinHeight = 100
                 });
 
-                var d = listDrugs [i];
+                var order = Instance.Chart.MedicationOrders [i];
                 int row = startRow + i;
 
                 TextBlock tbDrug = new TextBlock () {
-                    Text = $"{d.DrugName} {d.DoseAmount} {d.DoseUnit} {d.Route}\n{d.PeriodType} {d.PeriodAmount} {d.PeriodUnit}\n{d.Priority}\n{d.StartTime}\n{d.EndTime}",
+                    Text = $"{order.DrugName} {order.DoseAmount} {order.DoseUnit} {order.Route}\n"
+                            + $"{order.PeriodType} {order.PeriodAmount} {order.PeriodUnit}\n"
+                            + $"{order.Priority}\n{order.StartTime}\n{order.EndTime}",
                     Padding = new Thickness (10),
-                    Background = d.IsScheduled ? colorScheduled : colorPRN
+                    Background = order.IsScheduled ? colorScheduled : colorPRN
                 };
 
                 tbDrug.SetValue (Grid.RowProperty, row);
@@ -144,45 +119,10 @@ namespace IISIM {
                 gridMain?.Children.Add (tbDrug);
 
                 /* Populate the doses across the calendar grid */
-                switch (d.PeriodType) {
-                    default:
-                    case Chart.Order.Drug.PeriodTypes.Once:
-                    case Chart.Order.Drug.PeriodTypes.PRN:
-                        TextBlock singleDose = new TextBlock () {
-                            Text = $"{d.DoseAmount} {d.DoseUnit}\n{d.Route}\n{d.Priority}",
-                            Padding = new Thickness (10),
-                            Background = d.IsScheduled ? colorScheduled : colorPRN
-                        };
+                for (int j = 0; j < Instance.Chart.MedicationDoses.Count; j++) {
+                    var dose = Instance.Chart.MedicationDoses [j];
 
-                        singleDose.SetValue (Grid.RowProperty, row);
-                        singleDose.SetValue (Grid.ColumnProperty, startCol - currentHour);
-                        gridMain?.Children.Add (singleDose);
-                        break;
-
-                    case Chart.Order.Drug.PeriodTypes.Repeats:
-                        if (d.PeriodAmount is null || d.PeriodUnit is null)
-                            break;
-
-                        int doseHour = currentHour;
-                        for (int j = 0; j < d.TotalDoses && doseHour <= 24; j++) {
-                            TextBlock repeatDose = new TextBlock () {
-                                Text = $"{d.DoseAmount} {d.DoseUnit}\n{d.Route}\n{d.Priority}",
-                                Padding = new Thickness (10),
-                                Background = colorScheduled
-                            };
-
-                            repeatDose.SetValue (Grid.RowProperty, row);
-                            repeatDose.SetValue (Grid.ColumnProperty, startCol - doseHour);
-                            gridMain?.Children.Add (repeatDose);
-
-                            doseHour += d.PeriodUnit switch {
-                                Chart.Order.Drug.PeriodUnits.Hour => d.PeriodAmount ?? 1,
-                                Chart.Order.Drug.PeriodUnits.Day => (d.PeriodAmount ?? 1) * 24,
-                                Chart.Order.Drug.PeriodUnits.Week => (d.PeriodAmount ?? 1) * 24 * 7,
-                                _ => d.PeriodAmount ?? 1,
-                            };
-                        }
-                        break;
+                    throw new NotImplementedException ();
                 }
             }
         }

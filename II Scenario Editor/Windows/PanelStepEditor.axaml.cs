@@ -27,8 +27,8 @@ namespace IISE.Windows {
 
     public partial class PanelStepEditor : UserControl {
         /* Pointer to main data structure for the scenario, patient, devices, etc. */
-        private Scenario Scenario;
-        private WindowMain IMain;
+        private Scenario? Scenario;
+        private WindowMain? IMain;
 
         /* Interface items */
         public Canvas ICanvas;
@@ -74,7 +74,7 @@ namespace IISE.Windows {
             // Reset buffer parameters
             ISelectedStep = null;
             IsSelectedStepEnd = false;
-            await IMain.SetStep (null);
+            await (IMain?.SetStep (null) ?? Task.CompletedTask);
 
             PointerPosition = null;
 
@@ -130,7 +130,7 @@ namespace IISE.Windows {
                 }
 
                 // Propogate changes to the Step to other panels as needed
-                _ = IMain.SetStep (ISelectedStep.Step);
+                _ = IMain?.SetStep (ISelectedStep.Step);
             }
         }
 
@@ -143,7 +143,7 @@ namespace IISE.Windows {
                 }
 
                 // Propogate changes to the Step to other panels as needed
-                _ = IMain.SetStep (ISelectedStep.Step);
+                _ = IMain?.SetStep (ISelectedStep.Step);
             }
         }
 
@@ -190,7 +190,7 @@ namespace IISE.Windows {
             if (ISelectedStep != null) {
                 for (int i = 0; i < ISelectedStep.Step.Progressions.Count; i++) {
                     Scenario.Step.Progression prog = ISelectedStep.Step.Progressions [i];
-                    Scenario.Step? dest = Scenario.Steps.Find (s => s.UUID == prog.DestinationUUID);
+                    Scenario.Step? dest = Scenario?.Steps.Find (s => s.UUID == prog.DestinationUUID);
 
                     if (dest != null) {
                         PropertyProgression pProg = new PropertyProgression ();
@@ -224,8 +224,12 @@ namespace IISE.Windows {
                 List<string> srcUUIDs = new () { "" }, srcNames = new () { "None" };
                 List<string> destUUIDs = new () { "" }, destNames = new () { "None" };
 
-                List<Scenario.Step> srcSteps = new (Scenario.Steps.FindAll (s => s.Progressions.Any (p => p.DestinationUUID == ISelectedStep.UUID)));
-                List<Scenario.Step> destSteps = new (Scenario.Steps.FindAll (s => ISelectedStep.Step.Progressions.Any (p => p.DestinationUUID == s.UUID)));
+                List<Scenario.Step> srcSteps = new (
+                    Scenario?.Steps.FindAll (s => s.Progressions.Any (p => p.DestinationUUID == ISelectedStep.UUID))
+                    ?? new List<Scenario.Step> ());
+                List<Scenario.Step> destSteps = new (
+                    Scenario?.Steps.FindAll (s => ISelectedStep.Step.Progressions.Any (p => p.DestinationUUID == s.UUID))
+                    ?? new List<Scenario.Step> ());
 
                 srcUUIDs.AddRange (srcSteps.Select (s => s.UUID ?? ""));
                 srcNames.AddRange (srcSteps.Select (s => s.Name ?? ""));
@@ -252,7 +256,7 @@ namespace IISE.Windows {
              * the Scenario should already be set, and now we just need to process the Steps and
              * Progressions into the interface items (IStep) */
 
-            foreach (Scenario.Step step in Scenario.Steps) {
+            foreach (Scenario.Step step in Scenario?.Steps ?? new List<Scenario.Step> ()) {
                 ItemStep item = new ();
                 item.Step = step;
                 ISteps.Add (item);
@@ -273,6 +277,9 @@ namespace IISE.Windows {
 
         private async Task AddStep (ItemStep? incItem = null) {
             /* For use when adding a step via the UI designer- creates and instantiates the Step */
+
+            if (Scenario is null)
+                return;
 
             // Create data structures
             ItemStep item = new ();
@@ -314,6 +321,9 @@ namespace IISE.Windows {
         }
 
         private async Task DeleteStep (ItemStep item) {
+            if (Scenario is null)
+                return;
+
             // Remove the selected Step from the stack and visual
             ISteps.Remove (item);
             ICanvas.Children.Remove (item);
@@ -325,7 +335,7 @@ namespace IISE.Windows {
 
             foreach (ItemStep s in ISteps) {
                 // Nullify any default progression pointers that target the Step being deleted
-                if (s.Step?.DefaultProgression?.UUID == item.UUID)
+                if (s.Step?.DefaultProgression?.UUID == item.UUID && s.Step is not null)
                     s.Step.DefaultProgression = null;
 
                 // Remove all progressions targeting the Step being removed
@@ -373,11 +383,11 @@ namespace IISE.Windows {
                 await item.SetEndStep_Border (IsSelectedStepEnd && item == ISelectedStep);
 
                 // Color Step's Background depending
-                if (Scenario.BeginStep == item.UUID)
+                if (Scenario?.BeginStep == item.UUID)
                     await item.SetStep_Fill (ItemStep.Fill_FirstStep);
                 else {
                     bool isLinked = false;
-                    foreach (Scenario.Step s in Scenario.Steps) {
+                    foreach (Scenario.Step s in Scenario?.Steps ?? new List<Scenario.Step> ()) {
                         foreach (Scenario.Step.Progression p in s.Progressions) {
                             if (p.DestinationUUID == item.UUID) {
                                 isLinked = true;
@@ -453,6 +463,9 @@ namespace IISE.Windows {
         }
 
         private async Task SelectIStep (ItemStep item, Avalonia.Input.Pointer? capture = null) {
+            if (IMain is null)
+                return;
+
             ISelectedStep = item;
             IsSelectedStepEnd = false;
             await IMain.SetStep (ISelectedStep.Step);
@@ -466,6 +479,9 @@ namespace IISE.Windows {
         }
 
         private async Task SelectEndStep (ItemStepEnd end, Avalonia.Input.Pointer? capture = null) {
+            if (IMain is null)
+                return;
+
             ISelectedStep = end.Step;
             IsSelectedStepEnd = true;
             await IMain.SetStep (ISelectedStep.Step);
@@ -479,6 +495,9 @@ namespace IISE.Windows {
         }
 
         private async Task DeselectAll () {
+            if (IMain is null)
+                return;
+
             ISelectedStep = null;
             IsSelectedStepEnd = false;
             await IMain.SetStep (null);
@@ -556,22 +575,22 @@ namespace IISE.Windows {
         /* Generic Menu Items (across all Panels) */
 
         private void MenuFileNew_Click (object sender, RoutedEventArgs e)
-            => IMain.MenuFileNew_Click (sender, e);
+            => IMain?.MenuFileNew_Click (sender, e);
 
         private void MenuFileLoad_Click (object sender, RoutedEventArgs e)
-            => IMain.MenuFileLoad_Click (sender, e);
+            => IMain?.MenuFileLoad_Click (sender, e);
 
         private void MenuFileSave_Click (object sender, RoutedEventArgs e)
-            => IMain.MenuFileSave_Click (sender, e);
+            => IMain?.MenuFileSave_Click (sender, e);
 
         private void MenuFileSaveAs_Click (object sender, RoutedEventArgs e)
-            => IMain.MenuFileSaveAs_Click (sender, e);
+            => IMain?.MenuFileSaveAs_Click (sender, e);
 
         private void MenuFileExit_Click (object sender, RoutedEventArgs e)
-            => IMain.MenuFileExit_Click (sender, e);
+            => IMain?.MenuFileExit_Click (sender, e);
 
         private void MenuHelpAbout_Click (object sender, RoutedEventArgs e)
-            => IMain.MenuHelpAbout_Click (sender, e);
+            => IMain?.MenuHelpAbout_Click (sender, e);
 
         /* Menu Items specific to this Panel */
 

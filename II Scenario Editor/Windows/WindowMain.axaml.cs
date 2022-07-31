@@ -126,12 +126,15 @@ namespace IISE {
             await IPanelSimulation.SetScenario (Scenario);
             await IPanelStepEditor.SetScenario (Scenario);
             await IPanelParameters.SetStep (null);
+            await IPanelChart.SetStep (null);
 
             ITabControl.SelectedIndex = 0;
         }
 
-        public async Task SetStep (Scenario.Step? step)
-            => await IPanelParameters.SetStep (step);
+        public async Task SetStep (Scenario.Step? step) {
+            await IPanelParameters.SetStep (step);
+            await IPanelChart.SetStep (step);
+        }
 
         private async Task NewScenario () {
             if (await PromptUnsavedWork () == false)

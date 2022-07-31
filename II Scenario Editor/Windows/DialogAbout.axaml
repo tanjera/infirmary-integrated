@@ -57,7 +57,7 @@
         VerticalAlignment="Bottom"
         FontSize="22"
         FontWeight="Bold"
-        Content="Infirmary Integrated" />
+        Content="Infirmary Integrated: Scenario Editor" />
 
       <Label
         Name="lblVersion"

@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		         xmlns:iic="clr-namespace:IISE.Controls"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
              x:Class="IISE.Windows.PanelChart">
 
   <UserControl.Styles>
@@ -11,6 +11,22 @@
       <Setter Property="BorderBrush" Value="#bbbbbb" />
       <Setter Property="BorderThickness" Value="0 0 0 1" />
       <Setter Property="Background" Value="#f2f2f2" />
+    </Style>
+
+    <Style Selector="Grid.gdgrp">
+      <Setter Property="Margin" Value="3" />
+      <Setter Property="MinWidth" Value="250" />
+    </Style>
+
+    <Style Selector="StackPanel.spgrp">
+      <Setter Property="Margin" Value="3" />
+      <Setter Property="Orientation" Value="Vertical" />
+      <Setter Property="MinWidth" Value="250" />
+    </Style>
+
+    <Style Selector="Expander.exgrp">
+      <Setter Property="IsExpanded" Value="False" />
+      <Setter Property="Margin" Value="0" />
     </Style>
   </UserControl.Styles>
 
@@ -58,6 +74,113 @@
             VerticalScrollBarVisibility="Auto"
             HorizontalScrollBarVisibility="Auto"
             Background="White">
+
+      <StackPanel Background="White" Orientation="Vertical">
+
+        <!-- Information Pane -->
+
+        <StackPanel HorizontalAlignment="Stretch"
+                    Background="#f2f2f2">
+          <Label Name="lblActiveStep"
+                 Content="Editing Step: "
+                 FontSize="18"
+                 Margin="15 10" />
+        </StackPanel>
+
+        <!-- Step Date & Time -->
+
+        <StackPanel Orientation="Horizontal"
+                    Margin="20">
+          <Label Content="Current Date and Time:"
+                 VerticalAlignment="Center"
+                 Margin="0,0,10,0" />
+          <DatePicker Name="dateCurrent"
+                      Margin="2" />
+          <TimePicker Name="timeCurrent"
+                      Margin="2" />
+        </StackPanel>
+
+        <!-- Medication Orders and Doses -->
+
+        <Expander IsExpanded="True" Classes="exgrp">
+          <Expander.Header>
+            <Label Name="lblMedications"
+                 Content="Medication Orders and Doses" />
+          </Expander.Header>
+
+          <Grid ColumnDefinitions="Auto, Auto, *"
+                RowDefinitions="Auto, Auto, Auto, Auto"
+                Classes="gdgrp">
+
+            <StackPanel Orientation="Vertical"
+                        Grid.Column="0"
+                        Grid.Row="0"
+                        Grid.RowSpan="2"
+                        MinWidth="200"
+                        MinHeight="100">
+              <Label HorizontalAlignment="Center"
+                      HorizontalContentAlignment="Center"
+                      Content="Medication Orders" />
+              <ListBox Name="lbRxOrders"
+                       Background="White" />
+            </StackPanel>
+
+            <Button Name="btnAddRxOrder"
+                    Grid.Column="1"
+                    Grid.Row="0"
+                    Width="30"
+                    VerticalAlignment="Stretch"
+                    VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    Content="+"
+                    Click="ButtonAddRxOrder_Click" />
+            <Button Name="btnDelRxOrder"
+                    Grid.Column="1"
+                    Grid.Row="1"
+                    Width="30"
+                    VerticalAlignment="Stretch"
+                    VerticalContentAlignment="Center"
+                    HorizontalContentAlignment="Center"
+                    Content="-"
+                    Click="ButtonDeleteRxOrder_Click" />
+
+            <StackPanel Grid.Column="2"
+                        Grid.Row="0"
+                        Grid.RowSpan="2"
+                        Classes="spgrp">
+              <iic:PropertyRxOrder  x:Name="prxoRxOrder" />
+            </StackPanel>
+
+            <Button Name="btnPopulateAllRxDoses"
+                    Grid.Column="0"
+                    Grid.Row="2"
+                     Height="30"
+                     HorizontalAlignment="Stretch"
+                     HorizontalContentAlignment="Center"
+                     VerticalContentAlignment="Center"
+                     Content="Populate All Doses"
+                    Click="ButtonPopulateAllRxDoses_Click" />
+
+            <Button Name="btnPopulateThisRxDoses"
+                    Grid.Column="2"
+                      Grid.Row="2"
+                     Height="30"
+                     HorizontalAlignment="Stretch"
+                     HorizontalContentAlignment="Center"
+                     VerticalContentAlignment="Center"
+                     Content="Populate Doses For This Order"
+                    Click="ButtonPopulateThisRxDoses_Click" />
+
+            <ListBox Name="lbRxDoses"
+                     Grid.Column="0"
+                     Grid.ColumnSpan="3"
+                     Grid.Row="3"
+                     MinHeight="100"
+                     HorizontalAlignment="Stretch"
+                     Background="White" />
+          </Grid>
+        </Expander>
+      </StackPanel>
     </ScrollViewer>
   </DockPanel>
 </UserControl>
