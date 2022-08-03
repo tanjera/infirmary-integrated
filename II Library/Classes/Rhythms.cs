@@ -19,6 +19,9 @@ namespace II {
     public class Cardiac_Rhythms {
         public Values Value;
 
+        public bool AberrantBeat = false;           // Signals for aberrancy in rhythm generation
+        public bool AlternansBeat = false;          // Signals for switching in pulsus alternans
+
         public Cardiac_Rhythms (Values v) {
             Value = v;
         }
@@ -26,9 +29,6 @@ namespace II {
         public Cardiac_Rhythms () {
             Value = Values.Sinus_Rhythm;
         }
-
-        public bool AberrantBeat = false;           // Signals for aberrancy in rhythm generation
-        public bool AlternansBeat = false;          // Signals for switching in pulsus alternans
 
         public enum Values {
             Asystole,

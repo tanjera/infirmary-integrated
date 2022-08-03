@@ -13,7 +13,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
-
     public class Scenario {
         public string? Name, Description, Author;
         public DateTime? Updated;
@@ -27,6 +26,7 @@ namespace II {
         public List<Step> Steps = new ();
         public Timer ProgressTimer = new ();
 
+        public Settings.Chart ChartMAR = new (Settings.Chart.Records.MAR);
         public Settings.Device DeviceMonitor = new (Settings.Device.Devices.Monitor);
         public Settings.Device DeviceDefib = new (Settings.Device.Devices.Defib);
         public Settings.Device DeviceECG = new (Settings.Device.Devices.ECG);
@@ -112,38 +112,51 @@ namespace II {
                     if (line == "> Begin: Step") {
                         pbuffer = new StringBuilder ();
 
-                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Step")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Step")
                             pbuffer.AppendLine (pline);
 
                         IsLoaded = true;
                         Step s = new ();
-                        await s.Load_Process (pbuffer.ToString ());
+                        await s.Load (pbuffer.ToString ());
                         Steps.Add (s);
+                    } else if (line == "> Begin: ChartMAR") {
+                        pbuffer = new StringBuilder ();
+
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: ChartMAR")
+                            pbuffer.AppendLine (pline);
+
+                        await ChartMAR.Load (pbuffer.ToString ());
                     } else if (line == "> Begin: DeviceMonitor") {
                         pbuffer = new StringBuilder ();
 
-                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: DeviceMonitor")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: DeviceMonitor")
                             pbuffer.AppendLine (pline);
 
                         await DeviceMonitor.Load (pbuffer.ToString ());
                     } else if (line == "> Begin: DeviceDefib") {
                         pbuffer = new StringBuilder ();
 
-                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: DeviceDefib")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: DeviceDefib")
                             pbuffer.AppendLine (pline);
 
                         await DeviceDefib.Load (pbuffer.ToString ());
                     } else if (line == "> Begin: DeviceECG") {
                         pbuffer = new StringBuilder ();
 
-                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: DeviceECG")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: DeviceECG")
                             pbuffer.AppendLine (pline);
 
                         await DeviceECG.Load (pbuffer.ToString ());
                     } else if (line == "> Begin: DeviceIABP") {
                         pbuffer = new StringBuilder ();
 
-                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: DeviceIABP")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: DeviceIABP")
                             pbuffer.AppendLine (pline);
 
                         await DeviceIABP.Load (pbuffer.ToString ());
@@ -181,6 +194,10 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Beginning", BeginStep));
 
             /* Save() each Device's Settings */
+            sWrite.AppendLine ($"{dent}> Begin: ChartMAR");
+            sWrite.Append (await ChartMAR.Save (indent + 1));
+            sWrite.AppendLine ($"{dent}> End: ChartMAR");
+
             sWrite.AppendLine ($"{dent}> Begin: DeviceMonitor");
             sWrite.Append (await DeviceMonitor.Save (indent + 1));
             sWrite.AppendLine ($"{dent}> End: DeviceMonitor");
@@ -351,7 +368,7 @@ namespace II {
                 Patient = new Patient ();
             }
 
-            public async Task Load_Process (string inc) {
+            public async Task Load (string inc) {
                 using StringReader sRead = new (inc);
                 string? line, pline;
                 StringBuilder pbuffer;
@@ -359,21 +376,31 @@ namespace II {
                 try {
                     while (!String.IsNullOrEmpty (line = await sRead.ReadLineAsync ())) {
                         line = line.Trim ();
-                        if (line == "> Begin: Patient") {
+                        if (line == "> Begin: Chart") {
                             pbuffer = new ();
 
-                            while ((pline = await sRead.ReadLineAsync ()) != null && pline != "> End: Patient")
+                            while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                    && pline.Trim () != "> End: Chart")
                                 pbuffer.AppendLine (pline);
 
-                            await Patient.Load_Process (pbuffer.ToString ());
+                            await Chart.Load (pbuffer.ToString ());
+                        } else if (line == "> Begin: Patient") {
+                            pbuffer = new ();
+
+                            while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                    && pline.Trim () != "> End: Patient")
+                                pbuffer.AppendLine (pline);
+
+                            await Patient.Load (pbuffer.ToString ());
                         } else if (line == "> Begin: Progression") {
                             pbuffer = new ();
 
-                            while ((pline = await sRead.ReadLineAsync ()) != null && pline != "> End: Progression")
+                            while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                    && pline.Trim () != "> End: Progression")
                                 pbuffer.AppendLine (pline);
 
                             Progression p = new ();
-                            await p.Load_Process (pbuffer.ToString ());
+                            await p.Load (pbuffer.ToString ());
                             Progressions.Add (p);
 
                             if (p.UUID == DefaultProgression?.UUID)
@@ -415,6 +442,10 @@ namespace II {
                 sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "IISEPositionX", IISEPositionX));
                 sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "IISEPositionY", IISEPositionY));
 
+                sWrite.AppendLine ($"{dent}> Begin: Chart");
+                sWrite.Append (Chart.Save (indent + 1));
+                sWrite.AppendLine ($"{dent}> End: Chart");
+
                 sWrite.AppendLine ($"{dent}> Begin: Patient");
                 sWrite.Append (Patient.Save (indent + 1));
                 sWrite.AppendLine ($"{dent}> End: Patient");
@@ -445,7 +476,7 @@ namespace II {
                     Description = desc;
                 }
 
-                public async Task Load_Process (string inc) {
+                public async Task Load (string inc) {
                     using StringReader sRead = new (inc);
                     string? line;
 

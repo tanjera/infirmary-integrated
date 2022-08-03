@@ -45,6 +45,11 @@ namespace IISE.Controls {
             StrokeThickness_Default = new Thickness (.5d),
             StrokeThickness_Selected = new Thickness (2.0d);
 
+        public II.Chart Chart {
+            get { return Step.Chart; }
+            set { Step.Chart = value; }
+        }
+
         public II.Patient Patient {
             get { return Step.Patient; }
             set { Step.Patient = value; }

@@ -277,7 +277,7 @@ namespace IISIM {
             });
         }
 
-        public async Task Load_Process (string inc) {
+        public async Task Load (string inc) {
             using StringReader sRead = new (inc);
 
             try {

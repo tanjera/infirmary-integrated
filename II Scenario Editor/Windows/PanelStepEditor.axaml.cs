@@ -38,7 +38,7 @@ namespace IISE.Windows {
         public List<ItemStep.Progression> IProgressions = new List<ItemStep.Progression> ();
 
         // For copy/pasting Patient parameters
-        private Patient? CopiedPatient;
+        private Scenario.Step? CopiedStep;
 
         // Variables for capturing mouse and dragging UI elements
         private Point? PointerPosition = null;
@@ -299,7 +299,8 @@ namespace IISE.Windows {
                 item.Description = incItem.Description;
                 item.Step.Description = incItem.Step.Description;
 
-                await item.Step.Patient.Load_Process (incItem.Patient.Save ());
+                await item.Step.Chart.Load (incItem.Chart.Save ());
+                await item.Step.Patient.Load (incItem.Patient.Save ());
             } else {
                 item.Name = $"Step #{ISteps.Count}";
             }
@@ -555,20 +556,22 @@ namespace IISE.Windows {
             await DrawIProgressions ();
         }
 
-        private async Task Action_CopyPatient () {
+        private async Task Action_CopyStep () {
             if (ISelectedStep == null)
                 return;
 
-            CopiedPatient = new Patient ();
-            await CopiedPatient.Load_Process (ISelectedStep.Patient.Save ());
+            CopiedStep = new ();
+            await CopiedStep.Chart.Load (ISelectedStep.Chart.Save ());
+            await CopiedStep.Patient.Load (ISelectedStep.Patient.Save ());
         }
 
-        private async Task Action_PastePatient () {
+        private async Task Action_PasteStep () {
             if (ISelectedStep == null)
                 return;
 
-            if (CopiedPatient != null) {
-                await ISelectedStep.Patient.Load_Process (CopiedPatient.Save ());
+            if (CopiedStep != null) {
+                await ISelectedStep.Chart.Load (CopiedStep.Chart.Save ());
+                await ISelectedStep.Patient.Load (CopiedStep.Patient.Save ());
             }
         }
 
@@ -607,10 +610,10 @@ namespace IISE.Windows {
             => _ = Action_RepositionSteps ();
 
         private void MenuEditCopyPatient_Click (object sender, RoutedEventArgs e)
-            => _ = Action_CopyPatient ();
+            => _ = Action_CopyStep ();
 
         private void MenuEditPastePatient_Click (object sender, RoutedEventArgs e)
-            => _ = Action_PastePatient ();
+            => _ = Action_PasteStep ();
 
         /* Any other Routed events for this Panel */
 
@@ -624,10 +627,10 @@ namespace IISE.Windows {
             => Action_DeleteStep ();
 
         private void BtnCopyPatient_Click (object sender, RoutedEventArgs e)
-            => _ = Action_CopyPatient ();
+            => _ = Action_CopyStep ();
 
         private void BtnPastePatient_Click (object sender, RoutedEventArgs e)
-            => _ = Action_PastePatient ();
+            => _ = Action_PasteStep ();
 
         private void Item_PointerPressed (object? sender, PointerPressedEventArgs e) {
             if (sender is ItemStep item) {

@@ -103,7 +103,7 @@ namespace IISIM {
             });
         }
 
-        public void Load_Process (string inc) {
+        public void Load (string inc) {
             using StringReader sRead = new (inc);
 
             try {

@@ -534,7 +534,7 @@ namespace II {
 
         /* Process for loading Patient{} information from simulation file */
 
-        public async Task Load_Process (string inc) {
+        public async Task Load (string inc) {
             using StringReader sRead = new (inc);
 
             try {

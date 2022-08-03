@@ -7,13 +7,13 @@ namespace II.Server {
 
     public class Mirror {
         private bool ThreadLock = false;
-        public Timer timerUpdate = new();
+        public Timer timerUpdate = new ();
 
         public enum Statuses { INACTIVE, HOST, CLIENT };
 
         private int RefreshSeconds = 5;
         private string _Accession = "";
-        private BackgroundWorker _BackgroundWorker = new();
+        private BackgroundWorker _BackgroundWorker = new ();
 
         public Statuses Status = Statuses.INACTIVE;
 
@@ -40,9 +40,9 @@ namespace II.Server {
             timerUpdate.Process ();
         }
 
-        public void TimerTick (Patient? p, Server s) {
+        public void TimerTick (Scenario.Step? step, Server s) {
             _ = timerUpdate.ResetStart (5000);
-            _ = GetPatient (p, s);
+            _ = GetStep (step, s);
         }
 
         public void CancelOperation () {
@@ -55,7 +55,7 @@ namespace II.Server {
             }
         }
 
-        public async Task GetPatient (Patient? p, Server s) {
+        public async Task GetStep (Scenario.Step? step, Server s) {
             /* Mirroring not active; neither client or host */
             if (Status != Statuses.CLIENT)
                 return;
@@ -65,32 +65,32 @@ namespace II.Server {
                 // Using a thread lock to prevent multiple web calls from generating race conditions against each other
                 if (!ThreadLock) {
                     ThreadLock = true;
-                    Patient? pBuffer = await Server.Get_PatientMirror (this);
+                    Scenario.Step? pBuffer = await Server.Get_StepMirror (this);
                     ThreadLock = false;
 
                     if (pBuffer != null) {
-                        if (p == null)
-                            p = new ();
+                        if (step == null)
+                            step = new ();
 
-                        await p.Load_Process (pBuffer.Save ());
+                        await step.Load (pBuffer.Save ());
                     }
                 }
             }
         }
 
-        public async Task PostPatient (Patient? p, Server s) {
+        public async Task PostStep (Scenario.Step? step, Server s) {
             if (Status != Statuses.HOST)
                 return;
 
             // Must use intermediary objects, if App.Patient is thread-locked, Waveforms stop populating!!
-            string pStr = p.Save ();
-            DateTime pUp = p.Updated;
+            string pStr = step.Save ();
+            DateTime pUp = step.Patient.Updated;
 
-            Regex regex = new("^[a-zA-Z0-9]*$");
+            Regex regex = new ("^[a-zA-Z0-9]*$");
             if (Accession.Length <= 0 || !regex.IsMatch (Accession))
                 return;
 
-            await Server.Post_PatientMirror (this, pStr, pUp);
+            await Server.Post_StepMirror (this, pStr, pUp);
         }
     }
 }

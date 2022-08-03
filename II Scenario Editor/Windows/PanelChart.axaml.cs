@@ -124,7 +124,7 @@ namespace IISE.Windows {
 
             List<string> llbi = new ();
 
-            foreach (var order in Chart.MedicationOrders) {
+            foreach (var order in Chart.RxOrders) {
                 if (order.IsComplete) {
                     if (App.Language is not null) {
                         llbi.Add (String.Format ("{0} {1} {2} {3}",
@@ -175,38 +175,38 @@ namespace IISE.Windows {
 
             ListBox lbRxOrders = this.FindControl<ListBox> ("lbRxOrders");
 
-            if (SelectedRxOrder >= 0 && SelectedRxOrder < Chart.MedicationOrders.Count) {
-                Chart.MedicationOrders [SelectedRxOrder] = e.RxOrder;
+            if (SelectedRxOrder >= 0 && SelectedRxOrder < Chart.RxOrders.Count) {
+                Chart.RxOrders [SelectedRxOrder] = e.RxOrder;
             }
 
             UpdateView_RxOrderList ();
         }
 
         private void PopulateRxDose (int rxOrderIndex) {
-            if (Chart is null || Chart.MedicationOrders.Count < rxOrderIndex)
+            if (Chart is null || Chart.RxOrders.Count < rxOrderIndex)
                 return;
 
-            if (!Chart.MedicationOrders [rxOrderIndex].IsComplete)
+            if (!Chart.RxOrders [rxOrderIndex].IsComplete)
                 return;
 
-            if (Chart.MedicationDoses is null)
-                Chart.MedicationDoses = new List<Medication.Dose> ();
+            if (Chart.RxDoses is null)
+                Chart.RxDoses = new List<Medication.Dose> ();
 
-            Medication.Order order = Chart.MedicationOrders [rxOrderIndex];
+            Medication.Order order = Chart.RxOrders [rxOrderIndex];
 
             // Clear all doses for the currently selected drug
-            for (int i = Chart.MedicationDoses.Count - 1; i >= 0; i--) {
-                if (Chart.MedicationDoses [i].Order == order)
-                    Chart.MedicationDoses.RemoveAt (i);
+            for (int i = Chart.RxDoses.Count - 1; i >= 0; i--) {
+                if (Chart.RxDoses [i].OrderUUID == order.UUID)
+                    Chart.RxDoses.RemoveAt (i);
             }
 
             // Repopulate doses for the currently selected drug
-            switch (Chart.MedicationOrders [rxOrderIndex].PeriodType) {
+            switch (Chart.RxOrders [rxOrderIndex].PeriodType) {
                 default:
                 case Medication.Order.PeriodTypes.Values.Once:
                 case Medication.Order.PeriodTypes.Values.PRN:
-                    Chart.MedicationDoses.Add (new Medication.Dose () {
-                        Order = order,
+                    Chart.RxDoses.Add (new Medication.Dose () {
+                        OrderUUID = order.UUID,
                         ScheduledTime = Chart.CurrentTime,
                         TimeStatus = Medication.Dose.TimeStatuses.Values.Pending,
                         AdministrationNotes = order.Notes,
@@ -226,8 +226,8 @@ namespace IISE.Windows {
                     for (int j = 0; j < order.TotalDoses; j++) {
                         TimeSpan timeInterval = new TimeSpan (0, j * timeMultiplier * (order.PeriodAmount ?? 1), 0);
 
-                        Chart.MedicationDoses.Add (new Medication.Dose () {
-                            Order = order,
+                        Chart.RxDoses.Add (new Medication.Dose () {
+                            OrderUUID = order.UUID,
                             ScheduledTime = order.StartTime + timeInterval,
                             TimeStatus = order.StartTime + timeInterval < Chart.CurrentTime
                             ? Medication.Dose.TimeStatuses.Values.Late
@@ -244,7 +244,7 @@ namespace IISE.Windows {
             PropertyRxOrder prxOrder = this.FindControl<PropertyRxOrder> ("prxoRxOrder");
             ListBox lbRxOrders = this.FindControl<ListBox> ("lbRxOrders");
 
-            if (Chart is null || lbRxOrders.SelectedIndex < 0 || lbRxOrders.SelectedIndex >= Chart.MedicationOrders.Count) {
+            if (Chart is null || lbRxOrders.SelectedIndex < 0 || lbRxOrders.SelectedIndex >= Chart.RxOrders.Count) {
                 prxOrder.IsEnabled = false;
                 prxOrder.Init (new Medication.Order ());
                 return;
@@ -254,7 +254,7 @@ namespace IISE.Windows {
             prxOrder.IsEnabled = true;
 
             SelectedRxOrder = lbRxOrders.SelectedIndex;
-            prxOrder.Init (Chart.MedicationOrders [SelectedRxOrder]);
+            prxOrder.Init (Chart.RxOrders [SelectedRxOrder]);
 
             prxOrder.PropertyChanged += UpdateChart;
         }
@@ -263,12 +263,12 @@ namespace IISE.Windows {
             if (Chart is null)
                 return;
 
-            Chart.MedicationOrders.Add (new Medication.Order ());
+            Chart.RxOrders.Add (new Medication.Order ());
 
             UpdateView_RxOrderList ();
 
             ListBox lbRxOrders = this.FindControl<ListBox> ("lbRxOrders");
-            lbRxOrders.SelectedIndex = Chart.MedicationOrders.Count - 1;
+            lbRxOrders.SelectedIndex = Chart.RxOrders.Count - 1;
             SelectedRxOrder = lbRxOrders.SelectedIndex;
 
             Action_SelectRxOrder ();
@@ -281,12 +281,12 @@ namespace IISE.Windows {
             ListBox lbRxOrders = this.FindControl<ListBox> ("lbRxOrders");
 
             int index = lbRxOrders.SelectedIndex;
-            for (int i = Chart.MedicationDoses.Count - 1; i >= 0; i--) {
-                if (Chart.MedicationDoses [i].Order == Chart.MedicationOrders [index])
-                    Chart.MedicationDoses.RemoveAt (i);
+            for (int i = Chart.RxDoses.Count - 1; i >= 0; i--) {
+                if (Chart.RxDoses [i].OrderUUID == Chart.RxOrders [index].UUID)
+                    Chart.RxDoses.RemoveAt (i);
             }
 
-            Chart.MedicationOrders.RemoveAt (lbRxOrders.SelectedIndex);
+            Chart.RxOrders.RemoveAt (lbRxOrders.SelectedIndex);
             SelectedRxOrder -= 1;
             lbRxOrders.SelectedIndex = SelectedRxOrder;
 
@@ -295,7 +295,7 @@ namespace IISE.Windows {
         }
 
         private void Action_PopulateAllRxDoses () {
-            for (int i = 0; i < Chart?.MedicationOrders.Count; i++)
+            for (int i = 0; i < Chart?.RxOrders.Count; i++)
                 PopulateRxDose (i);
         }
 

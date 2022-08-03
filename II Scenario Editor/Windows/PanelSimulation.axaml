@@ -103,7 +103,7 @@
         <Expander Classes="exgrpt"
                   HorizontalContentAlignment="Stretch">
           <Expander.Header>
-            <Label Content="Device Options" />
+            <Label Content="Simulation Options" />
           </Expander.Header>
           <StackPanel>
 

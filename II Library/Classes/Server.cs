@@ -28,6 +28,7 @@ using System.Threading.Tasks;
 using II.Localization;
 
 namespace II.Server {
+
     public partial class Server {
         /* Variables for checking for updates, running bootstrapper */
         public string UpgradeVersion = String.Empty;
@@ -292,7 +293,7 @@ namespace II.Server {
             }
         }
 
-        public static async Task<Patient?> Get_PatientMirror (Mirror m) {
+        public static async Task<Scenario.Step?> Get_StepMirror (Mirror m) {
             HttpClient hc = new ();
 
             try {
@@ -304,13 +305,13 @@ namespace II.Server {
                 // We want this exception thrown in case of web disconnect- it will finish the task and end the faux ThreadLock
                 resp.EnsureSuccessStatusCode ();
 
-                string updated, patient;
+                string updated, step;
                 using (StringReader sr = new (await resp.Content.ReadAsStringAsync ())) {
                     updated = (await sr.ReadLineAsync ())?.Trim () ?? "";
-                    patient = (await sr.ReadLineAsync ())?.Trim () ?? "";
+                    step = (await sr.ReadLineAsync ())?.Trim () ?? "";
                 }
 
-                if (String.IsNullOrEmpty (updated) || String.IsNullOrEmpty (patient))
+                if (String.IsNullOrEmpty (updated) || String.IsNullOrEmpty (step))
                     return null;
 
                 DateTime serverUpdated = Utility.DateTime_FromString (updated);
@@ -320,18 +321,18 @@ namespace II.Server {
                 m.ServerQueried = DateTime.UtcNow;
                 m.PatientUpdated = serverUpdated;
 
-                Patient p = new ();
-                await p.Load_Process (Encryption.DecryptAES (patient.Replace (' ', '+')));
+                Scenario.Step s = new ();
+                await s.Load (Encryption.DecryptAES (step.Replace (' ', '+')));
 
                 hc.Dispose ();
-                return p;
+                return s;
             } catch {
                 hc.Dispose ();
                 return null;
             }
         }
 
-        public static async Task Post_PatientMirror (Mirror m, string pStr, DateTime pUp) {
+        public static async Task Post_StepMirror (Mirror m, string pStr, DateTime pUp) {
             HttpClient hc = new ();
 
             try {

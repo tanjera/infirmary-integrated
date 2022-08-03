@@ -534,7 +534,12 @@ namespace IISIM {
             await dlg.ShowDialog (this);
 
             if (Instance is not null)
-                await Instance.Mirror.PostPatient (Instance.Patient, Instance.Server);
+                await Instance.Mirror.PostStep (
+                    new Scenario.Step () {
+                        Patient = Instance.Patient,
+                        Chart = Instance.Chart
+                    },
+                    Instance.Server);
         }
 
         private async Task DialogMirrorReceive () {
@@ -800,14 +805,16 @@ namespace IISIM {
                 while ((line = (await sRead.ReadLineAsync ())?.Trim ()) != null) {
                     if (line == "> Begin: Patient") {           // Load files saved by Infirmary Integrated (base)
                         pbuffer = new StringBuilder ();
-                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Patient")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Patient")
                             pbuffer.AppendLine (pline);
 
                         await RefreshScenario (true);
-                        await Instance.Patient.Load_Process (pbuffer.ToString ());
+                        await Instance.Patient.Load (pbuffer.ToString ());
                     } else if (line == "> Begin: Scenario") {   // Load files saved by Infirmary Integrated Scenario Editor
                         pbuffer = new StringBuilder ();
-                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Scenario")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Scenario")
                             pbuffer.AppendLine (pline);
 
                         await RefreshScenario (false);
@@ -815,42 +822,47 @@ namespace IISIM {
                         await InitPatient ();     // Needs to be called manually since InitScenario(false) doesn't init a Patient
                     } else if (line == "> Begin: Editor") {
                         pbuffer = new StringBuilder ();
-                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Editor")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Editor")
                             pbuffer.AppendLine (pline);
 
                         await this.LoadOptions (pbuffer.ToString ());
                     } else if (line == "> Begin: Cardiac Monitor") {
                         pbuffer = new StringBuilder ();
-                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Cardiac Monitor")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Cardiac Monitor")
                             pbuffer.AppendLine (pline);
 
                         Instance.Device_Monitor = new DeviceMonitor (Instance) { };
                         await InitDeviceMonitor ();
-                        await Instance.Device_Monitor.Load_Process (pbuffer.ToString ());
+                        await Instance.Device_Monitor.Load (pbuffer.ToString ());
                     } else if (line == "> Begin: 12 Lead ECG") {
                         pbuffer = new StringBuilder ();
-                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: 12 Lead ECG")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: 12 Lead ECG")
                             pbuffer.AppendLine (pline);
 
                         Instance.Device_ECG = new DeviceECG (Instance);
                         await InitDeviceECG ();
-                        await Instance.Device_ECG.Load_Process (pbuffer.ToString ());
+                        await Instance.Device_ECG.Load (pbuffer.ToString ());
                     } else if (line == "> Begin: Defibrillator") {
                         pbuffer = new StringBuilder ();
-                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Defibrillator")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Defibrillator")
                             pbuffer.AppendLine (pline);
 
                         Instance.Device_Defib = new DeviceDefib (Instance);
                         await InitDeviceDefib ();
-                        await Instance.Device_Defib.Load_Process (pbuffer.ToString ());
+                        await Instance.Device_Defib.Load (pbuffer.ToString ());
                     } else if (line == "> Begin: Intra-aortic Balloon Pump") {
                         pbuffer = new StringBuilder ();
-                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Intra-aortic Balloon Pump")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Intra-aortic Balloon Pump")
                             pbuffer.AppendLine (pline);
 
                         Instance.Device_IABP = new DeviceIABP (Instance);
                         await InitDeviceIABP ();
-                        await Instance.Device_IABP.Load_Process (pbuffer.ToString ());
+                        await Instance.Device_IABP.Load (pbuffer.ToString ());
                     }
                 }
             } catch {
@@ -989,30 +1001,34 @@ namespace IISIM {
 
             StringBuilder sb = new ();
 
+            sb.AppendLine ("> Begin: Chart");
+            sb.Append (Instance?.Chart?.Save ());
+            sb.AppendLine ("> End: Chart");
+
             sb.AppendLine ("> Begin: Patient");
-            sb.Append (Instance.Patient?.Save ());
+            sb.Append (Instance?.Patient?.Save ());
             sb.AppendLine ("> End: Patient");
 
             sb.AppendLine ("> Begin: Editor");
             sb.Append (this.SaveOptions ());
             sb.AppendLine ("> End: Editor");
 
-            if (Instance.Device_Monitor is not null) {
+            if (Instance?.Device_Monitor is not null) {
                 sb.AppendLine ("> Begin: Cardiac Monitor");
                 sb.Append (Instance.Device_Monitor.Save ());
                 sb.AppendLine ("> End: Cardiac Monitor");
             }
-            if (Instance.Device_ECG is not null) {
+            if (Instance?.Device_ECG is not null) {
                 sb.AppendLine ("> Begin: 12 Lead ECG");
                 sb.Append (Instance.Device_ECG.Save ());
                 sb.AppendLine ("> End: 12 Lead ECG");
             }
-            if (Instance.Device_Defib is not null) {
+            if (Instance?.Device_Defib is not null) {
                 sb.AppendLine ("> Begin: Defibrillator");
                 sb.Append (Instance.Device_Defib.Save ());
                 sb.AppendLine ("> End: Defibrillator");
             }
-            if (Instance.Device_IABP is not null) {
+            if (Instance?.Device_IABP is not null) {
                 sb.AppendLine ("> Begin: Intra-aortic Balloon Pump");
                 sb.Append (Instance.Device_IABP.Save ());
                 sb.AppendLine ("> End: Intra-aortic Balloon Pump");
@@ -1044,7 +1060,12 @@ namespace IISIM {
         }
 
         private void OnMirrorTick (object? sender, EventArgs e) {
-            Instance?.Mirror.TimerTick (Instance.Patient, Instance.Server);
+            Instance?.Mirror.TimerTick (
+                new Scenario.Step () {
+                    Chart = Instance.Chart,
+                    Patient = Instance.Patient
+                },
+                Instance.Server);
 
             if (Instance?.Mirror.Status == Mirror.Statuses.CLIENT) {
                 UpdateView (Instance.Patient);
@@ -1094,19 +1115,26 @@ namespace IISIM {
             // Re-populate a StackPanel with RadioButtons for Progression options, including "Default Option"
             stackProgressions.Children.Clear ();
 
-            for (int i = 0; i < step.Progressions.Count; i++) {
-                Scenario.Step.Progression prog = step.Progressions [i];
-                Scenario.Step? stepTo = Instance?.Scenario?.Steps?.Find (s => s.UUID == prog.DestinationUUID);
-
-                stackProgressions.Children.Add (new RadioButton () {
-                    IsChecked = (step.DefaultProgression?.UUID == prog.UUID),
-                    Content = String.Format ("{0}{1}",
-                        ((step.DefaultProgression?.UUID == prog.UUID) ? $"{Instance?.Language.Localize ("PE:ProgressionDefault")}: " : ""),
-                        !String.IsNullOrEmpty (prog.Description) ? prog.Description : stepTo?.Name),
-                    Name = String.Format ("radioProgression_{0}", prog.DestinationUUID),
-                    GroupName = "ProgressionOptions",
-                    Margin = (i == step.Progressions.Count - 1 ? new Thickness (10, 5, 10, 10) : new Thickness (10, 5))
+            if (step.Progressions.Count == 0) {
+                stackProgressions.Children.Add (new Label () {
+                    Content = Instance?.Language.Localize ("PE:ProgressionNoneAvailable"),
+                    Margin = new Thickness (10)
                 });
+            } else {
+                for (int i = 0; i < step.Progressions.Count; i++) {
+                    Scenario.Step.Progression prog = step.Progressions [i];
+                    Scenario.Step? stepTo = Instance?.Scenario?.Steps?.Find (s => s.UUID == prog.DestinationUUID);
+
+                    stackProgressions.Children.Add (new RadioButton () {
+                        IsChecked = (step.DefaultProgression?.UUID == prog.UUID),
+                        Content = String.Format ("{0}{1}",
+                            ((step.DefaultProgression?.UUID == prog.UUID) ? $"{Instance?.Language.Localize ("PE:ProgressionDefault")}: " : ""),
+                            !String.IsNullOrEmpty (prog.Description) ? prog.Description : stepTo?.Name),
+                        Name = String.Format ("radioProgression_{0}", prog.DestinationUUID),
+                        GroupName = "ProgressionOptions",
+                        Margin = (i == step.Progressions.Count - 1 ? new Thickness (10, 5, 10, 10) : new Thickness (10, 5))
+                    });
+                }
             }
 
             return Task.CompletedTask;
@@ -1330,7 +1358,12 @@ namespace IISIM {
             }
 
             if (Instance?.Mirror is not null && Instance?.Server is not null)
-                _ = Instance.Mirror.PostPatient (Instance.Patient, Instance.Server);
+                _ = Instance.Mirror.PostStep (
+                    new Scenario.Step () {
+                        Chart = Instance.Chart,
+                        Patient = Instance.Patient,
+                    },
+                    Instance.Server);
         }
 
         private void ApplyPatientParameters_Respiratory (object? sender, EventArgs e) {
@@ -1350,7 +1383,12 @@ namespace IISIM {
             }
 
             if (Instance?.Mirror is not null && Instance?.Server is not null)
-                _ = Instance.Mirror.PostPatient (Instance.Patient, Instance.Server);
+                _ = Instance.Mirror.PostStep (
+                    new Scenario.Step () {
+                        Chart = Instance.Chart,
+                        Patient = Instance.Patient,
+                    },
+                    Instance.Server);
         }
 
         private void ApplyPatientParameters_Obstetric (object? sender, EventArgs e) {
@@ -1372,7 +1410,12 @@ namespace IISIM {
             }
 
             if (Instance?.Mirror is not null && Instance?.Server is not null)
-                _ = Instance.Mirror.PostPatient (Instance.Patient, Instance.Server);
+                _ = Instance.Mirror.PostStep (
+                    new Scenario.Step () {
+                        Chart = Instance.Chart,
+                        Patient = Instance.Patient,
+                    },
+                    Instance.Server);
         }
 
         private void UpdateView (Patient? p) {

@@ -230,7 +230,8 @@ namespace IISE {
 
                         if (line == "> Begin: Scenario") {
                             pbuffer = new StringBuilder ();
-                            while ((pline = await sRead.ReadLineAsync ()) != null && pline != "> End: Scenario")
+                            while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Scenario")
                                 pbuffer.AppendLine (pline);
 
                             await loadScene.Load (pbuffer.ToString ());

@@ -13,7 +13,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II.Settings {
-
     public class Device {
         private Devices DeviceType;
 
@@ -47,7 +46,8 @@ namespace II.Settings {
                     if (line == "> Begin: Alarms") {
                         pbuffer = new StringBuilder ();
 
-                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null && pline != "> End: Alarms")
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Alarms")
                             pbuffer.AppendLine (pline);
 
                         await LoadAlarms (pbuffer.ToString ());
