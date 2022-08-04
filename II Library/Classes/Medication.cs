@@ -5,7 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
+
     public class Medication {
+
         public class Dose {
             public string? OrderUUID;
 
@@ -13,8 +15,6 @@ namespace II {
 
             public AdministrationStatuses.Values? AdministrationStatus;
             public TimeStatuses.Values? TimeStatus;
-
-            public string? AdministrationNotes;
 
             public class AdministrationStatuses {
                 public Values? Value;
@@ -63,8 +63,6 @@ namespace II {
 
                                 case "AdministrationStatus": AdministrationStatus = (AdministrationStatuses.Values)Enum.Parse (typeof (AdministrationStatuses.Values), pValue); break;
                                 case "TimeStatus": TimeStatus = (TimeStatuses.Values)Enum.Parse (typeof (TimeStatuses.Values), pValue); break;
-
-                                case "AdministrationNotes": AdministrationNotes = pValue; break;
                             }
                         }
                     }
@@ -88,8 +86,6 @@ namespace II {
 
                 sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "AdministrationStatus", AdministrationStatus));
                 sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "TimeStatus", TimeStatus));
-
-                sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "AdministrationNotes", AdministrationNotes));
 
                 return sWrite.ToString ();
             }
@@ -157,8 +153,11 @@ namespace II {
                 }
 
                 public enum Values {
+                    PO,
                     IV,
-                    PO
+                    IM,
+                    Subcut,
+                    Inhaled
                 }
             }
 
@@ -170,6 +169,7 @@ namespace II {
                 }
 
                 public enum Values {
+
                     // Volume
                     L,
 

@@ -110,6 +110,7 @@ namespace IISE.Windows {
             }
 
             UpdateView_RxOrderList ();
+            UpdateView_RxDoseList ();
 
             return Task.CompletedTask;
         }
@@ -151,6 +152,35 @@ namespace IISE.Windows {
                 lbRxOrders.UnselectAll ();
 
             lbRxOrders.SelectionChanged += LbRxOrders_SelectionChanged;
+        }
+
+        private void UpdateView_RxDoseList () {
+            if (Chart is null || Chart.RxOrders.Count <= SelectedRxOrder)
+                return;
+
+            ListBox lbRxDoses = this.FindControl<ListBox> ("lbRxDoses");
+
+            lbRxDoses.SelectionChanged += LbRxDoses_SelectionChanged;
+
+            var order = Chart.RxOrders [SelectedRxOrder];
+            var doses = Chart.RxDoses.FindAll (d => d.OrderUUID == order.UUID);
+
+            List<string> llbi = new ();
+
+            foreach (var dose in doses) {
+                if (App.Language is not null) {
+                    llbi.Add (String.Format ("{0} {1}, {2}, {3}",
+                        dose?.ScheduledTime?.ToShortDateString (),
+                        dose?.ScheduledTime?.ToString ("HH:mm"),
+                        App.Language.Localize (Medication.Dose.TimeStatuses.LookupString (dose.TimeStatus ?? Medication.Dose.TimeStatuses.Values.Pending)),
+                        App.Language.Localize (Medication.Dose.AdministrationStatuses.LookupString (dose.AdministrationStatus ?? Medication.Dose.AdministrationStatuses.Values.NotAdministered))
+                        ));
+                }
+            }
+
+            lbRxDoses.Items = llbi;
+
+            lbRxDoses.SelectionChanged += LbRxDoses_SelectionChanged;
         }
 
         private void UpdateChart (object? sender, EventArgs e) {
@@ -209,7 +239,6 @@ namespace IISE.Windows {
                         OrderUUID = order.UUID,
                         ScheduledTime = Chart.CurrentTime,
                         TimeStatus = Medication.Dose.TimeStatuses.Values.Pending,
-                        AdministrationNotes = order.Notes,
                         AdministrationStatus = Medication.Dose.AdministrationStatuses.Values.NotAdministered
                     });
                     break;
@@ -232,7 +261,6 @@ namespace IISE.Windows {
                             TimeStatus = order.StartTime + timeInterval < Chart.CurrentTime
                             ? Medication.Dose.TimeStatuses.Values.Late
                             : Medication.Dose.TimeStatuses.Values.Pending,
-                            AdministrationNotes = order.Notes,
                             AdministrationStatus = Medication.Dose.AdministrationStatuses.Values.NotAdministered
                         });
                     }
@@ -257,6 +285,8 @@ namespace IISE.Windows {
             prxOrder.Init (Chart.RxOrders [SelectedRxOrder]);
 
             prxOrder.PropertyChanged += UpdateChart;
+
+            UpdateView_RxDoseList ();
         }
 
         private void Action_AddRxOrder () {
@@ -297,10 +327,13 @@ namespace IISE.Windows {
         private void Action_PopulateAllRxDoses () {
             for (int i = 0; i < Chart?.RxOrders.Count; i++)
                 PopulateRxDose (i);
+
+            UpdateView_RxDoseList ();
         }
 
         private void Action_PopulateThisRxDoses () {
             PopulateRxDose (SelectedRxOrder);
+            UpdateView_RxDoseList ();
         }
 
         /* Generic Menu Items (across all Panels) */
@@ -327,6 +360,9 @@ namespace IISE.Windows {
 
         private void LbRxOrders_SelectionChanged (object? sender, SelectionChangedEventArgs e)
             => Action_SelectRxOrder ();
+
+        private void LbRxDoses_SelectionChanged (object? sender, SelectionChangedEventArgs e) {
+        }
 
         private void ButtonAddRxOrder_Click (object sender, RoutedEventArgs e)
             => Action_AddRxOrder ();

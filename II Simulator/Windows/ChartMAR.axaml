@@ -105,15 +105,28 @@
                    Source="avares://Infirmary Integrated/Third_Party/Icon_PlayerArrowPlayReverse_128.png" />
           </Button>
 
-          <StackPanel Orientation="Vertical"
+          <StackPanel Orientation="Horizontal"
                       Grid.Column="2"
                       HorizontalAlignment="Center">
-            <DatePicker Name="dpAtTime"
-                        HorizontalAlignment="Center"
-                        Margin="0,5,0,0" />
-            <TimePicker Name="tpAtTime"
-                        HorizontalAlignment="Center"
-                        Margin="0,0,0,5" />
+
+            <StackPanel Orientation="Vertical"
+                        HorizontalAlignment="Center">
+
+              <DatePicker Name="dpAtTime"
+                          HorizontalAlignment="Center"
+                          Margin="0,5,0,0" />
+              <TimePicker Name="tpAtTime"
+                          ClockIdentifier="24HourClock"
+                          HorizontalAlignment="Center"
+                          Margin="0,0,0,5" />
+            </StackPanel>
+
+            <Button Classes="timesel"
+                    Click="ButtonRefresh_Click"
+                    Margin="20, 0, 0, 0">
+              <Image Classes="timesel"
+                     Source="avares://Infirmary Integrated/Third_Party/Icon_Clock_128.png" />
+            </Button>
           </StackPanel>
 
           <Button Grid.Column="3"

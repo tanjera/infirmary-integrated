@@ -159,14 +159,17 @@ namespace IISIM {
 
             /* Populate column headers for time periods */
             for (int hour = 0; hour < columnAmount; hour++) {
+                bool isAtCurrentTime = Instance?.Chart?.CurrentTime?.ToString ("yyyyMMddHH") == atTime.ToString ("yyyyMMddHH");
+
                 Label lbl = new Label () {
-                    Content = $"{atTime.ToShortDateString ()}\n{atTime.ToShortTimeString ()}",
-                    Margin = new Thickness (20, 5),
-                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Center,
+                    Content = $"{atTime.ToShortDateString ()}\n{atTime.ToString ("HH:mm")}",
+                    Padding = new Thickness (20, 5),
+                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
                     HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Center,
+                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch,
                     VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                    FontWeight = hour == columnAmount / 2 ? FontWeight.Bold : FontWeight.Normal
+                    FontWeight = isAtCurrentTime ? FontWeight.Bold : FontWeight.Normal,
+                    Background = isAtCurrentTime ? Brushes.LightBlue : Brushes.Transparent
                 };
 
                 lbl.SetValue (Grid.RowProperty, headerRow);
@@ -217,11 +220,18 @@ namespace IISIM {
                 int row = startRow + i;
 
                 TextBlock tbDrug = new TextBlock () {
-                    Text = $"{order.DrugName} {order.DoseAmount} {order.DoseUnit} {order.Route}\n"
-                            + $"{order.PeriodType} {order.PeriodAmount} {order.PeriodUnit}\n"
-                            + $"{order.Priority}\n{order.StartTime}\n{order.EndTime}",
+                    Text = $"{order.DrugName} {order.DoseAmount} "
+                            + $"{Instance.Language.Localize (Medication.Order.DoseUnits.LookupString (order.DoseUnit ?? Medication.Order.DoseUnits.Values.L))} "
+                            + $"{Instance.Language.Localize (Medication.Order.Routes.LookupString (order.Route ?? Medication.Order.Routes.Values.IV))}\n"
+                            + $"{Instance.Language.Localize (Medication.Order.PeriodTypes.LookupString (order.PeriodType ?? Medication.Order.PeriodTypes.Values.Repeats))} "
+                            + $"{order.PeriodAmount} "
+                            + $"{Instance.Language.Localize (Medication.Order.PeriodUnits.LookupString (order.PeriodUnit ?? Medication.Order.PeriodUnits.Values.Minute))}\n"
+                            + $"{Instance.Language.Localize (Medication.Order.Priorities.LookupString (order.Priority ?? Medication.Order.Priorities.Values.Routine))}\n"
+                            + $"{order?.StartTime?.ToShortDateString ()} {order?.StartTime?.ToString ("HH:mm")}\n"
+                            + $"{order?.EndTime?.ToShortDateString ()} {order?.EndTime?.ToString ("HH:mm")}\n"
+                            + $"{order?.Indication}\n{order?.Notes}",
                     Padding = new Thickness (10),
-                    Background = order.IsScheduled ? colorScheduled : colorPRN
+                    Background = (order?.IsScheduled ?? true) ? colorScheduled : colorPRN
                 };
 
                 tbDrug.SetValue (Grid.RowProperty, row);
@@ -282,7 +292,12 @@ namespace IISIM {
                     }
 
                     TextBlock tbDose = new TextBlock () {
-                        Text = $"{order.DoseAmount} {order.DoseUnit}\n{order.Route}\n{order.Priority}\n{dose.ScheduledTime}",
+                        Text = $"{(order.PeriodType == Medication.Order.PeriodTypes.Values.PRN ? $"{Instance.Language.Localize ("ENUM:PeriodTypes:PRN")}\n" : "")}"
+                                + $"{order.DoseAmount} "
+                                + $"{Instance.Language.Localize (Medication.Order.DoseUnits.LookupString (order.DoseUnit ?? Medication.Order.DoseUnits.Values.L))} "
+                                + $"{Instance.Language.Localize (Medication.Order.Routes.LookupString (order.Route ?? Medication.Order.Routes.Values.IV))}\n"
+                                + $"{Instance.Language.Localize (Medication.Order.Priorities.LookupString (order.Priority ?? Medication.Order.Priorities.Values.Routine))}\n"
+                                + $"{dose.ScheduledTime.Value.ToShortDateString ()} {dose.ScheduledTime.Value.ToString ("HH:mm")}",
                         Padding = new Thickness (10),
                         Background = bgColor
                     };
@@ -318,6 +333,9 @@ namespace IISIM {
             _ = PopulateHeaders ();
             _ = PopulateDoses ();
         }
+
+        private void ButtonRefresh_Click (object? s, RoutedEventArgs e)
+            => _ = RefreshInterface ();
 
         private void ButtonTimeForward1_Click (object? s, RoutedEventArgs e)
             => AdjustViewTime (1);

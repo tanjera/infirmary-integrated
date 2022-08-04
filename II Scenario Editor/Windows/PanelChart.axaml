@@ -91,12 +91,13 @@
 
         <StackPanel Orientation="Horizontal"
                     Margin="20">
-          <Label Content="Current Date and Time:"
+          <Label Content="Simulation Date and Time:"
                  VerticalAlignment="Center"
                  Margin="0,0,10,0" />
           <DatePicker Name="dateCurrent"
                       Margin="2" />
           <TimePicker Name="timeCurrent"
+                      ClockIdentifier="24HourClock"
                       Margin="2" />
         </StackPanel>
 

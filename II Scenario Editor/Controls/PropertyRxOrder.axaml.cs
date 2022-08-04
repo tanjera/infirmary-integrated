@@ -148,9 +148,9 @@ namespace IISE.Controls {
             TimePicker? ptimeStart = this.FindControl<TimePicker> ("timeStart");
             TimePicker? ptimeEnd = this.FindControl<TimePicker> ("timeEnd");
 
-            pcmbPeriodUnit.IsEnabled = rxOrder.PeriodType == Medication.Order.PeriodTypes.Values.Repeats;
-            pnumPeriodAmount.IsEnabled = rxOrder.PeriodType == Medication.Order.PeriodTypes.Values.Repeats;
-            pnumTotalDoses.IsEnabled = rxOrder.PeriodType == Medication.Order.PeriodTypes.Values.Repeats;
+            pcmbPeriodUnit.IsEnabled = rxOrder.PeriodType != Medication.Order.PeriodTypes.Values.Once;
+            pnumPeriodAmount.IsEnabled = rxOrder.PeriodType != Medication.Order.PeriodTypes.Values.Once;
+            pnumTotalDoses.IsEnabled = rxOrder.PeriodType != Medication.Order.PeriodTypes.Values.Once;
         }
 
         private void SendPropertyChange (object? sender, EventArgs e) {
