@@ -183,15 +183,15 @@ namespace IISIM.Controls {
         }
 
         private void MenuZeroTransducer_Click (object? sender, RoutedEventArgs e) {
-            if (Instance is null || Instance.Patient is null)
+            if (Instance is null || Instance.Physiology is null)
                 return;
 
             switch (Lead?.Value) {
-                case Lead.Values.ABP: Instance.Patient.TransducerZeroed_ABP = true; return;
-                case Lead.Values.CVP: Instance.Patient.TransducerZeroed_CVP = true; return;
-                case Lead.Values.PA: Instance.Patient.TransducerZeroed_PA = true; return;
-                case Lead.Values.ICP: Instance.Patient.TransducerZeroed_ICP = true; return;
-                case Lead.Values.IAP: Instance.Patient.TransducerZeroed_IAP = true; return;
+                case Lead.Values.ABP: Instance.Physiology.TransducerZeroed_ABP = true; return;
+                case Lead.Values.CVP: Instance.Physiology.TransducerZeroed_CVP = true; return;
+                case Lead.Values.PA: Instance.Physiology.TransducerZeroed_PA = true; return;
+                case Lead.Values.ICP: Instance.Physiology.TransducerZeroed_ICP = true; return;
+                case Lead.Values.IAP: Instance.Physiology.TransducerZeroed_IAP = true; return;
             }
         }
 
@@ -223,8 +223,8 @@ namespace IISIM.Controls {
 
             Strip?.SetLead (selectedValue);
             Strip?.Reset ();
-            Strip?.Add_Beat__Cardiac_Baseline (Instance?.Patient);
-            Strip?.Add_Breath__Respiratory_Baseline (Instance?.Patient);
+            Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology);
+            Strip?.Add_Breath__Respiratory_Baseline (Instance?.Physiology);
 
             CalculateOffsets ();
             UpdateInterface ();

@@ -56,8 +56,8 @@
       <iiw:PanelParameters x:Name="panelParameters" />
     </TabItem>
 
-    <TabItem Header="Electronic Health Record">
-      <iiw:PanelChart x:Name="panelChart" />
+    <TabItem Header="Medical Record">
+      <iiw:PanelRecords x:Name="panelRecords" />
     </TabItem>
   </TabControl>
 </Window>

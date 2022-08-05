@@ -1,8 +1,8 @@
-﻿/* Patient.cs
+﻿/* Physiology.cs
  * Infirmary Integrated
  * By Ibi Keller (Tanjera), (c) 2017
  *
- * All patient modeling takes place in Patient.cs, consisting of:
+ * All patient's physiology modeling takes place in Physiology.cs, consisting of:
  * - Variables: vital signs and modeling parameters
  * - Timers: for modeling cardiac and respiratory rhythms, etc.
  */
@@ -16,7 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
-    public class Patient {
+    public class Physiology {
         /* Mirroring variables */
         public DateTime Updated;                    // DateTime this Patient was last updated
 
@@ -172,7 +172,7 @@ namespace II {
             }
         }
 
-        public Patient () {
+        public Physiology () {
             Task.Run (async () => await UpdateParameters_Cardiac (
                             // Basic cardiac vital signs
                             80,
@@ -218,10 +218,10 @@ namespace II {
             Task.Run (async () => await ResetStartTimers ());
         }
 
-        ~Patient () => Task.Run (async () => await Dispose ());
+        ~Physiology () => Task.Run (async () => await Dispose ());
 
         public async Task Dispose () {
-            await UnsubscribePatientEvent ();
+            await UnsubscribePhysiologyEvent ();
 
             TimerCardiac_Baseline.Dispose ();
             TimerCardiac_Atrial_Electric.Dispose ();
@@ -389,16 +389,16 @@ namespace II {
             => MeasureHR (lengthSeconds, offsetSeconds, true);
 
         public int MeasureHR (double lengthSeconds, double offsetSeconds, bool isPulse = false) {
-            _ = Task.Run (async () => { await CleanListPatientEvents (); });
+            _ = Task.Run (async () => { await CleanListPhysiologyEvents (); });
 
             if (isPulse && !Cardiac_Rhythm.HasPulse_Ventricular)
                 return 0;
 
             int counter = 0;
 
-            lock (lockListPatientEvents) {
-                foreach (PatientEventArgs ea in ListPatientEvents)
-                    if (ea.EventType == PatientEventTypes.Cardiac_Ventricular_Electric
+            lock (lockListPhysiologyEvents) {
+                foreach (PhysiologyEventArgs ea in ListPhysiologyEvents)
+                    if (ea.EventType == PhysiologyEventTypes.Cardiac_Ventricular_Electric
                         && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-(lengthSeconds + offsetSeconds))) >= 0
                         && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-offsetSeconds)) <= 0)
                         counter++;
@@ -408,13 +408,13 @@ namespace II {
         }
 
         public int MeasureRR (double lengthSeconds, double offsetSeconds) {
-            _ = Task.Run (async () => { await CleanListPatientEvents (); });
+            _ = Task.Run (async () => { await CleanListPhysiologyEvents (); });
 
             int counter = 0;
 
-            lock (lockListPatientEvents) {
-                foreach (PatientEventArgs ea in ListPatientEvents)
-                    if (ea.EventType == PatientEventTypes.Respiratory_Inspiration
+            lock (lockListPhysiologyEvents) {
+                foreach (PhysiologyEventArgs ea in ListPhysiologyEvents)
+                    if (ea.EventType == PhysiologyEventTypes.Respiratory_Inspiration
                         && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-(lengthSeconds + offsetSeconds))) >= 0
                         && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-offsetSeconds)) <= 0)
                         counter++;
@@ -428,43 +428,43 @@ namespace II {
         }
 
         public async Task Deactivate () {
-            await UnsubscribePatientEvent ();
+            await UnsubscribePhysiologyEvent ();
             await StopTimers ();
         }
 
-        public Task UnsubscribePatientEvent () {
-            if (PatientEvent != null) {
-                foreach (Delegate d in PatientEvent.GetInvocationList ())
-                    PatientEvent -= (EventHandler<PatientEventArgs>)d;
+        public Task UnsubscribePhysiologyEvent () {
+            if (PhysiologyEvent != null) {
+                foreach (Delegate d in PhysiologyEvent.GetInvocationList ())
+                    PhysiologyEvent -= (EventHandler<PhysiologyEventArgs>)d;
             }
 
             return Task.CompletedTask;
         }
 
         /* PatientEvent event, handler, and caller */
-        public readonly object lockListPatientEvents = new ();
-        public List<PatientEventArgs> ListPatientEvents = new ();
+        public readonly object lockListPhysiologyEvents = new ();
+        public List<PhysiologyEventArgs> ListPhysiologyEvents = new ();
 
-        public event EventHandler<PatientEventArgs>? PatientEvent;
+        public event EventHandler<PhysiologyEventArgs>? PhysiologyEvent;
 
-        public class PatientEventArgs : EventArgs {
-            public Patient? Patient;                         // Remains as a pointer
+        public class PhysiologyEventArgs : EventArgs {
+            public Physiology? Physiology;                         // Remains as a pointer
             public Vital_Signs Vitals;                      // Copies over as a clone, not a pointer
-            public PatientEventTypes EventType;
+            public PhysiologyEventTypes EventType;
             public DateTime Occurred;
 
-            public PatientEventArgs (Patient? p, PatientEventTypes e) {
+            public PhysiologyEventArgs (Physiology? p, PhysiologyEventTypes e) {
                 if (p == null)
                     p = new ();
 
                 EventType = e;
-                Patient = p;
+                Physiology = p;
                 Vitals = new Vital_Signs (p.VS_Actual);
                 Occurred = DateTime.Now;
             }
         }
 
-        public enum PatientEventTypes {
+        public enum PhysiologyEventTypes {
             Vitals_Change,
             Cardiac_Baseline,
             Cardiac_Atrial_Electric,
@@ -483,24 +483,24 @@ namespace II {
             Obstetric_Contraction_End
         }
 
-        public Task OnPatientEvent (PatientEventTypes e) {
-            PatientEventArgs ea = new (this, e);
+        public Task OnPhysiologyEvent (PhysiologyEventTypes e) {
+            PhysiologyEventArgs ea = new (this, e);
 
-            lock (lockListPatientEvents) {
-                ListPatientEvents.Add (ea);
+            lock (lockListPhysiologyEvents) {
+                ListPhysiologyEvents.Add (ea);
             }
 
-            PatientEvent?.Invoke (this, ea);
+            PhysiologyEvent?.Invoke (this, ea);
 
             return Task.CompletedTask;
         }
 
-        public Task CleanListPatientEvents () {
+        public Task CleanListPhysiologyEvents () {
             // Remove all listings older than 1 minute... prevent cluttering memory
-            lock (lockListPatientEvents) {
-                for (int i = ListPatientEvents.Count - 1; i >= 0; i--)
-                    if (ListPatientEvents [i].Occurred.CompareTo (DateTime.Now.AddMinutes (-1)) < 0)
-                        ListPatientEvents.RemoveAt (i);
+            lock (lockListPhysiologyEvents) {
+                for (int i = ListPhysiologyEvents.Count - 1; i >= 0; i--)
+                    if (ListPhysiologyEvents [i].Occurred.CompareTo (DateTime.Now.AddMinutes (-1)) < 0)
+                        ListPhysiologyEvents.RemoveAt (i);
             }
 
             return Task.CompletedTask;
@@ -644,7 +644,7 @@ namespace II {
             await OnCardiac_Baseline ();
             await OnRespiratory_Baseline ();
 
-            await OnPatientEvent (PatientEventTypes.Vitals_Change);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change);
         }
 
         /* Process for saving Patient{} information to simulation file  */
@@ -770,7 +770,7 @@ namespace II {
                 st_elev, t_elev);
 
             await OnCardiac_Baseline ();
-            await OnPatientEvent (PatientEventTypes.Vitals_Change);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change);
         }
 
         public async Task UpdateParametersSilent_Cardiac (
@@ -866,7 +866,7 @@ namespace II {
                 resp_ier_i, resp_ier_e);
 
             await OnRespiratory_Baseline ();
-            await OnPatientEvent (PatientEventTypes.Vitals_Change);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change);
         }
 
         public async Task UpdateParametersSilent_Respiratory (
@@ -909,7 +909,7 @@ namespace II {
                 uc_freq, uc_duration, uc_intensity, uc_resting);
 
             await OnObstetric_Baseline ();
-            await OnPatientEvent (PatientEventTypes.Vitals_Change);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change);
         }
 
         public async Task UpdateParametersSilent_Obstetric (
@@ -941,13 +941,13 @@ namespace II {
             VS_Settings.ETCO2 = II.Math.Clamp (VS_Settings.ETCO2, etco2Min, etco2Max);
             VS_Settings.NSBP = II.Math.Clamp (VS_Settings.NSBP, sbpMin, sbpMax);
             VS_Settings.NDBP = II.Math.Clamp (VS_Settings.NDBP, dbpMin, dbpMax);
-            VS_Settings.NMAP = Patient.CalculateMAP (VS_Settings.NSBP, VS_Settings.NDBP);
+            VS_Settings.NMAP = Physiology.CalculateMAP (VS_Settings.NSBP, VS_Settings.NDBP);
             VS_Settings.ASBP = II.Math.Clamp (VS_Settings.ASBP, sbpMin, sbpMax);
             VS_Settings.ADBP = II.Math.Clamp (VS_Settings.ADBP, sbpMin, sbpMax);
-            VS_Settings.AMAP = Patient.CalculateMAP (VS_Settings.ASBP, VS_Settings.ADBP);
+            VS_Settings.AMAP = Physiology.CalculateMAP (VS_Settings.ASBP, VS_Settings.ADBP);
             VS_Settings.PSP = II.Math.Clamp (VS_Settings.PSP, pspMin, pspMax);
             VS_Settings.PDP = II.Math.Clamp (VS_Settings.PDP, pdpMin, pdpMax);
-            VS_Settings.PMP = Patient.CalculateMAP (VS_Settings.PSP, VS_Settings.PDP);
+            VS_Settings.PMP = Physiology.CalculateMAP (VS_Settings.PSP, VS_Settings.PDP);
 
             await VS_Actual.Set (VS_Settings);
 
@@ -958,7 +958,7 @@ namespace II {
             await OnRespiratory_Baseline ();
             await OnObstetric_Baseline ();
 
-            await OnPatientEvent (PatientEventTypes.Vitals_Change);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change);
         }
 
         private Task InitTimers () {
@@ -1108,7 +1108,7 @@ namespace II {
             await TimerDefibrillation.ResetStart (20);
 
             // Invoke the defibrillation event *after* starting the timer- IsDefibrillating() checks the timer!
-            await OnPatientEvent (PatientEventTypes.Defibrillation);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Defibrillation);
         }
 
         private async Task OnDefibrillation_End () {
@@ -1123,7 +1123,7 @@ namespace II {
 
         private async Task OnPacemaker_Baseline () {
             if (Pacemaker_Energy > 0)
-                await OnPatientEvent (PatientEventTypes.Pacermaker_Spike);
+                await OnPhysiologyEvent (PhysiologyEventTypes.Pacermaker_Spike);
 
             if (Pacemaker_Energy >= Pacemaker_Threshold)
                 await TimerPacemaker_Spike.ResetStart (40);          // Adds an interval between the spike and the QRS complex
@@ -1140,13 +1140,13 @@ namespace II {
                 await OnCardiac_Ventricular_Electric ();
                 Cardiac_Rhythm.AberrantBeat = false;
 
-                await OnPatientEvent (PatientEventTypes.Cardiac_Baseline);  // Triggers drawing isoelectric lines (important for a-fib/flutter)
+                await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Baseline);  // Triggers drawing isoelectric lines (important for a-fib/flutter)
                 await TimerCardiac_Baseline.ResetStart ();                   // Resets heart's intrinsic timer, allows pacemaker overdrive modeling
             }
         }
 
         private async Task OnCardiac_Baseline () {
-            await OnPatientEvent (PatientEventTypes.Cardiac_Baseline);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Baseline);
             await TimerCardiac_Baseline.Set ((int)(GetHR_Seconds * 1000d));
 
             switch (Cardiac_Rhythm.Value) {
@@ -1295,7 +1295,7 @@ namespace II {
         }
 
         private async Task OnCardiac_Atrial_Electric () {
-            await OnPatientEvent (PatientEventTypes.Cardiac_Atrial_Electric);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Atrial_Electric);
 
             if (Cardiac_Rhythm.HasPulse_Atrial)
                 await TimerCardiac_Atrial_Mechanical.ResetStart (Default_Electromechanical_Delay);
@@ -1366,7 +1366,7 @@ namespace II {
         }
 
         private async Task OnCardiac_Ventricular_Electric () {
-            await OnPatientEvent (PatientEventTypes.Cardiac_Ventricular_Electric);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Ventricular_Electric);
 
             if (Cardiac_Rhythm.HasPulse_Ventricular)
                 await TimerCardiac_Ventricular_Mechanical.ResetStart (Default_Electromechanical_Delay);
@@ -1378,13 +1378,13 @@ namespace II {
         }
 
         private async Task OnCardiac_Atrial_Mechanical () {
-            await OnPatientEvent (PatientEventTypes.Cardiac_Atrial_Mechanical);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Atrial_Mechanical);
 
             await TimerCardiac_Atrial_Mechanical.Stop ();
         }
 
         private async Task OnCardiac_Ventricular_Mechanical () {
-            await OnPatientEvent (PatientEventTypes.Cardiac_Ventricular_Mechanical);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Ventricular_Mechanical);
 
             if (IABP_Active)
                 await TimerIABP_Balloon_Trigger.ResetStart ((int)(GetHR_Seconds * 1000d * 0.35d));
@@ -1405,13 +1405,13 @@ namespace II {
         }
 
         private async Task OnIABP_Balloon_Inflate () {
-            await OnPatientEvent (PatientEventTypes.IABP_Balloon_Inflation);
+            await OnPhysiologyEvent (PhysiologyEventTypes.IABP_Balloon_Inflation);
 
             await TimerIABP_Balloon_Trigger.Stop ();
         }
 
         private async Task OnRespiratory_Baseline () {
-            await OnPatientEvent (PatientEventTypes.Respiratory_Baseline);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Respiratory_Baseline);
             await TimerRespiratory_Baseline.Set ((int)(GetRR_Seconds * 1000d));
 
             double c;
@@ -1479,7 +1479,7 @@ namespace II {
 
         private async Task OnRespiratory_Inspiration () {
             Respiration_Inflated = true;
-            await OnPatientEvent (PatientEventTypes.Respiratory_Inspiration);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Respiratory_Inspiration);
             await TimerRespiratory_Inspiration.Stop ();
 
             // Process pulsus paradoxus (numerical values) for inspiration here
@@ -1517,7 +1517,7 @@ namespace II {
 
         private async Task OnRespiratory_Expiration () {
             Respiration_Inflated = false;
-            await OnPatientEvent (PatientEventTypes.Respiratory_Expiration);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Respiratory_Expiration);
             await TimerRespiratory_Expiration.Stop ();
 
             // Process pulsus paradoxus (numerical values) for expiration here
@@ -1539,14 +1539,14 @@ namespace II {
         }
 
         private async Task OnObstetric_Baseline () {
-            await OnPatientEvent (PatientEventTypes.Obstetric_Baseline);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Obstetric_Baseline);
             await TimerObstetric_Baseline.ResetStart (1000);
 
             await OnObstetric_RunTimers ();
         }
 
         private async Task OnObstetric_Fetal_Baseline () {
-            await OnPatientEvent (PatientEventTypes.Obstetric_Fetal_Baseline);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Obstetric_Fetal_Baseline);
 
             // Must be divided by the TimerObstetric_Multiplier or else the speed multiplier effects the actual waveform drawing
             await TimerObstetric_Fetal_Baseline.ResetStart (2500 / TimerObstetric_Multiplier);
@@ -1689,7 +1689,7 @@ namespace II {
                 flagObstetricContraction = true;
                 await TimerObstetric_Contraction.ResetStart ((int)(ObstetricContractionDuration * 1000d / TimerObstetric_Multiplier));
 
-                await OnPatientEvent (PatientEventTypes.Obstetric_Contraction_Start);
+                await OnPhysiologyEvent (PhysiologyEventTypes.Obstetric_Contraction_Start);
 
                 // No need for triggering lockouts (e.g. Refractory state) when triggering based on contractions
                 switch (ObstetricFetalHeartRhythm.Value) {
@@ -1712,7 +1712,7 @@ namespace II {
                 flagObstetricContraction = false;
                 await TimerObstetric_Contraction.ResetStart ((int)(ObstetricContractionFrequency * 1000d / TimerObstetric_Multiplier));
 
-                await OnPatientEvent (PatientEventTypes.Obstetric_Contraction_End);
+                await OnPhysiologyEvent (PhysiologyEventTypes.Obstetric_Contraction_End);
             }
         }
     }

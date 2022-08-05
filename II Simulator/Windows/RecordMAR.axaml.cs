@@ -18,7 +18,7 @@ using II;
 
 namespace IISIM {
 
-    public partial class ChartMAR : ChartWindow {
+    public partial class RecordMAR : RecordWindow {
         private Grid? gridMain;
 
         private DateTime viewAtTime = DateTime.Now;
@@ -26,17 +26,20 @@ namespace IISIM {
         private DateTime? viewStartTime,
                             viewEndTime;
 
-        public ChartMAR () {
+        public RecordMAR () {
             InitializeComponent ();
         }
 
-        public ChartMAR (App? app) : base (app) {
+        public RecordMAR (App? app) : base (app) {
             InitializeComponent ();
 #if DEBUG
             this.AttachDevTools ();
 #endif
 
             DataContext = this;
+
+            /* Establish reference variables */
+            gridMain = this.FindControl<Grid> ("gridMain");
 
             _ = InitInterface ();
             _ = PopulateHeaders ();
@@ -48,30 +51,31 @@ namespace IISIM {
             AvaloniaXamlLoader.Load (this);
         }
 
-        private Task ReferenceView () {
-            gridMain = this.FindControl<Grid> ("gridMain");
-
-            return Task.CompletedTask;
-        }
-
-        private async Task InitInterface () {
+        private Task InitInterface () {
             /* Populate UI strings per language selection */
             if (Instance is not null) {
-                this.FindControl<Window> ("wdwChartMAR").Title = Instance.Language.Localize ("MAR:WindowTitle");
+                this.FindControl<Window> ("wdwRecordMAR").Title = Instance.Language.Localize ("MAR:WindowTitle");
                 this.FindControl<MenuItem> ("menuOptions").Header = Instance.Language.Localize ("MENU:MenuOptions");
                 this.FindControl<MenuItem> ("menuClose").Header = Instance.Language.Localize ("MENU:MenuClose");
                 this.FindControl<MenuItem> ("menuRefresh").Header = Instance.Language.Localize ("MENU:MenuRefresh");
-            }
 
-            /* Establish references */
-            await ReferenceView ();
+                this.FindControl<Label> ("lblPatientName").Content = Instance?.Records?.Name;
+
+                this.FindControl<Label> ("lblPatientDOB").Content = String.Format ("{0}: {1}",
+                    Instance?.Language.Localize ("CHART:DateOfBirth"),
+                    Instance?.Records?.DOB.ToShortDateString ());
+
+                this.FindControl<Label> ("lblPatientMRN").Content = String.Format ("{0}: {1}",
+                    Instance?.Language.Localize ("CHART:MedicalRecordNumber"),
+                    Instance?.Records?.MRN);
+            }
 
             /* Set the View time (time of MAR being viewed) to the Chart.CurrentTime */
             viewAtTime = new DateTime (
-                Instance?.Chart?.CurrentTime?.Year ?? DateTime.Now.Year,
-                Instance?.Chart?.CurrentTime?.Month ?? DateTime.Now.Month,
-                Instance?.Chart?.CurrentTime?.Day ?? DateTime.Now.Day,
-                Instance?.Chart?.CurrentTime?.Hour ?? DateTime.Now.Hour,
+                Instance?.Records?.CurrentTime?.Year ?? DateTime.Now.Year,
+                Instance?.Records?.CurrentTime?.Month ?? DateTime.Now.Month,
+                Instance?.Records?.CurrentTime?.Day ?? DateTime.Now.Day,
+                Instance?.Records?.CurrentTime?.Hour ?? DateTime.Now.Hour,
                 0, 0);
 
             DatePicker pdpAtTime = this.FindControl<DatePicker> ("dpAtTime");
@@ -81,15 +85,29 @@ namespace IISIM {
             TimePicker ptpAtTime = this.FindControl<TimePicker> ("tpAtTime");
             ptpAtTime.SelectedTime = new TimeSpan (viewAtTime.Hour, viewAtTime.Minute, 0);
             ptpAtTime.SelectedTimeChanged += TimeSelected_TimeChanged;
+
+            return Task.CompletedTask;
         }
 
         private async Task RefreshInterface () {
+            if (Instance is not null) {
+                this.FindControl<Label> ("lblPatientName").Content = Instance?.Records?.Name;
+
+                this.FindControl<Label> ("lblPatientDOB").Content = String.Format ("{0}: {1}",
+                    Instance?.Language.Localize ("CHART:DateOfBirth"),
+                    Instance?.Records?.DOB.ToShortDateString ());
+
+                this.FindControl<Label> ("lblPatientMRN").Content = String.Format ("{0}: {1}",
+                    Instance?.Language.Localize ("CHART:MedicalRecordNumber"),
+                    Instance?.Records?.MRN);
+            }
+
             /* Set the View time (time of MAR being viewed) to the Chart.CurrentTime */
             viewAtTime = new DateTime (
-                Instance?.Chart?.CurrentTime?.Year ?? DateTime.Now.Year,
-                Instance?.Chart?.CurrentTime?.Month ?? DateTime.Now.Month,
-                Instance?.Chart?.CurrentTime?.Day ?? DateTime.Now.Day,
-                Instance?.Chart?.CurrentTime?.Hour ?? DateTime.Now.Hour,
+                Instance?.Records?.CurrentTime?.Year ?? DateTime.Now.Year,
+                Instance?.Records?.CurrentTime?.Month ?? DateTime.Now.Month,
+                Instance?.Records?.CurrentTime?.Day ?? DateTime.Now.Day,
+                Instance?.Records?.CurrentTime?.Hour ?? DateTime.Now.Hour,
                 0, 0);
 
             DatePicker pdpAtTime = this.FindControl<DatePicker> ("dpAtTime");
@@ -134,7 +152,7 @@ namespace IISIM {
         }
 
         private Task PopulateHeaders () {
-            if (Instance?.Chart is null)
+            if (Instance?.Records is null)
                 return Task.CompletedTask;
 
             if (gridMain is null)
@@ -149,7 +167,8 @@ namespace IISIM {
 
             /* Clear any items on the Grid in the Drug space */
             for (int i = gridMain.Children.Count - 1; i >= 0; i--) {
-                if (gridMain.Children [i].GetValue (Grid.RowProperty) == headerRow) {
+                if (gridMain.Children [i].GetValue (Grid.RowProperty) == headerRow
+                    && gridMain.Children [i].GetValue (Grid.ColumnProperty) > 0) {
                     gridMain.Children.RemoveAt (i);
                 }
             }
@@ -159,23 +178,19 @@ namespace IISIM {
 
             /* Populate column headers for time periods */
             for (int hour = 0; hour < columnAmount; hour++) {
-                bool isAtCurrentTime = Instance?.Chart?.CurrentTime?.ToString ("yyyyMMddHH") == atTime.ToString ("yyyyMMddHH");
+                bool isAtCurrentTime = Instance?.Records?.CurrentTime?.ToString ("yyyyMMddHH") == atTime.ToString ("yyyyMMddHH");
 
-                Label lbl = new Label () {
-                    Content = $"{atTime.ToShortDateString ()}\n{atTime.ToString ("HH:mm")}",
-                    Padding = new Thickness (20, 5),
-                    HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Stretch,
-                    HorizontalContentAlignment = Avalonia.Layout.HorizontalAlignment.Center,
-                    VerticalAlignment = Avalonia.Layout.VerticalAlignment.Stretch,
-                    VerticalContentAlignment = Avalonia.Layout.VerticalAlignment.Center,
-                    FontWeight = isAtCurrentTime ? FontWeight.Bold : FontWeight.Normal,
+                Controls.MARHeader mh = new () {
+                    Date = atTime.ToShortDateString (),
+                    Time = atTime.ToString ("HH:mm"),
+                    Bold = isAtCurrentTime,
                     Background = isAtCurrentTime ? Brushes.LightBlue : Brushes.Transparent
                 };
 
-                lbl.SetValue (Grid.RowProperty, headerRow);
-                lbl.SetValue (Grid.ColumnProperty, columnAmount - hour);
+                mh.SetValue (Grid.RowProperty, headerRow);
+                mh.SetValue (Grid.ColumnProperty, columnAmount - hour);
 
-                gridMain?.Children.Add (lbl);
+                gridMain?.Children.Add (mh);
 
                 atTime += new TimeSpan (1, 0, 0);
             }
@@ -183,14 +198,9 @@ namespace IISIM {
             return Task.CompletedTask;
         }
 
-        private async Task PopulateDrugs () {
-            if (Instance?.Chart is null)
-                return;
-
-            await ReferenceView ();
-
-            if (gridMain is null)
-                return;
+        private Task PopulateDrugs () {
+            if (Instance?.Records is null || gridMain is null)
+                return Task.CompletedTask;
 
             const int drugColumn = 0;
             const int startRow = 2;           // The row to start populating drugs on
@@ -208,7 +218,7 @@ namespace IISIM {
             }
 
             /* The main drug information (along the left-hand column) */
-            for (int i = 0; i < Instance.Chart.RxOrders.Count; i++) {
+            for (int i = 0; i < Instance.Records.RxOrders.Count; i++) {
                 if (gridMain?.RowDefinitions.Count < startRow + i + 1) {
                     gridMain?.RowDefinitions.Add (new RowDefinition () {
                         Height = GridLength.Auto,
@@ -216,7 +226,7 @@ namespace IISIM {
                     });
                 }
 
-                var order = Instance.Chart.RxOrders [i];
+                var order = Instance.Records.RxOrders [i];
                 int row = startRow + i;
 
                 TextBlock tbDrug = new TextBlock () {
@@ -238,16 +248,13 @@ namespace IISIM {
                 tbDrug.SetValue (Grid.ColumnProperty, drugColumn);
                 gridMain?.Children.Add (tbDrug);
             }
+
+            return Task.CompletedTask;
         }
 
-        private async Task PopulateDoses () {
-            if (Instance?.Chart is null)
-                return;
-
-            await ReferenceView ();
-
-            if (gridMain is null)
-                return;
+        private Task PopulateDoses () {
+            if (Instance?.Records is null || gridMain is null)
+                return Task.CompletedTask;
 
             const int doseStartColumn = 1;
             const int doseStartRow = 2;
@@ -266,9 +273,9 @@ namespace IISIM {
             }
 
             /* Populate the doses across the calendar grid */
-            for (int i = 0; i < Instance.Chart.RxOrders.Count; i++) {
-                var order = Instance.Chart.RxOrders [i];
-                var doses = Instance.Chart.RxDoses.FindAll (d
+            for (int i = 0; i < Instance.Records.RxOrders.Count; i++) {
+                var order = Instance.Records.RxOrders [i];
+                var doses = Instance.Records.RxDoses.FindAll (d
                     => d.OrderUUID == order.UUID
                     && d.ScheduledTime >= viewStartTime && d.ScheduledTime <= viewEndTime);
 
@@ -282,7 +289,7 @@ namespace IISIM {
                     } else if (dose.AdministrationStatus == Medication.Dose.AdministrationStatuses.Values.NotAdministered) {
                         if (order.Priority == Medication.Order.Priorities.Values.Stat) {
                             bgColor = Brushes.HotPink;
-                        } else if (Instance.Chart.CurrentTime - dose.ScheduledTime > new TimeSpan (1, 0, 0)) {
+                        } else if (Instance.Records.CurrentTime - dose.ScheduledTime > new TimeSpan (1, 0, 0)) {
                             bgColor = Brushes.Red;      // Use Instance.Chart.CurrentTime to determine if doses are late!
                         } else if (order.PeriodType == Medication.Order.PeriodTypes.Values.PRN) {
                             bgColor = colorPRN;
@@ -307,6 +314,8 @@ namespace IISIM {
                     gridMain.Children.Add (tbDose);
                 }
             }
+
+            return Task.CompletedTask;
         }
 
         private void AdjustViewTime (int hours) {
@@ -314,7 +323,7 @@ namespace IISIM {
         }
 
         private void AdjustViewTime (DateTime newDate) {
-            if (Instance?.Chart is null)
+            if (Instance?.Records is null)
                 return;
 
             viewAtTime = newDate;

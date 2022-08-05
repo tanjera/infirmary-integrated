@@ -20,7 +20,7 @@
     <Style Selector="StackPanel.spgrp">
       <Setter Property="Margin" Value="3" />
       <Setter Property="Orientation" Value="Vertical" />
-      <Setter Property="MinWidth" Value="250" />
+      <Setter Property="MinWidth" Value="500" />
     </Style>
 
     <Style Selector="Expander.exgrpf">

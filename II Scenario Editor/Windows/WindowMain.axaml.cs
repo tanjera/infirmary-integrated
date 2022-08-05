@@ -36,7 +36,7 @@ namespace IISE {
         private PanelSimulation IPanelSimulation;
         private PanelStepEditor IPanelStepEditor;
         private PanelParameters IPanelParameters;
-        private PanelChart IPanelChart;
+        private PanelRecords IPanelRecords;
 
         /* Data structures for use */
         private string? SaveFilePath;
@@ -50,12 +50,12 @@ namespace IISE {
             IPanelSimulation = this.FindControl<PanelSimulation> ("panelSimulation");
             IPanelStepEditor = this.FindControl<PanelStepEditor> ("panelStepEditor");
             IPanelParameters = this.FindControl<PanelParameters> ("panelParameters");
-            IPanelChart = this.FindControl<PanelChart> ("panelChart");
+            IPanelRecords = this.FindControl<PanelRecords> ("panelRecords");
 
             _ = IPanelSimulation.InitReferences (this);
             _ = IPanelStepEditor.InitReferences (this);
             _ = IPanelParameters.InitReferences (this);
-            _ = IPanelChart.InitReferences (this);
+            _ = IPanelRecords.InitReferences (this);
 
             _ = InitScenario ();
             _ = InitHotkeys ();
@@ -126,14 +126,14 @@ namespace IISE {
             await IPanelSimulation.SetScenario (Scenario);
             await IPanelStepEditor.SetScenario (Scenario);
             await IPanelParameters.SetStep (null);
-            await IPanelChart.SetStep (null);
+            await IPanelRecords.SetStep (null);
 
             ITabControl.SelectedIndex = 0;
         }
 
         public async Task SetStep (Scenario.Step? step) {
             await IPanelParameters.SetStep (step);
-            await IPanelChart.SetStep (step);
+            await IPanelRecords.SetStep (step);
         }
 
         private async Task NewScenario () {

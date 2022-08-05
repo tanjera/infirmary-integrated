@@ -299,8 +299,8 @@ namespace IISE.Windows {
                 item.Description = incItem.Description;
                 item.Step.Description = incItem.Step.Description;
 
-                await item.Step.Chart.Load (incItem.Chart.Save ());
-                await item.Step.Patient.Load (incItem.Patient.Save ());
+                await item.Step.Records.Load (incItem.Records.Save ());
+                await item.Step.Physiology.Load (incItem.Physiology.Save ());
             } else {
                 item.Name = $"Step #{ISteps.Count}";
             }
@@ -556,23 +556,40 @@ namespace IISE.Windows {
             await DrawIProgressions ();
         }
 
-        private async Task Action_CopyStep () {
+        private async Task Action_CopyPhysiology () {
             if (ISelectedStep == null)
                 return;
 
-            CopiedStep = new ();
-            await CopiedStep.Chart.Load (ISelectedStep.Chart.Save ());
-            await CopiedStep.Patient.Load (ISelectedStep.Patient.Save ());
+            if (CopiedStep == null)
+                CopiedStep = new ();
+
+            await CopiedStep.Physiology.Load (ISelectedStep.Physiology.Save ());
         }
 
-        private async Task Action_PasteStep () {
+        private async Task Action_CopyRecords () {
             if (ISelectedStep == null)
                 return;
 
-            if (CopiedStep != null) {
-                await ISelectedStep.Chart.Load (CopiedStep.Chart.Save ());
-                await ISelectedStep.Patient.Load (CopiedStep.Patient.Save ());
-            }
+            if (CopiedStep == null)
+                CopiedStep = new ();
+
+            await CopiedStep.Records.Load (ISelectedStep.Records.Save ());
+        }
+
+        private async Task Action_PastePhysiology () {
+            if (ISelectedStep == null)
+                return;
+
+            if (CopiedStep != null)
+                await ISelectedStep.Physiology.Load (CopiedStep.Physiology.Save ());
+        }
+
+        private async Task Action_PasteRecords () {
+            if (ISelectedStep == null)
+                return;
+
+            if (CopiedStep != null)
+                await ISelectedStep.Records.Load (CopiedStep.Records.Save ());
         }
 
         /* Generic Menu Items (across all Panels) */
@@ -609,11 +626,17 @@ namespace IISE.Windows {
         private void MenuEditRepositionSteps_Click (object sender, RoutedEventArgs e)
             => _ = Action_RepositionSteps ();
 
-        private void MenuEditCopyPatient_Click (object sender, RoutedEventArgs e)
-            => _ = Action_CopyStep ();
+        private void MenuEditCopyPhysiology_Click (object sender, RoutedEventArgs e)
+            => _ = Action_CopyPhysiology ();
 
-        private void MenuEditPastePatient_Click (object sender, RoutedEventArgs e)
-            => _ = Action_PasteStep ();
+        private void MenuEditPastePhysiology_Click (object sender, RoutedEventArgs e)
+            => _ = Action_PastePhysiology ();
+
+        private void MenuEditCopyRecords_Click (object sender, RoutedEventArgs e)
+            => _ = Action_CopyRecords ();
+
+        private void MenuEditPasteRecords_Click (object sender, RoutedEventArgs e)
+            => _ = Action_PasteRecords ();
 
         /* Any other Routed events for this Panel */
 
@@ -626,11 +649,17 @@ namespace IISE.Windows {
         private void BtnDeleteStep_Click (object sender, RoutedEventArgs e)
             => Action_DeleteStep ();
 
-        private void BtnCopyPatient_Click (object sender, RoutedEventArgs e)
-            => _ = Action_CopyStep ();
+        private void BtnCopyPhysiology_Click (object sender, RoutedEventArgs e)
+            => _ = Action_CopyPhysiology ();
 
-        private void BtnPastePatient_Click (object sender, RoutedEventArgs e)
-            => _ = Action_PasteStep ();
+        private void BtnPastePhysiology_Click (object sender, RoutedEventArgs e)
+            => _ = Action_PastePhysiology ();
+
+        private void BtnCopyRecords_Click (object sender, RoutedEventArgs e)
+            => _ = Action_CopyRecords ();
+
+        private void BtnPasteRecords_Click (object sender, RoutedEventArgs e)
+            => _ = Action_PasteRecords ();
 
         private void Item_PointerPressed (object? sender, PointerPressedEventArgs e) {
             if (sender is ItemStep item) {

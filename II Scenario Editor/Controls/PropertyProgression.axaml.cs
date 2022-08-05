@@ -10,6 +10,8 @@ using System.Diagnostics;
 namespace IISE.Controls {
 
     public partial class PropertyProgression : UserControl {
+        private bool isInitiated = false;
+
         public string? UUID;
         public string? StepToUUID;
         public string? StepToName;
@@ -50,8 +52,12 @@ namespace IISE.Controls {
             txtDescription.Text = Description;
             lblProgressionProperty.Content = $"Progression To: {StepToName}";
 
-            txtDescription.TextInput += SendPropertyChange;
-            txtDescription.LostFocus += SendPropertyChange;
+            if (!isInitiated) {
+                txtDescription.TextInput += SendPropertyChange;
+                txtDescription.LostFocus += SendPropertyChange;
+            }
+
+            isInitiated = true;
         }
 
         private void BtnDelete_Click (object? sender, RoutedEventArgs e) {

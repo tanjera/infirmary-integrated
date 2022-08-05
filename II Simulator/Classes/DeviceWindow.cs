@@ -76,8 +76,8 @@ namespace IISIM {
             TimerAncillary_Delay.Dispose ();
 
             /* Unsubscribe from the main Patient event listing */
-            if (Instance?.Patient != null)
-                Instance.Patient.PatientEvent -= OnPatientEvent;
+            if (Instance?.Physiology != null)
+                Instance.Physiology.PhysiologyEvent -= OnPhysiologyEvent;
         }
 
         public virtual void InitAudio () {
@@ -151,7 +151,7 @@ namespace IISIM {
             DisposeAudio ();
         }
 
-        public virtual void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
+        public virtual void OnPhysiologyEvent (object? sender, Physiology.PhysiologyEventArgs e) {
         }
 
         public virtual void OnTick_Alarm (object? sender, EventArgs e) {

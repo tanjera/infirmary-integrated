@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 namespace IISE.Controls {
 
     public partial class PropertyECGSegment : UserControl {
+        private bool isInitiated = false;
+
         public Keys Key;
 
         public enum Keys {
@@ -59,31 +61,35 @@ namespace IISE.Controls {
                 case Keys.TWave: lblKey.Content = "T Wave Elevation: "; break;
             }
 
-            dblI.ValueChanged += SendPropertyChange;
-            dblII.ValueChanged += SendPropertyChange;
-            dblIII.ValueChanged += SendPropertyChange;
-            dblaVR.ValueChanged += SendPropertyChange;
-            dblaVL.ValueChanged += SendPropertyChange;
-            dblaVF.ValueChanged += SendPropertyChange;
-            dblV1.ValueChanged += SendPropertyChange;
-            dblV2.ValueChanged += SendPropertyChange;
-            dblV3.ValueChanged += SendPropertyChange;
-            dblV4.ValueChanged += SendPropertyChange;
-            dblV5.ValueChanged += SendPropertyChange;
-            dblV6.ValueChanged += SendPropertyChange;
+            if (!isInitiated) {
+                dblI.ValueChanged += SendPropertyChange;
+                dblII.ValueChanged += SendPropertyChange;
+                dblIII.ValueChanged += SendPropertyChange;
+                dblaVR.ValueChanged += SendPropertyChange;
+                dblaVL.ValueChanged += SendPropertyChange;
+                dblaVF.ValueChanged += SendPropertyChange;
+                dblV1.ValueChanged += SendPropertyChange;
+                dblV2.ValueChanged += SendPropertyChange;
+                dblV3.ValueChanged += SendPropertyChange;
+                dblV4.ValueChanged += SendPropertyChange;
+                dblV5.ValueChanged += SendPropertyChange;
+                dblV6.ValueChanged += SendPropertyChange;
 
-            dblI.LostFocus += SendPropertyChange;
-            dblII.LostFocus += SendPropertyChange;
-            dblIII.LostFocus += SendPropertyChange;
-            dblaVR.LostFocus += SendPropertyChange;
-            dblaVL.LostFocus += SendPropertyChange;
-            dblaVF.LostFocus += SendPropertyChange;
-            dblV1.LostFocus += SendPropertyChange;
-            dblV2.LostFocus += SendPropertyChange;
-            dblV3.LostFocus += SendPropertyChange;
-            dblV4.LostFocus += SendPropertyChange;
-            dblV5.LostFocus += SendPropertyChange;
-            dblV6.LostFocus += SendPropertyChange;
+                dblI.LostFocus += SendPropertyChange;
+                dblII.LostFocus += SendPropertyChange;
+                dblIII.LostFocus += SendPropertyChange;
+                dblaVR.LostFocus += SendPropertyChange;
+                dblaVL.LostFocus += SendPropertyChange;
+                dblaVF.LostFocus += SendPropertyChange;
+                dblV1.LostFocus += SendPropertyChange;
+                dblV2.LostFocus += SendPropertyChange;
+                dblV3.LostFocus += SendPropertyChange;
+                dblV4.LostFocus += SendPropertyChange;
+                dblV5.LostFocus += SendPropertyChange;
+                dblV6.LostFocus += SendPropertyChange;
+            }
+
+            isInitiated = true;
 
             return Task.CompletedTask;
         }

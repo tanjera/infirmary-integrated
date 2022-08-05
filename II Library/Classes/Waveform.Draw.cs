@@ -28,10 +28,10 @@ namespace II.Waveform {
         private static void VaryAmplitude_Random (double _Margin, ref double _Amplitude)
             => _Amplitude *= ((double)new Random ().NextDouble () * _Margin) + (1 - _Margin);
 
-        private static void DampenAmplitude_EctopicBeat (Patient _P, ref double _Amplitude)
+        private static void DampenAmplitude_EctopicBeat (Physiology _P, ref double _Amplitude)
             => _Amplitude *= _P.Cardiac_Rhythm.AberrantBeat ? 0.5d : 1d;
 
-        private static void DampenAmplitude_PulsusParadoxus (Patient _P, ref double _Amplitude) {
+        private static void DampenAmplitude_PulsusParadoxus (Physiology _P, ref double _Amplitude) {
             if (_P.Pulsus_Paradoxus)
                 _Amplitude *=
                     ((!_P.Mechanically_Ventilated && !_P.Respiration_Inflated)
@@ -39,17 +39,17 @@ namespace II.Waveform {
                         ? 0.65d : 1.0d;
         }
 
-        private static void DampenAmplitude_PulsusAlternans (Patient _P, ref double _Amplitude)
+        private static void DampenAmplitude_PulsusAlternans (Physiology _P, ref double _Amplitude)
             => _Amplitude *= (_P.Pulsus_Alternans && _P.Cardiac_Rhythm.AlternansBeat) ? 0.5d : 1d;
 
-        private static double GetAmplitude_ElectricalAlternans (Patient _P)
+        private static double GetAmplitude_ElectricalAlternans (Physiology _P)
             => (_P.Electrical_Alternans && _P.Cardiac_Rhythm.AlternansBeat) ? 0.6d : 1d;
 
-        private static void DampenAmplitude_ElectricalAlternans (Patient _P, ref double _Amplitude)
+        private static void DampenAmplitude_ElectricalAlternans (Physiology _P, ref double _Amplitude)
             => _Amplitude *= (_P.Electrical_Alternans && _P.Cardiac_Rhythm.AlternansBeat) ? 0.6d : 1d;
 
         // For arterial rhythms- increased intrathoracic pressure impairs cardiac output
-        private static void DampenAmplitude_IntrathoracicPressure (Patient _P, ref double _Amplitude) {
+        private static void DampenAmplitude_IntrathoracicPressure (Physiology _P, ref double _Amplitude) {
             if (_P.Mechanically_Ventilated)
                 _Amplitude *= _P.Respiration_Inflated ? 1d : 0.7d;
             else
@@ -57,7 +57,7 @@ namespace II.Waveform {
         }
 
         // For venous rhythms- increased intrathoracic pressure congests venous return
-        private static void MagnifyAmplitude_IntrathoracicPressure (Patient _P, ref double _Amplitude) {
+        private static void MagnifyAmplitude_IntrathoracicPressure (Physiology _P, ref double _Amplitude) {
             if (_P.Mechanically_Ventilated)
                 _Amplitude *= _P.Respiration_Inflated ? 1d : 1.1d;
             else
@@ -76,7 +76,7 @@ namespace II.Waveform {
          * Pulsatile Rhythms
          */
 
-        public static List<PointD> SPO2_Rhythm (Patient _P, double _Amplitude) {
+        public static List<PointD> SPO2_Rhythm (Physiology _P, double _Amplitude) {
             VaryAmplitude_Random (0.1d, ref _Amplitude);
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
             DampenAmplitude_PulsusAlternans (_P, ref _Amplitude);
@@ -87,7 +87,7 @@ namespace II.Waveform {
                 _Amplitude);
         }
 
-        public static List<PointD> RR_Rhythm (Patient _P, bool _Inspire, int _Resolution) {
+        public static List<PointD> RR_Rhythm (Physiology _P, bool _Inspire, int _Resolution) {
             double _Portion = 0.1d;
 
             List<PointD> thisBeat = new ();
@@ -96,12 +96,12 @@ namespace II.Waveform {
             return thisBeat;
         }
 
-        public static List<PointD> ETCO2_Rhythm (Patient _P) {
+        public static List<PointD> ETCO2_Rhythm (Physiology _P) {
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Stretch (Dictionary.ETCO2_Default, (double)_P.GetRR_Seconds_E));
         }
 
-        public static List<PointD> ICP_Rhythm (Patient _P, double _Amplitude) {
+        public static List<PointD> ICP_Rhythm (Physiology _P, double _Amplitude) {
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
             DampenAmplitude_PulsusAlternans (_P, ref _Amplitude);
             DampenAmplitude_PulsusParadoxus (_P, ref _Amplitude);
@@ -115,7 +115,7 @@ namespace II.Waveform {
                 _Amplitude);
         }
 
-        public static List<PointD> IAP_Rhythm (Patient _P, double _Amplitude) {
+        public static List<PointD> IAP_Rhythm (Physiology _P, double _Amplitude) {
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
             DampenAmplitude_PulsusAlternans (_P, ref _Amplitude);
             DampenAmplitude_PulsusParadoxus (_P, ref _Amplitude);
@@ -126,7 +126,7 @@ namespace II.Waveform {
                 _Amplitude);
         }
 
-        public static List<PointD> ABP_Rhythm (Patient _P, double _Amplitude) {
+        public static List<PointD> ABP_Rhythm (Physiology _P, double _Amplitude) {
             VaryAmplitude_Random (0.05d, ref _Amplitude);
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
             DampenAmplitude_PulsusAlternans (_P, ref _Amplitude);
@@ -137,7 +137,7 @@ namespace II.Waveform {
                 _Amplitude);
         }
 
-        public static List<PointD> CVP_Rhythm (Patient _P, double _Amplitude) {
+        public static List<PointD> CVP_Rhythm (Physiology _P, double _Amplitude) {
             VaryAmplitude_Random (0.05d, ref _Amplitude);
             MagnifyAmplitude_IntrathoracicPressure (_P, ref _Amplitude);
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
@@ -152,7 +152,7 @@ namespace II.Waveform {
                     _Amplitude);
         }
 
-        public static List<PointD> RV_Rhythm (Patient _P, double _Amplitude) {
+        public static List<PointD> RV_Rhythm (Physiology _P, double _Amplitude) {
             MagnifyAmplitude_IntrathoracicPressure (_P, ref _Amplitude);
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
 
@@ -161,7 +161,7 @@ namespace II.Waveform {
                 _Amplitude);
         }
 
-        public static List<PointD> PA_Rhythm (Patient _P, double _Amplitude) {
+        public static List<PointD> PA_Rhythm (Physiology _P, double _Amplitude) {
             MagnifyAmplitude_IntrathoracicPressure (_P, ref _Amplitude);
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
 
@@ -170,7 +170,7 @@ namespace II.Waveform {
                 _Amplitude);
         }
 
-        public static List<PointD> PCW_Rhythm (Patient _P, double _Amplitude) {
+        public static List<PointD> PCW_Rhythm (Physiology _P, double _Amplitude) {
             MagnifyAmplitude_IntrathoracicPressure (_P, ref _Amplitude);
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
 
@@ -179,13 +179,13 @@ namespace II.Waveform {
                 _Amplitude);
         }
 
-        public static List<PointD> IABP_Balloon_Rhythm (Patient _P, double _Amplitude) {
+        public static List<PointD> IABP_Balloon_Rhythm (Physiology _P, double _Amplitude) {
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Stretch (Dictionary.IABP_Balloon_Default, (double)_P.GetHR_Seconds * 0.6f),
                 _Amplitude);
         }
 
-        public static List<PointD> IABP_ABP_Rhythm (Patient _P, double _Amplitude) {
+        public static List<PointD> IABP_ABP_Rhythm (Physiology _P, double _Amplitude) {
             DampenAmplitude_PulsusAlternans (_P, ref _Amplitude);
             DampenAmplitude_PulsusParadoxus (_P, ref _Amplitude);
 
@@ -203,13 +203,13 @@ namespace II.Waveform {
                     _Amplitude);
         }
 
-        public static List<PointD> FHR_Rhythm (Patient _P) {
+        public static List<PointD> FHR_Rhythm (Physiology _P) {
             return new List<PointD> () {
                 new PointD(0, Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMin_FHR, Strip.DefaultScaleMax_FHR, _P.VS_Actual.FetalHR)))
             };
         }
 
-        public static List<PointD> TOCO_Rhythm (Patient _P) {
+        public static List<PointD> TOCO_Rhythm (Physiology _P) {
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Normalize (
                     Plotting.Stretch (Dictionary.EFM_Contraction, _P.ObstetricContractionDuration),
@@ -223,7 +223,7 @@ namespace II.Waveform {
          *
          */
 
-        public static List<PointD> ECG_Isoelectric__Atrial_Fibrillation (Patient? _P, Lead? _L) {
+        public static List<PointD> ECG_Isoelectric__Atrial_Fibrillation (Physiology? _P, Lead? _L) {
             if (_P is null || _L is null)
                 return new ();
 
@@ -235,7 +235,7 @@ namespace II.Waveform {
             return thisBeat;
         }
 
-        public static List<PointD> ECG_Isoelectric__Atrial_Flutter (Patient? _P, Lead? _L) {
+        public static List<PointD> ECG_Isoelectric__Atrial_Flutter (Physiology? _P, Lead? _L) {
             if (_P is null || _L is null)
                 return new ();
 
@@ -248,7 +248,7 @@ namespace II.Waveform {
             return thisBeat;
         }
 
-        public static List<PointD> ECG_Complex__P_Normal (Patient? _P, Lead? _L) {
+        public static List<PointD> ECG_Complex__P_Normal (Physiology? _P, Lead? _L) {
             if (_P is null || _L is null)
                 return new ();
 
@@ -256,7 +256,7 @@ namespace II.Waveform {
             return ECG_P (_P, _L, (PR * 2) / 3, .1d, 0d, new PointD (0, 0d));
         }
 
-        public static List<PointD> ECG_Complex__QRST_Normal (Patient? _P, Lead? _L) {
+        public static List<PointD> ECG_Complex__QRST_Normal (Physiology? _P, Lead? _L) {
             if (_P is null || _L is null)
                 return new ();
 
@@ -272,7 +272,7 @@ namespace II.Waveform {
             return thisBeat;
         }
 
-        public static List<PointD> ECG_Complex__QRST_Aberrant_1 (Patient? _P, Lead? _L) {
+        public static List<PointD> ECG_Complex__QRST_Aberrant_1 (Physiology? _P, Lead? _L) {
             if (_P is null || _L is null)
                 return new ();
 
@@ -288,7 +288,7 @@ namespace II.Waveform {
             return thisBeat;
         }
 
-        public static List<PointD> ECG_Complex__QRST_Aberrant_2 (Patient? _P, Lead? _L) {
+        public static List<PointD> ECG_Complex__QRST_Aberrant_2 (Physiology? _P, Lead? _L) {
             if (_P is null || _L is null)
                 return new ();
 
@@ -303,7 +303,7 @@ namespace II.Waveform {
             return thisBeat;
         }
 
-        public static List<PointD> ECG_Complex__QRST_Aberrant_3 (Patient? _P, Lead? _L) {
+        public static List<PointD> ECG_Complex__QRST_Aberrant_3 (Physiology? _P, Lead? _L) {
             if (_P is null || _L is null)
                 return new ();
 
@@ -318,7 +318,7 @@ namespace II.Waveform {
             return thisBeat;
         }
 
-        public static List<PointD> ECG_Complex__QRST_BBB (Patient? _P, Lead? _L) {
+        public static List<PointD> ECG_Complex__QRST_BBB (Physiology? _P, Lead? _L) {
             if (_P is null || _L is null)
                 return new ();
 
@@ -338,7 +338,7 @@ namespace II.Waveform {
             return thisBeat;
         }
 
-        public static List<PointD> ECG_Complex__QRST_SVT (Patient? _P, Lead? _L) {
+        public static List<PointD> ECG_Complex__QRST_SVT (Physiology? _P, Lead? _L) {
             if (_P is null || _L is null)
                 return new ();
 
@@ -354,7 +354,7 @@ namespace II.Waveform {
             return thisBeat;
         }
 
-        public static List<PointD> ECG_Complex__QRST_VT (Patient? _P, Lead? _L) {
+        public static List<PointD> ECG_Complex__QRST_VT (Physiology? _P, Lead? _L) {
             if (_P is null || _L is null)
                 return new ();
 
@@ -365,7 +365,7 @@ namespace II.Waveform {
                 GetAmplitude_ElectricalAlternans (_P));
         }
 
-        public static List<PointD> ECG_Complex__QRST_VF (Patient? _P, Lead? _L, double _Amp) {
+        public static List<PointD> ECG_Complex__QRST_VF (Physiology? _P, Lead? _L, double _Amp) {
             if (_P is null || _L is null)
                 return new ();
 
@@ -385,7 +385,7 @@ namespace II.Waveform {
             return thisBeat;
         }
 
-        public static List<PointD> ECG_Complex__Idioventricular (Patient? _P, Lead? _L) {
+        public static List<PointD> ECG_Complex__Idioventricular (Physiology? _P, Lead? _L) {
             if (_P is null || _L is null)
                 return new ();
 
@@ -396,7 +396,7 @@ namespace II.Waveform {
                 GetAmplitude_ElectricalAlternans (_P));
         }
 
-        public static List<PointD> ECG_CPR_Artifact (Patient? _P, Lead? _L) {
+        public static List<PointD> ECG_CPR_Artifact (Physiology? _P, Lead? _L) {
             if (_P is null || _L is null)
                 return new ();
 
@@ -406,7 +406,7 @@ namespace II.Waveform {
                 baseLeadCoeff [(int)_L.Value, (int)WavePart.QRST]));
         }
 
-        public static List<PointD> ECG_Defibrillation (Patient? _P, Lead? _L) {
+        public static List<PointD> ECG_Defibrillation (Physiology? _P, Lead? _L) {
             if (_P is null || _L is null)
                 return new ();
 
@@ -415,7 +415,7 @@ namespace II.Waveform {
                 baseLeadCoeff [(int)_L.Value, (int)WavePart.QRST]));
         }
 
-        public static List<PointD> ECG_Pacemaker (Patient? _P, Lead? _L) {
+        public static List<PointD> ECG_Pacemaker (Physiology? _P, Lead? _L) {
             if (_P is null || _L is null)
                 return new ();
 
@@ -435,78 +435,78 @@ namespace II.Waveform {
          * _mV_End == end deflection height
 	     */
 
-        private static List<PointD> ECG_P (Patient p, Lead l, PointD _S) {
+        private static List<PointD> ECG_P (Physiology p, Lead l, PointD _S) {
             return ECG_P (p, l, .08d, .15d, 0d, _S);
         }
 
-        private static List<PointD> ECG_P (Patient p, Lead l, double _L, double _mV, double _mV_End, PointD _S) {
+        private static List<PointD> ECG_P (Physiology p, Lead l, double _L, double _mV, double _mV_End, PointD _S) {
             return Plotting.Peak (ResolutionTime, _L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.P], _mV_End, _S);
         }
 
-        private static List<PointD> ECG_Q (Patient p, Lead l, PointD _S) {
+        private static List<PointD> ECG_Q (Physiology p, Lead l, PointD _S) {
             return ECG_Q (p, l, 1d, -.1d, _S);
         }
 
-        private static List<PointD> ECG_Q (Patient p, Lead l, double _L, double _mV, PointD _S) {
+        private static List<PointD> ECG_Q (Physiology p, Lead l, double _L, double _mV, PointD _S) {
             return Plotting.Line (ResolutionTime, _L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.Q]
                 * axisLeadCoeff [(int)p.Cardiac_Axis.Value, (int)l.Value, (int)AxisPart.Q], _S);
         }
 
-        private static List<PointD> ECG_R (Patient p, Lead l, PointD _S) {
+        private static List<PointD> ECG_R (Physiology p, Lead l, PointD _S) {
             return ECG_R (p, l, 1d, .9d, _S);
         }
 
-        private static List<PointD> ECG_R (Patient p, Lead l, double _L, double _mV, PointD _S) {
+        private static List<PointD> ECG_R (Physiology p, Lead l, double _L, double _mV, PointD _S) {
             return Plotting.Line (ResolutionTime, _L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.R]
                 * axisLeadCoeff [(int)p.Cardiac_Axis.Value, (int)l.Value, (int)AxisPart.R], _S);
         }
 
-        private static List<PointD> ECG_S (Patient p, Lead l, PointD _S) {
+        private static List<PointD> ECG_S (Physiology p, Lead l, PointD _S) {
             return ECG_S (p, l, 1d, -.3d, _S);
         }
 
-        private static List<PointD> ECG_S (Patient p, Lead l, double _L, double _mV, PointD _S) {
+        private static List<PointD> ECG_S (Physiology p, Lead l, double _L, double _mV, PointD _S) {
             return Plotting.Line (ResolutionTime, _L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.S]
                 * axisLeadCoeff [(int)p.Cardiac_Axis.Value, (int)l.Value, (int)AxisPart.S], _S);
         }
 
-        private static List<PointD> ECG_J (Patient p, Lead l, PointD _S) {
+        private static List<PointD> ECG_J (Physiology p, Lead l, PointD _S) {
             return ECG_J (p, l, 1d, -.1d, _S);
         }
 
-        private static List<PointD> ECG_J (Patient p, Lead l, double _L, double _mV, PointD _S) {
+        private static List<PointD> ECG_J (Physiology p, Lead l, double _L, double _mV, PointD _S) {
             return Plotting.Line (ResolutionTime, _L, (_mV * baseLeadCoeff [(int)l.Value, (int)WavePart.J]) + (double)p.ST_Elevation [(int)l.Value], _S);
         }
 
-        private static List<PointD> ECG_T (Patient p, Lead l, PointD _S) {
+        private static List<PointD> ECG_T (Physiology p, Lead l, PointD _S) {
             return ECG_T (p, l, .16d, .3d, 0d, _S);
         }
 
-        private static List<PointD> ECG_T (Patient p, Lead l, double _L, double _mV, double _mV_End, PointD _S) {
+        private static List<PointD> ECG_T (Physiology p, Lead l, double _L, double _mV, double _mV_End, PointD _S) {
             return Plotting.Peak (ResolutionTime, _L, (_mV * baseLeadCoeff [(int)l.Value, (int)WavePart.T]) + (double)p.T_Elevation [(int)l.Value], _mV_End, _S);
         }
 
-        private static List<PointD> ECG_PR (Patient p, Lead l, PointD _S) {
+        private static List<PointD> ECG_PR (Physiology p, Lead l, PointD _S) {
             return ECG_PR (p, l, .08d, 0d, _S);
         }
 
-        private static List<PointD> ECG_PR (Patient p, Lead l, double _L, double _mV, PointD _S) {
+        private static List<PointD> ECG_PR (Physiology p, Lead l, double _L, double _mV, PointD _S) {
             return Plotting.Line (ResolutionTime, _L, _mV + baseLeadCoeff [(int)l.Value, (int)WavePart.PR], _S);
         }
 
-        private static List<PointD> ECG_ST (Patient p, Lead l, PointD _S) {
+        private static List<PointD> ECG_ST (Physiology p, Lead l, PointD _S) {
             return ECG_ST (p, l, .1d, 0d, _S);
         }
 
-        private static List<PointD> ECG_ST (Patient p, Lead l, double _L, double _mV, PointD _S) {
+        private static List<PointD> ECG_ST (Physiology p, Lead l, double _L, double _mV, PointD _S) {
             return Plotting.Line (ResolutionTime, _L, _mV + baseLeadCoeff [(int)l.Value, (int)WavePart.ST] + (double)p.ST_Elevation [(int)l.Value], _S);
         }
 
-        private static List<PointD> ECG_TP (Patient p, Lead l, PointD _S) {
+        private static List<PointD> ECG_TP (Physiology p, Lead l, PointD _S) {
             return ECG_TP (p, l, .48d, .0d, _S);
         }
 
-        private static List<PointD> ECG_TP (Patient p, Lead l, double _L, double _mV, PointD _S) {
+        private static List<PointD> ECG_TP (Physiology p, Lead l, double _L, double _mV, PointD _S) {
             return Plotting.Line (ResolutionTime, _L, _mV + baseLeadCoeff [(int)l.Value, (int)WavePart.TP], _S);
         }
 

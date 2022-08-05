@@ -188,7 +188,7 @@ namespace II.Rhythm {
             }
         }
 
-        public void SetAutoScale (Patient? _P) {
+        public void SetAutoScale (Physiology? _P) {
             if (_P is null || !CanScale || !ScaleAuto)
                 return;
 
@@ -197,11 +197,11 @@ namespace II.Rhythm {
 
             int j = 0;
 
-            lock (_P.lockListPatientEvents) {
-                for (int i = _P.ListPatientEvents.Count; i > 0 && j < DefaultAutoScale_Iterations;) {
+            lock (_P.lockListPhysiologyEvents) {
+                for (int i = _P.ListPhysiologyEvents.Count; i > 0 && j < DefaultAutoScale_Iterations;) {
                     i--;
 
-                    if (_P.ListPatientEvents [i].EventType != Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical)
+                    if (_P.ListPhysiologyEvents [i].EventType != Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Mechanical)
                         continue;
                     else
                         j++;
@@ -209,13 +209,13 @@ namespace II.Rhythm {
                     switch (Lead.Value) {
                         default: return;
                         case Lead.Values.ABP:
-                            peak += _P.ListPatientEvents [i].Vitals.ASBP;
-                            trough += _P.ListPatientEvents [i].Vitals.ADBP;
+                            peak += _P.ListPhysiologyEvents [i].Vitals.ASBP;
+                            trough += _P.ListPhysiologyEvents [i].Vitals.ADBP;
                             break;
 
                         case Lead.Values.PA:
-                            peak += _P.ListPatientEvents [i].Vitals.PSP;
-                            trough += _P.ListPatientEvents [i].Vitals.PDP;
+                            peak += _P.ListPhysiologyEvents [i].Vitals.PSP;
+                            trough += _P.ListPhysiologyEvents [i].Vitals.PDP;
                             break;
                     }
                 }
@@ -261,7 +261,7 @@ namespace II.Rhythm {
             }
         }
 
-        private void SetForwardBuffer (Patient patient, bool onClear = false) {
+        private void SetForwardBuffer (Physiology patient, bool onClear = false) {
             /* Set the forward edge buffer (a coefficient of lengthSeconds!) to be the length of 2 beats/breaths */
             if (IsCardiac)
                 forwardBuffer = System.Math.Max (1 + (2 * ((double)patient.GetHR_Seconds / Length)),
@@ -287,7 +287,7 @@ namespace II.Rhythm {
             return Task.CompletedTask;
         }
 
-        public void ClearFuture (Patient? patient) {
+        public void ClearFuture (Physiology? patient) {
             if (Points is null || patient is null)
                 return;
 
@@ -495,7 +495,7 @@ namespace II.Rhythm {
             scrollingUnpausing = true;
         }
 
-        public List<PointD> Scale (Patient? p, List<PointD> addition) {
+        public List<PointD> Scale (Physiology? p, List<PointD> addition) {
             if (p is null || Lead is null || !CanScale || addition.Count == 0)
                 return addition;
 
@@ -531,7 +531,7 @@ namespace II.Rhythm {
             return addition;
         }
 
-        public void Add_Baseline (Patient? p) {
+        public void Add_Baseline (Physiology? p) {
             if (p is null || Lead is null)
                 return;
 
@@ -543,7 +543,7 @@ namespace II.Rhythm {
                 Add_Beat__Obstetric_Baseline (p);
         }
 
-        public void Add_Beat__Cardiac_Baseline (Patient? p) {
+        public void Add_Beat__Cardiac_Baseline (Physiology? p) {
             if (p is null || Lead is null || !IsCardiac)
                 return;
 
@@ -564,7 +564,7 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__Cardiac_Atrial_Electrical (Patient? p) {
+        public void Add_Beat__Cardiac_Atrial_Electrical (Physiology? p) {
             if (p is null || Lead is null || !IsECG)
                 return;
 
@@ -573,7 +573,7 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__Cardiac_Ventricular_Electrical (Patient? p) {
+        public void Add_Beat__Cardiac_Ventricular_Electrical (Physiology? p) {
             if (p is null || Lead is null || !IsECG)
                 return;
 
@@ -582,14 +582,14 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__Cardiac_Atrial_Mechanical (Patient? p) {
+        public void Add_Beat__Cardiac_Atrial_Mechanical (Physiology? p) {
             if (p is null || Lead is null)
                 return;
 
             return;
         }
 
-        public void Add_Beat__Cardiac_Ventricular_Mechanical (Patient? p) {
+        public void Add_Beat__Cardiac_Ventricular_Mechanical (Physiology? p) {
             if (p is null || Lead is null)
                 return;
 
@@ -634,7 +634,7 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__IABP_Balloon (Patient? p) {
+        public void Add_Beat__IABP_Balloon (Physiology? p) {
             if (p is null || Lead is null)
                 return;
 
@@ -652,7 +652,7 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__Cardiac_Defibrillation (Patient? p) {
+        public void Add_Beat__Cardiac_Defibrillation (Physiology? p) {
             if (p is null || Lead is null)
                 return;
 
@@ -664,7 +664,7 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__Cardiac_Pacemaker (Patient? p) {
+        public void Add_Beat__Cardiac_Pacemaker (Physiology? p) {
             if (p is null || Lead is null)
                 return;
 
@@ -676,7 +676,7 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Breath__Respiratory_Baseline (Patient? p) {
+        public void Add_Breath__Respiratory_Baseline (Physiology? p) {
             if (p is null || Lead is null || !IsRespiratory)
                 return;
 
@@ -690,7 +690,7 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Breath__Respiratory_Inspiration (Patient? p) {
+        public void Add_Breath__Respiratory_Inspiration (Physiology? p) {
             if (p is null || Lead is null)
                 return;
 
@@ -703,7 +703,7 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Breath__Respiratory_Expiration (Patient? p) {
+        public void Add_Breath__Respiratory_Expiration (Physiology? p) {
             if (p is null || Lead is null)
                 return;
 
@@ -716,7 +716,7 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__Obstetric_Baseline (Patient? p) {
+        public void Add_Beat__Obstetric_Baseline (Physiology? p) {
             /* Only TOCO needs to be drawn at baseline, in DeviceEFM */
             if (p is null || Lead is null || !IsObstetric)
                 return;
@@ -742,7 +742,7 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__Obstetric_Fetal_Baseline (Patient? p) {
+        public void Add_Beat__Obstetric_Fetal_Baseline (Physiology? p) {
             /* Only FHR needs to be drawn at baseline, in DeviceEFM */
             if (p is null || Lead is null || !IsObstetric || Lead.Value != Lead.Values.FHR)
                 return;
@@ -759,7 +759,7 @@ namespace II.Rhythm {
             SortPoints ();
         }
 
-        public void Add_Beat__Obstetric_Contraction_Start (Patient? p) {
+        public void Add_Beat__Obstetric_Contraction_Start (Physiology? p) {
             /* Only TOCO needs to be drawn on ContractionStart, in DeviceEFM */
             if (p is null || Lead is null || Lead.Value != Lead.Values.TOCO)
                 return;

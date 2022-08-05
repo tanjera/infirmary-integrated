@@ -5,9 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
-
     public class Medication {
-
         public class Dose {
             public string? OrderUUID;
 
@@ -114,16 +112,13 @@ namespace II {
 
             public Order () {
                 UUID = Guid.NewGuid ().ToString ();
-
-                StartTime = DateTime.Now;
-                EndTime = DateTime.Now + new TimeSpan (1, 0, 0, 0);
             }
 
-            public Order (string uuid, Chart chart) {
-                UUID = uuid;
+            public Order (Record chart) {
+                UUID = Guid.NewGuid ().ToString ();
 
                 StartTime = chart.CurrentTime;
-                EndTime = chart.CurrentTime + new TimeSpan (1, 0, 0, 0);
+                EndTime = chart.CurrentTime + new TimeSpan (7, 0, 0, 0);
             }
 
             public bool IsScheduled {
@@ -169,7 +164,6 @@ namespace II {
                 }
 
                 public enum Values {
-
                     // Volume
                     L,
 

@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 namespace IISE.Controls {
 
     public partial class PropertyBP : UserControl {
+        private bool isInitiated = false;
+
         public Keys Key;
 
         public enum Keys {
@@ -56,14 +58,19 @@ namespace IISE.Controls {
             numSystolic.Increment = sysInc;
             numSystolic.Minimum = sysMin;
             numSystolic.Maximum = sysMax;
-            numSystolic.ValueChanged += SendPropertyChange;
-            numSystolic.LostFocus += SendPropertyChange;
 
             numDiastolic.Increment = diasInc;
             numDiastolic.Minimum = diasMin;
             numDiastolic.Maximum = diasMax;
-            numDiastolic.ValueChanged += SendPropertyChange;
-            numDiastolic.LostFocus += SendPropertyChange;
+
+            if (!isInitiated) {
+                numSystolic.ValueChanged += SendPropertyChange;
+                numSystolic.LostFocus += SendPropertyChange;
+                numDiastolic.ValueChanged += SendPropertyChange;
+                numDiastolic.LostFocus += SendPropertyChange;
+            }
+
+            isInitiated = true;
 
             return Task.CompletedTask;
         }
@@ -115,7 +122,7 @@ namespace IISE.Controls {
                     default: break;
                     case 0: ea.Value = (int)numSystolic.Value; break;
                     case 1: ea.Value = (int)numDiastolic.Value; break;
-                    case 2: ea.Value = II.Patient.CalculateMAP ((int)numSystolic.Value, (int)numDiastolic.Value); break;
+                    case 2: ea.Value = II.Physiology.CalculateMAP ((int)numSystolic.Value, (int)numDiastolic.Value); break;
                 }
 
                 Debug.WriteLine ($"PropertyChanged: {ea.Key} '{ea.Value}'");

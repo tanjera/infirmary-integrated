@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 namespace IISE.Controls {
 
     public partial class PropertyCombo : UserControl {
+        private bool isInitiated = false;
+
         public Keys Key;
         public List<string>? Values;
 
@@ -57,7 +59,12 @@ namespace IISE.Controls {
                 listItems.Add (new ComboBoxItem () { Content = s });
 
             cmbEnumeration.Items = listItems;
-            cmbEnumeration.SelectionChanged += SendPropertyChange;
+
+            if (!isInitiated) {
+                cmbEnumeration.SelectionChanged += SendPropertyChange;
+            }
+
+            isInitiated = true;
 
             return Task.CompletedTask;
         }

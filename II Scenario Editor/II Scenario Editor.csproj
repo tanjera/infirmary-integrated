@@ -7,7 +7,7 @@
     <TrimMode>copyused</TrimMode>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <AssemblyName>Infirmary Integrated Scenario Editor</AssemblyName>
-    <Version>1.0.9</Version>
+    <Version>1.1.0</Version>
     <Company>Infirmary Integrated</Company>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageProjectUrl>https://www.infirmary-integrated.com/</PackageProjectUrl>
@@ -37,6 +37,9 @@
     <Compile Update="Controls\ItemStepEnd.axaml.cs">
       <DependentUpon>ItemStepEnd.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Controls\PropertyTime.axaml.cs">
+      <DependentUpon>PropertyTime.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Controls\PropertyList.axaml.cs">
       <DependentUpon>PropertyList.axaml</DependentUpon>
     </Compile>
@@ -49,14 +52,17 @@
     <Compile Update="Controls\PropertyRxOrder.axaml.cs">
       <DependentUpon>PropertyRxOrder.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Controls\PropertyDate.axaml.cs">
+      <DependentUpon>PropertyDate.axaml</DependentUpon>
+    </Compile>
     <Compile Update="Windows\DialogMessage.axaml.cs">
       <DependentUpon>DialogMessage.axaml</DependentUpon>
     </Compile>
     <Compile Update="Windows\DialogAbout.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
     </Compile>
-    <Compile Update="Windows\PanelChart.axaml.cs">
-      <DependentUpon>PanelChart.axaml</DependentUpon>
+    <Compile Update="Windows\PanelRecords.axaml.cs">
+      <DependentUpon>PanelRecords.axaml</DependentUpon>
     </Compile>
     <Compile Update="Windows\PanelParameters.axaml.cs">
       <DependentUpon>PanelParameters.axaml</DependentUpon>

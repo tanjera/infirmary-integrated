@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		         xmlns:iic="clr-namespace:IISE.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="800"
-             x:Class="IISE.Windows.PanelChart">
+             x:Class="IISE.Windows.PanelRecords">
 
   <UserControl.Styles>
     <Style Selector="Menu">
@@ -21,7 +21,8 @@
     <Style Selector="StackPanel.spgrp">
       <Setter Property="Margin" Value="3" />
       <Setter Property="Orientation" Value="Vertical" />
-      <Setter Property="MinWidth" Value="250" />
+      <Setter Property="HorizontalAlignment" Value="Left" />
+      <Setter Property="MinWidth" Value="500" />
     </Style>
 
     <Style Selector="Expander.exgrp">
@@ -89,17 +90,35 @@
 
         <!-- Step Date & Time -->
 
-        <StackPanel Orientation="Horizontal"
-                    Margin="20">
-          <Label Content="Simulation Date and Time:"
-                 VerticalAlignment="Center"
-                 Margin="0,0,10,0" />
-          <DatePicker Name="dateCurrent"
-                      Margin="2" />
-          <TimePicker Name="timeCurrent"
-                      ClockIdentifier="24HourClock"
-                      Margin="2" />
+        <StackPanel Margin="20"
+                    Classes="spgrp">
+
+          <iic:PropertyDate x:Name="pdpSimDate" />
+          <iic:PropertyTime x:Name="ptpSimTime" />
         </StackPanel>
+
+        <!-- Demographics -->
+
+        <Expander Classes="exgrp">
+          <Expander.Header>
+            <Label Content="Demographics" />
+          </Expander.Header>
+
+          <StackPanel Classes="spgrp">
+
+            <iic:PropertyString x:Name="pstrName" />
+            <iic:PropertyString x:Name="pstrMRN" />
+
+            <iic:PropertyDate x:Name="pdpDOB" />
+
+            <iic:PropertyEnum x:Name="penmCodeStatus" IsVisible="False" />
+
+            <iic:PropertyString x:Name="pstrHomeAddress" IsVisible="False" />
+            <iic:PropertyString x:Name="pstrTelephoneNumber" IsVisible="False" />
+            <iic:PropertyString x:Name="pstrInsuranceProvider" IsVisible="False" />
+            <iic:PropertyString x:Name="pstrInsuranceAccount" IsVisible="False" />
+          </StackPanel>
+        </Expander>
 
         <!-- Medication Orders and Doses -->
 
@@ -123,7 +142,8 @@
                       HorizontalContentAlignment="Center"
                       Content="Medication Orders" />
               <ListBox Name="lbRxOrders"
-                       Background="White" />
+                       Background="White"
+                       ScrollViewer.VerticalScrollBarVisibility="Auto" />
             </StackPanel>
 
             <Button Name="btnAddRxOrder"
@@ -178,7 +198,8 @@
                      Grid.Row="3"
                      MinHeight="100"
                      HorizontalAlignment="Stretch"
-                     Background="White" />
+                     Background="White"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto" />
           </Grid>
         </Expander>
       </StackPanel>

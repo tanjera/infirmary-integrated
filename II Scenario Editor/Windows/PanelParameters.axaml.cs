@@ -28,7 +28,7 @@ namespace IISE.Windows {
     public partial class PanelParameters : UserControl {
         /* Pointer to main data structure for the scenario, patient, devices, etc. */
         public Scenario.Step? Step;
-        public Patient? Patient;
+        public Physiology? Physiology;
         private WindowMain? IMain;
 
         public PanelParameters () {
@@ -51,9 +51,9 @@ namespace IISE.Windows {
 
         public async Task SetStep (Scenario.Step? step) {
             Step = step;
-            Patient = Step?.Patient;
+            Physiology = Step?.Physiology;
 
-            await UpdateViewModel ();
+            await UpdateView ();
         }
 
         private Task InitView () {
@@ -168,218 +168,218 @@ namespace IISE.Windows {
             pintUCIntensity.Init (PropertyInt.Keys.ObstetricContractionIntensity, 5, 0, 100);
             pintUCResting.Init (PropertyInt.Keys.ObstetricUterineRestingTone, 5, 0, 100);
 
-            pbpNBP.PropertyChanged += UpdatePatient;
-            pbpABP.PropertyChanged += UpdatePatient;
-            pbpPBP.PropertyChanged += UpdatePatient;
+            pbpNBP.PropertyChanged += UpdatePhysiology;
+            pbpABP.PropertyChanged += UpdatePhysiology;
+            pbpPBP.PropertyChanged += UpdatePhysiology;
 
-            pchkMechanicallyVentilated.PropertyChanged += UpdatePatient;
-            pchkPulsusParadoxus.PropertyChanged += UpdatePatient;
-            pchkPulsusAlternans.PropertyChanged += UpdatePatient;
-            pchkElectricalAlternans.PropertyChanged += UpdatePatient;
+            pchkMechanicallyVentilated.PropertyChanged += UpdatePhysiology;
+            pchkPulsusParadoxus.PropertyChanged += UpdatePhysiology;
+            pchkPulsusAlternans.PropertyChanged += UpdatePhysiology;
+            pchkElectricalAlternans.PropertyChanged += UpdatePhysiology;
 
-            pdblT.PropertyChanged += UpdatePatient;
-            pdblCO.PropertyChanged += UpdatePatient;
-            pdblQRSInterval.PropertyChanged += UpdatePatient;
-            pdblQTcInterval.PropertyChanged += UpdatePatient;
-            pdblInspiratoryRatio.PropertyChanged += UpdatePatient;
-            pdblExpiratoryRatio.PropertyChanged += UpdatePatient;
+            pdblT.PropertyChanged += UpdatePhysiology;
+            pdblCO.PropertyChanged += UpdatePhysiology;
+            pdblQRSInterval.PropertyChanged += UpdatePhysiology;
+            pdblQTcInterval.PropertyChanged += UpdatePhysiology;
+            pdblInspiratoryRatio.PropertyChanged += UpdatePhysiology;
+            pdblExpiratoryRatio.PropertyChanged += UpdatePhysiology;
 
-            pecgSTSegment.PropertyChanged += UpdatePatient;
-            pecgTWave.PropertyChanged += UpdatePatient;
+            pecgSTSegment.PropertyChanged += UpdatePhysiology;
+            pecgTWave.PropertyChanged += UpdatePhysiology;
 
-            penmCardiacRhythms.PropertyChanged += UpdatePatient;
-            penmRespiratoryRhythms.PropertyChanged += UpdatePatient;
-            penmPACatheterRhythm.PropertyChanged += UpdatePatient;
-            penmCardiacAxis.PropertyChanged += UpdatePatient;
-            penmFetalHeartRhythm.PropertyChanged += UpdatePatient;
+            penmCardiacRhythms.PropertyChanged += UpdatePhysiology;
+            penmRespiratoryRhythms.PropertyChanged += UpdatePhysiology;
+            penmPACatheterRhythm.PropertyChanged += UpdatePhysiology;
+            penmCardiacAxis.PropertyChanged += UpdatePhysiology;
+            penmFetalHeartRhythm.PropertyChanged += UpdatePhysiology;
 
             penmCardiacRhythms.PropertyChanged += UpdateCardiacRhythm;
             penmRespiratoryRhythms.PropertyChanged += UpdateRespiratoryRhythm;
             penmPACatheterRhythm.PropertyChanged += UpdatePACatheterRhythm;
 
-            pintICP.PropertyChanged += UpdatePatient;
-            pintIAP.PropertyChanged += UpdatePatient;
-            pintHR.PropertyChanged += UpdatePatient;
-            pintRR.PropertyChanged += UpdatePatient;
-            pintSPO2.PropertyChanged += UpdatePatient;
-            pintETCO2.PropertyChanged += UpdatePatient;
-            pintCVP.PropertyChanged += UpdatePatient;
-            pintPacemakerThreshold.PropertyChanged += UpdatePatient;
-            pintFHR.PropertyChanged += UpdatePatient;
-            pintFHRVariability.PropertyChanged += UpdatePatient;
-            pintUCFreq.PropertyChanged += UpdatePatient;
-            pintUCDur.PropertyChanged += UpdatePatient;
-            pintUCIntensity.PropertyChanged += UpdatePatient;
-            pintUCResting.PropertyChanged += UpdatePatient;
+            pintICP.PropertyChanged += UpdatePhysiology;
+            pintIAP.PropertyChanged += UpdatePhysiology;
+            pintHR.PropertyChanged += UpdatePhysiology;
+            pintRR.PropertyChanged += UpdatePhysiology;
+            pintSPO2.PropertyChanged += UpdatePhysiology;
+            pintETCO2.PropertyChanged += UpdatePhysiology;
+            pintCVP.PropertyChanged += UpdatePhysiology;
+            pintPacemakerThreshold.PropertyChanged += UpdatePhysiology;
+            pintFHR.PropertyChanged += UpdatePhysiology;
+            pintFHRVariability.PropertyChanged += UpdatePhysiology;
+            pintUCFreq.PropertyChanged += UpdatePhysiology;
+            pintUCDur.PropertyChanged += UpdatePhysiology;
+            pintUCIntensity.PropertyChanged += UpdatePhysiology;
+            pintUCResting.PropertyChanged += UpdatePhysiology;
 
             return Task.CompletedTask;
         }
 
-        private void UpdatePatient (object? sender, PropertyInt.PropertyIntEventArgs e) {
-            if (Patient != null) {
+        private void UpdatePhysiology (object? sender, PropertyInt.PropertyIntEventArgs e) {
+            if (Physiology != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyInt.Keys.HR: Patient.HR = e.Value; break;
-                    case PropertyInt.Keys.RR: Patient.RR = e.Value; break;
-                    case PropertyInt.Keys.ETCO2: Patient.ETCO2 = e.Value; break;
-                    case PropertyInt.Keys.SPO2: Patient.SPO2 = e.Value; break;
-                    case PropertyInt.Keys.CVP: Patient.CVP = e.Value; break;
-                    case PropertyInt.Keys.ICP: Patient.ICP = e.Value; break;
-                    case PropertyInt.Keys.IAP: Patient.IAP = e.Value; break;
-                    case PropertyInt.Keys.PacemakerThreshold: Patient.Pacemaker_Threshold = e.Value; break;
-                    case PropertyInt.Keys.FHR: Patient.Fetal_HR = e.Value; break;
-                    case PropertyInt.Keys.ObstetricFHRVariability: Patient.ObstetricFetalRateVariability = e.Value; break;
-                    case PropertyInt.Keys.ObstetricContractionFrequency: Patient.ObstetricContractionFrequency = e.Value; break;
-                    case PropertyInt.Keys.ObstetricContractionDuration: Patient.ObstetricContractionDuration = e.Value; break;
-                    case PropertyInt.Keys.ObstetricContractionIntensity: Patient.ObstetricContractionIntensity = e.Value; break;
-                    case PropertyInt.Keys.ObstetricUterineRestingTone: Patient.ObstetricUterineRestingTone = e.Value; break;
+                    case PropertyInt.Keys.HR: Physiology.HR = e.Value; break;
+                    case PropertyInt.Keys.RR: Physiology.RR = e.Value; break;
+                    case PropertyInt.Keys.ETCO2: Physiology.ETCO2 = e.Value; break;
+                    case PropertyInt.Keys.SPO2: Physiology.SPO2 = e.Value; break;
+                    case PropertyInt.Keys.CVP: Physiology.CVP = e.Value; break;
+                    case PropertyInt.Keys.ICP: Physiology.ICP = e.Value; break;
+                    case PropertyInt.Keys.IAP: Physiology.IAP = e.Value; break;
+                    case PropertyInt.Keys.PacemakerThreshold: Physiology.Pacemaker_Threshold = e.Value; break;
+                    case PropertyInt.Keys.FHR: Physiology.Fetal_HR = e.Value; break;
+                    case PropertyInt.Keys.ObstetricFHRVariability: Physiology.ObstetricFetalRateVariability = e.Value; break;
+                    case PropertyInt.Keys.ObstetricContractionFrequency: Physiology.ObstetricContractionFrequency = e.Value; break;
+                    case PropertyInt.Keys.ObstetricContractionDuration: Physiology.ObstetricContractionDuration = e.Value; break;
+                    case PropertyInt.Keys.ObstetricContractionIntensity: Physiology.ObstetricContractionIntensity = e.Value; break;
+                    case PropertyInt.Keys.ObstetricUterineRestingTone: Physiology.ObstetricUterineRestingTone = e.Value; break;
                 }
             }
         }
 
-        private void UpdatePatient (object? sender, PropertyDouble.PropertyDoubleEventArgs e) {
-            if (Patient != null) {
+        private void UpdatePhysiology (object? sender, PropertyDouble.PropertyDoubleEventArgs e) {
+            if (Physiology != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyDouble.Keys.T: Patient.T = e.Value ?? 0d; break;
-                    case PropertyDouble.Keys.CO: Patient.CO = e.Value ?? 0d; break;
-                    case PropertyDouble.Keys.QRSInterval: Patient.QRS_Interval = e.Value ?? 0d; break;
-                    case PropertyDouble.Keys.QTcInterval: Patient.QTc_Interval = e.Value ?? 0d; break;
-                    case PropertyDouble.Keys.RRInspiratoryRatio: Patient.RR_IE_I = e.Value ?? 0d; break;
-                    case PropertyDouble.Keys.RRExpiratoryRatio: Patient.RR_IE_E = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.T: Physiology.T = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.CO: Physiology.CO = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.QRSInterval: Physiology.QRS_Interval = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.QTcInterval: Physiology.QTc_Interval = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.RRInspiratoryRatio: Physiology.RR_IE_I = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.RRExpiratoryRatio: Physiology.RR_IE_E = e.Value ?? 0d; break;
                 }
             }
         }
 
-        private void UpdatePatient (object? sender, PropertyBP.PropertyIntEventArgs e) {
-            if (Patient != null) {
+        private void UpdatePhysiology (object? sender, PropertyBP.PropertyIntEventArgs e) {
+            if (Physiology != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyBP.Keys.NSBP: Patient.NSBP = e.Value ?? 0; break;
-                    case PropertyBP.Keys.NDBP: Patient.NDBP = e.Value ?? 0; break;
-                    case PropertyBP.Keys.NMAP: Patient.NMAP = e.Value ?? 0; break;
-                    case PropertyBP.Keys.ASBP: Patient.ASBP = e.Value ?? 0; break;
-                    case PropertyBP.Keys.ADBP: Patient.ADBP = e.Value ?? 0; break;
-                    case PropertyBP.Keys.AMAP: Patient.AMAP = e.Value ?? 0; break;
-                    case PropertyBP.Keys.PSP: Patient.PSP = e.Value ?? 0; break;
-                    case PropertyBP.Keys.PDP: Patient.PDP = e.Value ?? 0; break;
-                    case PropertyBP.Keys.PMP: Patient.PMP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.NSBP: Physiology.NSBP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.NDBP: Physiology.NDBP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.NMAP: Physiology.NMAP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.ASBP: Physiology.ASBP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.ADBP: Physiology.ADBP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.AMAP: Physiology.AMAP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.PSP: Physiology.PSP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.PDP: Physiology.PDP = e.Value ?? 0; break;
+                    case PropertyBP.Keys.PMP: Physiology.PMP = e.Value ?? 0; break;
                 }
             }
         }
 
-        private void UpdatePatient (object? sender, PropertyEnum.PropertyEnumEventArgs e) {
-            if (e.Value != null && Patient != null) {
+        private void UpdatePhysiology (object? sender, PropertyEnum.PropertyEnumEventArgs e) {
+            if (e.Value != null && Physiology != null) {
                 switch (e.Key) {
                     default: break;
 
                     case PropertyEnum.Keys.Cardiac_Axis:
-                        Patient.Cardiac_Axis.Value = (Cardiac_Axes.Values)Enum.Parse (typeof (Cardiac_Axes.Values), e.Value);
+                        Physiology.Cardiac_Axis.Value = (Cardiac_Axes.Values)Enum.Parse (typeof (Cardiac_Axes.Values), e.Value);
                         break;
 
                     case PropertyEnum.Keys.Cardiac_Rhythms:
-                        Patient.Cardiac_Rhythm.Value = (Cardiac_Rhythms.Values)Enum.Parse (typeof (Cardiac_Rhythms.Values), e.Value);
+                        Physiology.Cardiac_Rhythm.Value = (Cardiac_Rhythms.Values)Enum.Parse (typeof (Cardiac_Rhythms.Values), e.Value);
                         break;
 
                     case PropertyEnum.Keys.Respiratory_Rhythms:
-                        Patient.Respiratory_Rhythm.Value = (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), e.Value);
+                        Physiology.Respiratory_Rhythm.Value = (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), e.Value);
                         break;
 
                     case PropertyEnum.Keys.PACatheter_Rhythms:
-                        Patient.PulmonaryArtery_Placement.Value = (PulmonaryArtery_Rhythms.Values)Enum.Parse (typeof (PulmonaryArtery_Rhythms.Values), e.Value);
+                        Physiology.PulmonaryArtery_Placement.Value = (PulmonaryArtery_Rhythms.Values)Enum.Parse (typeof (PulmonaryArtery_Rhythms.Values), e.Value);
                         break;
 
                     case PropertyEnum.Keys.FetalHeart_Rhythms:
-                        Patient.ObstetricFetalHeartRhythm.Value = (FetalHeart_Rhythms.Values)Enum.Parse (typeof (FetalHeart_Rhythms.Values), e.Value);
+                        Physiology.ObstetricFetalHeartRhythm.Value = (FetalHeart_Rhythms.Values)Enum.Parse (typeof (FetalHeart_Rhythms.Values), e.Value);
                         break;
                 }
             }
         }
 
-        private void UpdatePatient (object? sender, PropertyList.PropertyListEventArgs e) {
-            if (e.Values != null && Patient != null) {
+        private void UpdatePhysiology (object? sender, PropertyList.PropertyListEventArgs e) {
+            if (e.Values != null && Physiology != null) {
                 switch (e.Key) {
                     default: break;
                 }
             }
         }
 
-        private void UpdatePatient (object? sender, PropertyCheck.PropertyCheckEventArgs e) {
-            if (Patient != null) {
+        private void UpdatePhysiology (object? sender, PropertyCheck.PropertyCheckEventArgs e) {
+            if (Physiology != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyCheck.Keys.PulsusParadoxus: Patient.Pulsus_Paradoxus = e.Value; break;
-                    case PropertyCheck.Keys.PulsusAlternans: Patient.Pulsus_Alternans = e.Value; break;
-                    case PropertyCheck.Keys.ElectricalAlternans: Patient.Electrical_Alternans = e.Value; break;
-                    case PropertyCheck.Keys.MechanicallyVentilated: Patient.Mechanically_Ventilated = e.Value; break;
+                    case PropertyCheck.Keys.PulsusParadoxus: Physiology.Pulsus_Paradoxus = e.Value; break;
+                    case PropertyCheck.Keys.PulsusAlternans: Physiology.Pulsus_Alternans = e.Value; break;
+                    case PropertyCheck.Keys.ElectricalAlternans: Physiology.Electrical_Alternans = e.Value; break;
+                    case PropertyCheck.Keys.MechanicallyVentilated: Physiology.Mechanically_Ventilated = e.Value; break;
                 }
             }
         }
 
-        private void UpdatePatient (object? sender, PropertyECGSegment.PropertyECGEventArgs e) {
-            if (Patient != null) {
+        private void UpdatePhysiology (object? sender, PropertyECGSegment.PropertyECGEventArgs e) {
+            if (Physiology != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyECGSegment.Keys.STElevation: Patient.ST_Elevation = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
-                    case PropertyECGSegment.Keys.TWave: Patient.T_Elevation = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
+                    case PropertyECGSegment.Keys.STElevation: Physiology.ST_Elevation = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
+                    case PropertyECGSegment.Keys.TWave: Physiology.T_Elevation = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
                 }
             }
         }
 
         private void UpdateCardiacRhythm (object? sender, PropertyEnum.PropertyEnumEventArgs e) {
             CheckBox chkClampVitals = this.FindControl<CheckBox> ("chkClampVitals");
-            if ((!chkClampVitals.IsChecked ?? false) || e.Value == null || this.Patient == null)
+            if ((!chkClampVitals.IsChecked ?? false) || e.Value == null || this.Physiology == null)
                 return;
 
             Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
                 (Cardiac_Rhythms.Values)Enum.Parse (typeof (Cardiac_Rhythms.Values), e.Value));
 
-            Patient.HR = (int)II.Math.Clamp ((double)Patient.VS_Settings.HR, v.HRMin, v.HRMax);
-            Patient.RR = (int)II.Math.Clamp ((double)Patient.VS_Settings.RR, v.RRMin, v.RRMax);
-            Patient.SPO2 = (int)II.Math.Clamp ((double)Patient.VS_Settings.SPO2, v.SPO2Min, v.SPO2Max);
-            Patient.ETCO2 = (int)II.Math.Clamp ((double)Patient.VS_Settings.ETCO2, v.ETCO2Min, v.ETCO2Max);
-            Patient.NSBP = (int)II.Math.Clamp ((double)Patient.VS_Settings.NSBP, v.SBPMin, v.SBPMax);
-            Patient.NDBP = (int)II.Math.Clamp ((double)Patient.VS_Settings.NDBP, v.DBPMin, v.DBPMax);
-            Patient.ASBP = (int)II.Math.Clamp ((double)Patient.VS_Settings.ASBP, v.SBPMin, v.SBPMax);
-            Patient.ADBP = (int)II.Math.Clamp ((double)Patient.VS_Settings.ADBP, v.DBPMin, v.DBPMax);
-            Patient.PSP = (int)II.Math.Clamp ((double)Patient.VS_Settings.PSP, v.PSPMin, v.PSPMax);
-            Patient.PDP = (int)II.Math.Clamp ((double)Patient.VS_Settings.PDP, v.PDPMin, v.PDPMax);
-            Patient.QRS_Interval = (double)II.Math.Clamp ((double)Patient.QRS_Interval, v.QRSIntervalMin, v.QRSIntervalMax);
-            Patient.QTc_Interval = (double)II.Math.Clamp ((double)Patient.QTc_Interval, v.QTCIntervalMin, v.QTCIntervalMax);
+            Physiology.HR = (int)II.Math.Clamp ((double)Physiology.VS_Settings.HR, v.HRMin, v.HRMax);
+            Physiology.RR = (int)II.Math.Clamp ((double)Physiology.VS_Settings.RR, v.RRMin, v.RRMax);
+            Physiology.SPO2 = (int)II.Math.Clamp ((double)Physiology.VS_Settings.SPO2, v.SPO2Min, v.SPO2Max);
+            Physiology.ETCO2 = (int)II.Math.Clamp ((double)Physiology.VS_Settings.ETCO2, v.ETCO2Min, v.ETCO2Max);
+            Physiology.NSBP = (int)II.Math.Clamp ((double)Physiology.VS_Settings.NSBP, v.SBPMin, v.SBPMax);
+            Physiology.NDBP = (int)II.Math.Clamp ((double)Physiology.VS_Settings.NDBP, v.DBPMin, v.DBPMax);
+            Physiology.ASBP = (int)II.Math.Clamp ((double)Physiology.VS_Settings.ASBP, v.SBPMin, v.SBPMax);
+            Physiology.ADBP = (int)II.Math.Clamp ((double)Physiology.VS_Settings.ADBP, v.DBPMin, v.DBPMax);
+            Physiology.PSP = (int)II.Math.Clamp ((double)Physiology.VS_Settings.PSP, v.PSPMin, v.PSPMax);
+            Physiology.PDP = (int)II.Math.Clamp ((double)Physiology.VS_Settings.PDP, v.PDPMin, v.PDPMax);
+            Physiology.QRS_Interval = (double)II.Math.Clamp ((double)Physiology.QRS_Interval, v.QRSIntervalMin, v.QRSIntervalMax);
+            Physiology.QTc_Interval = (double)II.Math.Clamp ((double)Physiology.QTc_Interval, v.QTCIntervalMin, v.QTCIntervalMax);
 
-            _ = UpdateViewModel ();
+            _ = UpdateView ();
         }
 
         private void UpdateRespiratoryRhythm (object? sender, PropertyEnum.PropertyEnumEventArgs e) {
             CheckBox chkClampVitals = this.FindControl<CheckBox> ("chkClampVitals");
 
-            if ((!chkClampVitals.IsChecked ?? false) || e.Value == null || Patient == null)
+            if ((!chkClampVitals.IsChecked ?? false) || e.Value == null || Physiology == null)
                 return;
 
             Respiratory_Rhythms.Default_Vitals v = Respiratory_Rhythms.DefaultVitals (
                 (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), e.Value));
 
-            Patient.RR = (int)II.Math.Clamp ((double)Patient.RR, v.RRMin, v.RRMax);
-            Patient.RR_IE_I = (int)II.Math.Clamp ((double)Patient.RR_IE_I, v.RR_IE_I_Min, v.RR_IE_I_Max);
-            Patient.RR_IE_E = (int)II.Math.Clamp ((double)Patient.RR_IE_E, v.RR_IE_E_Min, v.RR_IE_E_Max);
+            Physiology.RR = (int)II.Math.Clamp ((double)Physiology.RR, v.RRMin, v.RRMax);
+            Physiology.RR_IE_I = (int)II.Math.Clamp ((double)Physiology.RR_IE_I, v.RR_IE_I_Min, v.RR_IE_I_Max);
+            Physiology.RR_IE_E = (int)II.Math.Clamp ((double)Physiology.RR_IE_E, v.RR_IE_E_Min, v.RR_IE_E_Max);
 
-            _ = UpdateViewModel ();
+            _ = UpdateView ();
         }
 
         private void UpdatePACatheterRhythm (object? sender, PropertyEnum.PropertyEnumEventArgs e) {
-            if (e.Value == null || Patient == null)
+            if (e.Value == null || Physiology == null)
                 return;
 
             PulmonaryArtery_Rhythms.Default_Vitals v = PulmonaryArtery_Rhythms.DefaultVitals (
                 (PulmonaryArtery_Rhythms.Values)Enum.Parse (typeof (PulmonaryArtery_Rhythms.Values), e.Value));
 
-            Patient.PSP = (int)II.Math.Clamp ((double)Patient.PSP, v.PSPMin, v.PSPMax);
-            Patient.PDP = (int)II.Math.Clamp ((double)Patient.PDP, v.PDPMin, v.PDPMax);
+            Physiology.PSP = (int)II.Math.Clamp ((double)Physiology.PSP, v.PSPMin, v.PSPMax);
+            Physiology.PDP = (int)II.Math.Clamp ((double)Physiology.PDP, v.PDPMin, v.PDPMax);
 
-            _ = UpdateViewModel ();
+            _ = UpdateView ();
         }
 
-        private async Task UpdateViewModel () {
+        private async Task UpdateView () {
             Label lblActiveStep = this.FindControl<Label> ("lblActiveStep");
 
             CheckBox chkClampVitals = this.FindControl<CheckBox> ("chkClampVitals");
@@ -429,89 +429,89 @@ namespace IISE.Windows {
                 Step is null ? "N/A" : Step.Description);
 
             // Enable/Disable controls based on if Patient is null!
-            chkClampVitals.IsEnabled = (Patient != null);
+            chkClampVitals.IsEnabled = (Physiology != null);
 
-            pbpNBP.IsEnabled = (Patient != null);
-            pbpABP.IsEnabled = (Patient != null);
-            pbpPBP.IsEnabled = (Patient != null);
+            pbpNBP.IsEnabled = (Physiology != null);
+            pbpABP.IsEnabled = (Physiology != null);
+            pbpPBP.IsEnabled = (Physiology != null);
 
-            pchkMechanicallyVentilated.IsEnabled = (Patient != null);
-            pchkPulsusParadoxus.IsEnabled = (Patient != null);
-            pchkPulsusAlternans.IsEnabled = (Patient != null);
-            pchkElectricalAlternans.IsEnabled = (Patient != null);
+            pchkMechanicallyVentilated.IsEnabled = (Physiology != null);
+            pchkPulsusParadoxus.IsEnabled = (Physiology != null);
+            pchkPulsusAlternans.IsEnabled = (Physiology != null);
+            pchkElectricalAlternans.IsEnabled = (Physiology != null);
 
-            pdblT.IsEnabled = (Patient != null);
-            pdblCO.IsEnabled = (Patient != null);
-            pdblQRSInterval.IsEnabled = (Patient != null);
-            pdblQTcInterval.IsEnabled = (Patient != null);
-            pdblInspiratoryRatio.IsEnabled = (Patient != null);
-            pdblExpiratoryRatio.IsEnabled = (Patient != null);
+            pdblT.IsEnabled = (Physiology != null);
+            pdblCO.IsEnabled = (Physiology != null);
+            pdblQRSInterval.IsEnabled = (Physiology != null);
+            pdblQTcInterval.IsEnabled = (Physiology != null);
+            pdblInspiratoryRatio.IsEnabled = (Physiology != null);
+            pdblExpiratoryRatio.IsEnabled = (Physiology != null);
 
-            pecgSTSegment.IsEnabled = (Patient != null);
-            pecgTWave.IsEnabled = (Patient != null);
+            pecgSTSegment.IsEnabled = (Physiology != null);
+            pecgTWave.IsEnabled = (Physiology != null);
 
-            penmCardiacRhythms.IsEnabled = (Patient != null);
-            penmRespiratoryRhythms.IsEnabled = (Patient != null);
-            penmPACatheterRhythm.IsEnabled = (Patient != null);
-            penmCardiacAxis.IsEnabled = (Patient != null);
-            penmFetalHeartRhythm.IsEnabled = (Patient != null);
+            penmCardiacRhythms.IsEnabled = (Physiology != null);
+            penmRespiratoryRhythms.IsEnabled = (Physiology != null);
+            penmPACatheterRhythm.IsEnabled = (Physiology != null);
+            penmCardiacAxis.IsEnabled = (Physiology != null);
+            penmFetalHeartRhythm.IsEnabled = (Physiology != null);
 
-            pintHR.IsEnabled = (Patient != null);
-            pintRR.IsEnabled = (Patient != null);
-            pintSPO2.IsEnabled = (Patient != null);
-            pintETCO2.IsEnabled = (Patient != null);
-            pintCVP.IsEnabled = (Patient != null);
-            pintICP.IsEnabled = (Patient != null);
-            pintIAP.IsEnabled = (Patient != null);
-            pintPacemakerThreshold.IsEnabled = (Patient != null);
-            pintFHR.IsEnabled = (Patient != null);
-            pintFHRVariability.IsEnabled = (Patient != null);
-            pintUCFreq.IsEnabled = (Patient != null);
-            pintUCDur.IsEnabled = (Patient != null);
-            pintUCIntensity.IsEnabled = (Patient != null);
-            pintUCResting.IsEnabled = (Patient != null);
+            pintHR.IsEnabled = (Physiology != null);
+            pintRR.IsEnabled = (Physiology != null);
+            pintSPO2.IsEnabled = (Physiology != null);
+            pintETCO2.IsEnabled = (Physiology != null);
+            pintCVP.IsEnabled = (Physiology != null);
+            pintICP.IsEnabled = (Physiology != null);
+            pintIAP.IsEnabled = (Physiology != null);
+            pintPacemakerThreshold.IsEnabled = (Physiology != null);
+            pintFHR.IsEnabled = (Physiology != null);
+            pintFHRVariability.IsEnabled = (Physiology != null);
+            pintUCFreq.IsEnabled = (Physiology != null);
+            pintUCDur.IsEnabled = (Physiology != null);
+            pintUCIntensity.IsEnabled = (Physiology != null);
+            pintUCResting.IsEnabled = (Physiology != null);
 
-            if (Patient != null) {
+            if (Physiology != null) {
                 // Update all controls with Patient values
-                await pbpNBP.Set (Patient.VS_Settings.NSBP, Patient.VS_Settings.NDBP);
-                await pbpABP.Set (Patient.VS_Settings.ASBP, Patient.VS_Settings.ADBP);
-                await pbpPBP.Set (Patient.VS_Settings.PSP, Patient.VS_Settings.PDP);
+                await pbpNBP.Set (Physiology.VS_Settings.NSBP, Physiology.VS_Settings.NDBP);
+                await pbpABP.Set (Physiology.VS_Settings.ASBP, Physiology.VS_Settings.ADBP);
+                await pbpPBP.Set (Physiology.VS_Settings.PSP, Physiology.VS_Settings.PDP);
 
-                await pchkMechanicallyVentilated.Set (Patient.Mechanically_Ventilated);
-                await pchkPulsusParadoxus.Set (Patient.Pulsus_Paradoxus);
-                await pchkPulsusAlternans.Set (Patient.Pulsus_Alternans);
-                await pchkElectricalAlternans.Set (Patient.Electrical_Alternans);
+                await pchkMechanicallyVentilated.Set (Physiology.Mechanically_Ventilated);
+                await pchkPulsusParadoxus.Set (Physiology.Pulsus_Paradoxus);
+                await pchkPulsusAlternans.Set (Physiology.Pulsus_Alternans);
+                await pchkElectricalAlternans.Set (Physiology.Electrical_Alternans);
 
-                await pdblT.Set (Patient.VS_Settings.T);
-                await pdblCO.Set (Patient.VS_Settings.CO);
-                await pdblQRSInterval.Set (Patient.QRS_Interval);
-                await pdblQTcInterval.Set (Patient.QTc_Interval);
-                await pdblInspiratoryRatio.Set (Patient.VS_Settings.RR_IE_I);
-                await pdblExpiratoryRatio.Set (Patient.VS_Settings.RR_IE_E);
+                await pdblT.Set (Physiology.VS_Settings.T);
+                await pdblCO.Set (Physiology.VS_Settings.CO);
+                await pdblQRSInterval.Set (Physiology.QRS_Interval);
+                await pdblQTcInterval.Set (Physiology.QTc_Interval);
+                await pdblInspiratoryRatio.Set (Physiology.VS_Settings.RR_IE_I);
+                await pdblExpiratoryRatio.Set (Physiology.VS_Settings.RR_IE_E);
 
-                await pecgSTSegment.Set (Patient.ST_Elevation);
-                await pecgTWave.Set (Patient.T_Elevation);
+                await pecgSTSegment.Set (Physiology.ST_Elevation);
+                await pecgTWave.Set (Physiology.T_Elevation);
 
-                await penmCardiacRhythms.Set ((int)Patient.Cardiac_Rhythm.Value);
-                await penmRespiratoryRhythms.Set ((int)Patient.Respiratory_Rhythm.Value);
-                await penmPACatheterRhythm.Set ((int)Patient.PulmonaryArtery_Placement.Value);
-                await penmCardiacAxis.Set ((int)Patient.Cardiac_Axis.Value);
-                await penmFetalHeartRhythm.Set ((int)Patient.ObstetricFetalHeartRhythm.Value);
+                await penmCardiacRhythms.Set ((int)Physiology.Cardiac_Rhythm.Value);
+                await penmRespiratoryRhythms.Set ((int)Physiology.Respiratory_Rhythm.Value);
+                await penmPACatheterRhythm.Set ((int)Physiology.PulmonaryArtery_Placement.Value);
+                await penmCardiacAxis.Set ((int)Physiology.Cardiac_Axis.Value);
+                await penmFetalHeartRhythm.Set ((int)Physiology.ObstetricFetalHeartRhythm.Value);
 
-                await pintHR.Set (Patient.VS_Settings.HR);
-                await pintRR.Set (Patient.VS_Settings.RR);
-                await pintSPO2.Set (Patient.VS_Settings.SPO2);
-                await pintETCO2.Set (Patient.VS_Settings.ETCO2);
-                await pintCVP.Set (Patient.VS_Settings.CVP);
-                await pintICP.Set (Patient.VS_Settings.ICP);
-                await pintIAP.Set (Patient.VS_Settings.IAP);
-                await pintPacemakerThreshold.Set (Patient.Pacemaker_Threshold);
-                await pintFHR.Set (Patient.VS_Settings.FetalHR);
-                await pintFHRVariability.Set (Patient.ObstetricFetalRateVariability);
-                await pintUCFreq.Set (Patient.ObstetricContractionFrequency);
-                await pintUCDur.Set (Patient.ObstetricContractionDuration);
-                await pintUCIntensity.Set (Patient.ObstetricContractionIntensity);
-                await pintUCResting.Set (Patient.ObstetricUterineRestingTone);
+                await pintHR.Set (Physiology.VS_Settings.HR);
+                await pintRR.Set (Physiology.VS_Settings.RR);
+                await pintSPO2.Set (Physiology.VS_Settings.SPO2);
+                await pintETCO2.Set (Physiology.VS_Settings.ETCO2);
+                await pintCVP.Set (Physiology.VS_Settings.CVP);
+                await pintICP.Set (Physiology.VS_Settings.ICP);
+                await pintIAP.Set (Physiology.VS_Settings.IAP);
+                await pintPacemakerThreshold.Set (Physiology.Pacemaker_Threshold);
+                await pintFHR.Set (Physiology.VS_Settings.FetalHR);
+                await pintFHRVariability.Set (Physiology.ObstetricFetalRateVariability);
+                await pintUCFreq.Set (Physiology.ObstetricContractionFrequency);
+                await pintUCDur.Set (Physiology.ObstetricContractionDuration);
+                await pintUCIntensity.Set (Physiology.ObstetricContractionIntensity);
+                await pintUCResting.Set (Physiology.ObstetricUterineRestingTone);
             }
         }
 

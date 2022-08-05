@@ -13,8 +13,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II.Settings {
-    public class Chart {
-        private Records ChartType;
+
+    public class Record {
+        private Records RecordType;
 
         public bool IsEnabled { get; set; }
 
@@ -22,8 +23,8 @@ namespace II.Settings {
             MAR
         }
 
-        public Chart (Records d) {
-            ChartType = d;
+        public Record (Records d) {
+            RecordType = d;
         }
 
         public async Task Load (string inc) {
@@ -51,13 +52,13 @@ namespace II.Settings {
             sRead.Close ();
         }
 
-        public async Task<string> Save (int indent = 1) {
+        public Task<string> Save (int indent = 1) {
             string dent = Utility.Indent (indent);
             StringBuilder sw = new ();
 
             sw.AppendLine (String.Format ("{0}{1}:{2}", dent, "IsEnabled", IsEnabled));
 
-            return sw.ToString ();
+            return Task.FromResult (sw.ToString ());
         }
     }
 }

@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 namespace IISE.Controls {
 
     public partial class PropertyEnum : UserControl {
+        private bool isInitiated = false;
+
         public Keys Key;
         public List<string>? Values;
 
@@ -18,7 +20,8 @@ namespace IISE.Controls {
             Cardiac_Rhythms,
             Respiratory_Rhythms,
             PACatheter_Rhythms,
-            FetalHeart_Rhythms
+            FetalHeart_Rhythms,
+            CodeStatus
         }
 
         public new event EventHandler<PropertyEnumEventArgs>? PropertyChanged;
@@ -55,6 +58,7 @@ namespace IISE.Controls {
                 case Keys.Respiratory_Rhythms: lblKey.Content = "Respiratory Rhythm: "; break;
                 case Keys.PACatheter_Rhythms: lblKey.Content = "Pulmonary Artery Catheter Placement: "; break;
                 case Keys.FetalHeart_Rhythms: lblKey.Content = "Fetal Heart Rhythm: "; break;
+                case Keys.CodeStatus: lblKey.Content = "Resuscitation Status: "; break;
             }
 
             List<ComboBoxItem> listItems = new List<ComboBoxItem> ();
@@ -63,7 +67,12 @@ namespace IISE.Controls {
                 listItems.Add (new ComboBoxItem () { Content = s });
 
             cmbEnumeration.Items = listItems;
-            cmbEnumeration.SelectionChanged += SendPropertyChange;
+
+            if (!isInitiated) {
+                cmbEnumeration.SelectionChanged += SendPropertyChange;
+            }
+
+            isInitiated = true;
 
             return Task.CompletedTask;
         }

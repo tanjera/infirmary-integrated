@@ -260,7 +260,7 @@ namespace II {
             }
         }
 
-        public void ECG_Isoelectric (Patient p, Rhythm.Strip s) {
+        public void ECG_Isoelectric (Physiology p, Rhythm.Strip s) {
             switch (Value) {
                 case Values.Asystole: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
                 case Values.Atrial_Fibrillation: s.Concatenate (Draw.ECG_Isoelectric__Atrial_Fibrillation (p, s.Lead)); return;
@@ -294,7 +294,7 @@ namespace II {
             }
         }
 
-        public void ECG_Atrial (Patient p, Rhythm.Strip s) {
+        public void ECG_Atrial (Physiology p, Rhythm.Strip s) {
             switch (Value) {
                 case Values.Asystole: return;
                 case Values.Atrial_Fibrillation: return;
@@ -328,7 +328,7 @@ namespace II {
             }
         }
 
-        public void ECG_Ventricular (Patient p, Rhythm.Strip s) {
+        public void ECG_Ventricular (Physiology p, Rhythm.Strip s) {
             // Handle aberrant beats (may be triggered by pacemaker...)
             if (p.Cardiac_Rhythm.AberrantBeat)
                 switch (Value) {

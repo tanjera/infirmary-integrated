@@ -29,8 +29,8 @@ namespace IISIM {
         public Language Language = new ();
 
         public Scenario? Scenario;
-        public Patient? Patient;
-        public Chart? Chart;
+        public Physiology? Physiology;
+        public Record? Records;
 
         public WindowSplash? Window_Splash;
         public WindowMain? Window_Main;
@@ -40,7 +40,7 @@ namespace IISIM {
         public DeviceDefib? Device_Defib;
         public DeviceIABP? Device_IABP;
         public DeviceEFM? Device_EFM;
-        public ChartMAR? Chart_MAR;
+        public RecordMAR? Records_MAR;
 
         public System.Timers.Timer Timer_Main = new ();
 
@@ -108,7 +108,7 @@ namespace IISIM {
             Device_ECG?.Close ();
             Device_IABP?.Close ();
             Device_EFM?.Close ();
-            Chart_MAR?.Close ();
+            Records_MAR?.Close ();
 
             Window_Main?.Close ();
 

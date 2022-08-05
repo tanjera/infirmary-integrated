@@ -13,11 +13,12 @@ using II;
 namespace IISE.Controls {
 
     public partial class PropertyRxOrder : UserControl {
+        private bool isInitiated = false;
 
         public new event EventHandler<PropertyRxOrderEventArgs>? PropertyChanged;
 
         public class PropertyRxOrderEventArgs : EventArgs {
-            public Medication.Order RxOrder = new Medication.Order ();
+            public Medication.Order RxOrder = new ();
         }
 
         public PropertyRxOrder () {
@@ -105,30 +106,34 @@ namespace IISE.Controls {
             ptxtIndication.Text = rxOrder.Indication;
             ptxtNotes.Text = rxOrder.Notes;
 
-            ptxtDrugName.TextInput += SendPropertyChange;
-            ptxtDrugName.LostFocus += SendPropertyChange;
+            if (!isInitiated) {
+                ptxtDrugName.TextInput += SendPropertyChange;
+                ptxtDrugName.LostFocus += SendPropertyChange;
 
-            ptxtIndication.TextInput += SendPropertyChange;
-            ptxtIndication.LostFocus += SendPropertyChange;
+                ptxtIndication.TextInput += SendPropertyChange;
+                ptxtIndication.LostFocus += SendPropertyChange;
 
-            ptxtNotes.TextInput += SendPropertyChange;
-            ptxtNotes.LostFocus += SendPropertyChange;
+                ptxtNotes.TextInput += SendPropertyChange;
+                ptxtNotes.LostFocus += SendPropertyChange;
 
-            pcmbDoseUnit.SelectionChanged += SendPropertyChange;
-            pcmbDoseRoute.SelectionChanged += SendPropertyChange;
-            pcmbPeriodType.SelectionChanged += SendPropertyChange;
-            pcmbPeriodUnit.SelectionChanged += SendPropertyChange;
-            pcmbPriority.SelectionChanged += SendPropertyChange;
+                pcmbDoseUnit.SelectionChanged += SendPropertyChange;
+                pcmbDoseRoute.SelectionChanged += SendPropertyChange;
+                pcmbPeriodType.SelectionChanged += SendPropertyChange;
+                pcmbPeriodUnit.SelectionChanged += SendPropertyChange;
+                pcmbPriority.SelectionChanged += SendPropertyChange;
 
-            pnumDoseAmount.ValueChanged += SendPropertyChange;
-            pnumPeriodAmount.ValueChanged += SendPropertyChange;
-            pnumTotalDoses.ValueChanged += SendPropertyChange;
+                pnumDoseAmount.ValueChanged += SendPropertyChange;
+                pnumPeriodAmount.ValueChanged += SendPropertyChange;
+                pnumTotalDoses.ValueChanged += SendPropertyChange;
 
-            pdateStart.SelectedDateChanged += SendPropertyChange;
-            pdateEnd.SelectedDateChanged += SendPropertyChange;
+                pdateStart.SelectedDateChanged += SendPropertyChange;
+                pdateEnd.SelectedDateChanged += SendPropertyChange;
 
-            ptimeStart.SelectedTimeChanged += SendPropertyChange;
-            ptimeEnd.SelectedTimeChanged += SendPropertyChange;
+                ptimeStart.SelectedTimeChanged += SendPropertyChange;
+                ptimeEnd.SelectedTimeChanged += SendPropertyChange;
+            }
+
+            isInitiated = true;
         }
 
         private void UpdateView (Medication.Order rxOrder) {
@@ -176,29 +181,35 @@ namespace IISE.Controls {
             ea.RxOrder.DoseAmount = pnumDoseAmount.Value;
             ea.RxOrder.DoseUnit = Enum.GetValues<Medication.Order.DoseUnits.Values> () [
                 pcmbDoseUnit.SelectedIndex < 0 ? 0 : pcmbDoseUnit.SelectedIndex];
+
             ea.RxOrder.Route = Enum.GetValues<Medication.Order.Routes.Values> () [
                 pcmbDoseRoute.SelectedIndex < 0 ? 0 : pcmbDoseRoute.SelectedIndex];
+
             ea.RxOrder.PeriodType = Enum.GetValues<Medication.Order.PeriodTypes.Values> () [
                 pcmbPeriodType.SelectedIndex < 0 ? 0 : pcmbPeriodType.SelectedIndex];
             ea.RxOrder.PeriodAmount = (int)pnumPeriodAmount.Value;
             ea.RxOrder.PeriodUnit = Enum.GetValues<Medication.Order.PeriodUnits.Values> () [
                 pcmbPeriodUnit.SelectedIndex < 0 ? 0 : pcmbPeriodUnit.SelectedIndex];
+
             ea.RxOrder.TotalDoses = (int)pnumTotalDoses.Value;
+
             ea.RxOrder.Priority = Enum.GetValues<Medication.Order.Priorities.Values> () [
                 pcmbPriority.SelectedIndex < 0 ? 0 : pcmbPriority.SelectedIndex];
+
             ea.RxOrder.StartTime = new DateTime (
-                pdateStart.SelectedDate.Value.Year,
-                pdateStart.SelectedDate.Value.Month,
-                pdateStart.SelectedDate.Value.Day,
-                ptimeStart.SelectedTime.Value.Hours,
-                ptimeStart.SelectedTime.Value.Minutes,
+                pdateStart?.SelectedDate?.Year ?? new DateTime ().Year,
+                pdateStart?.SelectedDate?.Month ?? new DateTime ().Month,
+                pdateStart?.SelectedDate?.Day ?? new DateTime ().Day,
+                ptimeStart?.SelectedTime?.Hours ?? new DateTime ().Hour,
+                ptimeStart?.SelectedTime?.Minutes ?? new DateTime ().Minute,
                 0);
+
             ea.RxOrder.EndTime = new DateTime (
-                pdateEnd.SelectedDate.Value.Year,
-                pdateEnd.SelectedDate.Value.Month,
-                pdateEnd.SelectedDate.Value.Day,
-                ptimeEnd.SelectedTime.Value.Hours,
-                ptimeEnd.SelectedTime.Value.Minutes,
+                pdateEnd?.SelectedDate?.Year ?? new DateTime ().Year,
+                pdateEnd?.SelectedDate?.Month ?? new DateTime ().Month,
+                pdateEnd?.SelectedDate?.Day ?? new DateTime ().Day,
+                ptimeEnd?.SelectedTime?.Hours ?? new DateTime ().Hour,
+                ptimeEnd?.SelectedTime?.Minutes ?? new DateTime ().Minute,
                 0);
             ea.RxOrder.Indication = ptxtIndication.Text;
             ea.RxOrder.Notes = ptxtNotes.Text;

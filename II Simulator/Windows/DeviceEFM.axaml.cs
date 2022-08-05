@@ -135,7 +135,7 @@ namespace IISIM {
         }
 
         private void SetStripSpeed (int multiplier) {
-            _ = Instance?.Patient?.SetTimerMultiplier_Obstetric (multiplier);
+            _ = Instance?.Physiology?.SetTimerMultiplier_Obstetric (multiplier);
         }
 
         public override void TogglePause () {
@@ -171,30 +171,30 @@ namespace IISIM {
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {
-                listTracings [i].Strip?.Scroll (Instance?.Patient?.TimerObstetric_Multiplier);
+                listTracings [i].Strip?.Scroll (Instance?.Physiology?.TimerObstetric_Multiplier);
                 Dispatcher.UIThread.InvokeAsync (listTracings [i].DrawTracing);
             }
         }
 
-        public override void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
+        public override void OnPhysiologyEvent (object? sender, Physiology.PhysiologyEventArgs e) {
             switch (e.EventType) {
                 default: break;
-                case Patient.PatientEventTypes.Obstetric_Baseline:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Baseline (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Obstetric_Baseline:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Baseline (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Obstetric_Fetal_Baseline:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Fetal_Baseline (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Obstetric_Fetal_Baseline:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Fetal_Baseline (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Obstetric_Contraction_Start:
-                    listTracings.ForEach (c => c.Strip?.ClearFuture (Instance?.Patient));
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Contraction_Start (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Obstetric_Contraction_Start:
+                    listTracings.ForEach (c => c.Strip?.ClearFuture (Instance?.Physiology));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Contraction_Start (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Obstetric_Contraction_End:
-                    listTracings.ForEach (c => c.Strip?.ClearFuture (Instance?.Patient));
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Baseline (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Obstetric_Contraction_End:
+                    listTracings.ForEach (c => c.Strip?.ClearFuture (Instance?.Physiology));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Baseline (Instance?.Physiology));
                     break;
             }
         }

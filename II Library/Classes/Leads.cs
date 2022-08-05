@@ -47,14 +47,14 @@ namespace II {
             }
         }
 
-        public static bool IsZeroed (Values value, Patient patient) {
+        public static bool IsZeroed (Values value, Physiology p) {
             switch (value) {
                 default: return false;
-                case Values.ABP: return patient.TransducerZeroed_ABP;
-                case Values.CVP: return patient.TransducerZeroed_CVP;
-                case Values.PA: return patient.TransducerZeroed_PA;
-                case Values.ICP: return patient.TransducerZeroed_ICP;
-                case Values.IAP: return patient.TransducerZeroed_IAP;
+                case Values.ABP: return p.TransducerZeroed_ABP;
+                case Values.CVP: return p.TransducerZeroed_CVP;
+                case Values.PA: return p.TransducerZeroed_PA;
+                case Values.ICP: return p.TransducerZeroed_ICP;
+                case Values.IAP: return p.TransducerZeroed_IAP;
             }
         }
     }

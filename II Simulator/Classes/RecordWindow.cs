@@ -16,7 +16,7 @@ using II;
 
 namespace IISIM {
 
-    public class ChartWindow : Window {
+    public class RecordWindow : Window {
         public App? Instance { get; set; }
 
         public States State;
@@ -27,10 +27,10 @@ namespace IISIM {
             Closed
         }
 
-        public ChartWindow () {
+        public RecordWindow () {
         }
 
-        public ChartWindow (App? app) {
+        public RecordWindow (App? app) {
             Instance = app;
 
             Closed += this.OnClosed;

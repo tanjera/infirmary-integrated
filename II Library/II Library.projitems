@@ -13,7 +13,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\Chart.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Allergy.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Record.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Medication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Alarm.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Audio.cs" />
@@ -31,7 +32,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Tracing.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Scales.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Scenario.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\Patient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Physiology.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Rhythms.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Server.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Rhythm.Strip.cs" />

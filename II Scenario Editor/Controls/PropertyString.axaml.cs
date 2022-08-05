@@ -10,14 +10,24 @@ using System.Threading.Tasks;
 namespace IISE.Controls {
 
     public partial class PropertyString : UserControl {
+        private bool isInitiated = false;
+
         public Keys Key;
 
         public enum Keys {
             ScenarioAuthor,
             ScenarioName,
             ScenarioDescription,
+
             StepName,
-            StepDescription
+            StepDescription,
+
+            DemographicsName,
+            DemographicsMRN,
+            DemographicsHomeAddress,
+            DemographicsTelephoneNumber,
+            DemographicsInsuranceProvider,
+            DemographicsInsuranceAccount
         }
 
         public new event EventHandler<PropertyStringEventArgs>? PropertyChanged;
@@ -50,12 +60,24 @@ namespace IISE.Controls {
                 case Keys.ScenarioAuthor: lblKey.Content = "Author: "; break;
                 case Keys.ScenarioName: lblKey.Content = "Title: "; break;
                 case Keys.ScenarioDescription: lblKey.Content = "Description: "; break;
+
                 case Keys.StepName: lblKey.Content = "Name: "; break;
                 case Keys.StepDescription: lblKey.Content = "Description: "; break;
+
+                case Keys.DemographicsName: lblKey.Content = "Name: "; break;
+                case Keys.DemographicsMRN: lblKey.Content = "Medical Record Number: "; break;
+                case Keys.DemographicsHomeAddress: lblKey.Content = "Home Address: "; break;
+                case Keys.DemographicsTelephoneNumber: lblKey.Content = "Telephone Number: "; break;
+                case Keys.DemographicsInsuranceProvider: lblKey.Content = "Insurance Provider: "; break;
+                case Keys.DemographicsInsuranceAccount: lblKey.Content = "Insurance Account: "; break;
             }
 
-            txtValue.KeyUp += SendPropertyChange;
-            txtValue.LostFocus += SendPropertyChange;
+            if (!isInitiated) {
+                txtValue.KeyUp += SendPropertyChange;
+                txtValue.LostFocus += SendPropertyChange;
+            }
+
+            isInitiated = true;
 
             return Task.CompletedTask;
         }

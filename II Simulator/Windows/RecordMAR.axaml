@@ -1,11 +1,11 @@
 <Window
-	x:Class="IISIM.ChartMAR"
+	x:Class="IISIM.RecordMAR"
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	Name="wdwChartMAR"
-	Title="ChartMAR"
+	Name="wdwRecordMAR"
+	Title="RecordMAR"
 	Width="1200"
 	Height="800"
 	d:DesignHeight="720"
@@ -30,9 +30,9 @@
       <Setter Property="Height" Value="48" />
     </Style>
 
-    <Style Selector="Label.timeheader">
-      <Setter Property="Margin" Value="20, 5" />
-      <Setter Property="HorizontalAlignment" Value="Center" />
+    <Style Selector="Label.patientid">
+      <Setter Property="Margin" Value="20, 2" />
+      <Setter Property="HorizontalAlignment" Value="Left" />
       <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
   </Window.Styles>
@@ -79,6 +79,30 @@
           <RowDefinition Height="Auto" />
           <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
+
+        <!-- Patient Information-->
+        <Grid Grid.Row="0"
+              Grid.Column="0"
+              ZIndex="1"
+              Background="White"
+              RowDefinitions="Auto,Auto,Auto"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch">
+
+          <Label Name="lblPatientName"
+                 Grid.Row="0"
+                 FontSize="24"
+                 FontWeight="Bold"
+                 Classes="patientid" />
+
+          <Label Name="lblPatientDOB"
+                 Grid.Row="1"
+                 Classes="patientid" />
+
+          <Label Name="lblPatientMRN"
+                 Grid.Row="2"
+                 Classes="patientid" />
+        </Grid>
 
         <!-- Time selectors-->
 

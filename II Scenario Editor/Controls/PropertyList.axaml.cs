@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 namespace IISE.Controls {
 
     public partial class PropertyList : UserControl {
+        private bool isInitiated = false;
+
         public Keys Key;
         public List<string>? Values;
 
@@ -63,7 +65,11 @@ namespace IISE.Controls {
 
             listBox.SelectionMode = multiselect ? SelectionMode.Multiple : SelectionMode.Single;
 
-            listBox.SelectionChanged += SendPropertyChange;
+            if (!isInitiated) {
+                listBox.SelectionChanged += SendPropertyChange;
+            }
+
+            isInitiated = true;
 
             return Task.CompletedTask;
         }

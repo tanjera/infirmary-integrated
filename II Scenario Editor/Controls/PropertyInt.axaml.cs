@@ -10,6 +10,8 @@ using System.Threading.Tasks;
 namespace IISE.Controls {
 
     public partial class PropertyInt : UserControl {
+        private bool isInitiated = false;
+
         public Keys Key;
 
         public enum Keys {
@@ -75,9 +77,13 @@ namespace IISE.Controls {
             numValue.Increment = increment;
             numValue.Minimum = minvalue;
             numValue.Maximum = maxvalue;
-            numValue.ValueChanged += SendPropertyChange;
-            numValue.LostFocus += SendPropertyChange;
 
+            if (!isInitiated) {
+                numValue.ValueChanged += SendPropertyChange;
+                numValue.LostFocus += SendPropertyChange;
+            }
+
+            isInitiated = true;
             return Task.CompletedTask;
         }
 

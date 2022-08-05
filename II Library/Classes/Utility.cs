@@ -34,11 +34,21 @@ namespace II {
             get { return (double)(DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess ().StartTime.ToUniversalTime ()).TotalSeconds; }
         }
 
+        public static string? DateOnly_ToString (DateOnly? dt)
+            => dt?.ToString ("yyyy/MM/dd");
+
         public static string? DateTime_ToString (DateTime? dt)
             => dt?.ToString ("yyyy/MM/dd HH:mm:ss");
 
         public static string? DateTime_ToString_FilePath (DateTime? dt)
             => dt?.ToString ("yyyy.MM.dd.HH.mm.ss");
+
+        public static DateOnly DateOnly_FromString (string str) {
+            return new DateOnly (
+                int.Parse (str.Substring (0, 4)),
+                int.Parse (str.Substring (5, 2)),
+                int.Parse (str.Substring (8, 2)));
+        }
 
         public static DateTime DateTime_FromString (string str) {
             return new DateTime (

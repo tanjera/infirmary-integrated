@@ -409,8 +409,8 @@ namespace IISIM {
         }
 
         private void ButtonZeroABP_Click (object s, RoutedEventArgs e) {
-            if (Instance?.Patient is not null)
-                Instance.Patient.TransducerZeroed_ABP = true;
+            if (Instance?.Physiology is not null)
+                Instance.Physiology.TransducerZeroed_ABP = true;
             UpdateInterface ();
         }
 
@@ -532,7 +532,7 @@ namespace IISIM {
                 return;
             }
 
-            if (Running && Instance?.Patient?.IABP_AP < AugmentationAlarm) {
+            if (Running && Instance?.Physiology?.IABP_AP < AugmentationAlarm) {
                 if (!AudioPlayer.IsPlaying) {
                     AudioPlayer.Play ();
                 }
@@ -553,18 +553,18 @@ namespace IISIM {
         }
 
         public override void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
-            if (State != States.Running || Instance?.Patient is null)
+            if (State != States.Running || Instance?.Physiology is null)
                 return;
 
             // Re-calculate IABP-specific vital signs (augmentation pressure and augmentation-assisted MAP)
             if (Running) {
-                Instance.Patient.IABP_DBP = II.Math.Clamp (Instance.Patient.ADBP - 7, 0, 1000);
-                Instance.Patient.IABP_AP = (int)(Instance.Patient.ASBP + (Instance.Patient.ASBP * 0.3f * (Augmentation * 0.01f)));
-                Instance.Patient.IABP_MAP = Instance.Patient.IABP_DBP + ((Instance.Patient.IABP_AP - Instance.Patient.IABP_DBP) / 2);
+                Instance.Physiology.IABP_DBP = II.Math.Clamp (Instance.Physiology.ADBP - 7, 0, 1000);
+                Instance.Physiology.IABP_AP = (int)(Instance.Physiology.ASBP + (Instance.Physiology.ASBP * 0.3f * (Augmentation * 0.01f)));
+                Instance.Physiology.IABP_MAP = Instance.Physiology.IABP_DBP + ((Instance.Physiology.IABP_AP - Instance.Physiology.IABP_DBP) / 2);
             } else {    // Use arterial line pressures if the balloon isn't actively pumping
-                Instance.Patient.IABP_DBP = Instance.Patient.ADBP;
-                Instance.Patient.IABP_AP = 0;
-                Instance.Patient.IABP_MAP = Instance.Patient.AMAP;
+                Instance.Physiology.IABP_DBP = Instance.Physiology.ADBP;
+                Instance.Physiology.IABP_AP = 0;
+                Instance.Physiology.IABP_MAP = Instance.Physiology.AMAP;
             }
 
             Dispatcher.UIThread.InvokeAsync (UpdateInterface);
@@ -572,58 +572,58 @@ namespace IISIM {
             listNumerics.ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }
 
-        public override void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
+        public override void OnPhysiologyEvent (object? sender, Physiology.PhysiologyEventArgs e) {
             switch (e.EventType) {
                 default: break;
-                case Patient.PatientEventTypes.Vitals_Change:
+                case Physiology.PhysiologyEventTypes.Vitals_Change:
                     listTracings.ForEach (c => {
-                        c.Strip?.ClearFuture (Instance?.Patient);
-                        c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Patient);
+                        c.Strip?.ClearFuture (Instance?.Physiology);
+                        c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology);
                     });
                     break;
 
-                case Patient.PatientEventTypes.Defibrillation:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Defibrillation:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Pacermaker_Spike:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Pacermaker_Spike:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Baseline:
-                    if (Instance?.Patient is not null) {
-                        Instance.Patient.IABP_Active = Running && (Frequency_Iter % Frequency == 0)
-                            && ((Trigger.Value == Triggering.Values.ECG && Instance.Patient.Cardiac_Rhythm.HasWaveform_Ventricular)
-                            || (Trigger.Value == Triggering.Values.Pressure && Instance.Patient.Cardiac_Rhythm.HasPulse_Ventricular));
-                        Instance.Patient.IABP_Trigger = Trigger.Value.ToString ();
+                case Physiology.PhysiologyEventTypes.Cardiac_Baseline:
+                    if (Instance?.Physiology is not null) {
+                        Instance.Physiology.IABP_Active = Running && (Frequency_Iter % Frequency == 0)
+                            && ((Trigger.Value == Triggering.Values.ECG && Instance.Physiology.Cardiac_Rhythm.HasWaveform_Ventricular)
+                            || (Trigger.Value == Triggering.Values.Pressure && Instance.Physiology.Cardiac_Rhythm.HasPulse_Ventricular));
+                        Instance.Physiology.IABP_Trigger = Trigger.Value.ToString ();
                     }
 
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Atrial_Electric:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Electrical (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Cardiac_Atrial_Electric:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Electrical (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Ventricular_Electric:
+                case Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Electric:
                     if (Running)
                         Frequency_Iter++;
 
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Atrial_Mechanical:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Mechanical (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Cardiac_Atrial_Mechanical:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Mechanical (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Mechanical:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Physiology));
 
                     /* Iterations and trigger for auto-scaling pressure waveform strips */
                     autoScale_iter -= 1;
                     if (autoScale_iter <= 0) {
                         for (int i = 0; i < listTracings.Count; i++) {
-                            listTracings [i].Strip?.SetAutoScale (Instance?.Patient);
+                            listTracings [i].Strip?.SetAutoScale (Instance?.Physiology);
                             Dispatcher.UIThread.InvokeAsync (listTracings [i].UpdateScale);
                         }
 
@@ -631,8 +631,8 @@ namespace IISIM {
                     }
                     break;
 
-                case Patient.PatientEventTypes.IABP_Balloon_Inflation:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__IABP_Balloon (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.IABP_Balloon_Inflation:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__IABP_Balloon (Instance?.Physiology));
                     break;
             }
         }

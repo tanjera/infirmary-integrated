@@ -291,12 +291,12 @@
             Header="Header">
             <StackPanel Margin="3">
               <Button
-                Name="btnChartMAR"
+                Name="btnRecordMAR"
                 Classes="device"
-                Click="ButtonChartMAR_Click">
+                Click="ButtonRecordMAR_Click">
                 <StackPanel Orientation="Horizontal">
-                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_ChartMAR_128.png" />
-                  <Label Name="lblChartMAR" Classes="device" />
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_RecordMAR_128.png" />
+                  <Label Name="lblRecordMAR" Classes="device" />
                 </StackPanel>
               </Button>
             </StackPanel>
@@ -447,11 +447,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="5"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="500"
 										Minimum="0"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblNIBP"
@@ -464,11 +464,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="5"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="300"
 										Minimum="0"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblNDBP"
@@ -483,11 +483,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="5"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="200"
 										Minimum="0"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblRR"
@@ -500,11 +500,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="2"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="100"
 										Minimum="0"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblSPO2"
@@ -517,11 +517,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="2"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="100"
 										Minimum="0"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblT"
@@ -534,11 +534,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0.0}"
 										Increment="0.2"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="100"
 										Minimum="0"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <!--  Cardiac Rhythms  -->
                   <Label
@@ -615,11 +615,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="2"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="100"
 										Minimum="0"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblCVP"
@@ -632,11 +632,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="1"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="100"
 										Minimum="-100"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblASBP"
@@ -649,11 +649,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="5"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="300"
 										Minimum="0"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblADBP"
@@ -668,11 +668,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="5"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="200"
 										Minimum="0"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblCO"
@@ -685,11 +685,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0.0}"
 										Increment="0.1 "
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="20"
 										Minimum="0"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <!--  Pulmonary Artery Catheter Rhythms  -->
                   <Label
@@ -715,11 +715,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="2"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="200"
 										Minimum="0"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
                   <Label
 										Name="lblPDP"
 										Grid.Row="5"
@@ -733,11 +733,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="2"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="200"
 										Minimum="0"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblICP"
@@ -750,11 +750,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="1"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="50"
 										Minimum="-50"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
                   <Label
 										Name="lblIAP"
 										Grid.Row="7"
@@ -766,11 +766,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="1"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="50"
 										Minimum="-50"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
                 </Grid>
               </Expander>
             </Border>
@@ -800,11 +800,11 @@
 										Name="chkMechanicallyVentilated"
 										Grid.Column="1"
 										VerticalAlignment="Center"
-										Checked="OnUIPatientParameter_Changed"
+										Checked="OnUIPhysiologyParameter_Changed"
 										IsChecked="False"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
-										Unchecked="OnUIPatientParameter_Changed" />
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
+										Unchecked="OnUIPhysiologyParameter_Changed" />
 
                   <!--  I:E Ratio  -->
                   <Label
@@ -818,11 +818,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0.0}"
 										Increment="0.1"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="10"
 										Minimum="0.1"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
                   <Label
 										Name="lblExpiratoryRatio"
 										Grid.Row="1"
@@ -835,11 +835,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0.0}"
 										Increment="0.1"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="10"
 										Minimum="0.1"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
                 </Grid>
               </Expander>
             </Border>
@@ -880,11 +880,11 @@
 										Grid.Column="1"
 										Classes="vitals"
 										Increment="5"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="200"
 										Minimum="0"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblPulsusParadoxus"
@@ -895,11 +895,11 @@
 										Grid.Row="1"
 										Grid.Column="1"
 										VerticalAlignment="Center"
-										Checked="OnUIPatientParameter_Changed"
+										Checked="OnUIPhysiologyParameter_Changed"
 										IsChecked="False"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
-										Unchecked="OnUIPatientParameter_Changed" />
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
+										Unchecked="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblPulsusAlternans"
@@ -910,11 +910,11 @@
 										Grid.Row="2"
 										Grid.Column="1"
 										VerticalAlignment="Center"
-										Checked="OnUIPatientParameter_Changed"
+										Checked="OnUIPhysiologyParameter_Changed"
 										IsChecked="False"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
-										Unchecked="OnUIPatientParameter_Changed" />
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
+										Unchecked="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblElectricalAlternans"
@@ -925,11 +925,11 @@
 										Grid.Row="3"
 										Grid.Column="1"
 										VerticalAlignment="Center"
-										Checked="OnUIPatientParameter_Changed"
+										Checked="OnUIPhysiologyParameter_Changed"
 										IsChecked="False"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
-										Unchecked="OnUIPatientParameter_Changed" />
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
+										Unchecked="OnUIPhysiologyParameter_Changed" />
 
                   <!--  Cardiac Axis Deviation  -->
                   <Label
@@ -941,9 +941,9 @@
 										Grid.Row="4"
 										Grid.Column="1"
 										Classes="vitals"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
-										SelectionChanged="OnUIPatientParameter_Changed" />
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
+										SelectionChanged="OnUIPhysiologyParameter_Changed" />
 
                   <!--  QRS and QTc Intervals -->
 
@@ -957,12 +957,12 @@
 										Grid.Column="1"
 										Classes="vitals"
 										Increment=".02"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum=".4"
 										Minimum="0.04"
 										FormatString="{}{0:0.00}"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblQTcInterval"
@@ -974,12 +974,12 @@
 										Grid.Column="1"
 										Classes="vitals"
 										Increment=".02"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum=".8"
 										Minimum="0.2"
 										FormatString="{}{0:0.00}"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <!--  ST Segment Elevation  -->
                   <HeaderedContentControl
@@ -1017,9 +1017,9 @@
 												Grid.Row="0"
 												Grid.Column="1"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
                       <Label
 												Grid.Row="1"
 												Grid.Column="0"
@@ -1030,9 +1030,9 @@
 												Grid.Row="1"
 												Grid.Column="1"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
                       <Label
 												Grid.Row="2"
 												Grid.Column="0"
@@ -1043,9 +1043,9 @@
 												Grid.Row="2"
 												Grid.Column="1"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                       <Label
 												Grid.Row="0"
@@ -1057,9 +1057,9 @@
 												Grid.Row="0"
 												Grid.Column="3"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
                       <Label
 												Grid.Row="1"
 												Grid.Column="2"
@@ -1070,9 +1070,9 @@
 												Grid.Row="1"
 												Grid.Column="3"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
                       <Label
 												Grid.Row="2"
 												Grid.Column="2"
@@ -1083,9 +1083,9 @@
 												Grid.Row="2"
 												Grid.Column="3"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                       <Label
 												Grid.Row="0"
@@ -1097,9 +1097,9 @@
 												Grid.Row="0"
 												Grid.Column="5"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
                       <Label
 												Grid.Row="1"
 												Grid.Column="4"
@@ -1110,9 +1110,9 @@
 												Grid.Row="1"
 												Grid.Column="5"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
                       <Label
 												Grid.Row="2"
 												Grid.Column="4"
@@ -1123,9 +1123,9 @@
 												Grid.Row="2"
 												Grid.Column="5"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                       <Label
 												Grid.Row="0"
@@ -1137,9 +1137,9 @@
 												Grid.Row="0"
 												Grid.Column="7"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
                       <Label
 												Grid.Row="1"
 												Grid.Column="6"
@@ -1150,9 +1150,9 @@
 												Grid.Row="1"
 												Grid.Column="7"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
                       <Label
 												Grid.Row="2"
 												Grid.Column="6"
@@ -1163,9 +1163,9 @@
 												Grid.Row="2"
 												Grid.Column="7"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
                     </Grid>
                   </HeaderedContentControl>
 
@@ -1205,9 +1205,9 @@
 												Grid.Row="0"
 												Grid.Column="1"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
                       <Label
 												Grid.Row="1"
 												Grid.Column="0"
@@ -1218,9 +1218,9 @@
 												Grid.Row="1"
 												Grid.Column="1"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
                       <Label
 												Grid.Row="2"
 												Grid.Column="0"
@@ -1231,9 +1231,9 @@
 												Grid.Row="2"
 												Grid.Column="1"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                       <Label
 												Grid.Row="0"
@@ -1245,9 +1245,9 @@
 												Grid.Row="0"
 												Grid.Column="3"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
                       <Label
 												Grid.Row="1"
 												Grid.Column="2"
@@ -1258,9 +1258,9 @@
 												Grid.Row="1"
 												Grid.Column="3"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
                       <Label
 												Grid.Row="2"
 												Grid.Column="2"
@@ -1271,9 +1271,9 @@
 												Grid.Row="2"
 												Grid.Column="3"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                       <Label
 												Grid.Row="0"
@@ -1285,9 +1285,9 @@
 												Grid.Row="0"
 												Grid.Column="5"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
                       <Label
 												Grid.Row="1"
 												Grid.Column="4"
@@ -1298,9 +1298,9 @@
 												Grid.Row="1"
 												Grid.Column="5"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
                       <Label
 												Grid.Row="2"
 												Grid.Column="4"
@@ -1311,9 +1311,9 @@
 												Grid.Row="2"
 												Grid.Column="5"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                       <Label
 												Grid.Row="0"
@@ -1325,9 +1325,9 @@
 												Grid.Row="0"
 												Grid.Column="7"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
                       <Label
 												Grid.Row="1"
 												Grid.Column="6"
@@ -1338,9 +1338,9 @@
 												Grid.Row="1"
 												Grid.Column="7"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
                       <Label
 												Grid.Row="2"
 												Grid.Column="6"
@@ -1351,9 +1351,9 @@
 												Grid.Row="2"
 												Grid.Column="7"
 												Classes="vitals wavepart"
-												KeyDown="OnUIPatientParameter_KeyDown"
-												LostFocus="OnUIPatientParameter_LostFocus"
-												ValueChanged="OnUIPatientParameter_Changed" />
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
                     </Grid>
                   </HeaderedContentControl>
                 </Grid>
@@ -1396,11 +1396,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="5"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="500"
 										Minimum="0"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblFHRRhythms"
@@ -1410,7 +1410,7 @@
 										Name="comboFHRRhythm"
 										Grid.Row="1"
 										Grid.Column="1"
-										SelectionChanged="OnUIPatientParameter_Changed"
+										SelectionChanged="OnUIPhysiologyParameter_Changed"
 										Classes="vitals" />
 
                   <Label
@@ -1424,11 +1424,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="5"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="80"
 										Minimum="0"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblUCFrequency"
@@ -1441,11 +1441,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="30"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="600"
 										Minimum="0"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblUCDuration"
@@ -1458,11 +1458,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="10"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="600"
 										Minimum="30"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblUCIntensity"
@@ -1475,11 +1475,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="5"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="100"
 										Minimum="0"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <Label
 										Name="lblUCResting"
@@ -1492,11 +1492,11 @@
 										Classes="vitals"
 										FormatString="{}{0:#0}"
 										Increment="5"
-										KeyDown="OnUIPatientParameter_KeyDown"
-										LostFocus="OnUIPatientParameter_LostFocus"
+										KeyDown="OnUIPhysiologyParameter_KeyDown"
+										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="100"
 										Minimum="0"
-										ValueChanged="OnUIPatientParameter_Changed" />
+										ValueChanged="OnUIPhysiologyParameter_Changed" />
                 </Grid>
               </Expander>
             </Border>

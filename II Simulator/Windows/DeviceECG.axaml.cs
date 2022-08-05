@@ -182,43 +182,43 @@ namespace IISIM {
             }
         }
 
-        public override void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
+        public override void OnPhysiologyEvent (object? sender, Physiology.PhysiologyEventArgs e) {
             switch (e.EventType) {
                 default: break;
-                case Patient.PatientEventTypes.Vitals_Change:
+                case Physiology.PhysiologyEventTypes.Vitals_Change:
                     listTracings.ForEach (c => {
-                        c.Strip?.ClearFuture (Instance?.Patient);
-                        c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Patient);
+                        c.Strip?.ClearFuture (Instance?.Physiology);
+                        c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology);
                     });
 
                     break;
 
-                case Patient.PatientEventTypes.Defibrillation:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Defibrillation:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Pacermaker_Spike:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Pacermaker_Spike:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Baseline:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Cardiac_Baseline:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Atrial_Electric:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Electrical (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Cardiac_Atrial_Electric:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Electrical (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Ventricular_Electric:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Electric:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Atrial_Mechanical:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Mechanical (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Cardiac_Atrial_Mechanical:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Mechanical (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Mechanical:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Physiology));
                     break;
             }
         }

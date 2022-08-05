@@ -17,11 +17,17 @@
       <Setter Property="Background" Value="#f2f2f2" />
     </Style>
 
+    <Style Selector="Image">
+      <Setter Property="Width" Value="64" />
+      <Setter Property="Height" Value="64" />
+    </Style>
+
     <Style Selector="Button.imgbtn">
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="Background" Value="Transparent" />
       <Setter Property="Height" Value="64" />
       <Setter Property="Width" Value="64" />
+      <Setter Property="Margin" Value="5" />
     </Style>
   </UserControl.Styles>
 
@@ -74,12 +80,21 @@
 
         <Separator />
 
-        <MenuItem Name="menuEditCopyPatient"
-              Header="Copy Patient Properties"
-              Click="MenuEditCopyPatient_Click" />
-        <MenuItem Name="menuEditPastePatient"
-                  Header="Paste Patient Properties"
-                  Click="MenuEditPastePatient_Click" />
+        <MenuItem Name="menuEditCopyPhysiology"
+              Header="Copy Physiology"
+              Click="MenuEditCopyPhysiology_Click" />
+        <MenuItem Name="menuEditPastePhysiology"
+                  Header="Paste Physiology"
+                  Click="MenuEditPastePhysiology_Click" />
+
+        <Separator />
+
+        <MenuItem Name="menuEditCopyRecords"
+              Header="Copy Medical Records"
+              Click="MenuEditCopyRecords_Click" />
+        <MenuItem Name="menuEditPasteRecords"
+                  Header="Paste Medical Records"
+                  Click="MenuEditPasteRecords_Click" />
       </MenuItem>
 
       <MenuItem Name="menuHelp"
@@ -166,32 +181,53 @@
           <Button Name="btnAddStep"
                   Click="ButtonAddStep_Click"
                   Classes="imgbtn">
-            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_PlayerAdd_128.png" />
+            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_PlayerAdd_128.png"
+                   ToolTip.Tip="Add Step" />
           </Button>
           <Button Name="btnDuplicateStep"
                   Click="ButtonDuplicateStep_Click"
                   Classes="imgbtn">
-            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_Stack_128.png" />
+            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_Stack_128.png"
+                   ToolTip.Tip="Duplicate Step" />
           </Button>
 
           <Button Name="btnDeleteStep"
                   Click="BtnDeleteStep_Click"
                   Classes="imgbtn">
-            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_TrashBin_128.png" />
+            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_TrashBin_128.png"
+                   ToolTip.Tip="Delete Step" />
           </Button>
 
           <Separator Margin="3, 10" />
 
-          <Button Name="btnCopyPatient"
-                  Click="BtnCopyPatient_Click"
-                  Classes="imgbtn">
-            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_CopyData_128.png" />
+          <Button Name="btnCopyPhysiology"
+              Click="BtnCopyPhysiology_Click"
+              Classes="imgbtn">
+            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_DeviceMonitor_128.png"
+                   ToolTip.Tip="Copy Physiology" />
           </Button>
-          <Button Name="btnPastePatient"
-                  Click="BtnPastePatient_Click"
+          <Button Name="btnPastePhysiology"
+                  Click="BtnPastePhysiology_Click"
                   Classes="imgbtn">
 
-            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_PasteData_128.png" />
+            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_Device12LeadECG_128.png"
+                   ToolTip.Tip="Paste Physiology" />
+          </Button>
+
+          <Separator Margin="3, 10" />
+
+          <Button Name="btnCopyRecords"
+              Click="BtnCopyRecords_Click"
+              Classes="imgbtn">
+            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_CopyData_128.png"
+                   ToolTip.Tip="Copy Medical Records" />
+          </Button>
+          <Button Name="btnPasteRecords"
+                  Click="BtnPasteRecords_Click"
+                  Classes="imgbtn">
+
+            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_Clipboard_128.png"
+                   ToolTip.Tip="Paste Medical Records" />
           </Button>
         </StackPanel>
 

@@ -222,7 +222,7 @@ namespace IISIM.Controls {
         }
 
         public void UpdateVitals () {
-            if (Instance?.Patient == null)
+            if (Instance?.Physiology == null)
                 return;
 
             TextBlock lblLine1 = this.FindControl<TextBlock> ("lblLine1");
@@ -232,7 +232,7 @@ namespace IISIM.Controls {
             switch (ControlType?.Value) {
                 default:
                 case ControlTypes.Values.ECG:
-                    int? hr = Instance?.Patient.MeasureHR_ECG (Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength);
+                    int? hr = Instance?.Physiology.MeasureHR_ECG (Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength);
                     lblLine1.Text = String.Format ("{0:0}", hr);
 
                     AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.HR);
@@ -240,13 +240,13 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.T:
-                    lblLine1.Text = String.Format ("{0:0.0}", Instance?.Patient.T);
+                    lblLine1.Text = String.Format ("{0:0.0}", Instance?.Physiology.T);
                     break;
 
                 case ControlTypes.Values.SPO2:
-                    int? spo2 = (int)II.Math.RandomPercentRange (Instance?.Patient?.SPO2 ?? 0, 0.01f);
+                    int? spo2 = (int)II.Math.RandomPercentRange (Instance?.Physiology?.SPO2 ?? 0, 0.01f);
                     lblLine1.Text = String.Format ("{0:0}", spo2);
-                    lblLine2.Text = String.Format ("@ {0:0}", Instance?.Patient.MeasureHR_SPO2 (
+                    lblLine2.Text = String.Format ("@ {0:0}", Instance?.Physiology.MeasureHR_SPO2 (
                         Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
 
                     AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.SPO2);
@@ -254,7 +254,7 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.RR:
-                    int? rr = Instance?.Patient.MeasureRR (
+                    int? rr = Instance?.Physiology.MeasureRR (
                         Strip.DefaultLength * Strip.DefaultRespiratoryCoefficient, Strip.DefaultLength * Strip.DefaultBufferLength);
 
                     lblLine1.Text = String.Format ("{0:0}", rr);
@@ -264,10 +264,10 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.ETCO2:
-                    int? etco2 = (int)II.Math.RandomPercentRange (Instance?.Patient?.ETCO2 ?? 0, 0.02f);
+                    int? etco2 = (int)II.Math.RandomPercentRange (Instance?.Physiology?.ETCO2 ?? 0, 0.02f);
 
                     lblLine1.Text = String.Format ("{0:0}", etco2);
-                    lblLine2.Text = String.Format ("@ {0:0}", Instance?.Patient.MeasureRR (
+                    lblLine2.Text = String.Format ("@ {0:0}", Instance?.Physiology.MeasureRR (
                         Strip.DefaultLength * Strip.DefaultRespiratoryCoefficient, Strip.DefaultLength * Strip.DefaultBufferLength));
 
                     AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.ETCO2);
@@ -275,25 +275,25 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.NIBP:
-                    lblLine1.Text = String.Format ("{0:0}", Instance?.Patient.NSBP);
-                    lblLine2.Text = String.Format ("/ {0:0}", Instance?.Patient.NDBP);
-                    lblLine3.Text = String.Format ("({0:0})", Instance?.Patient.NMAP);
+                    lblLine1.Text = String.Format ("{0:0}", Instance?.Physiology.NSBP);
+                    lblLine2.Text = String.Format ("/ {0:0}", Instance?.Physiology.NDBP);
+                    lblLine3.Text = String.Format ("({0:0})", Instance?.Physiology.NMAP);
 
                     AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.NSBP);
-                    AlarmLine1 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (Instance?.Patient.NSBP));
+                    AlarmLine1 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (Instance?.Physiology.NSBP));
 
                     AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.NDBP);
-                    AlarmLine2 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (Instance?.Patient.NDBP));
+                    AlarmLine2 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (Instance?.Physiology.NDBP));
 
                     AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.NMAP);
-                    AlarmLine3 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (Instance?.Patient.NMAP));
+                    AlarmLine3 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (Instance?.Physiology.NMAP));
                     break;
 
                 case ControlTypes.Values.ABP:
-                    if (Instance?.Patient.TransducerZeroed_ABP ?? false) {
-                        int asbp = (int)II.Math.RandomPercentRange (Instance?.Patient?.ASBP, 0.02f);
-                        int adbp = (int)II.Math.RandomPercentRange ((Instance?.Patient?.IABP_Active ?? false ? Instance?.Patient.IABP_DBP : Instance?.Patient.ADBP), 0.02f);
-                        int amap = (int)II.Math.RandomPercentRange (Instance?.Patient?.AMAP, 0.02f);
+                    if (Instance?.Physiology.TransducerZeroed_ABP ?? false) {
+                        int asbp = (int)II.Math.RandomPercentRange (Instance?.Physiology?.ASBP, 0.02f);
+                        int adbp = (int)II.Math.RandomPercentRange ((Instance?.Physiology?.IABP_Active ?? false ? Instance?.Physiology.IABP_DBP : Instance?.Physiology.ADBP), 0.02f);
+                        int amap = (int)II.Math.RandomPercentRange (Instance?.Physiology?.AMAP, 0.02f);
 
                         lblLine1.Text = String.Format ("{0:0}", asbp);
                         lblLine2.Text = String.Format ("/ {0:0}", adbp);
@@ -319,8 +319,8 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.CVP:
-                    if (Instance?.Patient.TransducerZeroed_CVP ?? false) {
-                        int cvp = (int)II.Math.RandomPercentRange (Instance?.Patient.CVP, 0.02f);
+                    if (Instance?.Physiology.TransducerZeroed_CVP ?? false) {
+                        int cvp = (int)II.Math.RandomPercentRange (Instance?.Physiology.CVP, 0.02f);
 
                         lblLine1.Text = String.Format ("{0:0}", cvp);
 
@@ -334,14 +334,14 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.CO:
-                    lblLine1.Text = String.Format ("{0:0.0}", Instance?.Patient.CO);
+                    lblLine1.Text = String.Format ("{0:0.0}", Instance?.Physiology.CO);
                     break;
 
                 case ControlTypes.Values.PA:
-                    if (Instance?.Patient.TransducerZeroed_PA ?? false) {
-                        int psp = (int)II.Math.RandomPercentRange (Instance?.Patient.PSP, 0.02f);
-                        int pdp = (int)II.Math.RandomPercentRange (Instance?.Patient.PDP, 0.02f);
-                        int pmp = (int)II.Math.RandomPercentRange (Instance?.Patient.PMP, 0.02f);
+                    if (Instance?.Physiology.TransducerZeroed_PA ?? false) {
+                        int psp = (int)II.Math.RandomPercentRange (Instance?.Physiology.PSP, 0.02f);
+                        int pdp = (int)II.Math.RandomPercentRange (Instance?.Physiology.PDP, 0.02f);
+                        int pmp = (int)II.Math.RandomPercentRange (Instance?.Physiology.PMP, 0.02f);
 
                         lblLine1.Text = String.Format ("{0:0}", psp);
                         lblLine2.Text = String.Format ("/ {0:0}", pdp);
@@ -367,11 +367,11 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.ICP:
-                    if (Instance?.Patient.TransducerZeroed_ICP ?? false) {
-                        int icp = (int)II.Math.RandomPercentRange (Instance?.Patient.ICP, 0.02f);
+                    if (Instance?.Physiology.TransducerZeroed_ICP ?? false) {
+                        int icp = (int)II.Math.RandomPercentRange (Instance?.Physiology.ICP, 0.02f);
 
                         lblLine1.Text = String.Format ("{0:0}", icp);
-                        lblLine2.Text = String.Format ("({0:0})", Patient.CalculateCPP (Instance?.Patient.ICP, Instance?.Patient.AMAP));
+                        lblLine2.Text = String.Format ("({0:0})", Physiology.CalculateCPP (Instance?.Physiology.ICP, Instance?.Physiology.AMAP));
 
                         AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.ICP);
                         AlarmLine1 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (icp));
@@ -384,8 +384,8 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.IAP:
-                    if (Instance?.Patient.TransducerZeroed_IAP ?? false) {
-                        int iap = (int)II.Math.RandomPercentRange (Instance?.Patient.IAP, 0.02f);
+                    if (Instance?.Physiology.TransducerZeroed_IAP ?? false) {
+                        int iap = (int)II.Math.RandomPercentRange (Instance?.Physiology.IAP, 0.02f);
 
                         lblLine1.Text = String.Format ("{0:0}", iap);
 
@@ -441,15 +441,15 @@ namespace IISIM.Controls {
         }
 
         private void MenuZeroTransducer_Click (object? sender, RoutedEventArgs e) {
-            if (Instance?.Patient is null)
+            if (Instance?.Physiology is null)
                 return;
 
             switch (ControlType?.Value) {
-                case ControlTypes.Values.ABP: Instance.Patient.TransducerZeroed_ABP = true; return;
-                case ControlTypes.Values.CVP: Instance.Patient.TransducerZeroed_CVP = true; return;
-                case ControlTypes.Values.PA: Instance.Patient.TransducerZeroed_PA = true; return;
-                case ControlTypes.Values.ICP: Instance.Patient.TransducerZeroed_ICP = true; return;
-                case ControlTypes.Values.IAP: Instance.Patient.TransducerZeroed_IAP = true; return;
+                case ControlTypes.Values.ABP: Instance.Physiology.TransducerZeroed_ABP = true; return;
+                case ControlTypes.Values.CVP: Instance.Physiology.TransducerZeroed_CVP = true; return;
+                case ControlTypes.Values.PA: Instance.Physiology.TransducerZeroed_PA = true; return;
+                case ControlTypes.Values.ICP: Instance.Physiology.TransducerZeroed_ICP = true; return;
+                case ControlTypes.Values.IAP: Instance.Physiology.TransducerZeroed_IAP = true; return;
             }
         }
 

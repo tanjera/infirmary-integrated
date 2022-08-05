@@ -29,7 +29,7 @@ namespace IISIM {
         public App? Instance;
 
         /* Buffers for ViewModel handling and temporal smoothing of upstream Model data changes */
-        private Patient? ApplyBuffer;
+        private Physiology? ApplyBuffer;
 
         private bool ApplyPending_Cardiac = false,
                      ApplyPending_Respiratory = false,
@@ -144,7 +144,7 @@ namespace IISIM {
                 this.FindControl<Label> ("lblDeviceEFM").Content = Instance.Language.Localize ("PE:EFM");
 
                 this.FindControl<HeaderedContentControl> ("lblGroupEHR").Header = Instance.Language.Localize ("PE:EHR");
-                this.FindControl<Label> ("lblChartMAR").Content = Instance.Language.Localize ("PE:MAR");
+                this.FindControl<Label> ("lblRecordMAR").Content = Instance.Language.Localize ("PE:MAR");
 
                 this.FindControl<Label> ("lblGroupScenarioPlayer").Content = Instance.Language.Localize ("PE:ScenarioPlayer");
                 this.FindControl<HeaderedContentControl> ("lblProgressionOptions").Header = Instance.Language.Localize ("PE:ProgressionOptions");
@@ -290,7 +290,7 @@ namespace IISIM {
             Instance.Timer_Main.Elapsed += Instance.Scenario.ProcessTimer;
 
             if (toInit)         // If toInit is false, Patient is null- InitPatient() will need to be called manually
-                await InitPatient ();
+                await InitScenarioStep ();
         }
 
         private async Task UnloadScenario () {
@@ -318,59 +318,59 @@ namespace IISIM {
             Instance.Timer_Main.Elapsed += ApplyTimer_Respiratory.Process;
             Instance.Timer_Main.Elapsed += ApplyTimer_Obstetric.Process;
 
-            ApplyTimer_Cardiac.Tick += ApplyPatientParameters_Cardiac;
-            ApplyTimer_Respiratory.Tick += ApplyPatientParameters_Respiratory;
-            ApplyTimer_Obstetric.Tick += ApplyPatientParameters_Obstetric;
+            ApplyTimer_Cardiac.Tick += ApplyPhysiologyParameters_Cardiac;
+            ApplyTimer_Respiratory.Tick += ApplyPhysiologyParameters_Respiratory;
+            ApplyTimer_Obstetric.Tick += ApplyPhysiologyParameters_Obstetric;
 
             await ApplyTimer_Cardiac.Set (5000);
             await ApplyTimer_Respiratory.Set (10000);
             await ApplyTimer_Obstetric.Set (30000);
         }
 
-        private async Task InitPatient () {
+        private async Task InitScenarioStep () {
             if (Instance?.Scenario is not null) {
-                Instance.Patient = Instance.Scenario.Patient;
-                Instance.Chart = Instance.Scenario.Chart;
+                Instance.Physiology = Instance.Scenario.Physiology;
+                Instance.Records = Instance.Scenario.Records;
             }
 
-            await InitPatientEvents ();
+            await InitPhysiologyEvents ();
             await InitStep ();
         }
 
-        private Task InitPatientEvents () {
-            if (Instance?.Patient is null)
+        private Task InitPhysiologyEvents () {
+            if (Instance?.Physiology is null)
                 return Task.CompletedTask;
 
             /* Tie the Patient's Timer to the Main Timer */
-            Instance.Timer_Main.Elapsed += Instance.Patient.ProcessTimers;
+            Instance.Timer_Main.Elapsed += Instance.Physiology.ProcessTimers;
 
             /* Tie PatientEvents to the PatientEditor UI! And trigger. */
-            Instance.Patient.PatientEvent += OnPatientEvent;
-            OnPatientEvent (this, new Patient.PatientEventArgs (Instance.Patient, Patient.PatientEventTypes.Vitals_Change));
+            Instance.Physiology.PhysiologyEvent += OnPhysiologyEvent;
+            OnPhysiologyEvent (this, new Physiology.PhysiologyEventArgs (Instance.Physiology, Physiology.PhysiologyEventTypes.Vitals_Change));
 
             if (Instance.Device_Monitor is not null)
-                Instance.Patient.PatientEvent += Instance.Device_Monitor.OnPatientEvent;
+                Instance.Physiology.PhysiologyEvent += Instance.Device_Monitor.OnPhysiologyEvent;
             if (Instance.Device_ECG is not null)
-                Instance.Patient.PatientEvent += Instance.Device_ECG.OnPatientEvent;
+                Instance.Physiology.PhysiologyEvent += Instance.Device_ECG.OnPhysiologyEvent;
             if (Instance.Device_Defib is not null)
-                Instance.Patient.PatientEvent += Instance.Device_Defib.OnPatientEvent;
+                Instance.Physiology.PhysiologyEvent += Instance.Device_Defib.OnPhysiologyEvent;
             if (Instance.Device_IABP is not null)
-                Instance.Patient.PatientEvent += Instance.Device_IABP.OnPatientEvent;
+                Instance.Physiology.PhysiologyEvent += Instance.Device_IABP.OnPhysiologyEvent;
 
             return Task.CompletedTask;
         }
 
         private async Task UnloadPatientEvents () {
-            if (Instance?.Patient is null)
+            if (Instance?.Physiology is null)
                 return;
 
             /* Unloading the Patient from the Main Timer also stops all the Patient's Timers
             /* and results in that Patient not triggering PatientEvent's */
-            Instance.Timer_Main.Elapsed -= Instance.Patient.ProcessTimers;
+            Instance.Timer_Main.Elapsed -= Instance.Physiology.ProcessTimers;
 
             /* But it's still important to clear PatientEvent subscriptions so they're not adding
             /* as duplicates when InitPatientEvents() is called!! */
-            await Instance.Patient.UnsubscribePatientEvent ();
+            await Instance.Physiology.UnsubscribePhysiologyEvent ();
         }
 
         private Task InitDeviceMonitor () {
@@ -386,8 +386,8 @@ namespace IISIM {
             Instance.Device_Monitor.Activate ();
             Instance.Device_Monitor.Show ();
 
-            if (Instance.Patient is not null)
-                Instance.Patient.PatientEvent += Instance.Device_Monitor.OnPatientEvent;
+            if (Instance.Physiology is not null)
+                Instance.Physiology.PhysiologyEvent += Instance.Device_Monitor.OnPhysiologyEvent;
 
             return Task.CompletedTask;
         }
@@ -405,8 +405,8 @@ namespace IISIM {
             Instance.Device_ECG.Activate ();
             Instance.Device_ECG.Show ();
 
-            if (Instance.Patient is not null)
-                Instance.Patient.PatientEvent += Instance.Device_ECG.OnPatientEvent;
+            if (Instance.Physiology is not null)
+                Instance.Physiology.PhysiologyEvent += Instance.Device_ECG.OnPhysiologyEvent;
 
             return Task.CompletedTask;
         }
@@ -424,8 +424,8 @@ namespace IISIM {
             Instance.Device_Defib.Activate ();
             Instance.Device_Defib.Show ();
 
-            if (Instance.Patient is not null)
-                Instance.Patient.PatientEvent += Instance.Device_Defib.OnPatientEvent;
+            if (Instance.Physiology is not null)
+                Instance.Physiology.PhysiologyEvent += Instance.Device_Defib.OnPhysiologyEvent;
 
             return Task.CompletedTask;
         }
@@ -443,8 +443,8 @@ namespace IISIM {
             Instance.Device_IABP.Activate ();
             Instance.Device_IABP.Show ();
 
-            if (Instance.Patient is not null)
-                Instance.Patient.PatientEvent += Instance.Device_IABP.OnPatientEvent;
+            if (Instance.Physiology is not null)
+                Instance.Physiology.PhysiologyEvent += Instance.Device_IABP.OnPhysiologyEvent;
 
             return Task.CompletedTask;
         }
@@ -462,24 +462,24 @@ namespace IISIM {
             Instance.Device_EFM.Activate ();
             Instance.Device_EFM.Show ();
 
-            if (Instance.Patient is not null)
-                Instance.Patient.PatientEvent += Instance.Device_EFM.OnPatientEvent;
+            if (Instance.Physiology is not null)
+                Instance.Physiology.PhysiologyEvent += Instance.Device_EFM.OnPhysiologyEvent;
 
             return Task.CompletedTask;
         }
 
-        private Task InitChartMAR () {
+        private Task InitRecordMAR () {
             if (Instance is null)
                 return Task.CompletedTask;
 
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (Instance.Chart_MAR is null || Instance.Chart_MAR.State == ChartWindow.States.Closed)
-                Instance.Chart_MAR = new ChartMAR (Instance);
+            if (Instance.Records_MAR is null || Instance.Records_MAR.State == RecordWindow.States.Closed)
+                Instance.Records_MAR = new RecordMAR (Instance);
 
-            Instance.Chart_MAR.Activate ();
-            Instance.Chart_MAR.Show ();
+            Instance.Records_MAR.Activate ();
+            Instance.Records_MAR.Show ();
 
             return Task.CompletedTask;
         }
@@ -536,8 +536,8 @@ namespace IISIM {
             if (Instance is not null)
                 await Instance.Mirror.PostStep (
                     new Scenario.Step () {
-                        Patient = Instance.Patient,
-                        Chart = Instance.Chart
+                        Physiology = Instance.Physiology,
+                        Records = Instance.Records
                     },
                     Instance.Server);
         }
@@ -743,7 +743,7 @@ namespace IISIM {
                 await LoadFail ();
             }
 
-            OnPatientEvent (this, new Patient.PatientEventArgs (Instance?.Patient, Patient.PatientEventTypes.Vitals_Change));
+            OnPhysiologyEvent (this, new Physiology.PhysiologyEventArgs (Instance?.Physiology, Physiology.PhysiologyEventTypes.Vitals_Change));
         }
 
         private async Task LoadInit (string incFile) {
@@ -792,8 +792,8 @@ namespace IISIM {
             if (Instance is null)
                 return;
 
-            if (Instance.Patient is null)
-                Instance.Patient = new ();
+            if (Instance.Physiology is null)
+                Instance.Physiology = new ();
             if (Instance.Scenario is null)
                 Instance.Scenario = new ();
 
@@ -803,14 +803,14 @@ namespace IISIM {
 
             try {
                 while ((line = (await sRead.ReadLineAsync ())?.Trim ()) != null) {
-                    if (line == "> Begin: Patient") {           // Load files saved by Infirmary Integrated (base)
+                    if (line == "> Begin: Physiology") {           // Load files saved by Infirmary Integrated (base)
                         pbuffer = new StringBuilder ();
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
-                                && pline != "> End: Patient")
+                                && pline != "> End: Physiology")
                             pbuffer.AppendLine (pline);
 
                         await RefreshScenario (true);
-                        await Instance.Patient.Load (pbuffer.ToString ());
+                        await Instance.Physiology.Load (pbuffer.ToString ());
                     } else if (line == "> Begin: Scenario") {   // Load files saved by Infirmary Integrated Scenario Editor
                         pbuffer = new StringBuilder ();
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
@@ -819,7 +819,7 @@ namespace IISIM {
 
                         await RefreshScenario (false);
                         await Instance.Scenario.Load (pbuffer.ToString ());
-                        await InitPatient ();     // Needs to be called manually since InitScenario(false) doesn't init a Patient
+                        await InitScenarioStep ();     // Needs to be called manually since InitScenario(false) doesn't init a Patient
                     } else if (line == "> Begin: Editor") {
                         pbuffer = new StringBuilder ();
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
@@ -1001,13 +1001,13 @@ namespace IISIM {
 
             StringBuilder sb = new ();
 
-            sb.AppendLine ("> Begin: Chart");
-            sb.Append (Instance?.Chart?.Save ());
-            sb.AppendLine ("> End: Chart");
+            sb.AppendLine ("> Begin: Records");
+            sb.Append (Instance?.Records?.Save ());
+            sb.AppendLine ("> End: Records");
 
-            sb.AppendLine ("> Begin: Patient");
-            sb.Append (Instance?.Patient?.Save ());
-            sb.AppendLine ("> End: Patient");
+            sb.AppendLine ("> Begin: Physiology");
+            sb.Append (Instance?.Physiology?.Save ());
+            sb.AppendLine ("> End: Physiology");
 
             sb.AppendLine ("> Begin: Editor");
             sb.Append (this.SaveOptions ());
@@ -1062,13 +1062,13 @@ namespace IISIM {
         private void OnMirrorTick (object? sender, EventArgs e) {
             Instance?.Mirror.TimerTick (
                 new Scenario.Step () {
-                    Chart = Instance.Chart,
-                    Patient = Instance.Patient
+                    Records = Instance.Records,
+                    Physiology = Instance.Physiology
                 },
                 Instance.Server);
 
             if (Instance?.Mirror.Status == Mirror.Statuses.CLIENT) {
-                UpdateView (Instance.Patient);
+                UpdateView (Instance.Physiology);
             }
         }
 
@@ -1077,14 +1077,14 @@ namespace IISIM {
 
         private void OnStepChanged (object? sender, EventArgs e) {
             if (Instance is not null) {
-                Instance.Patient = Instance.Scenario?.Patient;
-                Instance.Chart = Instance.Scenario?.Chart;
+                Instance.Physiology = Instance.Scenario?.Physiology;
+                Instance.Records = Instance.Scenario?.Records;
             }
 
-            _ = InitPatientEvents ();
+            _ = InitPhysiologyEvents ();
             _ = InitStep ();
 
-            UpdateView (Instance?.Patient);
+            UpdateView (Instance?.Physiology);
         }
 
         private Task InitStep () {
@@ -1189,18 +1189,18 @@ namespace IISIM {
                     Instance?.Language.Localize ("PE:ProgressionSeconds"));
         }
 
-        private Task ResetPatientParameters () {
-            UpdateView (Instance?.Patient);
+        private Task ResetPhysiologyParameters () {
+            UpdateView (Instance?.Physiology);
             return Task.CompletedTask;
         }
 
-        private async Task ApplyPatientParameters () {
+        private async Task ApplyPhysiologyParameters () {
             await AdvanceParameterStatus (ParameterStatuses.ChangesApplied);
 
             if (ApplyBuffer is null)
                 ApplyBuffer = new ();
 
-            await ApplyPatientParameters_Buffer (ApplyBuffer);
+            await ApplyPhysiologyParameters_Buffer (ApplyBuffer);
             ApplyPending_Cardiac = true;
             ApplyPending_Respiratory = true;
             ApplyPending_Obstetric = true;
@@ -1210,7 +1210,7 @@ namespace IISIM {
             await ApplyTimer_Obstetric.ResetStart ();
         }
 
-        private async Task ApplyPatientParameters_Buffer (Patient? p) {
+        private async Task ApplyPhysiologyParameters_Buffer (Physiology? p) {
             if (p is null)
                 return;
 
@@ -1225,7 +1225,7 @@ namespace IISIM {
                 (int)(this.FindControl<NumericUpDown> ("numHR")?.Value ?? 0),
                 (int)(this.FindControl<NumericUpDown> ("numNSBP")?.Value ?? 0),
                 (int)(this.FindControl<NumericUpDown> ("numNDBP")?.Value ?? 0),
-                Patient.CalculateMAP ((int)(this.FindControl<NumericUpDown> ("numNSBP")?.Value ?? 0), (int)(this.FindControl<NumericUpDown> ("numNDBP")?.Value ?? 0)),
+                Physiology.CalculateMAP ((int)(this.FindControl<NumericUpDown> ("numNSBP")?.Value ?? 0), (int)(this.FindControl<NumericUpDown> ("numNDBP")?.Value ?? 0)),
                 (int)(this.FindControl<NumericUpDown> ("numSPO2")?.Value ?? 0),
                 (double)(this.FindControl<NumericUpDown> ("numT")?.Value ?? 0),
 
@@ -1237,7 +1237,7 @@ namespace IISIM {
                 (int)(this.FindControl<NumericUpDown> ("numCVP")?.Value ?? 0),
                 (int)(this.FindControl<NumericUpDown> ("numASBP")?.Value ?? 0),
                 (int)(this.FindControl<NumericUpDown> ("numADBP")?.Value ?? 0),
-                Patient.CalculateMAP ((int)(this.FindControl<NumericUpDown> ("numASBP")?.Value ?? 0), (int)(this.FindControl<NumericUpDown> ("numADBP")?.Value ?? 0)),
+                Physiology.CalculateMAP ((int)(this.FindControl<NumericUpDown> ("numASBP")?.Value ?? 0), (int)(this.FindControl<NumericUpDown> ("numADBP")?.Value ?? 0)),
 
                 (float)(this.FindControl<NumericUpDown> ("numCO")?.Value ?? 0),
 
@@ -1247,7 +1247,7 @@ namespace IISIM {
 
                 (int)(this.FindControl<NumericUpDown> ("numPSP")?.Value ?? 0),
                 (int)(this.FindControl<NumericUpDown> ("numPDP")?.Value ?? 0),
-                Patient.CalculateMAP ((int)(this.FindControl<NumericUpDown> ("numPSP")?.Value ?? 0),
+                Physiology.CalculateMAP ((int)(this.FindControl<NumericUpDown> ("numPSP")?.Value ?? 0),
                 (int)(this.FindControl<NumericUpDown> ("numPDP")?.Value ?? 0)),
 
                 (int)(this.FindControl<NumericUpDown> ("numICP")?.Value ?? 0),
@@ -1322,15 +1322,15 @@ namespace IISIM {
                 (int)(this.FindControl<NumericUpDown> ("numUCResting")?.Value ?? 0));
         }
 
-        private void ApplyPatientParameters_Cardiac (object? sender, EventArgs e) {
+        private void ApplyPhysiologyParameters_Cardiac (object? sender, EventArgs e) {
             if (ApplyPending_Cardiac != true || ApplyBuffer is null)
                 return;
 
             ApplyPending_Cardiac = false;
             _ = ApplyTimer_Cardiac.ResetStop ();
 
-            if (Instance?.Patient is not null) {
-                _ = Instance.Patient.UpdateParametersSilent_Cardiac (
+            if (Instance?.Physiology is not null) {
+                _ = Instance.Physiology.UpdateParametersSilent_Cardiac (
                     ApplyBuffer.HR,
                     ApplyBuffer.NSBP, ApplyBuffer.NDBP, ApplyBuffer.NMAP,
                     ApplyBuffer.SPO2,
@@ -1360,21 +1360,21 @@ namespace IISIM {
             if (Instance?.Mirror is not null && Instance?.Server is not null)
                 _ = Instance.Mirror.PostStep (
                     new Scenario.Step () {
-                        Chart = Instance.Chart,
-                        Patient = Instance.Patient,
+                        Records = Instance.Records,
+                        Physiology = Instance.Physiology,
                     },
                     Instance.Server);
         }
 
-        private void ApplyPatientParameters_Respiratory (object? sender, EventArgs e) {
+        private void ApplyPhysiologyParameters_Respiratory (object? sender, EventArgs e) {
             if (ApplyPending_Respiratory != true || ApplyBuffer is null)
                 return;
 
             ApplyPending_Respiratory = false;
             _ = ApplyTimer_Respiratory.ResetStop ();
 
-            if (Instance?.Patient is not null) {
-                _ = Instance.Patient.UpdateParameters_Respiratory (
+            if (Instance?.Physiology is not null) {
+                _ = Instance.Physiology.UpdateParameters_Respiratory (
                     ApplyBuffer.RR,
                     ApplyBuffer.Respiratory_Rhythm.Value,
                     ApplyBuffer.ETCO2,
@@ -1385,21 +1385,21 @@ namespace IISIM {
             if (Instance?.Mirror is not null && Instance?.Server is not null)
                 _ = Instance.Mirror.PostStep (
                     new Scenario.Step () {
-                        Chart = Instance.Chart,
-                        Patient = Instance.Patient,
+                        Records = Instance.Records,
+                        Physiology = Instance.Physiology,
                     },
                     Instance.Server);
         }
 
-        private void ApplyPatientParameters_Obstetric (object? sender, EventArgs e) {
+        private void ApplyPhysiologyParameters_Obstetric (object? sender, EventArgs e) {
             if (ApplyPending_Obstetric != true || ApplyBuffer is null)
                 return;
 
             ApplyPending_Obstetric = false;
             _ = ApplyTimer_Obstetric.ResetStop ();
 
-            if (Instance?.Patient is not null) {
-                _ = Instance.Patient.UpdateParameters_Obstetric (
+            if (Instance?.Physiology is not null) {
+                _ = Instance.Physiology.UpdateParameters_Obstetric (
                     ApplyBuffer.Fetal_HR,
                     ApplyBuffer.ObstetricFetalRateVariability,
                     ApplyBuffer.ObstetricFetalHeartRhythm.Value,
@@ -1412,13 +1412,13 @@ namespace IISIM {
             if (Instance?.Mirror is not null && Instance?.Server is not null)
                 _ = Instance.Mirror.PostStep (
                     new Scenario.Step () {
-                        Chart = Instance.Chart,
-                        Patient = Instance.Patient,
+                        Records = Instance.Records,
+                        Physiology = Instance.Physiology,
                     },
                     Instance.Server);
         }
 
-        private void UpdateView (Patient? p) {
+        private void UpdateView (Physiology? p) {
             Dispatcher.UIThread.InvokeAsync (() => {                        // Updating the UI requires being on the proper thread
                 ParameterStatus = ParameterStatuses.Loading;                // To prevent each form update from auto-applying back to Patient
 
@@ -1559,8 +1559,8 @@ namespace IISIM {
         private void ButtonDeviceEFM_Click (object s, RoutedEventArgs e)
             => _ = InitDeviceEFM ();
 
-        private void ButtonChartMAR_Click (object s, RoutedEventArgs e)
-            => _ = InitChartMAR ();
+        private void ButtonRecordMAR_Click (object s, RoutedEventArgs e)
+            => _ = InitRecordMAR ();
 
         private void ButtonPreviousStep_Click (object s, RoutedEventArgs e)
             => _ = PreviousStep ();
@@ -1575,10 +1575,10 @@ namespace IISIM {
             => _ = PlayStep ();
 
         private void ButtonResetParameters_Click (object s, RoutedEventArgs e)
-            => _ = ResetPatientParameters ();
+            => _ = ResetPhysiologyParameters ();
 
         private void ButtonApplyParameters_Click (object sender, RoutedEventArgs e)
-            => _ = ApplyPatientParameters ();
+            => _ = ApplyPhysiologyParameters ();
 
         private void OnActivated (object sender, EventArgs e) {
             if (!IsUILoadCompleted) {
@@ -1611,24 +1611,24 @@ namespace IISIM {
             _ = SetParameterStatus (Instance.Settings.AutoApplyChanges);
         }
 
-        private void OnUIPatientParameter_KeyDown (object sender, KeyEventArgs e) {
+        private void OnUIPhysiologyParameter_KeyDown (object sender, KeyEventArgs e) {
             if (e.Key == Key.Enter)
-                OnUIPatientParameter_Process (sender, e);
+                OnUIPhysiologyParameter_Process (sender, e);
         }
 
-        private void OnUIPatientParameter_Changed (object sender, NumericUpDownValueChangedEventArgs e)
-            => OnUIPatientParameter_Process (sender, e);
+        private void OnUIPhysiologyParameter_Changed (object sender, NumericUpDownValueChangedEventArgs e)
+            => OnUIPhysiologyParameter_Process (sender, e);
 
-        private void OnUIPatientParameter_Changed (object sender, SelectionChangedEventArgs e)
-            => OnUIPatientParameter_Process (sender, e);
+        private void OnUIPhysiologyParameter_Changed (object sender, SelectionChangedEventArgs e)
+            => OnUIPhysiologyParameter_Process (sender, e);
 
-        private void OnUIPatientParameter_Changed (object sender, RoutedEventArgs e)
-            => OnUIPatientParameter_Process (sender, e);
+        private void OnUIPhysiologyParameter_Changed (object sender, RoutedEventArgs e)
+            => OnUIPhysiologyParameter_Process (sender, e);
 
-        private void OnUIPatientParameter_LostFocus (object sender, RoutedEventArgs e)
-            => OnUIPatientParameter_Process (sender, e);
+        private void OnUIPhysiologyParameter_LostFocus (object sender, RoutedEventArgs e)
+            => OnUIPhysiologyParameter_Process (sender, e);
 
-        private void OnUIPatientParameter_Process (object sender, RoutedEventArgs e) {
+        private void OnUIPhysiologyParameter_Process (object sender, RoutedEventArgs e) {
             switch (ParameterStatus) {
                 default:
                 case ParameterStatuses.Loading:            // For loading state
@@ -1640,14 +1640,14 @@ namespace IISIM {
                     break;
 
                 case ParameterStatuses.AutoApply:
-                    _ = ApplyPatientParameters ();
+                    _ = ApplyPhysiologyParameters ();
                     _ = UpdateParameterIndicators ();
                     break;
             }
         }
 
         private void OnCardiacRhythm_Selected (object sender, SelectionChangedEventArgs e) {
-            if (!this.FindControl<CheckBox> ("checkDefaultVitals").IsChecked ?? false || Instance?.Patient == null)
+            if (!this.FindControl<CheckBox> ("checkDefaultVitals").IsChecked ?? false || Instance?.Physiology == null)
                 return;
 
             int si = this.FindControl<ComboBox> ("comboCardiacRhythm").SelectedIndex;
@@ -1671,11 +1671,11 @@ namespace IISIM {
             this.FindControl<NumericUpDown> ("numQRSInterval").Value = (double)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numQRSInterval")?.Value ?? 0), v.QRSIntervalMin, v.QRSIntervalMax);
             this.FindControl<NumericUpDown> ("numQTcInterval").Value = (double)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numQTcInterval")?.Value ?? 0), v.QTCIntervalMin, v.QTCIntervalMax);
 
-            OnUIPatientParameter_Process (sender, e);
+            OnUIPhysiologyParameter_Process (sender, e);
         }
 
         private void OnRespiratoryRhythm_Selected (object sender, SelectionChangedEventArgs e) {
-            if (!this.FindControl<CheckBox> ("checkDefaultVitals")?.IsChecked ?? false || Instance?.Patient == null)
+            if (!this.FindControl<CheckBox> ("checkDefaultVitals")?.IsChecked ?? false || Instance?.Physiology == null)
                 return;
 
             int si = this.FindControl<ComboBox> ("comboRespiratoryRhythm").SelectedIndex;
@@ -1694,11 +1694,11 @@ namespace IISIM {
             numInspiratoryRatio.Value = (int)global::II.Math.Clamp ((double)(numInspiratoryRatio?.Value ?? 0), v.RR_IE_I_Min, v.RR_IE_I_Max);
             numExpiratoryRatio.Value = (int)global::II.Math.Clamp ((double)(numExpiratoryRatio?.Value ?? 0), v.RR_IE_E_Min, v.RR_IE_E_Max);
 
-            OnUIPatientParameter_Process (sender, e);
+            OnUIPhysiologyParameter_Process (sender, e);
         }
 
         private void OnPulmonaryArteryRhythm_Selected (object sender, SelectionChangedEventArgs e) {
-            if (Instance?.Patient is null)
+            if (Instance?.Physiology is null)
                 return;
 
             int si = this.FindControl<ComboBox> ("comboPACatheterPlacement").SelectedIndex;
@@ -1715,31 +1715,31 @@ namespace IISIM {
             numPSP.Value = (int)global::II.Math.Clamp ((double)(numPSP?.Value ?? 0), v.PSPMin, v.PSPMax);
             numPDP.Value = (int)global::II.Math.Clamp ((double)(numPDP?.Value ?? 0), v.PDPMin, v.PDPMax);
 
-            OnUIPatientParameter_Process (sender, e);
+            OnUIPhysiologyParameter_Process (sender, e);
         }
 
-        private void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
-            if (e.Patient is null)
+        private void OnPhysiologyEvent (object? sender, Physiology.PhysiologyEventArgs e) {
+            if (e.Physiology is null)
                 return;
 
             switch (e.EventType) {
                 default:
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Baseline:
-                    ApplyPatientParameters_Cardiac (sender, new EventArgs ());
+                case Physiology.PhysiologyEventTypes.Cardiac_Baseline:
+                    ApplyPhysiologyParameters_Cardiac (sender, new EventArgs ());
                     break;
 
-                case Patient.PatientEventTypes.Respiratory_Baseline:
-                    ApplyPatientParameters_Respiratory (sender, new EventArgs ());
+                case Physiology.PhysiologyEventTypes.Respiratory_Baseline:
+                    ApplyPhysiologyParameters_Respiratory (sender, new EventArgs ());
                     break;
 
-                case Patient.PatientEventTypes.Obstetric_Baseline:
-                    ApplyPatientParameters_Obstetric (sender, new EventArgs ());
+                case Physiology.PhysiologyEventTypes.Obstetric_Baseline:
+                    ApplyPhysiologyParameters_Obstetric (sender, new EventArgs ());
                     break;
 
-                case Patient.PatientEventTypes.Vitals_Change:
-                    UpdateView (e.Patient);
+                case Physiology.PhysiologyEventTypes.Vitals_Change:
+                    UpdateView (e.Physiology);
                     break;
             }
         }

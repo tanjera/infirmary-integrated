@@ -26,7 +26,7 @@ namespace II {
         public List<Step> Steps = new ();
         public Timer ProgressTimer = new ();
 
-        public Settings.Chart ChartMAR = new (Settings.Chart.Records.MAR);
+        public Settings.Record RecordMAR = new (Settings.Record.Records.MAR);
         public Settings.Device DeviceMonitor = new (Settings.Device.Devices.Monitor);
         public Settings.Device DeviceDefib = new (Settings.Device.Devices.Defib);
         public Settings.Device DeviceECG = new (Settings.Device.Devices.ECG);
@@ -55,7 +55,7 @@ namespace II {
             await UnsubscribeEvents ();
 
             foreach (Step s in Steps)
-                await s.Patient.Dispose ();
+                await s.Physiology.Dispose ();
 
             ProgressTimer.Dispose ();
         }
@@ -89,14 +89,14 @@ namespace II {
             Updated = DateTime.UtcNow;
         }
 
-        public Patient? Patient {
-            get { return Current?.Patient; }
-            set { if (Current != null) Current.Patient = value; }
+        public Physiology? Physiology {
+            get { return Current?.Physiology; }
+            set { if (Current != null) Current.Physiology = value; }
         }
 
-        public Chart? Chart {
-            get { return Current?.Chart; }
-            set { if (Current != null) Current.Chart = value; }
+        public Record? Records {
+            get { return Current?.Records; }
+            set { if (Current != null) Current.Records = value; }
         }
 
         public async Task Load (string inc) {
@@ -120,14 +120,14 @@ namespace II {
                         Step s = new ();
                         await s.Load (pbuffer.ToString ());
                         Steps.Add (s);
-                    } else if (line == "> Begin: ChartMAR") {
+                    } else if (line == "> Begin: RecordMAR") {
                         pbuffer = new StringBuilder ();
 
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
-                                && pline != "> End: ChartMAR")
+                                && pline != "> End: RecordMAR")
                             pbuffer.AppendLine (pline);
 
-                        await ChartMAR.Load (pbuffer.ToString ());
+                        await RecordMAR.Load (pbuffer.ToString ());
                     } else if (line == "> Begin: DeviceMonitor") {
                         pbuffer = new StringBuilder ();
 
@@ -194,9 +194,9 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Beginning", BeginStep));
 
             /* Save() each Device's Settings */
-            sWrite.AppendLine ($"{dent}> Begin: ChartMAR");
-            sWrite.Append (await ChartMAR.Save (indent + 1));
-            sWrite.AppendLine ($"{dent}> End: ChartMAR");
+            sWrite.AppendLine ($"{dent}> Begin: RecordMAR");
+            sWrite.Append (await RecordMAR.Save (indent + 1));
+            sWrite.AppendLine ($"{dent}> End: RecordMAR");
 
             sWrite.AppendLine ($"{dent}> Begin: DeviceMonitor");
             sWrite.Append (await DeviceMonitor.Save (indent + 1));
@@ -240,18 +240,18 @@ namespace II {
                 Step? stepFrom = Steps.Find (s => s.UUID == progFrom);
 
                 if (stepFrom != null) {
-                    CopyDeviceStatus (stepFrom.Patient, Current.Patient);
-                    await stepFrom.Patient.Deactivate ();                   // Additional unlinking of events and timers!
+                    CopyDeviceStatus (stepFrom.Physiology, Current.Physiology);
+                    await stepFrom.Physiology.Deactivate ();                   // Additional unlinking of events and timers!
                 }
             }
 
             // Init step regardless of whether step Index changed; step may have been deactivated by StepChangeRequest()
             await SetTimer ();
-            await Current.Patient.Activate ();
+            await Current.Physiology.Activate ();
 
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
-            await Current.Patient.OnPatientEvent (Patient.PatientEventTypes.Vitals_Change);
+            await Current.Physiology.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change);
         }
 
         public async Task LastStep () {
@@ -268,18 +268,18 @@ namespace II {
                 Step? stepFrom = Steps.Find (s => s.UUID == progFrom);
 
                 if (stepFrom != null) {
-                    CopyDeviceStatus (stepFrom.Patient, Current.Patient);
-                    await stepFrom.Patient.Deactivate ();                   // Additional unlinking of events and timers!
+                    CopyDeviceStatus (stepFrom.Physiology, Current.Physiology);
+                    await stepFrom.Physiology.Deactivate ();                   // Additional unlinking of events and timers!
                 }
             }
 
             // Init step regardless of whether step Index changed; step may have been deactivated by StepChangeRequest()
             await SetTimer ();
-            await Current.Patient.Activate ();
+            await Current.Physiology.Activate ();
 
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
-            await Current.Patient.OnPatientEvent (Patient.PatientEventTypes.Vitals_Change);
+            await Current.Physiology.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change);
         }
 
         public async Task SetStep (string? incUUID) {
@@ -301,25 +301,25 @@ namespace II {
                 Step? stepFrom = Steps.Find (s => s.UUID == (progFrom ?? ""));
 
                 if (stepFrom != null) {
-                    CopyDeviceStatus (stepFrom.Patient, Current.Patient);
-                    await stepFrom.Patient.Deactivate ();                   // Additional unlinking of events and timers!
+                    CopyDeviceStatus (stepFrom.Physiology, Current.Physiology);
+                    await stepFrom.Physiology.Deactivate ();                   // Additional unlinking of events and timers!
                 }
             }
 
             await SetTimer ();
-            await Current.Patient.Activate ();
+            await Current.Physiology.Activate ();
 
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
-            await Current.Patient.OnPatientEvent (Patient.PatientEventTypes.Vitals_Change);
+            await Current.Physiology.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change);
         }
 
-        public void CopyDeviceStatus (Patient lastPatient, Patient thisPatient) {
-            thisPatient.TransducerZeroed_CVP = lastPatient.TransducerZeroed_CVP;
-            thisPatient.TransducerZeroed_ABP = lastPatient.TransducerZeroed_ABP;
-            thisPatient.TransducerZeroed_PA = lastPatient.TransducerZeroed_PA;
-            thisPatient.TransducerZeroed_ICP = lastPatient.TransducerZeroed_ICP;
-            thisPatient.TransducerZeroed_IAP = lastPatient.TransducerZeroed_IAP;
+        public void CopyDeviceStatus (Physiology lastP, Physiology thisP) {
+            thisP.TransducerZeroed_CVP = lastP.TransducerZeroed_CVP;
+            thisP.TransducerZeroed_ABP = lastP.TransducerZeroed_ABP;
+            thisP.TransducerZeroed_PA = lastP.TransducerZeroed_PA;
+            thisP.TransducerZeroed_ICP = lastP.TransducerZeroed_ICP;
+            thisP.TransducerZeroed_IAP = lastP.TransducerZeroed_IAP;
         }
 
         public async Task PauseStep () => await ProgressTimer.Stop ();
@@ -348,8 +348,8 @@ namespace II {
 
         public class Step {
             public string? UUID = null;
-            public Chart Chart;
-            public Patient Patient;
+            public Record Records;
+            public Physiology Physiology;
             public string? Name, Description;
 
             public List<Progression> Progressions = new ();
@@ -364,8 +364,8 @@ namespace II {
             public Step () {
                 UUID = Guid.NewGuid ().ToString ();
 
-                Chart = new Chart ();
-                Patient = new Patient ();
+                Records = new Record ();
+                Physiology = new Physiology ();
             }
 
             public async Task Load (string inc) {
@@ -376,22 +376,22 @@ namespace II {
                 try {
                     while (!String.IsNullOrEmpty (line = await sRead.ReadLineAsync ())) {
                         line = line.Trim ();
-                        if (line == "> Begin: Chart") {
+                        if (line == "> Begin: Records") {
                             pbuffer = new ();
 
                             while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
-                                    && pline.Trim () != "> End: Chart")
+                                    && pline.Trim () != "> End: Records")
                                 pbuffer.AppendLine (pline);
 
-                            await Chart.Load (pbuffer.ToString ());
-                        } else if (line == "> Begin: Patient") {
+                            await Records.Load (pbuffer.ToString ());
+                        } else if (line == "> Begin: Physiology") {
                             pbuffer = new ();
 
                             while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
-                                    && pline.Trim () != "> End: Patient")
+                                    && pline.Trim () != "> End: Physiology")
                                 pbuffer.AppendLine (pline);
 
-                            await Patient.Load (pbuffer.ToString ());
+                            await Physiology.Load (pbuffer.ToString ());
                         } else if (line == "> Begin: Progression") {
                             pbuffer = new ();
 
@@ -442,13 +442,13 @@ namespace II {
                 sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "IISEPositionX", IISEPositionX));
                 sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "IISEPositionY", IISEPositionY));
 
-                sWrite.AppendLine ($"{dent}> Begin: Chart");
-                sWrite.Append (Chart.Save (indent + 1));
-                sWrite.AppendLine ($"{dent}> End: Chart");
+                sWrite.AppendLine ($"{dent}> Begin: Records");
+                sWrite.Append (Records.Save (indent + 1));
+                sWrite.AppendLine ($"{dent}> End: Records");
 
-                sWrite.AppendLine ($"{dent}> Begin: Patient");
-                sWrite.Append (Patient.Save (indent + 1));
-                sWrite.AppendLine ($"{dent}> End: Patient");
+                sWrite.AppendLine ($"{dent}> Begin: Physiology");
+                sWrite.Append (Physiology.Save (indent + 1));
+                sWrite.AppendLine ($"{dent}> End: Physiology");
 
                 foreach (Progression p in Progressions) {
                     sWrite.AppendLine ($"{dent}> Begin: Progression");

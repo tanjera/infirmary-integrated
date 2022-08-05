@@ -84,7 +84,7 @@ namespace II.Server {
 
             // Must use intermediary objects, if App.Patient is thread-locked, Waveforms stop populating!!
             string pStr = step.Save ();
-            DateTime pUp = step.Patient.Updated;
+            DateTime pUp = step.Physiology.Updated;
 
             Regex regex = new ("^[a-zA-Z0-9]*$");
             if (Accession.Length <= 0 || !regex.IsMatch (Accession))

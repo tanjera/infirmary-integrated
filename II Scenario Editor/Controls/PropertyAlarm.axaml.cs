@@ -12,6 +12,8 @@ using II;
 namespace IISE.Controls {
 
     public partial class PropertyAlarm : UserControl {
+        private bool isInitiated = false;
+
         public Devices Device;
         public Alarm.Parameters Key;
         public List<string>? Values;
@@ -89,25 +91,29 @@ namespace IISE.Controls {
             }
 
             if (pnumHigh is not null && pnumLow is not null && pchkEnabled is not null && pcmbPriority is not null) {
-                pnumHigh.ValueChanged += SendPropertyChange;
-                pnumHigh.LostFocus += SendPropertyChange;
-                pnumLow.ValueChanged += SendPropertyChange;
-                pnumLow.LostFocus += SendPropertyChange;
-
-                pchkEnabled.Checked += SendPropertyChange;
-                pchkEnabled.Unchecked += SendPropertyChange;
-                pchkEnabled.LostFocus += SendPropertyChange;
-
                 Values = new ();
                 List<ComboBoxItem> listItems = new ();
                 foreach (string s in Enum.GetNames (typeof (Alarm.Priorities))) {
                     listItems.Add (new ComboBoxItem () { Content = s });
                     Values.Add (s);
                 }
-
                 pcmbPriority.Items = listItems;
-                pcmbPriority.SelectionChanged += SendPropertyChange;
-                pcmbPriority.LostFocus += SendPropertyChange;
+
+                if (!isInitiated) {
+                    pcmbPriority.SelectionChanged += SendPropertyChange;
+                    pcmbPriority.LostFocus += SendPropertyChange;
+
+                    pnumHigh.ValueChanged += SendPropertyChange;
+                    pnumHigh.LostFocus += SendPropertyChange;
+                    pnumLow.ValueChanged += SendPropertyChange;
+                    pnumLow.LostFocus += SendPropertyChange;
+
+                    pchkEnabled.Checked += SendPropertyChange;
+                    pchkEnabled.Unchecked += SendPropertyChange;
+                    pchkEnabled.LostFocus += SendPropertyChange;
+                }
+
+                isInitiated = true;
             }
         }
 

@@ -226,7 +226,7 @@ namespace IISIM {
             return;
         }
 
-        public async Task PlayAudioTone (ToneSources trigger, Patient? p) {
+        public async Task PlayAudioTone (ToneSources trigger, Physiology? p) {
             if (TonePlayer is null || Instance?.AudioLib is null)
                 return;
 
@@ -471,57 +471,57 @@ namespace IISIM {
             }
         }
 
-        public override void OnPatientEvent (object? sender, Patient.PatientEventArgs e) {
+        public override void OnPhysiologyEvent (object? sender, Physiology.PhysiologyEventArgs e) {
             switch (e.EventType) {
                 default: break;
-                case Patient.PatientEventTypes.Vitals_Change:
+                case Physiology.PhysiologyEventTypes.Vitals_Change:
                     listTracings.ForEach (c => {
-                        c.Strip?.ClearFuture (Instance?.Patient);
-                        c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Patient);
+                        c.Strip?.ClearFuture (Instance?.Physiology);
+                        c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology);
                     });
 
                     listNumerics.ForEach (n => n.UpdateVitals ());
                     break;
 
-                case Patient.PatientEventTypes.Defibrillation:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Defibrillation:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Pacermaker_Spike:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Pacermaker_Spike:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Baseline:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Cardiac_Baseline:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Atrial_Electric:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Electrical (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Cardiac_Atrial_Electric:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Electrical (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Ventricular_Electric:
+                case Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Electric:
                     // QRS audio tone is only triggered by rhythms w/ a ventricular electrical (QRS complex) action
-                    _ = PlayAudioTone (ToneSources.ECG, e.Patient);
+                    _ = PlayAudioTone (ToneSources.ECG, e.Physiology);
 
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Atrial_Mechanical:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Mechanical (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Cardiac_Atrial_Mechanical:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Mechanical (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Cardiac_Ventricular_Mechanical:
+                case Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Mechanical:
                     // SPO2 audio tone is only triggered  by rhythms w/ a ventricular mechanical action (systole)
-                    _ = PlayAudioTone (ToneSources.SPO2, e.Patient);
+                    _ = PlayAudioTone (ToneSources.SPO2, e.Physiology);
 
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Patient));
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Physiology));
 
                     /* Iterations and trigger for auto-scaling pressure waveform strips */
 
                     autoScale_iter -= 1;
                     if (autoScale_iter <= 0) {
                         for (int i = 0; i < listTracings.Count; i++) {
-                            listTracings [i].Strip?.SetAutoScale (Instance?.Patient);
+                            listTracings [i].Strip?.SetAutoScale (Instance?.Physiology);
                             Dispatcher.UIThread.InvokeAsync (listTracings [i].UpdateScale);
                         }
 
@@ -529,16 +529,16 @@ namespace IISIM {
                     }
                     break;
 
-                case Patient.PatientEventTypes.Respiratory_Baseline:
-                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Baseline (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Respiratory_Baseline:
+                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Baseline (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Respiratory_Inspiration:
-                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Inspiration (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Respiratory_Inspiration:
+                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Inspiration (Instance?.Physiology));
                     break;
 
-                case Patient.PatientEventTypes.Respiratory_Expiration:
-                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Expiration (Instance?.Patient));
+                case Physiology.PhysiologyEventTypes.Respiratory_Expiration:
+                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Expiration (Instance?.Physiology));
                     break;
             }
         }
