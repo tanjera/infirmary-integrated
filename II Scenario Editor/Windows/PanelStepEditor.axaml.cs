@@ -125,7 +125,7 @@ namespace IISE.Windows {
                     case PropertyCombo.Keys.DefaultSource: ISelectedStep.Step.DefaultSource = e.Value; break;
 
                     case PropertyCombo.Keys.DefaultProgression:
-                        ISelectedStep.Step.DefaultProgression = ISelectedStep.Step.Progressions.Find (p => p.UUID == e.Value);
+                        ISelectedStep.Step.DefaultProgression = ISelectedStep.Step.Progressions.Find (p => p.DestinationUUID == e.Value);
                         break;
                 }
 

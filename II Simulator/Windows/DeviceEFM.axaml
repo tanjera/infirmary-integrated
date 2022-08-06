@@ -12,8 +12,6 @@
 	d:DesignWidth="1200"
 	Background="White"
 	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
-	WindowStartupLocation="CenterScreen"
-	WindowState="Maximized"
 	mc:Ignorable="d">
 
   <DockPanel LastChildFill="True">
