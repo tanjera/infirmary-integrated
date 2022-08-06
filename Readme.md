@@ -12,6 +12,7 @@ Infirmary Integrated currently functions as a simulator for the following health
 - 12-lead electrocardiograph (ECG)
 - Intra-aortic balloon pump (IABP)
 - External fetal monitor, cardiotocograph (EFM/CTG)
+- Medication administration record (MAR)
 
 Main features in Infirmary Integrated include:
 - Realistic waveforms draw according to multiple factors, accounting for:
@@ -101,6 +102,9 @@ Infirmary Integrated also simulates the following fetal heart rhythms:
 - Early Decelerations
 - Late Decelerations
 - Variable Decelerations
+
+Infirmary Integrated also simulates features of an electronic health record (EHR) including:
+- Navigating drug orders and doses due on an electronic Medication Administration Record (MAR)
 
 Infirmary Integrated also supports full localization (translation) for the following languages:
 - አማርኛ (Amharic)
