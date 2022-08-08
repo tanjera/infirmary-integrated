@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -72,8 +73,10 @@ namespace IISIM {
             => await Draw (Strip, TracingBrush, 1);
 
         public Task Draw (Strip? _Strip, IBrush? _Brush, double? _Thickness) {
-            if (_Strip is null)
+            if (_Strip is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (Draw)}");
                 return Task.CompletedTask;
+            }
 
             Image imgTracing = this.FindControl<Image> ("imgTracing");
 

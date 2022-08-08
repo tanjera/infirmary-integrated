@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -81,8 +82,10 @@ namespace IISIM {
         }
 
         public virtual void InitAudio () {
-            if (Instance?.AudioLib is null)
+            if (Instance?.AudioLib is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitAudio)}");
                 return;
+            }
 
             AudioPlayer = new MediaPlayer (Instance.AudioLib);
         }

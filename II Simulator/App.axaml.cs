@@ -29,8 +29,8 @@ namespace IISIM {
         public Language Language = new ();
 
         public Scenario? Scenario;
-        public Physiology? Physiology;
-        public Record? Records;
+        public Physiology? Physiology { get => Scenario?.Physiology; }
+        public Record? Records { get => Scenario?.Records; }
 
         public WindowSplash? Window_Splash;
         public WindowMain? Window_Main;

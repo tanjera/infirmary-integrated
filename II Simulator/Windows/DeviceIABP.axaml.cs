@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -114,8 +115,10 @@ namespace IISIM {
         }
 
         public override void InitAudio () {
-            if (Instance?.AudioLib is null)
+            if (Instance?.AudioLib is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitAudio)}");
                 return;
+            }
 
             base.InitAudio ();
 
@@ -125,8 +128,10 @@ namespace IISIM {
         }
 
         private void InitInterface () {
-            if (Instance is null)
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitInterface)}");
                 return;
+            }
 
             // Populate UI strings per language selection
 
@@ -507,6 +512,13 @@ namespace IISIM {
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Dark);
 
+        public override void OnClosing (object? sender, CancelEventArgs e) {
+            base.OnClosing (sender, e);
+
+            if (Instance?.Physiology is not null)
+                Instance.Physiology.PhysiologyEvent -= OnPhysiologyEvent;
+        }
+
         private void OnTick_PrimingComplete (object? sender, EventArgs e) {
             TimerAncillary_Delay.Stop ();
             TimerAncillary_Delay.Unlock ();
@@ -524,8 +536,10 @@ namespace IISIM {
         }
 
         public override void OnTick_Alarm (object? sender, EventArgs e) {
-            if (AudioPlayer is null || Instance?.AudioLib is null)
+            if (AudioPlayer is null || Instance?.AudioLib is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (OnTick_Alarm)}");
                 return;
+            }
 
             if (Instance?.Settings.AudioEnabled == false) {
                 AudioPlayer.Stop ();

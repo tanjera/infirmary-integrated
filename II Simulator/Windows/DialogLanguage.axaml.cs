@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 using Avalonia;
 using Avalonia.Controls;
@@ -34,20 +35,26 @@ namespace IISIM {
         }
 
         private void Init () {
-            // Populate UI strings per language selection
-            if (Instance is not null) {
-                this.FindControl<Window> ("dlgLanguage").Title = Instance.Language.Localize ("LANGUAGE:Title");
-                this.FindControl<Label> ("lblChooseLanguage").Content = Instance.Language.Localize ("LANGUAGE:Select");
-                this.FindControl<Button> ("btnContinue").Content = Instance.Language.Localize ("BUTTON:Continue");
-
-                this.FindControl<ComboBox> ("cmbLanguages").Items = II.Localization.Language.Descriptions;
-                this.FindControl<ComboBox> ("cmbLanguages").SelectedIndex = (int)II.Localization.Language.Values.ENG;
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (Init)}");
+                return;
             }
+
+            // Populate UI strings per language selection
+
+            this.FindControl<Window> ("dlgLanguage").Title = Instance.Language.Localize ("LANGUAGE:Title");
+            this.FindControl<Label> ("lblChooseLanguage").Content = Instance.Language.Localize ("LANGUAGE:Select");
+            this.FindControl<Button> ("btnContinue").Content = Instance.Language.Localize ("BUTTON:Continue");
+
+            this.FindControl<ComboBox> ("cmbLanguages").Items = II.Localization.Language.Descriptions;
+            this.FindControl<ComboBox> ("cmbLanguages").SelectedIndex = (int)II.Localization.Language.Values.ENG;
         }
 
         private void OnClick_Continue (object sender, RoutedEventArgs e) {
-            if (Instance is null)
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (OnClick_Continue)}");
                 return;
+            }
 
             Instance.Language.Value = Enum.GetValues<Language.Values> () [this.FindControl<ComboBox> ("cmbLanguages").SelectedIndex];
 

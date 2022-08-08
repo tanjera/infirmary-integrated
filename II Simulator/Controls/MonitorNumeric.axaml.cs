@@ -472,7 +472,7 @@ namespace IISIM.Controls {
                 ControlType.Value = selectedValue;
 
             UpdateInterface ();
-            UpdateVitals ();
+            Dispatcher.UIThread.InvokeAsync (UpdateVitals);
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 using Avalonia;
 using Avalonia.Controls;
@@ -34,12 +35,16 @@ namespace IISIM {
         }
 
         private void Init () {
-            // Populate UI strings per language selection
-            if (Instance is not null) {
-                this.FindControl<Window> ("dlgEULA").Title = Instance.Language.Localize ("EULA:Title");
-                this.FindControl<TextBlock> ("txtAgreeTerms").Text = Instance.Language.Localize ("EULA:AgreeToTerms");
-                this.FindControl<Button> ("btnContinue").Content = Instance.Language.Localize ("BUTTON:Continue");
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (Init)}");
+                return;
             }
+
+            // Populate UI strings per language selection
+
+            this.FindControl<Window> ("dlgEULA").Title = Instance.Language.Localize ("EULA:Title");
+            this.FindControl<TextBlock> ("txtAgreeTerms").Text = Instance.Language.Localize ("EULA:AgreeToTerms");
+            this.FindControl<Button> ("btnContinue").Content = Instance.Language.Localize ("BUTTON:Continue");
         }
 
         private void OnClick_Continue (object sender, RoutedEventArgs e) {

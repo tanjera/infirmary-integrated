@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -36,6 +37,11 @@ namespace IISIM {
         }
 
         private void Init () {
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (Init)}");
+                return;
+            }
+
             // Populate UI strings per language selection
             this.FindControl<Window> ("dlgMirrorReceive").Title = Instance.Language.Localize ("MIRROR:ReceiveTitle");
             this.FindControl<TextBlock> ("txtMessage").Text = Instance.Language.Localize ("MIRROR:EnterSettings");
@@ -47,6 +53,11 @@ namespace IISIM {
         }
 
         private void OnClick_Continue (object sender, RoutedEventArgs e) {
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (OnClick_Continue)}");
+                return;
+            }
+
             Regex regex = new ("^[a-zA-Z0-9]*$");
             if ((this.FindControl<TextBox> ("tbAccessionKey").Text ?? "").Length > 0
                     && regex.IsMatch (this.FindControl<TextBox> ("tbAccessionKey").Text)) {

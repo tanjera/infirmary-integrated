@@ -82,8 +82,10 @@ namespace IISIM {
         }
 
         public override void InitAudio () {
-            if (Instance?.AudioLib is null)
+            if (Instance?.AudioLib is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitAudio)}");
                 return;
+            }
 
             base.InitAudio ();
 
@@ -107,42 +109,46 @@ namespace IISIM {
         }
 
         private void InitInterface () {
-            // Populate UI strings per language selection
-            if (Instance?.Language is not null) {
-                this.FindControl<Window> ("wdwDeviceDefib").Title = Instance.Language.Localize ("DEFIB:WindowTitle");
-                this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
-                this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
-                this.FindControl<MenuItem> ("menuAddNumeric").Header = Instance.Language.Localize ("MENU:MenuAddNumeric");
-                this.FindControl<MenuItem> ("menuAddTracing").Header = Instance.Language.Localize ("MENU:MenuAddTracing");
-                this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
-
-                this.FindControl<MenuItem> ("menuAudio").Header = Instance.Language.Localize ("MENU:MenuAudio");
-                this.FindControl<MenuItem> ("menuAudioOff").Header = Instance.Language.Localize ("MENU:MenuAudioOff");
-                this.FindControl<MenuItem> ("menuAudioECG").Header = Instance.Language.Localize ("MENU:MenuAudioECG");
-                this.FindControl<MenuItem> ("menuAlarmsSPO2").Header = Instance.Language.Localize ("MENU:MenuAudioSPO2");
-
-                this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
-                this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
-                this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
-
-                this.FindControl<TextBlock> ("btntxtDefib").Text = Instance.Language.Localize ("DEFIB:Defibrillator");
-                this.FindControl<TextBlock> ("txtEnergyAmount").Text = Instance.Language.Localize ("DEFIB:EnergyAmount");
-                this.FindControl<TextBlock> ("btntxtEnergyDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
-                this.FindControl<TextBlock> ("btntxtEnergyIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
-                this.FindControl<TextBlock> ("btntxtCharge").Text = Instance.Language.Localize ("DEFIB:Charge");
-                this.FindControl<TextBlock> ("btntxtShock").Text = Instance.Language.Localize ("DEFIB:Shock");
-                this.FindControl<TextBlock> ("btntxtAnalyze").Text = Instance.Language.Localize ("DEFIB:Analyze");
-                this.FindControl<TextBlock> ("btntxtSync").Text = Instance.Language.Localize ("DEFIB:Sync");
-
-                this.FindControl<TextBlock> ("btntxtPacer").Text = Instance.Language.Localize ("DEFIB:Pacer");
-                this.FindControl<TextBlock> ("txtPaceRate").Text = Instance.Language.Localize ("DEFIB:Rate");
-                this.FindControl<TextBlock> ("btntxtPaceRateDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
-                this.FindControl<TextBlock> ("btntxtPaceRateIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
-                this.FindControl<TextBlock> ("txtPaceEnergy").Text = Instance.Language.Localize ("DEFIB:EnergyAmount");
-                this.FindControl<TextBlock> ("btntxtPaceEnergyDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
-                this.FindControl<TextBlock> ("btntxtPaceEnergyIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
-                this.FindControl<TextBlock> ("btntxtPacePause").Text = Instance.Language.Localize ("DEFIB:Pause");
+            if (Instance?.Language is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitInterface)}");
+                return;
             }
+
+            // Populate UI strings per language selection
+
+            this.FindControl<Window> ("wdwDeviceDefib").Title = Instance.Language.Localize ("DEFIB:WindowTitle");
+            this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
+            this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+            this.FindControl<MenuItem> ("menuAddNumeric").Header = Instance.Language.Localize ("MENU:MenuAddNumeric");
+            this.FindControl<MenuItem> ("menuAddTracing").Header = Instance.Language.Localize ("MENU:MenuAddTracing");
+            this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
+
+            this.FindControl<MenuItem> ("menuAudio").Header = Instance.Language.Localize ("MENU:MenuAudio");
+            this.FindControl<MenuItem> ("menuAudioOff").Header = Instance.Language.Localize ("MENU:MenuAudioOff");
+            this.FindControl<MenuItem> ("menuAudioECG").Header = Instance.Language.Localize ("MENU:MenuAudioECG");
+            this.FindControl<MenuItem> ("menuAlarmsSPO2").Header = Instance.Language.Localize ("MENU:MenuAudioSPO2");
+
+            this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
+            this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
+            this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
+
+            this.FindControl<TextBlock> ("btntxtDefib").Text = Instance.Language.Localize ("DEFIB:Defibrillator");
+            this.FindControl<TextBlock> ("txtEnergyAmount").Text = Instance.Language.Localize ("DEFIB:EnergyAmount");
+            this.FindControl<TextBlock> ("btntxtEnergyDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
+            this.FindControl<TextBlock> ("btntxtEnergyIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
+            this.FindControl<TextBlock> ("btntxtCharge").Text = Instance.Language.Localize ("DEFIB:Charge");
+            this.FindControl<TextBlock> ("btntxtShock").Text = Instance.Language.Localize ("DEFIB:Shock");
+            this.FindControl<TextBlock> ("btntxtAnalyze").Text = Instance.Language.Localize ("DEFIB:Analyze");
+            this.FindControl<TextBlock> ("btntxtSync").Text = Instance.Language.Localize ("DEFIB:Sync");
+
+            this.FindControl<TextBlock> ("btntxtPacer").Text = Instance.Language.Localize ("DEFIB:Pacer");
+            this.FindControl<TextBlock> ("txtPaceRate").Text = Instance.Language.Localize ("DEFIB:Rate");
+            this.FindControl<TextBlock> ("btntxtPaceRateDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
+            this.FindControl<TextBlock> ("btntxtPaceRateIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
+            this.FindControl<TextBlock> ("txtPaceEnergy").Text = Instance.Language.Localize ("DEFIB:EnergyAmount");
+            this.FindControl<TextBlock> ("btntxtPaceEnergyDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
+            this.FindControl<TextBlock> ("btntxtPaceEnergyIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
+            this.FindControl<TextBlock> ("btntxtPacePause").Text = Instance.Language.Localize ("DEFIB:Pause");
         }
 
         private void UpdateInterface () {
@@ -243,8 +249,10 @@ namespace IISIM {
         }
 
         public async Task PlayAudioTone (ToneSources trigger, Physiology? p) {
-            if (TonePlayer is null || Instance?.AudioLib is null)
+            if (TonePlayer is null || Instance?.AudioLib is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (PlayAudioTone)}");
                 return;
+            }
 
             if (ToneSource == trigger && (Instance?.Settings.AudioEnabled ?? false)) {
                 switch (ToneSource) {
@@ -470,6 +478,13 @@ namespace IISIM {
             Charged = true;
 
             UpdateInterface ();
+        }
+
+        public override void OnClosing (object? sender, CancelEventArgs e) {
+            base.OnClosing (sender, e);
+
+            if (Instance?.Physiology is not null)
+                Instance.Physiology.PhysiologyEvent -= OnPhysiologyEvent;
         }
 
         public override void OnTick_Tracing (object? sender, EventArgs e) {

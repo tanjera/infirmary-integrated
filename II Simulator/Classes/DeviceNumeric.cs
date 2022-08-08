@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -47,8 +48,10 @@ namespace IISIM {
         }
 
         public virtual void InitTimers () {
-            if (Instance is null || AlarmTimer is null)
+            if (Instance is null || AlarmTimer is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitTimers)}");
                 return;
+            }
 
             Instance.Timer_Main.Elapsed += AlarmTimer.Process;
 

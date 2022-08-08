@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Reactive;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -52,23 +53,27 @@ namespace IISIM {
         }
 
         private Task InitInterface () {
-            /* Populate UI strings per language selection */
-            if (Instance is not null) {
-                this.FindControl<Window> ("wdwRecordMAR").Title = Instance.Language.Localize ("MAR:WindowTitle");
-                this.FindControl<MenuItem> ("menuOptions").Header = Instance.Language.Localize ("MENU:MenuOptions");
-                this.FindControl<MenuItem> ("menuClose").Header = Instance.Language.Localize ("MENU:MenuClose");
-                this.FindControl<MenuItem> ("menuRefresh").Header = Instance.Language.Localize ("MENU:MenuRefresh");
-
-                this.FindControl<Label> ("lblPatientName").Content = Instance?.Records?.Name;
-
-                this.FindControl<Label> ("lblPatientDOB").Content = String.Format ("{0}: {1}",
-                    Instance?.Language.Localize ("CHART:DateOfBirth"),
-                    Instance?.Records?.DOB.ToShortDateString ());
-
-                this.FindControl<Label> ("lblPatientMRN").Content = String.Format ("{0}: {1}",
-                    Instance?.Language.Localize ("CHART:MedicalRecordNumber"),
-                    Instance?.Records?.MRN);
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitInterface)}");
+                return Task.CompletedTask;
             }
+
+            /* Populate UI strings per language selection */
+
+            this.FindControl<Window> ("wdwRecordMAR").Title = Instance.Language.Localize ("MAR:WindowTitle");
+            this.FindControl<MenuItem> ("menuOptions").Header = Instance.Language.Localize ("MENU:MenuOptions");
+            this.FindControl<MenuItem> ("menuClose").Header = Instance.Language.Localize ("MENU:MenuClose");
+            this.FindControl<MenuItem> ("menuRefresh").Header = Instance.Language.Localize ("MENU:MenuRefresh");
+
+            this.FindControl<Label> ("lblPatientName").Content = Instance?.Records?.Name;
+
+            this.FindControl<Label> ("lblPatientDOB").Content = String.Format ("{0}: {1}",
+                Instance?.Language.Localize ("CHART:DateOfBirth"),
+                Instance?.Records?.DOB.ToShortDateString ());
+
+            this.FindControl<Label> ("lblPatientMRN").Content = String.Format ("{0}: {1}",
+                Instance?.Language.Localize ("CHART:MedicalRecordNumber"),
+                Instance?.Records?.MRN);
 
             /* Set the View time (time of MAR being viewed) to the Chart.CurrentTime */
             viewAtTime = new DateTime (
@@ -90,17 +95,20 @@ namespace IISIM {
         }
 
         private async Task RefreshInterface () {
-            if (Instance is not null) {
-                this.FindControl<Label> ("lblPatientName").Content = Instance?.Records?.Name;
-
-                this.FindControl<Label> ("lblPatientDOB").Content = String.Format ("{0}: {1}",
-                    Instance?.Language.Localize ("CHART:DateOfBirth"),
-                    Instance?.Records?.DOB.ToShortDateString ());
-
-                this.FindControl<Label> ("lblPatientMRN").Content = String.Format ("{0}: {1}",
-                    Instance?.Language.Localize ("CHART:MedicalRecordNumber"),
-                    Instance?.Records?.MRN);
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (RefreshInterface)}");
+                return;
             }
+
+            this.FindControl<Label> ("lblPatientName").Content = Instance?.Records?.Name;
+
+            this.FindControl<Label> ("lblPatientDOB").Content = String.Format ("{0}: {1}",
+                Instance?.Language.Localize ("CHART:DateOfBirth"),
+                Instance?.Records?.DOB.ToShortDateString ());
+
+            this.FindControl<Label> ("lblPatientMRN").Content = String.Format ("{0}: {1}",
+                Instance?.Language.Localize ("CHART:MedicalRecordNumber"),
+                Instance?.Records?.MRN);
 
             /* Set the View time (time of MAR being viewed) to the Chart.CurrentTime */
             viewAtTime = new DateTime (
@@ -152,11 +160,10 @@ namespace IISIM {
         }
 
         private Task PopulateHeaders () {
-            if (Instance?.Records is null)
+            if (Instance?.Records is null || gridMain is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (PopulateHeaders)}");
                 return Task.CompletedTask;
-
-            if (gridMain is null)
-                return Task.CompletedTask;
+            }
 
             const int headerRow = 1;
             const int columnAmount = 12;
@@ -199,8 +206,10 @@ namespace IISIM {
         }
 
         private Task PopulateDrugs () {
-            if (Instance?.Records is null || gridMain is null)
+            if (Instance?.Records is null || gridMain is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (PopulateHeaders)}");
                 return Task.CompletedTask;
+            }
 
             const int drugColumn = 0;
             const int startRow = 2;           // The row to start populating drugs on
@@ -253,8 +262,10 @@ namespace IISIM {
         }
 
         private Task PopulateDoses () {
-            if (Instance?.Records is null || gridMain is null)
+            if (Instance?.Records is null || gridMain is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (PopulateDoses)}");
                 return Task.CompletedTask;
+            }
 
             const int doseStartColumn = 1;
             const int doseStartRow = 2;
@@ -323,8 +334,10 @@ namespace IISIM {
         }
 
         private void AdjustViewTime (DateTime newDate) {
-            if (Instance?.Records is null)
+            if (Instance?.Records is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (AdjustViewTime)}");
                 return;
+            }
 
             viewAtTime = newDate;
 
@@ -359,8 +372,10 @@ namespace IISIM {
             => AdjustViewTime (-12);
 
         private void DateSelected_DateChanged (object? s, DatePickerSelectedValueChangedEventArgs e) {
-            if (e.NewDate is null)
+            if (e.NewDate is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (DateSelected_DateChanged)}");
                 return;
+            }
 
             AdjustViewTime (new DateTime (
                 e.NewDate.Value.Year,
@@ -371,8 +386,10 @@ namespace IISIM {
         }
 
         private void TimeSelected_TimeChanged (object? s, TimePickerSelectedValueChangedEventArgs e) {
-            if (e.NewTime is null)
+            if (e.NewTime is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (TimeSelected_TimeChanged)}");
                 return;
+            }
 
             AdjustViewTime (new DateTime (
                 viewAtTime.Year,

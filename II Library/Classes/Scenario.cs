@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
+
     public class Scenario {
         public string? Name, Description, Author;
         public DateTime? Updated;
@@ -55,7 +56,7 @@ namespace II {
             await UnsubscribeEvents ();
 
             foreach (Step s in Steps)
-                await s.Physiology.Dispose ();
+                await (s.Physiology?.Dispose () ?? Task.CompletedTask);
 
             ProgressTimer.Dispose ();
         }
@@ -348,8 +349,8 @@ namespace II {
 
         public class Step {
             public string? UUID = null;
-            public Record Records;
-            public Physiology Physiology;
+            public Record? Records;
+            public Physiology? Physiology;
             public string? Name, Description;
 
             public List<Progression> Progressions = new ();

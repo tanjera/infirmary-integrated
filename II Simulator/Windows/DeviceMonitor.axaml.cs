@@ -70,8 +70,10 @@ namespace IISIM {
         }
 
         public override void InitAudio () {
-            if (Instance?.AudioLib is null)
+            if (Instance?.AudioLib is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitAudio)}");
                 return;
+            }
 
             base.InitAudio ();
 
@@ -111,29 +113,31 @@ namespace IISIM {
         }
 
         private void InitInterface () {
-            // Populate UI strings per language selection
-
-            if (Instance is not null) {
-                this.FindControl<Window> ("wdwDeviceMonitor").Title = Instance.Language.Localize ("CM:WindowTitle");
-                this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
-                this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
-                this.FindControl<MenuItem> ("menuAddNumeric").Header = Instance.Language.Localize ("MENU:MenuAddNumeric");
-                this.FindControl<MenuItem> ("menuAddTracing").Header = Instance.Language.Localize ("MENU:MenuAddTracing");
-                this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
-
-                this.FindControl<MenuItem> ("menuAlarms").Header = Instance.Language.Localize ("MENU:MenuAlarms");
-                this.FindControl<MenuItem> ("menuAlarmsEnable").Header = Instance.Language.Localize ("MENU:MenuAlarmsEnable");
-                this.FindControl<MenuItem> ("menuAlarmsDisable").Header = Instance.Language.Localize ("MENU:MenuAlarmsDisable");
-
-                this.FindControl<MenuItem> ("menuAudio").Header = Instance.Language.Localize ("MENU:MenuAudio");
-                this.FindControl<MenuItem> ("menuAudioOff").Header = Instance.Language.Localize ("MENU:MenuAudioOff");
-                this.FindControl<MenuItem> ("menuAudioECG").Header = Instance.Language.Localize ("MENU:MenuAudioECG");
-                this.FindControl<MenuItem> ("menuAlarmsSPO2").Header = Instance.Language.Localize ("MENU:MenuAudioSPO2");
-
-                this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
-                this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
-                this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitInterface)}");
+                return;
             }
+
+            // Populate UI strings per language selection
+            this.FindControl<Window> ("wdwDeviceMonitor").Title = Instance.Language.Localize ("CM:WindowTitle");
+            this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
+            this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+            this.FindControl<MenuItem> ("menuAddNumeric").Header = Instance.Language.Localize ("MENU:MenuAddNumeric");
+            this.FindControl<MenuItem> ("menuAddTracing").Header = Instance.Language.Localize ("MENU:MenuAddTracing");
+            this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
+
+            this.FindControl<MenuItem> ("menuAlarms").Header = Instance.Language.Localize ("MENU:MenuAlarms");
+            this.FindControl<MenuItem> ("menuAlarmsEnable").Header = Instance.Language.Localize ("MENU:MenuAlarmsEnable");
+            this.FindControl<MenuItem> ("menuAlarmsDisable").Header = Instance.Language.Localize ("MENU:MenuAlarmsDisable");
+
+            this.FindControl<MenuItem> ("menuAudio").Header = Instance.Language.Localize ("MENU:MenuAudio");
+            this.FindControl<MenuItem> ("menuAudioOff").Header = Instance.Language.Localize ("MENU:MenuAudioOff");
+            this.FindControl<MenuItem> ("menuAudioECG").Header = Instance.Language.Localize ("MENU:MenuAudioECG");
+            this.FindControl<MenuItem> ("menuAlarmsSPO2").Header = Instance.Language.Localize ("MENU:MenuAudioSPO2");
+
+            this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
+            this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
+            this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
         }
 
         private void UpdateInterface () {
@@ -227,8 +231,10 @@ namespace IISIM {
         }
 
         public async Task PlayAudioTone (ToneSources trigger, Physiology? p) {
-            if (TonePlayer is null || Instance?.AudioLib is null)
+            if (TonePlayer is null || Instance?.AudioLib is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (PlayAudioTone)}");
                 return;
+            }
 
             if (ToneSource == trigger && (Instance?.Settings.AudioEnabled ?? false)) {
                 switch (ToneSource) {
@@ -328,9 +334,18 @@ namespace IISIM {
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Dark);
 
+        public override void OnClosing (object? sender, CancelEventArgs e) {
+            base.OnClosing (sender, e);
+
+            if (Instance?.Physiology is not null)
+                Instance.Physiology.PhysiologyEvent -= OnPhysiologyEvent;
+        }
+
         public override void OnTick_Alarm (object? sender, EventArgs e) {
-            if (AudioPlayer is null || Instance?.AudioLib is null || AlarmMedia is null)
+            if (AudioPlayer is null || Instance?.AudioLib is null || AlarmMedia is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (OnTick_Alarm)}");
                 return;
+            }
 
             if (Instance?.Settings.AudioEnabled == false) {
                 AudioPlayer.Stop ();
@@ -480,7 +495,7 @@ namespace IISIM {
                         c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology);
                     });
 
-                    listNumerics.ForEach (n => n.UpdateVitals ());
+                    listNumerics.ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
                     break;
 
                 case Physiology.PhysiologyEventTypes.Defibrillation:

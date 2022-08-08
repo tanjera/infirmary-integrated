@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -46,19 +47,23 @@ namespace IISIM {
         }
 
         private void InitInterface () {
-            Grid layoutGrid = this.FindControl<Grid> ("layoutGrid");
+            if (Instance?.Language is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitInterface)}");
+                return;
+            }
 
             /* Populate UI strings per language selection */
-            if (Instance?.Language is not null) {
-                this.FindControl<Window> ("wdwDeviceECG").Title = Instance.Language.Localize ("ECG:WindowTitle");
-                this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
-                this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
-                this.FindControl<MenuItem> ("menuShowGrid").Header = Instance.Language.Localize ("MENU:MenuShowGrid");
-                this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
-                this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
-                this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
-                this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
-            }
+
+            this.FindControl<Window> ("wdwDeviceECG").Title = Instance.Language.Localize ("ECG:WindowTitle");
+            this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
+            this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+            this.FindControl<MenuItem> ("menuShowGrid").Header = Instance.Language.Localize ("MENU:MenuShowGrid");
+            this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
+            this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
+            this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
+            this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
+
+            Grid layoutGrid = this.FindControl<Grid> ("layoutGrid");
 
             /* Set background image for grid lines */
             var assets = AvaloniaLocator.Current.GetService<Avalonia.Platform.IAssetLoader> ();
@@ -171,6 +176,13 @@ namespace IISIM {
 
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Dark);
+
+        public override void OnClosing (object? sender, CancelEventArgs e) {
+            base.OnClosing (sender, e);
+
+            if (Instance?.Physiology is not null)
+                Instance.Physiology.PhysiologyEvent -= OnPhysiologyEvent;
+        }
 
         public override void OnTick_Tracing (object? sender, EventArgs e) {
             if (State != States.Running)

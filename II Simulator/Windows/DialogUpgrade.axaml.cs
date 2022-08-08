@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 using Avalonia;
 using Avalonia.Controls;
@@ -50,14 +51,18 @@ namespace IISIM {
         }
 
         public void Init () {
-            // Populate UI strings per language selection
-            if (Instance is not null) {
-                this.FindControl<Window> ("dlgUpgrade").Title = Instance.Language.Localize ("UPGRADE:Upgrade");
-                this.FindControl<Label> ("lblUpdateAvailable").Content = Instance.Language.Localize ("UPGRADE:UpdateAvailable");
-                this.FindControl<Label> ("lblWebsite").Content = Instance.Language.Localize ("UPGRADE:OpenDownloadPage");
-                this.FindControl<Label> ("lblDelay").Content = Instance.Language.Localize ("UPGRADE:Later");
-                this.FindControl<Label> ("lblMute").Content = Instance.Language.Localize ("UPGRADE:Mute");
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (Init)}");
+                return;
             }
+
+            // Populate UI strings per language selection
+
+            this.FindControl<Window> ("dlgUpgrade").Title = Instance.Language.Localize ("UPGRADE:Upgrade");
+            this.FindControl<Label> ("lblUpdateAvailable").Content = Instance.Language.Localize ("UPGRADE:UpdateAvailable");
+            this.FindControl<Label> ("lblWebsite").Content = Instance.Language.Localize ("UPGRADE:OpenDownloadPage");
+            this.FindControl<Label> ("lblDelay").Content = Instance.Language.Localize ("UPGRADE:Later");
+            this.FindControl<Label> ("lblMute").Content = Instance.Language.Localize ("UPGRADE:Mute");
         }
 
         private void btnWebsite_Click (object sender, RoutedEventArgs e) {

@@ -52,20 +52,23 @@ namespace IISIM {
         }
 
         private void InitInterface () {
-            /* Populate UI strings per language selection */
-            if (Instance is not null) {
-                this.FindControl<Window> ("wdwDeviceEFM").Title = Instance.Language.Localize ("EFM:WindowTitle");
-                this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
-                this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
-                this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
-                this.FindControl<MenuItem> ("menuStripSpeed").Header = Instance.Language.Localize ("MENU:StripSpeed");
-                this.FindControl<MenuItem> ("menuStripSpeedx1").Header = Instance.Language.Localize ("MENU:StripSpeedx1");
-                this.FindControl<MenuItem> ("menuStripxSpeedx10").Header = Instance.Language.Localize ("MENU:StripSpeedx10");
-                this.FindControl<MenuItem> ("menuStripxSpeedx25").Header = Instance.Language.Localize ("MENU:StripSpeedx25");
-                this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
-                this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
-                this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitInterface)}");
+                return;
             }
+
+            /* Populate UI strings per language selection */
+            this.FindControl<Window> ("wdwDeviceEFM").Title = Instance.Language.Localize ("EFM:WindowTitle");
+            this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
+            this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+            this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
+            this.FindControl<MenuItem> ("menuStripSpeed").Header = Instance.Language.Localize ("MENU:StripSpeed");
+            this.FindControl<MenuItem> ("menuStripSpeedx1").Header = Instance.Language.Localize ("MENU:StripSpeedx1");
+            this.FindControl<MenuItem> ("menuStripxSpeedx10").Header = Instance.Language.Localize ("MENU:StripSpeedx10");
+            this.FindControl<MenuItem> ("menuStripxSpeedx25").Header = Instance.Language.Localize ("MENU:StripSpeedx25");
+            this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
+            this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
+            this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
 
             Grid displayGrid = this.FindControl<Grid> ("displayGrid");
 
@@ -165,6 +168,13 @@ namespace IISIM {
 
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Dark);
+
+        public override void OnClosing (object? sender, CancelEventArgs e) {
+            base.OnClosing (sender, e);
+
+            if (Instance?.Physiology is not null)
+                Instance.Physiology.PhysiologyEvent -= OnPhysiologyEvent;
+        }
 
         public override void OnTick_Tracing (object? sender, EventArgs e) {
             if (State != States.Running)
