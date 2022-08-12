@@ -57,6 +57,11 @@ namespace IISE {
 
 #pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
 
+        public void OnMenuAbout_Click (object sender, EventArgs e) {
+            if (WindowMain is not null)
+                _ = WindowMain.DialogAbout ();
+        }
+
         public static Task Exit () {
             WindowSplash?.Close ();
             WindowMain?.Close ();

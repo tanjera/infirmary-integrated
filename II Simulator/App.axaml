@@ -5,4 +5,10 @@
   <Application.Styles>
     <FluentTheme Mode="Light" />
   </Application.Styles>
+  <NativeMenu.Menu>
+    <NativeMenu>
+      <NativeMenuItem Header="About Infirmary Integrated"
+                      Click="OnMenuAbout_Click" />
+    </NativeMenu>
+  </NativeMenu.Menu>
 </Application>

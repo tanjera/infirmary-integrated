@@ -574,7 +574,7 @@ namespace IISIM {
             await dlg.ShowDialog (this);
         }
 
-        private async Task DialogAbout () {
+        public async Task DialogAbout () {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 

@@ -100,6 +100,11 @@ namespace IISIM {
             base.OnFrameworkInitializationCompleted ();
         }
 
+        public void OnMenuAbout_Click (object sender, EventArgs e) {
+            if (Window_Main is not null)
+                _ = Window_Main.DialogAbout ();
+        }
+
         public void Exit () {
             Window_Splash?.Close ();
 

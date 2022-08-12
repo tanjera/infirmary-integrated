@@ -22,6 +22,7 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 
 using II;
+
 using IISE.Controls;
 using IISE.Windows;
 
@@ -65,7 +66,7 @@ namespace IISE {
             AvaloniaXamlLoader.Load (this);
         }
 
-        private async Task DialogAbout () {
+        public async Task DialogAbout () {
             DialogAbout dlg = new ();
             await dlg.ShowDialog (this);
         }
