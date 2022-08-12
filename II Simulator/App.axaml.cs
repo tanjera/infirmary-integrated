@@ -69,6 +69,8 @@ namespace IISIM {
 
         public override async void OnFrameworkInitializationCompleted () {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
+                Start_Args = desktop.Args;      // Must set *before* new Window_Main(this) for loading file from desktop
+
                 Window_Splash = new ();
                 Window_Main = new (this);
 
@@ -90,8 +92,6 @@ namespace IISIM {
                 desktop.MainWindow = Window_Main;
 
                 Window_Splash.Close ();
-
-                Start_Args = desktop.Args;
 
                 if (OperatingSystem.IsMacOS ())
                     _ = MacOSRegisterLaunchServices ();

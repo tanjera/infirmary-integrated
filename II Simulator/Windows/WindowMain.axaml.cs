@@ -91,7 +91,7 @@ namespace IISIM {
             await InitTimers ();
 
             if (Instance.Start_Args?.Length > 0)
-                await LoadOpen (Instance.Start_Args [0]);
+                await LoadOpen (Instance.Start_Args [0].Trim (' ', '\n', '\r'));
 
             if (Instance?.AudioLib is null)
                 await MessageAudioUnavailable ();
