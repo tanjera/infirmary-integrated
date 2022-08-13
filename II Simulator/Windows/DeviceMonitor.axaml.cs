@@ -60,8 +60,8 @@ namespace IISIM {
 #endif
 
             DataContext = this;
-            InitInterface ();
 
+            InitInterface ();
             OnLayoutChange ();
         }
 

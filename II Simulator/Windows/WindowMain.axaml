@@ -201,7 +201,7 @@
 				HorizontalAlignment="Right">
         <MenuItem
 					Name="menuUpdate"
-					Background="Yellow"
+					Background="LightYellow"
 					Click="MenuUpdate_Click"
 					IsVisible="False" />
       </Menu>

@@ -13,9 +13,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 namespace II {
-
     public class InterOp {
-
         public enum Platforms {
             Null,
             Windows,
@@ -37,10 +35,8 @@ namespace II {
 
         public static void OpenBrowser (string url) {
             try {
-                Process.Start (url);
-            } catch {
                 switch (GetPlatform ()) {
-                    default: throw;
+                    default: break;
 
                     case Platforms.Windows:
                         url = url.Replace ("&", "^&");
@@ -55,6 +51,8 @@ namespace II {
                         Process.Start ("open", url);
                         break;
                 }
+            } catch {
+                return;
             }
         }
     }

@@ -8,15 +8,12 @@ namespace IISIM {
 
         public WindowSplash () {
             InitializeComponent ();
-            Init ();
+
+            DataContext = this;
         }
 
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
-        }
-
-        private void Init () {
-            DataContext = this;
         }
     }
 }

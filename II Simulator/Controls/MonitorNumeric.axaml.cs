@@ -84,7 +84,6 @@ namespace IISIM.Controls {
             ColorScheme = cs;
 
             InitInterface ();
-
             UpdateInterface ();
         }
 

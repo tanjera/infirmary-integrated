@@ -42,10 +42,14 @@ namespace IISIM {
             /* Establish reference variables */
             gridMain = this.FindControl<Grid> ("gridMain");
 
-            _ = InitInterface ();
-            _ = PopulateHeaders ();
-            _ = PopulateDrugs ();
-            _ = PopulateDoses ();
+            Task.Run (async () => {
+                await Dispatcher.UIThread.InvokeAsync (async () => {
+                    await InitInterface ();
+                    await PopulateHeaders ();
+                    await PopulateDrugs ();
+                    await PopulateDoses ();
+                });
+            });
         }
 
         private void InitializeComponent () {

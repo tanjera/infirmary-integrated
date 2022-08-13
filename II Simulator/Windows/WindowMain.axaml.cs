@@ -57,7 +57,7 @@ namespace IISIM {
 
             InitializeComponent ();
 
-            _ = Init ();
+            Init ();
         }
 
         public WindowMain () {
@@ -68,7 +68,7 @@ namespace IISIM {
             AvaloniaXamlLoader.Load (this);
         }
 
-        private async Task Init () {
+        private void Init () {
             if (Instance is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (Init)}");
                 return;
@@ -78,30 +78,40 @@ namespace IISIM {
 
             Instance.Window_Main = this;
 
-            await InitInitialRun ();
+            InitInitialRun ();
+
+            /* Init essential functions first */
+            InitInterface ();
+            InitMirroring ();
+            InitScenario (true);
+            InitTimers ();
+
+            Task.Run (async () => {
+                await Dispatcher.UIThread.InvokeAsync (async () => {
+                    /* Init important but non-essential functions */
+                    if (Instance.Start_Args?.Length > 0)
+                        await LoadOpen (Instance.Start_Args [0].Trim (' ', '\n', '\r'));
+
+                    /* Update UI from loading functionality */
+                    await SetParameterStatus (Instance?.Settings.AutoApplyChanges ?? false);
+
+                    /* Run useful but otherwise vanity functions last */
 
 #if !DEBUG
             await InitUsageStatistics ();
 #endif
 
-            InitInterface ();
-            await InitUpgrade ();
-            await InitMirroring ();
-            await InitScenario (true);
-            await InitTimers ();
+                    if (Instance?.AudioLib is null)
+                        await MessageAudioUnavailable ();
 
-            if (Instance.Start_Args?.Length > 0)
-                await LoadOpen (Instance.Start_Args [0].Trim (' ', '\n', '\r'));
-
-            if (Instance?.AudioLib is null)
-                await MessageAudioUnavailable ();
-
-            await SetParameterStatus (Instance?.Settings.AutoApplyChanges ?? false);
+                    await InitUpgrade ();
+                });
+            });
         }
 
-        private async Task InitInitialRun () {
+        private void InitInitialRun () {
             if (!global::II.Settings.Simulator.Exists ()) {
-                await DialogEULA ();
+                DialogEULA ();
             }
         }
 
@@ -258,10 +268,14 @@ namespace IISIM {
             await Instance.Server.Get_LatestVersion ();
 
             string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
-            if (Utility.IsNewerVersion (version, Instance.Server.UpgradeVersion)) {
+            bool upgradeAvailable = Utility.IsNewerVersion (version, Instance.Server.UpgradeVersion);
+
+            if (upgradeAvailable) {
                 MenuItem miUpdate = this.FindControl<MenuItem> ("menuUpdate");
-                miUpdate.Header = Instance.Language.Localize ("STATUS:UpdateAvailable");
-                miUpdate.IsVisible = true;
+                if (miUpdate is not null) {
+                    miUpdate.Header = Instance.Language.Localize ("STATUS:UpdateAvailable");
+                    miUpdate.IsVisible = true;
+                }
             } else {            // If no update available, no status update; remove any notification muting
                 Instance.Settings.MuteUpgrade = false;
                 Instance.Settings.Save ();
@@ -270,17 +284,18 @@ namespace IISIM {
 
             if (Instance.Settings.MuteUpgrade) {
                 if (DateTime.Compare (Instance.Settings.MuteUpgradeDate, DateTime.Now - new TimeSpan (30, 0, 0, 0)) < 0) {
-                    Instance.Settings.MuteUpgrade = false;                       // Reset the notification mute every 30 days
+                    Instance.Settings.MuteUpgrade = false;              // Reset the notification mute every 30 days
                     Instance.Settings.Save ();
                 } else {        // Mutes update popup notification
                     return;
                 }
             }
 
+            // Show the upgrade dialog to the user
             await DialogUpgrade ();
         }
 
-        private async Task InitMirroring () {
+        private void InitMirroring () {
             if (Instance is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitMirroring)}");
                 return;
@@ -288,12 +303,14 @@ namespace IISIM {
 
             Instance.Timer_Main.Elapsed += Instance.Mirror.ProcessTimer;
             Instance.Mirror.timerUpdate.Tick += OnMirrorTick;
-            await Instance.Mirror.timerUpdate.ResetStart (5000);
 
-            await UpdateMirrorStatus ();
+            Task.Run (async () => {
+                await Instance.Mirror.timerUpdate.ResetStart (5000);
+                await UpdateMirrorStatus ();
+            });
         }
 
-        private async Task InitScenario (bool toInit) {
+        private void InitScenario (bool toInit) {
             if (Instance is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitScenario)}");
                 return;
@@ -305,7 +322,7 @@ namespace IISIM {
             Instance.Timer_Main.Elapsed += Instance.Scenario.ProcessTimer;
 
             if (toInit)         // If toInit is false, Patient is null- InitPatient() will need to be called manually
-                await InitScenarioStep ();
+                InitScenarioStep ();
         }
 
         private async Task UnloadScenario () {
@@ -322,12 +339,12 @@ namespace IISIM {
 
         private async Task RefreshScenario (bool toInit) {
             await UnloadScenario ();
-            await InitScenario (toInit);
+            InitScenario (toInit);
 
             await UpdateExpanders ();
         }
 
-        private async Task InitTimers () {
+        private void InitTimers () {
             if (Instance is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitTimers)}");
                 return;
@@ -341,20 +358,22 @@ namespace IISIM {
             ApplyTimer_Respiratory.Tick += ApplyPhysiologyParameters_Respiratory;
             ApplyTimer_Obstetric.Tick += ApplyPhysiologyParameters_Obstetric;
 
-            await ApplyTimer_Cardiac.Set (5000);
-            await ApplyTimer_Respiratory.Set (10000);
-            await ApplyTimer_Obstetric.Set (30000);
+            Task.Run (async () => {
+                await ApplyTimer_Cardiac.Set (5000);
+                await ApplyTimer_Respiratory.Set (10000);
+                await ApplyTimer_Obstetric.Set (30000);
+            });
         }
 
-        private async Task InitScenarioStep () {
-            await InitPhysiologyEvents ();
-            await InitStep ();
+        private void InitScenarioStep () {
+            InitPhysiologyEvents ();
+            InitStep ();
         }
 
-        private Task InitPhysiologyEvents () {
+        private void InitPhysiologyEvents () {
             if (Instance?.Physiology is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitPhysiologyEvents)}");
-                return Task.CompletedTask;
+                return;
             }
 
             /* Tie the Patient's Timer to the Main Timer */
@@ -363,8 +382,6 @@ namespace IISIM {
             /* Tie PatientEvents to the PatientEditor UI! And trigger. */
             Instance.Physiology.PhysiologyEvent += OnPhysiologyEvent;
             OnPhysiologyEvent (this, new Physiology.PhysiologyEventArgs (Instance.Physiology, Physiology.PhysiologyEventTypes.Vitals_Change));
-
-            return Task.CompletedTask;
         }
 
         private async Task UnloadPatientEvents () {
@@ -524,13 +541,16 @@ namespace IISIM {
             await dlg.AsyncShow (this);
         }
 
-        private async Task DialogEULA () {
+        private void DialogEULA () {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
             DialogEULA dlg = new (Instance);
             dlg.Activate ();
-            await dlg.ShowDialog (this);
+
+            Dispatcher.UIThread.InvokeAsync (async () => {
+                await dlg.ShowDialog (this);
+            });
         }
 
         private async Task DialogLanguage (bool reloadUI = false) {
@@ -851,7 +871,7 @@ namespace IISIM {
 
                         await RefreshScenario (false);
                         await Instance.Scenario.Load (pbuffer.ToString ());
-                        await InitScenarioStep ();     // Needs to be called manually since InitScenario(false) doesn't init a Patient
+                        InitScenarioStep ();     // Needs to be called manually since InitScenario(false) doesn't init a Patient
                     } else if (line == "> Begin: Editor") {
                         pbuffer = new StringBuilder ();
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
@@ -910,8 +930,8 @@ namespace IISIM {
             }
 
             // Initialize the first step of the scenario
-            if (Instance.Scenario.IsLoaded) {
-                await InitStep ();
+            if (Instance?.Scenario?.IsLoaded ?? false) {
+                InitStep ();
 
                 if (Instance.Scenario.DeviceMonitor.IsEnabled)
                     await InitDeviceMonitor ();
@@ -1118,13 +1138,13 @@ namespace IISIM {
                 return;
             }
 
-            _ = InitPhysiologyEvents ();
-            _ = InitStep ();
+            InitPhysiologyEvents ();
+            InitStep ();
 
             UpdateView (Instance?.Physiology);
         }
 
-        private Task InitStep () {
+        private void InitStep () {
             Scenario.Step step = Instance?.Scenario?.Current ?? new Scenario.Step ();
 
             Label lblScenarioStep = this.FindControl<Label> ("lblScenarioStep");
@@ -1173,8 +1193,6 @@ namespace IISIM {
                     });
                 }
             }
-
-            return Task.CompletedTask;
         }
 
         private async Task NextStep () {

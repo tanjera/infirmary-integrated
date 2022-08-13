@@ -29,6 +29,7 @@ namespace IISIM {
 #endif
             DataContext = this;
             Instance = app;
+
             Init ();
         }
 
