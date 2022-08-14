@@ -192,14 +192,29 @@
                      Content="Populate Doses For This Order"
                     Click="ButtonPopulateThisRxDoses_Click" />
 
-            <ListBox Name="lbRxDoses"
-                     Grid.Column="0"
-                     Grid.ColumnSpan="3"
-                     Grid.Row="3"
-                     MinHeight="100"
-                     HorizontalAlignment="Stretch"
-                     Background="White"
-                     ScrollViewer.VerticalScrollBarVisibility="Auto" />
+            <Grid Grid.Column="0"
+                  Grid.ColumnSpan="3"
+                  Grid.Row="3"
+                  ColumnDefinitions="*, Auto"
+                  Margin="0 10 0 0">
+              <ListBox Name="lbRxDoses"
+                       Grid.Column="0"
+                       MinHeight="100"
+                       HorizontalAlignment="Stretch"
+                       Background="White"
+                       ScrollViewer.VerticalScrollBarVisibility="Auto"
+                       SelectionMode="Multiple" />
+              <StackPanel Orientation="Vertical"
+                          Grid.Column="1">
+                <Button Name="btnToggleDoseAdministered"
+                        Height="30"
+                        Margin="5 0 0 5"
+                        Content="Toggle Administration Status"
+                        Click="ButtonToggleDoseAdministration_Click" />
+
+                <iic:PropertyString x:Name="pstrDoseComment" />
+              </StackPanel>
+            </Grid>
           </Grid>
         </Expander>
       </StackPanel>

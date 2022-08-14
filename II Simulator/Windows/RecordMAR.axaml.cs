@@ -299,9 +299,9 @@ namespace IISIM {
                         continue;
 
                     IBrush bgColor = Brushes.Black;
-                    if (dose.AdministrationStatus == Medication.Dose.AdministrationStatuses.Values.Administered) {
+                    if (dose.Administered) {
                         bgColor = Brushes.LightGray;
-                    } else if (dose.AdministrationStatus == Medication.Dose.AdministrationStatuses.Values.NotAdministered) {
+                    } else if (!dose.Administered) {
                         if (order.Priority == Medication.Order.Priorities.Values.Stat) {
                             bgColor = Brushes.HotPink;
                         } else if (Instance.Records.CurrentTime - dose.ScheduledTime > new TimeSpan (1, 0, 0)) {
@@ -319,7 +319,9 @@ namespace IISIM {
                                 + $"{Instance.Language.Localize (Medication.Order.DoseUnits.LookupString (order.DoseUnit ?? Medication.Order.DoseUnits.Values.L))} "
                                 + $"{Instance.Language.Localize (Medication.Order.Routes.LookupString (order.Route ?? Medication.Order.Routes.Values.IV))}\n"
                                 + $"{Instance.Language.Localize (Medication.Order.Priorities.LookupString (order.Priority ?? Medication.Order.Priorities.Values.Routine))}\n"
-                                + $"{dose.ScheduledTime.Value.ToShortDateString ()} {dose.ScheduledTime.Value.ToString ("HH:mm")}",
+                                + $"{dose.ScheduledTime.Value.ToShortDateString ()} {dose.ScheduledTime.Value.ToString ("HH:mm")}\n"
+                                + (dose.Administered ? $"\n{Instance.Language.Localize ("ENUM:AdministrationStatuses:Administered")}" : "")
+                                + (!String.IsNullOrEmpty (dose.Comment) ? $"\n{dose.Comment}" : ""),
                         Padding = new Thickness (10),
                         Background = bgColor
                     };

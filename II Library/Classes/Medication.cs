@@ -5,40 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
+
     public class Medication {
+
         public class Dose {
             public string? OrderUUID;
 
             public DateTime? ScheduledTime;
 
-            public AdministrationStatuses.Values? AdministrationStatus;
-            public TimeStatuses.Values? TimeStatus;
-
-            public class AdministrationStatuses {
-                public Values? Value;
-
-                public static string LookupString (Values value) {
-                    return String.Format ("ENUM:AdministrationStatuses:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value)?.ToString ());
-                }
-
-                public enum Values {
-                    Administered,
-                    NotAdministered
-                }
-            }
-
-            public class TimeStatuses {
-                public Values? Value;
-
-                public static string LookupString (Values value) {
-                    return String.Format ("ENUM:TimeStatuses:{0}", Enum.GetValues (typeof (Values)).GetValue ((int)value)?.ToString ());
-                }
-
-                public enum Values {
-                    Pending,
-                    Late
-                }
-            }
+            public bool Administered = false;
+            public string Comment = "";
 
             public Task Load (string inc) {
                 using StringReader sRead = new (inc);
@@ -58,9 +34,8 @@ namespace II {
                                 case "OrderUUID": OrderUUID = pValue; break;
 
                                 case "ScheduledTime": ScheduledTime = Utility.DateTime_FromString (pValue); break;
-
-                                case "AdministrationStatus": AdministrationStatus = (AdministrationStatuses.Values)Enum.Parse (typeof (AdministrationStatuses.Values), pValue); break;
-                                case "TimeStatus": TimeStatus = (TimeStatuses.Values)Enum.Parse (typeof (TimeStatuses.Values), pValue); break;
+                                case "Administered": Administered = bool.Parse (pValue); break;
+                                case "Comment": Comment = pValue; break;
                             }
                         }
                     }
@@ -81,9 +56,8 @@ namespace II {
                 sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "OrderUUID", OrderUUID));
 
                 sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ScheduledTime", Utility.DateTime_ToString (ScheduledTime)));
-
-                sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "AdministrationStatus", AdministrationStatus));
-                sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "TimeStatus", TimeStatus));
+                sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Administered", Administered));
+                sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Comment", Comment));
 
                 return sWrite.ToString ();
             }
@@ -164,6 +138,7 @@ namespace II {
                 }
 
                 public enum Values {
+
                     // Volume
                     L,
 

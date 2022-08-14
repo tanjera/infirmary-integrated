@@ -27,7 +27,9 @@ namespace IISE.Controls {
             DemographicsHomeAddress,
             DemographicsTelephoneNumber,
             DemographicsInsuranceProvider,
-            DemographicsInsuranceAccount
+            DemographicsInsuranceAccount,
+
+            DoseComment
         }
 
         public new event EventHandler<PropertyStringEventArgs>? PropertyChanged;
@@ -70,6 +72,8 @@ namespace IISE.Controls {
                 case Keys.DemographicsTelephoneNumber: lblKey.Content = "Telephone Number: "; break;
                 case Keys.DemographicsInsuranceProvider: lblKey.Content = "Insurance Provider: "; break;
                 case Keys.DemographicsInsuranceAccount: lblKey.Content = "Insurance Account: "; break;
+
+                case Keys.DoseComment: lblKey.Content = "Comment: "; break;
             }
 
             if (!isInitiated) {

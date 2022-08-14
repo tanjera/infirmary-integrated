@@ -21,6 +21,7 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 
 using II;
+
 using IISE.Controls;
 
 namespace IISE.Windows {
@@ -82,6 +83,7 @@ namespace IISE.Windows {
             PropertyString pstrTelephoneNumber = this.FindControl<PropertyString> ("pstrTelephoneNumber");
             PropertyString pstrInsuranceProvider = this.FindControl<PropertyString> ("pstrInsuranceProvider");
             PropertyString pstrInsuranceAccount = this.FindControl<PropertyString> ("pstrInsuranceAccount");
+            PropertyString pstrDoseComment = this.FindControl<PropertyString> ("pstrDoseComment");
 
             PropertyRxOrder prxOrder = this.FindControl<PropertyRxOrder> ("prxoRxOrder");
 
@@ -101,6 +103,7 @@ namespace IISE.Windows {
             pstrTelephoneNumber.Init (PropertyString.Keys.DemographicsTelephoneNumber);
             pstrInsuranceProvider.Init (PropertyString.Keys.DemographicsInsuranceProvider);
             pstrInsuranceAccount.Init (PropertyString.Keys.DemographicsInsuranceAccount);
+            pstrDoseComment.Init (PropertyString.Keys.DoseComment);
 
             pdpSimDate.PropertyChanged += UpdateRecords;
             pdpDOB.PropertyChanged += UpdateRecords;
@@ -115,6 +118,7 @@ namespace IISE.Windows {
             pstrTelephoneNumber.PropertyChanged += UpdateRecords;
             pstrInsuranceProvider.PropertyChanged += UpdateRecords;
             pstrInsuranceAccount.PropertyChanged += UpdateRecords;
+            pstrDoseComment.PropertyChanged += UpdateRecords;
 
             prxOrder.PropertyChanged += UpdateRecords;
             lbRxOrders.SelectionChanged += LbRxOrders_SelectionChanged;
@@ -248,18 +252,32 @@ namespace IISE.Windows {
 
             List<string> llbi = new ();
 
-            foreach (var dose in doses) {
+            for (int i = 0; i < doses.Count; i++) {
                 if (App.Language is not null) {
-                    llbi.Add (String.Format ("{0} {1}, {2}, {3}",
-                        dose?.ScheduledTime?.ToShortDateString (),
-                        dose?.ScheduledTime?.ToString ("HH:mm"),
-                        App.Language.Localize (Medication.Dose.TimeStatuses.LookupString (dose.TimeStatus ?? Medication.Dose.TimeStatuses.Values.Pending)),
-                        App.Language.Localize (Medication.Dose.AdministrationStatuses.LookupString (dose.AdministrationStatus ?? Medication.Dose.AdministrationStatuses.Values.NotAdministered))
+                    llbi.Add (String.Format ("{0}: {1} {2}, {3}: {4}",
+                        i,
+                        doses [i].ScheduledTime?.ToShortDateString (),
+                        doses [i].ScheduledTime?.ToString ("HH:mm"),
+                        App.Language.Localize (doses [i].Administered ? "ENUM:AdministrationStatuses:Administered" : "ENUM:AdministrationStatuses:NotAdministered"),
+                        doses [i].Comment
                         ));
                 }
             }
 
+            // Save old selection
+            List<int> selections = new ();
+            foreach (var dose in lbRxDoses.SelectedItems.Cast<string> ())
+                selections.Add (int.Parse (dose.Substring (0, dose.IndexOf (':'))));
+            lbRxDoses.SelectedItems.Clear ();
+
+            // Update list to display
             lbRxDoses.Items = llbi;
+
+            // Restore selection as available
+            foreach (int i in selections) {
+                if (i < llbi.Count)
+                    lbRxDoses.SelectedItems.Add (llbi [i]);
+            }
 
             lbRxDoses.SelectionChanged += LbRxDoses_SelectionChanged;
         }
@@ -324,6 +342,7 @@ namespace IISE.Windows {
                     case PropertyString.Keys.DemographicsTelephoneNumber: Records.TelephoneNumber = e.Value; break;
                     case PropertyString.Keys.DemographicsInsuranceProvider: Records.InsuranceProvider = e.Value; break;
                     case PropertyString.Keys.DemographicsInsuranceAccount: Records.InsuranceAccount = e.Value; break;
+                    case PropertyString.Keys.DoseComment: Action_SetRxDoseComment (e.Value ?? ""); break;
                 }
             }
         }
@@ -387,8 +406,7 @@ namespace IISE.Windows {
                         Records.RxDoses.Add (new Medication.Dose () {
                             OrderUUID = order.UUID,
                             ScheduledTime = Records.CurrentTime,
-                            TimeStatus = Medication.Dose.TimeStatuses.Values.Pending,
-                            AdministrationStatus = Medication.Dose.AdministrationStatuses.Values.NotAdministered
+                            Administered = false
                         });
                     break;
 
@@ -409,10 +427,7 @@ namespace IISE.Windows {
                             Records.RxDoses.Add (new Medication.Dose () {
                                 OrderUUID = order.UUID,
                                 ScheduledTime = scheduledTime,
-                                TimeStatus = order.StartTime + timeInterval < Records.CurrentTime
-                                    ? Medication.Dose.TimeStatuses.Values.Late
-                                    : Medication.Dose.TimeStatuses.Values.Pending,
-                                AdministrationStatus = Medication.Dose.AdministrationStatuses.Values.NotAdministered
+                                Administered = false
                             });
                     }
                     break;
@@ -476,6 +491,10 @@ namespace IISE.Windows {
             Action_SelectRxOrder ();
         }
 
+        private void Action_SelectRxDoses () {
+            this.FindControl<PropertyString> ("pstrDoseComment").Set ("");
+        }
+
         private void Action_PopulateAllRxDoses () {
             for (int i = 0; i < Records?.RxOrders.Count; i++)
                 PopulateRxDose (i);
@@ -485,6 +504,46 @@ namespace IISE.Windows {
 
         private void Action_PopulateThisRxDoses () {
             PopulateRxDose (SelectedRxOrder);
+            UpdateView_RxDoseList ();
+        }
+
+        private void Action_ToggleRxDoseAdministration () {
+            if (Records is null || Records.RxOrders is null
+                || SelectedRxOrder < 0 || Records.RxOrders.Count <= SelectedRxOrder)
+                return;
+
+            ListBox lbRxDoses = this.FindControl<ListBox> ("lbRxDoses");
+
+            var order = Records.RxOrders [SelectedRxOrder];
+            var doses = Records.RxDoses.FindAll (d => d.OrderUUID == order.UUID);
+
+            foreach (var dose in lbRxDoses.SelectedItems.Cast<string> ()) {
+                int i = int.Parse (dose.Substring (0, dose.IndexOf (':')));
+
+                if (i < doses.Count)
+                    doses [i].Administered = !doses [i].Administered;
+            }
+
+            UpdateView_RxDoseList ();
+        }
+
+        private void Action_SetRxDoseComment (string comment) {
+            if (Records is null || Records.RxOrders is null
+                || SelectedRxOrder < 0 || Records.RxOrders.Count <= SelectedRxOrder)
+                return;
+
+            ListBox lbRxDoses = this.FindControl<ListBox> ("lbRxDoses");
+
+            var order = Records.RxOrders [SelectedRxOrder];
+            var doses = Records.RxDoses.FindAll (d => d.OrderUUID == order.UUID);
+
+            foreach (var dose in lbRxDoses.SelectedItems.Cast<string> ()) {
+                int i = int.Parse (dose.Substring (0, dose.IndexOf (':')));
+
+                if (i < doses.Count)
+                    doses [i].Comment = comment;
+            }
+
             UpdateView_RxDoseList ();
         }
 
@@ -513,8 +572,8 @@ namespace IISE.Windows {
         private void LbRxOrders_SelectionChanged (object? sender, SelectionChangedEventArgs e)
             => Action_SelectRxOrder ();
 
-        private void LbRxDoses_SelectionChanged (object? sender, SelectionChangedEventArgs e) {
-        }
+        private void LbRxDoses_SelectionChanged (object? sender, SelectionChangedEventArgs e)
+            => Action_SelectRxDoses ();
 
         private void ButtonAddRxOrder_Click (object sender, RoutedEventArgs e)
             => Action_AddRxOrder ();
@@ -527,5 +586,8 @@ namespace IISE.Windows {
 
         private void ButtonPopulateThisRxDoses_Click (object sender, RoutedEventArgs e)
             => Action_PopulateThisRxDoses ();
+
+        private void ButtonToggleDoseAdministration_Click (object sender, RoutedEventArgs e)
+            => Action_ToggleRxDoseAdministration ();
     }
 }
