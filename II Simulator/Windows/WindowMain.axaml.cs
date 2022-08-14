@@ -28,6 +28,8 @@ namespace IISIM {
     public partial class WindowMain : Window {
         public App? Instance;
 
+        private bool HideDeviceLabels = false;
+
         /* Buffers for ViewModel handling and temporal smoothing of upstream Model data changes */
         private Physiology? ApplyBuffer;
 
@@ -162,6 +164,9 @@ namespace IISIM {
 
             this.FindControl<HeaderedContentControl> ("lblGroupEHR").Header = Instance.Language.Localize ("PE:EHR");
             this.FindControl<Label> ("lblRecordMAR").Content = Instance.Language.Localize ("PE:MAR");
+
+            this.FindControl<HeaderedContentControl> ("lblGroupOptions").Header = Instance.Language.Localize ("PE:Options");
+            this.FindControl<Label> ("lblOptionsHide").Content = Instance.Language.Localize ("PE:HideDevices");
 
             this.FindControl<Label> ("lblGroupScenarioPlayer").Content = Instance.Language.Localize ("PE:ScenarioPlayer");
             this.FindControl<HeaderedContentControl> ("lblProgressionOptions").Header = Instance.Language.Localize ("PE:ProgressionOptions");
@@ -651,6 +656,17 @@ namespace IISIM {
             return Task.CompletedTask;
         }
 
+        private Task ToggleHideDevices () {
+            HideDeviceLabels = !HideDeviceLabels;
+
+            Dispatcher.UIThread.InvokeAsync (() => {
+                this.FindControl<Panel> ("panelDevicesExpanded").IsVisible = !HideDeviceLabels;
+                this.FindControl<Panel> ("panelDevicesHidden").IsVisible = HideDeviceLabels;
+            });
+
+            return Task.CompletedTask;
+        }
+
         private async Task CheckUpgrade () {
             if (Instance is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (CheckUpgrade)}");
@@ -707,20 +723,11 @@ namespace IISIM {
             Dispatcher.UIThread.InvokeAsync (() => {
                 MenuItem miStatus = this.FindControl<MenuItem> ("menuMirrorStatus");
 
-                switch (Instance?.Mirror.Status) {
-                    default:
-                    case Mirror.Statuses.INACTIVE:
-                        miStatus.Header = $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Inactive")}";
-                        break;
-
-                    case Mirror.Statuses.HOST:
-                        miStatus.Header = $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Server")}";
-                        break;
-
-                    case Mirror.Statuses.CLIENT:
-                        miStatus.Header = $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Client")}";
-                        break;
-                }
+                miStatus.Header = (Instance?.Mirror.Status) switch {
+                    Mirror.Statuses.HOST => $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Server")}",
+                    Mirror.Statuses.CLIENT => $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Client")}",
+                    _ => $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Inactive")}",
+                };
             });
 
             return Task.CompletedTask;
@@ -849,6 +856,9 @@ namespace IISIM {
 
             try {
                 while ((line = (await sRead.ReadLineAsync ())?.Trim ()) != null) {
+                    if (Instance is null)
+                        continue;
+
                     if (line == "> Begin: Physiology") {           // Load files saved by Infirmary Integrated (base)
                         if (Instance.Scenario?.Physiology is null)
                             Instance.Scenario = new (true);
@@ -861,8 +871,7 @@ namespace IISIM {
                         await RefreshScenario (true);
                         await (Instance?.Physiology?.Load (pbuffer.ToString ()) ?? Task.CompletedTask);
                     } else if (line == "> Begin: Scenario") {   // Load files saved by Infirmary Integrated Scenario Editor
-                        if (Instance.Scenario is null)
-                            Instance.Scenario = new (false);
+                        Instance.Scenario ??= new (false);
 
                         pbuffer = new StringBuilder ();
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
@@ -953,7 +962,7 @@ namespace IISIM {
             try {
                 string? line;
                 while ((line = await sRead.ReadLineAsync ()) != null) {
-                    if (line.Contains (":")) {
+                    if (line.Contains (':')) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1);
                         switch (pName) {
@@ -1201,9 +1210,9 @@ namespace IISIM {
             if (Instance?.Scenario?.Current?.Progressions.Count == 0)
                 await Instance.Scenario.NextStep ();
             else {
-                foreach (RadioButton rb in stackProgressions.Children)
-                    if (rb.IsChecked ?? false && rb.Name.Contains ("_")) {
-                        string? prog = rb.Name?.Substring (rb.Name.IndexOf ("_") + 1);
+                foreach (RadioButton rb in stackProgressions.Children.Cast<RadioButton> ())
+                    if (rb.IsChecked ?? false && rb.Name.Contains ('_')) {
+                        string? prog = rb.Name?.Substring (rb.Name.IndexOf ('_') + 1);
                         if (Instance?.Scenario is not null)
                             await Instance.Scenario.NextStep (prog == "Default" ? null : prog);
                         break;
@@ -1223,7 +1232,7 @@ namespace IISIM {
             if (Instance?.Scenario is not null)
                 await Instance.Scenario.PauseStep ();
 
-            this.FindControl<Label> ("lblTimerStep").Content = Instance.Language.Localize ("PE:ProgressionPaused");
+            this.FindControl<Label> ("lblTimerStep").Content = Instance?.Language.Localize ("PE:ProgressionPaused");
         }
 
         private async Task PlayStep () {
@@ -1252,8 +1261,7 @@ namespace IISIM {
         private async Task ApplyPhysiologyParameters () {
             await AdvanceParameterStatus (ParameterStatuses.ChangesApplied);
 
-            if (ApplyBuffer is null)
-                ApplyBuffer = new ();
+            ApplyBuffer ??= new ();
 
             await ApplyPhysiologyParameters_Buffer (ApplyBuffer);
             ApplyPending_Cardiac = true;
@@ -1477,6 +1485,11 @@ namespace IISIM {
             Dispatcher.UIThread.InvokeAsync (() => {                        // Updating the UI requires being on the proper thread
                 ParameterStatus = ParameterStatuses.Loading;                // To prevent each form update from auto-applying back to Patient
 
+                if (p is null) {
+                    Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitDeviceMonitor)}");
+                    return;
+                }
+
                 if (!ApplyPending_Cardiac) {
                     // Basic vital signs
                     this.FindControl<NumericUpDown> ("numHR").Value = p.VS_Settings.HR;
@@ -1616,6 +1629,9 @@ namespace IISIM {
 
         private void ButtonRecordMAR_Click (object s, RoutedEventArgs e)
             => _ = InitRecordMAR ();
+
+        private void ButtonOptionsHide_Click (object s, RoutedEventArgs e)
+            => _ = ToggleHideDevices ();
 
         private void ButtonPreviousStep_Click (object s, RoutedEventArgs e)
             => _ = PreviousStep ();

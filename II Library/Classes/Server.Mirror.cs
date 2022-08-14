@@ -69,8 +69,7 @@ namespace II.Server {
                     ThreadLock = false;
 
                     if (pBuffer != null) {
-                        if (step == null)
-                            step = new ();
+                        step ??= new ();
 
                         await step.Load (pBuffer.Save ());
                     }

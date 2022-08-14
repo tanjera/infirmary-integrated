@@ -36,8 +36,7 @@ namespace II {
         }
 
         public static int RandomInt (int? min, int? max) {
-            if (min is null)
-                min = 0;
+            min ??= 0;
             if (max is null)
                 return (int)min;
 
@@ -46,8 +45,7 @@ namespace II {
         }
 
         public static double RandomDbl (double? min, double? max) {
-            if (min is null)
-                min = 0;
+            min ??= 0;
             if (max is null)
                 return (double)min;
 

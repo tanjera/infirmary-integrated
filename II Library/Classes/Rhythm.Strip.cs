@@ -479,8 +479,7 @@ namespace II.Rhythm {
                 return;
             }
 
-            if (multiplier is null)
-                multiplier = 1;
+            multiplier ??= 1;
 
             double scrollBy = (double)(((DateTime.UtcNow - scrolledLast).TotalMilliseconds / 1000) * multiplier);
             scrolledLast = DateTime.UtcNow;

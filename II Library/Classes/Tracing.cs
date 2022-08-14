@@ -18,10 +18,8 @@ namespace II.Rhythm {
             ref PointD? drawMultiplier) {
             if (strip is null)
                 return;
-            if (drawOffset is null)
-                drawOffset = new PointD ();
-            if (drawMultiplier is null)
-                drawMultiplier = new PointD ();
+            drawOffset ??= new PointD ();
+            drawMultiplier ??= new PointD ();
 
             drawOffset.X = 0;
             drawMultiplier.X = (int)width / strip.DisplayLength;

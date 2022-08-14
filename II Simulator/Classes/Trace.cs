@@ -35,11 +35,9 @@ namespace IISIM {
                 return;
             }
 
-            if (offset is null)
-                offset = new ();
+            offset ??= new ();
 
-            if (multiplier is null)
-                multiplier = new (1d, 1d);
+            multiplier ??= new (1d, 1d);
 
             using (IDrawingContextImpl ctx = bitmap.CreateDrawingContext (null)) {
                 var sg = new StreamGeometry ();

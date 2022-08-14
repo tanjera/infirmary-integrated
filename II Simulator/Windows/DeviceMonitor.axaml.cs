@@ -361,10 +361,8 @@ namespace IISIM {
             }
 
             Alarm? alarm = AlarmRefs.Find (a => a.Alarming ?? false && a.Priority == Alarm.Priorities.High);
-            if (alarm is null)
-                alarm = AlarmRefs.Find (a => a.Alarming ?? false && a.Priority == Alarm.Priorities.Medium);
-            if (alarm is null)
-                alarm = AlarmRefs.Find (a => a.Alarming ?? false && a.Priority == Alarm.Priorities.Low);
+            alarm ??= AlarmRefs.Find (a => a.Alarming ?? false && a.Priority == Alarm.Priorities.Medium);
+            alarm ??= AlarmRefs.Find (a => a.Alarming ?? false && a.Priority == Alarm.Priorities.Low);
 
             if (alarm is null) {
                 AudioPlayer.Stop ();

@@ -68,8 +68,7 @@ namespace II {
         }
 
         public static string WrapString (string? input) {
-            if (input is null)
-                input = "";
+            input ??= "";
             return input.Replace (" ", Environment.NewLine);
         }
 

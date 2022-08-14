@@ -207,23 +207,21 @@
       </Menu>
     </Grid>
 
-    <Grid>
+    <Grid Name="gridDevices">
       <Grid.RowDefinitions>
         <RowDefinition Height="*" />
       </Grid.RowDefinitions>
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="400" />
+        <ColumnDefinition Width="Auto" />
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
 
       <!--  Column for Devices (opening Cardiac Monitor, Ventilator, etc.  -->
-      <ScrollViewer
-				Grid.Row="0"
-				Grid.Column="0"
-				VerticalAlignment="Top"
-				HorizontalScrollBarVisibility="Auto"
-				VerticalScrollBarVisibility="Auto">
-
+      <Panel Name="panelDevicesExpanded"
+             MinWidth="400"
+             Grid.Row="0"
+             Grid.Column="0"
+             VerticalAlignment="Top">
         <StackPanel Orientation="Vertical">
 
           <HeaderedContentControl
@@ -301,8 +299,85 @@
               </Button>
             </StackPanel>
           </HeaderedContentControl>
+
+          <HeaderedContentControl
+            Name="lblGroupOptions"
+            Background="White"
+            Classes="groupbox"
+            Header="Header">
+            <StackPanel Margin="3">
+              <Button
+                Name="btnOptionsHide"
+                Classes="device"
+                Click="ButtonOptionsHide_Click">
+                <StackPanel Orientation="Horizontal">
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_Clipboard_128.png" />
+                  <Label Name="lblOptionsHide" Classes="device" />
+                </StackPanel>
+              </Button>
+            </StackPanel>
+          </HeaderedContentControl>
         </StackPanel>
-      </ScrollViewer>
+      </Panel>
+
+      <Panel Name="panelDevicesHidden"
+             Grid.Row="0"
+             Grid.Column="0"
+             Width="64"
+             Margin="10 0 0 0"
+             VerticalAlignment="Top"
+             IsVisible="False">
+        <StackPanel Orientation="Vertical">
+
+          <Separator Margin="0 6" />
+
+          <Button
+            Classes="device"
+            Click="ButtonDeviceMonitor_Click">
+            <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceMonitor_128.png" />
+          </Button>
+
+          <Button
+            Classes="device"
+            Click="ButtonDeviceDefib_Click">
+            <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceDefibrillator_128.png" />
+          </Button>
+
+          <Button
+            Classes="device"
+            Click="ButtonDeviceECG_Click">
+            <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_Device12LeadECG_128.png" />
+          </Button>
+
+          <Button
+            Classes="device"
+            Click="ButtonDeviceIABP_Click">
+            <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceIABP_128.png" />
+          </Button>
+
+          <Button
+            Classes="device"
+            Click="ButtonDeviceEFM_Click">
+            <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceEFM_128.png" />
+          </Button>
+
+          <Separator Margin="0 6" />
+
+          <Button
+            Classes="device"
+            Click="ButtonRecordMAR_Click">
+            <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_RecordMAR_128.png" />
+          </Button>
+
+          <Separator Margin="0 6" />
+
+          <Button
+              Classes="device"
+              Click="ButtonOptionsHide_Click">
+            <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_Clipboard_128.png" />
+          </Button>
+        </StackPanel>
+      </Panel>
 
       <!--  Column for Patient Editor  -->
       <ScrollViewer

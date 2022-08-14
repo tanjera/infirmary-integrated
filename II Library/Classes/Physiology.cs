@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
+
     public class Physiology {
         /* Mirroring variables */
         public DateTime Updated;                    // DateTime this Patient was last updated
@@ -389,7 +390,7 @@ namespace II {
             => MeasureHR (lengthSeconds, offsetSeconds, true);
 
         public int MeasureHR (double lengthSeconds, double offsetSeconds, bool isPulse = false) {
-            _ = Task.Run (async () => { await CleanListPhysiologyEvents (); });
+            CleanListPhysiologyEvents ();
 
             if (isPulse && !Cardiac_Rhythm.HasPulse_Ventricular)
                 return 0;
@@ -408,7 +409,7 @@ namespace II {
         }
 
         public int MeasureRR (double lengthSeconds, double offsetSeconds) {
-            _ = Task.Run (async () => { await CleanListPhysiologyEvents (); });
+            CleanListPhysiologyEvents ();
 
             int counter = 0;
 
@@ -454,8 +455,7 @@ namespace II {
             public DateTime Occurred;
 
             public PhysiologyEventArgs (Physiology? p, PhysiologyEventTypes e) {
-                if (p == null)
-                    p = new ();
+                p ??= new ();
 
                 EventType = e;
                 Physiology = p;
@@ -495,15 +495,13 @@ namespace II {
             return Task.CompletedTask;
         }
 
-        public Task CleanListPhysiologyEvents () {
+        public void CleanListPhysiologyEvents () {
             // Remove all listings older than 1 minute... prevent cluttering memory
             lock (lockListPhysiologyEvents) {
                 for (int i = ListPhysiologyEvents.Count - 1; i >= 0; i--)
                     if (ListPhysiologyEvents [i].Occurred.CompareTo (DateTime.Now.AddMinutes (-1)) < 0)
                         ListPhysiologyEvents.RemoveAt (i);
             }
-
-            return Task.CompletedTask;
         }
 
         /* Process all timers for patient modeling */

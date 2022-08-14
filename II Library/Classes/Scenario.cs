@@ -179,9 +179,9 @@ namespace II {
                 // If the load fails... just bail on the actual value parsing and continue the load process
             }
 
-            _ = SetStep (BeginStep);
-
             sRead.Close ();
+
+            _ = SetStep (BeginStep);
         }
 
         public async Task<string> Save (int indent = 1) {
@@ -237,22 +237,24 @@ namespace II {
             }
 
             if (progFrom != AtStep) {                                       // If the actual step Index changed
-                Current.DefaultSource = progFrom;
+                if (Current is not null)
+                    Current.DefaultSource = progFrom;
+
                 Step? stepFrom = Steps.Find (s => s.UUID == progFrom);
 
                 if (stepFrom != null) {
-                    CopyDeviceStatus (stepFrom.Physiology, Current.Physiology);
-                    await stepFrom.Physiology.Deactivate ();                   // Additional unlinking of events and timers!
+                    CopyDeviceStatus (stepFrom.Physiology, Current?.Physiology);
+                    await (stepFrom?.Physiology?.Deactivate () ?? Task.CompletedTask);                   // Additional unlinking of events and timers!
                 }
             }
 
             // Init step regardless of whether step Index changed; step may have been deactivated by StepChangeRequest()
             await SetTimer ();
-            await Current.Physiology.Activate ();
+            await (Current?.Physiology?.Activate () ?? Task.CompletedTask);
 
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
-            await Current.Physiology.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change);
+            await (Current?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change) ?? Task.CompletedTask);
         }
 
         public async Task LastStep () {
@@ -270,17 +272,17 @@ namespace II {
 
                 if (stepFrom != null) {
                     CopyDeviceStatus (stepFrom.Physiology, Current.Physiology);
-                    await stepFrom.Physiology.Deactivate ();                   // Additional unlinking of events and timers!
+                    await (stepFrom?.Physiology?.Deactivate () ?? Task.CompletedTask);                   // Additional unlinking of events and timers!
                 }
             }
 
             // Init step regardless of whether step Index changed; step may have been deactivated by StepChangeRequest()
             await SetTimer ();
-            await Current.Physiology.Activate ();
+            await (Current?.Physiology?.Activate () ?? Task.CompletedTask);
 
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
-            await Current.Physiology.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change);
+            await (Current?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change) ?? Task.CompletedTask);
         }
 
         public async Task SetStep (string? incUUID) {
@@ -303,19 +305,22 @@ namespace II {
 
                 if (stepFrom != null) {
                     CopyDeviceStatus (stepFrom.Physiology, Current.Physiology);
-                    await stepFrom.Physiology.Deactivate ();                   // Additional unlinking of events and timers!
+                    await (stepFrom?.Physiology?.Deactivate () ?? Task.CompletedTask);                   // Additional unlinking of events and timers!
                 }
             }
 
             await SetTimer ();
-            await Current.Physiology.Activate ();
+            await (Current?.Physiology?.Activate () ?? Task.CompletedTask);
 
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
-            await Current.Physiology.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change);
+            await (Current?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change) ?? Task.CompletedTask);
         }
 
-        public void CopyDeviceStatus (Physiology lastP, Physiology thisP) {
+        public void CopyDeviceStatus (Physiology? lastP, Physiology? thisP) {
+            if (lastP is null || thisP is null)
+                return;
+
             thisP.TransducerZeroed_CVP = lastP.TransducerZeroed_CVP;
             thisP.TransducerZeroed_ABP = lastP.TransducerZeroed_ABP;
             thisP.TransducerZeroed_PA = lastP.TransducerZeroed_PA;
@@ -384,7 +389,7 @@ namespace II {
                                     && pline.Trim () != "> End: Records")
                                 pbuffer.AppendLine (pline);
 
-                            await Records.Load (pbuffer.ToString ());
+                            await (Records?.Load (pbuffer.ToString ()) ?? Task.CompletedTask);
                         } else if (line == "> Begin: Physiology") {
                             pbuffer = new ();
 
@@ -392,7 +397,7 @@ namespace II {
                                     && pline.Trim () != "> End: Physiology")
                                 pbuffer.AppendLine (pline);
 
-                            await Physiology.Load (pbuffer.ToString ());
+                            await (Physiology?.Load (pbuffer.ToString ()) ?? Task.CompletedTask);
                         } else if (line == "> Begin: Progression") {
                             pbuffer = new ();
 
@@ -444,11 +449,11 @@ namespace II {
                 sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "IISEPositionY", IISEPositionY));
 
                 sWrite.AppendLine ($"{dent}> Begin: Records");
-                sWrite.Append (Records.Save (indent + 1));
+                sWrite.Append (Records?.Save (indent + 1));
                 sWrite.AppendLine ($"{dent}> End: Records");
 
                 sWrite.AppendLine ($"{dent}> Begin: Physiology");
-                sWrite.Append (Physiology.Save (indent + 1));
+                sWrite.Append (Physiology?.Save (indent + 1));
                 sWrite.AppendLine ($"{dent}> End: Physiology");
 
                 foreach (Progression p in Progressions) {
