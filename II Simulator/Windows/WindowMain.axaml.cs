@@ -91,8 +91,11 @@ namespace IISIM {
             Task.Run (async () => {
                 await Dispatcher.UIThread.InvokeAsync (async () => {
                     /* Init important but non-essential functions */
-                    if (Instance.Start_Args?.Length > 0)
-                        await LoadOpen (Instance.Start_Args [0].Trim (' ', '\n', '\r'));
+                    if (Instance.Start_Args?.Length > 0) {
+                        string loadfile = Instance.Start_Args [0].Trim (' ', '\n', '\r');
+                        if (!String.IsNullOrEmpty (loadfile))
+                            await LoadOpen (loadfile);
+                    }
 
                     /* Update UI from loading functionality */
                     await SetParameterStatus (Instance?.Settings.AutoApplyChanges ?? false);

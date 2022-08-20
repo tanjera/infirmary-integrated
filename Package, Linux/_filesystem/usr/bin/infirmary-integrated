@@ -1,2 +1,2 @@
 #!/bin/sh
-"/usr/share/infirmary-integrated/Infirmary Integrated/Infirmary Integrated" "$1"
+"/usr/share/infirmary-integrated/Infirmary Integrated/Infirmary Integrated" $1
