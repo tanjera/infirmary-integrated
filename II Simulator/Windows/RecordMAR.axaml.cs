@@ -20,12 +20,15 @@ using II;
 namespace IISIM {
 
     public partial class RecordMAR : RecordWindow {
-        private Grid? gridMain;
-
         private DateTime viewAtTime = DateTime.Now;
 
         private DateTime? viewStartTime,
                             viewEndTime;
+
+        /* References for UI elements */
+        private Grid? gridMain;
+
+        private List<TextBlock> tbDoses = new ();
 
         public RecordMAR () {
             InitializeComponent ();
@@ -279,13 +282,12 @@ namespace IISIM {
             SolidColorBrush colorScheduled = new (Avalonia.Media.Color.Parse ("#D1FFFC"));
             SolidColorBrush colorPRN = new (Avalonia.Media.Color.Parse ("#DEFFD1"));
 
-            /* Clear any items on the Grid in the Dose space */
-            for (int i = gridMain.Children.Count - 1; i >= 0; i--) {
-                if (gridMain.Children [i].GetValue (Grid.ColumnProperty) >= doseStartColumn
-                    && gridMain.Children [i].GetValue (Grid.RowProperty) >= doseStartRow) {
-                    gridMain.Children.RemoveAt (i);
-                }
+            /* Clear all Doses off the Grid */
+            foreach (TextBlock tbd in tbDoses) {
+                tbd.PointerPressed -= Dose_Click;
+                gridMain.Children.Remove (tbd);
             }
+            tbDoses.Clear ();
 
             /* Populate the doses across the calendar grid */
             for (int i = 0; i < Instance.Records.RxOrders.Count; i++) {
@@ -323,11 +325,16 @@ namespace IISIM {
                                 + (dose.Administered ? $"\n{Instance.Language.Localize ("ENUM:AdministrationStatuses:Administered")}" : "")
                                 + (!String.IsNullOrEmpty (dose.Comment) ? $"\n{dose.Comment}" : ""),
                         Padding = new Thickness (10),
-                        Background = bgColor
+                        Background = bgColor,
+                        Tag = dose
                     };
 
                     tbDose.SetValue (Grid.RowProperty, doseStartRow + i);              // Get Grid.Row based on Rx Order iteration
                     tbDose.SetValue (Grid.ColumnProperty, doseStartColumn + (columnAmount - 1) - (dose.ScheduledTime - viewStartTime).Value.Hours);
+
+                    tbDose.PointerPressed += Dose_Click;
+
+                    tbDoses.Add (tbDose);
                     gridMain.Children.Add (tbDose);
                 }
             }
@@ -360,6 +367,26 @@ namespace IISIM {
 
             _ = PopulateHeaders ();
             _ = PopulateDoses ();
+        }
+
+        private async Task DialogAdministerDose (Medication.Dose? rxDose) {
+            if (rxDose is null)
+                return;
+
+            await Dispatcher.UIThread.InvokeAsync (async () => {
+                DialogMARDose dlg = new (Instance,
+                    Instance?.Records?.RxOrders.Find (o => o.UUID == rxDose.OrderUUID),
+                    rxDose);
+
+                dlg.Activate ();
+
+                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                    this.Show ();
+
+                rxDose = await dlg.AsyncShow (this);
+
+                _ = PopulateDoses ();
+            });
         }
 
         private void ButtonRefresh_Click (object? s, RoutedEventArgs e)
@@ -403,6 +430,13 @@ namespace IISIM {
                 viewAtTime.Day,
                 e.NewTime.Value.Hours,
                 0, 0));
+        }
+
+        private void Dose_Click (object? s, Avalonia.Input.PointerPressedEventArgs e) {
+            if (s is null || ((TextBlock)s).Tag is null || ((TextBlock)s).Tag is not Medication.Dose)
+                return;
+
+            _ = DialogAdministerDose (((TextBlock)s).Tag as Medication.Dose);
         }
 
         private void MenuClose_Click (object s, RoutedEventArgs e)

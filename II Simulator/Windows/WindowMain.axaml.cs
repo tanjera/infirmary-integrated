@@ -100,7 +100,7 @@ namespace IISIM {
                     /* Run useful but otherwise vanity functions last */
 
 #if !DEBUG
-            await InitUsageStatistics ();
+                    await InitUsageStatistics ();
 #endif
 
                     if (Instance?.AudioLib is null)
@@ -425,106 +425,105 @@ namespace IISIM {
             return Task.CompletedTask;
         }
 
-        private Task InitDeviceECG () {
+        private async Task InitDeviceECG () {
             if (Instance is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitDeviceECG)}");
-                return Task.CompletedTask;
+                return;
             }
 
-            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
-                this.Show ();
+            await Dispatcher.UIThread.InvokeAsync (() => {
+                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                    this.Show ();
 
-            if (Instance.Device_ECG is null || Instance.Device_ECG.State == DeviceWindow.States.Closed)
-                Instance.Device_ECG = new DeviceECG (Instance);
+                if (Instance.Device_ECG is null || Instance.Device_ECG.State == DeviceWindow.States.Closed)
+                    Instance.Device_ECG = new DeviceECG (Instance);
 
-            Instance.Device_ECG.Activate ();
-            Instance.Device_ECG.Show ();
+                Instance.Device_ECG.Activate ();
+                Instance.Device_ECG.Show ();
 
-            if (Instance.Physiology is not null)
-                Instance.Physiology.PhysiologyEvent += Instance.Device_ECG.OnPhysiologyEvent;
-
-            return Task.CompletedTask;
+                if (Instance.Physiology is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_ECG.OnPhysiologyEvent;
+            });
         }
 
-        private Task InitDeviceDefib () {
+        private async Task InitDeviceDefib () {
             if (Instance is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitDeviceDefib)}");
-                return Task.CompletedTask;
+                return;
             }
 
-            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
-                this.Show ();
+            await Dispatcher.UIThread.InvokeAsync (() => {
+                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                    this.Show ();
 
-            if (Instance.Device_Defib is null || Instance.Device_Defib.State == DeviceWindow.States.Closed)
-                Instance.Device_Defib = new DeviceDefib (Instance);
+                if (Instance.Device_Defib is null || Instance.Device_Defib.State == DeviceWindow.States.Closed)
+                    Instance.Device_Defib = new DeviceDefib (Instance);
 
-            Instance.Device_Defib.Activate ();
-            Instance.Device_Defib.Show ();
+                Instance.Device_Defib.Activate ();
+                Instance.Device_Defib.Show ();
 
-            if (Instance.Physiology is not null)
-                Instance.Physiology.PhysiologyEvent += Instance.Device_Defib.OnPhysiologyEvent;
-
-            return Task.CompletedTask;
+                if (Instance.Physiology is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_Defib.OnPhysiologyEvent;
+            });
         }
 
-        private Task InitDeviceIABP () {
+        private async Task InitDeviceIABP () {
             if (Instance is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitDeviceIABP)}");
-                return Task.CompletedTask;
+                return;
             }
 
-            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
-                this.Show ();
+            await Dispatcher.UIThread.InvokeAsync (() => {
+                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                    this.Show ();
 
-            if (Instance.Device_IABP is null || Instance.Device_IABP.State == DeviceWindow.States.Closed)
-                Instance.Device_IABP = new DeviceIABP (Instance);
+                if (Instance.Device_IABP is null || Instance.Device_IABP.State == DeviceWindow.States.Closed)
+                    Instance.Device_IABP = new DeviceIABP (Instance);
 
-            Instance.Device_IABP.Activate ();
-            Instance.Device_IABP.Show ();
+                Instance.Device_IABP.Activate ();
+                Instance.Device_IABP.Show ();
 
-            if (Instance.Physiology is not null)
-                Instance.Physiology.PhysiologyEvent += Instance.Device_IABP.OnPhysiologyEvent;
-
-            return Task.CompletedTask;
+                if (Instance.Physiology is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_IABP.OnPhysiologyEvent;
+            });
         }
 
-        private Task InitDeviceEFM () {
+        private async Task InitDeviceEFM () {
             if (Instance is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitDeviceEFM)}");
-                return Task.CompletedTask;
+                return;
             }
+            await Dispatcher.UIThread.InvokeAsync (() => {
+                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                    this.Show ();
 
-            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
-                this.Show ();
+                if (Instance.Device_EFM is null || Instance.Device_EFM.State == DeviceWindow.States.Closed)
+                    Instance.Device_EFM = new DeviceEFM (Instance);
 
-            if (Instance.Device_EFM is null || Instance.Device_EFM.State == DeviceWindow.States.Closed)
-                Instance.Device_EFM = new DeviceEFM (Instance);
+                Instance.Device_EFM.Activate ();
+                Instance.Device_EFM.Show ();
 
-            Instance.Device_EFM.Activate ();
-            Instance.Device_EFM.Show ();
-
-            if (Instance.Physiology is not null)
-                Instance.Physiology.PhysiologyEvent += Instance.Device_EFM.OnPhysiologyEvent;
-
-            return Task.CompletedTask;
+                if (Instance.Physiology is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_EFM.OnPhysiologyEvent;
+            });
         }
 
-        private Task InitRecordMAR () {
+        private async Task InitRecordMAR () {
             if (Instance is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitRecordMAR)}");
-                return Task.CompletedTask;
+                return;
             }
 
-            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
-                this.Show ();
+            await Dispatcher.UIThread.InvokeAsync (() => {
+                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                    this.Show ();
 
-            if (Instance.Records_MAR is null || Instance.Records_MAR.State == RecordWindow.States.Closed)
-                Instance.Records_MAR = new RecordMAR (Instance);
+                if (Instance.Records_MAR is null || Instance.Records_MAR.State == RecordWindow.States.Closed)
+                    Instance.Records_MAR = new RecordMAR (Instance);
 
-            Instance.Records_MAR.Activate ();
-            Instance.Records_MAR.Show ();
-
-            return Task.CompletedTask;
+                Instance.Records_MAR.Activate ();
+                Instance.Records_MAR.Show ();
+            });
         }
 
         private async Task MessageAudioUnavailable () {
@@ -533,138 +532,155 @@ namespace IISIM {
                 return;
             }
 
-            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
-                this.Show ();
+            await Dispatcher.UIThread.InvokeAsync (async () => {
+                DialogMessage dlg = new (Instance) {
+                    Message = Instance.Language.Localize ("MESSAGE:AudioUnavailableMessage"),
+                    Title = Instance.Language.Localize ("MESSAGE:AudioUnavailableTitle"),
+                    Indicator = DialogMessage.Indicators.InfirmaryIntegrated,
+                    Option = DialogMessage.Options.OK,
+                };
 
-            DialogMessage dlg = new (Instance) {
-                Message = Instance.Language.Localize ("MESSAGE:AudioUnavailableMessage"),
-                Title = Instance.Language.Localize ("MESSAGE:AudioUnavailableTitle"),
-                Indicator = DialogMessage.Indicators.InfirmaryIntegrated,
-                Option = DialogMessage.Options.OK,
-            };
+                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                    this.Show ();
 
-            await dlg.AsyncShow (this);
+                await dlg.AsyncShow (this);
+            });
         }
 
         private void DialogEULA () {
-            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
-                this.Show ();
-
-            DialogEULA dlg = new (Instance);
-            dlg.Activate ();
-
             Dispatcher.UIThread.InvokeAsync (async () => {
+                DialogEULA dlg = new (Instance);
+                dlg.Activate ();
+
+                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                    this.Show ();
+
                 await dlg.ShowDialog (this);
             });
         }
 
         private async Task DialogLanguage (bool reloadUI = false) {
-            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
-                this.Show ();
+            await Dispatcher.UIThread.InvokeAsync (async () => {
+                var oldLang = Instance?.Language.Value;
+                DialogLanguage dlg = new (Instance);
+                dlg.Activate ();
 
-            var oldLang = Instance?.Language.Value;
-            DialogLanguage dlg = new (Instance);
-            dlg.Activate ();
-            await dlg.ShowDialog (this);
+                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                    this.Show ();
 
-            reloadUI = oldLang != Instance?.Language.Value;
+                await dlg.ShowDialog (this);
 
-            if (reloadUI)
-                InitInterface ();
+                reloadUI = oldLang != Instance?.Language.Value;
+
+                if (reloadUI)
+                    InitInterface ();
+            });
         }
 
         private async Task DialogMirrorBroadcast () {
-            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
-                this.Show ();
+            await Dispatcher.UIThread.InvokeAsync (async () => {
+                DialogMirrorBroadcast dlg = new (Instance);
+                dlg.Activate ();
 
-            DialogMirrorBroadcast dlg = new (Instance);
-            dlg.Activate ();
-            await dlg.ShowDialog (this);
+                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                    this.Show ();
 
-            if (Instance is not null)
-                await Instance.Mirror.PostStep (
-                    new Scenario.Step () {
-                        Physiology = Instance.Physiology ?? new Physiology (),
-                        Records = Instance.Records ?? new Record ()
-                    },
-                    Instance.Server);
+                await dlg.ShowDialog (this);
+
+                if (Instance is not null)
+                    await Instance.Mirror.PostStep (
+                        new Scenario.Step () {
+                            Physiology = Instance.Physiology ?? new Physiology (),
+                            Records = Instance.Records ?? new Record ()
+                        },
+                        Instance.Server);
+            });
         }
 
         private async Task DialogMirrorReceive () {
-            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
-                this.Show ();
+            await Dispatcher.UIThread.InvokeAsync (async () => {
+                DialogMirrorReceive dlg = new (Instance);
+                dlg.Activate ();
 
-            DialogMirrorReceive dlg = new (Instance);
-            dlg.Activate ();
-            await dlg.ShowDialog (this);
+                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                    this.Show ();
+
+                await dlg.ShowDialog (this);
+            });
         }
 
         public async Task DialogAbout () {
-            if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
-                this.Show ();
+            await Dispatcher.UIThread.InvokeAsync (async () => {
+                DialogAbout dlg = new (Instance);
+                dlg.Activate ();
 
-            DialogAbout dlg = new (Instance);
-            dlg.Activate ();
-            await dlg.ShowDialog (this);
+                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                    this.Show ();
+
+                await dlg.ShowDialog (this);
+            });
         }
 
         private async Task DialogUpgrade () {
-            DialogUpgrade.UpgradeOptions decision = IISIM.DialogUpgrade.UpgradeOptions.None;
+            await Dispatcher.UIThread.InvokeAsync (async () => {
+                DialogUpgrade.UpgradeOptions decision = IISIM.DialogUpgrade.UpgradeOptions.None;
 
-            DialogUpgrade dlg = new (Instance);
-            dlg.Activate ();
+                DialogUpgrade dlg = new (Instance);
+                dlg.Activate ();
 
-            dlg.OnUpgradeRoute += (s, ea) => decision = ea.Route;
-            await dlg.ShowDialog (this);
-            dlg.OnUpgradeRoute -= (s, ea) => decision = ea.Route;
+                dlg.OnUpgradeRoute += (s, ea) => decision = ea.Route;
 
-            switch (decision) {
-                default:
-                case IISIM.DialogUpgrade.UpgradeOptions.None:
-                case IISIM.DialogUpgrade.UpgradeOptions.Delay:
-                    return;
+                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                    this.Show ();
 
-                case IISIM.DialogUpgrade.UpgradeOptions.Mute:
-                    if (Instance is not null) {
-                        Instance.Settings.MuteUpgrade = true;
-                        Instance.Settings.MuteUpgradeDate = DateTime.Now;
-                        Instance.Settings.Save ();
-                    }
-                    return;
+                await dlg.ShowDialog (this);
 
-                case IISIM.DialogUpgrade.UpgradeOptions.Website:
-                    if (!String.IsNullOrEmpty (Instance?.Server.UpgradeWebpage))
-                        InterOp.OpenBrowser (Instance.Server.UpgradeWebpage);
-                    return;
-            }
+                dlg.OnUpgradeRoute -= (s, ea) => decision = ea.Route;
+
+                switch (decision) {
+                    default:
+                    case IISIM.DialogUpgrade.UpgradeOptions.None:
+                    case IISIM.DialogUpgrade.UpgradeOptions.Delay:
+                        return;
+
+                    case IISIM.DialogUpgrade.UpgradeOptions.Mute:
+                        if (Instance is not null) {
+                            Instance.Settings.MuteUpgrade = true;
+                            Instance.Settings.MuteUpgradeDate = DateTime.Now;
+                            Instance.Settings.Save ();
+                        }
+                        return;
+
+                    case IISIM.DialogUpgrade.UpgradeOptions.Website:
+                        if (!String.IsNullOrEmpty (Instance?.Server.UpgradeWebpage))
+                            InterOp.OpenBrowser (Instance.Server.UpgradeWebpage);
+                        return;
+                }
+            });
         }
 
-        private Task ToggleAudio () {
+        private async Task ToggleAudio () {
             if (Instance is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (ToggleAudio)}");
-                return Task.CompletedTask;
+                return;
             }
 
             Instance.Settings.AudioEnabled = !Instance.Settings.AudioEnabled;
 
-            Dispatcher.UIThread.InvokeAsync (() => {
+            await Dispatcher.UIThread.InvokeAsync (() => {
                 this.FindControl<MenuItem> ("menuToggleAudio").Header = String.Format ("{0}: {1}",
                     Instance.Language.Localize ("PE:MenuToggleAudio"),
                     Instance.Settings.AudioEnabled ? Instance.Language.Localize ("BOOLEAN:On") : Instance.Language.Localize ("BOOLEAN:Off"));
             });
-
-            return Task.CompletedTask;
         }
 
-        private Task ToggleHideDevices () {
+        private async Task ToggleHideDevices () {
             HideDeviceLabels = !HideDeviceLabels;
 
-            Dispatcher.UIThread.InvokeAsync (() => {
+            await Dispatcher.UIThread.InvokeAsync (() => {
                 this.FindControl<Panel> ("panelDevicesExpanded").IsVisible = !HideDeviceLabels;
                 this.FindControl<Panel> ("panelDevicesHidden").IsVisible = HideDeviceLabels;
             });
-
-            return Task.CompletedTask;
         }
 
         private async Task CheckUpgrade () {
@@ -680,9 +696,15 @@ namespace IISIM {
             if (Utility.IsNewerVersion (version, Instance.Server.UpgradeVersion)) {
                 await DialogUpgrade ();
             } else {
-                DialogUpgradeCurrent dlg = new (Instance);
-                dlg.Activate ();
-                await dlg.ShowDialog (this);
+                await Dispatcher.UIThread.InvokeAsync (async () => {
+                    DialogUpgradeCurrent dlg = new (Instance);
+                    dlg.Activate ();
+
+                    if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                        this.Show ();
+
+                    await dlg.ShowDialog (this);
+                });
             }
         }
 

@@ -1,0 +1,85 @@
+<Window
+	x:Class="IISIM.DialogMARDose"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	Name="dlgMARDose"
+	Title=""
+	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
+	SizeToContent="WidthAndHeight"
+  MinWidth="300"
+  MinHeight="200"
+	WindowStartupLocation="CenterScreen"
+	mc:Ignorable="d">
+
+  <Window.Styles>
+    <Style Selector="Label">
+      <Setter Property="Margin" Value="0 2 5 0" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style Selector="Button">
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="Width" Value="100" />
+    </Style>
+  </Window.Styles>
+
+  <Grid Margin="10"
+        ColumnDefinitions="Auto, *"
+        RowDefinitions="*, Auto, Auto"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch">
+
+    <TextBlock Name="tbDose"
+               Grid.Column="0"
+               Grid.ColumnSpan="2"
+               Grid.Row="0"
+               Padding="10"
+               HorizontalAlignment="Stretch"
+               VerticalAlignment="Stretch" />
+
+    <Grid Grid.Column="0"
+          Grid.ColumnSpan="2"
+          Grid.Row="1"
+          ColumnDefinitions="Auto, *"
+          RowDefinitions="Auto, Auto"
+          Margin="0 10">
+
+      <Label Name="lblStatus"
+             Grid.Column="0"
+             Grid.Row="0" />
+
+      <ComboBox Name="cmbStatus"
+                Grid.Column="1"
+                Grid.Row="0"
+                HorizontalAlignment="Stretch"
+                Margin="2 2 0 2" />
+
+      <Label Name="lblComment"
+             Grid.Column="0"
+             Grid.Row="1" />
+
+      <TextBox Name="txtComment"
+               Grid.Column="1"
+               Grid.Row="1"
+               HorizontalAlignment="Stretch"
+               Margin="2 2 0 2" />
+    </Grid>
+
+    <Button Name="btnCancel"
+            Grid.Column="0"
+            Grid.Row="2"
+            HorizontalAlignment="Left"
+            Click="btnCancel_Click" />
+
+    <Button Name="btnContinue"
+            Grid.Column="1"
+            Grid.Row="2"
+            HorizontalAlignment="Right"
+            Click="btnContinue_Click" />
+  </Grid>
+</Window>
