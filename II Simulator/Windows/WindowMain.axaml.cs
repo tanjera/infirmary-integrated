@@ -368,7 +368,7 @@ namespace IISIM {
 
             Task.Run (async () => {
                 await ApplyTimer_Cardiac.Set (5000);
-                await ApplyTimer_Respiratory.Set (10000);
+                await ApplyTimer_Respiratory.Set (5000);
                 await ApplyTimer_Obstetric.Set (30000);
             });
         }
@@ -977,8 +977,13 @@ namespace IISIM {
                     await InitDeviceIABP ();
             }
 
-            // Set Expanders IsExpanded and IsEnabled on whether is a Scenario
+            // Set UI Expanders IsExpanded and IsEnabled on whether is a Scenario
             await UpdateExpanders ();
+
+            /* Load completed but possibly in any order (e.g. physiology before devices)
+             * Fire events to begin synchronizing devices with physiology
+             */
+            Instance?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change);
         }
 
         private async Task LoadOptions (string inc) {
@@ -1418,7 +1423,7 @@ namespace IISIM {
             _ = ApplyTimer_Cardiac.ResetStop ();
 
             if (Instance?.Physiology is not null) {
-                _ = Instance.Physiology.UpdateParametersSilent_Cardiac (
+                _ = Instance.Physiology.UpdateParameters_Cardiac (
                     ApplyBuffer.HR,
                     ApplyBuffer.NSBP, ApplyBuffer.NDBP, ApplyBuffer.NMAP,
                     ApplyBuffer.SPO2,

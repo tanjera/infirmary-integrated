@@ -747,52 +747,6 @@ namespace II {
                     Cardiac_Axes.Values card_axis,
                     double qrs_int, double qtc_int,
                     double []? st_elev, double []? t_elev) {
-            await UpdateParametersSilent_Cardiac (
-                hr,
-                nsbp, ndbp, nmap,
-                spo2,
-                t,
-                card_rhythm,
-
-                cvp,
-                asbp, adbp, amap,
-                co,
-                pa_placement,
-                psp, pdp, pmp,
-                icp, iap,
-
-                pacer_threshold,
-                puls_paradoxus, puls_alternans, elec_alternans,
-                card_axis,
-                qrs_int, qtc_int,
-                st_elev, t_elev);
-
-            await OnCardiac_Baseline ();
-            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change);
-        }
-
-        public async Task UpdateParametersSilent_Cardiac (
-                // Basic vital signs
-                int hr,
-                int nsbp, int ndbp, int nmap,
-                int spo2,
-                double t,
-                Cardiac_Rhythms.Values card_rhythm,
-
-                // Advanced hemodynamics
-                int cvp,
-                int asbp, int adbp, int amap,
-                double co,
-                PulmonaryArtery_Rhythms.Values pa_placement,
-                int psp, int pdp, int pmp,
-                int icp, int iap,
-
-                // Cardiac profile
-                int pacer_threshold,
-                bool puls_paradoxus, bool puls_alternans, bool elec_alternans,
-                Cardiac_Axes.Values card_axis,
-                double qrs_int, double qtc_int,
-                double []? st_elev, double []? t_elev) {
             Updated = DateTime.UtcNow;
 
             // Basic vital signs
@@ -848,6 +802,9 @@ namespace II {
 
             // Reset actual vital signs to set parameters
             await VS_Actual.Set (VS_Settings);
+
+            await OnCardiac_Baseline ();
+            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change);
         }
 
         public async Task UpdateParameters_Respiratory (
@@ -856,23 +813,6 @@ namespace II {
                     int etco2,
                     bool mech_vent,
                     double resp_ier_i, double resp_ier_e) {
-            await UpdateParametersSilent_Respiratory (
-                rr,
-                resp_rhythm,
-                etco2,
-                mech_vent,
-                resp_ier_i, resp_ier_e);
-
-            await OnRespiratory_Baseline ();
-            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change);
-        }
-
-        public async Task UpdateParametersSilent_Respiratory (
-                int rr,
-                Respiratory_Rhythms.Values resp_rhythm,
-                int etco2,
-                bool mech_vent,
-                double resp_ier_i, double resp_ier_e) {
             Updated = DateTime.UtcNow;
 
             VS_Settings.RR = rr;
@@ -897,22 +837,14 @@ namespace II {
 
             // Reset actual vital signs to set parameters
             await VS_Actual.Set (VS_Settings);
+
+            await OnRespiratory_Baseline ();
+            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change);
         }
 
         public async Task UpdateParameters_Obstetric (
                     int fhr, int fhr_var, FetalHeart_Rhythms.Values fhr_rhythm,
                     int uc_freq, int uc_duration, int uc_intensity, int uc_resting) {
-            await UpdateParametersSilent_Obstetric (
-                fhr, fhr_var, fhr_rhythm,
-                uc_freq, uc_duration, uc_intensity, uc_resting);
-
-            await OnObstetric_Baseline ();
-            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change);
-        }
-
-        public async Task UpdateParametersSilent_Obstetric (
-                int fhr, int fhr_var, FetalHeart_Rhythms.Values fhr_rhythm,
-                int uc_freq, int uc_duration, int uc_intensity, int uc_resting) {
             Updated = DateTime.UtcNow;
 
             // Obstetric profile
@@ -926,6 +858,9 @@ namespace II {
 
             // Reset actual vital signs to set parameters
             await VS_Actual.Set (VS_Settings);
+
+            await OnObstetric_Baseline ();
+            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change);
         }
 
         public async Task ClampVitals (

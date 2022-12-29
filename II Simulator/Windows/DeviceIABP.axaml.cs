@@ -592,7 +592,7 @@ namespace IISIM {
                 case Physiology.PhysiologyEventTypes.Vitals_Change:
                     listTracings.ForEach (c => {
                         c.Strip?.ClearFuture (Instance?.Physiology);
-                        c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology);
+                        c.Strip?.Add_Baseline (Instance?.Physiology);
                     });
                     break;
 

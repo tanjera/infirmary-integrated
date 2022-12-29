@@ -35,8 +35,8 @@
 			Grid.Row="0"
 			Grid.Column="0"
 			Margin="0"
-			Padding="2"
-			HorizontalAlignment="Right"
+			Padding="5"
+			HorizontalAlignment="Left"
 			ZIndex="2" />
   </Grid>
 </UserControl>
