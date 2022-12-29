@@ -93,9 +93,26 @@ namespace Publishing {
             Console.Write ("Please enter the signing certificate password: ");
             string password = Console.ReadLine ().Trim ();
 
-            // "signtool sign /f sigfile.pfx /p password filename"
+            // "signtool sign /fd digest /tr timeserver /td timeserver-digest /f sigfile.pfx /p password filename"
 
-            arguments = $"sign /f \"{progVar.pathCert}\" /p {password} \"{pkgName}\"";
+            arguments = $"sign /fd SHA256 /tr http://timestamp.globalsign.com/tsa/r6advanced1 /td SHA256 /f \"{progVar.pathCert}\" /p {password} \"{pkgName}\"";
+
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine (Environment.NewLine);
+            Console.WriteLine ($"- Executing signtool {arguments}");
+            Console.WriteLine (Environment.NewLine);
+            Console.ResetColor ();
+
+            proc.StartInfo.FileName = progVar.pathSigntool;
+            proc.StartInfo.Arguments = arguments;
+            proc.StartInfo.UseShellExecute = false;
+            proc.StartInfo.WorkingDirectory = dirRelease;
+            proc.Start ();
+            proc.WaitForExit ();
+
+            // "signtool verify /v /pa filepath"
+
+            arguments = $"verify /v /pa \"{pkgName}\"";
 
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine (Environment.NewLine);
