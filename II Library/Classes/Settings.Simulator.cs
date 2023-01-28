@@ -19,6 +19,9 @@ namespace II.Settings {
         public bool AudioEnabled;
         public bool AutoApplyChanges;
 
+        public int DefibEnergyMaximum;
+        public int DefibEnergyIncrement;
+
         public Point WindowSize;
         public Point WindowPosition;
 
@@ -32,6 +35,9 @@ namespace II.Settings {
 
             AudioEnabled = true;
             AutoApplyChanges = false;
+
+            DefibEnergyMaximum = 200;
+            DefibEnergyIncrement = 20;
 
             WindowSize = new Point (800, 600);
 
@@ -72,6 +78,17 @@ namespace II.Settings {
                                 AutoApplyChanges = parseBool;
                             break;
 
+                        // Settings for Defibrillator energy and increments
+                        case "DefibEnergyMaximum":
+                            if (int.TryParse (pValue, out parseInt))
+                                DefibEnergyMaximum = parseInt;
+                            break;
+
+                        case "DefibEnergyIncrement":
+                            if (int.TryParse (pValue, out parseInt))
+                                DefibEnergyIncrement = parseInt;
+                            break;
+
                         // Settings for the size of the Patient Editor
                         case "WindowSizeX":
                             if (int.TryParse (pValue, out parseInt))
@@ -105,6 +122,8 @@ namespace II.Settings {
             sw.WriteLine ($"Language:{Language}");
             sw.WriteLine ($"AudioEnabled:{AudioEnabled}");
             sw.WriteLine ($"AutoApplyChanges:{AutoApplyChanges}");
+            sw.WriteLine ($"DefibEnergyMaximum:{DefibEnergyMaximum}");
+            sw.WriteLine ($"DefibEnergyIncrement:{DefibEnergyIncrement}");
             sw.WriteLine ($"WindowSizeX:{WindowSize.X}");
             sw.WriteLine ($"WindowSizeY:{WindowSize.Y}");
             sw.WriteLine ($"WindowPositionX:{WindowPosition.X}");

@@ -293,7 +293,7 @@ namespace IISIM.Controls {
                             case DeviceDefib.Modes.DEFIB:
 
                                 lblLine1.Text = Instance.Language.Localize ("DEFIB:Defibrillation");
-                                lblLine2.Text = String.Format ("{0:0} {1}", device.Energy, Instance.Language.Localize ("DEFIB:Joules"));
+                                lblLine2.Text = String.Format ("{0:0} {1}", device.DefibEnergy, Instance.Language.Localize ("DEFIB:Joules"));
                                 if (device.Charging)
                                     lblLine3.Text = Instance.Language.Localize ("DEFIB:Charging");
                                 else if (device.Charged)
@@ -318,7 +318,7 @@ namespace IISIM.Controls {
 
                             case DeviceDefib.Modes.SYNC:
                                 lblLine1.Text = Instance.Language.Localize ("DEFIB:Synchronized");
-                                lblLine2.Text = String.Format ("{0:0} {1}", device.Energy, Instance.Language.Localize ("DEFIB:Joules"));
+                                lblLine2.Text = String.Format ("{0:0} {1}", device.DefibEnergy, Instance.Language.Localize ("DEFIB:Joules"));
                                 lblLine3.Text = device.Charged ? Instance.Language.Localize ("DEFIB:Charged") : "";
                                 break;
 

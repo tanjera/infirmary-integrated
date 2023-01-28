@@ -18,7 +18,6 @@
     <Style Selector="Border.control" />
 
     <Style Selector="Button.round">
-
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="VerticalAlignment" Value="Stretch" />
       <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -34,6 +33,13 @@
       <Setter Property="FontSize" Value="20" />
       <Setter Property="FontWeight" Value="Bold" />
     </Style>
+
+    <Style Selector="TextBlock.buttonsub">
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="FontSize" Value="16" />
+      <Setter Property="FontWeight" Value="Bold" />
+    </Style>
   </Window.Styles>
   <DockPanel LastChildFill="True">
     <!--  Main Menu  -->
@@ -43,6 +49,17 @@
         <Separator />
         <MenuItem Name="menuAddNumeric" Click="MenuAddNumeric_Click" />
         <MenuItem Name="menuAddTracing" Click="MenuAddTracing_Click" />
+        <Separator />
+        <MenuItem Name="menuDefibEnergy">
+          <MenuItem Name="menuDefibMaximum">
+            <MenuItem Name="menuDefibMaximum_200" Click="MenuDefibEnergyMaximum_200" />
+            <MenuItem Name="menuDefibMaximum_360" Click="MenuDefibEnergyMaximum_360" />
+          </MenuItem>
+          <MenuItem Name="menuDefibIncrement">
+            <MenuItem Name="menuDefibIncrement_10" Click="MenuDefibEnergyIncrement_10" />
+            <MenuItem Name="menuDefibIncrement_20" Click="MenuDefibEnergyIncrement_20" />
+          </MenuItem>
+        </MenuItem>
         <Separator />
         <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" />
       </MenuItem>
@@ -163,30 +180,30 @@
           </Grid.RowDefinitions>
 
           <Button
-						Name="buttonEnergyDecrease"
+						Name="buttonDefibEnergyDecrease"
 						Grid.Row="0"
 						Grid.Column="0"
 						Background="LightGray"
 						Classes="round"
-						Click="ButtonEnergyDecrease_Click">
-            <TextBlock Name="btntxtEnergyDecrease" Classes="button" />
+						Click="ButtonDefibEnergyDecrease_Click">
+            <TextBlock Name="btntxtDefibEnergyDecrease" Classes="button" />
           </Button>
 
           <TextBlock
-						Name="txtEnergyAmount"
+						Name="txtDefibEnergy"
 						Grid.Row="0"
 						Grid.Column="1"
 						VerticalAlignment="Center"
-						Classes="button" />
+						Classes="buttonsub" />
 
           <Button
-						Name="buttonEnergyIncrease"
+						Name="buttonDefibEnergyIncrease"
 						Grid.Row="0"
 						Grid.Column="2"
 						Background="LightGray"
 						Classes="round"
-						Click="ButtonEnergyIncrease_Click">
-            <TextBlock Name="btntxtEnergyIncrease" Classes="button" />
+						Click="ButtonDefibEnergyIncrease_Click">
+            <TextBlock Name="btntxtDefibEnergyIncrease" Classes="button" />
           </Button>
         </Grid>
 
@@ -269,7 +286,7 @@
 						Grid.Row="0"
 						Grid.Column="1"
 						VerticalAlignment="Center"
-						Classes="button" />
+						Classes="buttonsub" />
 
           <Button
 						Name="buttonPaceRateIncrease"
@@ -307,7 +324,7 @@
 						Grid.Row="0"
 						Grid.Column="1"
 						VerticalAlignment="Center"
-						Classes="button" />
+						Classes="buttonsub" />
 
           <Button
 						Name="buttonPaceEnergyIncrease"

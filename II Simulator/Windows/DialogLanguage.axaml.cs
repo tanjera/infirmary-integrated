@@ -5,6 +5,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media.Imaging;
 
 using II;
 using II.Localization;
@@ -60,6 +61,31 @@ namespace IISIM {
 
             Instance.Settings.Language = Instance.Language.Value.ToString ();
             Instance.Settings.Save ();
+
+            // Show messagebox prompting user to restart the program for changes to take effect
+
+            var assets = AvaloniaLocator.Current.GetService<Avalonia.Platform.IAssetLoader> ();
+            var icon = new Bitmap (assets.Open (new Uri ("avares://Infirmary Integrated/Third_Party/Icon_DeviceMonitor_128.png")));
+
+            var msBoxStandardWindow = MessageBox.Avalonia.MessageBoxManager
+                .GetMessageBoxCustomWindow (new MessageBox.Avalonia.DTO.MessageBoxCustomParamsWithImage {
+                    ButtonDefinitions = new [] {
+                            new MessageBox.Avalonia.Models.ButtonDefinition {
+                                Name = "OK",
+                                IsCancel=true}
+                    },
+                    ContentTitle = Instance.Language.Localize ("MESSAGE:Restart"),
+                    ContentMessage = Instance.Language.Localize ("MESSAGE:RestartForChanges"),
+                    Icon = icon,
+                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
+                    WindowIcon = this.Icon,
+                    ShowInCenter = true,
+                    SizeToContent = SizeToContent.WidthAndHeight,
+                    Topmost = true,
+                    CanResize = false,
+                });
+
+            msBoxStandardWindow.Show ();
 
             this.Close ();
         }

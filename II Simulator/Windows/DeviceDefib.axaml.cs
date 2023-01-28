@@ -30,7 +30,7 @@ namespace IISIM {
                     Charged = false,
                     Analyzed = false;
 
-        public int Energy = 200,
+        public int DefibEnergy = 200,
                     PacerEnergy = 0,
                     PacerRate = 80;
 
@@ -72,6 +72,9 @@ namespace IISIM {
 #endif
 
             DataContext = this;
+
+            // Initiate Device variables per Instance.Settings
+            DefibEnergy = Instance?.Settings?.DefibEnergyMaximum ?? 200;
 
             InitInterface ();
             OnLayoutChange ();
@@ -121,6 +124,13 @@ namespace IISIM {
             this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
             this.FindControl<MenuItem> ("menuAddNumeric").Header = Instance.Language.Localize ("MENU:MenuAddNumeric");
             this.FindControl<MenuItem> ("menuAddTracing").Header = Instance.Language.Localize ("MENU:MenuAddTracing");
+            this.FindControl<MenuItem> ("menuDefibEnergy").Header = Instance.Language.Localize ("DEFIB:DefibrillationEnergy");
+            this.FindControl<MenuItem> ("menuDefibMaximum").Header = Instance.Language.Localize ("DEFIB:Maximum");
+            this.FindControl<MenuItem> ("menuDefibMaximum_200").Header = $"200 {Instance.Language.Localize ("DEFIB:Joules")}";
+            this.FindControl<MenuItem> ("menuDefibMaximum_360").Header = $"360 {Instance.Language.Localize ("DEFIB:Joules")}";
+            this.FindControl<MenuItem> ("menuDefibIncrement").Header = Instance.Language.Localize ("DEFIB:Increment");
+            this.FindControl<MenuItem> ("menuDefibIncrement_10").Header = $"10 {Instance.Language.Localize ("DEFIB:Joules")}";
+            this.FindControl<MenuItem> ("menuDefibIncrement_20").Header = $"20 {Instance.Language.Localize ("DEFIB:Joules")}";
             this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
 
             this.FindControl<MenuItem> ("menuAudio").Header = Instance.Language.Localize ("MENU:MenuAudio");
@@ -133,9 +143,9 @@ namespace IISIM {
             this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
 
             this.FindControl<TextBlock> ("btntxtDefib").Text = Instance.Language.Localize ("DEFIB:Defibrillator");
-            this.FindControl<TextBlock> ("txtEnergyAmount").Text = Instance.Language.Localize ("DEFIB:EnergyAmount");
-            this.FindControl<TextBlock> ("btntxtEnergyDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
-            this.FindControl<TextBlock> ("btntxtEnergyIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
+            this.FindControl<TextBlock> ("txtDefibEnergy").Text = Instance.Language.Localize ("DEFIB:Energy");
+            this.FindControl<TextBlock> ("btntxtDefibEnergyDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
+            this.FindControl<TextBlock> ("btntxtDefibEnergyIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
             this.FindControl<TextBlock> ("btntxtCharge").Text = Instance.Language.Localize ("DEFIB:Charge");
             this.FindControl<TextBlock> ("btntxtShock").Text = Instance.Language.Localize ("DEFIB:Shock");
             this.FindControl<TextBlock> ("btntxtAnalyze").Text = Instance.Language.Localize ("DEFIB:Analyze");
@@ -145,7 +155,7 @@ namespace IISIM {
             this.FindControl<TextBlock> ("txtPaceRate").Text = Instance.Language.Localize ("DEFIB:Rate");
             this.FindControl<TextBlock> ("btntxtPaceRateDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
             this.FindControl<TextBlock> ("btntxtPaceRateIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
-            this.FindControl<TextBlock> ("txtPaceEnergy").Text = Instance.Language.Localize ("DEFIB:EnergyAmount");
+            this.FindControl<TextBlock> ("txtPaceEnergy").Text = Instance.Language.Localize ("DEFIB:Energy");
             this.FindControl<TextBlock> ("btntxtPaceEnergyDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
             this.FindControl<TextBlock> ("btntxtPaceEnergyIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
             this.FindControl<TextBlock> ("btntxtPacePause").Text = Instance.Language.Localize ("DEFIB:Pause");
@@ -190,7 +200,7 @@ namespace IISIM {
                             case "Mode": Mode = (Modes)Enum.Parse (typeof (Modes), pValue); break;
                             case "Charged": Charged = bool.Parse (pValue); break;
                             case "Analyzed": Analyzed = bool.Parse (pValue); break;
-                            case "Energy": Energy = int.Parse (pValue); break;
+                            case "DefibEnergy": DefibEnergy = int.Parse (pValue); break;
                             case "PacerEnergy": PacerEnergy = int.Parse (pValue); break;
                             case "PacerRate": PacerRate = int.Parse (pValue); break;
                         }
@@ -220,11 +230,34 @@ namespace IISIM {
             sWrite.AppendLine (String.Format ("{0}:{1}", "Mode", Mode));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Charged", Charged));
             sWrite.AppendLine (String.Format ("{0}:{1}", "Analyzed", Analyzed));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Energy", Energy));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "DefibEnergy", DefibEnergy));
             sWrite.AppendLine (String.Format ("{0}:{1}", "PacerEnergy", PacerEnergy));
             sWrite.AppendLine (String.Format ("{0}:{1}", "PacerRate", PacerRate));
 
             return sWrite.ToString ();
+        }
+
+        public Task SetDefibEnergyMaximum (int joules) {
+            if (Instance?.Settings is null)
+                return Task.CompletedTask;
+
+            Instance.Settings.DefibEnergyMaximum = joules;
+            Instance.Settings.Save ();
+
+            DefibEnergy = II.Math.Clamp (DefibEnergy, 0, Instance?.Settings?.DefibEnergyMaximum ?? joules);
+            UpdateInterface ();
+
+            return Task.CompletedTask;
+        }
+
+        public Task SetDefibEnergyIncrement (int joules) {
+            if (Instance?.Settings is null)
+                return Task.CompletedTask;
+
+            Instance.Settings.DefibEnergyIncrement = joules;
+            Instance.Settings.Save ();
+
+            return Task.CompletedTask;
         }
 
         public async Task SetAudioTone (ToneSources source) {
@@ -329,19 +362,19 @@ namespace IISIM {
             UpdateInterface ();
         }
 
-        private void ButtonEnergyDecrease_Click (object s, RoutedEventArgs e) {
+        private void ButtonDefibEnergyDecrease_Click (object s, RoutedEventArgs e) {
             if (Mode != Modes.DEFIB && Mode != Modes.SYNC)
                 return;
 
-            Energy = II.Math.Clamp (Energy - 20, 0, 200);
+            DefibEnergy = II.Math.Clamp (DefibEnergy - (Instance?.Settings?.DefibEnergyIncrement ?? 20), 0, Instance?.Settings?.DefibEnergyMaximum ?? 200);
             UpdateInterface ();
         }
 
-        private void ButtonEnergyIncrease_Click (object s, RoutedEventArgs e) {
+        private void ButtonDefibEnergyIncrease_Click (object s, RoutedEventArgs e) {
             if (Mode != Modes.DEFIB && Mode != Modes.SYNC)
                 return;
 
-            Energy = II.Math.Clamp (Energy + 20, 0, 200);
+            DefibEnergy = II.Math.Clamp (DefibEnergy + (Instance?.Settings?.DefibEnergyIncrement ?? 20), 0, Instance?.Settings?.DefibEnergyMaximum ?? 200);
             UpdateInterface ();
         }
 
@@ -453,6 +486,18 @@ namespace IISIM {
 
         private void MenuTogglePause_Click (object s, RoutedEventArgs e)
             => TogglePause ();
+
+        private void MenuDefibEnergyMaximum_200 (object s, RoutedEventArgs e)
+            => _ = SetDefibEnergyMaximum (200);
+
+        private void MenuDefibEnergyMaximum_360 (object s, RoutedEventArgs e)
+            => _ = SetDefibEnergyMaximum (360);
+
+        private void MenuDefibEnergyIncrement_10 (object s, RoutedEventArgs e)
+            => _ = SetDefibEnergyIncrement (10);
+
+        private void MenuDefibEnergyIncrement_20 (object s, RoutedEventArgs e)
+             => _ = SetDefibEnergyIncrement (20);
 
         private void MenuAudioOff (object sender, RoutedEventArgs e)
             => _ = SetAudioTone (ToneSources.None);
