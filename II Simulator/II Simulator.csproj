@@ -8,7 +8,7 @@
     <AssemblyName>Infirmary Integrated</AssemblyName>
     <Copyright>© 2017-2023, Ibi Keller</Copyright>
     <Authors>Ibi Keller</Authors>
-    <Version>2.4.5</Version>
+    <Version>2.4.6</Version>
     <Company>Infirmary Integrated</Company>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageProjectUrl>https://www.infirmary-integrated.com/</PackageProjectUrl>
@@ -21,13 +21,13 @@
     <RootNamespace>IISIM</RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.7" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.7" />
-    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.7" />
-    <PackageReference Include="LibVLCSharp" Version="3.6.6" />
-    <PackageReference Include="MessageBox.Avalonia" Version="1.5.1" />
+    <PackageReference Include="Avalonia" Version="0.10.18" />
+    <PackageReference Include="Avalonia.Desktop" Version="0.10.18" />
+    <PackageReference Include="Avalonia.Diagnostics" Version="0.10.18" />
+    <PackageReference Include="LibVLCSharp" Version="3.6.7" />
+    <PackageReference Include="MessageBox.Avalonia" Version="2.1.0" />
     <PackageReference Include="VideoLAN.LibVLC.Mac" Version="3.1.3.1" />
-    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.17.4" />
+    <PackageReference Include="VideoLAN.LibVLC.Windows" Version="3.0.18" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Controls\EFMTracing.axaml.cs">

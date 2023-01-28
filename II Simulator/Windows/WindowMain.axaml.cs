@@ -1018,13 +1018,11 @@ namespace IISIM {
                 ButtonDefinitions = new [] {
                     new MessageBox.Avalonia.Models.ButtonDefinition {
                         Name = "OK",
-                        Type = MessageBox.Avalonia.Enums.ButtonType.Default,
                         IsCancel=true}
                 },
                 ContentTitle = Instance?.Language.Localize ("PE:LoadFailTitle"),
                 ContentMessage = Instance?.Language.Localize ("PE:LoadFailMessage"),
                 Icon = icon,
-                Style = MessageBox.Avalonia.Enums.Style.None,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 WindowIcon = this.Icon,
                 Topmost = true,
@@ -1047,13 +1045,11 @@ namespace IISIM {
                     ButtonDefinitions = new [] {
                     new MessageBox.Avalonia.Models.ButtonDefinition {
                         Name = "OK",
-                        Type = MessageBox.Avalonia.Enums.ButtonType.Default,
                         IsCancel=true}
                     },
                     ContentTitle = ("PE:SaveFailScenarioTitle"),
                     ContentMessage = Instance.Language.Localize ("PE:SaveFailScenarioMessage"),
                     Icon = icon,
-                    Style = MessageBox.Avalonia.Enums.Style.None,
                     WindowStartupLocation = WindowStartupLocation.CenterScreen,
                     WindowIcon = this.Icon,
                     Topmost = true,

@@ -86,13 +86,11 @@ namespace IISIM {
                         ButtonDefinitions = new [] {
                             new MessageBox.Avalonia.Models.ButtonDefinition {
                                 Name = "OK",
-                                Type = MessageBox.Avalonia.Enums.ButtonType.Default,
                                 IsCancel=true}
                         },
                         ContentTitle = Instance?.Language.Localize ("MIRROR:BroadcastTitle"),
                         ContentMessage = Instance?.Language.Localize ("MIRROR:SettingsInvalid"),
                         Icon = icon,
-                        Style = MessageBox.Avalonia.Enums.Style.None,
                         WindowStartupLocation = WindowStartupLocation.CenterScreen,
                         WindowIcon = this.Icon,
                         Topmost = true,
