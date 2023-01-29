@@ -294,11 +294,10 @@ namespace IISIM.Controls {
 
                                 lblLine1.Text = Instance.Language.Localize ("DEFIB:Defibrillation");
                                 lblLine2.Text = String.Format ("{0:0} {1}", device.DefibEnergy, Instance.Language.Localize ("DEFIB:Joules"));
-                                if (device.Charging)
-                                    lblLine3.Text = Instance.Language.Localize ("DEFIB:Charging");
-                                else if (device.Charged)
-                                    lblLine3.Text = Instance.Language.Localize ("DEFIB:Charged");
-                                else if (device.Analyzed) {
+
+                                if (device.Analyze == DeviceDefib.AnalyzeStates.Analyzing) {
+                                    lblLine3.Text = Instance.Language.Localize ("DEFIB:Analyzing");
+                                } else if (device.Analyze == DeviceDefib.AnalyzeStates.Analyzed) {
                                     switch (Instance.Physiology.Cardiac_Rhythm.Value) {
                                         default:
                                             lblLine3.Text = Instance.Language.Localize ("DEFIB:NoShockAdvised");
@@ -312,14 +311,24 @@ namespace IISIM.Controls {
                                             lblLine3.Text = Instance.Language.Localize ("DEFIB:ShockAdvised");
                                             break;
                                     }
-                                } else
-                                    lblLine3.Text = "";
+                                } else {
+                                    lblLine3.Text = device.Charge switch {
+                                        DeviceDefib.ChargeStates.Charging => Instance.Language.Localize ("DEFIB:Charging"),
+                                        DeviceDefib.ChargeStates.Charged => Instance.Language.Localize ("DEFIB:Charged"),
+                                        _ => ""
+                                    };
+                                }
+
                                 break;
 
                             case DeviceDefib.Modes.SYNC:
                                 lblLine1.Text = Instance.Language.Localize ("DEFIB:Synchronized");
                                 lblLine2.Text = String.Format ("{0:0} {1}", device.DefibEnergy, Instance.Language.Localize ("DEFIB:Joules"));
-                                lblLine3.Text = device.Charged ? Instance.Language.Localize ("DEFIB:Charged") : "";
+                                lblLine3.Text = device.Charge switch {
+                                    DeviceDefib.ChargeStates.Charging => Instance.Language.Localize ("DEFIB:Charging"),
+                                    DeviceDefib.ChargeStates.Charged => Instance.Language.Localize ("DEFIB:Charged"),
+                                    _ => ""
+                                };
                                 break;
 
                             case DeviceDefib.Modes.PACER:

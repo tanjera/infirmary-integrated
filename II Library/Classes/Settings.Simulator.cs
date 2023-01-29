@@ -12,6 +12,8 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
+using IISIM;
+
 namespace II.Settings {
     public class Simulator {
         public string Language;
@@ -21,6 +23,7 @@ namespace II.Settings {
 
         public int DefibEnergyMaximum;
         public int DefibEnergyIncrement;
+        public DeviceDefib.ToneSources DefibAudioSource;
 
         public Point WindowSize;
         public Point WindowPosition;
@@ -38,6 +41,7 @@ namespace II.Settings {
 
             DefibEnergyMaximum = 200;
             DefibEnergyIncrement = 20;
+            DefibAudioSource = DeviceDefib.ToneSources.Defibrillator;
 
             WindowSize = new Point (800, 600);
 
@@ -78,7 +82,7 @@ namespace II.Settings {
                                 AutoApplyChanges = parseBool;
                             break;
 
-                        // Settings for Defibrillator energy and increments
+                        // Settings for Defibrillator
                         case "DefibEnergyMaximum":
                             if (int.TryParse (pValue, out parseInt))
                                 DefibEnergyMaximum = parseInt;
@@ -88,6 +92,8 @@ namespace II.Settings {
                             if (int.TryParse (pValue, out parseInt))
                                 DefibEnergyIncrement = parseInt;
                             break;
+
+                        case "DefibAudioSource": DefibAudioSource = (DeviceDefib.ToneSources)Enum.Parse (typeof (DeviceDefib.ToneSources), pValue); break;
 
                         // Settings for the size of the Patient Editor
                         case "WindowSizeX":
@@ -124,6 +130,7 @@ namespace II.Settings {
             sw.WriteLine ($"AutoApplyChanges:{AutoApplyChanges}");
             sw.WriteLine ($"DefibEnergyMaximum:{DefibEnergyMaximum}");
             sw.WriteLine ($"DefibEnergyIncrement:{DefibEnergyIncrement}");
+            sw.WriteLine ($"DefibAudioSource:{DefibAudioSource}");
             sw.WriteLine ($"WindowSizeX:{WindowSize.X}");
             sw.WriteLine ($"WindowSizeY:{WindowSize.Y}");
             sw.WriteLine ($"WindowPositionX:{WindowPosition.X}");

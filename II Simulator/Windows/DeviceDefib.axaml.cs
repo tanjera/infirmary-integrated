@@ -26,9 +26,8 @@ namespace IISIM {
         // Device settings
         public Modes Mode = Modes.DEFIB;
 
-        public bool Charging = false,
-                    Charged = false,
-                    Analyzed = false;
+        public ChargeStates Charge;
+        public AnalyzeStates Analyze;
 
         public int DefibEnergy = 200,
                     PacerEnergy = 0,
@@ -44,10 +43,21 @@ namespace IISIM {
         private List<Controls.DefibTracing> listTracings = new ();
         private List<Controls.DefibNumeric> listNumerics = new ();
 
-        /* Variables for audio tones (QRS or SPO2 beeps)*/
-        private ToneSources ToneSource = ToneSources.None;
-        public MediaPlayer? TonePlayer;
-        private MemoryStream? ToneMedia;
+        /* Variables for audio tones (QRS or SPO2 beeps) and defibrillator charger */
+        public MediaPlayer? TonePlayer, ChargePlayer;
+        private MemoryStream? ToneMedia, ChargeMedia;
+
+        public enum AnalyzeStates {
+            Inactive,
+            Analyzing,
+            Analyzed
+        }
+
+        public enum ChargeStates {
+            Discharged,
+            Charging,
+            Charged
+        }
 
         public enum Modes {
             DEFIB,
@@ -56,7 +66,8 @@ namespace IISIM {
         };
 
         public enum ToneSources {
-            None,
+            Mute,
+            Defibrillator,
             ECG,
             SPO2
         }
@@ -93,6 +104,7 @@ namespace IISIM {
             base.InitAudio ();
 
             TonePlayer = new MediaPlayer (Instance.AudioLib);
+            ChargePlayer = new MediaPlayer (Instance.AudioLib);
         }
 
         public override void DisposeAudio () {
@@ -108,6 +120,18 @@ namespace IISIM {
                 ToneMedia.Close ();
                 ToneMedia.Dispose ();
                 ToneMedia = null;
+            }
+
+            if (ChargePlayer is not null) {
+                ChargePlayer.Stop ();
+                ChargePlayer.Dispose ();
+                ChargePlayer = null;
+            }
+
+            if (ChargeMedia is not null) {
+                ChargeMedia.Close ();
+                ChargeMedia.Dispose ();
+                ChargeMedia = null;
             }
         }
 
@@ -135,6 +159,7 @@ namespace IISIM {
 
             this.FindControl<MenuItem> ("menuAudio").Header = Instance.Language.Localize ("MENU:MenuAudio");
             this.FindControl<MenuItem> ("menuAudioOff").Header = Instance.Language.Localize ("MENU:MenuAudioOff");
+            this.FindControl<MenuItem> ("menuAudioDefib").Header = Instance.Language.Localize ("MENU:MenuAudioDefib");
             this.FindControl<MenuItem> ("menuAudioECG").Header = Instance.Language.Localize ("MENU:MenuAudioECG");
             this.FindControl<MenuItem> ("menuAlarmsSPO2").Header = Instance.Language.Localize ("MENU:MenuAudioSPO2");
 
@@ -198,8 +223,8 @@ namespace IISIM {
                             case "numericTypes": numericTypes.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
                             case "tracingTypes": tracingTypes.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
                             case "Mode": Mode = (Modes)Enum.Parse (typeof (Modes), pValue); break;
-                            case "Charged": Charged = bool.Parse (pValue); break;
-                            case "Analyzed": Analyzed = bool.Parse (pValue); break;
+                            case "Charge": Charge = (ChargeStates)Enum.Parse (typeof (ChargeStates), pValue); break;
+                            case "Analyze": Analyze = (AnalyzeStates)Enum.Parse (typeof (AnalyzeStates), pValue); break;
                             case "DefibEnergy": DefibEnergy = int.Parse (pValue); break;
                             case "PacerEnergy": PacerEnergy = int.Parse (pValue); break;
                             case "PacerRate": PacerRate = int.Parse (pValue); break;
@@ -226,10 +251,9 @@ namespace IISIM {
             listTracings.ForEach (o => { tracingTypes.Add (o.Strip?.Lead?.Value.ToString () ?? ""); });
             sWrite.AppendLine (String.Format ("{0}:{1}", "numericTypes", string.Join (",", numericTypes)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "tracingTypes", string.Join (",", tracingTypes)));
-
             sWrite.AppendLine (String.Format ("{0}:{1}", "Mode", Mode));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Charged", Charged));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Analyzed", Analyzed));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Charge", Charge));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Analyze", Analyze));
             sWrite.AppendLine (String.Format ("{0}:{1}", "DefibEnergy", DefibEnergy));
             sWrite.AppendLine (String.Format ("{0}:{1}", "PacerEnergy", PacerEnergy));
             sWrite.AppendLine (String.Format ("{0}:{1}", "PacerRate", PacerRate));
@@ -260,11 +284,54 @@ namespace IISIM {
             return Task.CompletedTask;
         }
 
+        public async Task SetChargeState (ChargeStates charge) {
+            Charge = charge;
+            await PlayAudioCharge ();
+        }
+
+        public async Task PlayAudioCharge () {
+            if (ChargePlayer is null || Instance?.AudioLib is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (PlayAudioCharge)}");
+                return;
+            }
+
+            if (!(Instance?.Settings?.AudioEnabled ?? false) || ((Instance?.Settings?.DefibAudioSource ?? ToneSources.Mute) == ToneSources.Mute)) {
+                ChargePlayer.Stop ();
+                await ReleaseAudioCharge ();
+            } else {
+                switch (Charge) {
+                    default:
+                        ChargePlayer.Stop ();
+                        break;
+
+                    case ChargeStates.Charging:
+                        ChargePlayer.Stop ();
+                        await ReleaseAudioCharge ();
+                        ChargeMedia = await Audio.ToneGenerator (3, 440, true);
+                        ChargePlayer.Media = new Media (Instance.AudioLib, new StreamMediaInput (ChargeMedia));
+                        ChargePlayer.Play ();
+                        break;
+
+                    case ChargeStates.Charged:
+                        ChargePlayer.Stop ();
+                        await ReleaseAudioCharge ();
+                        ChargeMedia = await Audio.ToneGenerator (30, 660, true);
+                        ChargePlayer.Media = new Media (Instance.AudioLib, new StreamMediaInput (ChargeMedia));
+                        ChargePlayer.Play ();
+                        break;
+                }
+            }
+        }
+
         public async Task SetAudioTone (ToneSources source) {
-            ToneSource = source;
+            if (Instance?.Settings is null)
+                return;
+
+            Instance.Settings.DefibAudioSource = source;
+            Instance.Settings.Save ();
 
             if (TonePlayer is not null && Instance?.AudioLib is not null) {
-                switch (ToneSource) {
+                switch (Instance.Settings.DefibAudioSource) {
                     default:
                     case ToneSources.SPO2:
                         await ReleaseAudioTone ();
@@ -287,8 +354,8 @@ namespace IISIM {
                 return;
             }
 
-            if (ToneSource == trigger && (Instance?.Settings.AudioEnabled ?? false)) {
-                switch (ToneSource) {
+            if (Instance.Settings.DefibAudioSource == trigger && (Instance?.Settings.AudioEnabled ?? false)) {
+                switch (Instance.Settings.DefibAudioSource) {
                     default: break;
 
                     case ToneSources.ECG:           // Plays a fixed tone each QRS complex
@@ -305,6 +372,17 @@ namespace IISIM {
                         break;
                 }
             }
+        }
+
+        private Task ReleaseAudioCharge () {
+            ChargePlayer?.Stop ();
+            if (ChargePlayer is not null)
+                ChargePlayer.Media = null;
+
+            ChargeMedia?.Close ();
+            ChargeMedia?.Dispose ();
+
+            return Task.CompletedTask;
         }
 
         private Task ReleaseAudioTone () {
@@ -366,7 +444,14 @@ namespace IISIM {
             if (Mode != Modes.DEFIB && Mode != Modes.SYNC)
                 return;
 
-            DefibEnergy = II.Math.Clamp (DefibEnergy - (Instance?.Settings?.DefibEnergyIncrement ?? 20), 0, Instance?.Settings?.DefibEnergyMaximum ?? 200);
+            // Discard any charged energy if energy selection buttons are pressed!
+            _ = SetChargeState (ChargeStates.Discharged);
+
+            DefibEnergy = II.Math.Clamp (
+                DefibEnergy - (Instance?.Settings?.DefibEnergyIncrement ?? 20),
+                0,
+                Instance?.Settings?.DefibEnergyMaximum ?? 200);
+
             UpdateInterface ();
         }
 
@@ -374,7 +459,14 @@ namespace IISIM {
             if (Mode != Modes.DEFIB && Mode != Modes.SYNC)
                 return;
 
-            DefibEnergy = II.Math.Clamp (DefibEnergy + (Instance?.Settings?.DefibEnergyIncrement ?? 20), 0, Instance?.Settings?.DefibEnergyMaximum ?? 200);
+            // Discard any charged energy if energy selection buttons are pressed!
+            _ = SetChargeState (ChargeStates.Discharged);
+
+            DefibEnergy = II.Math.Clamp (
+                DefibEnergy + (Instance?.Settings?.DefibEnergyIncrement ?? 20),
+                0,
+                Instance?.Settings?.DefibEnergyMaximum ?? 200);
+
             UpdateInterface ();
         }
 
@@ -383,14 +475,13 @@ namespace IISIM {
             if (Mode != Modes.DEFIB && Mode != Modes.SYNC)
                 return;
 
-            Analyzed = false;
+            Analyze = AnalyzeStates.Inactive;
 
             if (TimerAncillary_Delay.IsLocked) {
-                Charging = false;
-                Charged = true;
+                _ = SetChargeState (ChargeStates.Charged);
             } else {
-                Charging = true;
-                Charged = false;
+                _ = SetChargeState (ChargeStates.Charging);
+
                 TimerAncillary_Delay.Lock ();
                 TimerAncillary_Delay.Tick += OnTick_ChargingComplete;
                 TimerAncillary_Delay.Set (3000);
@@ -401,36 +492,49 @@ namespace IISIM {
         }
 
         private void ButtonShock_Click (object s, RoutedEventArgs e) {
-            if (!Charged)
+            if (Charge != ChargeStates.Charged)
                 return;
 
-            Charged = false;
+            _ = SetChargeState (ChargeStates.Discharged);
 
             switch (Mode) {
                 default: break;
-                case Modes.DEFIB: _ = Instance.Physiology?.Defibrillate (); break;
-                case Modes.SYNC: _ = Instance.Physiology?.Cardiovert (); break;
+                case Modes.DEFIB: _ = Instance?.Physiology?.Defibrillate (); break;
+                case Modes.SYNC: _ = Instance?.Physiology?.Cardiovert (); break;
             }
 
             UpdateInterface ();
         }
 
         private void ButtonAnalyze_Click (object s, RoutedEventArgs e) {
-            Analyzed = true;
-            Mode = Modes.DEFIB;
-            UpdatePacemaker ();
+            if (Mode != Modes.DEFIB)
+                return;
+
+            Analyze = AnalyzeStates.Analyzing;
+
+            if (TimerAncillary_Delay.IsLocked) {
+                Analyze = AnalyzeStates.Analyzed;
+            } else {
+                Analyze = AnalyzeStates.Analyzing;
+
+                TimerAncillary_Delay.Lock ();
+                TimerAncillary_Delay.Tick += OnTick_AnalyzingComplete;
+                TimerAncillary_Delay.Set (3000);
+                TimerAncillary_Delay.Start ();
+            }
+
             UpdateInterface ();
         }
 
         private void ButtonSync_Click (object s, RoutedEventArgs e) {
-            Analyzed = false;
+            Analyze = AnalyzeStates.Inactive;
             Mode = (Mode != Modes.SYNC ? Modes.SYNC : Modes.DEFIB);
             UpdatePacemaker ();
             UpdateInterface ();
         }
 
         private void ButtonPacer_Click (object s, RoutedEventArgs e) {
-            Analyzed = false;
+            Analyze = AnalyzeStates.Inactive;
             Mode = (Mode != Modes.PACER ? Modes.PACER : Modes.DEFIB);
             UpdatePacemaker ();
             UpdateInterface ();
@@ -500,7 +604,10 @@ namespace IISIM {
              => _ = SetDefibEnergyIncrement (20);
 
         private void MenuAudioOff (object sender, RoutedEventArgs e)
-            => _ = SetAudioTone (ToneSources.None);
+            => _ = SetAudioTone (ToneSources.Mute);
+
+        private void MenuAudioDefib (object sender, RoutedEventArgs e)
+            => _ = SetAudioTone (ToneSources.Defibrillator);
 
         private void MenuAudioECG (object sender, RoutedEventArgs e)
             => _ = SetAudioTone (ToneSources.ECG);
@@ -514,13 +621,22 @@ namespace IISIM {
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Dark);
 
+        private void OnTick_AnalyzingComplete (object? sender, EventArgs e) {
+            TimerAncillary_Delay.Stop ();
+            TimerAncillary_Delay.Unlock ();
+            TimerAncillary_Delay.Tick -= OnTick_AnalyzingComplete;
+
+            Analyze = AnalyzeStates.Analyzed;
+
+            UpdateInterface ();
+        }
+
         private void OnTick_ChargingComplete (object? sender, EventArgs e) {
             TimerAncillary_Delay.Stop ();
             TimerAncillary_Delay.Unlock ();
             TimerAncillary_Delay.Tick -= OnTick_ChargingComplete;
 
-            Charging = false;
-            Charged = true;
+            _ = SetChargeState (ChargeStates.Charged);
 
             UpdateInterface ();
         }

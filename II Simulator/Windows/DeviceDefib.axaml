@@ -66,6 +66,7 @@
 
       <MenuItem Name="menuAudio">
         <MenuItem Name="menuAudioOff" Click="MenuAudioOff" />
+        <MenuItem Name="menuAudioDefib" Click="MenuAudioDefib" />
         <MenuItem Name="menuAudioECG" Click="MenuAudioECG" />
         <MenuItem Name="menuAlarmsSPO2" Click="MenuAudioSPO2" />
       </MenuItem>
