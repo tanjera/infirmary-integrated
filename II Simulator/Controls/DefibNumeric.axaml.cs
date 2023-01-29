@@ -159,13 +159,40 @@ namespace IISIM.Controls {
                 TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
                 TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
 
-                borderNumeric.BorderBrush = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
+                if (ControlType?.Value == ControlTypes.Values.DEFIB && ColorScheme == Color.Schemes.Dark) {
+                    // Defib numeric in dark more (colorful) gets specific colors based on status
 
-                lblNumType.Foreground = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
-                lblLine1.Foreground = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
-                lblLine2.Foreground = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
-                lblLine3.Foreground = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
+                    // Default color scheme settings are still utilized as "default" state
+                    IBrush statusColor = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
 
+                    if (((DeviceDefib)DeviceParent).Mode == DeviceDefib.Modes.PACER) {
+                        statusColor = Brushes.Orange;
+                    } else if (((DeviceDefib)DeviceParent).Analyze != DeviceDefib.AnalyzeStates.Inactive) {
+                        statusColor = ((DeviceDefib)DeviceParent).Analyze switch {
+                            DeviceDefib.AnalyzeStates.Analyzing => Brushes.YellowGreen,
+                            _ => statusColor
+                        };
+                    } else if (((DeviceDefib)DeviceParent).Charge != DeviceDefib.ChargeStates.Discharged) {
+                        statusColor = ((DeviceDefib)DeviceParent).Charge switch {
+                            DeviceDefib.ChargeStates.Charging => Brushes.Yellow,
+                            DeviceDefib.ChargeStates.Charged => Brushes.Red,
+                            _ => statusColor
+                        };
+                    }
+
+                    borderNumeric.BorderBrush = statusColor;
+                    lblNumType.Foreground = statusColor;
+                    lblLine1.Foreground = statusColor;
+                    lblLine2.Foreground = statusColor;
+                    lblLine3.Foreground = statusColor;
+                } else {
+                    // All other numerics and color modes get colors set by the color scheme
+                    borderNumeric.BorderBrush = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
+                    lblNumType.Foreground = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
+                    lblLine1.Foreground = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
+                    lblLine2.Foreground = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
+                    lblLine3.Foreground = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
+                }
                 lblLine1.IsVisible = true;
                 lblLine2.IsVisible = true;
                 lblLine3.IsVisible = true;
