@@ -15,6 +15,7 @@ using Avalonia.Threading;
 
 using II;
 using II.Rhythm;
+using II.Settings;
 using II.Waveform;
 
 using LibVLCSharp.Shared;
@@ -64,13 +65,6 @@ namespace IISIM {
             SYNC,
             PACER
         };
-
-        public enum ToneSources {
-            Mute,
-            Defibrillator,
-            ECG,
-            SPO2
-        }
 
         public DeviceDefib () {
             InitializeComponent ();
@@ -295,7 +289,7 @@ namespace IISIM {
                 return;
             }
 
-            if (!(Instance?.Settings?.AudioEnabled ?? false) || ((Instance?.Settings?.DefibAudioSource ?? ToneSources.Mute) == ToneSources.Mute)) {
+            if (!(Instance?.Settings?.AudioEnabled ?? false) || ((Instance?.Settings?.DefibAudioSource ?? Simulator.ToneSources.Mute) == Simulator.ToneSources.Mute)) {
                 ChargePlayer.Stop ();
                 await ReleaseAudioCharge ();
             } else {
@@ -323,7 +317,7 @@ namespace IISIM {
             }
         }
 
-        public async Task SetAudioTone (ToneSources source) {
+        public async Task SetAudioTone (II.Settings.Simulator.ToneSources source) {
             if (Instance?.Settings is null)
                 return;
 
@@ -333,11 +327,11 @@ namespace IISIM {
             if (TonePlayer is not null && Instance?.AudioLib is not null) {
                 switch (Instance.Settings.DefibAudioSource) {
                     default:
-                    case ToneSources.SPO2:
+                    case Simulator.ToneSources.SPO2:
                         await ReleaseAudioTone ();
                         break;
 
-                    case ToneSources.ECG:
+                    case Simulator.ToneSources.ECG:
                         await ReleaseAudioTone ();
                         ToneMedia = await Audio.ToneGenerator (0.15, 330, true);
                         TonePlayer.Media = new Media (Instance.AudioLib, new StreamMediaInput (ToneMedia));
@@ -348,7 +342,7 @@ namespace IISIM {
             return;
         }
 
-        public async Task PlayAudioTone (ToneSources trigger, Physiology? p) {
+        public async Task PlayAudioTone (Simulator.ToneSources trigger, Physiology? p) {
             if (TonePlayer is null || Instance?.AudioLib is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (PlayAudioTone)}");
                 return;
@@ -358,12 +352,12 @@ namespace IISIM {
                 switch (Instance.Settings.DefibAudioSource) {
                     default: break;
 
-                    case ToneSources.ECG:           // Plays a fixed tone each QRS complex
+                    case Simulator.ToneSources.ECG:           // Plays a fixed tone each QRS complex
                         TonePlayer.Stop ();
                         TonePlayer.Play ();
                         break;
 
-                    case ToneSources.SPO2:          // Plays a variable tone depending on SpO2
+                    case Simulator.ToneSources.SPO2:          // Plays a variable tone depending on SpO2
                         TonePlayer.Stop ();
                         await ReleaseAudioTone ();
                         ToneMedia = await Audio.ToneGenerator (0.15, II.Math.Lerp (110, 330, (double)(p?.SPO2 ?? 100) / 100), true);
@@ -604,16 +598,16 @@ namespace IISIM {
              => _ = SetDefibEnergyIncrement (20);
 
         private void MenuAudioOff (object sender, RoutedEventArgs e)
-            => _ = SetAudioTone (ToneSources.Mute);
+            => _ = SetAudioTone (Simulator.ToneSources.Mute);
 
         private void MenuAudioDefib (object sender, RoutedEventArgs e)
-            => _ = SetAudioTone (ToneSources.Defibrillator);
+            => _ = SetAudioTone (Simulator.ToneSources.Defibrillator);
 
         private void MenuAudioECG (object sender, RoutedEventArgs e)
-            => _ = SetAudioTone (ToneSources.ECG);
+            => _ = SetAudioTone (Simulator.ToneSources.ECG);
 
         private void MenuAudioSPO2 (object sender, RoutedEventArgs e)
-            => _ = SetAudioTone (ToneSources.SPO2);
+            => _ = SetAudioTone (Simulator.ToneSources.SPO2);
 
         private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Light);
@@ -775,7 +769,7 @@ namespace IISIM {
 
                 case Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Electric:
                     // QRS audio tone is only triggered by rhythms w/ a ventricular electrical (QRS complex) action
-                    _ = PlayAudioTone (ToneSources.ECG, e.Physiology);
+                    _ = PlayAudioTone (Simulator.ToneSources.ECG, e.Physiology);
 
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Physiology));
                     break;
@@ -786,7 +780,7 @@ namespace IISIM {
 
                 case Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Mechanical:
                     // SPO2 audio tone is only triggered  by rhythms w/ a ventricular mechanical action (systole)
-                    _ = PlayAudioTone (ToneSources.SPO2, e.Physiology);
+                    _ = PlayAudioTone (Simulator.ToneSources.SPO2, e.Physiology);
 
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Physiology));
 

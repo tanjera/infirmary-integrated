@@ -12,9 +12,8 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
-using IISIM;
-
 namespace II.Settings {
+
     public class Simulator {
         public string Language;
 
@@ -23,13 +22,20 @@ namespace II.Settings {
 
         public int DefibEnergyMaximum;
         public int DefibEnergyIncrement;
-        public DeviceDefib.ToneSources DefibAudioSource;
+        public ToneSources DefibAudioSource;
 
         public Point WindowSize;
         public Point WindowPosition;
 
         public bool MuteUpgrade;
         public DateTime MuteUpgradeDate;
+
+        public enum ToneSources {
+            Mute,
+            Defibrillator,
+            ECG,
+            SPO2
+        }
 
         public Simulator () {
             /* Note: These are the DEFAULT settings on 1st run (or Load() failure to parse)! */
@@ -41,7 +47,7 @@ namespace II.Settings {
 
             DefibEnergyMaximum = 200;
             DefibEnergyIncrement = 20;
-            DefibAudioSource = DeviceDefib.ToneSources.Defibrillator;
+            DefibAudioSource = ToneSources.Defibrillator;
 
             WindowSize = new Point (800, 600);
 
@@ -93,7 +99,7 @@ namespace II.Settings {
                                 DefibEnergyIncrement = parseInt;
                             break;
 
-                        case "DefibAudioSource": DefibAudioSource = (DeviceDefib.ToneSources)Enum.Parse (typeof (DeviceDefib.ToneSources), pValue); break;
+                        case "DefibAudioSource": DefibAudioSource = (ToneSources)Enum.Parse (typeof (ToneSources), pValue); break;
 
                         // Settings for the size of the Patient Editor
                         case "WindowSizeX":
