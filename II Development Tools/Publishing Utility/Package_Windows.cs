@@ -7,11 +7,11 @@ namespace Publishing {
 
     public class Package_Windows {
 
-        public static void Process (Program.Variables progVar, string dirRelease, string verNumber) {
-            string pkgOrig = $"infirmary-integrated-.exe";
-            string pkgName = $"infirmary-integrated-{verNumber}-windows.exe";
-            string dirSimulator = Path.Combine (progVar.dirSolution, @$"II Simulator\bin\Release\{progVar.versionDotnet}\win-x64\publish");
-            string dirScenarioEditor = Path.Combine (progVar.dirSolution, @$"II Scenario Editor\bin\Release\{progVar.versionDotnet}\win-x64\publish");
+        public static void Process (Program.Variables progVar, string dirRelease, string verNumber, string release) {
+            string pkgOrig = $"infirmary-integrated-{release}.exe";
+            string pkgName = $"infirmary-integrated-{verNumber}-{release}.exe";
+            string dirSimulator = Path.Combine (progVar.dirSolution, @$"II Simulator\bin\Release\{progVar.versionDotnet}\{release}\publish");
+            string dirScenarioEditor = Path.Combine (progVar.dirSolution, @$"II Scenario Editor\bin\Release\{progVar.versionDotnet}\{release}\publish");
 
             // Ensure the directory exists and is empty
             if (!Directory.Exists (progVar.dirTemporary))
@@ -20,7 +20,7 @@ namespace Publishing {
             Directory.Move (dirSimulator, Path.Combine (progVar.dirTemporary, "Infirmary Integrated"));
             Directory.Move (dirScenarioEditor, Path.Combine (progVar.dirTemporary, "Infirmary Integrated Scenario Editor"));
 
-            CreatePackage_Windows (progVar, progVar.dirTemporary, verNumber);
+            CreatePackage_Windows (progVar, progVar.dirTemporary, verNumber, release);
             MovePackage_Windows (progVar.dirTemporary, dirRelease, pkgOrig, pkgName);
             SignPackage_Windows (progVar, dirRelease, pkgName);
 
@@ -28,9 +28,9 @@ namespace Publishing {
             Directory.Delete (progVar.dirTemporary, true);
         }
 
-        public static void CreatePackage_Windows (Program.Variables progVar, string dirPackage, string verNumber) {
-            string nsiOriginal = Path.Combine (progVar.dirSolution, @$"Package, Windows\Package.nsi");
-            string nsiBuffer = Path.Combine (dirPackage, "Package.nsi");
+        public static void CreatePackage_Windows (Program.Variables progVar, string dirPackage, string verNumber, string release) {
+            string nsiOriginal = Path.Combine (progVar.dirSolution, @$"Package, Windows\package-{release}.nsi");
+            string nsiBuffer = Path.Combine (dirPackage, "package.nsi");
 
             if (File.Exists (nsiOriginal)) {
                 List<string> nsiTextFile = new List<string> (File.ReadAllLines (nsiOriginal));
@@ -40,9 +40,9 @@ namespace Publishing {
 
                 Process proc = new ();
 
-                //makensis.exe {dir}\Package.nsi
+                //makensis.exe {dir}\package.nsi
 
-                string arguments = $"Package.nsi";
+                string arguments = $"package.nsi";
 
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine (Environment.NewLine);
@@ -56,8 +56,6 @@ namespace Publishing {
                 proc.StartInfo.WorkingDirectory = dirPackage;
                 proc.Start ();
                 proc.WaitForExit ();
-
-                File.Delete (nsiBuffer);
             } else {
                 throw new FileNotFoundException ();
             }

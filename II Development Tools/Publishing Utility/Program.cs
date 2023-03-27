@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace Publishing {
 
@@ -65,8 +66,11 @@ namespace Publishing {
 
             string [] listReleases = {
                 "win-x64",
+                "win-arm64",
                 "linux-x64",
-                "osx-x64"
+                "linux-arm64",
+                "osx-x64",
+                "osx-arm64"
                 };
 
             Directory.CreateDirectory (dirRelease);
@@ -107,11 +111,13 @@ namespace Publishing {
                 Console.ResetColor ();
 
                 if (Console.ReadLine ().Trim ().ToLower () == "y") {
-                    // Re-publish for Windows target because previous Pack() moved/deleted the Publish directory
-                    Building.Publish (progVar, dirSimulator, "win-x64");
-                    Building.Publish (progVar, dirScenarioEditor, "win-x64");
+                    foreach (string release in listReleases.Where (o => o.StartsWith ("win-"))) {
+                        // Re-publish for Windows target because previous Pack() moved/deleted the Publish directory
+                        Building.Publish (progVar, dirSimulator, release);
+                        Building.Publish (progVar, dirScenarioEditor, release);
 
-                    Package_Windows.Process (progVar, dirRelease, verNumber);
+                        Package_Windows.Process (progVar, dirRelease, verNumber, release);
+                    }
                 }
 
                 Console.ForegroundColor = ConsoleColor.Yellow;

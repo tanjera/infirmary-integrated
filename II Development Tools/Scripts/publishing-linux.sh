@@ -32,10 +32,10 @@ if ! command -v uuidgen &> /dev/null; then
     exit
 fi
 
-ZIPFILE=$( ls "$RELEASE_PATH/"infirmary-integrated-*-linux.tar.gz )
+ZIPFILE=$( ls "$RELEASE_PATH/"infirmary-integrated-*-linux-x64.tar.gz )
 
 if ! test -f "$ZIPFILE" ; then
-    echo "Error: infirmary-integrated-[version].tar.gz missing from Infirmary Integrated/Release publish folder"
+    echo "Error: infirmary-integrated-[version]-linux-x64.tar.gz missing from Infirmary Integrated/Release publish folder"
     exit
 fi
 
@@ -56,7 +56,7 @@ echo -e "Extracting package and setting file permissions\n"
 
 cd "$PROCESS_PATH"
 
-ZIPFILE=$( ls infirmary-integrated-*-linux.tar.gz )
+ZIPFILE=$( ls infirmary-integrated-*-linux-x64.tar.gz )
 tar -xzf "$ZIPFILE"
 rm "$ZIPFILE"
 chmod +x "$PUB_SIMEXE"
@@ -77,8 +77,7 @@ mv "$ZIPFILE" "$RELEASE_PATH"
 # ####
 
 len1=`echo $ZIPFILE | wc -c`
-len2=$(expr $len1 - 13)
-VERSION=$(echo $ZIPFILE | cut -c 22-$( expr $len1 - 14 ))
+VERSION=$(echo $ZIPFILE | cut -c 22-$( expr $len1 - 18 ))
 DEB_PACKAGE=$(printf "infirmary-integrated_%s_amd64.deb" $VERSION)
 
 if ! command -v dpkg-deb &> /dev/null;

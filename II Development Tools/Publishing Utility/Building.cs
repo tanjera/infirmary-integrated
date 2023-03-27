@@ -115,18 +115,11 @@ namespace Publishing {
 
             // Package the directories/files into a tarball or zip
 
-            string packName = "", packTitle = "", osName = "";
+            string packName = "", packTitle = "";
 
             Console.WriteLine ($"Packing build: {release}-{verNumber}");
 
-            osName = release switch {
-                "win-x64" => "windows",
-                "linux-x64" => "linux",
-                "osx-x64" => "macos",
-                _ => ""
-            };
-
-            packTitle = $"infirmary-integrated-{verNumber}-{osName}";
+            packTitle = $"infirmary-integrated-{verNumber}-{release}";
 
             if (packType == Program.Variables.PackageType.Tar) {
                 packName = $"{packTitle}.tar.gz";
