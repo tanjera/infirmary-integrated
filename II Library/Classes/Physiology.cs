@@ -374,7 +374,10 @@ namespace II {
         public double GetRR_Seconds { get { return 60d / System.Math.Max (1, VS_Actual.RR); } }
         public double GetRR_Seconds_I { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_I; } }
         public double GetRR_Seconds_E { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_E; } }
-        public double GetPulsatility_Seconds { get { return System.Math.Min (GetHR_Seconds * 0.75d, 0.75d); } }
+
+        // A functional length in seconds of pulsatile rhythms; based on set heart rate (not actual!)
+        // for consistency in irregular rhythms
+        public double GetPulsatility_Seconds { get { return 60d / System.Math.Max (1, VS_Settings.HR) * 0.9d; } }
 
         // Using Fridericia Formula for QT <-> QTc calculation
         public double GetQTInterval { get { return System.Math.Pow ((60d / System.Math.Max (1, VS_Actual.HR)), (1 / 3)) * QTc_Interval; } }

@@ -26,12 +26,12 @@ namespace IISIM {
         public static void DrawPath (Strip? strip, RenderTargetBitmap bitmap,
                 Pen pen, PointD? offset, PointD? multiplier) {
             if (strip is null || strip?.Points is null || strip?.Points?.Count < 2) {
-                Debug.WriteLine ($"Null return at Trace.{nameof (DrawPath)}");
+                Debug.WriteLine ($"Null return at Trace.{nameof (DrawPath)} d/t null Strip or Strip.Points; normal on initialization.");
                 return;
             }
 
             if (bitmap == null) {    // Can't initiate Bitmap here; don't have width/height
-                Debug.WriteLine ($"Null return at Trace.{nameof (DrawPath)}");
+                Debug.WriteLine ($"Null return at Trace.{nameof (DrawPath)} d/t null bitmap; normal on initialization.");
                 return;
             }
 

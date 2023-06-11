@@ -14,6 +14,8 @@ using System.IO;
 
 using II.Rhythm;
 using II.Drawing;
+using System.Diagnostics;
+using System.Linq;
 
 namespace II.Waveform {
 
@@ -29,7 +31,19 @@ namespace II.Waveform {
             => _Amplitude *= ((double)new Random ().NextDouble () * _Margin) + (1 - _Margin);
 
         private static void DampenAmplitude_EctopicBeat (Physiology _P, ref double _Amplitude)
-            => _Amplitude *= _P.Cardiac_Rhythm.AberrantBeat ? 0.5d : 1d;
+            => _Amplitude *= _P.Cardiac_Rhythm.AberrantBeat ? 0.7d : 1d;
+
+        // Decreases pulsatility based on decreased diastolic filling time. Linear interpolation of where actual HR
+        // is compared to set HR (e.g. for tachycardic runs of irregular rhythms, or premature contractions)
+        private static void DampenAmplitude_DiastolicFillTime (Physiology _P, ref double _Amplitude) {
+            var peList = _P.ListPhysiologyEvents.Where (p => p.EventType == Physiology.PhysiologyEventTypes.Cardiac_Baseline).ToList ();
+            if (peList.Count < 2)
+                return;
+
+            // Utilize actual vital signs from 1 entry ago (because of electromechanical delay, most recent actual HR is for forthcoming pulsatile beat)
+            var aVS = peList [peList.Count - 2].Vitals;
+            _Amplitude *= Math.Lerp (1.0d, 0.5d, Math.Clamp ((aVS.HR - _P.VS_Settings.HR) / (double)_P.VS_Settings.HR));
+        }
 
         private static void DampenAmplitude_PulsusParadoxus (Physiology _P, ref double _Amplitude) {
             if (_P.Pulsus_Paradoxus)
@@ -77,13 +91,13 @@ namespace II.Waveform {
          */
 
         public static List<PointD> SPO2_Rhythm (Physiology _P, double _Amplitude) {
-            VaryAmplitude_Random (0.1d, ref _Amplitude);
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
             DampenAmplitude_PulsusAlternans (_P, ref _Amplitude);
             DampenAmplitude_PulsusParadoxus (_P, ref _Amplitude);
+            DampenAmplitude_DiastolicFillTime (_P, ref _Amplitude);
 
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch (Dictionary.SPO2_Rhythm, (double)_P.GetHR_Seconds),
+                Plotting.Stretch (Dictionary.SPO2_Rhythm, (double)_P.GetPulsatility_Seconds),
                 _Amplitude);
         }
 
@@ -227,11 +241,14 @@ namespace II.Waveform {
             if (_P is null || _L is null)
                 return new ();
 
-            int Fibrillations = (int)System.Math.Ceiling (_P.GetHR_Seconds / 0.06);
-
+            int Fibrillations = (int)System.Math.Ceiling (_P.GetHR_Seconds / 0.08);
             List<PointD> thisBeat = new ();
             for (int i = 1; i < Fibrillations; i++)
-                thisBeat = Plotting.Concatenate (thisBeat, ECG_P (_P, _L, 0.06d, .04d, 0d, Plotting.Last (thisBeat)));
+                thisBeat = Plotting.Concatenate (thisBeat, ECG_P (_P, _L,
+                    Math.RandomDbl (0.04d, 0.12d),                                                                          // fibrillatory wave interval
+                    (Math.RandomInt (0, 3) == 0 ? Math.RandomDbl (-0.04d, -0.02d) : Math.RandomDbl (0.02d, 0.06d)),         // fibrillation amplitude
+                    0d, Plotting.Last (thisBeat)));
+
             return thisBeat;
         }
 

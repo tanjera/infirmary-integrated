@@ -14,6 +14,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Avalonia.Controls;
+
 using II.Drawing;
 using II.Waveform;
 
@@ -331,17 +333,83 @@ namespace II.Rhythm {
             for (int i = 0; i < splice.Count; i++)
                 splice [i].X += Length * forwardBuffer;
 
-            double replaceStart = splice [0].X,
-                replaceEnd = splice [splice.Count - 1].X;
-
             lock (lockPoints) {
-                Points.RemoveAll (p => { return p.X > replaceStart && p.X < replaceEnd; });
+                Points.RemoveAll (p => { return p.X > splice [0].X && p.X < splice.Last ().X; });
                 Points.AddRange (splice);
             }
         }
 
+        // Splice in a set of points *after* the Y value supercedes the original strip's Y value (used to transition)
+        public void ReplaceAtOver (List<PointD> splice, bool dirUp = true) {
+            if (Points is null || splice.Count == 0)
+                return;
+
+            // Offset the splice to meet the leading/future edge of the strip
+            for (int i = 0; i < splice.Count; i++)
+                splice [i].X += Length * forwardBuffer;
+
+            // Sort the splice and the Points so we can walk through them
+            splice.Sort (delegate (PointD p1, PointD p2) {
+                if (p1 is null && p2 is null) return 0;
+                else if (p1 is null) return -1;
+                else if (p2 is null) return 1;
+                else return p1.X.CompareTo (p2.X);
+            });
+
+            if (Points.Count == 0
+                || Points.Min (x => x.X) > splice.Last ().X
+                || Points.Max (x => x.X) < splice.First ().X) {
+                // Utilizes the regular Replace() routine... calling the whole routine would shift the offset again...
+                lock (lockPoints) {
+                    Points.RemoveAll (p => { return p.X > splice [0].X && p.X < splice.Last ().X; });
+                    Points.AddRange (splice);
+                }
+
+                return;
+            }
+
+            lock (lockPoints) {
+                Points.Sort (delegate (PointD p1, PointD p2) {
+                    if (p1 is null && p2 is null) return 0;
+                    else if (p1 is null) return -1;
+                    else if (p2 is null) return 1;
+                    else return p1.X.CompareTo (p2.X);
+                });
+
+                double spliceStart = splice.First ().X,
+                    spliceEnd = splice.Last ().X;
+
+                bool isReplacing = false;
+                int lastPoint = 0, lastSplice = 0;
+
+                for (int i = 0, j = 0; i < Points.Count && j < splice.Count; i++) {
+                    if (Points [i].X > spliceStart && Points [i].X < spliceEnd) {
+                        // Sync i (Points) with j (splice) based on X axis
+                        while (Points [i].X > splice [j].X && j < splice.Count - 1) {
+                            j++;
+                        }
+
+                        // Once splice's Y axis supercedes/overcomes Points' in the set direction, trigger the replace functionality
+                        if ((dirUp && splice [j].Y >= Points [i].Y)
+                            || (!dirUp && splice [j].Y <= Points [i].Y)) {
+                            isReplacing = true;
+                            lastPoint = i;
+                            lastSplice = j;
+                            break;
+                        }
+                    }
+                }
+
+                if (isReplacing) {
+                    Points.RemoveAll (p => { return p.X > Points [lastPoint].X && p.X < splice.Last ().X; });
+                    splice.RemoveRange (0, lastSplice);
+                    Points.AddRange (splice);
+                }
+            }
+        }
+
         // Splices in a set of points, combining their Y values
-        public void Combine (List<PointD> splice, bool onlyIfPolar = false) {
+        public void Combine (List<PointD> splice) {
             if (Points is null || splice.Count == 0)
                 return;
 
@@ -380,13 +448,8 @@ namespace II.Rhythm {
                             i++;                                                                                                // Repeat the comparison with current Point ...
                             j--;                                                                                                // ... against the next splice
                         } else {                                                                                                // If this Point is closest to this splice
-                            if (!onlyIfPolar
-                                || Points [i].Y == 0 || splice [j].Y == 0
-                                || (Points [i].Y < 0 && splice [j].Y < 0)
-                                || (Points [i].Y > 0 && splice [j].Y > 0)) {
-                                lastCombine = splice [j].Y;                                                                         // The new combine amount
-                                Points [i].Y += splice [j].Y;                                                                       // And combine them
-                            }
+                            lastCombine = splice [j].Y;                                                                         // The new combine amount
+                            Points [i].Y += splice [j].Y;                                                                       // And combine them
                             j--;                                                                                                // Iterating to the next splice
                         }
                     }
@@ -596,37 +659,38 @@ namespace II.Rhythm {
                 default: return;
 
                 case Lead.Values.SPO2:
-                    Replace (Draw.SPO2_Rhythm (p, 1d));
+                    ReplaceAtOver (Draw.SPO2_Rhythm (p, 1d));
                     break;
 
                 case Lead.Values.ABP:
                     if (p.IABP_Active)
+                        // IABP causes important downward deflections- do not use ReplaceAtOver!
                         Replace (Scale (p, Draw.IABP_ABP_Rhythm (p, 1d)));
                     else if (p.Cardiac_Rhythm.HasPulse_Ventricular)
-                        Replace (Scale (p, Draw.ABP_Rhythm (p, 1d)));
+                        ReplaceAtOver (Scale (p, Draw.ABP_Rhythm (p, 1d)));
                     break;
 
                 case Lead.Values.CVP:
-                    Replace (Draw.CVP_Rhythm (p, 1d));
+                    ReplaceAtOver (Draw.CVP_Rhythm (p, 1d));
                     break;
 
                 case Lead.Values.PA:    // Vary PA waveforms based on PA catheter placement
                     if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Atrium)
-                        Replace (Scale (p, Draw.CVP_Rhythm (p, 1d)));
+                        ReplaceAtOver (Scale (p, Draw.CVP_Rhythm (p, 1d)));
                     else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Ventricle)
-                        Replace (Scale (p, Draw.RV_Rhythm (p, 1d)));
+                        ReplaceAtOver (Scale (p, Draw.RV_Rhythm (p, 1d)));
                     else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Pulmonary_Artery)
-                        Replace (Scale (p, Draw.PA_Rhythm (p, 1d)));
+                        ReplaceAtOver (Scale (p, Draw.PA_Rhythm (p, 1d)));
                     else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Pulmonary_Capillary_Wedge)
-                        Replace (Scale (p, Draw.PCW_Rhythm (p, 1d)));
+                        ReplaceAtOver (Scale (p, Draw.PCW_Rhythm (p, 1d)));
                     break;
 
                 case Lead.Values.ICP:
-                    Replace (Draw.ICP_Rhythm (p, 1d));
+                    ReplaceAtOver (Draw.ICP_Rhythm (p, 1d));
                     break;
 
                 case Lead.Values.IAP:
-                    Replace (Draw.IAP_Rhythm (p, 1d));
+                    ReplaceAtOver (Draw.IAP_Rhythm (p, 1d));
                     break;
             }
 
@@ -642,9 +706,11 @@ namespace II.Rhythm {
 
             if (p.Cardiac_Rhythm.HasWaveform_Ventricular && p.IABP_Trigger == "ECG") {
                 /* ECG Trigger works only if ventricular ECG waveform */
+                // IABP causes important downward deflections- do not use ReplaceAtOver!
                 Replace (Draw.IABP_Balloon_Rhythm (p, 1d));
             } else if (p.Cardiac_Rhythm.HasPulse_Ventricular && p.IABP_Trigger == "Pressure") {
                 /* Pressure Trigger works only if ventricular pressure impulse */
+                // IABP causes important downward deflections- do not use ReplaceAtOver!
                 Replace (Draw.IABP_Balloon_Rhythm (p, 1d));
             }
 

@@ -302,7 +302,7 @@ namespace II {
                 case Values.AV_Block__1st_Degree: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
                 case Values.AV_Block__Wenckebach: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
                 case Values.AV_Block__Mobitz_II: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.AV_Block__3rd_Degree: s.Combine (Draw.ECG_Complex__P_Normal (p, s.Lead), true); return;
+                case Values.AV_Block__3rd_Degree: s.Combine (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
                 case Values.Bundle_Branch_Block: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
                 case Values.CPR_Artifact: return;
                 case Values.Idioventricular: return;

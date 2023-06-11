@@ -15,6 +15,7 @@ namespace II {
             return (value < min) ? min : (value > max) ? max : value;
         }
 
+        // Clamps a double to 0 - 1
         public static double Clamp (double value) {
             return (value < 0) ? 0 : (value > 1) ? 1 : value;
         }
