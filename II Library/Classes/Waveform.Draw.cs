@@ -36,13 +36,9 @@ namespace II.Waveform {
         // Decreases pulsatility based on decreased diastolic filling time. Linear interpolation of where actual HR
         // is compared to set HR (e.g. for tachycardic runs of irregular rhythms, or premature contractions)
         private static void DampenAmplitude_DiastolicFillTime (Physiology _P, ref double _Amplitude) {
-            var peList = _P.ListPhysiologyEvents.Where (p => p.EventType == Physiology.PhysiologyEventTypes.Cardiac_Baseline).ToList ();
-            if (peList.Count < 2)
-                return;
-
             // Utilize actual vital signs from 1 entry ago (because of electromechanical delay, most recent actual HR is for forthcoming pulsatile beat)
-            var aVS = peList [peList.Count - 2].Vitals;
-            _Amplitude *= Math.Lerp (1.0d, 0.5d, Math.Clamp ((aVS.HR - _P.VS_Settings.HR) / (double)_P.VS_Settings.HR));
+            _Amplitude *= Math.Lerp (1.0d, 0.5d,
+                Math.Clamp ((_P.GetLastVS (Physiology.PhysiologyEventTypes.Cardiac_Baseline).HR - _P.VS_Settings.HR) / (double)_P.VS_Settings.HR));
         }
 
         private static void DampenAmplitude_PulsusParadoxus (Physiology _P, ref double _Amplitude) {
@@ -112,7 +108,7 @@ namespace II.Waveform {
 
         public static List<PointD> ETCO2_Rhythm (Physiology _P) {
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch (Dictionary.ETCO2_Default, (double)_P.GetRR_Seconds_E));
+                Plotting.Stretch (Dictionary.ETCO2_Default, (double)_P.GetRRInterval_Expiratory));
         }
 
         public static List<PointD> ICP_Rhythm (Physiology _P, double _Amplitude) {
@@ -125,7 +121,7 @@ namespace II.Waveform {
                 Plotting.Stretch (  // Lerp to change waveform based on intracranial compliance due to ICP
                     Dictionary.Lerp (Dictionary.ICP_HighCompliance, Dictionary.ICP_LowCompliance,
                         Math.Clamp (Math.InverseLerp (15, 25, _P.ICP), 0, 1)),    // ICP compliance coefficient
-                    (double)_P.GetHR_Seconds),
+                    (double)_P.GetHRInterval),
                 _Amplitude);
         }
 
@@ -136,7 +132,7 @@ namespace II.Waveform {
             VaryAmplitude_Random (0.1d, ref _Amplitude);
 
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch (Dictionary.IAP_Default, (double)_P.GetHR_Seconds),
+                Plotting.Stretch (Dictionary.IAP_Default, (double)_P.GetHRInterval),
                 _Amplitude);
         }
 
@@ -158,11 +154,11 @@ namespace II.Waveform {
 
             if (_P.Cardiac_Rhythm.HasPulse_Atrial && !_P.Cardiac_Rhythm.AberrantBeat)
                 return Plotting.Concatenate (new List<PointD> (),
-                    Plotting.Stretch (Dictionary.CVP_Atrioventricular, (double)_P.GetHR_Seconds),
+                    Plotting.Stretch (Dictionary.CVP_Atrioventricular, (double)_P.GetHRInterval),
                     _Amplitude);
             else
                 return Plotting.Concatenate (new List<PointD> (),
-                    Plotting.Stretch (Dictionary.CVP_Ventricular, (double)_P.GetHR_Seconds),
+                    Plotting.Stretch (Dictionary.CVP_Ventricular, (double)_P.GetHRInterval),
                     _Amplitude);
         }
 
@@ -189,13 +185,14 @@ namespace II.Waveform {
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
 
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch (Dictionary.PCW_Default, (double)_P.GetHR_Seconds),
+                Plotting.Stretch (Dictionary.PCW_Default, (double)_P.GetHRInterval),
                 _Amplitude);
         }
 
         public static List<PointD> IABP_Balloon_Rhythm (Physiology _P, double _Amplitude) {
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch (Dictionary.IABP_Balloon_Default, (double)_P.GetHR_Seconds * 0.6f),
+                Plotting.Stretch (Dictionary.IABP_Balloon_Default,
+                Physiology.CalculateHRInterval (_P.GetLastVS (Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Electric).HR) * 0.7f),
                 _Amplitude);
         }
 
@@ -205,15 +202,15 @@ namespace II.Waveform {
 
             if (!_P.Cardiac_Rhythm.HasPulse_Ventricular)
                 return Plotting.Concatenate (new List<PointD> (),
-                    Plotting.Stretch (Dictionary.IABP_ABP_Nonpulsatile, (double)_P.GetHR_Seconds),
+                    Plotting.Stretch (Dictionary.IABP_ABP_Nonpulsatile, (double)_P.GetHRInterval),
                     _Amplitude);
             else if (_P.Cardiac_Rhythm.AberrantBeat)
                 return Plotting.Concatenate (new List<PointD> (),
-                    Plotting.Stretch (Dictionary.IABP_ABP_Ectopic, (double)_P.GetHR_Seconds),
+                    Plotting.Stretch (Dictionary.IABP_ABP_Ectopic, (double)_P.GetHRInterval),
                     _Amplitude);
             else
                 return Plotting.Concatenate (new List<PointD> (),
-                    Plotting.Stretch (Dictionary.IABP_ABP_Default, (double)_P.GetHR_Seconds),
+                    Plotting.Stretch (Dictionary.IABP_ABP_Default, Physiology.CalculateHRInterval (_P.GetLastVS (Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Electric).HR)),
                     _Amplitude);
         }
 
@@ -241,7 +238,7 @@ namespace II.Waveform {
             if (_P is null || _L is null)
                 return new ();
 
-            int Fibrillations = (int)System.Math.Ceiling (_P.GetHR_Seconds / 0.08);
+            int Fibrillations = (int)System.Math.Ceiling (_P.GetHRInterval / 0.08);
             List<PointD> thisBeat = new ();
             for (int i = 1; i < Fibrillations; i++)
                 thisBeat = Plotting.Concatenate (thisBeat, ECG_P (_P, _L,
@@ -256,8 +253,8 @@ namespace II.Waveform {
             if (_P is null || _L is null)
                 return new ();
 
-            int Flutters = (int)Math.Clamp (System.Math.Floor (60 / _P.GetHR_Seconds * 4), 2, 5);
-            double lengthFlutter = _P.GetHR_Seconds / Flutters;
+            int Flutters = (int)Math.Clamp (System.Math.Floor (60 / _P.GetHRInterval * 4), 2, 5);
+            double lengthFlutter = _P.GetHRInterval / Flutters;
 
             List<PointD> thisBeat = new ();
             for (int i = 1; i < Flutters; i++)
@@ -377,7 +374,7 @@ namespace II.Waveform {
 
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Multiply (
-                    Plotting.Stretch (Dictionary.ECG_Complex_VT, (double)_P.GetHR_Seconds),
+                    Plotting.Stretch (Dictionary.ECG_Complex_VT, (double)_P.GetHRInterval),
                 baseLeadCoeff [(int)_L.Value, (int)WavePart.QRST]),
                 GetAmplitude_ElectricalAlternans (_P));
         }
@@ -386,8 +383,8 @@ namespace II.Waveform {
             if (_P is null || _L is null)
                 return new ();
 
-            double _Length = (double)_P.GetHR_Seconds,
-                    _Wave = (double)_P.GetHR_Seconds / 2d,
+            double _Length = (double)_P.GetHRInterval,
+                    _Wave = (double)_P.GetHRInterval / 2d,
                     _Amplitude = (double)(Math.RandomDbl (0.3d, 0.6d) * _Amp);
 
             List<PointD> thisBeat = new ();
@@ -408,7 +405,7 @@ namespace II.Waveform {
 
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Multiply (
-                    Plotting.Stretch (Dictionary.ECG_Complex_Idioventricular, (double)_P.GetHR_Seconds),
+                    Plotting.Stretch (Dictionary.ECG_Complex_Idioventricular, (double)_P.GetHRInterval),
                 baseLeadCoeff [(int)_L.Value, (int)WavePart.QRST]),
                 GetAmplitude_ElectricalAlternans (_P));
         }
@@ -419,7 +416,7 @@ namespace II.Waveform {
 
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Multiply (
-                    Plotting.Stretch (Dictionary.ECG_CPR_Artifact, (double)_P.GetHR_Seconds),
+                    Plotting.Stretch (Dictionary.ECG_CPR_Artifact, (double)_P.GetHRInterval),
                 baseLeadCoeff [(int)_L.Value, (int)WavePart.QRST]));
         }
 

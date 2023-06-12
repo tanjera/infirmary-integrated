@@ -359,6 +359,11 @@ namespace II {
 
         /* Methods for counting, calculating, and measuring vital signs, timing re: vital signs, etc. */
 
+        // Calculates R-to-R interval,
+        public static double CalculateHRInterval (int hr) {
+            return 60d / System.Math.Max (1, hr);
+        }
+
         public static int CalculateMAP (int sbp, int dbp) {
             return dbp + ((sbp - dbp) / 3);
         }
@@ -370,14 +375,27 @@ namespace II {
             return (int)(map - icp);
         }
 
-        public double GetHR_Seconds { get { return 60d / System.Math.Max (1, VS_Actual.HR); } }
-        public double GetRR_Seconds { get { return 60d / System.Math.Max (1, VS_Actual.RR); } }
-        public double GetRR_Seconds_I { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_I; } }
-        public double GetRR_Seconds_E { get { return (GetRR_Seconds / (RR_IE_I + RR_IE_E)) * RR_IE_E; } }
+        // Allows for pulling historical sets of vital signs; useful for calculating beat times after electromechanical delay has caused additional
+        // cardiac events to take over the newest set of vital signs!
+        public Vital_Signs GetLastVS (PhysiologyEventTypes pe, int amountEvents = 1) {
+            var peList = ListPhysiologyEvents.Where (p => p.EventType == pe).ToList ();
+            if (peList.Count < (2 + amountEvents))
+                return VS_Actual;
+
+            return peList [peList.Count - (1 + amountEvents)].Vitals;
+        }
+
+        public double GetHRInterval { get { return CalculateHRInterval (VS_Actual.HR); } }
+
+        // Gets Respiratory Rate interval... *not* to be confused with R-to-R interval (ECG)
+        public double GetRRInterval { get { return CalculateHRInterval (VS_Actual.RR); } }
+
+        public double GetRRInterval_Inspiratory { get { return (GetRRInterval / (RR_IE_I + RR_IE_E)) * RR_IE_I; } }
+        public double GetRRInterval_Expiratory { get { return (GetRRInterval / (RR_IE_I + RR_IE_E)) * RR_IE_E; } }
 
         // A functional length in seconds of pulsatile rhythms; based on set heart rate (not actual!)
         // for consistency in irregular rhythms
-        public double GetPulsatility_Seconds { get { return 60d / System.Math.Max (1, VS_Settings.HR) * 0.9d; } }
+        public double GetPulsatility_Seconds { get { return CalculateHRInterval (VS_Settings.HR) * 0.9d; } }
 
         // Using Fridericia Formula for QT <-> QTc calculation
         public double GetQTInterval { get { return System.Math.Pow ((60d / System.Math.Max (1, VS_Actual.HR)), (1 / 3)) * QTc_Interval; } }
@@ -927,7 +945,7 @@ namespace II {
         }
 
         private async Task ResetStartTimers_Cardiac () {
-            await TimerCardiac_Baseline.ResetStart ((int)(GetHR_Seconds * 1000d));
+            await TimerCardiac_Baseline.ResetStart ((int)(GetHRInterval * 1000d));
             await TimerCardiac_Atrial_Electric.Stop ();
             await TimerCardiac_Ventricular_Electric.Stop ();
             await TimerCardiac_Atrial_Mechanical.Stop ();
@@ -943,7 +961,7 @@ namespace II {
         }
 
         private async Task ResetStartTimers_Respiratory () {
-            await TimerRespiratory_Baseline.ResetStart ((int)(GetRR_Seconds * 1000d));
+            await TimerRespiratory_Baseline.ResetStart ((int)(GetRRInterval * 1000d));
             await TimerRespiratory_Inspiration.Stop ();
             await TimerRespiratory_Expiration.Stop ();
         }
@@ -1083,7 +1101,7 @@ namespace II {
 
         private async Task OnCardiac_Baseline () {
             await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Baseline);
-            await TimerCardiac_Baseline.Set ((int)(GetHR_Seconds * 1000d));
+            await TimerCardiac_Baseline.Set ((int)(GetHRInterval * 1000d));
 
             switch (Cardiac_Rhythm.Value) {
                 default:
@@ -1304,6 +1322,9 @@ namespace II {
         private async Task OnCardiac_Ventricular_Electric () {
             await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Ventricular_Electric);
 
+            if (IABP_Active)
+                await TimerIABP_Balloon_Trigger.ResetStart ((int)(GetHRInterval * 1000d * 0.35d));
+
             if (Cardiac_Rhythm.HasPulse_Ventricular)
                 await TimerCardiac_Ventricular_Mechanical.ResetStart (Default_Electromechanical_Delay);
 
@@ -1321,9 +1342,6 @@ namespace II {
 
         private async Task OnCardiac_Ventricular_Mechanical () {
             await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Ventricular_Mechanical);
-
-            if (IABP_Active)
-                await TimerIABP_Balloon_Trigger.ResetStart ((int)(GetHR_Seconds * 1000d * 0.35d));
 
             if (Pulsus_Alternans) {
                 VS_Actual.ASBP += Cardiac_Rhythm.AlternansBeat ? (int)(VS_Settings.ASBP * 0.15d) : -(int)(VS_Settings.ASBP * 0.15d);
@@ -1348,7 +1366,7 @@ namespace II {
 
         private async Task OnRespiratory_Baseline () {
             await OnPhysiologyEvent (PhysiologyEventTypes.Respiratory_Baseline);
-            await TimerRespiratory_Baseline.Set ((int)(GetRR_Seconds * 1000d));
+            await TimerRespiratory_Baseline.Set ((int)(GetRRInterval * 1000d));
 
             double c;
 
@@ -1446,7 +1464,7 @@ namespace II {
                 case Respiratory_Rhythms.Values.Biot:
                 case Respiratory_Rhythms.Values.Cheyne_Stokes:
                 case Respiratory_Rhythms.Values.Regular:
-                    await TimerRespiratory_Expiration.ResetStart ((int)(GetRR_Seconds_I * 1000d));     // Expiration.Interval marks end inspiration
+                    await TimerRespiratory_Expiration.ResetStart ((int)(GetRRInterval_Inspiratory * 1000d));     // Expiration.Interval marks end inspiration
                     break;
             }
         }

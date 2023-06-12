@@ -34,7 +34,7 @@
     </Style>
 
     <Style Selector="TextBlock.button">
-      <Setter Property="FontSize" Value="26" />
+      <Setter Property="FontSize" Value="20" />
       <Setter Property="FontWeight" Value="Bold" />
       <Setter Property="TextWrapping" Value="Wrap" />
       <Setter Property="TextAlignment" Value="Center" />
@@ -129,48 +129,62 @@
 							Grid.Row="0"
 							Grid.Column="0"
 							Classes="numeric">
-              <TextBlock Name="lblTriggerSource" Classes="numeric" />
+              <Viewbox Stretch="Uniform">
+                <TextBlock Name="lblTriggerSource" Classes="numeric" />
+              </Viewbox>
             </Border>
             <Border
 							Name="brdOperationMode"
 							Grid.Row="1"
 							Grid.Column="0"
 							Classes="numeric">
-              <TextBlock Name="lblOperationMode" Classes="numeric" />
+              <Viewbox Stretch="Uniform">
+                <TextBlock Name="lblOperationMode" Classes="numeric" />
+              </Viewbox>
             </Border>
             <Border
 							Name="brdFrequency"
 							Grid.Row="2"
 							Grid.Column="0"
 							Classes="numeric">
-              <TextBlock Name="lblFrequency" Classes="numeric" />
+              <Viewbox Stretch="Uniform">
+                <TextBlock Name="lblFrequency" Classes="numeric" />
+              </Viewbox>
             </Border>
             <Border
 							Name="brdMachineStatus"
 							Grid.Row="3"
 							Grid.Column="0"
 							Classes="numeric">
-              <TextBlock Name="lblMachineStatus" Classes="numeric" />
+
+              <Viewbox Stretch="Uniform">
+                <TextBlock Name="lblMachineStatus" Classes="numeric" />
+              </Viewbox>
             </Border>
             <Border
 							Name="brdTubingStatus"
 							Grid.Row="4"
 							Grid.Column="0"
 							Classes="numeric">
-              <TextBlock
-								Name="lblTubingStatus"
-								Classes="numeric"
-								FontSize="30" />
+
+              <Viewbox Stretch="Uniform">
+                <TextBlock
+                  Name="lblTubingStatus"
+                  Classes="numeric"
+                  FontSize="30" />
+              </Viewbox>
             </Border>
             <Border
 							Name="brdHelium"
 							Grid.Row="5"
 							Grid.Column="0"
 							Classes="numeric">
-              <TextBlock
-								Name="lblHelium"
-								Classes="numeric"
-								FontSize="30" />
+              <Viewbox Stretch="Uniform">
+                <TextBlock
+                  Name="lblHelium"
+                  Classes="numeric"
+                  FontSize="30" />
+              </Viewbox>
             </Border>
           </Grid>
         </Border>
@@ -223,7 +237,9 @@
 					Background="LightGreen"
 					Classes="round"
 					Click="ButtonModeAuto_Click">
-          <TextBlock Name="buttonModeAuto" Classes="button" />
+          <Viewbox Stretch="Uniform">
+            <TextBlock Name="buttonModeAuto" Classes="button" />
+          </Viewbox>
         </Button>
 
         <Button
@@ -232,7 +248,9 @@
 					Background="LightGray"
 					Classes="round"
 					Click="ButtonModeSemiAuto_Click">
-          <TextBlock Name="buttonModeSemiAuto" Classes="button" />
+          <Viewbox Stretch="Uniform">
+            <TextBlock Name="buttonModeSemiAuto" Classes="button" />
+          </Viewbox>
         </Button>
 
         <Button
@@ -241,10 +259,12 @@
 					Background="LightGreen"
 					Classes="round"
 					Click="ButtonStart_Click">
-          <TextBlock
-						Name="buttonStart"
-						Classes="button"
-						FontSize="34" />
+          <Viewbox Stretch="Uniform">
+            <TextBlock
+              Name="buttonStart"
+              Classes="button"
+              FontSize="34" />
+          </Viewbox>
         </Button>
 
         <Button
@@ -253,10 +273,12 @@
 					Background="Yellow"
 					Classes="round"
 					Click="ButtonPause_Click">
-          <TextBlock
-						Name="buttonPause"
-						Classes="button"
-						FontSize="34" />
+          <Viewbox Stretch="Uniform">
+            <TextBlock
+              Name="buttonPause"
+              Classes="button"
+              FontSize="34" />
+          </Viewbox>
         </Button>
 
         <!--  2nd Row  -->
@@ -289,7 +311,9 @@
 					Background="PowderBlue"
 					Classes="round"
 					Click="ButtonTrigger_Click">
-          <TextBlock Name="btntxtTrigger" Classes="button" />
+          <Viewbox Stretch="Uniform">
+            <TextBlock Name="btntxtTrigger" Classes="button" />
+          </Viewbox>
         </Button>
 
         <Button
@@ -299,7 +323,9 @@
 					Background="PowderBlue"
 					Classes="round"
 					Click="ButtonFrequency_Click">
-          <TextBlock Name="btntxtFrequency" Classes="button" />
+          <Viewbox Stretch="Uniform">
+            <TextBlock Name="btntxtFrequency" Classes="button" />
+          </Viewbox>
         </Button>
 
         <Button
@@ -309,7 +335,9 @@
 					Background="PowderBlue"
 					Classes="round"
 					Click="ButtonAugmentationPressure_Click">
-          <TextBlock Name="btntxtAugmentationPressure" Classes="button" />
+          <Viewbox Stretch="Uniform">
+            <TextBlock Name="btntxtAugmentationPressure" Classes="button" />
+          </Viewbox>
         </Button>
 
         <Button
@@ -319,7 +347,9 @@
 					Background="AntiqueWhite"
 					Classes="round"
 					Click="ButtonIncrease_Click">
-          <TextBlock Name="btntxtIncrease" Classes="button" />
+          <Viewbox Stretch="Uniform">
+            <TextBlock Name="btntxtIncrease" Classes="button" />
+          </Viewbox>
         </Button>
 
         <!--  3rd Row  -->
@@ -342,7 +372,9 @@
 					Background="PowderBlue"
 					Classes="round"
 					Click="ButtonPrimeBalloon_Click">
-          <TextBlock Name="buttonPrimeBalloon" Classes="button" />
+          <Viewbox Stretch="Uniform">
+            <TextBlock Name="buttonPrimeBalloon" Classes="button" />
+          </Viewbox>
         </Button>
 
         <Button
@@ -351,7 +383,9 @@
 					Background="PowderBlue"
 					Classes="round"
 					Click="ButtonZeroABP_Click">
-          <TextBlock Name="buttonZero" Classes="button" />
+          <Viewbox Stretch="Uniform">
+            <TextBlock Name="buttonZero" Classes="button" />
+          </Viewbox>
         </Button>
 
         <Button
@@ -361,7 +395,9 @@
 					Background="PowderBlue"
 					Classes="round"
 					Click="ButtonAugmentationAlarm_Click">
-          <TextBlock Name="btntxtAugmentationAlarm" Classes="button" />
+          <Viewbox Stretch="Uniform">
+            <TextBlock Name="btntxtAugmentationAlarm" Classes="button" />
+          </Viewbox>
         </Button>
 
         <Button
@@ -371,7 +407,9 @@
 					Background="AntiqueWhite"
 					Classes="round"
 					Click="ButtonDecrease_Click">
-          <TextBlock Name="btntxtDecrease" Classes="button" />
+          <Viewbox Stretch="Uniform">
+            <TextBlock Name="btntxtDecrease" Classes="button" />
+          </Viewbox>
         </Button>
       </Grid>
     </Grid>

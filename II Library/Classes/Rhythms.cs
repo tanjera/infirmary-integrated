@@ -262,35 +262,35 @@ namespace II {
 
         public void ECG_Isoelectric (Physiology p, Rhythm.Strip s) {
             switch (Value) {
-                case Values.Asystole: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
+                case Values.Asystole: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
                 case Values.Atrial_Fibrillation: s.Concatenate (Draw.ECG_Isoelectric__Atrial_Fibrillation (p, s.Lead)); return;
                 case Values.Atrial_Flutter: s.Concatenate (Draw.ECG_Isoelectric__Atrial_Flutter (p, s.Lead)); return;
-                case Values.AV_Block__1st_Degree: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.AV_Block__3rd_Degree: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.AV_Block__Mobitz_II: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.AV_Block__Wenckebach: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Bundle_Branch_Block: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.CPR_Artifact: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Idioventricular: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Junctional: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Pulseless_Electrical_Activity: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Sick_Sinus_Syndrome: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Sinus_Arrhythmia: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_Arrest: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_Bigeminy: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_Trigeminy: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_PACs: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_PJCs: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_PVCs_Multifocal: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Sinus_Rhythm_with_PVCs_Unifocal: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Supraventricular_Tachycardia: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Ventricular_Fibrillation_Coarse: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Ventricular_Fibrillation_Fine: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Ventricular_Standstill: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
-                case Values.Ventricular_Tachycardia_Polymorphic: s.Concatenate (Draw.Flat_Line ((float)p.GetHR_Seconds, 0f)); return;
+                case Values.AV_Block__1st_Degree: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.AV_Block__3rd_Degree: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.AV_Block__Mobitz_II: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.AV_Block__Wenckebach: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Bundle_Branch_Block: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.CPR_Artifact: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Idioventricular: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Junctional: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Pulseless_Electrical_Activity: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Sick_Sinus_Syndrome: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Sinus_Arrhythmia: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Sinus_Rhythm: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Sinus_Rhythm_with_Arrest: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Sinus_Rhythm_with_Bigeminy: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Sinus_Rhythm_with_Trigeminy: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Sinus_Rhythm_with_PACs: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Sinus_Rhythm_with_PJCs: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Sinus_Rhythm_with_PVCs_Multifocal: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Sinus_Rhythm_with_PVCs_Unifocal: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Supraventricular_Tachycardia: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Ventricular_Fibrillation_Coarse: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Ventricular_Fibrillation_Fine: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Ventricular_Standstill: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
+                case Values.Ventricular_Tachycardia_Polymorphic: s.Concatenate (Draw.Flat_Line ((float)p.GetHRInterval, 0f)); return;
             }
         }
 

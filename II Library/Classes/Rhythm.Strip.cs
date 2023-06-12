@@ -203,7 +203,7 @@ namespace II.Rhythm {
                 for (int i = _P.ListPhysiologyEvents.Count; i > 0 && j < DefaultAutoScale_Iterations;) {
                     i--;
 
-                    if (_P.ListPhysiologyEvents [i].EventType != Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Mechanical)
+                    if (_P.ListPhysiologyEvents [i].EventType != Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Electric)
                         continue;
                     else
                         j++;
@@ -266,10 +266,10 @@ namespace II.Rhythm {
         private void SetForwardBuffer (Physiology patient, bool onClear = false) {
             /* Set the forward edge buffer (a coefficient of lengthSeconds!) to be the length of 2 beats/breaths */
             if (IsCardiac)
-                forwardBuffer = System.Math.Max (1 + (2 * ((double)patient.GetHR_Seconds / Length)),
+                forwardBuffer = System.Math.Max (1 + (2 * ((double)patient.GetHRInterval / Length)),
                     (onClear ? 1.1f : forwardBuffer));
             else if (IsRespiratory)
-                forwardBuffer = System.Math.Max (1 + (2 * ((double)patient.GetRR_Seconds / Length)),
+                forwardBuffer = System.Math.Max (1 + (2 * ((double)patient.GetRRInterval / Length)),
                     (onClear ? 1.1f : forwardBuffer));
             else if (IsObstetric)
                 forwardBuffer = System.Math.Max (1 + ((double)patient.ObstetricContractionFrequency / Length),
@@ -616,11 +616,11 @@ namespace II.Rhythm {
                 p.Cardiac_Rhythm.ECG_Isoelectric (p, this);
             } else if (CanScale) {
                 double fill = (Length * forwardBuffer) - Last (Points).X;
-                Concatenate (Scale (p, Draw.Flat_Line (fill > (double)p.GetHR_Seconds ? fill : (double)p.GetHR_Seconds, 0d)));
+                Concatenate (Scale (p, Draw.Flat_Line (fill > (double)p.GetHRInterval ? fill : (double)p.GetHRInterval, 0d)));
             } else {
                 /* Fill waveform through to future buffer with flatline */
                 double fill = (Length * forwardBuffer) - Last (Points).X;
-                Concatenate (Draw.Flat_Line (fill > (double)p.GetHR_Seconds ? fill : (double)p.GetHR_Seconds, 0d));
+                Concatenate (Draw.Flat_Line (fill > (double)p.GetHRInterval ? fill : (double)p.GetHRInterval, 0d));
             }
 
             SortPoints ();
@@ -701,20 +701,32 @@ namespace II.Rhythm {
             if (p is null || Lead is null)
                 return;
 
-            if (Lead?.Value != Lead.Values.IABP || !p.IABP_Active)
-                return;
+            if (p.IABP_Active) {
+                switch (Lead?.Value) {
+                    default: return;
 
-            if (p.Cardiac_Rhythm.HasWaveform_Ventricular && p.IABP_Trigger == "ECG") {
-                /* ECG Trigger works only if ventricular ECG waveform */
-                // IABP causes important downward deflections- do not use ReplaceAtOver!
-                Replace (Draw.IABP_Balloon_Rhythm (p, 1d));
-            } else if (p.Cardiac_Rhythm.HasPulse_Ventricular && p.IABP_Trigger == "Pressure") {
-                /* Pressure Trigger works only if ventricular pressure impulse */
-                // IABP causes important downward deflections- do not use ReplaceAtOver!
-                Replace (Draw.IABP_Balloon_Rhythm (p, 1d));
+                    case Lead.Values.IABP:
+                        if (p.Cardiac_Rhythm.HasWaveform_Ventricular && p.IABP_Trigger == "ECG") {
+                            /* ECG Trigger works only if ventricular ECG waveform */
+                            // IABP causes important downward deflections- do not use ReplaceAtOver!
+                            Replace (Draw.IABP_Balloon_Rhythm (p, 1d));
+                        } else if (p.Cardiac_Rhythm.HasPulse_Ventricular && p.IABP_Trigger == "Pressure") {
+                            /* Pressure Trigger works only if ventricular pressure impulse */
+                            // IABP causes important downward deflections- do not use ReplaceAtOver!
+                            Replace (Draw.IABP_Balloon_Rhythm (p, 1d));
+                        }
+                        break;
+
+                    case Lead.Values.ABP:
+                        if (!p.Cardiac_Rhythm.HasPulse_Ventricular) {
+                            // IABP causes important downward deflections- do not use ReplaceAtOver!
+                            Replace (Scale (p, Draw.IABP_ABP_Rhythm (p, 1d)));
+                        }
+                        break;
+                }
+
+                SortPoints ();
             }
-
-            SortPoints ();
         }
 
         public void Add_Beat__Cardiac_Defibrillation (Physiology? p) {
@@ -750,7 +762,7 @@ namespace II.Rhythm {
 
             /* Fill waveform through to future buffer with flatline */
             double fill = (Length * forwardBuffer) - Last (Points).X;
-            Concatenate (Draw.Flat_Line (fill > (double)p.GetRR_Seconds ? fill : (double)p.GetRR_Seconds, 0d, Resolution_Respiratory));
+            Concatenate (Draw.Flat_Line (fill > (double)p.GetRRInterval ? fill : (double)p.GetRRInterval, 0d, Resolution_Respiratory));
 
             SortPoints ();
         }

@@ -301,6 +301,20 @@ namespace IISIM {
             OnLayoutChange ();
         }
 
+        private void IterateAutoScale () {
+            /* Iterations and trigger for auto-scaling pressure waveform strips */
+            autoScale_iter -= 1;
+
+            if (autoScale_iter <= 0) {
+                for (int i = 0; i < listTracings.Count; i++) {
+                    listTracings [i].Strip?.SetAutoScale (Instance?.Physiology);
+                    Dispatcher.UIThread.InvokeAsync (listTracings [i].UpdateScale);
+                }
+
+                autoScale_iter = Strip.DefaultAutoScale_Iterations;
+            }
+        }
+
         private void MenuClose_Click (object s, RoutedEventArgs e)
             => this.Close ();
 
@@ -528,18 +542,15 @@ namespace IISIM {
                     _ = PlayAudioTone (ToneSources.SPO2, e.Physiology);
 
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Physiology));
+                    IterateAutoScale ();
 
-                    /* Iterations and trigger for auto-scaling pressure waveform strips */
+                    break;
 
-                    autoScale_iter -= 1;
-                    if (autoScale_iter <= 0) {
-                        for (int i = 0; i < listTracings.Count; i++) {
-                            listTracings [i].Strip?.SetAutoScale (Instance?.Physiology);
-                            Dispatcher.UIThread.InvokeAsync (listTracings [i].UpdateScale);
-                        }
+                case Physiology.PhysiologyEventTypes.IABP_Balloon_Inflation:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__IABP_Balloon (Instance?.Physiology));
 
-                        autoScale_iter = Strip.DefaultAutoScale_Iterations;
-                    }
+                    if (Instance?.Physiology is not null && !Instance.Physiology.Cardiac_Rhythm.HasPulse_Ventricular)
+                        IterateAutoScale ();
                     break;
 
                 case Physiology.PhysiologyEventTypes.Respiratory_Baseline:
