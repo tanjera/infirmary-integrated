@@ -34,9 +34,7 @@
     <Grid Name="layoutGrid">
       <Grid.RowDefinitions>
         <RowDefinition Height="Auto" />
-        <RowDefinition Height="1.8 *" />
-        <RowDefinition Height="1.4 *" />
-        <RowDefinition Height="1.2 *" />
+        <RowDefinition Height="*" />
       </Grid.RowDefinitions>
       <Grid.ColumnDefinitions>
         <ColumnDefinition />
@@ -51,39 +49,43 @@
 				Classes="stretch" />
 
       <Viewbox
-				Name="vbLine1"
 				Grid.Row="1"
 				Grid.Column="0"
 				Classes="stretch">
-        <TextBlock
-					Name="lblLine1"
-					Classes="stretch"
-					FontSize="38"
-					FontWeight="Bold" />
-      </Viewbox>
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
 
-      <Viewbox
-				Name="vbLine2"
-				Grid.Row="2"
-				Grid.Column="0"
-				Classes="stretch">
-        <TextBlock
-					Name="lblLine2"
-					Classes="stretch"
-					FontSize="32"
-					FontWeight="Bold" />
-      </Viewbox>
+          <TextBlock
+            Name="lblLine1"
+            Classes="stretch"
+            FontSize="36"
+            FontWeight="Bold"
+            Grid.Row="0"
+            Grid.Column="0" />
 
-      <Viewbox
-				Name="vbLine3"
-				Grid.Row="3"
-				Grid.Column="0"
-				Classes="stretch">
-        <TextBlock
-					Name="lblLine3"
-					Classes="stretch"
-					FontSize="28"
-					FontWeight="Bold" />
+          <TextBlock
+            Name="lblLine2"
+            Classes="stretch"
+            FontSize="32"
+            FontWeight="Bold"
+            Grid.Row="1"
+            Grid.Column="0" />
+
+          <TextBlock
+            Name="lblLine3"
+            Classes="stretch"
+            FontSize="28"
+            FontWeight="Bold"
+            Grid.Row="2"
+            Grid.Column="0" />
+        </Grid>
       </Viewbox>
     </Grid>
   </Border>

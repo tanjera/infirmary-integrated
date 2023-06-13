@@ -105,9 +105,13 @@ namespace IISIM.Controls {
                     default:
                     case ControlTypes.Values.ABP:
                     case ControlTypes.Values.IABP_AP:
+                        lblLine1.FontSize = 30;
+                        lblLine2.FontSize = 30;
+                        lblLine3.FontSize = 20;
                         break;
 
                     case ControlTypes.Values.ECG:
+                        lblLine1.FontSize = 30;
                         lblLine2.IsVisible = false;
                         lblLine3.IsVisible = false;
                         break;

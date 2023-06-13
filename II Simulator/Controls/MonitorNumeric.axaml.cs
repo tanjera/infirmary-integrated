@@ -101,9 +101,6 @@ namespace IISIM.Controls {
             this.FindControl<TextBlock> ("lblLine1").ContextMenu = contextMenu;
             this.FindControl<TextBlock> ("lblLine2").ContextMenu = contextMenu;
             this.FindControl<TextBlock> ("lblLine3").ContextMenu = contextMenu;
-            this.FindControl<Viewbox> ("vbLine1").ContextMenu = contextMenu;
-            this.FindControl<Viewbox> ("vbLine2").ContextMenu = contextMenu;
-            this.FindControl<Viewbox> ("vbLine3").ContextMenu = contextMenu;
 
             uiMenuZeroTransducer = new ();
             uiMenuZeroTransducer.Header = Instance?.Language.Localize ("MENU:MenuZeroTransducer");
@@ -182,11 +179,16 @@ namespace IISIM.Controls {
                     case ControlTypes.Values.NIBP:
                     case ControlTypes.Values.ABP:
                     case ControlTypes.Values.PA:
+                        lblLine1.FontSize = 30;
+                        lblLine2.FontSize = 30;
+                        lblLine3.FontSize = 20;
                         break;
 
                     case ControlTypes.Values.SPO2:
                     case ControlTypes.Values.ETCO2:
                     case ControlTypes.Values.ICP:
+                        lblLine1.FontSize = 30;
+                        lblLine2.FontSize = 20;
                         lblLine3.IsVisible = false;
                         break;
 
@@ -196,6 +198,7 @@ namespace IISIM.Controls {
                     case ControlTypes.Values.CVP:
                     case ControlTypes.Values.CO:
                     case ControlTypes.Values.IAP:
+                        lblLine1.FontSize = 30;
                         lblLine2.IsVisible = false;
                         lblLine3.IsVisible = false;
                         break;
@@ -244,7 +247,7 @@ namespace IISIM.Controls {
 
                 case ControlTypes.Values.SPO2:
                     int? spo2 = (int)II.Math.RandomPercentRange (Instance?.Physiology?.SPO2 ?? 0, 0.01f);
-                    lblLine1.Text = String.Format ("{0:0}", spo2);
+                    lblLine1.Text = String.Format ("{0:0} %", spo2);
                     lblLine2.Text = String.Format ("@ {0:0}", Instance?.Physiology.MeasureHR_SPO2 (
                         Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
 
@@ -470,7 +473,7 @@ namespace IISIM.Controls {
             else
                 ControlType.Value = selectedValue;
 
-            UpdateInterface ();
+            Dispatcher.UIThread.InvokeAsync (UpdateInterface);
             Dispatcher.UIThread.InvokeAsync (UpdateVitals);
         }
     }

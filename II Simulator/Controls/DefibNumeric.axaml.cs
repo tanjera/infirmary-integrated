@@ -97,9 +97,6 @@ namespace IISIM.Controls {
             this.FindControl<TextBlock> ("lblLine1").ContextMenu = contextMenu;
             this.FindControl<TextBlock> ("lblLine2").ContextMenu = contextMenu;
             this.FindControl<TextBlock> ("lblLine3").ContextMenu = contextMenu;
-            this.FindControl<Viewbox> ("vbLine1").ContextMenu = contextMenu;
-            this.FindControl<Viewbox> ("vbLine2").ContextMenu = contextMenu;
-            this.FindControl<Viewbox> ("vbLine3").ContextMenu = contextMenu;
 
             uiMenuZeroTransducer = new MenuItem ();
             uiMenuZeroTransducer.Header = Instance?.Language.Localize ("MENU:MenuZeroTransducer");
@@ -206,17 +203,23 @@ namespace IISIM.Controls {
                     case ControlTypes.Values.ABP:
                     case ControlTypes.Values.PA:
                     case ControlTypes.Values.DEFIB:
+                        lblLine1.FontSize = 30;
+                        lblLine2.FontSize = 30;
+                        lblLine3.FontSize = 20;
+                        break;
+
+                    case ControlTypes.Values.SPO2:
+                    case ControlTypes.Values.ETCO2:
+                        lblLine1.FontSize = 30;
+                        lblLine2.FontSize = 20;
+                        lblLine3.IsVisible = false;
                         break;
 
                     case ControlTypes.Values.ECG:
                     case ControlTypes.Values.T:
                     case ControlTypes.Values.RR:
                     case ControlTypes.Values.CVP:
-                        lblLine3.IsVisible = false;
-                        break;
-
-                    case ControlTypes.Values.SPO2:
-                    case ControlTypes.Values.ETCO2:
+                        lblLine1.FontSize = 30;
                         lblLine2.IsVisible = false;
                         lblLine3.IsVisible = false;
                         break;
@@ -259,7 +262,7 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.SPO2:
-                    lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Physiology.SPO2, 0.01f));
+                    lblLine1.Text = String.Format ("{0:0} %", II.Math.RandomPercentRange (Instance.Physiology.SPO2, 0.01f));
                     lblLine2.Text = String.Format ("@ {0:0}", Instance.Physiology.MeasureHR_SPO2 (
                         Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
                     break;

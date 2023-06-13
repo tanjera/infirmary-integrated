@@ -46,8 +46,8 @@
 
     <Grid Name="layoutGrid">
       <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="Auto" />
-        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="1 *" />
+        <ColumnDefinition Width="4 *" />
       </Grid.ColumnDefinitions>
       <Grid.RowDefinitions>
         <RowDefinition Height="*" />
