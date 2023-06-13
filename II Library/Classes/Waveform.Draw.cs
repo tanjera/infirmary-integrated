@@ -18,7 +18,6 @@ using System.Diagnostics;
 using System.Linq;
 
 namespace II.Waveform {
-
     public static class Draw {
         public const int ResolutionTime = 10;           // Tracing resolution milliseconds per drawing point
         public const int RefreshTime = 17;              // Tracing draw refresh time in milliseconds (60 fps = ~17ms)
@@ -137,10 +136,10 @@ namespace II.Waveform {
         }
 
         public static List<PointD> ABP_Rhythm (Physiology _P, double _Amplitude) {
-            VaryAmplitude_Random (0.05d, ref _Amplitude);
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
             DampenAmplitude_PulsusAlternans (_P, ref _Amplitude);
             DampenAmplitude_PulsusParadoxus (_P, ref _Amplitude);
+            DampenAmplitude_DiastolicFillTime (_P, ref _Amplitude);
 
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Stretch (Dictionary.ABP_Default, (double)_P.GetPulsatility_Seconds),
