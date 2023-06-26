@@ -801,6 +801,7 @@ namespace IISIM {
                     break;
 
                 case Physiology.PhysiologyEventTypes.IABP_Balloon_Inflation:
+                    // Note: May draw either IABP or ABP waveforms (e.g. ABP with augmentation in non-pulsatile rhythm cases)
                     listTracings.ForEach (c => c.Strip?.Add_Beat__IABP_Balloon (Instance?.Physiology));
 
                     if (Instance?.Physiology is not null && !Instance.Physiology.Cardiac_Rhythm.HasPulse_Ventricular)

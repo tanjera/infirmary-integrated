@@ -72,8 +72,17 @@ namespace II {
 
         /* Intra-aortic balloon pump parameters */
         public int IABP_AP, IABP_DBP, IABP_MAP;     // Intra-aortic balloon pump blood pressures
+
+        // Default IABP settings:
         public bool IABP_Active = false;            // Is the Device_IABP currently augmenting?
-        public string IABP_Trigger = "";            // Device_IABP's trigger; data backflow for strip processing
+
+        public int IABP_DelayDynamic = 280;                             // Delay between trigger to inflation (in milliseconds); dynamically adjusted
+        public int IABP_DelayManual = 0;                                // Manual delay adjustment (in milliseconds)
+        public IABP_Triggers IABP_Trigger = IABP_Triggers.ECG;          // Device_IABP's trigger; data backflow for strip processing
+
+        public enum IABP_Triggers { ECG, Pressure }
+
+        public static int [] IABP_Delays = { 280, 200 };    // Default delays to use for trigger timing
 
         /* Timers and multipliers for temporal modeling */
 
@@ -646,7 +655,7 @@ namespace II {
                             case "IABP_DBP": IABP_DBP = int.Parse (pValue); break;
                             case "IABP_MAP": IABP_MAP = int.Parse (pValue); break;
                             case "IABP_Active": IABP_Active = bool.Parse (pValue); break;
-                            case "IABP_Trigger": IABP_Trigger = pValue; break;
+                            case "IABP_Trigger": IABP_Trigger = (IABP_Triggers)Enum.Parse (typeof (IABP_Triggers), pValue); break;
                         }
                     }
                 }
@@ -1322,8 +1331,10 @@ namespace II {
         private async Task OnCardiac_Ventricular_Electric () {
             await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Ventricular_Electric);
 
-            if (IABP_Active)
-                await TimerIABP_Balloon_Trigger.ResetStart ((int)(GetHRInterval * 1000d * 0.35d));
+            if (IABP_Active && IABP_Trigger == IABP_Triggers.ECG) {
+                IABP_DelayDynamic = (int)((GetHRInterval * 1000) * .34);
+                await TimerIABP_Balloon_Trigger.ResetStart (Default_Electromechanical_Delay + IABP_DelayDynamic + IABP_DelayManual);
+            }
 
             if (Cardiac_Rhythm.HasPulse_Ventricular)
                 await TimerCardiac_Ventricular_Mechanical.ResetStart (Default_Electromechanical_Delay);
@@ -1342,6 +1353,11 @@ namespace II {
 
         private async Task OnCardiac_Ventricular_Mechanical () {
             await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Ventricular_Mechanical);
+
+            if (IABP_Active && IABP_Trigger == IABP_Triggers.Pressure) {
+                IABP_DelayDynamic = (int)((GetHRInterval * 1000) * .34);
+                await TimerIABP_Balloon_Trigger.ResetStart (IABP_DelayDynamic + IABP_DelayManual);
+            }
 
             if (Pulsus_Alternans) {
                 VS_Actual.ASBP += Cardiac_Rhythm.AlternansBeat ? (int)(VS_Settings.ASBP * 0.15d) : -(int)(VS_Settings.ASBP * 0.15d);

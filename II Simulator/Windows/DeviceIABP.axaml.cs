@@ -53,6 +53,7 @@ namespace IISIM {
             None,
             Trigger,
             Frequency,
+            InflationTiming,
             AugmentationPressure,
             AugmentationAlarm
         }
@@ -151,6 +152,7 @@ namespace IISIM {
             this.FindControl<TextBlock> ("btntxtTrigger").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:Trigger"));
             this.FindControl<TextBlock> ("btntxtFrequency").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:Frequency"));
             this.FindControl<TextBlock> ("buttonPrimeBalloon").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:PrimeBalloon"));
+            this.FindControl<TextBlock> ("btntxtInflationTiming").Text = Utility.WrapString (Instance.Language.Localize ("IABP:InflationTiming"));
             this.FindControl<TextBlock> ("btntxtAugmentationPressure").Text = Utility.WrapString (Instance.Language.Localize ("IABP:AugmentationPressure"));
             this.FindControl<TextBlock> ("btntxtAugmentationAlarm").Text = Utility.WrapString (Instance.Language.Localize ("IABP:AugmentationAlarm"));
             this.FindControl<TextBlock> ("btntxtIncrease").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:Increase"));
@@ -380,11 +382,13 @@ namespace IISIM {
         private void SelectSetting (Settings s) {
             Button buttonTrigger = this.FindControl<Button> ("buttonTrigger");
             Button buttonFrequency = this.FindControl<Button> ("buttonFrequency");
+            Button buttonInflationTiming = this.FindControl<Button> ("buttonInflationTiming");
             Button buttonAugmentationPressure = this.FindControl<Button> ("buttonAugmentationPressure");
             Button buttonAugmentationAlarm = this.FindControl<Button> ("buttonAugmentationAlarm");
 
             buttonTrigger.Background = Brushes.PowderBlue;
             buttonFrequency.Background = Brushes.PowderBlue;
+            buttonInflationTiming.Background = Brushes.PowderBlue;
             buttonAugmentationPressure.Background = Brushes.LightSkyBlue;
             buttonAugmentationAlarm.Background = Brushes.LightSkyBlue;
 
@@ -401,6 +405,10 @@ namespace IISIM {
 
                 case Settings.Frequency:
                     buttonFrequency.Background = Brushes.Yellow;
+                    return;
+
+                case Settings.InflationTiming:
+                    buttonInflationTiming.Background = Brushes.Yellow;
                     return;
 
                 case Settings.AugmentationPressure:
@@ -444,8 +452,26 @@ namespace IISIM {
                 case Settings.Trigger:
                     Array enumValues = Enum.GetValues (typeof (Triggering.Values));
                     Trigger.Value = (Triggering.Values)(enumValues.GetValue (II.Math.Clamp ((int)Trigger.Value + 1, 0, enumValues.Length - 1)) ?? Triggering.Values.ECG);
+
+                    if (Instance?.Physiology is not null) {
+                        Instance.Physiology.IABP_Trigger = Trigger.Value switch {
+                            Triggering.Values.ECG => Physiology.IABP_Triggers.ECG,
+                            Triggering.Values.Pressure => Physiology.IABP_Triggers.Pressure,
+                            _ => Physiology.IABP_Triggers.ECG
+                        };
+
+                        Instance.Physiology.IABP_DelayManual = 0;
+                        Instance.Physiology.IABP_DelayDynamic = Physiology.IABP_Delays [Instance.Physiology.IABP_Trigger.GetHashCode ()];
+                    }
+
                     PauseDevice ();
                     UpdateInterface ();
+                    return;
+
+                case Settings.InflationTiming:
+                    if (Instance?.Physiology is not null) {
+                        Instance.Physiology.IABP_DelayManual += 50;
+                    }
                     return;
 
                 case Settings.AugmentationPressure:
@@ -471,8 +497,26 @@ namespace IISIM {
                 case Settings.Trigger:
                     Array enumValues = Enum.GetValues (typeof (Triggering.Values));
                     Trigger.Value = (Triggering.Values)(enumValues.GetValue (II.Math.Clamp ((int)Trigger.Value - 1, 0, enumValues.Length - 1)) ?? Triggering.Values.ECG);
+
+                    if (Instance?.Physiology is not null) {
+                        Instance.Physiology.IABP_Trigger = Trigger.Value switch {
+                            Triggering.Values.ECG => Physiology.IABP_Triggers.ECG,
+                            Triggering.Values.Pressure => Physiology.IABP_Triggers.Pressure,
+                            _ => Physiology.IABP_Triggers.ECG
+                        };
+
+                        Instance.Physiology.IABP_DelayManual = 0;
+                        Instance.Physiology.IABP_DelayDynamic = Physiology.IABP_Delays [Instance.Physiology.IABP_Trigger.GetHashCode ()];
+                    }
+
                     PauseDevice ();
                     UpdateInterface ();
+                    return;
+
+                case Settings.InflationTiming:
+                    if (Instance?.Physiology is not null) {
+                        Instance.Physiology.IABP_DelayManual -= 50;
+                    }
                     return;
 
                 case Settings.AugmentationPressure:
@@ -498,6 +542,9 @@ namespace IISIM {
 
         private void ButtonFrequency_Click (object s, RoutedEventArgs e)
             => SelectSetting (Settings.Frequency);
+
+        private void ButtonInflationTiming_Click (object s, RoutedEventArgs e)
+            => SelectSetting (Settings.InflationTiming);
 
         private void ButtonAugmentationPressure_Click (object s, RoutedEventArgs e)
             => SelectSetting (Settings.AugmentationPressure);
@@ -623,7 +670,6 @@ namespace IISIM {
                         Instance.Physiology.IABP_Active = Running && (Frequency_Iter % Frequency == 0)
                             && ((Trigger.Value == Triggering.Values.ECG && Instance.Physiology.Cardiac_Rhythm.HasWaveform_Ventricular)
                             || (Trigger.Value == Triggering.Values.Pressure && Instance.Physiology.Cardiac_Rhythm.HasPulse_Ventricular));
-                        Instance.Physiology.IABP_Trigger = Trigger.Value.ToString ();
                     }
 
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology));

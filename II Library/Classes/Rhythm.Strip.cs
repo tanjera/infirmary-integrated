@@ -20,7 +20,6 @@ using II.Drawing;
 using II.Waveform;
 
 namespace II.Rhythm {
-
     public class Strip {
         /* Default variables for easy modification of multiple measurement/tracing functions */
         public const double DefaultLength = 6.0d;
@@ -706,11 +705,11 @@ namespace II.Rhythm {
                     default: return;
 
                     case Lead.Values.IABP:
-                        if (p.Cardiac_Rhythm.HasWaveform_Ventricular && p.IABP_Trigger == "ECG") {
+                        if (p.Cardiac_Rhythm.HasWaveform_Ventricular && p.IABP_Trigger == Physiology.IABP_Triggers.ECG) {
                             /* ECG Trigger works only if ventricular ECG waveform */
                             // IABP causes important downward deflections- do not use ReplaceAtOver!
                             Replace (Draw.IABP_Balloon_Rhythm (p, 1d));
-                        } else if (p.Cardiac_Rhythm.HasPulse_Ventricular && p.IABP_Trigger == "Pressure") {
+                        } else if (p.Cardiac_Rhythm.HasPulse_Ventricular && p.IABP_Trigger == Physiology.IABP_Triggers.Pressure) {
                             /* Pressure Trigger works only if ventricular pressure impulse */
                             // IABP causes important downward deflections- do not use ReplaceAtOver!
                             Replace (Draw.IABP_Balloon_Rhythm (p, 1d));
