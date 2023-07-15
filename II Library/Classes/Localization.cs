@@ -1,4 +1,9 @@
-﻿using System;
+﻿/* Localization.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -7,7 +12,7 @@ namespace II.Localization {
         public Values Value;
 
         public Language (string s) {
-            object? lang = new();
+            object? lang = new ();
             if (Enum.TryParse (typeof (Values), s, out lang))
                 Value = lang is not null ? (Values)lang : Values.ENG;
             else

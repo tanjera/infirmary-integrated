@@ -1,3 +1,7 @@
+/* Infirmary Integrated Scenario Editor
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -21,6 +25,7 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 
 using II;
+
 using IISE.Controls;
 
 namespace IISE.Windows {

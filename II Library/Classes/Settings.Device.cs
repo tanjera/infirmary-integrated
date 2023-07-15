@@ -1,6 +1,6 @@
 ﻿/* Settings.Device.cs
  * Infirmary Integrated
- * By Ibi Keller (Tanjera)
+ * By Ibi Keller (Tanjera) (c) 2023
  *
  * Stores settings for persistence between sessions and for loading/saving simulations
  */

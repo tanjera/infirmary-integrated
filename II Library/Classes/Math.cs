@@ -1,12 +1,15 @@
-﻿using System;
+﻿/* Math.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 
 namespace II {
-
     public static class Math {
-
         public static double Clamp (double value, double min, double max) {
             return (value < min) ? min : (value > max) ? max : value;
         }

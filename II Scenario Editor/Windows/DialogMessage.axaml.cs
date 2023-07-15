@@ -1,3 +1,7 @@
+/* Infirmary Integrated Scenario Editor
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
 using System;
 using System.IO;
 using System.Reflection;

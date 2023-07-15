@@ -18,6 +18,10 @@
     <ApplicationIcon>Icon_IISE.ico</ApplicationIcon>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RootNamespace>IISE</RootNamespace>
+    <Title>Infirmary Integrated Scenario Editor</Title>
+    <Authors>Ibi Keller</Authors>
+    <Copyright>© 2017-2023, Ibi Keller</Copyright>
+    <PackageReadmeFile>Readme.md</PackageReadmeFile>
   </PropertyGroup>  
   <ItemGroup>
     <!--This helps with theme dll-s trimming.
@@ -93,6 +97,10 @@
     <None Include="..\License.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
+    </None>
+    <None Include="..\Readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
 </Project>

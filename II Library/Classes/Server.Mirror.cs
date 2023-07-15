@@ -1,10 +1,14 @@
-﻿using System;
+﻿/* Sever.Mirror.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
+using System;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace II.Server {
-
     public class Mirror {
         private bool ThreadLock = false;
         public Timer timerUpdate = new ();

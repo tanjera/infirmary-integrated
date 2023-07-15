@@ -1,11 +1,15 @@
-﻿using System;
+﻿/* Waveform.Plotting.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 using II.Drawing;
 
 namespace II.Waveform {
-
     public static class Plotting {
         /*
 	     * Shaping and point plotting functions

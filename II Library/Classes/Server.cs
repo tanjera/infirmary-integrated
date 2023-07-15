@@ -1,6 +1,6 @@
 ﻿/* Server.cs
  * Infirmary Integrated
- * By Ibi Keller (Tanjera)
+ * By Ibi Keller (Tanjera) (c) 2023
  *
  * Connection to MySQL database functioning as a data server for Infirmary Integrated.
  * Establishes database connection, includes functions for queries/commands.
@@ -28,7 +28,6 @@ using System.Threading.Tasks;
 using II.Localization;
 
 namespace II.Server {
-
     public partial class Server {
         /* Variables for checking for updates, running bootstrapper */
         public string UpgradeVersion = String.Empty;

@@ -1,6 +1,6 @@
 ﻿/* Physiology.cs
  * Infirmary Integrated
- * By Ibi Keller (Tanjera), (c) 2017
+ * By Ibi Keller (Tanjera), (c) 2017-2023
  *
  * All patient's physiology modeling takes place in Physiology.cs, consisting of:
  * - Variables: vital signs and modeling parameters
@@ -16,7 +16,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
-
     public class Physiology {
         /* Mirroring variables */
         public DateTime Updated;                    // DateTime this Patient was last updated

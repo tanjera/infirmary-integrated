@@ -1,3 +1,8 @@
+/* Leads.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
 using System;
 
 namespace II {

@@ -1,6 +1,6 @@
 ﻿/* Strip.cs
  * Infirmary Integrated
- * By Ibi Keller (Tanjera), (c) 2017
+ * By Ibi Keller (Tanjera), (c) 2017-2023
  *
  * Actual management of geometric plotting of waveforms as a single tracing is in Strip.cs.
  * Concatenation of waveform complexes, overwriting and underwriting (combining) wave points,

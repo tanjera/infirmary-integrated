@@ -1,6 +1,6 @@
 ﻿/* Scenario.cs
  * Infirmary Integrated
- * By Ibi Keller (Tanjera), (c) 2017
+ * By Ibi Keller (Tanjera), (c) 2017-2023
  *
  * Management of scenario takes place here; iterating steps.
  */
@@ -13,7 +13,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
-
     public class Scenario {
         public string? Name, Description, Author;
         public DateTime? Updated;

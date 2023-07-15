@@ -1,6 +1,6 @@
 /* Rhythms.cs
  * Infirmary Integrated
- * By Ibi Keller (Tanjera), (c) 2017
+ * By Ibi Keller (Tanjera), (c) 2017-2023
  *
  * Enumeration of rhythms, properties of actual rhythms (e.g. has a pulse? has an atrial
  * pulse? an atrial waveform?), default vital signs for clamping.
@@ -15,7 +15,6 @@ using System.Diagnostics;
 using II.Waveform;
 
 namespace II {
-
     public class Cardiac_Rhythms {
         public Values Value;
 
@@ -194,7 +193,6 @@ namespace II {
         }
 
         public class Default_Vitals {
-
             public int HRMin, HRMax,
                         RRMin, RRMax,
                         SPO2Min, SPO2Max,

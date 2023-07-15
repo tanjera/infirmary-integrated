@@ -1,4 +1,9 @@
-﻿using System;
+﻿/* File.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
@@ -49,7 +54,7 @@ namespace II {
 
             OperatingSystem os = Environment.OSVersion;
             if (os.Platform == PlatformID.Win32NT) {
-                StringBuilder sb = new();
+                StringBuilder sb = new ();
 
                 for (int i = 0; i < input.Length; i++) {
                     if (i == 0 || input [i - 1] == ' ')

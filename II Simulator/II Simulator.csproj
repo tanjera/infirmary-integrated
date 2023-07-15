@@ -19,6 +19,7 @@
     <ApplicationIcon>Icon_II.ico</ApplicationIcon>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RootNamespace>IISIM</RootNamespace>
+    <PackageReadmeFile>Readme.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Avalonia" Version="0.10.21" />
@@ -103,6 +104,10 @@
     <None Include="..\License.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
+    </None>
+    <None Include="..\Readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
     </None>
   </ItemGroup>
   <ItemGroup>

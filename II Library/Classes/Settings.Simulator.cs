@@ -1,6 +1,6 @@
 ﻿/* Settings.Simulator.cs
  * Infirmary Integrated
- * By Ibi Keller (Tanjera)
+ * By Ibi Keller (Tanjera) (c) 2023
  *
  * Stores settings for persistence between sessions and for loading/saving simulations
  */
@@ -13,7 +13,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II.Settings {
-
     public class Simulator {
         public string Language;
 

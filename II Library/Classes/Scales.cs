@@ -1,4 +1,9 @@
-﻿using System;
+﻿/* Scales.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 

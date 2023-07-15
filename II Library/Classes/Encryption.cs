@@ -1,4 +1,9 @@
-﻿using System;
+﻿/* Encryption.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -6,7 +11,6 @@ using System.Security.Cryptography;
 using System.Text;
 
 namespace II {
-
     public static class Encryption {
         private static string keyString = "!8x/A?b(G+KbPe$hVkYpEs6V9y$B&E)H";
         public static byte [] Key { get { return Encoding.UTF8.GetBytes (keyString); } }
@@ -17,7 +21,7 @@ namespace II {
             byte [] bytes = Encoding.ASCII.GetBytes (str);
             byte [] hash = sha256.ComputeHash (bytes);
 
-            StringBuilder sb = new();
+            StringBuilder sb = new ();
             foreach (byte b in hash)
                 sb.Append (b.ToString ("X2"));
 

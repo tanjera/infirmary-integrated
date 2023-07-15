@@ -1,13 +1,16 @@
-﻿using System;
+﻿/* Medication.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
-
     public class Medication {
-
         public class Dose {
             public string? OrderUUID;
 
@@ -138,7 +141,6 @@ namespace II {
                 }
 
                 public enum Values {
-
                     // Volume
                     L,
 

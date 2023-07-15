@@ -1,9 +1,13 @@
-﻿using System;
+﻿/* Drawing.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace II.Drawing {
-
     public class PointD {
         public double X { get; set; }
         public double Y { get; set; }
@@ -52,16 +56,16 @@ namespace II.Drawing {
         }
 
         public static PointD operator + (PointD a, PointD b)
-        => new(a.X + b.X, a.Y + b.Y);
+        => new (a.X + b.X, a.Y + b.Y);
 
         public static PointD operator - (PointD a, PointD b)
-        => new(a.X - b.X, a.Y - b.Y);
+        => new (a.X - b.X, a.Y - b.Y);
 
         public static PointD operator * (PointD a, PointD b)
-        => new(a.X * b.X, a.Y * b.Y);
+        => new (a.X * b.X, a.Y * b.Y);
 
         public static PointD operator * (PointD a, double b)
-        => new(a.X * b, a.Y * b);
+        => new (a.X * b, a.Y * b);
 
         public static PointD operator / (PointD a, PointD b) {
             if (b.X == 0 || b.Y == 0)

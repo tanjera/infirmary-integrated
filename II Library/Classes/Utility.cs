@@ -1,4 +1,9 @@
-﻿using System;
+﻿/* Utility.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -7,9 +12,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 namespace II {
-
     public static class Utility {
-
         public static bool IsNewerVersion (string current, string comparison) {
             string [] curSplit = current.Split ('.'),
                 compSplit = comparison.Split ('.');

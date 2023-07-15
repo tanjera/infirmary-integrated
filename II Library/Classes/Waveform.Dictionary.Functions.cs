@@ -1,10 +1,13 @@
-﻿using System;
+﻿/* Waveform.Dictionary.Functions.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
+using System;
 using System.Collections.Generic;
 
 namespace II.Waveform {
-
     public static partial class Dictionary {
-
         public class Plot {
             public int DrawResolution;
             public int IndexOffset;
@@ -24,11 +27,11 @@ namespace II.Waveform {
              * Note: IndexOffset and DrawResolution are only averaged; loss of accuracy possible
              */
 
-            Plot _Out = new(
+            Plot _Out = new (
                 (_Plot1.DrawResolution + _Plot2.DrawResolution) / 2,
                 (_Plot1.IndexOffset + _Plot2.IndexOffset) / 2);
 
-            List<double> vertices = new();
+            List<double> vertices = new ();
 
             for (int i = 0; i < _Plot1.Vertices.Length || i < _Plot2.Vertices.Length; i++) {
                 if (i < _Plot1.Vertices.Length && i < _Plot2.Vertices.Length)

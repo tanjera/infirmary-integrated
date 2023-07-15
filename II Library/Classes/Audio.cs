@@ -1,13 +1,16 @@
-﻿using System;
+﻿/* Audio.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
-
     public class Audio {
-
         public static Task<MemoryStream> ToneGenerator (double seconds = 0.1, double frequency = 220, bool fixpop = true) {
             MemoryStream stream = new ();
             BinaryWriter writer = new BinaryWriter (stream, Encoding.Default, true);

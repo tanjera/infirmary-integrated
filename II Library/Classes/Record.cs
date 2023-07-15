@@ -1,4 +1,9 @@
-﻿using System;
+﻿/* Record.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;

@@ -2,9 +2,9 @@
 <br>
 (c) 2017-2023, Ibi Keller (tanjera)
 
-Infirmary Integrated is free and open-source software developed to advance healthcare education for medical and nursing professionals and students. Developed as in-depth, accurate, and accessible educational tools, Infirmary Integrated can meet the needs of clinical simulators in emergency, critical care, obstetric, and many other medical and nursing specialties.
+Infirmary Integrated is free and open-source software suite consisting of the Infirmary Integrated Simulator, Scenario Editor, and Development Tools designed to advance healthcare education for medical and nursing professionals and students. Developed as in-depth, accurate, and accessible educational tools, Infirmary Integrated can meet the needs of clinical simulators in emergency, critical care, obstetric, and many other medical and nursing specialties.
 
-Infirmary Integrated is a free simulator for healthcare devices to aide in medical and nursing education. By simulating medical devices such as a defibrillator or external fetal monitor, students can practice reading tracings, interpreting waveforms, and starting interventions. Educators can use Infirmary Integrated to enhance simulations in a lifelike environment similar to patient care areas, allowing educators to simulate patient presentations and hemodynamic states ranging from simple simulations to extremely complex scenarios. Infirmary Integrated is developed to be clinically accurate and contain relevant content. Additionally, Infirmary Integrated is free and open source software in order to be accessible for healthcare professionals around the world.
+Infirmary Integrated contains a free simulator for healthcare devices to aide in medical and nursing education. By simulating medical devices such as a defibrillator or external fetal monitor, students can practice reading tracings, interpreting waveforms, and starting interventions. Educators can use Infirmary Integrated to enhance simulations in a lifelike environment similar to patient care areas, allowing educators to simulate patient presentations and hemodynamic states ranging from simple simulations to extremely complex scenarios. Infirmary Integrated is developed to be clinically accurate and contain relevant content. Additionally, Infirmary Integrated is free and open source software in order to be accessible for healthcare professionals around the world.
 
 Infirmary Integrated currently functions as a simulator for the following healthcare devices:
 - Cardiac monitor
@@ -124,3 +124,19 @@ Infirmary Integrated also supports full localization (translation) for the follo
 - Swahili (Kiswahili)
 
 For more information, feel free to visit http://www.infirmary-integrated.com/
+<br>
+***
+<br>
+Copyright 2017-2023 Ibi Keller
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.

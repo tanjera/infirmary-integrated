@@ -1,3 +1,7 @@
+/* Infirmary Integrated Scenario Editor
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;

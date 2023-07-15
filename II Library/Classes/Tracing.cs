@@ -1,4 +1,9 @@
-﻿using System;
+﻿/* Tracing.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -8,9 +13,7 @@ using System.Threading.Tasks;
 using II.Drawing;
 
 namespace II.Rhythm {
-
     public class Tracing {
-
         public static void CalculateOffsets (
             Strip? strip,
             double width, double height,

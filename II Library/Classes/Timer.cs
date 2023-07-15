@@ -1,8 +1,12 @@
-﻿using System;
+﻿/* Timer.cs
+ * Infirmary Integrated
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
+using System;
 using System.Threading.Tasks;
 
 namespace II {
-
     public class Timer {
         private int _Interval = 0;
         private bool _Locked = false;

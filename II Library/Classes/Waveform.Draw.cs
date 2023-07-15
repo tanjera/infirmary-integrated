@@ -1,6 +1,6 @@
 /* Waveforms.cs
  * Infirmary Integrated
- * By Ibi Keller (Tanjera), (c) 2017
+ * By Ibi Keller (Tanjera), (c) 2017-2023
  *
  * All mathematical modeling of waveforms are done in Waveforms.cs, including
  * the plotting of individual waves, the plotting/ordering of multiple waves into a
@@ -18,7 +18,6 @@ using System.Diagnostics;
 using System.Linq;
 
 namespace II.Waveform {
-
     public static class Draw {
         public const int ResolutionTime = 10;           // Tracing resolution milliseconds per drawing point
         public const int RefreshTime = 17;              // Tracing draw refresh time in milliseconds (60 fps = ~17ms)

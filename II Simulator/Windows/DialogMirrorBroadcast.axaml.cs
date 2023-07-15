@@ -1,3 +1,7 @@
+/* Infirmary Integrated Simulator
+ * By Ibi Keller (Tanjera), (c) 2023
+ */
+
 using System;
 using System.Diagnostics;
 using System.Text;
