@@ -26,13 +26,16 @@ try {
     $sql->execute();
 
     $row_exists = false;
+
     if ($sql->fetch()) {            // An entry exists for this accession
+
         if ($existing != filter_input(INPUT_GET, 'key_edit')) {
             $conn->close();
             die();
+
         } else if ($existing == filter_input(INPUT_GET, 'key_edit')) {
 
-            $conn->refresh();
+            $conn->refresh(MYSQLI_REFRESH_STATUS);
             $sql->reset();
 
             if ($sql = $conn->prepare(
@@ -56,7 +59,8 @@ try {
             $conn->close();
         }
     } else if (!$sql->fetch()) {    // No entry exists for this accession
-        $conn->refresh();
+
+        $conn->refresh(MYSQLI_REFRESH_STATUS);
         $sql->reset();
 
         if ($sql = $conn->prepare(
