@@ -28,8 +28,7 @@ namespace Publishing {
                     pathTar = @"C:\Windows\System32\tar.exe";
                     path7Zip = @"C:\Program Files\7-Zip\7z.exe";
                     pathNSIS = @"C:\Program Files (x86)\NSIS\makensis.exe";
-                    pathSigntool = @"C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe";
-                    pathCert = @"C:\Users\Ibi\Documents\Code Signing Certificate, Sectigo, 2022-23.pfx";
+                    pathSigntool = @"C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe";                    
                     //dirSolution = @"Z:\Infirmary Integrated";
                     dirSolution = @"C:\Users\Ibi\Documents\Infirmary Integrated";
                 } else if (OperatingSystem.IsLinux ()) {

@@ -1,0 +1,3 @@
+& 'C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe' sign /n "Open Source Developer, Ibi Keller" /t http://time.certum.pl /fd SHA256 /v
+
+& 'C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe' verify /v /pa

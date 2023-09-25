@@ -88,12 +88,9 @@ namespace Publishing {
             Console.WriteLine (Environment.NewLine);
             Console.ResetColor ();
 
-            Console.Write ("Please enter the signing certificate password: ");
-            string password = Console.ReadLine ().Trim ();
+            // "signtool sign /n "Open Source Developer, Ibi Keller" /t "http://time.certum.pl" /fd SHA256 /vfilename"
 
-            // "signtool sign /fd digest /tr timeserver /td timeserver-digest /f sigfile.pfx /p password filename"
-
-            arguments = $"sign /fd SHA256 /tr http://timestamp.globalsign.com/tsa/r6advanced1 /td SHA256 /f \"{progVar.pathCert}\" /p {password} \"{pkgName}\"";
+            arguments = $"sign /n \"Open Source Developer, Ibi Keller\" /t \"http://time.certum.pl\" /fd SHA256 /v \"{pkgName}\"";
 
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine (Environment.NewLine);
