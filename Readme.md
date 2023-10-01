@@ -14,6 +14,8 @@ Infirmary Integrated currently functions as a simulator for the following health
 - External fetal monitor, cardiotocograph (EFM/CTG)
 - Medication administration record (MAR)
 
+![Infirmary Integrated Demonstration](https://www.infirmary-integrated.com/wp-content/uploads/2023/09/II-Demonstration.jpg)
+
 Main features in Infirmary Integrated include:
 - Realistic waveforms draw according to multiple factors, accounting for:
   - Atrial and/or ventricular contractions
@@ -56,6 +58,8 @@ And Infirmary Integrated can simulate hemodynamic and other readings including:
 - Defibrillation, cardioversion, and transcutaneous pacing
 - Fetal heart rate (FHR), fetal heart rate variability, and uterine contractions (frequency and duration)
 
+![Infirmary Integrated Cardiac Monitor](https://www.infirmary-integrated.com/wp-content/uploads/2019/04/Pulmonary-Hypertension-Right-Heart-Failure.png)
+
 Also, Infirmary Integrated simulates the following cardiac rhythms with waveforms and corresponding vital signs for scenario management:
 - Asystole
 - Atrial Fibrillation
@@ -87,6 +91,8 @@ Also, Infirmary Integrated simulates the following cardiac rhythms with waveform
 - Ventricular Tachycardia Monomorphic Pulseless
 - Ventricular Tachycardia Polymorphic
 
+![12 Lead ECG](https://www.infirmary-integrated.com/wp-content/uploads/2023/09/12L-ECG.png)
+
 Infirmary Integrated also simulates the following respiratory rhythms:
 - Agonal
 - Apnea
@@ -103,8 +109,12 @@ Infirmary Integrated also simulates the following fetal heart rhythms:
 - Late Decelerations
 - Variable Decelerations
 
+![Fetal Heart Monitor](https://www.infirmary-integrated.com/wp-content/uploads/2022/07/efm-accels.png)
+
 Infirmary Integrated also simulates features of an electronic health record (EHR) including:
 - Navigating drug orders and doses due on an electronic Medication Administration Record (MAR)
+
+![Medication Administration Record](https://www.infirmary-integrated.com/wp-content/uploads/2022/08/mar-mw.png)
 
 Infirmary Integrated also supports full localization (translation) for the following languages:
 - አማርኛ (Amharic)
