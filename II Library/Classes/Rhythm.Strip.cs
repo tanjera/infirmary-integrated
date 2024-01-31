@@ -20,6 +20,7 @@ using II.Drawing;
 using II.Waveform;
 
 namespace II.Rhythm {
+
     public class Strip {
         /* Default variables for easy modification of multiple measurement/tracing functions */
         public const double DefaultLength = 6.0d;
@@ -581,7 +582,7 @@ namespace II.Rhythm {
                 max = (max > addition [i].Y) ? max : addition [i].Y;
             max = (min != max) ? max : 1;           // Scaled waveforms should be 0.0 to 1.0
 
-            // Get new min and max vaules for the desired tracing
+            // Get new min and max values for the desired tracing
             double newMin = II.Math.InverseLerp (ScaleMin, ScaleMax, trough);
             double newMax = II.Math.InverseLerp (ScaleMin, ScaleMax, peak);
 
@@ -670,13 +671,13 @@ namespace II.Rhythm {
                     break;
 
                 case Lead.Values.CVP:
-                    ReplaceAtOver (Draw.CVP_Rhythm (p, 1d));
+                    Replace (Draw.CVP_Rhythm (p, 1d));
                     break;
 
                 case Lead.Values.PA:    // Vary PA waveforms based on PA catheter placement
-                    if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Atrium)
-                        ReplaceAtOver (Scale (p, Draw.CVP_Rhythm (p, 1d)));
-                    else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Ventricle)
+                    if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Atrium) {
+                        Replace (Scale (p, Draw.CVP_Rhythm (p, 1d)));
+                    } else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Ventricle)
                         ReplaceAtOver (Scale (p, Draw.RV_Rhythm (p, 1d)));
                     else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Pulmonary_Artery)
                         ReplaceAtOver (Scale (p, Draw.PA_Rhythm (p, 1d)));

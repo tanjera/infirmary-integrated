@@ -18,6 +18,7 @@ using System.Diagnostics;
 using System.Linq;
 
 namespace II.Waveform {
+
     public static class Draw {
         public const int ResolutionTime = 10;           // Tracing resolution milliseconds per drawing point
         public const int RefreshTime = 17;              // Tracing draw refresh time in milliseconds (60 fps = ~17ms)
@@ -34,10 +35,10 @@ namespace II.Waveform {
 
         // Decreases pulsatility based on decreased diastolic filling time. Linear interpolation of where actual HR
         // is compared to set HR (e.g. for tachycardic runs of irregular rhythms, or premature contractions)
-        private static void DampenAmplitude_DiastolicFillTime (Physiology _P, ref double _Amplitude, double coefficient = 1.0) {
+        private static void DampenAmplitude_DiastolicFillTime (Physiology _P, ref double _Amplitude) {
             // Utilize actual vital signs from 1 entry ago (because of electromechanical delay, most recent actual HR is for forthcoming pulsatile beat)
-            _Amplitude *= (coefficient * Math.Lerp (1.0d, 0.5d,
-                Math.Clamp ((_P.GetLastVS (Physiology.PhysiologyEventTypes.Cardiac_Baseline).HR - _P.VS_Settings.HR) / (double)_P.VS_Settings.HR)));
+            _Amplitude *= Math.Lerp (1.0d, 0.5d,
+                Math.Clamp ((_P.GetLastVS (Physiology.PhysiologyEventTypes.Cardiac_Baseline).HR - _P.VS_Settings.HR) / (double)_P.VS_Settings.HR));
         }
 
         private static void DampenAmplitude_PulsusParadoxus (Physiology _P, ref double _Amplitude) {
@@ -149,7 +150,7 @@ namespace II.Waveform {
         public static List<PointD> CVP_Rhythm (Physiology _P, double _Amplitude) {
             MagnifyAmplitude_IntrathoracicPressure (_P, ref _Amplitude);
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
-            DampenAmplitude_DiastolicFillTime (_P, ref _Amplitude, -1.0);
+            DampenAmplitude_DiastolicFillTime (_P, ref _Amplitude);
 
             if (_P.Cardiac_Rhythm.HasPulse_Atrial && !_P.Cardiac_Rhythm.AberrantBeat)
                 return Plotting.Concatenate (new List<PointD> (),

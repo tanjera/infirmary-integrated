@@ -39,8 +39,8 @@ namespace II.Rhythm {
                     break;
 
                 case Strip.Offsets.Scaled:
-                    drawOffset.Y = (int)(height * (1 - strip.ScaleMargin));
-                    drawMultiplier.Y = -(int)height;
+                    drawOffset.Y = (int)(height * (1 - (strip.ScaleMargin / 2)));
+                    drawMultiplier.Y = -(int)height * (1 - strip.ScaleMargin) * strip.Amplitude;
                     break;
             }
         }

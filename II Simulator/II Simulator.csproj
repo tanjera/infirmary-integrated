@@ -6,9 +6,9 @@
     <StartupObject>IISIM.Program</StartupObject>
     <SignAssembly>False</SignAssembly>
     <AssemblyName>Infirmary Integrated</AssemblyName>
-    <Copyright>© 2017-2023, Ibi Keller</Copyright>
+    <Copyright>© 2017-2024, Ibi Keller</Copyright>
     <Authors>Ibi Keller</Authors>
-    <Version>2.5.7</Version>
+    <Version>2.5.8</Version>
     <Company>Infirmary Integrated</Company>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageProjectUrl>https://www.infirmary-integrated.com/</PackageProjectUrl>
