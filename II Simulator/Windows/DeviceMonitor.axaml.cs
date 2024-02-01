@@ -129,6 +129,7 @@ namespace IISIM {
             this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
             this.FindControl<MenuItem> ("menuAddNumeric").Header = Instance.Language.Localize ("MENU:MenuAddNumeric");
             this.FindControl<MenuItem> ("menuAddTracing").Header = Instance.Language.Localize ("MENU:MenuAddTracing");
+            this.FindControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
             this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
 
             this.FindControl<MenuItem> ("menuAlarms").Header = Instance.Language.Localize ("MENU:MenuAlarms");
@@ -297,6 +298,13 @@ namespace IISIM {
             UpdateInterface ();
         }
 
+        public void ToggleFullscreen () {
+            if (WindowState == WindowState.FullScreen)
+                WindowState = WindowState.Normal;
+            else
+                WindowState = WindowState.FullScreen;
+        }
+
         public override void TogglePause () {
             base.TogglePause ();
 
@@ -381,6 +389,9 @@ namespace IISIM {
                 autoScale_iter = Strip.DefaultAutoScale_Iterations;
             }
         }
+
+        private void MenuToggleFullscreen_Click (object s, RoutedEventArgs e)
+            => ToggleFullscreen ();
 
         private void MenuClose_Click (object s, RoutedEventArgs e)
             => this.Close ();

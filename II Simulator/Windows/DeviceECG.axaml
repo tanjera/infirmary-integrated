@@ -16,6 +16,9 @@
 
   <Window.KeyBindings>
     <KeyBinding Gesture="Pause" Command="{Binding TogglePause}" />
+
+    <KeyBinding Gesture="Alt + Enter" Command="{Binding ToggleFullscreen}" />
+
     <KeyBinding Gesture="Alt + F4" Command="{Binding Close}" />
 
     <KeyBinding Gesture="F1" Command="{Binding SetColorScheme_Grid}" />
@@ -30,6 +33,8 @@
 
       <MenuItem Name="menuDevice">
         <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" InputGesture="Pause" />
+        <Separator />
+        <MenuItem Name="menuToggleFullscreen" Click="MenuToggleFullscreen_Click" InputGesture="Alt+Enter" />
         <Separator />
         <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGesture="Alt+F4" />
       </MenuItem>

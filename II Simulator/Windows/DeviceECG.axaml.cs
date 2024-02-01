@@ -61,6 +61,7 @@ namespace IISIM {
             this.FindControl<Window> ("wdwDeviceECG").Title = Instance.Language.Localize ("ECG:WindowTitle");
             this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
             this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+            this.FindControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
             this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
             this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
             this.FindControl<MenuItem> ("menuColorGrid").Header = Instance.Language.Localize ("MENU:MenuColorSchemeGrid");
@@ -171,6 +172,16 @@ namespace IISIM {
             if (State == States.Running)
                 listTracings.ForEach (c => c.Strip?.Unpause ());
         }
+
+        public void ToggleFullscreen () {
+            if (WindowState == WindowState.FullScreen)
+                WindowState = WindowState.Normal;
+            else
+                WindowState = WindowState.FullScreen;
+        }
+
+        private void MenuToggleFullscreen_Click (object s, RoutedEventArgs e)
+            => ToggleFullscreen ();
 
         private void MenuClose_Click (object s, RoutedEventArgs e)
             => this.Close ();

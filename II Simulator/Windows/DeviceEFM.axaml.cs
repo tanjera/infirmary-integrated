@@ -65,6 +65,7 @@ namespace IISIM {
             this.FindControl<Window> ("wdwDeviceEFM").Title = Instance.Language.Localize ("EFM:WindowTitle");
             this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
             this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+            this.FindControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
             this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
             this.FindControl<MenuItem> ("menuStripSpeed").Header = Instance.Language.Localize ("MENU:StripSpeed");
             this.FindControl<MenuItem> ("menuStripSpeedx1").Header = Instance.Language.Localize ("MENU:StripSpeedx1");
@@ -155,12 +156,22 @@ namespace IISIM {
             _ = Instance?.Physiology?.SetTimerMultiplier_Obstetric (multiplier);
         }
 
+        public void ToggleFullscreen () {
+            if (WindowState == WindowState.FullScreen)
+                WindowState = WindowState.Normal;
+            else
+                WindowState = WindowState.FullScreen;
+        }
+
         public override void TogglePause () {
             base.TogglePause ();
 
             if (State == States.Running)
                 listTracings.ForEach (c => c.Strip?.Unpause ());
         }
+
+        private void MenuToggleFullscreen_Click (object s, RoutedEventArgs e)
+            => ToggleFullscreen ();
 
         private void MenuClose_Click (object s, RoutedEventArgs e)
             => this.Close ();

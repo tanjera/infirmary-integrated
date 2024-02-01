@@ -35,16 +35,25 @@
     </Style>
   </Window.Styles>
 
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Alt + Enter" Command="{Binding ToggleFullscreen}" />
+    <KeyBinding Gesture="Alt + F4" Command="{Binding Close}" />
+
+    <KeyBinding Gesture="Ctrl + R" Command="{Binding RefreshInterface}" />
+  </Window.KeyBindings>
+
   <DockPanel LastChildFill="True">
 
     <!--  Main Menu  -->
     <Menu Background="White" DockPanel.Dock="Top">
 
       <MenuItem Name="menuOptions">
-        <MenuItem Name="menuClose" Click="MenuClose_Click" />
+        <MenuItem Name="menuToggleFullscreen" Click="MenuToggleFullscreen_Click" InputGesture="Alt+Enter" />
+        <Separator />
+        <MenuItem Name="menuClose" Click="MenuClose_Click" InputGesture="Alt+F4" />
       </MenuItem>
 
-      <MenuItem Name="menuRefresh" Click="MenuRefresh_Click" />
+      <MenuItem Name="menuRefresh" Click="MenuRefresh_Click" InputGesture="Ctrl+R" />
     </Menu>
 
     <ScrollViewer

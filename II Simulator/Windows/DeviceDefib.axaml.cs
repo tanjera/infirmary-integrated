@@ -153,6 +153,7 @@ namespace IISIM {
             this.FindControl<MenuItem> ("menuDefibIncrement").Header = Instance.Language.Localize ("DEFIB:Increment");
             this.FindControl<MenuItem> ("menuDefibIncrement_10").Header = $"10 {Instance.Language.Localize ("DEFIB:Joules")}";
             this.FindControl<MenuItem> ("menuDefibIncrement_20").Header = $"20 {Instance.Language.Localize ("DEFIB:Joules")}";
+            this.FindControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
             this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
 
             this.FindControl<MenuItem> ("menuAudio").Header = Instance.Language.Localize ("MENU:MenuAudio");
@@ -259,6 +260,13 @@ namespace IISIM {
             sWrite.AppendLine (String.Format ("{0}:{1}", "PacerRate", PacerRate));
 
             return sWrite.ToString ();
+        }
+
+        public void ToggleFullscreen () {
+            if (WindowState == WindowState.FullScreen)
+                WindowState = WindowState.Normal;
+            else
+                WindowState = WindowState.FullScreen;
         }
 
         public Task SetDefibEnergyMaximum (int joules) {
@@ -638,6 +646,9 @@ namespace IISIM {
 
         private void ButtonPacePause_Click (object s, RoutedEventArgs e)
             => _ = Instance?.Physiology?.PacemakerPause ();
+
+        private void MenuToggleFullscreen_Click (object s, RoutedEventArgs e)
+            => ToggleFullscreen ();
 
         private void MenuClose_Click (object s, RoutedEventArgs e)
             => this.Close ();

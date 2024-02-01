@@ -20,6 +20,7 @@
     <KeyBinding Gesture="N" Command="{Binding AddNumeric}" />
     <KeyBinding Gesture="T" Command="{Binding AddTracing}" />
 
+    <KeyBinding Gesture="Alt + Enter" Command="{Binding ToggleFullscreen}" />
     <KeyBinding Gesture="Alt + F4" Command="{Binding Close}" />
 
     <KeyBinding Gesture="Subtract" Command="{Binding SetAlarms_Off}" />
@@ -63,6 +64,8 @@
         <Separator />
         <MenuItem Name="menuAddNumeric" Click="MenuAddNumeric_Click" InputGesture="N" />
         <MenuItem Name="menuAddTracing" Click="MenuAddTracing_Click" InputGesture="T" />
+        <Separator />
+        <MenuItem Name="menuToggleFullscreen" Click="MenuToggleFullscreen_Click" InputGesture="Alt+Enter" />
         <Separator />
         <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGesture="Alt+F4" />
       </MenuItem>

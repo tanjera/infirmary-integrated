@@ -74,6 +74,7 @@ namespace IISIM {
             this.FindControl<Window> ("wdwRecordMAR").Title = Instance.Language.Localize ("MAR:WindowTitle");
             this.FindControl<MenuItem> ("menuOptions").Header = Instance.Language.Localize ("MENU:MenuOptions");
             this.FindControl<MenuItem> ("menuClose").Header = Instance.Language.Localize ("MENU:MenuClose");
+            this.FindControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
             this.FindControl<MenuItem> ("menuRefresh").Header = Instance.Language.Localize ("MENU:MenuRefresh");
 
             this.FindControl<Label> ("lblPatientName").Content = Instance?.Records?.Name;
@@ -442,6 +443,16 @@ namespace IISIM {
 
             _ = DialogAdministerDose (((TextBlock)s).Tag as Medication.Dose);
         }
+
+        public void ToggleFullscreen () {
+            if (WindowState == WindowState.FullScreen)
+                WindowState = WindowState.Normal;
+            else
+                WindowState = WindowState.FullScreen;
+        }
+
+        private void MenuToggleFullscreen_Click (object s, RoutedEventArgs e)
+            => ToggleFullscreen ();
 
         private void MenuClose_Click (object s, RoutedEventArgs e)
             => this.Close ();

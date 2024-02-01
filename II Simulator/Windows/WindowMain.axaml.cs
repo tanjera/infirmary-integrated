@@ -146,6 +146,7 @@ namespace IISIM {
             this.FindControl<MenuItem> ("menuFile").Header = Instance.Language.Localize ("PE:MenuFile");
             this.FindControl<MenuItem> ("menuLoad").Header = Instance.Language.Localize ("PE:MenuLoadSimulation");
             this.FindControl<MenuItem> ("menuSave").Header = Instance.Language.Localize ("PE:MenuSaveSimulation");
+            this.FindControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
             this.FindControl<MenuItem> ("menuExit").Header = Instance.Language.Localize ("PE:MenuExitProgram");
 
             this.FindControl<MenuItem> ("menuMirror").Header = Instance.Language.Localize ("PE:MenuMirror");
@@ -1629,6 +1630,13 @@ namespace IISIM {
             });
         }
 
+        public void ToggleFullscreen () {
+            if (WindowState == WindowState.FullScreen)
+                WindowState = WindowState.Normal;
+            else
+                WindowState = WindowState.FullScreen;
+        }
+
         private void MenuNewSimulation_Click (object sender, RoutedEventArgs e)
             => _ = RefreshScenario (true);
 
@@ -1637,6 +1645,9 @@ namespace IISIM {
 
         private void MenuSaveFile_Click (object s, RoutedEventArgs e)
             => _ = SaveFile ();
+
+        private void MenuToggleFullscreen_Click (object s, RoutedEventArgs e)
+            => ToggleFullscreen ();
 
         private void MenuExit_Click (object s, RoutedEventArgs e)
             => _ = Exit ();
