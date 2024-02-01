@@ -61,9 +61,9 @@ namespace IISIM {
             this.FindControl<Window> ("wdwDeviceECG").Title = Instance.Language.Localize ("ECG:WindowTitle");
             this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
             this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
-            this.FindControl<MenuItem> ("menuShowGrid").Header = Instance.Language.Localize ("MENU:MenuShowGrid");
             this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
             this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
+            this.FindControl<MenuItem> ("menuColorGrid").Header = Instance.Language.Localize ("MENU:MenuColorSchemeGrid");
             this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
             this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
 
@@ -154,6 +154,12 @@ namespace IISIM {
             return sWrite.ToString ();
         }
 
+        public void SetColorScheme_Grid () => SetColorScheme (Color.Schemes.Grid);
+
+        public void SetColorScheme_Light () => SetColorScheme (Color.Schemes.Light);
+
+        public void SetColorScheme_Dark () => SetColorScheme (Color.Schemes.Dark);
+
         public void SetColorScheme (Color.Schemes scheme) {
             colorScheme = scheme;
             UpdateInterface ();
@@ -172,7 +178,7 @@ namespace IISIM {
         private void MenuTogglePause_Click (object s, RoutedEventArgs e)
             => TogglePause ();
 
-        private void MenuShowGrid_Click (object sender, RoutedEventArgs e)
+        private void MenuColorGrid_Click (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Grid);
 
         private void MenuColorScheme_Light (object sender, RoutedEventArgs e)

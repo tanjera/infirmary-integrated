@@ -14,33 +14,76 @@
 	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
 	mc:Ignorable="d">
 
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Pause" Command="{Binding TogglePause}" />
+
+    <KeyBinding Gesture="N" Command="{Binding AddNumeric}" />
+    <KeyBinding Gesture="T" Command="{Binding AddTracing}" />
+
+    <KeyBinding Gesture="Alt + F4" Command="{Binding Close}" />
+
+    <KeyBinding Gesture="Subtract" Command="{Binding SetAlarms_Off}" />
+    <KeyBinding Gesture="Add" Command="{Binding SetAlarms_On}" />
+
+    <KeyBinding Gesture="P" Command="{Binding SetAudioTone_Off}" />
+    <KeyBinding Gesture="OemOpenBrackets" Command="{Binding SetAudioTone_ECG}" />
+    <KeyBinding Gesture="OemCloseBrackets" Command="{Binding SetAudioTone_SPO2}" />
+
+    <KeyBinding Gesture="Ctrl+Subtract" Command="{Binding SetAudio_Off}" />
+    <KeyBinding Gesture="Ctrl+Add" Command="{Binding SetAudio_On}" />
+
+    <KeyBinding Gesture="F1" Command="{Binding SetColorScheme_Light}" />
+    <KeyBinding Gesture="F2" Command="{Binding SetColorScheme_Dark}" />
+
+    <KeyBinding Gesture="D1" Command="{Binding SetNumeric_1}" />
+    <KeyBinding Gesture="D2" Command="{Binding SetNumeric_2}" />
+    <KeyBinding Gesture="D3" Command="{Binding SetNumeric_3}" />
+    <KeyBinding Gesture="D4" Command="{Binding SetNumeric_4}" />
+    <KeyBinding Gesture="D5" Command="{Binding SetNumeric_5}" />
+    <KeyBinding Gesture="D6" Command="{Binding SetNumeric_6}" />
+    <KeyBinding Gesture="D7" Command="{Binding SetNumeric_7}" />
+    <KeyBinding Gesture="D8" Command="{Binding SetNumeric_8}" />
+
+    <KeyBinding Gesture="Ctrl+D1" Command="{Binding SetTracing_1}" />
+    <KeyBinding Gesture="Ctrl+D2" Command="{Binding SetTracing_2}" />
+    <KeyBinding Gesture="Ctrl+D3" Command="{Binding SetTracing_3}" />
+    <KeyBinding Gesture="Ctrl+D4" Command="{Binding SetTracing_4}" />
+    <KeyBinding Gesture="Ctrl+D5" Command="{Binding SetTracing_5}" />
+    <KeyBinding Gesture="Ctrl+D6" Command="{Binding SetTracing_6}" />
+    <KeyBinding Gesture="Ctrl+D7" Command="{Binding SetTracing_7}" />
+    <KeyBinding Gesture="Ctrl+D8" Command="{Binding SetTracing_8}" />
+  </Window.KeyBindings>
+
   <DockPanel LastChildFill="True">
 
     <!--  Main Menu  -->
     <Menu Background="White" DockPanel.Dock="Top">
       <MenuItem Name="menuDevice">
-        <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" />
+        <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" InputGesture="Pause" />
         <Separator />
-        <MenuItem Name="menuAddNumeric" Click="MenuAddNumeric_Click" />
-        <MenuItem Name="menuAddTracing" Click="MenuAddTracing_Click" />
+        <MenuItem Name="menuAddNumeric" Click="MenuAddNumeric_Click" InputGesture="N" />
+        <MenuItem Name="menuAddTracing" Click="MenuAddTracing_Click" InputGesture="T" />
         <Separator />
-        <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" />
+        <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGesture="Alt+F4" />
       </MenuItem>
 
       <MenuItem Name="menuAlarms">
-        <MenuItem Name="menuAlarmsEnable" Click="MenuEnableAlarms" />
-        <MenuItem Name="menuAlarmsDisable" Click="MenuDisableAlarms" />
+        <MenuItem Name="menuAlarmsEnable" Click="MenuEnableAlarms" InputGesture="-" />
+        <MenuItem Name="menuAlarmsDisable" Click="MenuDisableAlarms" InputGesture="+" />
       </MenuItem>
 
       <MenuItem Name="menuAudio">
-        <MenuItem Name="menuAudioOff" Click="MenuAudioOff" />
-        <MenuItem Name="menuAudioECG" Click="MenuAudioECG" />
-        <MenuItem Name="menuAlarmsSPO2" Click="MenuAudioSPO2" />
+        <MenuItem Name="menuAudioOff" Click="MenuAudioOff" InputGesture="P" />
+        <MenuItem Name="menuAudioECG" Click="MenuAudioECG" InputGesture="OemOpenBrackets" />
+        <MenuItem Name="menuAudioSPO2" Click="MenuAudioSPO2" InputGesture="OemCloseBrackets" />
+        <Separator />
+        <MenuItem Name="menuAudioDisable" Click="MenuDisableAudio" InputGesture="Ctrl+-" />
+        <MenuItem Name="menuAudioEnable" Click="MenuEnableAudio" InputGesture="Ctrl++" />
       </MenuItem>
 
       <MenuItem Name="menuColor">
-        <MenuItem Name="menuColorLight" Click="MenuColorScheme_Light" />
-        <MenuItem Name="menuColorDark" Click="MenuColorScheme_Dark" />
+        <MenuItem Name="menuColorLight" Click="MenuColorScheme_Light" InputGesture="F1" />
+        <MenuItem Name="menuColorDark" Click="MenuColorScheme_Dark" InputGesture="F2" />
       </MenuItem>
     </Menu>
 

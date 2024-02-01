@@ -159,7 +159,9 @@ namespace IISIM {
             this.FindControl<MenuItem> ("menuAudioOff").Header = Instance.Language.Localize ("MENU:MenuAudioOff");
             this.FindControl<MenuItem> ("menuAudioDefib").Header = Instance.Language.Localize ("MENU:MenuAudioDefib");
             this.FindControl<MenuItem> ("menuAudioECG").Header = Instance.Language.Localize ("MENU:MenuAudioECG");
-            this.FindControl<MenuItem> ("menuAlarmsSPO2").Header = Instance.Language.Localize ("MENU:MenuAudioSPO2");
+            this.FindControl<MenuItem> ("menuAudioSPO2").Header = Instance.Language.Localize ("MENU:MenuAudioSPO2");
+            this.FindControl<MenuItem> ("menuAudioDisable").Header = Instance.Language.Localize ("MENU:MenuAudioDisable");
+            this.FindControl<MenuItem> ("menuAudioEnable").Header = Instance.Language.Localize ("MENU:MenuAudioEnable");
 
             this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
             this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
@@ -321,6 +323,18 @@ namespace IISIM {
             }
         }
 
+        public void SetAudio_On () => _ = Instance?.Window_Main?.SetAudio (true);
+
+        public void SetAudio_Off () => _ = Instance?.Window_Main?.SetAudio (false);
+
+        public void SetAudioTone_Off () => _ = SetAudioTone (II.Settings.Simulator.ToneSources.Mute);
+
+        public void SetAudioTone_Defib () => _ = SetAudioTone (II.Settings.Simulator.ToneSources.Defibrillator);
+
+        public void SetAudioTone_ECG () => _ = SetAudioTone (II.Settings.Simulator.ToneSources.ECG);
+
+        public void SetAudioTone_SPO2 () => _ = SetAudioTone (II.Settings.Simulator.ToneSources.SPO2);
+
         public async Task SetAudioTone (II.Settings.Simulator.ToneSources source) {
             if (Instance?.Settings is null)
                 return;
@@ -394,6 +408,10 @@ namespace IISIM {
             return Task.CompletedTask;
         }
 
+        private void SetColorScheme_Light () => SetColorScheme (Color.Schemes.Light);
+
+        private void SetColorScheme_Dark () => SetColorScheme (Color.Schemes.Dark);
+
         public void SetColorScheme (Color.Schemes scheme) {
             colorScheme = scheme;
             UpdateInterface ();
@@ -406,19 +424,49 @@ namespace IISIM {
                 listTracings.ForEach (c => c?.Strip?.Unpause ());
         }
 
-        public void AddTracing () {
-            rowsTracings += 1;
+        public void SetTracing_1 () => SetTracing (1);
+
+        public void SetTracing_2 () => SetTracing (2);
+
+        public void SetTracing_3 () => SetTracing (3);
+
+        public void SetTracing_4 () => SetTracing (4);
+
+        public void SetTracing (int amount) {
+            rowsTracings = amount;
             OnLayoutChange ();
         }
 
-        public void AddNumeric () {
-            colsNumerics += 1;
+        public void AddTracing () {
+            rowsTracings += 1;
             OnLayoutChange ();
         }
 
         public void RemoveTracing (Controls.DefibTracing requestSender) {
             rowsTracings -= 1;
             listTracings.Remove (requestSender);
+            OnLayoutChange ();
+        }
+
+        public void SetNumeric_1 () => SetNumeric (1);
+
+        public void SetNumeric_2 () => SetNumeric (2);
+
+        public void SetNumeric_3 () => SetNumeric (3);
+
+        public void SetNumeric_4 () => SetNumeric (4);
+
+        public void SetNumeric_5 () => SetNumeric (5);
+
+        public void SetNumeric_6 () => SetNumeric (6);
+
+        public void SetNumeric (int amount) {
+            colsNumerics = amount;
+            OnLayoutChange ();
+        }
+
+        public void AddNumeric () {
+            colsNumerics += 1;
             OnLayoutChange ();
         }
 
@@ -614,6 +662,12 @@ namespace IISIM {
 
         private void MenuDefibEnergyIncrement_20 (object s, RoutedEventArgs e)
              => _ = SetDefibEnergyIncrement (20);
+
+        private void MenuEnableAudio (object sender, RoutedEventArgs e)
+            => SetAudio_On ();
+
+        private void MenuDisableAudio (object sender, RoutedEventArgs e)
+            => SetAudio_Off ();
 
         private void MenuAudioOff (object sender, RoutedEventArgs e)
             => _ = SetAudioTone (Simulator.ToneSources.Mute);

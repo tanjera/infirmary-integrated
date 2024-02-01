@@ -42,14 +42,47 @@
       <Setter Property="FontWeight" Value="Bold" />
     </Style>
   </Window.Styles>
+
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Pause" Command="{Binding TogglePause}" />
+
+    <KeyBinding Gesture="N" Command="{Binding AddNumeric}" />
+    <KeyBinding Gesture="T" Command="{Binding AddTracing}" />
+
+    <KeyBinding Gesture="Alt + F4" Command="{Binding Close}" />
+
+    <KeyBinding Gesture="P" Command="{Binding SetAudioTone_Off}" />
+    <KeyBinding Gesture="OemOpenBrackets" Command="{Binding SetAudioTone_Defib}" />
+    <KeyBinding Gesture="OemCloseBrackets" Command="{Binding SetAudioTone_ECG}" />
+    <KeyBinding Gesture="OemPipe" Command="{Binding SetAudioTone_SPO2}" />
+
+    <KeyBinding Gesture="Ctrl+Subtract" Command="{Binding SetAudio_Off}" />
+    <KeyBinding Gesture="Ctrl+Add" Command="{Binding SetAudio_On}" />
+
+    <KeyBinding Gesture="F1" Command="{Binding SetColorScheme_Light}" />
+    <KeyBinding Gesture="F2" Command="{Binding SetColorScheme_Dark}" />
+
+    <KeyBinding Gesture="D1" Command="{Binding SetNumeric_1}" />
+    <KeyBinding Gesture="D2" Command="{Binding SetNumeric_2}" />
+    <KeyBinding Gesture="D3" Command="{Binding SetNumeric_3}" />
+    <KeyBinding Gesture="D4" Command="{Binding SetNumeric_4}" />
+    <KeyBinding Gesture="D5" Command="{Binding SetNumeric_5}" />
+    <KeyBinding Gesture="D6" Command="{Binding SetNumeric_6}" />
+
+    <KeyBinding Gesture="Ctrl+D1" Command="{Binding SetTracing_1}" />
+    <KeyBinding Gesture="Ctrl+D2" Command="{Binding SetTracing_2}" />
+    <KeyBinding Gesture="Ctrl+D3" Command="{Binding SetTracing_3}" />
+    <KeyBinding Gesture="Ctrl+D4" Command="{Binding SetTracing_4}" />
+  </Window.KeyBindings>
+
   <DockPanel LastChildFill="True">
     <!--  Main Menu  -->
     <Menu Background="White" DockPanel.Dock="Top">
       <MenuItem Name="menuDevice">
-        <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" />
+        <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" InputGesture="Pause" />
         <Separator />
-        <MenuItem Name="menuAddNumeric" Click="MenuAddNumeric_Click" />
-        <MenuItem Name="menuAddTracing" Click="MenuAddTracing_Click" />
+        <MenuItem Name="menuAddNumeric" Click="MenuAddNumeric_Click" InputGesture="N" />
+        <MenuItem Name="menuAddTracing" Click="MenuAddTracing_Click" InputGesture="T" />
         <Separator />
         <MenuItem Name="menuDefibEnergy">
           <MenuItem Name="menuDefibMaximum">
@@ -62,19 +95,22 @@
           </MenuItem>
         </MenuItem>
         <Separator />
-        <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" />
+        <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGesture="Alt+F4" />
       </MenuItem>
 
       <MenuItem Name="menuAudio">
-        <MenuItem Name="menuAudioOff" Click="MenuAudioOff" />
-        <MenuItem Name="menuAudioDefib" Click="MenuAudioDefib" />
-        <MenuItem Name="menuAudioECG" Click="MenuAudioECG" />
-        <MenuItem Name="menuAlarmsSPO2" Click="MenuAudioSPO2" />
+        <MenuItem Name="menuAudioOff" Click="MenuAudioOff" InputGesture="P" />
+        <MenuItem Name="menuAudioDefib" Click="MenuAudioDefib" InputGesture="OemOpenBrackets" />
+        <MenuItem Name="menuAudioECG" Click="MenuAudioECG" InputGesture="OemCloseBrackets" />
+        <MenuItem Name="menuAudioSPO2" Click="MenuAudioSPO2" InputGesture="OemPipe" />
+        <Separator />
+        <MenuItem Name="menuAudioDisable" Click="MenuDisableAudio" InputGesture="Ctrl+-" />
+        <MenuItem Name="menuAudioEnable" Click="MenuEnableAudio" InputGesture="Ctrl++" />
       </MenuItem>
 
       <MenuItem Name="menuColor">
-        <MenuItem Name="menuColorLight" Click="MenuColorScheme_Light" />
-        <MenuItem Name="menuColorDark" Click="MenuColorScheme_Dark" />
+        <MenuItem Name="menuColorLight" Click="MenuColorScheme_Light" InputGesture="F1" />
+        <MenuItem Name="menuColorDark" Click="MenuColorScheme_Dark" InputGesture="F2" />
       </MenuItem>
     </Menu>
 

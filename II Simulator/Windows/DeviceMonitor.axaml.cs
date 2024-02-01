@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
@@ -137,7 +138,9 @@ namespace IISIM {
             this.FindControl<MenuItem> ("menuAudio").Header = Instance.Language.Localize ("MENU:MenuAudio");
             this.FindControl<MenuItem> ("menuAudioOff").Header = Instance.Language.Localize ("MENU:MenuAudioOff");
             this.FindControl<MenuItem> ("menuAudioECG").Header = Instance.Language.Localize ("MENU:MenuAudioECG");
-            this.FindControl<MenuItem> ("menuAlarmsSPO2").Header = Instance.Language.Localize ("MENU:MenuAudioSPO2");
+            this.FindControl<MenuItem> ("menuAudioSPO2").Header = Instance.Language.Localize ("MENU:MenuAudioSPO2");
+            this.FindControl<MenuItem> ("menuAudioDisable").Header = Instance.Language.Localize ("MENU:MenuAudioDisable");
+            this.FindControl<MenuItem> ("menuAudioEnable").Header = Instance.Language.Localize ("MENU:MenuAudioEnable");
 
             this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
             this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
@@ -201,6 +204,10 @@ namespace IISIM {
             return sWrite.ToString ();
         }
 
+        public void SetAlarms_On () => SetAlarms (true);
+
+        public void SetAlarms_Off () => SetAlarms (false);
+
         public void SetAlarms (bool toEnable) {
             foreach (Alarm a in Instance?.Scenario?.DeviceMonitor.Alarms ?? new List<Alarm> ()) {
                 a.Enabled = toEnable;
@@ -212,6 +219,16 @@ namespace IISIM {
             if (toEnable == false && (AudioPlayer?.IsPlaying ?? false))
                 AudioPlayer.Stop ();
         }
+
+        public void SetAudio_On () => _ = Instance?.Window_Main?.SetAudio (true);
+
+        public void SetAudio_Off () => _ = Instance?.Window_Main?.SetAudio (false);
+
+        public void SetAudioTone_Off () => _ = SetAudioTone (ToneSources.None);
+
+        public void SetAudioTone_ECG () => _ = SetAudioTone (ToneSources.ECG);
+
+        public void SetAudioTone_SPO2 () => _ = SetAudioTone (ToneSources.SPO2);
 
         public async Task SetAudioTone (ToneSources source) {
             ToneSource = source;
@@ -271,6 +288,10 @@ namespace IISIM {
             return Task.CompletedTask;
         }
 
+        private void SetColorScheme_Light () => SetColorScheme (Color.Schemes.Light);
+
+        private void SetColorScheme_Dark () => SetColorScheme (Color.Schemes.Dark);
+
         public void SetColorScheme (Color.Schemes scheme) {
             colorScheme = scheme;
             UpdateInterface ();
@@ -283,6 +304,27 @@ namespace IISIM {
                 listTracings.ForEach (c => c.Strip?.Unpause ());
         }
 
+        public void SetTracing_1 () => SetTracing (1);
+
+        public void SetTracing_2 () => SetTracing (2);
+
+        public void SetTracing_3 () => SetTracing (3);
+
+        public void SetTracing_4 () => SetTracing (4);
+
+        public void SetTracing_5 () => SetTracing (5);
+
+        public void SetTracing_6 () => SetTracing (6);
+
+        public void SetTracing_7 () => SetTracing (7);
+
+        public void SetTracing_8 () => SetTracing (8);
+
+        public void SetTracing (int amount) {
+            rowsTracings = amount;
+            OnLayoutChange ();
+        }
+
         public void AddTracing () {
             rowsTracings += 1;
             OnLayoutChange ();
@@ -291,6 +333,27 @@ namespace IISIM {
         public void RemoveTracing (Controls.MonitorTracing requestSender) {
             rowsTracings -= 1;
             listTracings.Remove (requestSender);
+            OnLayoutChange ();
+        }
+
+        public void SetNumeric_1 () => SetNumeric (1);
+
+        public void SetNumeric_2 () => SetNumeric (2);
+
+        public void SetNumeric_3 () => SetNumeric (3);
+
+        public void SetNumeric_4 () => SetNumeric (4);
+
+        public void SetNumeric_5 () => SetNumeric (5);
+
+        public void SetNumeric_6 () => SetNumeric (6);
+
+        public void SetNumeric_7 () => SetNumeric (7);
+
+        public void SetNumeric_8 () => SetNumeric (8);
+
+        public void SetNumeric (int amount) {
+            rowsNumerics = amount;
             OnLayoutChange ();
         }
 
@@ -334,11 +397,20 @@ namespace IISIM {
         private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Light);
 
+        private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
+            => SetColorScheme (Color.Schemes.Dark);
+
         private void MenuEnableAlarms (object sender, RoutedEventArgs e)
             => SetAlarms (true);
 
         private void MenuDisableAlarms (object sender, RoutedEventArgs e)
             => SetAlarms (false);
+
+        private void MenuEnableAudio (object sender, RoutedEventArgs e)
+            => SetAudio_On ();
+
+        private void MenuDisableAudio (object sender, RoutedEventArgs e)
+            => SetAudio_Off ();
 
         private void MenuAudioOff (object sender, RoutedEventArgs e)
             => _ = SetAudioTone (ToneSources.None);
@@ -348,9 +420,6 @@ namespace IISIM {
 
         private void MenuAudioSPO2 (object sender, RoutedEventArgs e)
             => _ = SetAudioTone (ToneSources.SPO2);
-
-        private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
-            => SetColorScheme (Color.Schemes.Dark);
 
         public override void OnClosing (object? sender, CancelEventArgs e) {
             base.OnClosing (sender, e);

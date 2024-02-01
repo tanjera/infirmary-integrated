@@ -153,6 +153,15 @@
     </Style>
   </Window.Styles>
 
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Ctrl+N" Command="{Binding NewScenario}" />
+    <KeyBinding Gesture="Ctrl+O" Command="{Binding LoadFile}" />
+    <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveFile}" />
+    <KeyBinding Gesture="Alt + F4" Command="{Binding Exit}" />
+
+    <KeyBinding Gesture="Ctrl+A" Command="{Binding ToggleAudio}" />
+  </Window.KeyBindings>
+
   <DockPanel LastChildFill="True">
     <!--  Main Menu  -->
     <Grid DockPanel.Dock="Top">
@@ -165,12 +174,12 @@
       </Grid.ColumnDefinitions>
       <Menu Grid.Column="0">
         <MenuItem Name="menuFile">
-          <MenuItem Name="menuNew" Click="MenuNewSimulation_Click" />
+          <MenuItem Name="menuNew" Click="MenuNewSimulation_Click" InputGesture="Ctrl+N" />
           <Separator />
-          <MenuItem Name="menuLoad" Click="MenuLoadFile_Click" />
-          <MenuItem Name="menuSave" Click="MenuSaveFile_Click" />
+          <MenuItem Name="menuLoad" Click="MenuLoadFile_Click" InputGesture="Ctrl+O" />
+          <MenuItem Name="menuSave" Click="MenuSaveFile_Click" InputGesture="Ctrl+S" />
           <Separator />
-          <MenuItem Name="menuExit" Click="MenuExit_Click" />
+          <MenuItem Name="menuExit" Click="MenuExit_Click" InputGesture="Alt+F4" />
         </MenuItem>
 
         <MenuItem Name="menuMirror">
@@ -183,7 +192,7 @@
         </MenuItem>
 
         <MenuItem Name="menuSettings">
-          <MenuItem Name="menuToggleAudio" Click="MenuToggleAudio_Click" />
+          <MenuItem Name="menuToggleAudio" Click="MenuToggleAudio_Click" InputGesture="Ctrl+A" />
           <Separator />
           <MenuItem Name="menuSetLanguage" Click="MenuSetLanguage_Click" />
         </MenuItem>
@@ -710,8 +719,8 @@
 										KeyDown="OnUIPhysiologyParameter_KeyDown"
 										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="100"
-										Minimum="-100"
-										ValueChanged="OnUIPhysiologyParameter_Changed" />
+										Minimum="-20"
+										ValueChanged="OnCentralVenousPressure_Changed" />
 
                   <Label
 										Name="lblASBP"
@@ -793,7 +802,7 @@
 										KeyDown="OnUIPhysiologyParameter_KeyDown"
 										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="200"
-										Minimum="0"
+										Minimum="-20"
 										ValueChanged="OnUIPhysiologyParameter_Changed" />
                   <Label
 										Name="lblPDP"
@@ -811,7 +820,7 @@
 										KeyDown="OnUIPhysiologyParameter_KeyDown"
 										LostFocus="OnUIPhysiologyParameter_LostFocus"
 										Maximum="200"
-										Minimum="0"
+										Minimum="-20"
 										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   <Label

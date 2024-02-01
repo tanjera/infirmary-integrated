@@ -70,9 +70,9 @@ namespace IISIM {
             this.FindControl<MenuItem> ("menuStripSpeedx1").Header = Instance.Language.Localize ("MENU:StripSpeedx1");
             this.FindControl<MenuItem> ("menuStripxSpeedx10").Header = Instance.Language.Localize ("MENU:StripSpeedx10");
             this.FindControl<MenuItem> ("menuStripxSpeedx25").Header = Instance.Language.Localize ("MENU:StripSpeedx25");
-            this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
-            this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
-            this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
+            //this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
+            //this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
+            //this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
 
             Grid displayGrid = this.FindControl<Grid> ("displayGrid");
 
@@ -136,10 +136,20 @@ namespace IISIM {
             return sWrite.ToString ();
         }
 
+        public void SetColorScheme_Light () => SetColorScheme (Color.Schemes.Light);
+
+        public void SetColorScheme_Dark () => SetColorScheme (Color.Schemes.Dark);
+
         public void SetColorScheme (Color.Schemes scheme) {
             colorScheme = scheme;
             UpdateInterface ();
         }
+
+        private void SetStripSpeed_x1 () => SetStripSpeed (1);
+
+        private void SetStripSpeed_x10 () => SetStripSpeed (10);
+
+        private void SetStripSpeed_x25 () => SetStripSpeed (25);
 
         private void SetStripSpeed (int multiplier) {
             _ = Instance?.Physiology?.SetTimerMultiplier_Obstetric (multiplier);

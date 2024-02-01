@@ -88,6 +88,7 @@ namespace IISIM {
 
             /* Init essential functions first */
             InitInterface ();
+            InitInput ();
             InitMirroring ();
             InitScenario (true);
             InitTimers ();
@@ -270,6 +271,13 @@ namespace IISIM {
             this.FindControl<ComboBox> ("comboFHRRhythm").Items = fetalHeartRhythms;
         }
 
+        private void InitInput () {
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitInput)}");
+                return;
+            }
+        }
+
         private async Task InitUpgrade () {
             if (Instance is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitUpgrade)}");
@@ -348,6 +356,8 @@ namespace IISIM {
                 await Instance.Scenario.Dispose ();        // Disposes Scenario's events and timer, and all Patients' events and timers
             }
         }
+
+        private void NewScenario () => _ = RefreshScenario (true);
 
         private async Task RefreshScenario (bool toInit) {
             await UnloadScenario ();
@@ -666,13 +676,26 @@ namespace IISIM {
             });
         }
 
-        private async Task ToggleAudio () {
+        public async Task ToggleAudio () {
             if (Instance is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (ToggleAudio)}");
                 return;
             }
 
-            Instance.Settings.AudioEnabled = !Instance.Settings.AudioEnabled;
+            await SetAudio (!Instance.Settings.AudioEnabled);
+        }
+
+        public void SetAudio_On () => _ = SetAudio (true);
+
+        public void SetAudio_Off () => _ = SetAudio (false);
+
+        public async Task SetAudio (bool toSet) {
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (SetAudio)}");
+                return;
+            }
+
+            Instance.Settings.AudioEnabled = toSet;
 
             await Dispatcher.UIThread.InvokeAsync (() => {
                 this.FindControl<MenuItem> ("menuToggleAudio").Header = String.Format ("{0}: {1}",
@@ -816,7 +839,7 @@ namespace IISIM {
             dlgLoad.AllowMultiple = false;
 
             string [] loadFile = await dlgLoad.ShowAsync (this);
-            if (loadFile.Length > 0) {
+            if (loadFile?.Length > 0) {
                 await LoadInit (loadFile [0]);
             }
         }
@@ -1776,24 +1799,18 @@ namespace IISIM {
         }
 
         private void OnRespiratoryRhythm_Selected (object sender, SelectionChangedEventArgs e) {
-            if (!this.FindControl<CheckBox> ("checkDefaultVitals")?.IsChecked ?? false || Instance?.Physiology == null)
-                return;
+            OnUIPhysiologyParameter_Process (sender, e);
+        }
 
-            int si = this.FindControl<ComboBox> ("comboRespiratoryRhythm").SelectedIndex;
-            Array ev = Enum.GetValues (typeof (Respiratory_Rhythms.Values));
-            if (si < 0 || si > ev.Length - 1)
-                return;
+        private void OnCentralVenousPressure_Changed (object sender, NumericUpDownValueChangedEventArgs e) {
+            if (Instance?.Physiology is not null
+                && Instance.Physiology.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Atrium) {
+                NumericUpDown numPSP = this.FindControl<NumericUpDown> ("numPSP");
+                NumericUpDown numPDP = this.FindControl<NumericUpDown> ("numPDP");
 
-            Respiratory_Rhythms.Default_Vitals v = Respiratory_Rhythms.DefaultVitals (
-                (Respiratory_Rhythms.Values)(ev.GetValue (si) ?? Respiratory_Rhythms.Values.Regular));
-
-            NumericUpDown numRR = this.FindControl<NumericUpDown> ("numRR");
-            NumericUpDown numInspiratoryRatio = this.FindControl<NumericUpDown> ("numInspiratoryRatio");
-            NumericUpDown numExpiratoryRatio = this.FindControl<NumericUpDown> ("numExpiratoryRatio");
-
-            numRR.Value = (int)global::II.Math.Clamp ((double)(numRR?.Value ?? 0), v.RRMin, v.RRMax);
-            numInspiratoryRatio.Value = (int)global::II.Math.Clamp ((double)(numInspiratoryRatio?.Value ?? 0), v.RR_IE_I_Min, v.RR_IE_I_Max);
-            numExpiratoryRatio.Value = (int)global::II.Math.Clamp ((double)(numExpiratoryRatio?.Value ?? 0), v.RR_IE_E_Min, v.RR_IE_E_Max);
+                numPSP.Value = (int)System.Math.Ceiling (e.NewValue + System.Math.Max (1, e.NewValue * 0.25));
+                numPDP.Value = (int)System.Math.Floor (e.NewValue - System.Math.Max (1, e.NewValue * 0.25));
+            }
 
             OnUIPhysiologyParameter_Process (sender, e);
         }
@@ -1807,14 +1824,25 @@ namespace IISIM {
             if (si < 0 || si > ev.Length - 1)
                 return;
 
-            PulmonaryArtery_Rhythms.Default_Vitals v = PulmonaryArtery_Rhythms.DefaultVitals (
-                (PulmonaryArtery_Rhythms.Values)(ev.GetValue (si) ?? PulmonaryArtery_Rhythms.Values.Right_Atrium));
+            PulmonaryArtery_Rhythms.Values sel = (PulmonaryArtery_Rhythms.Values)(ev.GetValue (si) ?? PulmonaryArtery_Rhythms.Values.Pulmonary_Artery);
 
             NumericUpDown numPSP = this.FindControl<NumericUpDown> ("numPSP");
             NumericUpDown numPDP = this.FindControl<NumericUpDown> ("numPDP");
 
-            numPSP.Value = (int)global::II.Math.Clamp ((double)(numPSP?.Value ?? 0), v.PSPMin, v.PSPMax);
-            numPDP.Value = (int)global::II.Math.Clamp ((double)(numPDP?.Value ?? 0), v.PDPMin, v.PDPMax);
+            // If the PA placement is RV, PA, or PAWP, utilize default vital sign ranges
+            // But if it is in the RA... utilize the current CVP reading
+            if (sel != PulmonaryArtery_Rhythms.Values.Right_Atrium) {
+                PulmonaryArtery_Rhythms.Default_Vitals v = PulmonaryArtery_Rhythms.DefaultVitals (sel);
+                numPSP.Value = (int)II.Math.Clamp ((double)(numPSP?.Value ?? 0), v.PSPMin, v.PSPMax);
+                numPDP.Value = (int)II.Math.Clamp ((double)(numPDP?.Value ?? 0), v.PDPMin, v.PDPMax);
+            } else if (sel == PulmonaryArtery_Rhythms.Values.Right_Atrium) {
+                numPSP.Value = (int)System.Math.Ceiling (Instance.Physiology.CVP + System.Math.Max (1, Instance.Physiology.CVP * 0.25));
+                numPDP.Value = (int)System.Math.Floor (Instance.Physiology.CVP - System.Math.Max (1, Instance.Physiology.CVP * 0.25));
+            }
+
+            // Disable the PA pressure input if the catheter is in the RA (and pressures are all based on CVP!)
+            numPSP.IsEnabled = sel != PulmonaryArtery_Rhythms.Values.Right_Atrium;
+            numPDP.IsEnabled = sel != PulmonaryArtery_Rhythms.Values.Right_Atrium;
 
             OnUIPhysiologyParameter_Process (sender, e);
         }

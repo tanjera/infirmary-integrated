@@ -14,31 +14,30 @@
 	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
 	mc:Ignorable="d">
 
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Pause" Command="{Binding TogglePause}" />
+    <KeyBinding Gesture="Alt + F4" Command="{Binding Close}" />
+
+    <KeyBinding Gesture="D1" Command="{Binding SetStripSpeed_x1}" />
+    <KeyBinding Gesture="D2" Command="{Binding SetStripSpeed_x10}" />
+    <KeyBinding Gesture="D3" Command="{Binding SetStripSpeed_x25}" />
+  </Window.KeyBindings>
+
   <DockPanel LastChildFill="True">
 
     <!--  Main Menu  -->
     <Menu Background="White" DockPanel.Dock="Top">
 
       <MenuItem Name="menuDevice">
-        <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" />
+        <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" InputGesture="Pause" />
         <Separator />
-        <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" />
+        <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGesture="Alt+F4" />
       </MenuItem>
 
       <MenuItem Name="menuStripSpeed">
-        <MenuItem Name="menuStripSpeedx1" Click="MenuStripSpeed_x1" />
-        <MenuItem Name="menuStripxSpeedx10" Click="MenuStripSpeed_x10" />
-        <MenuItem Name="menuStripxSpeedx25" Click="MenuStripSpeed_x25" />
-      </MenuItem>
-
-      <MenuItem Name="menuColor"
-                IsVisible="False">
-        <MenuItem
-					Name="menuColorLight"
-					Click="MenuColorScheme_Light" />
-        <MenuItem
-					Name="menuColorDark"
-					Click="MenuColorScheme_Dark" />
+        <MenuItem Name="menuStripSpeedx1" Click="MenuStripSpeed_x1" InputGesture="D1" />
+        <MenuItem Name="menuStripxSpeedx10" Click="MenuStripSpeed_x10" InputGesture="D2" />
+        <MenuItem Name="menuStripxSpeedx25" Click="MenuStripSpeed_x25" InputGesture="D3" />
       </MenuItem>
     </Menu>
 

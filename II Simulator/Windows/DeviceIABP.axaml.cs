@@ -329,6 +329,10 @@ namespace IISIM {
             return sWrite.ToString ();
         }
 
+        private void SetColorScheme_Light () => SetColorScheme (Color.Schemes.Light);
+
+        private void SetColorScheme_Dark () => SetColorScheme (Color.Schemes.Dark);
+
         public void SetColorScheme (Color.Schemes scheme) {
             colorScheme = scheme;
             UpdateInterface ();

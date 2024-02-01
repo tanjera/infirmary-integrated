@@ -256,6 +256,10 @@ namespace II.Rhythm {
                     break;
 
                 case Lead.Values.CVP:
+                    Offset = Offsets.Center;
+                    Amplitude = 0.5f;
+                    break;
+
                 case Lead.Values.IAP:
                 case Lead.Values.ICP:
                     Offset = Offsets.Center;
@@ -671,12 +675,12 @@ namespace II.Rhythm {
                     break;
 
                 case Lead.Values.CVP:
-                    Replace (Draw.CVP_Rhythm (p, 1d));
+                    ReplaceAtOver (Draw.CVP_Rhythm (p, 1d));
                     break;
 
                 case Lead.Values.PA:    // Vary PA waveforms based on PA catheter placement
                     if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Atrium) {
-                        Replace (Scale (p, Draw.CVP_Rhythm (p, 1d)));
+                        ReplaceAtOver (Scale (p, Draw.CVP_Rhythm (p, 1d)));
                     } else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Ventricle)
                         ReplaceAtOver (Scale (p, Draw.RV_Rhythm (p, 1d)));
                     else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Pulmonary_Artery)
