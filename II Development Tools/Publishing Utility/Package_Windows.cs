@@ -7,7 +7,7 @@ namespace Publishing {
 
     public class Package_Windows {
 
-        public static void Process (Program.Variables progVar, string dirRelease, string verNumber, string release) {
+        public static void Package (Program.Variables progVar, string dirRelease, string verNumber, string release) {
             string pkgOrig = $"infirmary-integrated-{release}.exe";
             string pkgName = $"infirmary-integrated-{verNumber}-{release}.exe";
             string dirSimulator = Path.Combine (progVar.dirSolution, @$"II Simulator\bin\Release\{progVar.versionDotnet}\{release}\publish");
@@ -22,10 +22,15 @@ namespace Publishing {
 
             CreatePackage_Windows (progVar, progVar.dirTemporary, verNumber, release);
             MovePackage_Windows (progVar.dirTemporary, dirRelease, pkgOrig, pkgName);
-            SignPackage_Windows (progVar, dirRelease, pkgName);
 
             // Clean the temporary directory
             Directory.Delete (progVar.dirTemporary, true);
+        }
+
+        public static void Sign (Program.Variables progVar, string dirRelease, string verNumber, string release) {
+            string pkgName = $"infirmary-integrated-{verNumber}-{release}.exe";
+
+            SignPackage_Windows (progVar, dirRelease, pkgName);
         }
 
         public static void CreatePackage_Windows (Program.Variables progVar, string dirPackage, string verNumber, string release) {
@@ -88,7 +93,7 @@ namespace Publishing {
             Console.WriteLine (Environment.NewLine);
             Console.ResetColor ();
 
-            // "signtool sign /n "Open Source Developer, Ibi Keller" /t "http://time.certum.pl" /fd SHA256 /vfilename"
+            // "signtool sign /n "Open Source Developer, Ibi Keller" /t "http://time.certum.pl" /fd SHA256 /v filename"
 
             arguments = $"sign /n \"Open Source Developer, Ibi Keller\" /t \"http://time.certum.pl\" /fd SHA256 /v \"{pkgName}\"";
 

@@ -28,7 +28,7 @@ namespace Publishing {
                     pathTar = @"C:\Windows\System32\tar.exe";
                     path7Zip = @"C:\Program Files\7-Zip\7z.exe";
                     pathNSIS = @"C:\Program Files (x86)\NSIS\makensis.exe";
-                    pathSigntool = @"C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe";                    
+                    pathSigntool = @"C:\Program Files (x86)\Windows Kits\10\App Certification Kit\signtool.exe";
                     //dirSolution = @"Z:\Infirmary Integrated";
                     dirSolution = @"C:\Users\Ibi\Documents\Infirmary Integrated";
                 } else if (OperatingSystem.IsLinux ()) {
@@ -106,7 +106,7 @@ namespace Publishing {
             if (OperatingSystem.IsWindows ()) {                     // Process Windows packages
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine (Environment.NewLine);
-                Console.Write ("Would you like to create and sign the Windows package? [y/N] ");
+                Console.Write ("Would you like to CREATE the Windows packages? [y/N] ");
                 Console.ResetColor ();
 
                 if (Console.ReadLine ().Trim ().ToLower () == "y") {
@@ -115,7 +115,18 @@ namespace Publishing {
                         Building.Publish (progVar, dirSimulator, release);
                         Building.Publish (progVar, dirScenarioEditor, release);
 
-                        Package_Windows.Process (progVar, dirRelease, verNumber, release);
+                        Package_Windows.Package (progVar, dirRelease, verNumber, release);
+                    }
+                }
+
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine (Environment.NewLine);
+                Console.Write ("Would you like to SIGN the Windows packages? [y/N] ");
+                Console.ResetColor ();
+
+                if (Console.ReadLine ().Trim ().ToLower () == "y") {
+                    foreach (string release in listReleases.Where (o => o.StartsWith ("win-"))) {
+                        Package_Windows.Sign (progVar, dirRelease, verNumber, release);
                     }
                 }
 

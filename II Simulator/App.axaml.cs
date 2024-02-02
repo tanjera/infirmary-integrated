@@ -15,7 +15,7 @@ using Avalonia.Threading;
 using II;
 using II.Localization;
 using II.Server;
-
+using IISIM.Controls;
 using LibVLCSharp.Shared;
 
 namespace IISIM {
@@ -40,6 +40,7 @@ namespace IISIM {
         public DeviceDefib? Device_Defib;
         public DeviceIABP? Device_IABP;
         public DeviceEFM? Device_EFM;
+        public DeviceEHR? Records_EHR;
         public RecordMAR? Records_MAR;
 
         public System.Timers.Timer Timer_Main = new ();
@@ -113,7 +114,7 @@ namespace IISIM {
             Device_ECG?.Close ();
             Device_IABP?.Close ();
             Device_EFM?.Close ();
-            Records_MAR?.Close ();
+            Records_EHR?.Close ();
 
             Window_Main?.Close ();
 

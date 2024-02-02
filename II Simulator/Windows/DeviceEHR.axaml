@@ -1,0 +1,169 @@
+<Window
+	x:Class="IISIM.DeviceEHR"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  Name="wdwDeviceEHR"
+	Title="DeviceEHR"
+	Width="1200"
+	Height="800"
+	d:DesignHeight="720"
+	d:DesignWidth="1200"
+	Background="White"
+  Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
+	mc:Ignorable="d">
+
+  <Window.Styles>
+    <Style Selector="Button.device">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="Background" Value="White" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="Padding" Value="10,2" />
+    </Style>
+
+    <Style Selector="Image.device">
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="Width" Value="48" />
+      <Setter Property="Height" Value="48" />
+    </Style>
+
+    <Style Selector="Label.device">
+      <Setter Property="Margin" Value="2" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="FontSize" Value="16" />
+    </Style>
+  </Window.Styles>
+
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Alt + Enter" Command="{Binding ToggleFullscreen}" />
+    <KeyBinding Gesture="Alt + F4" Command="{Binding Close}" />
+
+    <KeyBinding Gesture="Ctrl + R" Command="{Binding RefreshInterface}" />
+  </Window.KeyBindings>
+
+  <DockPanel LastChildFill="True">
+
+    <!--  Main Menu  -->
+    <Menu Background="White" DockPanel.Dock="Top">
+
+      <MenuItem Name="menuOptions">
+        <MenuItem Name="menuToggleFullscreen" Click="MenuToggleFullscreen_Click" InputGesture="Alt+Enter" />
+        <Separator />
+        <MenuItem Name="menuClose" Click="MenuClose_Click" InputGesture="Alt+F4" />
+      </MenuItem>
+
+      <MenuItem Name="menuRefresh" Click="MenuRefresh_Click" InputGesture="Ctrl+R" />
+    </Menu>
+
+    <Grid Name="gridMain">
+
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" MinWidth="300" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+
+      <!-- Patient Information-->
+      <Border Grid.Row="0"
+              Grid.Column="0"
+              Grid.ColumnSpan="2"
+              BorderBrush="Black"
+              BorderThickness="0,1,0,1">
+
+        <Grid RowDefinitions="Auto,Auto,Auto"
+              ColumnDefinitions="*">
+
+          <Label Name="lblPatientName"
+                 Grid.Row="0"
+                 FontSize="24"
+                 FontWeight="Bold"
+                 Classes="patientid" />
+
+          <Label Name="lblPatientDOB"
+                 Grid.Row="1"
+                 Classes="patientid" />
+
+          <Label Name="lblPatientMRN"
+                 Grid.Row="2"
+                 Classes="patientid" />
+        </Grid>
+      </Border>
+
+      <!-- Navigation Panel -->
+      <Border Grid.Row="1"
+              Grid.Column="0"
+              BorderBrush="Black"
+              BorderThickness="0,0,1,0">
+        <StackPanel
+            Orientation="Vertical">
+
+          <Button
+            Name="btnDemographics"
+            Classes="device"
+            Click="ButtonDemographics_Click">
+            <StackPanel Orientation="Horizontal">
+              <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_RecordEHR_128.png" />
+              <Label Name="lblDemographics" Classes="device" />
+            </StackPanel>
+          </Button>
+
+          <Button
+            Name="btnNotes"
+            Classes="device"
+            Click="ButtonNotes_Click">
+            <StackPanel Orientation="Horizontal">
+              <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_RecordNotes_128.png" />
+              <Label Name="lblNotes" Classes="device" />
+            </StackPanel>
+          </Button>
+
+          <Button
+            Name="btnFlowsheet"
+            Classes="device"
+            Click="ButtonFlowsheet_Click">
+            <StackPanel Orientation="Horizontal">
+              <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_Clipboard_128.png" />
+              <Label Name="lblFlowsheet" Classes="device" />
+            </StackPanel>
+          </Button>
+
+          <Button
+            Name="btnResults"
+            Classes="device"
+            Click="ButtonResults_Click">
+            <StackPanel Orientation="Horizontal">
+              <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceMonitor_128.png" />
+              <Label Name="lblResults" Classes="device" />
+            </StackPanel>
+          </Button>
+
+          <Button
+            Name="btnMAR"
+            Classes="device"
+            Click="ButtonMAR_Click">
+            <StackPanel Orientation="Horizontal">
+              <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_RecordMAR_128.png" />
+              <Label Name="lblMAR" Classes="device" />
+            </StackPanel>
+          </Button>
+        </StackPanel>
+      </Border>
+
+      <!-- Content Panel -->
+      <ScrollViewer
+        Name="svContent"
+        Grid.Row="1"
+        Grid.Column="1"
+        VerticalAlignment="Stretch"
+        HorizontalAlignment="Stretch"
+        HorizontalScrollBarVisibility="Auto"
+        VerticalScrollBarVisibility="Auto" />
+    </Grid>
+  </DockPanel>
+</Window>

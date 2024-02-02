@@ -1,20 +1,14 @@
-<Window
-	x:Class="IISIM.RecordMAR"
+<UserControl
+	x:Class="IISIM.Controls.RecordMAR"
 	xmlns="https://github.com/avaloniaui"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	Name="wdwRecordMAR"
-	Title="RecordMAR"
-	Width="1200"
-	Height="800"
 	d:DesignHeight="720"
 	d:DesignWidth="1200"
-	Background="White"
-	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
 	mc:Ignorable="d">
 
-  <Window.Styles>
+  <UserControl.Styles>
     <Style Selector="Button.timesel">
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="VerticalAlignment" Value="Stretch" />
@@ -27,34 +21,9 @@
       <Setter Property="Width" Value="48" />
       <Setter Property="Height" Value="48" />
     </Style>
-
-    <Style Selector="Label.patientid">
-      <Setter Property="Margin" Value="20, 2" />
-      <Setter Property="HorizontalAlignment" Value="Left" />
-      <Setter Property="VerticalAlignment" Value="Center" />
-    </Style>
-  </Window.Styles>
-
-  <Window.KeyBindings>
-    <KeyBinding Gesture="Alt + Enter" Command="{Binding ToggleFullscreen}" />
-    <KeyBinding Gesture="Alt + F4" Command="{Binding Close}" />
-
-    <KeyBinding Gesture="Ctrl + R" Command="{Binding RefreshInterface}" />
-  </Window.KeyBindings>
+  </UserControl.Styles>
 
   <DockPanel LastChildFill="True">
-
-    <!--  Main Menu  -->
-    <Menu Background="White" DockPanel.Dock="Top">
-
-      <MenuItem Name="menuOptions">
-        <MenuItem Name="menuToggleFullscreen" Click="MenuToggleFullscreen_Click" InputGesture="Alt+Enter" />
-        <Separator />
-        <MenuItem Name="menuClose" Click="MenuClose_Click" InputGesture="Alt+F4" />
-      </MenuItem>
-
-      <MenuItem Name="menuRefresh" Click="MenuRefresh_Click" InputGesture="Ctrl+R" />
-    </Menu>
 
     <ScrollViewer
 				HorizontalScrollBarVisibility="Auto"
@@ -65,9 +34,11 @@
             ShowGridLines="True">
 
         <Grid.ColumnDefinitions>
+
+          <!-- Drug information column-->
           <ColumnDefinition Width="Auto" MinWidth="300" />
 
-          <!-- 12 visible columns -->
+          <!-- 12 visible columns for doses -->
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="*" />
           <ColumnDefinition Width="*" />
@@ -87,35 +58,11 @@
           <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!-- Patient Information-->
-        <Grid Grid.Row="0"
-              Grid.Column="0"
-              ZIndex="1"
-              Background="White"
-              RowDefinitions="Auto,Auto,Auto"
-              HorizontalAlignment="Stretch"
-              VerticalAlignment="Stretch">
-
-          <Label Name="lblPatientName"
-                 Grid.Row="0"
-                 FontSize="24"
-                 FontWeight="Bold"
-                 Classes="patientid" />
-
-          <Label Name="lblPatientDOB"
-                 Grid.Row="1"
-                 Classes="patientid" />
-
-          <Label Name="lblPatientMRN"
-                 Grid.Row="2"
-                 Classes="patientid" />
-        </Grid>
-
         <!-- Time selectors-->
 
         <Grid Grid.Row="0"
-              Grid.Column="1"
-              Grid.ColumnSpan="12"
+              Grid.Column="0"
+              Grid.ColumnSpan="13"
               ZIndex="1"
               Background="White"
               ColumnDefinitions="Auto, Auto, *, Auto, Auto"
@@ -177,4 +124,4 @@
       </Grid>
     </ScrollViewer>
   </DockPanel>
-</Window>
+</UserControl>

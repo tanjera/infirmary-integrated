@@ -60,7 +60,10 @@
     <Compile Update="Windows\DialogMARDose.axaml.cs">
       <DependentUpon>DialogMARDose.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Windows\RecordMAR.axaml.cs">
+    <Compile Update="Controls\RecordMAR.axaml.cs">
+      <DependentUpon>RecordMAR.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\RecordMAR.axaml.cs">
       <DependentUpon>RecordMAR.axaml</DependentUpon>
     </Compile>
     <Compile Update="Windows\DialogMessage.axaml.cs">
@@ -77,6 +80,9 @@
     </Compile>
     <Compile Update="Windows\DialogEULA.axaml.cs">
       <DependentUpon>DialogEULA.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Windows\DeviceEHR.axaml.cs">
+      <DependentUpon>DeviceEHR.axaml</DependentUpon>
     </Compile>
     <Compile Update="Windows\WindowMain.axaml.cs">
       <DependentUpon>WindowMain.axaml</DependentUpon>

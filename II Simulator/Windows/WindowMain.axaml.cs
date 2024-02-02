@@ -172,7 +172,7 @@ namespace IISIM {
             this.FindControl<Label> ("lblDeviceEFM").Content = Instance.Language.Localize ("PE:EFM");
 
             this.FindControl<HeaderedContentControl> ("lblGroupEHR").Header = Instance.Language.Localize ("PE:EHR");
-            this.FindControl<Label> ("lblRecordMAR").Content = Instance.Language.Localize ("PE:MAR");
+            this.FindControl<Label> ("lblRecordEHR").Content = Instance.Language.Localize ("PE:EHR");
 
             this.FindControl<HeaderedContentControl> ("lblGroupOptions").Header = Instance.Language.Localize ("PE:Options");
             this.FindControl<Label> ("lblOptionsHide").Content = Instance.Language.Localize ("PE:HideDevices");
@@ -526,9 +526,9 @@ namespace IISIM {
             });
         }
 
-        private async Task InitRecordMAR () {
+        private async Task InitRecordEHR () {
             if (Instance is null) {
-                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitRecordMAR)}");
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitRecordEHR)}");
                 return;
             }
 
@@ -536,11 +536,11 @@ namespace IISIM {
                 if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                     this.Show ();
 
-                if (Instance.Records_MAR is null || Instance.Records_MAR.State == RecordWindow.States.Closed)
-                    Instance.Records_MAR = new RecordMAR (Instance);
+                if (Instance.Records_EHR is null || Instance.Records_EHR.State == RecordWindow.States.Closed)
+                    Instance.Records_EHR = new DeviceEHR (Instance);
 
-                Instance.Records_MAR.Activate ();
-                Instance.Records_MAR.Show ();
+                Instance.Records_EHR.Activate ();
+                Instance.Records_EHR.Show ();
             });
         }
 
@@ -1691,8 +1691,8 @@ namespace IISIM {
         private void ButtonDeviceEFM_Click (object s, RoutedEventArgs e)
             => _ = InitDeviceEFM ();
 
-        private void ButtonRecordMAR_Click (object s, RoutedEventArgs e)
-            => _ = InitRecordMAR ();
+        private void ButtonRecordEHR_Click (object s, RoutedEventArgs e)
+            => _ = InitRecordEHR ();
 
         private void ButtonOptionsHide_Click (object s, RoutedEventArgs e)
             => _ = ToggleHideDevices ();

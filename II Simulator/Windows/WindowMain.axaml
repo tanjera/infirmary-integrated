@@ -303,12 +303,12 @@
             Header="Header">
             <StackPanel Margin="3">
               <Button
-                Name="btnRecordMAR"
+                Name="btnRecordEHR"
                 Classes="device"
-                Click="ButtonRecordMAR_Click">
+                Click="ButtonRecordEHR_Click">
                 <StackPanel Orientation="Horizontal">
-                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_RecordMAR_128.png" />
-                  <Label Name="lblRecordMAR" Classes="device" />
+                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_RecordEHR_128.png" />
+                  <Label Name="lblRecordEHR" Classes="device" />
                 </StackPanel>
               </Button>
             </StackPanel>
@@ -379,8 +379,8 @@
 
           <Button
             Classes="device"
-            Click="ButtonRecordMAR_Click">
-            <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_RecordMAR_128.png" />
+            Click="ButtonRecordEHR_Click">
+            <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_RecordEHR_128.png" />
           </Button>
 
           <Separator Margin="0 6" />

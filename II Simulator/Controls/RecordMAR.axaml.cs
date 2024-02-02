@@ -21,9 +21,9 @@ using Avalonia.Threading;
 
 using II;
 
-namespace IISIM {
+namespace IISIM.Controls {
 
-    public partial class RecordMAR : RecordWindow {
+    public partial class RecordMAR : RecordControl {
         private DateTime viewAtTime = DateTime.Now;
 
         private DateTime? viewStartTime,
@@ -40,9 +40,6 @@ namespace IISIM {
 
         public RecordMAR (App? app) : base (app) {
             InitializeComponent ();
-#if DEBUG
-            this.AttachDevTools ();
-#endif
 
             DataContext = this;
 
@@ -65,27 +62,9 @@ namespace IISIM {
 
         private Task InitInterface () {
             if (Instance is null) {
-                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitInterface)}");
+                Debug.WriteLine ($"Null return at {Name}.{nameof (InitInterface)}");
                 return Task.CompletedTask;
             }
-
-            /* Populate UI strings per language selection */
-
-            this.FindControl<Window> ("wdwRecordMAR").Title = Instance.Language.Localize ("MAR:WindowTitle");
-            this.FindControl<MenuItem> ("menuOptions").Header = Instance.Language.Localize ("MENU:MenuOptions");
-            this.FindControl<MenuItem> ("menuClose").Header = Instance.Language.Localize ("MENU:MenuClose");
-            this.FindControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
-            this.FindControl<MenuItem> ("menuRefresh").Header = Instance.Language.Localize ("MENU:MenuRefresh");
-
-            this.FindControl<Label> ("lblPatientName").Content = Instance?.Records?.Name;
-
-            this.FindControl<Label> ("lblPatientDOB").Content = String.Format ("{0}: {1}",
-                Instance?.Language.Localize ("CHART:DateOfBirth"),
-                Instance?.Records?.DOB.ToShortDateString ());
-
-            this.FindControl<Label> ("lblPatientMRN").Content = String.Format ("{0}: {1}",
-                Instance?.Language.Localize ("CHART:MedicalRecordNumber"),
-                Instance?.Records?.MRN);
 
             /* Set the View time (time of MAR being viewed) to the Chart.CurrentTime */
             viewAtTime = new DateTime (
@@ -108,17 +87,17 @@ namespace IISIM {
 
         private async Task RefreshInterface () {
             if (Instance is null) {
-                Debug.WriteLine ($"Null return at {this.Name}.{nameof (RefreshInterface)}");
+                Debug.WriteLine ($"Null return at {Name}.{nameof (RefreshInterface)}");
                 return;
             }
 
             this.FindControl<Label> ("lblPatientName").Content = Instance?.Records?.Name;
 
-            this.FindControl<Label> ("lblPatientDOB").Content = String.Format ("{0}: {1}",
+            this.FindControl<Label> ("lblPatientDOB").Content = string.Format ("{0}: {1}",
                 Instance?.Language.Localize ("CHART:DateOfBirth"),
                 Instance?.Records?.DOB.ToShortDateString ());
 
-            this.FindControl<Label> ("lblPatientMRN").Content = String.Format ("{0}: {1}",
+            this.FindControl<Label> ("lblPatientMRN").Content = string.Format ("{0}: {1}",
                 Instance?.Language.Localize ("CHART:MedicalRecordNumber"),
                 Instance?.Records?.MRN);
 
@@ -173,7 +152,7 @@ namespace IISIM {
 
         private Task PopulateHeaders () {
             if (Instance?.Records is null || gridMain is null) {
-                Debug.WriteLine ($"Null return at {this.Name}.{nameof (PopulateHeaders)}");
+                Debug.WriteLine ($"Null return at {Name}.{nameof (PopulateHeaders)}");
                 return Task.CompletedTask;
             }
 
@@ -199,7 +178,7 @@ namespace IISIM {
             for (int hour = 0; hour < columnAmount; hour++) {
                 bool isAtCurrentTime = Instance?.Records?.CurrentTime?.ToString ("yyyyMMddHH") == atTime.ToString ("yyyyMMddHH");
 
-                Controls.MARHeader mh = new () {
+                MARHeader mh = new () {
                     Date = atTime.ToShortDateString (),
                     Time = atTime.ToString ("HH:mm"),
                     Bold = isAtCurrentTime,
@@ -219,7 +198,7 @@ namespace IISIM {
 
         private Task PopulateDrugs () {
             if (Instance?.Records is null || gridMain is null) {
-                Debug.WriteLine ($"Null return at {this.Name}.{nameof (PopulateHeaders)}");
+                Debug.WriteLine ($"Null return at {Name}.{nameof (PopulateHeaders)}");
                 return Task.CompletedTask;
             }
 
@@ -262,7 +241,7 @@ namespace IISIM {
                             + $"{order?.EndTime?.ToShortDateString ()} {order?.EndTime?.ToString ("HH:mm")}\n"
                             + $"{order?.Indication}\n{order?.Notes}",
                     Padding = new Thickness (10),
-                    Background = (order?.IsScheduled ?? true) ? colorScheduled : colorPRN
+                    Background = order?.IsScheduled ?? true ? colorScheduled : colorPRN
                 };
 
                 tbDrug.SetValue (Grid.RowProperty, row);
@@ -275,7 +254,7 @@ namespace IISIM {
 
         private Task PopulateDoses () {
             if (Instance?.Records is null || gridMain is null) {
-                Debug.WriteLine ($"Null return at {this.Name}.{nameof (PopulateDoses)}");
+                Debug.WriteLine ($"Null return at {Name}.{nameof (PopulateDoses)}");
                 return Task.CompletedTask;
             }
 
@@ -328,7 +307,7 @@ namespace IISIM {
                                 + $"{Instance.Language.Localize (Medication.Order.Priorities.LookupString (order.Priority ?? Medication.Order.Priorities.Values.Routine))}\n"
                                 + $"{dose.ScheduledTime.Value.ToShortDateString ()} {dose.ScheduledTime.Value.ToString ("HH:mm")}\n"
                                 + (dose.Administered ? $"\n{Instance.Language.Localize ("ENUM:AdministrationStatuses:Administered")}" : "")
-                                + (!String.IsNullOrEmpty (dose.Comment) ? $"\n{dose.Comment}" : ""),
+                                + (!string.IsNullOrEmpty (dose.Comment) ? $"\n{dose.Comment}" : ""),
                         Padding = new Thickness (10),
                         Background = bgColor,
                         Tag = dose
@@ -353,7 +332,7 @@ namespace IISIM {
 
         private void AdjustViewTime (DateTime newDate) {
             if (Instance?.Records is null) {
-                Debug.WriteLine ($"Null return at {this.Name}.{nameof (AdjustViewTime)}");
+                Debug.WriteLine ($"Null return at {Name}.{nameof (AdjustViewTime)}");
                 return;
             }
 
@@ -385,10 +364,13 @@ namespace IISIM {
 
                 dlg.Activate ();
 
-                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
-                    this.Show ();
+                // Avalonia's parent must be visible to attach a window
+                if (Instance?.Records_EHR is not null) {
+                    if (!Instance.Records_EHR.IsVisible)
+                        Instance.Records_EHR.Show ();
 
-                rxDose = await dlg.AsyncShow (this);
+                    rxDose = await dlg.AsyncShow (Instance.Records_EHR);
+                }
 
                 _ = PopulateDoses ();
             });
@@ -411,7 +393,7 @@ namespace IISIM {
 
         private void DateSelected_DateChanged (object? s, DatePickerSelectedValueChangedEventArgs e) {
             if (e.NewDate is null) {
-                Debug.WriteLine ($"Null return at {this.Name}.{nameof (DateSelected_DateChanged)}");
+                Debug.WriteLine ($"Null return at {Name}.{nameof (DateSelected_DateChanged)}");
                 return;
             }
 
@@ -425,7 +407,7 @@ namespace IISIM {
 
         private void TimeSelected_TimeChanged (object? s, TimePickerSelectedValueChangedEventArgs e) {
             if (e.NewTime is null) {
-                Debug.WriteLine ($"Null return at {this.Name}.{nameof (TimeSelected_TimeChanged)}");
+                Debug.WriteLine ($"Null return at {Name}.{nameof (TimeSelected_TimeChanged)}");
                 return;
             }
 
@@ -443,21 +425,5 @@ namespace IISIM {
 
             _ = DialogAdministerDose (((TextBlock)s).Tag as Medication.Dose);
         }
-
-        public void ToggleFullscreen () {
-            if (WindowState == WindowState.FullScreen)
-                WindowState = WindowState.Normal;
-            else
-                WindowState = WindowState.FullScreen;
-        }
-
-        private void MenuToggleFullscreen_Click (object s, RoutedEventArgs e)
-            => ToggleFullscreen ();
-
-        private void MenuClose_Click (object s, RoutedEventArgs e)
-            => this.Close ();
-
-        private void MenuRefresh_Click (object s, RoutedEventArgs e)
-            => _ = RefreshInterface ();
     }
 }
