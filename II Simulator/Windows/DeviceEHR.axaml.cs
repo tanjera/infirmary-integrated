@@ -112,6 +112,21 @@ namespace IISIM {
             this.FindControl<Label> ("lblPatientMRN").Content = String.Format ("{0}: {1}",
                 Instance?.Language.Localize ("CHART:MedicalRecordNumber"),
                 Instance?.Records?.MRN);
+
+            switch (SelectedRecord) {
+                default:
+                    break;
+
+                case Records.Demographics:
+                case Records.Notes:
+                case Records.Flowsheet:
+                case Records.Results:
+                    break;
+
+                case Records.MAR:
+                    await Record_MAR.RefreshInterface ();
+                    break;
+            }
         }
 
         public void Load (string inc) {
@@ -159,6 +174,8 @@ namespace IISIM {
                     cntlContent.Content = Record_MAR;
                     break;
             }
+
+            _ = RefreshInterface ();
         }
 
         private void ButtonRefresh_Click (object? s, RoutedEventArgs e)

@@ -85,21 +85,11 @@ namespace IISIM.Controls {
             return Task.CompletedTask;
         }
 
-        private async Task RefreshInterface () {
+        public async Task RefreshInterface () {
             if (Instance is null) {
                 Debug.WriteLine ($"Null return at {Name}.{nameof (RefreshInterface)}");
                 return;
             }
-
-            this.FindControl<Label> ("lblPatientName").Content = Instance?.Records?.Name;
-
-            this.FindControl<Label> ("lblPatientDOB").Content = string.Format ("{0}: {1}",
-                Instance?.Language.Localize ("CHART:DateOfBirth"),
-                Instance?.Records?.DOB.ToShortDateString ());
-
-            this.FindControl<Label> ("lblPatientMRN").Content = string.Format ("{0}: {1}",
-                Instance?.Language.Localize ("CHART:MedicalRecordNumber"),
-                Instance?.Records?.MRN);
 
             /* Set the View time (time of MAR being viewed) to the Chart.CurrentTime */
             viewAtTime = new DateTime (

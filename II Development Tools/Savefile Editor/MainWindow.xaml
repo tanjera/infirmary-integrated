@@ -1,0 +1,39 @@
+﻿<Window x:Class="Savefile_Editor.MainWindow"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="clr-namespace:Savefile_Editor"
+		mc:Ignorable="d"
+		Title="Savefile Editor"
+		Height="400"
+		Width="300"
+		SizeToContent="Height">
+	<StackPanel Orientation="Vertical">
+
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+
+			<Label Grid.Column="0"
+				   Content="File:" />
+			<TextBox Grid.Column="1"
+					 Name="tbFilepath"
+					 Margin="3" />
+		</Grid>
+		<Button Name="btnSelectFile"
+				Content="Select File"
+				Click="btnSelectFile_Click"
+				Margin="0,0,0,20" />
+
+		<Button Name="btnDecode"
+				Content=".ii -> .txt"
+				Click="btnDecode_Click"
+				Margin="0,0,0,20" />
+		<Button Name="btnEncode"
+				Content=".txt -> .ii (ii:t1)"
+				Click="btnEncodeT1_Click" />
+	</StackPanel>
+</Window>

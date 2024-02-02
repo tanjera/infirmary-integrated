@@ -23,7 +23,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tone Generator", "II Development Tools\Tone Generator\Tone Generator.csproj", "{2D47AA7F-C68B-4F95-A0E4-68D39C298AEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Country Code List", "II Development Tools\Country Code List\Country Code List.csproj", "{95EE95E4-FEEA-48A6-BCA1-1DB59725C545}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Country Code List", "II Development Tools\Country Code List\Country Code List.csproj", "{95EE95E4-FEEA-48A6-BCA1-1DB59725C545}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Savefile Editor", "II Development Tools\Savefile Editor\Savefile Editor.csproj", "{DC82FCCF-A552-4127-8D44-ED4589A6DE63}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{95EE95E4-FEEA-48A6-BCA1-1DB59725C545}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95EE95E4-FEEA-48A6-BCA1-1DB59725C545}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95EE95E4-FEEA-48A6-BCA1-1DB59725C545}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC82FCCF-A552-4127-8D44-ED4589A6DE63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC82FCCF-A552-4127-8D44-ED4589A6DE63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC82FCCF-A552-4127-8D44-ED4589A6DE63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC82FCCF-A552-4127-8D44-ED4589A6DE63}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

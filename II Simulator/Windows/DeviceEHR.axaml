@@ -104,6 +104,7 @@
             Orientation="Vertical">
 
           <Button
+            IsEnabled="False"
             Name="btnDemographics"
             Classes="device"
             Click="ButtonDemographics_Click">
@@ -114,6 +115,7 @@
           </Button>
 
           <Button
+            IsEnabled="False"
             Name="btnNotes"
             Classes="device"
             Click="ButtonNotes_Click">
@@ -124,6 +126,7 @@
           </Button>
 
           <Button
+            IsEnabled="False"
             Name="btnFlowsheet"
             Classes="device"
             Click="ButtonFlowsheet_Click">
@@ -134,6 +137,7 @@
           </Button>
 
           <Button
+            IsEnabled="False"
             Name="btnResults"
             Classes="device"
             Click="ButtonResults_Click">
