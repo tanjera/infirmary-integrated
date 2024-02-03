@@ -24,10 +24,12 @@ namespace IISE.Controls {
 
             DemographicsName,
             DemographicsMRN,
+            DemographicsSex,
             DemographicsHomeAddress,
             DemographicsTelephoneNumber,
             DemographicsInsuranceProvider,
             DemographicsInsuranceAccount,
+            DemographicsNotes,
 
             DoseComment
         }
@@ -68,10 +70,12 @@ namespace IISE.Controls {
 
                 case Keys.DemographicsName: lblKey.Content = "Name: "; break;
                 case Keys.DemographicsMRN: lblKey.Content = "Medical Record Number: "; break;
+                case Keys.DemographicsSex: lblKey.Content = "Sex: "; break;
                 case Keys.DemographicsHomeAddress: lblKey.Content = "Home Address: "; break;
                 case Keys.DemographicsTelephoneNumber: lblKey.Content = "Telephone Number: "; break;
                 case Keys.DemographicsInsuranceProvider: lblKey.Content = "Insurance Provider: "; break;
                 case Keys.DemographicsInsuranceAccount: lblKey.Content = "Insurance Account: "; break;
+                case Keys.DemographicsNotes: lblKey.Content = "Demographics Notes: "; break;
 
                 case Keys.DoseComment: lblKey.Content = "Comment: "; break;
             }

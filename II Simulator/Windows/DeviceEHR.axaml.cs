@@ -27,7 +27,8 @@ namespace IISIM {
         /* References for UI elements */
         public ScrollViewer cntlContent;
 
-        public Controls.RecordMAR Record_MAR;
+        public PanelDemographics Panel_Demographics;
+        public PanelMAR Panel_MAR;
 
         public Records SelectedRecord;
 
@@ -68,7 +69,8 @@ namespace IISIM {
             }
 
             /* Initiate content Panels & references */
-            Record_MAR = new Controls.RecordMAR (Instance);
+            Panel_Demographics = new PanelDemographics (Instance);
+            Panel_MAR = new PanelMAR (Instance);
 
             /* Populate UI strings per language selection */
 
@@ -88,7 +90,7 @@ namespace IISIM {
 
             this.FindControl<Label> ("lblPatientDOB").Content = String.Format ("{0}: {1}",
                 Instance?.Language.Localize ("CHART:DateOfBirth"),
-                Instance?.Records?.DOB.ToShortDateString ());
+                Instance?.Records?.DOB?.ToShortDateString ());
 
             this.FindControl<Label> ("lblPatientMRN").Content = String.Format ("{0}: {1}",
                 Instance?.Language.Localize ("CHART:MedicalRecordNumber"),
@@ -107,7 +109,7 @@ namespace IISIM {
 
             this.FindControl<Label> ("lblPatientDOB").Content = String.Format ("{0}: {1}",
                 Instance?.Language.Localize ("CHART:DateOfBirth"),
-                Instance?.Records?.DOB.ToShortDateString ());
+                Instance?.Records?.DOB?.ToShortDateString ());
 
             this.FindControl<Label> ("lblPatientMRN").Content = String.Format ("{0}: {1}",
                 Instance?.Language.Localize ("CHART:MedicalRecordNumber"),
@@ -118,13 +120,16 @@ namespace IISIM {
                     break;
 
                 case Records.Demographics:
+                    await Panel_Demographics.RefreshInterface ();
+                    break;
+
                 case Records.Notes:
                 case Records.Flowsheet:
                 case Records.Results:
                     break;
 
                 case Records.MAR:
-                    await Record_MAR.RefreshInterface ();
+                    await Panel_MAR.RefreshInterface ();
                     break;
             }
         }
@@ -155,6 +160,8 @@ namespace IISIM {
             return sWrite.ToString ();
         }
 
+        private void SelectRecord_Demographics () => SelectRecord (Records.Demographics);
+
         private void SelectRecord_MAR () => SelectRecord (Records.MAR);
 
         private void SelectRecord (Records incType) {
@@ -165,13 +172,16 @@ namespace IISIM {
                     break;
 
                 case Records.Demographics:
+                    cntlContent.Content = Panel_Demographics;
+                    break;
+
                 case Records.Notes:
                 case Records.Flowsheet:
                 case Records.Results:
                     break;
 
                 case Records.MAR:
-                    cntlContent.Content = Record_MAR;
+                    cntlContent.Content = Panel_MAR;
                     break;
             }
 
@@ -197,8 +207,8 @@ namespace IISIM {
         private void MenuRefresh_Click (object s, RoutedEventArgs e)
             => _ = RefreshInterface ();
 
-        private void ButtonDemographics_Click (object s, RoutedEventArgs e) {
-        }
+        private void ButtonDemographics_Click (object s, RoutedEventArgs e)
+            => SelectRecord_Demographics ();
 
         private void ButtonNotes_Click (object s, RoutedEventArgs e) {
         }

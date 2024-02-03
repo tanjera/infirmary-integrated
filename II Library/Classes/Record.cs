@@ -14,26 +14,39 @@ namespace II {
         public DateTime? CurrentTime;
 
         public string? Name;
-        public DateOnly DOB;
+        public DateOnly? DOB;
+        public string? Sex;
         public string? MRN;
 
-        public CodeStatuses.Values CodeStatus;
+        public CodeStatuses.Values? CodeStatus;
         public List<Allergy> Allergies = new ();
 
         public string? HomeAddress;
         public string? TelephoneNumber;
         public string? InsuranceProvider;
         public string? InsuranceAccount;
+        public string? DemographicNotes;
 
         public List<Medication.Order> RxOrders = new ();
         public List<Medication.Dose> RxDoses = new ();
 
+        public int? Age {
+            get {
+                if (DOB is null)
+                    return null;
+
+                int age = DateTime.Today.Year - DOB.Value.Year;
+
+                if (DateTime.Today.Month < DOB.Value.Month
+                    || (DateTime.Today.Month == DOB.Value.Month && DateTime.Today.Day < DOB.Value.Day))
+                    age -= 1;
+
+                return age;
+            }
+        }
+
         public Record () {
             CurrentTime = DateTime.Now;
-
-            /* Initialize values that would otherwise cause functions to crash (e.g. Save/Load) if left blank */
-            CodeStatus = CodeStatuses.Values.FullCode;
-            DOB = new DateOnly (2000, 1, 1);
         }
 
         public class CodeStatuses {
@@ -93,6 +106,14 @@ namespace II {
                         Medication.Dose dose = new ();
                         await dose.Load (pbuffer.ToString ());
                         RxDoses.Add (dose);
+                    } else if (line == "> Begin: Demographic.Notes >>>") {
+                        pbuffer = new ();
+
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline.Trim () != "> End: Demographic.Notes <<<")
+                            pbuffer.AppendLine (pline);
+
+                        DemographicNotes = pbuffer.ToString ();
                     } else if (line.Contains (':')) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
@@ -104,9 +125,13 @@ namespace II {
 
                             case "Name": Name = pValue; break;
                             case "DOB": DOB = Utility.DateOnly_FromString (pValue); break;
+                            case "Sex": Sex = pValue; break;
                             case "MRN": MRN = pValue; break;
 
-                            case "CodeStatus": CodeStatus = (CodeStatuses.Values)Enum.Parse (typeof (CodeStatuses.Values), pValue); break;
+                            case "CodeStatus":
+                                CodeStatus = String.IsNullOrEmpty (pValue) ? null
+                                    : (CodeStatuses.Values)Enum.Parse (typeof (CodeStatuses.Values), pValue);
+                                break;
 
                             case "HomeAddress": HomeAddress = pValue; break;
                             case "TelephoneNumber": TelephoneNumber = pValue; break;
@@ -130,7 +155,8 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "CurrentTime", Utility.DateTime_ToString (CurrentTime)));
 
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Name", Name));
-            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "DOB", Utility.DateOnly_ToString (DOB)));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "DOB", Utility.DateOnly_ToString (DOB) ?? ""));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Sex", Sex));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "MRN", MRN));
 
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "CodeStatus", CodeStatus));
@@ -145,6 +171,11 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "TelephoneNumber", TelephoneNumber));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "InsuranceProvider", InsuranceProvider));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "InsuranceAccount", InsuranceAccount));
+
+            // Allow for multi-line demographic notes
+            sWrite.AppendLine ($"{dent}> Begin: Demographic.Notes >>>");
+            sWrite.AppendLine (DemographicNotes);
+            sWrite.AppendLine ($"{dent}> End: Demographic.Notes <<<");
 
             for (int i = 0; i < RxOrders.Count; i++) {
                 sWrite.AppendLine ($"{dent}> Begin: Medication.Order");

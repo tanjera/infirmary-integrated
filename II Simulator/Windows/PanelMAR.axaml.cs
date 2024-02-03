@@ -21,9 +21,9 @@ using Avalonia.Threading;
 
 using II;
 
-namespace IISIM.Controls {
+namespace IISIM {
 
-    public partial class RecordMAR : RecordControl {
+    public partial class PanelMAR : RecordPanel {
         private DateTime viewAtTime = DateTime.Now;
 
         private DateTime? viewStartTime,
@@ -34,11 +34,11 @@ namespace IISIM.Controls {
 
         private List<TextBlock> tbDoses = new ();
 
-        public RecordMAR () {
+        public PanelMAR () {
             InitializeComponent ();
         }
 
-        public RecordMAR (App? app) : base (app) {
+        public PanelMAR (App? app) : base (app) {
             InitializeComponent ();
 
             DataContext = this;
@@ -168,7 +168,7 @@ namespace IISIM.Controls {
             for (int hour = 0; hour < columnAmount; hour++) {
                 bool isAtCurrentTime = Instance?.Records?.CurrentTime?.ToString ("yyyyMMddHH") == atTime.ToString ("yyyyMMddHH");
 
-                MARHeader mh = new () {
+                Controls.MARHeader mh = new () {
                     Date = atTime.ToShortDateString (),
                     Time = atTime.ToString ("HH:mm"),
                     Bold = isAtCurrentTime,

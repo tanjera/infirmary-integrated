@@ -34,6 +34,8 @@
              Grid.Row="0"
              HorizontalAlignment="Stretch"
              VerticalContentAlignment="Center"
-             Margin="5,2" />
+             Margin="5,2"
+             AcceptsReturn="True"
+             TextWrapping="Wrap" />
   </Grid>
 </UserControl>

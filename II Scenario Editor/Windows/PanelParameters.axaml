@@ -26,42 +26,6 @@
   </UserControl.Styles>
   <DockPanel LastChildFill="True">
 
-    <!--  Main Menu  -->
-
-    <Menu DockPanel.Dock="Top">
-      <MenuItem Name="menuFile"
-                  Header="_File">
-        <MenuItem Name="menuNew"
-                  Header="New"
-                  Click="MenuFileNew_Click" />
-        <Separator />
-        <MenuItem Name="menuLoad"
-              Header="_Open"
-              Click="MenuFileLoad_Click" />
-        <MenuItem Name="menuSave"
-              Header="_Save"
-              Click="MenuFileSave_Click" />
-        <MenuItem Name="menuSaveAs"
-              Header="Save As"
-              Click="MenuFileSaveAs_Click" />
-        <Separator />
-        <MenuItem Name="menuExit"
-              Header="E_xit Program"
-              Click="MenuFileExit_Click" />
-      </MenuItem>
-
-      <MenuItem Name="menuEdit"
-                  Header="_Edit">
-      </MenuItem>
-
-      <MenuItem Name="menu_Help"
-          Header="_Help">
-        <MenuItem Name="menuAbout"
-              Header="_About"
-              Click="MenuHelpAbout_Click" />
-      </MenuItem>
-    </Menu>
-
     <!-- Property Editor -->
 
     <ScrollViewer Name="scrlProperties"

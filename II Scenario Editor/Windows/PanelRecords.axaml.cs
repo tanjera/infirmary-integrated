@@ -83,10 +83,12 @@ namespace IISE.Windows {
 
             PropertyString pstrName = this.FindControl<PropertyString> ("pstrName");
             PropertyString pstrMRN = this.FindControl<PropertyString> ("pstrMRN");
+            PropertyString pstrSex = this.FindControl<PropertyString> ("pstrSex");
             PropertyString pstrHomeAddress = this.FindControl<PropertyString> ("pstrHomeAddress");
             PropertyString pstrTelephoneNumber = this.FindControl<PropertyString> ("pstrTelephoneNumber");
             PropertyString pstrInsuranceProvider = this.FindControl<PropertyString> ("pstrInsuranceProvider");
             PropertyString pstrInsuranceAccount = this.FindControl<PropertyString> ("pstrInsuranceAccount");
+            PropertyString pstrDemographicNotes = this.FindControl<PropertyString> ("pstrDemographicNotes");
             PropertyString pstrDoseComment = this.FindControl<PropertyString> ("pstrDoseComment");
 
             PropertyRxOrder prxOrder = this.FindControl<PropertyRxOrder> ("prxoRxOrder");
@@ -103,10 +105,12 @@ namespace IISE.Windows {
 
             pstrName.Init (PropertyString.Keys.DemographicsName);
             pstrMRN.Init (PropertyString.Keys.DemographicsMRN);
+            pstrSex.Init (PropertyString.Keys.DemographicsSex);
             pstrHomeAddress.Init (PropertyString.Keys.DemographicsHomeAddress);
             pstrTelephoneNumber.Init (PropertyString.Keys.DemographicsTelephoneNumber);
             pstrInsuranceProvider.Init (PropertyString.Keys.DemographicsInsuranceProvider);
             pstrInsuranceAccount.Init (PropertyString.Keys.DemographicsInsuranceAccount);
+            pstrDemographicNotes.Init (PropertyString.Keys.DemographicsNotes);
             pstrDoseComment.Init (PropertyString.Keys.DoseComment);
 
             pdpSimDate.PropertyChanged += UpdateRecords;
@@ -118,10 +122,12 @@ namespace IISE.Windows {
 
             pstrName.PropertyChanged += UpdateRecords;
             pstrMRN.PropertyChanged += UpdateRecords;
+            pstrSex.PropertyChanged += UpdateRecords;
             pstrHomeAddress.PropertyChanged += UpdateRecords;
             pstrTelephoneNumber.PropertyChanged += UpdateRecords;
             pstrInsuranceProvider.PropertyChanged += UpdateRecords;
             pstrInsuranceAccount.PropertyChanged += UpdateRecords;
+            pstrDemographicNotes.PropertyChanged += UpdateRecords;
             pstrDoseComment.PropertyChanged += UpdateRecords;
 
             prxOrder.PropertyChanged += UpdateRecords;
@@ -142,10 +148,12 @@ namespace IISE.Windows {
 
             PropertyString pstrName = this.FindControl<PropertyString> ("pstrName");
             PropertyString pstrMRN = this.FindControl<PropertyString> ("pstrMRN");
+            PropertyString pstrSex = this.FindControl<PropertyString> ("pstrSex");
             PropertyString pstrHomeAddress = this.FindControl<PropertyString> ("pstrHomeAddress");
             PropertyString pstrTelephoneNumber = this.FindControl<PropertyString> ("pstrTelephoneNumber");
             PropertyString pstrInsuranceProvider = this.FindControl<PropertyString> ("pstrInsuranceProvider");
             PropertyString pstrInsuranceAccount = this.FindControl<PropertyString> ("pstrInsuranceAccount");
+            PropertyString pstrDemographicNotes = this.FindControl<PropertyString> ("pstrDemographicNotes");
 
             PropertyRxOrder prxOrder = this.FindControl<PropertyRxOrder> ("prxoRxOrder");
 
@@ -167,10 +175,12 @@ namespace IISE.Windows {
 
             pstrName.IsEnabled = (Records != null);
             pstrMRN.IsEnabled = (Records != null);
+            pstrSex.IsEnabled = (Records != null);
             pstrHomeAddress.IsEnabled = (Records != null);
             pstrTelephoneNumber.IsEnabled = (Records != null);
             pstrInsuranceProvider.IsEnabled = (Records != null);
             pstrInsuranceAccount.IsEnabled = (Records != null);
+            pstrDemographicNotes.IsEnabled = (Records != null);
 
             prxOrder.IsEnabled = lbRxOrders.IsEnabled && lbRxOrders.SelectedIndex >= 0;
 
@@ -183,16 +193,18 @@ namespace IISE.Windows {
                 pdpSimDate.Set (Records?.CurrentTime);
                 ptpSimTime.Set (Records?.CurrentTime);
 
-                pdpDOB.Set (Records?.DOB ?? new DateOnly ());
+                pdpDOB.Set (Records?.DOB);
 
                 penmCodeStatus.Set ((int)(Records?.CodeStatus ?? Record.CodeStatuses.Values.FullCode));
 
                 pstrName.Set (Records?.Name ?? "");
                 pstrMRN.Set (Records?.MRN ?? "");
+                pstrSex.Set (Records?.Sex ?? "");
                 pstrHomeAddress.Set (Records?.HomeAddress ?? "");
                 pstrTelephoneNumber.Set (Records?.TelephoneNumber ?? "");
                 pstrInsuranceProvider.Set (Records?.InsuranceProvider ?? "");
                 pstrInsuranceAccount.Set (Records?.InsuranceAccount ?? "");
+                pstrDemographicNotes.Set (Records?.DemographicNotes ?? "");
             }
 
             UpdateView_RxOrderList ();
@@ -342,10 +354,12 @@ namespace IISE.Windows {
                     default: break;
                     case PropertyString.Keys.DemographicsName: Records.Name = e.Value; break;
                     case PropertyString.Keys.DemographicsMRN: Records.MRN = e.Value; break;
+                    case PropertyString.Keys.DemographicsSex: Records.Sex = e.Value; break;
                     case PropertyString.Keys.DemographicsHomeAddress: Records.HomeAddress = e.Value; break;
                     case PropertyString.Keys.DemographicsTelephoneNumber: Records.TelephoneNumber = e.Value; break;
                     case PropertyString.Keys.DemographicsInsuranceProvider: Records.InsuranceProvider = e.Value; break;
                     case PropertyString.Keys.DemographicsInsuranceAccount: Records.InsuranceAccount = e.Value; break;
+                    case PropertyString.Keys.DemographicsNotes: Records.DemographicNotes = e.Value; break;
                     case PropertyString.Keys.DoseComment: Action_SetRxDoseComment (e.Value ?? ""); break;
                 }
             }
@@ -550,26 +564,6 @@ namespace IISE.Windows {
 
             UpdateView_RxDoseList ();
         }
-
-        /* Generic Menu Items (across all Panels) */
-
-        private void MenuFileNew_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileNew_Click (sender, e);
-
-        private void MenuFileLoad_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileLoad_Click (sender, e);
-
-        private void MenuFileSave_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileSave_Click (sender, e);
-
-        private void MenuFileSaveAs_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileSaveAs_Click (sender, e);
-
-        private void MenuFileExit_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileExit_Click (sender, e);
-
-        private void MenuHelpAbout_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuHelpAbout_Click (sender, e);
 
         /* Any other Routed events for this Panel */
 

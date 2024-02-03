@@ -384,7 +384,7 @@ namespace IISE.Windows {
             _ = UpdateView ();
         }
 
-        private async Task UpdateView () {
+        public async Task UpdateView () {
             Label lblActiveStep = this.FindControl<Label> ("lblActiveStep");
 
             CheckBox chkClampVitals = this.FindControl<CheckBox> ("chkClampVitals");
@@ -519,25 +519,5 @@ namespace IISE.Windows {
                 await pintUCResting.Set (Physiology.ObstetricUterineRestingTone);
             }
         }
-
-        /* Generic Menu Items (across all Panels) */
-
-        private void MenuFileNew_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileNew_Click (sender, e);
-
-        private void MenuFileLoad_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileLoad_Click (sender, e);
-
-        private void MenuFileSave_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileSave_Click (sender, e);
-
-        private void MenuFileSaveAs_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileSaveAs_Click (sender, e);
-
-        private void MenuFileExit_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileExit_Click (sender, e);
-
-        private void MenuHelpAbout_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuHelpAbout_Click (sender, e);
     }
 }

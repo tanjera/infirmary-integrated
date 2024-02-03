@@ -43,21 +43,144 @@
     </Style>
   </Window.Styles>
 
-  <TabControl Name="tabControl">
-    <TabItem Header="Simulation Options">
-      <iiw:PanelSimulation x:Name="panelSimulation" />
-    </TabItem>
+  <Window.KeyBindings>
+    <KeyBinding Gesture="Ctrl+N" Command="{Binding MenuFileNew_Command}" />
+    <KeyBinding Gesture="Ctrl+O" Command="{Binding MenuFileLoad_Command}" />
+    <KeyBinding Gesture="Ctrl+S" Command="{Binding MenuFileSave_Command}" />
+    <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding MenuFileSaveAs_Command}" />
+    <KeyBinding Gesture="Alt + Enter" Command="{Binding ToggleFullscreen}" />
+    <KeyBinding Gesture="Alt+F4" Command="{Binding Close}" />
 
-    <TabItem Header="Steps and Progressions">
-      <iiw:PanelStepEditor x:Name="panelStepEditor" />
-    </TabItem>
+    <KeyBinding Gesture="Ctrl+-" Command="{Binding MenuEditDeleteStep_Command}" />
+    <KeyBinding Gesture="Ctrl++" Command="{Binding MenuEditAddStep_Command}" />
+    <KeyBinding Gesture="Ctrl+Shift++" Command="{Binding MenuEditDuplicateStep_Command}" />
+    <KeyBinding Gesture="Ctrl+C" Command="{Binding MenuEditCopyPhysiology_Command}" />
+    <KeyBinding Gesture="Ctrl+V" Command="{Binding MenuEditPastePhysiology_Command}" />
+    <KeyBinding Gesture="Ctrl+Shift+C" Command="{Binding MenuEditCopyRecords_Command}" />
+    <KeyBinding Gesture="Ctrl+Shift+V" Command="{Binding MenuEditPasteRecords_Command}" />
+  </Window.KeyBindings>
 
-    <TabItem Header="Physiologic Parameters">
-      <iiw:PanelParameters x:Name="panelParameters" />
-    </TabItem>
+  <DockPanel LastChildFill="True">
 
-    <TabItem Header="Medical Record">
-      <iiw:PanelRecords x:Name="panelRecords" />
-    </TabItem>
-  </TabControl>
+    <!--  Main Menu  -->
+    <Menu DockPanel.Dock="Top">
+      <MenuItem Name="menuFile"
+                  Header="_File">
+
+        <MenuItem Name="menuNew"
+                  Header="New"
+                  Click="MenuFileNew_Click"
+                  InputGesture="Ctrl+N" />
+
+        <Separator />
+
+        <MenuItem Name="menuLoad"
+              Header="_Open"
+              Click="MenuFileLoad_Click"
+              InputGesture="Ctrl+O" />
+
+        <MenuItem Name="menuSave"
+              Header="_Save"
+              Click="MenuFileSave_Click"
+              InputGesture="Ctrl+S" />
+
+        <MenuItem Name="menuSaveAs"
+              Header="Save As"
+              Click="MenuFileSaveAs_Click"
+              InputGesture="Ctrl+Shift+S" />
+
+        <Separator />
+
+        <MenuItem Name="menuToggleFullscreen"
+                  Header="Toggle Fullscreen"
+                  Click="MenuToggleFullscreen_Click"
+                  InputGesture="Alt+Enter" />
+
+        <Separator />
+
+        <MenuItem Name="menuExit"
+              Header="E_xit Program"
+              Click="MenuFileExit_Click"
+              InputGesture="Alt+F4" />
+      </MenuItem>
+
+      <MenuItem Name="menuEdit_PanelStepEditor"
+                  Header="_Edit"
+                IsVisible="False">
+
+        <MenuItem Name="menuEditAddStep"
+              Header="_Add Step"
+              Click="MenuEditAddStep_Click"
+                  InputGesture="Ctrl++" />
+
+        <MenuItem Name="menuEditDuplicateStep"
+              Header="_Duplicate Step"
+              Click="MenuEditDuplicateStep_Click"
+                  InputGesture="Ctrl+Shift++" />
+
+        <Separator />
+
+        <MenuItem Name="menuEditDeleteStep"
+              Header="Delete Step"
+              Click="MenuEditDeleteStep_Click"
+                  InputGesture="Ctrl+-" />
+
+        <Separator />
+
+        <MenuItem Name="menuEditRepositionSteps"
+              Header="Reposition All Steps"
+              Click="MenuEditRepositionSteps_Click" />
+
+        <Separator />
+
+        <MenuItem Name="menuEditCopyPhysiology"
+              Header="Copy Physiology"
+              Click="MenuEditCopyPhysiology_Click"
+              InputGesture="Ctrl+C" />
+
+        <MenuItem Name="menuEditPastePhysiology"
+                  Header="Paste Physiology"
+                  Click="MenuEditPastePhysiology_Click"
+                  InputGesture="Ctrl+V" />
+
+        <Separator />
+
+        <MenuItem Name="menuEditCopyRecords"
+              Header="Copy Medical Records"
+              Click="MenuEditCopyRecords_Click"
+                  InputGesture="Ctrl+Shift+C" />
+
+        <MenuItem Name="menuEditPasteRecords"
+                  Header="Paste Medical Records"
+                  Click="MenuEditPasteRecords_Click"
+                  InputGesture="Ctrl+Shift+V" />
+      </MenuItem>
+
+      <MenuItem Name="menuHelp"
+          Header="_Help">
+
+        <MenuItem Name="menuAbout"
+              Header="_About"
+              Click="MenuHelpAbout_Click" />
+      </MenuItem>
+    </Menu>
+
+    <TabControl Name="tabControl">
+      <TabItem Name="PanelSimulation" Header="Simulation Options">
+        <iiw:PanelSimulation x:Name="panelSimulation" />
+      </TabItem>
+
+      <TabItem Name="PanelStepEditor" Header="Steps and Progressions">
+        <iiw:PanelStepEditor x:Name="panelStepEditor" />
+      </TabItem>
+
+      <TabItem Name="PanelParameters" Header="Physiologic Parameters">
+        <iiw:PanelParameters x:Name="panelParameters" />
+      </TabItem>
+
+      <TabItem Name="PanelRecords" Header="Medical Record">
+        <iiw:PanelRecords x:Name="panelRecords" />
+      </TabItem>
+    </TabControl>
+  </DockPanel>
 </Window>

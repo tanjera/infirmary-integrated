@@ -57,13 +57,14 @@ namespace IISE {
             IPanelParameters = this.FindControl<PanelParameters> ("panelParameters");
             IPanelRecords = this.FindControl<PanelRecords> ("panelRecords");
 
+            ITabControl.SelectionChanged += ITabControl_SelectionChanged;
+
             _ = IPanelSimulation.InitReferences (this);
             _ = IPanelStepEditor.InitReferences (this);
             _ = IPanelParameters.InitReferences (this);
             _ = IPanelRecords.InitReferences (this);
 
             _ = InitScenario ();
-            _ = InitHotkeys ();
         }
 
         private void InitializeComponent () {
@@ -106,18 +107,6 @@ namespace IISE {
                 return (response != null && response == DialogMessage.Responses.Yes);
             } else
                 return true;
-        }
-
-        private Task InitHotkeys () {
-            var menuNew = IPanelSimulation.FindControl<MenuItem> ("menuNew");
-            var menuLoad = IPanelSimulation.FindControl<MenuItem> ("menuLoad");
-            var menuSave = IPanelSimulation.FindControl<MenuItem> ("menuSave");
-
-            HotKeyManager.SetHotKey (menuNew, new KeyGesture (Key.N, KeyModifiers.Control));
-            HotKeyManager.SetHotKey (menuLoad, new KeyGesture (Key.O, KeyModifiers.Control));
-            HotKeyManager.SetHotKey (menuSave, new KeyGesture (Key.S, KeyModifiers.Control));
-
-            return Task.CompletedTask;
         }
 
         private async Task InitScenario () {
@@ -182,7 +171,7 @@ namespace IISE {
 
         private async Task<string> LoadDialog () {
             OpenFileDialog dlg = new ();
-            dlg.Title = "Save Simulation";
+            dlg.Title = "Load Simulation";
             dlg.Filters.Add (new FileDialogFilter () { Name = "Infirmary Integrated Simulation", Extensions = { "ii" } });
             dlg.Filters.Add (new FileDialogFilter () { Name = "All Files", Extensions = { "*" } });
             dlg.AllowMultiple = false;
@@ -288,6 +277,23 @@ namespace IISE {
             sw.Close ();
         }
 
+        public void ToggleFullscreen () {
+            if (WindowState == WindowState.FullScreen)
+                WindowState = WindowState.Normal;
+            else
+                WindowState = WindowState.FullScreen;
+        }
+
+        private void ITabControl_SelectionChanged (object? sender, SelectionChangedEventArgs e) {
+            MenuItem miPanelStepEditor = this.FindControl<MenuItem> ("menuEdit_PanelStepEditor");
+
+            if (e.AddedItems.Count > 0 && e.AddedItems [0] is TabItem ta && ta.Name == "PanelStepEditor")
+                miPanelStepEditor.IsVisible = true;
+
+            if (e.RemovedItems.Count > 0 && e.RemovedItems [0] is TabItem tr && tr.Name == "PanelStepEditor")
+                miPanelStepEditor.IsVisible = false;
+        }
+
         public void MenuFileNew_Click (object sender, RoutedEventArgs e)
             => _ = NewScenario ();
 
@@ -300,10 +306,96 @@ namespace IISE {
         public void MenuFileSaveAs_Click (object sender, RoutedEventArgs e)
             => _ = SaveScenario (false);
 
+        private void MenuToggleFullscreen_Click (object s, RoutedEventArgs e)
+            => ToggleFullscreen ();
+
         public void MenuFileExit_Click (object sender, RoutedEventArgs e)
             => _ = Exit (true);
 
         public void MenuHelpAbout_Click (object sender, RoutedEventArgs e)
             => _ = DialogAbout ();
+
+        /* Menu Items specific to IPanelStepEditor */
+
+        public void MenuEditAddStep_Click (object sender, RoutedEventArgs e)
+            => IPanelStepEditor.Action_AddStep ();
+
+        public void MenuEditDuplicateStep_Click (object sender, RoutedEventArgs e)
+            => IPanelStepEditor.Action_DuplicateStep ();
+
+        public void MenuEditDeleteStep_Click (object sender, RoutedEventArgs e)
+            => IPanelStepEditor.Action_DeleteStep ();
+
+        public void MenuEditRepositionSteps_Click (object sender, RoutedEventArgs e)
+            => _ = IPanelStepEditor.Action_RepositionSteps ();
+
+        public void MenuEditCopyPhysiology_Click (object sender, RoutedEventArgs e)
+            => _ = IPanelStepEditor.Action_CopyPhysiology ();
+
+        public void MenuEditPastePhysiology_Click (object sender, RoutedEventArgs e) {
+            _ = IPanelStepEditor.Action_PastePhysiology ();
+            _ = IPanelParameters.UpdateView ();
+        }
+
+        public void MenuEditCopyRecords_Click (object sender, RoutedEventArgs e)
+            => _ = IPanelStepEditor.Action_CopyRecords ();
+
+        public void MenuEditPasteRecords_Click (object sender, RoutedEventArgs e) {
+            _ = IPanelStepEditor.Action_PasteRecords ();
+            _ = IPanelParameters.UpdateView ();
+        }
+
+        /* Menu Commands: For HotKey support!! */
+
+        private void MenuFileNew_Command ()
+        => MenuFileNew_Click (this, new RoutedEventArgs ());
+
+        private void MenuFileLoad_Command ()
+            => MenuFileLoad_Click (this, new RoutedEventArgs ());
+
+        private void MenuFileSave_Command ()
+            => MenuFileSave_Click (this, new RoutedEventArgs ());
+
+        private void Menu_Command ()
+            => MenuFileSaveAs_Click (this, new RoutedEventArgs ());
+
+        private void MenuEditCopyPhysiology_Command () {
+            if (ITabControl.SelectedItem is TabItem ti && ti.Name == "PanelStepEditor")
+                MenuEditCopyPhysiology_Click (this, new RoutedEventArgs ());
+        }
+
+        private void MenuEditPastePhysiology_Command () {
+            if (ITabControl.SelectedItem is TabItem ti && ti.Name == "PanelStepEditor")
+                MenuEditPastePhysiology_Click (this, new RoutedEventArgs ());
+
+            _ = IPanelParameters.UpdateView ();
+        }
+
+        private void MenuEditCopyRecords_Command () {
+            if (ITabControl.SelectedItem is TabItem ti && ti.Name == "PanelStepEditor")
+                MenuEditCopyRecords_Click (this, new RoutedEventArgs ());
+        }
+
+        private void MenuEditPasteRecords_Command () {
+            if (ITabControl.SelectedItem is TabItem ti && ti.Name == "PanelStepEditor")
+                MenuEditPasteRecords_Click (this, new RoutedEventArgs ());
+
+            _ = IPanelParameters.UpdateView ();
+        }
+
+        private void MenuEditDeleteStep_Command () {
+            if (ITabControl.SelectedItem is TabItem ti && ti.Name == "PanelStepEditor")
+                MenuEditDeleteStep_Click (this, new RoutedEventArgs ());
+        }
+
+        private void MenuEditAddStep_Command () {
+            if (ITabControl.SelectedItem is TabItem ti && ti.Name == "PanelStepEditor")
+                MenuEditAddStep_Click (this, new RoutedEventArgs ());
+        }
+
+        private void MenuEditDuplicateStep_Command () {
+            if (ITabControl.SelectedItem is TabItem ti && ti.Name == "PanelStepEditor")
+                MenuEditDuplicateStep_Click (this, new RoutedEventArgs ());
+        }
     }
 }

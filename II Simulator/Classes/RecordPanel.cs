@@ -16,13 +16,13 @@ using II;
 
 namespace IISIM {
 
-    public class RecordControl : UserControl {
+    public class RecordPanel : UserControl {
         public App? Instance { get; set; }
 
-        public RecordControl () {
+        public RecordPanel () {
         }
 
-        public RecordControl (App? app) {
+        public RecordPanel (App? app) {
             Instance = app;
         }
     }

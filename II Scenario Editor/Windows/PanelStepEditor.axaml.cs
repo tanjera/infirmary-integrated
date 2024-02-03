@@ -518,24 +518,24 @@ namespace IISE.Windows {
             await UpdateViewModel ();
         }
 
-        private void Action_AddStep ()
+        public void Action_AddStep ()
             => _ = AddStep ();
 
-        private void Action_DuplicateStep () {
+        public void Action_DuplicateStep () {
             if (ISelectedStep == null)
                 return;
 
             _ = AddStep (ISelectedStep);
         }
 
-        private void Action_DeleteStep () {
+        public void Action_DeleteStep () {
             if (ISelectedStep != null) {
                 _ = DeleteStep (ISelectedStep);
                 _ = DeselectAll ();
             }
         }
 
-        private async Task Action_RepositionSteps () {
+        public async Task Action_RepositionSteps () {
             _ = DeselectAll ();
 
             int minorOffset = 25;
@@ -561,7 +561,7 @@ namespace IISE.Windows {
             await DrawIProgressions ();
         }
 
-        private async Task Action_CopyPhysiology () {
+        public async Task Action_CopyPhysiology () {
             if (ISelectedStep == null)
                 return;
 
@@ -571,7 +571,7 @@ namespace IISE.Windows {
             await CopiedStep.Physiology.Load (ISelectedStep.Physiology.Save ());
         }
 
-        private async Task Action_CopyRecords () {
+        public async Task Action_CopyRecords () {
             if (ISelectedStep == null)
                 return;
 
@@ -581,7 +581,7 @@ namespace IISE.Windows {
             await CopiedStep.Records.Load (ISelectedStep.Records.Save ());
         }
 
-        private async Task Action_PastePhysiology () {
+        public async Task Action_PastePhysiology () {
             if (ISelectedStep == null)
                 return;
 
@@ -589,59 +589,13 @@ namespace IISE.Windows {
                 await ISelectedStep.Physiology.Load (CopiedStep.Physiology.Save ());
         }
 
-        private async Task Action_PasteRecords () {
+        public async Task Action_PasteRecords () {
             if (ISelectedStep == null)
                 return;
 
             if (CopiedStep != null)
                 await ISelectedStep.Records.Load (CopiedStep.Records.Save ());
         }
-
-        /* Generic Menu Items (across all Panels) */
-
-        private void MenuFileNew_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileNew_Click (sender, e);
-
-        private void MenuFileLoad_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileLoad_Click (sender, e);
-
-        private void MenuFileSave_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileSave_Click (sender, e);
-
-        private void MenuFileSaveAs_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileSaveAs_Click (sender, e);
-
-        private void MenuFileExit_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileExit_Click (sender, e);
-
-        private void MenuHelpAbout_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuHelpAbout_Click (sender, e);
-
-        /* Menu Items specific to this Panel */
-
-        private void MenuEditAddStep_Click (object sender, RoutedEventArgs e)
-            => Action_AddStep ();
-
-        private void MenuEditDuplicateStep_Click (object sender, RoutedEventArgs e)
-            => Action_DuplicateStep ();
-
-        private void MenuEditDeleteStep_Click (object sender, RoutedEventArgs e)
-            => Action_DeleteStep ();
-
-        private void MenuEditRepositionSteps_Click (object sender, RoutedEventArgs e)
-            => _ = Action_RepositionSteps ();
-
-        private void MenuEditCopyPhysiology_Click (object sender, RoutedEventArgs e)
-            => _ = Action_CopyPhysiology ();
-
-        private void MenuEditPastePhysiology_Click (object sender, RoutedEventArgs e)
-            => _ = Action_PastePhysiology ();
-
-        private void MenuEditCopyRecords_Click (object sender, RoutedEventArgs e)
-            => _ = Action_CopyRecords ();
-
-        private void MenuEditPasteRecords_Click (object sender, RoutedEventArgs e)
-            => _ = Action_PasteRecords ();
 
         /* Any other Routed events for this Panel */
 

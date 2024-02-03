@@ -104,7 +104,6 @@
             Orientation="Vertical">
 
           <Button
-            IsEnabled="False"
             Name="btnDemographics"
             Classes="device"
             Click="ButtonDemographics_Click">

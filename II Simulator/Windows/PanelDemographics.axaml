@@ -1,0 +1,139 @@
+<UserControl
+	x:Class="IISIM.PanelDemographics"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	d:DesignHeight="720"
+	d:DesignWidth="1200"
+	mc:Ignorable="d">
+
+  <UserControl.Styles>
+    <Style Selector="Label">
+      <Setter Property="HorizontalAlignment" Value="Right" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Margin" Value="5,3,10,3" />
+    </Style>
+    <Style Selector="TextBlock">
+      <Setter Property="HorizontalAlignment" Value="Left" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Margin" Value="0,3,10,3" />
+    </Style>
+  </UserControl.Styles>
+
+  <DockPanel LastChildFill="True">
+
+    <ScrollViewer
+				HorizontalScrollBarVisibility="Auto"
+				VerticalScrollBarVisibility="Auto">
+
+      <Grid Name="gridMain"
+            ColumnDefinitions="Auto,*"
+            RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto, Auto,Auto">
+
+        <!-- Label column -->
+
+        <Label
+          Grid.Column="0"
+          Grid.Row="0"
+          Name="lblName" />
+        <Label
+          Grid.Column="0"
+          Grid.Row="1"
+          Name="lblMRN" />
+        <Label
+          Grid.Column="0"
+          Grid.Row="2"
+          Name="lblAge" />
+        <Label
+          Grid.Column="0"
+          Grid.Row="3"
+          Name="lblDOB" />
+        <Label
+          Grid.Column="0"
+          Grid.Row="4"
+          Name="lblSex" />
+        <Label
+          Grid.Column="0"
+          Grid.Row="5"
+          Name="lblAllergies" />
+        <Label
+          Grid.Column="0"
+          Grid.Row="6"
+          Name="lblCodeStatus" />
+        <Label
+          Grid.Column="0"
+          Grid.Row="7"
+          Name="lblHomeAddress" />
+        <Label
+          Grid.Column="0"
+          Grid.Row="8"
+          Name="lblTelephoneNumber" />
+        <Label
+          Grid.Column="0"
+          Grid.Row="9"
+          Name="lblInsuranceProvider" />
+        <Label
+          Grid.Column="0"
+          Grid.Row="10"
+          Name="lblInsuranceAccount" />
+        <Label
+          Grid.Column="0"
+          Grid.Row="11"
+          VerticalAlignment="Top"
+          Name="lblDemographicNotes" />
+
+        <!-- Information column -->
+
+        <TextBlock
+          Grid.Column="1"
+          Grid.Row="0"
+          Name="tbName" />
+        <TextBlock
+          Grid.Column="1"
+          Grid.Row="1"
+          Name="tbMRN" />
+        <TextBlock
+          Grid.Column="1"
+          Grid.Row="2"
+          Name="tbAge" />
+        <TextBlock
+          Grid.Column="1"
+          Grid.Row="3"
+          Name="tbDOB" />
+        <TextBlock
+          Grid.Column="1"
+          Grid.Row="4"
+          Name="tbSex" />
+        <TextBlock
+          Grid.Column="1"
+          Grid.Row="5"
+          Name="tbAllergies" />
+        <TextBlock
+          Grid.Column="1"
+          Grid.Row="6"
+          Name="tbCodeStatus" />
+        <TextBlock
+          Grid.Column="1"
+          Grid.Row="7"
+          Name="tbHomeAddress" />
+        <TextBlock
+          Grid.Column="1"
+          Grid.Row="8"
+          Name="tbTelephoneNumber" />
+        <TextBlock
+          Grid.Column="1"
+          Grid.Row="9"
+          Name="tbInsuranceProvider" />
+        <TextBlock
+          Grid.Column="1"
+          Grid.Row="10"
+          Name="tbInsuranceAccount" />
+        <TextBlock
+          Grid.Column="1"
+          Grid.Row="11"
+          Name="tbDemographicNotes" />
+      </Grid>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>

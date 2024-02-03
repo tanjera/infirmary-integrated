@@ -12,7 +12,9 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 namespace II {
+
     public static class Utility {
+
         public static bool IsNewerVersion (string current, string comparison) {
             string [] curSplit = current.Split ('.'),
                 compSplit = comparison.Split ('.');
@@ -38,19 +40,26 @@ namespace II {
         }
 
         public static string? DateOnly_ToString (DateOnly? dt)
-            => dt?.ToString ("yyyy/MM/dd");
+            => dt?.ToString ("yyyy/MM/dd") ?? null;
 
         public static string? DateTime_ToString (DateTime? dt)
-            => dt?.ToString ("yyyy/MM/dd HH:mm:ss");
+            => dt?.ToString ("yyyy/MM/dd HH:mm:ss") ?? null;
 
         public static string? DateTime_ToString_FilePath (DateTime? dt)
-            => dt?.ToString ("yyyy.MM.dd.HH.mm.ss");
+            => dt?.ToString ("yyyy.MM.dd.HH.mm.ss") ?? null;
 
-        public static DateOnly DateOnly_FromString (string str) {
-            return new DateOnly (
-                int.Parse (str.Substring (0, 4)),
-                int.Parse (str.Substring (5, 2)),
-                int.Parse (str.Substring (8, 2)));
+        public static DateOnly? DateOnly_FromString (string str) {
+            if (String.IsNullOrEmpty (str))
+                return null;
+
+            try {
+                return new DateOnly (
+                    int.Parse (str.Substring (0, 4)),
+                    int.Parse (str.Substring (5, 2)),
+                    int.Parse (str.Substring (8, 2)));
+            } catch {
+                return null;
+            }
         }
 
         public static DateTime DateTime_FromString (string str) {

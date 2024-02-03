@@ -41,7 +41,7 @@ namespace IISIM {
         public DeviceIABP? Device_IABP;
         public DeviceEFM? Device_EFM;
         public DeviceEHR? Records_EHR;
-        public RecordMAR? Records_MAR;
+        public PanelMAR? Records_MAR;
 
         public System.Timers.Timer Timer_Main = new ();
 

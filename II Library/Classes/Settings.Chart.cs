@@ -19,7 +19,7 @@ namespace II.Settings {
         public bool IsEnabled { get; set; }
 
         public enum Records {
-            MAR
+            EHR
         }
 
         public Record (Records d) {

@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
+
     public class Scenario {
         public string? Name, Description, Author;
         public DateTime? Updated;
@@ -26,7 +27,7 @@ namespace II {
         public List<Step> Steps = new ();
         public Timer ProgressTimer = new ();
 
-        public Settings.Record RecordMAR = new (Settings.Record.Records.MAR);
+        public Settings.Record RecordEHR = new (Settings.Record.Records.EHR);
         public Settings.Device DeviceMonitor = new (Settings.Device.Devices.Monitor);
         public Settings.Device DeviceDefib = new (Settings.Device.Devices.Defib);
         public Settings.Device DeviceECG = new (Settings.Device.Devices.ECG);
@@ -120,14 +121,14 @@ namespace II {
                         Step s = new ();
                         await s.Load (pbuffer.ToString ());
                         Steps.Add (s);
-                    } else if (line == "> Begin: RecordMAR") {
+                    } else if (line == "> Begin: RecordEHR") {
                         pbuffer = new StringBuilder ();
 
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
-                                && pline != "> End: RecordMAR")
+                                && pline != "> End: RecordEHR")
                             pbuffer.AppendLine (pline);
 
-                        await RecordMAR.Load (pbuffer.ToString ());
+                        await RecordEHR.Load (pbuffer.ToString ());
                     } else if (line == "> Begin: DeviceMonitor") {
                         pbuffer = new StringBuilder ();
 
@@ -194,9 +195,9 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Beginning", BeginStep));
 
             /* Save() each Device's Settings */
-            sWrite.AppendLine ($"{dent}> Begin: RecordMAR");
-            sWrite.Append (await RecordMAR.Save (indent + 1));
-            sWrite.AppendLine ($"{dent}> End: RecordMAR");
+            sWrite.AppendLine ($"{dent}> Begin: RecordEHR");
+            sWrite.Append (await RecordEHR.Save (indent + 1));
+            sWrite.AppendLine ($"{dent}> End: RecordEHR");
 
             sWrite.AppendLine ($"{dent}> Begin: DeviceMonitor");
             sWrite.Append (await DeviceMonitor.Save (indent + 1));
