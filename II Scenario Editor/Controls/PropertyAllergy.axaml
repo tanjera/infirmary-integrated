@@ -1,0 +1,62 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="IISE.Controls.PropertyAllergy"
+             HorizontalAlignment="Stretch">
+
+  <UserControl.Styles>
+    <Style Selector="Label">
+      <Setter Property="HorizontalAlignment" Value="Left" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="MinWidth" Value="120" />
+      <Setter Property="Margin" Value="2, 0" />
+    </Style>
+
+    <Style Selector="TextBox">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="MinWidth" Value="120" />
+      <Setter Property="Margin" Value="2" />
+    </Style>
+
+    <Style Selector="ComboBox">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="MinWidth" Value="120" />
+      <Setter Property="Margin" Value="2" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid RowDefinitions="Auto, Auto, Auto"
+        ColumnDefinitions="Auto, *"
+        HorizontalAlignment="Stretch"
+        VerticalAlignment="Stretch">
+
+    <!-- Allergen -->
+    <Label Grid.Column="0"
+           Grid.Row="0"
+           Content="Allergen:" />
+
+    <TextBox Name="txtAllergen"
+             Grid.Column="1"
+             Grid.Row="0" />
+
+    <!-- Reaction -->
+    <Label Grid.Column="0"
+           Grid.Row="1"
+           Content="Reaction:" />
+
+    <TextBox Name="txtReaction"
+             Grid.Column="1"
+             Grid.Row="1" />
+
+    <!-- Intensity -->
+    <Label Grid.Column="0"
+       Grid.Row="2"
+       Content="Intensity:" />
+
+    <ComboBox Name="cmbIntensity"
+              Grid.Column="1"
+              Grid.Row="2" />
+  </Grid>
+</UserControl>

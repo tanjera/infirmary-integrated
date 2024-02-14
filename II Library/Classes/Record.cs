@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
+
     public class Record {
         public DateTime? CurrentTime;
 

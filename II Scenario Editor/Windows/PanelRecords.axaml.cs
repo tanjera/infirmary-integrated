@@ -35,6 +35,7 @@ namespace IISE.Windows {
         public Scenario.Step? Step;
         public Record? Records;
 
+        public int SelectedAllergy = -1;
         public int SelectedRxOrder = -1;
 
         private WindowMain? IMain;
@@ -91,8 +92,10 @@ namespace IISE.Windows {
             PropertyString pstrDemographicNotes = this.FindControl<PropertyString> ("pstrDemographicNotes");
             PropertyString pstrDoseComment = this.FindControl<PropertyString> ("pstrDoseComment");
 
+            PropertyAllergy pallAllergy = this.FindControl<PropertyAllergy> ("pallAllergy");
             PropertyRxOrder prxOrder = this.FindControl<PropertyRxOrder> ("prxoRxOrder");
 
+            ListBox lbAllergies = this.FindControl<ListBox> ("lbAllergies");
             ListBox lbRxOrders = this.FindControl<ListBox> ("lbRxOrders");
 
             pdpSimDate.Init (PropertyDate.Keys.SimulationDate);
@@ -130,6 +133,9 @@ namespace IISE.Windows {
             pstrDemographicNotes.PropertyChanged += UpdateRecords;
             pstrDoseComment.PropertyChanged += UpdateRecords;
 
+            pallAllergy.PropertyChanged += UpdateRecords;
+            lbAllergies.SelectionChanged += LbAllergies_SelectionChanged;
+
             prxOrder.PropertyChanged += UpdateRecords;
             lbRxOrders.SelectionChanged += LbRxOrders_SelectionChanged;
 
@@ -155,9 +161,14 @@ namespace IISE.Windows {
             PropertyString pstrInsuranceAccount = this.FindControl<PropertyString> ("pstrInsuranceAccount");
             PropertyString pstrDemographicNotes = this.FindControl<PropertyString> ("pstrDemographicNotes");
 
+            PropertyAllergy pallAllergy = this.FindControl<PropertyAllergy> ("pallAllergy");
             PropertyRxOrder prxOrder = this.FindControl<PropertyRxOrder> ("prxoRxOrder");
 
+            ListBox lbAllergies = this.FindControl<ListBox> ("lbAllergies");
             ListBox lbRxOrders = this.FindControl<ListBox> ("lbRxOrders");
+
+            Button btnAddAllergy = this.FindControl<Button> ("btnAddAllergy");
+            Button btnDelAllergy = this.FindControl<Button> ("btnDelAllergy");
 
             Button btnAddRxOrder = this.FindControl<Button> ("btnAddRxOrder");
             Button btnDelRxOrder = this.FindControl<Button> ("btnDelRxOrder");
@@ -182,9 +193,14 @@ namespace IISE.Windows {
             pstrInsuranceAccount.IsEnabled = (Records != null);
             pstrDemographicNotes.IsEnabled = (Records != null);
 
+            pallAllergy.IsEnabled = lbAllergies.IsEnabled && lbAllergies.SelectedIndex >= 0;
             prxOrder.IsEnabled = lbRxOrders.IsEnabled && lbRxOrders.SelectedIndex >= 0;
 
+            lbAllergies.IsEnabled = (Records != null);
             lbRxOrders.IsEnabled = (Records != null);
+
+            btnAddAllergy.IsEnabled = (Records != null);
+            btnDelAllergy.IsEnabled = (Records != null);
 
             btnAddRxOrder.IsEnabled = (Records != null);
             btnDelRxOrder.IsEnabled = (Records != null);
@@ -195,7 +211,8 @@ namespace IISE.Windows {
 
                 pdpDOB.Set (Records?.DOB);
 
-                penmCodeStatus.Set ((int)(Records?.CodeStatus ?? Record.CodeStatuses.Values.FullCode));
+                if (Records?.CodeStatus is not null)
+                    penmCodeStatus.Set ((int)(Records.CodeStatus));
 
                 pstrName.Set (Records?.Name ?? "");
                 pstrMRN.Set (Records?.MRN ?? "");
@@ -207,10 +224,47 @@ namespace IISE.Windows {
                 pstrDemographicNotes.Set (Records?.DemographicNotes ?? "");
             }
 
+            UpdateView_AllergyList ();
             UpdateView_RxOrderList ();
             UpdateView_RxDoseList ();
 
             return Task.CompletedTask;
+        }
+
+        private void UpdateView_AllergyList () {
+            if (Records is null)
+                return;
+
+            ListBox lbAllergies = this.FindControl<ListBox> ("lbAllergies");
+
+            lbAllergies.SelectionChanged -= LbAllergies_SelectionChanged;
+
+            List<string> llbi = new ();
+
+            SortAllergies ();
+
+            foreach (var allergy in Records.Allergies) {
+                if (App.Language is not null) {
+                    llbi.Add (String.Format ("{0}: {1} ({2})",
+                        allergy.Allergen,
+                        allergy.Reaction,
+                        App.Language.Localize (II.Scales.Intensity.LookupString (allergy.Intensity ?? II.Scales.Intensity.Values.Absent))
+                        ));
+                } else {
+                    llbi.Add (String.Format ("{0}: {1}",
+                        allergy.Allergen,
+                        allergy.Reaction
+                        ));
+                }
+            }
+
+            lbAllergies.Items = llbi;
+            if (SelectedAllergy >= 0 && SelectedAllergy < llbi.Count)
+                lbAllergies.SelectedIndex = SelectedAllergy;
+            else
+                lbAllergies.UnselectAll ();
+
+            lbAllergies.SelectionChanged += LbAllergies_SelectionChanged;
         }
 
         private void UpdateView_RxOrderList () {
@@ -365,6 +419,19 @@ namespace IISE.Windows {
             }
         }
 
+        private void UpdateRecords (object? sender, PropertyAllergy.PropertyAllergyEventArgs e) {
+            if (Records is null)
+                return;
+
+            ListBox lbAllergies = this.FindControl<ListBox> ("lbAllergies");
+
+            if (SelectedAllergy >= 0 && SelectedAllergy < Records.Allergies.Count) {
+                Records.Allergies [SelectedAllergy] = e.Allergy;
+            }
+
+            UpdateView_AllergyList ();
+        }
+
         private void UpdateRecords (object? sender, PropertyRxOrder.PropertyRxOrderEventArgs e) {
             if (Records is null)
                 return;
@@ -376,6 +443,75 @@ namespace IISE.Windows {
             }
 
             UpdateView_RxOrderList ();
+        }
+
+        private void SortAllergies () {
+            string? selUUID = null;
+            if (SelectedAllergy >= 0 && Records?.Allergies.Count > SelectedAllergy)
+                selUUID = Records.Allergies [SelectedAllergy].UUID;
+
+            Records?.Allergies.Sort ((a, b) => {
+                return String.Compare (a.Allergen, b.Allergen);
+            });
+
+            if (selUUID is null)
+                SelectedAllergy = -1;
+            else
+                SelectedAllergy = Records?.Allergies.FindIndex (o => o.UUID == selUUID) ?? -1;
+        }
+
+        private void Action_SelectAllergy () {
+            PropertyAllergy pallAllergy = this.FindControl<PropertyAllergy> ("pallAllergy");
+            ListBox lbAllergies = this.FindControl<ListBox> ("lbAllergies");
+
+            if (Records is null || lbAllergies.SelectedIndex < 0 || lbAllergies.SelectedIndex >= Records.Allergies.Count) {
+                pallAllergy.IsEnabled = false;
+                pallAllergy.Init (new II.Allergy ());
+                return;
+            }
+
+            pallAllergy.PropertyChanged -= UpdateRecords;
+            pallAllergy.IsEnabled = true;
+
+            SelectedAllergy = lbAllergies.SelectedIndex;
+            pallAllergy.Init (Records.Allergies [SelectedAllergy]);
+
+            pallAllergy.PropertyChanged += UpdateRecords;
+        }
+
+        private void Action_AddAllergy () {
+            if (Records is null)
+                return;
+
+            II.Allergy allergy = new ();
+            Records.Allergies.Add (allergy);
+
+            UpdateView_AllergyList ();
+
+            ListBox lbAllergies = this.FindControl<ListBox> ("lbAllergies");
+            lbAllergies.SelectedIndex = Records.Allergies.FindIndex (o => o.UUID == allergy.UUID);
+            SelectedAllergy = lbAllergies.SelectedIndex;
+
+            Action_SelectAllergy ();
+        }
+
+        private void Action_DeleteAllergy () {
+            if (Records is null)
+                return;
+
+            ListBox lbAllergies = this.FindControl<ListBox> ("lbAllergies");
+            SelectedAllergy = lbAllergies.SelectedIndex;
+
+            if (SelectedAllergy < 0 || SelectedAllergy >= Records.Allergies.Count)
+                return;
+
+            II.Allergy allergy = Records.Allergies [SelectedAllergy];
+            Records.Allergies.RemoveAt (SelectedAllergy);
+
+            SelectedAllergy = SelectedAllergy > -1 ? SelectedAllergy - 1 : -1;
+
+            UpdateView_AllergyList ();
+            Action_SelectAllergy ();
         }
 
         private void SortRxOrders () {
@@ -566,6 +702,15 @@ namespace IISE.Windows {
         }
 
         /* Any other Routed events for this Panel */
+
+        private void LbAllergies_SelectionChanged (object? sender, SelectionChangedEventArgs e)
+            => Action_SelectAllergy ();
+
+        private void ButtonAddAllergy_Click (object sender, RoutedEventArgs e)
+            => Action_AddAllergy ();
+
+        private void ButtonDeleteAllergy_Click (object sender, RoutedEventArgs e)
+            => Action_DeleteAllergy ();
 
         private void LbRxOrders_SelectionChanged (object? sender, SelectionChangedEventArgs e)
             => Action_SelectRxOrder ();

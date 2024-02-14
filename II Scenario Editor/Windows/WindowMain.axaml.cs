@@ -356,9 +356,6 @@ namespace IISE {
         private void MenuFileSave_Command ()
             => MenuFileSave_Click (this, new RoutedEventArgs ());
 
-        private void Menu_Command ()
-            => MenuFileSaveAs_Click (this, new RoutedEventArgs ());
-
         private void MenuEditCopyPhysiology_Command () {
             if (ITabControl.SelectedItem is TabItem ti && ti.Name == "PanelStepEditor")
                 MenuEditCopyPhysiology_Click (this, new RoutedEventArgs ());

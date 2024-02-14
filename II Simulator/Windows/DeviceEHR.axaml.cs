@@ -96,6 +96,8 @@ namespace IISIM {
                 Instance?.Language.Localize ("CHART:MedicalRecordNumber"),
                 Instance?.Records?.MRN);
 
+            SelectRecord (Records.Demographics);
+
             return Task.CompletedTask;
         }
 

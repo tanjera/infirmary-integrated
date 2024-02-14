@@ -68,22 +68,70 @@
             <Label Content="Demographics" />
           </Expander.Header>
 
-          <StackPanel Classes="spgrp">
+          <Grid ColumnDefinitions="*"
+                RowDefinitions="Auto, Auto, Auto, Auto, Auto,  Auto, Auto, Auto, Auto, Auto,  Auto"
+                Classes="gdgrp">
 
-            <iic:PropertyString x:Name="pstrName" />
-            <iic:PropertyString x:Name="pstrMRN" />
+            <iic:PropertyString x:Name="pstrName" Grid.Row="0" />
+            <iic:PropertyString x:Name="pstrMRN" Grid.Row="1" />
 
-            <iic:PropertyDate x:Name="pdpDOB" />
-            <iic:PropertyString x:Name="pstrSex" />
+            <iic:PropertyDate x:Name="pdpDOB" Grid.Row="2" />
+            <iic:PropertyString x:Name="pstrSex" Grid.Row="3" />
 
-            <iic:PropertyEnum x:Name="penmCodeStatus" />
+            <Grid Grid.Row="4"
+                ColumnDefinitions="Auto, Auto, *"
+                RowDefinitions="Auto, Auto, Auto, Auto"
+                Classes="gdgrp">
 
-            <iic:PropertyString x:Name="pstrHomeAddress" />
-            <iic:PropertyString x:Name="pstrTelephoneNumber" />
-            <iic:PropertyString x:Name="pstrInsuranceProvider" />
-            <iic:PropertyString x:Name="pstrInsuranceAccount" />
-            <iic:PropertyString x:Name="pstrDemographicNotes" />
-          </StackPanel>
+              <StackPanel Orientation="Vertical"
+                          Grid.Column="0"
+                          Grid.Row="0"
+                          Grid.RowSpan="2"
+                          MinWidth="200"
+                          MinHeight="100">
+                <Label HorizontalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        Content="Allergies" />
+                <ListBox Name="lbAllergies"
+                         Background="White"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto" />
+              </StackPanel>
+
+              <Button Name="btnAddAllergy"
+                      Grid.Column="1"
+                      Grid.Row="0"
+                      Width="30"
+                      VerticalAlignment="Stretch"
+                      VerticalContentAlignment="Center"
+                      HorizontalContentAlignment="Center"
+                      Content="+"
+                      Click="ButtonAddAllergy_Click" />
+              <Button Name="btnDelAllergy"
+                      Grid.Column="1"
+                      Grid.Row="1"
+                      Width="30"
+                      VerticalAlignment="Stretch"
+                      VerticalContentAlignment="Center"
+                      HorizontalContentAlignment="Center"
+                      Content="-"
+                      Click="ButtonDeleteAllergy_Click" />
+
+              <StackPanel Grid.Column="2"
+                          Grid.Row="0"
+                          Grid.RowSpan="2"
+                          Classes="spgrp">
+                <iic:PropertyAllergy x:Name="pallAllergy" />
+              </StackPanel>
+            </Grid>
+
+            <iic:PropertyEnum x:Name="penmCodeStatus" Grid.Row="5" />
+
+            <iic:PropertyString x:Name="pstrHomeAddress" Grid.Row="6" />
+            <iic:PropertyString x:Name="pstrTelephoneNumber" Grid.Row="7" />
+            <iic:PropertyString x:Name="pstrInsuranceProvider" Grid.Row="8" />
+            <iic:PropertyString x:Name="pstrInsuranceAccount" Grid.Row="9" />
+            <iic:PropertyString x:Name="pstrDemographicNotes" Grid.Row="10" />
+          </Grid>
         </Expander>
 
         <!-- Medication Orders and Doses -->

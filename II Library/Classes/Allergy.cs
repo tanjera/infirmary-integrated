@@ -10,12 +10,13 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
+
     public class Allergy {
         public string? UUID;
 
         public string? Allergen;
         public string? Reaction;
-        public Scales.Intensity.Values Intensity;
+        public Scales.Intensity.Values? Intensity;
 
         public Allergy () {
             UUID = Guid.NewGuid ().ToString ();

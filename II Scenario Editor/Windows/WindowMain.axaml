@@ -47,7 +47,6 @@
     <KeyBinding Gesture="Ctrl+N" Command="{Binding MenuFileNew_Command}" />
     <KeyBinding Gesture="Ctrl+O" Command="{Binding MenuFileLoad_Command}" />
     <KeyBinding Gesture="Ctrl+S" Command="{Binding MenuFileSave_Command}" />
-    <KeyBinding Gesture="Ctrl+Shift+S" Command="{Binding MenuFileSaveAs_Command}" />
     <KeyBinding Gesture="Alt + Enter" Command="{Binding ToggleFullscreen}" />
     <KeyBinding Gesture="Alt+F4" Command="{Binding Close}" />
 
@@ -86,8 +85,7 @@
 
         <MenuItem Name="menuSaveAs"
               Header="Save As"
-              Click="MenuFileSaveAs_Click"
-              InputGesture="Ctrl+Shift+S" />
+              Click="MenuFileSaveAs_Click" />
 
         <Separator />
 
