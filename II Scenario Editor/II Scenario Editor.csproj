@@ -7,7 +7,7 @@
     <TrimMode>copyused</TrimMode>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <AssemblyName>Infirmary Integrated Scenario Editor</AssemblyName>
-    <Version>1.1.7</Version>
+    <Version>1.1.8</Version>
     <Company>Infirmary Integrated</Company>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageProjectUrl>https://www.infirmary-integrated.com/</PackageProjectUrl>
@@ -40,6 +40,9 @@
   <ItemGroup>
     <Compile Update="Controls\ItemStepEnd.axaml.cs">
       <DependentUpon>ItemStepEnd.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\PropertyNote.axaml.cs">
+      <DependentUpon>PropertyNote.axaml</DependentUpon>
     </Compile>
     <Compile Update="Controls\PropertyAllergy.axaml.cs">
       <DependentUpon>PropertyAllergy.axaml</DependentUpon>

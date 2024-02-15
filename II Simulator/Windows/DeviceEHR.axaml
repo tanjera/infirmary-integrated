@@ -114,7 +114,6 @@
           </Button>
 
           <Button
-            IsEnabled="False"
             Name="btnNotes"
             Classes="device"
             Click="ButtonNotes_Click">

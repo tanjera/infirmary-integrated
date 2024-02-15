@@ -1,6 +1,6 @@
 ﻿/* Record.cs
  * Infirmary Integrated
- * By Ibi Keller (Tanjera), (c) 2023
+ * By Ibi Keller (Tanjera), (c) 2024
  */
 
 using System;
@@ -10,7 +10,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
-
     public class Record {
         public DateTime? CurrentTime;
 
@@ -28,6 +27,8 @@ namespace II {
         public string? InsuranceAccount;
         public string? DemographicNotes;
 
+        public List<Note> Notes = new List<Note> ();
+
         public List<Medication.Order> RxOrders = new ();
         public List<Medication.Dose> RxDoses = new ();
 
@@ -43,6 +44,76 @@ namespace II {
                     age -= 1;
 
                 return age;
+            }
+        }
+
+        public class Note {
+            public string? UUID;
+
+            public DateTime? Timestamp;
+            public string? Title;
+            public string? Author;
+            public string? Content;
+
+            public Note () {
+                UUID = Guid.NewGuid ().ToString ();
+            }
+
+            public async void Load (string inc) {
+                using StringReader sRead = new (inc);
+                string? line, pline;
+                StringBuilder pbuffer;
+
+                try {
+                    while (!String.IsNullOrEmpty (line = sRead.ReadLine ())) {
+                        line = line.Trim ();
+
+                        if (line == "> Begin: Note.Content >>>") {
+                            pbuffer = new ();
+
+                            while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                    && pline.Trim () != "> End: Note.Content <<<")
+                                pbuffer.AppendLine (pline);
+
+                            Content = pbuffer.ToString ();
+                        } else if (line.Contains (':')) {
+                            string pName = line.Substring (0, line.IndexOf (':')),
+                                    pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
+                            switch (pName) {
+                                default: break;
+
+                                case "UUID": UUID = pValue; break;
+
+                                case "Timestamp": Timestamp = Utility.DateTime_FromString (pValue); break;
+                                case "Title": Title = pValue; break;
+                                case "Author": Author = pValue; break;
+                            }
+                        }
+                    }
+                } catch {
+                    /* If the load fails... just bail on the actual value parsing and continue the load process */
+                }
+
+                sRead.Close ();
+            }
+
+            public string Save (int indent = 1) {
+                string dent = Utility.Indent (indent);
+                StringBuilder sWrite = new ();
+
+                // File/scenario information
+                sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "UUID", UUID));
+
+                sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Timestamp", Utility.DateTime_ToString (Timestamp)));
+                sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Title", Title));
+                sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Author", Author));
+
+                // Allow for multi-line note content
+                sWrite.AppendLine ($"{dent}> Begin: Note.Content >>>");
+                sWrite.AppendLine (Content);
+                sWrite.AppendLine ($"{dent}> End: Note.Content <<<");
+
+                return sWrite.ToString ();
             }
         }
 

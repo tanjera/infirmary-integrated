@@ -28,6 +28,7 @@ namespace IISIM {
         public ScrollViewer cntlContent;
 
         public PanelDemographics Panel_Demographics;
+        public PanelNotes Panel_Notes;
         public PanelMAR Panel_MAR;
 
         public Records SelectedRecord;
@@ -70,6 +71,7 @@ namespace IISIM {
 
             /* Initiate content Panels & references */
             Panel_Demographics = new PanelDemographics (Instance);
+            Panel_Notes = new PanelNotes (Instance);
             Panel_MAR = new PanelMAR (Instance);
 
             /* Populate UI strings per language selection */
@@ -126,6 +128,9 @@ namespace IISIM {
                     break;
 
                 case Records.Notes:
+                    await Panel_Notes.RefreshInterface ();
+                    break;
+
                 case Records.Flowsheet:
                 case Records.Results:
                     break;
@@ -164,6 +169,8 @@ namespace IISIM {
 
         private void SelectRecord_Demographics () => SelectRecord (Records.Demographics);
 
+        private void SelectRecord_Notes () => SelectRecord (Records.Notes);
+
         private void SelectRecord_MAR () => SelectRecord (Records.MAR);
 
         private void SelectRecord (Records incType) {
@@ -178,6 +185,9 @@ namespace IISIM {
                     break;
 
                 case Records.Notes:
+                    cntlContent.Content = Panel_Notes;
+                    break;
+
                 case Records.Flowsheet:
                 case Records.Results:
                     break;
@@ -212,8 +222,8 @@ namespace IISIM {
         private void ButtonDemographics_Click (object s, RoutedEventArgs e)
             => SelectRecord_Demographics ();
 
-        private void ButtonNotes_Click (object s, RoutedEventArgs e) {
-        }
+        private void ButtonNotes_Click (object s, RoutedEventArgs e)
+            => SelectRecord_Notes ();
 
         private void ButtonFlowsheet_Click (object s, RoutedEventArgs e) {
         }

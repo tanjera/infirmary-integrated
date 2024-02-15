@@ -82,7 +82,7 @@ namespace IISIM {
 
             StringBuilder sbAllergies = new StringBuilder ();
             foreach (var allergy in Instance?.Records?.Allergies ?? new List<Allergy> ())
-                sbAllergies.AppendLine ($"{allergy.Allergen}: {allergy.Reaction} ({allergy.Intensity}");
+                sbAllergies.AppendLine ($"{allergy.Allergen}: {allergy.Reaction} ({allergy.Intensity})");
 
             this.FindControl<TextBlock> ("tbName").Text = Instance?.Records?.Name;
             this.FindControl<TextBlock> ("tbMRN").Text = Instance?.Records?.MRN;
@@ -91,7 +91,7 @@ namespace IISIM {
             this.FindControl<TextBlock> ("tbSex").Text = Instance?.Records?.Sex;
             this.FindControl<TextBlock> ("tbAllergies").Text = sbAllergies.ToString ();
 
-            this.FindControl<TextBlock> ("tbCodeStatus").Text = Instance.Language.Localize (
+            this.FindControl<TextBlock> ("tbCodeStatus").Text = Instance?.Language.Localize (
                 $"ENUM:CodeStatuses:{Instance?.Records?.CodeStatus.ToString ()}");
 
             this.FindControl<TextBlock> ("tbHomeAddress").Text = Instance?.Records?.HomeAddress;

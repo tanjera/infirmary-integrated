@@ -36,6 +36,7 @@ namespace IISE.Windows {
         public Record? Records;
 
         public int SelectedAllergy = -1;
+        public int SelectedNote = -1;
         public int SelectedRxOrder = -1;
 
         private WindowMain? IMain;
@@ -93,9 +94,11 @@ namespace IISE.Windows {
             PropertyString pstrDoseComment = this.FindControl<PropertyString> ("pstrDoseComment");
 
             PropertyAllergy pallAllergy = this.FindControl<PropertyAllergy> ("pallAllergy");
+            PropertyNote prnoNote = this.FindControl<PropertyNote> ("prnoNote");
             PropertyRxOrder prxOrder = this.FindControl<PropertyRxOrder> ("prxoRxOrder");
 
             ListBox lbAllergies = this.FindControl<ListBox> ("lbAllergies");
+            ListBox lbNotes = this.FindControl<ListBox> ("lbNotes");
             ListBox lbRxOrders = this.FindControl<ListBox> ("lbRxOrders");
 
             pdpSimDate.Init (PropertyDate.Keys.SimulationDate);
@@ -136,6 +139,9 @@ namespace IISE.Windows {
             pallAllergy.PropertyChanged += UpdateRecords;
             lbAllergies.SelectionChanged += LbAllergies_SelectionChanged;
 
+            prnoNote.PropertyChanged += UpdateRecords;
+            lbNotes.SelectionChanged += LbNotes_SelectionChanged;
+
             prxOrder.PropertyChanged += UpdateRecords;
             lbRxOrders.SelectionChanged += LbRxOrders_SelectionChanged;
 
@@ -162,13 +168,18 @@ namespace IISE.Windows {
             PropertyString pstrDemographicNotes = this.FindControl<PropertyString> ("pstrDemographicNotes");
 
             PropertyAllergy pallAllergy = this.FindControl<PropertyAllergy> ("pallAllergy");
+            PropertyNote prnoNote = this.FindControl<PropertyNote> ("prnoNote");
             PropertyRxOrder prxOrder = this.FindControl<PropertyRxOrder> ("prxoRxOrder");
 
             ListBox lbAllergies = this.FindControl<ListBox> ("lbAllergies");
+            ListBox lbNotes = this.FindControl<ListBox> ("lbNotes");
             ListBox lbRxOrders = this.FindControl<ListBox> ("lbRxOrders");
 
             Button btnAddAllergy = this.FindControl<Button> ("btnAddAllergy");
             Button btnDelAllergy = this.FindControl<Button> ("btnDelAllergy");
+
+            Button btnAddNote = this.FindControl<Button> ("btnAddNote");
+            Button btnDelNote = this.FindControl<Button> ("btnDelNote");
 
             Button btnAddRxOrder = this.FindControl<Button> ("btnAddRxOrder");
             Button btnDelRxOrder = this.FindControl<Button> ("btnDelRxOrder");
@@ -194,13 +205,18 @@ namespace IISE.Windows {
             pstrDemographicNotes.IsEnabled = (Records != null);
 
             pallAllergy.IsEnabled = lbAllergies.IsEnabled && lbAllergies.SelectedIndex >= 0;
+            prnoNote.IsEnabled = lbNotes.IsEnabled && lbNotes.SelectedIndex >= 0;
             prxOrder.IsEnabled = lbRxOrders.IsEnabled && lbRxOrders.SelectedIndex >= 0;
 
             lbAllergies.IsEnabled = (Records != null);
+            lbNotes.IsEnabled = (Records != null);
             lbRxOrders.IsEnabled = (Records != null);
 
             btnAddAllergy.IsEnabled = (Records != null);
             btnDelAllergy.IsEnabled = (Records != null);
+
+            btnAddNote.IsEnabled = (Records != null);
+            btnDelNote.IsEnabled = (Records != null);
 
             btnAddRxOrder.IsEnabled = (Records != null);
             btnDelRxOrder.IsEnabled = (Records != null);
@@ -265,6 +281,34 @@ namespace IISE.Windows {
                 lbAllergies.UnselectAll ();
 
             lbAllergies.SelectionChanged += LbAllergies_SelectionChanged;
+        }
+
+        private void UpdateView_NoteList () {
+            if (Records is null)
+                return;
+
+            ListBox lbNotes = this.FindControl<ListBox> ("lbNotes");
+
+            lbNotes.SelectionChanged -= LbNotes_SelectionChanged;
+
+            List<string> llbi = new ();
+
+            SortNotes ();
+
+            foreach (var note in Records.Notes) {
+                llbi.Add (String.Format ("{0}: {1}",
+                    note?.Timestamp?.ToString (),
+                    note.Title
+                    ));
+            }
+
+            lbNotes.Items = llbi;
+            if (SelectedNote >= 0 && SelectedNote < llbi.Count)
+                lbNotes.SelectedIndex = SelectedNote;
+            else
+                lbNotes.UnselectAll ();
+
+            lbNotes.SelectionChanged += LbNotes_SelectionChanged;
         }
 
         private void UpdateView_RxOrderList () {
@@ -432,6 +476,19 @@ namespace IISE.Windows {
             UpdateView_AllergyList ();
         }
 
+        private void UpdateRecords (object? sender, PropertyNote.PropertyNoteEventArgs e) {
+            if (Records is null)
+                return;
+
+            ListBox lbNotes = this.FindControl<ListBox> ("lbNotes");
+
+            if (SelectedNote >= 0 && SelectedNote < Records.Notes.Count) {
+                Records.Notes [SelectedNote] = e.Note;
+            }
+
+            UpdateView_NoteList ();
+        }
+
         private void UpdateRecords (object? sender, PropertyRxOrder.PropertyRxOrderEventArgs e) {
             if (Records is null)
                 return;
@@ -512,6 +569,75 @@ namespace IISE.Windows {
 
             UpdateView_AllergyList ();
             Action_SelectAllergy ();
+        }
+
+        private void SortNotes () {
+            string? selUUID = null;
+            if (SelectedNote >= 0 && Records?.Notes.Count > SelectedNote)
+                selUUID = Records.Notes [SelectedNote].UUID;
+
+            Records?.Notes.Sort ((a, b) => {
+                return DateTime.Compare (a.Timestamp ?? new DateTime (), b.Timestamp ?? new DateTime ());
+            });
+
+            if (selUUID is null)
+                SelectedNote = -1;
+            else
+                SelectedNote = Records?.Notes.FindIndex (o => o.UUID == selUUID) ?? -1;
+        }
+
+        private void Action_SelectNote () {
+            PropertyNote prnoNote = this.FindControl<PropertyNote> ("prnoNote");
+            ListBox lbNotes = this.FindControl<ListBox> ("lbNotes");
+
+            if (Records is null || lbNotes.SelectedIndex < 0 || lbNotes.SelectedIndex >= Records.Notes.Count) {
+                prnoNote.IsEnabled = false;
+                prnoNote.Init (new II.Record.Note ());
+                return;
+            }
+
+            prnoNote.PropertyChanged -= UpdateRecords;
+            prnoNote.IsEnabled = true;
+
+            SelectedNote = lbNotes.SelectedIndex;
+            prnoNote.Init (Records.Notes [SelectedNote]);
+
+            prnoNote.PropertyChanged += UpdateRecords;
+        }
+
+        private void Action_AddNote () {
+            if (Records is null)
+                return;
+
+            II.Record.Note note = new ();
+            Records.Notes.Add (note);
+
+            UpdateView_NoteList ();
+
+            ListBox lbNotes = this.FindControl<ListBox> ("lbNotes");
+            lbNotes.SelectedIndex = Records.Notes.FindIndex (o => o.UUID == note.UUID);
+            SelectedNote = lbNotes.SelectedIndex;
+
+            Action_SelectNote ();
+        }
+
+        private void Action_DeleteNote () {
+            if (Records is null)
+                return;
+
+            ListBox lbNotes = this.FindControl<ListBox> ("lbNotes");
+            SelectedNote = lbNotes.SelectedIndex;
+
+            if (SelectedNote < 0 || SelectedNote >= Records.Notes.Count)
+                return;
+
+            II.Record.Note note = Records.Notes [SelectedNote];
+            Records.Notes.RemoveAt (SelectedNote);
+
+            SelectedNote = SelectedNote > -1 ? SelectedNote - 1 : -1;
+
+            UpdateView_NoteList ();
+            Action_SelectNote ();
         }
 
         private void SortRxOrders () {
@@ -711,6 +837,15 @@ namespace IISE.Windows {
 
         private void ButtonDeleteAllergy_Click (object sender, RoutedEventArgs e)
             => Action_DeleteAllergy ();
+
+        private void LbNotes_SelectionChanged (object? sender, SelectionChangedEventArgs e)
+            => Action_SelectNote ();
+
+        private void ButtonAddNote_Click (object sender, RoutedEventArgs e)
+            => Action_AddNote ();
+
+        private void ButtonDeleteNote_Click (object sender, RoutedEventArgs e)
+            => Action_DeleteNote ();
 
         private void LbRxOrders_SelectionChanged (object? sender, SelectionChangedEventArgs e)
             => Action_SelectRxOrder ();

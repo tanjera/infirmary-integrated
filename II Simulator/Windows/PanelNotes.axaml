@@ -1,0 +1,47 @@
+<UserControl
+	x:Class="IISIM.PanelNotes"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	d:DesignHeight="720"
+	d:DesignWidth="1200"
+	mc:Ignorable="d">
+
+  <UserControl.Styles>
+    <Style Selector="Label">
+      <Setter Property="HorizontalAlignment" Value="Right" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Margin" Value="5,3,10,3" />
+    </Style>
+    <Style Selector="TextBlock">
+      <Setter Property="HorizontalAlignment" Value="Left" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Margin" Value="0,3,10,3" />
+    </Style>
+  </UserControl.Styles>
+
+  <DockPanel LastChildFill="True">
+
+    <ScrollViewer
+				HorizontalScrollBarVisibility="Auto"
+				VerticalScrollBarVisibility="Auto">
+      <Grid Name="gridMain"
+            ColumnDefinitions="Auto,*"
+            RowDefinitions="*">
+
+        <!-- List of Notes -->
+
+        <ListBox Name="lbNotes"
+                 Grid.Column="0"
+                 MinWidth="200"
+                 SelectionChanged="LbNotes_SelectionChanged" />
+
+        <!-- Display for selected Note -->
+
+        <TextBlock Name="tbNote"
+                   Grid.Column="1" />
+      </Grid>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>
