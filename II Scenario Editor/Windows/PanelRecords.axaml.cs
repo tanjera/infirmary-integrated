@@ -241,6 +241,7 @@ namespace IISE.Windows {
             }
 
             UpdateView_AllergyList ();
+            UpdateView_NoteList ();
             UpdateView_RxOrderList ();
             UpdateView_RxDoseList ();
 

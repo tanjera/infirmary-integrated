@@ -268,12 +268,6 @@ namespace IISE {
             await sw.WriteLineAsync (Encryption.HashSHA256 (sb.ToString ()));              // Hash for validation
             await sw.WriteAsync (Encryption.EncryptAES (sb.ToString ()));                  // Savefile data encrypted with AES
 
-#if DEBUG
-            /* Note: the following debugging code CRASHES the Load() process */
-            //sw.WriteLine ($"{Environment.NewLine}{Environment.NewLine}");
-            //sw.WriteLine (sb.ToString ());                                      // FOR DEBUGGING: An unencrypted write call; human-readable output
-#endif
-
             sw.Close ();
         }
 
@@ -348,7 +342,7 @@ namespace IISE {
         /* Menu Commands: For HotKey support!! */
 
         private void MenuFileNew_Command ()
-        => MenuFileNew_Click (this, new RoutedEventArgs ());
+            => MenuFileNew_Click (this, new RoutedEventArgs ());
 
         private void MenuFileLoad_Command ()
             => MenuFileLoad_Click (this, new RoutedEventArgs ());

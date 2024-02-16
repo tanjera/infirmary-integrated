@@ -40,7 +40,9 @@
         <!-- Display for selected Note -->
 
         <TextBlock Name="tbNote"
-                   Grid.Column="1" />
+                   Grid.Column="1"
+                   VerticalAlignment="Top"
+                   Margin="5" />
       </Grid>
     </ScrollViewer>
   </DockPanel>

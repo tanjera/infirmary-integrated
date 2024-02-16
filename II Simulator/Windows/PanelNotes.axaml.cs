@@ -84,8 +84,19 @@ namespace IISIM {
             ListBox lbNotes = this.FindControl<ListBox> ("lbNotes");
             TextBlock tbNote = this.FindControl<TextBlock> ("tbNote");
 
-            if (lbNotes.SelectedIndex > -1 && Instance?.Records?.Notes.Count >= lbNotes.SelectedIndex)
-                tbNote.Text = Instance?.Records?.Notes [lbNotes.SelectedIndex].Content;
+            if (lbNotes.SelectedIndex > -1 && Instance?.Records?.Notes.Count >= lbNotes.SelectedIndex) {
+                StringBuilder sb = new ();
+                Record.Note? note = Instance?.Records?.Notes [lbNotes.SelectedIndex];
+                if (note is not null) {
+                    sb.AppendLine (note.Timestamp.ToString ());
+                    sb.AppendLine (note.Title);
+                    sb.AppendLine (note.Author);
+                    sb.AppendLine ("");
+                    sb.Append (note.Content);
+
+                    tbNote.Text = sb.ToString ();
+                }
+            }
         }
 
         public void Load (string inc) {

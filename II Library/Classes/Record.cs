@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
+
     public class Record {
         public DateTime? CurrentTime;
 
@@ -59,7 +60,7 @@ namespace II {
                 UUID = Guid.NewGuid ().ToString ();
             }
 
-            public async void Load (string inc) {
+            public async Task Load (string inc) {
                 using StringReader sRead = new (inc);
                 string? line, pline;
                 StringBuilder pbuffer;
@@ -68,14 +69,14 @@ namespace II {
                     while (!String.IsNullOrEmpty (line = sRead.ReadLine ())) {
                         line = line.Trim ();
 
-                        if (line == "> Begin: Note.Content >>>") {
+                        if (line == "> Begin: Record.Note.Content >>>") {
                             pbuffer = new ();
 
                             while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
-                                    && pline.Trim () != "> End: Note.Content <<<")
+                                    && pline.Trim () != "> End: Record.Note.Content <<<")
                                 pbuffer.AppendLine (pline);
 
-                            Content = pbuffer.ToString ();
+                            Content = pbuffer.ToString ().Trim ();
                         } else if (line.Contains (':')) {
                             string pName = line.Substring (0, line.IndexOf (':')),
                                     pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
@@ -109,9 +110,9 @@ namespace II {
                 sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Author", Author));
 
                 // Allow for multi-line note content
-                sWrite.AppendLine ($"{dent}> Begin: Note.Content >>>");
-                sWrite.AppendLine (Content);
-                sWrite.AppendLine ($"{dent}> End: Note.Content <<<");
+                sWrite.AppendLine ($"{dent}> Begin: Record.Note.Content >>>");
+                sWrite.AppendLine (Content?.Trim ());
+                sWrite.AppendLine ($"{dent}> End: Record.Note.Content <<<");
 
                 return sWrite.ToString ();
             }
@@ -158,6 +159,16 @@ namespace II {
                         Allergy allergy = new ();
                         await allergy.Load (pbuffer.ToString ());
                         Allergies.Add (allergy);
+                    } else if (line == "> Begin: Record.Note") {
+                        pbuffer = new ();
+
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline.Trim () != "> End: Record.Note")
+                            pbuffer.AppendLine (pline);
+
+                        Note note = new ();
+                        await note.Load (pbuffer.ToString ());
+                        Notes.Add (note);
                     } else if (line == "> Begin: Medication.Order") {
                         pbuffer = new ();
 
@@ -185,7 +196,7 @@ namespace II {
                                 && pline.Trim () != "> End: Demographic.Notes <<<")
                             pbuffer.AppendLine (pline);
 
-                        DemographicNotes = pbuffer.ToString ();
+                        DemographicNotes = pbuffer.ToString ().Trim ();
                     } else if (line.Contains (':')) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
@@ -246,15 +257,24 @@ namespace II {
 
             // Allow for multi-line demographic notes
             sWrite.AppendLine ($"{dent}> Begin: Demographic.Notes >>>");
-            sWrite.AppendLine (DemographicNotes);
+            sWrite.AppendLine (DemographicNotes?.Trim ());
             sWrite.AppendLine ($"{dent}> End: Demographic.Notes <<<");
 
+            // Notes
+            for (int i = 0; i < Notes.Count; i++) {
+                sWrite.AppendLine ($"{dent}> Begin: Record.Note");
+                sWrite.Append (Notes [i].Save (indent + 1));
+                sWrite.AppendLine ($"{dent}> End: Record.Note");
+            }
+
+            // Medication Orders
             for (int i = 0; i < RxOrders.Count; i++) {
                 sWrite.AppendLine ($"{dent}> Begin: Medication.Order");
                 sWrite.Append (RxOrders [i].Save (indent + 1));
                 sWrite.AppendLine ($"{dent}> End: Medication.Order");
             }
 
+            // Medication Doses
             for (int i = 0; i < RxDoses.Count; i++) {
                 sWrite.AppendLine ($"{dent}> Begin: Medication.Dose");
                 sWrite.Append (RxDoses [i].Save (indent + 1));
