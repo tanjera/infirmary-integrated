@@ -270,13 +270,13 @@ namespace II.Rhythm {
         private void SetForwardBuffer (Physiology patient, bool onClear = false) {
             /* Set the forward edge buffer (a coefficient of lengthSeconds!) to be the length of 2 beats/breaths */
             if (IsCardiac)
-                forwardBuffer = System.Math.Max (1 + (2 * ((double)patient.GetHRInterval / Length)),
+                forwardBuffer = System.Math.Max (1 + (2 * (patient.GetHRInterval / Length)),
                     (onClear ? 1.1f : forwardBuffer));
             else if (IsRespiratory)
-                forwardBuffer = System.Math.Max (1 + (2 * ((double)patient.GetRRInterval / Length)),
+                forwardBuffer = System.Math.Max (1 + (2 * (patient.GetRRInterval / Length)),
                     (onClear ? 1.1f : forwardBuffer));
             else if (IsObstetric)
-                forwardBuffer = System.Math.Max (1 + ((double)patient.ObstetricContractionFrequency / Length),
+                forwardBuffer = System.Math.Max (1 + (patient.ObstetricContractionFrequency / Length),
                     (onClear ? 1.1f : forwardBuffer));
         }
 
@@ -553,7 +553,7 @@ namespace II.Rhythm {
 
             lock (lockPoints) {
                 for (int i = Points.Count - 1; i >= 0; i--)
-                    Points [i] = new PointD (Points [i].X - scrollBy, Points [i].Y);
+                    Points [i].X = Points [i].X - scrollBy;
             }
         }
 
@@ -617,14 +617,29 @@ namespace II.Rhythm {
             TrimPoints ();
 
             if (IsECG) {
+                // Note: resolution scaling takes place within ECG_Isoelectric()
                 p.Cardiac_Rhythm.ECG_Isoelectric (p, this);
             } else if (CanScale) {
                 double fill = (Length * forwardBuffer) - Last (Points).X;
-                Concatenate (Scale (p, Draw.Flat_Line (fill > (double)p.GetHRInterval ? fill : (double)p.GetHRInterval, 0d)));
+                
+                // Interpolate HR Interval (.75 - 5 seconds) to a resolution coefficient of 1 - 100
+                // w/ default resolution of 10ms: @ HR 60 bpm, resolve @ 10ms, @ ~12 bpm, resolve @ 1000ms 
+                double length = fill > p.GetHRInterval ? fill : p.GetHRInterval;
+                double ilerpHRi = Math.Clamp(Math.InverseLerp (.75, 5, length), 0, 1);
+                double scaleRes = Math.Lerp(1, 100, ilerpHRi);
+                
+                Concatenate (Scale (p, Draw.Flat_Line (length, 0d, scaleRes)));
             } else {
                 /* Fill waveform through to future buffer with flatline */
                 double fill = (Length * forwardBuffer) - Last (Points).X;
-                Concatenate (Draw.Flat_Line (fill > (double)p.GetHRInterval ? fill : (double)p.GetHRInterval, 0d));
+                
+                // Interpolate HR Interval (.75 - 5 seconds) to a resolution coefficient of 1 - 100
+                // w/ default resolution of 10ms: @ HR 60 bpm, resolve @ 10ms, @ ~12 bpm, resolve @ 100ms 
+                double length = fill > p.GetHRInterval ? fill : p.GetHRInterval;
+                double ilerpHRi = Math.Clamp(Math.InverseLerp (.75, 5, length), 0, 1);
+                double scaleRes = Math.Lerp(1, 100, ilerpHRi);
+                
+                Concatenate (Draw.Flat_Line (length, 0d, scaleRes));
             }
 
             SortPoints ();

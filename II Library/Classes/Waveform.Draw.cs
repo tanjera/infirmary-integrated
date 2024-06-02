@@ -76,9 +76,11 @@ namespace II.Waveform {
 
         /*
          * Generic flat-line
+         * Note: Resolution is a coefficient for draw time resolution in milliseconds; e.g. base
+         * ResolutionTime (default 10) * _Resolution (2) = 20ms between each PointD plotted
          */
 
-        public static List<PointD> Flat_Line (double _Length, double _Isoelectric, int _Resolution = 1) {
+        public static List<PointD> Flat_Line (double _Length, double _Isoelectric, double _Resolution = 1) {
             return Plotting.Line ((int)(ResolutionTime * _Resolution), _Length, _Isoelectric, new PointD (0, _Isoelectric));
         }
 
