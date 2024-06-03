@@ -24,8 +24,9 @@ namespace Waveform_Editor {
         private List<Vertex> Vertices;
 
         /* Waveform settings */
-        private int DrawResolution;
-        private double DrawLength;
+        private int DrawResolution;             // In milliseconds
+        private int DrawLength;                 // In milliseconds
+        private int SystoleLength;              // In milliseconds
         private int IndexOffset;
         private string WaveName;
 
@@ -76,14 +77,17 @@ namespace Waveform_Editor {
             DrawResolution = 10;
             intDrawResolution.Value = 10;
 
-            DrawLength = 1;
-            dblDrawLength.Value = 1;
+            DrawLength = 1000;
+            intDrawLength.Value = 1000;
+
+            SystoleLength = 330;
+            intSystoleLength.Value = 330;
 
             IndexOffset = 0;
             intIndexOffset.Value = 0;
 
             Vertices = new List<Vertex> ();
-            for (int i = 0; i < ((DrawLength * 1000) / DrawResolution); i++)
+            for (int i = 0; i < (DrawLength / DrawResolution); i++)
                 Vertices.Add (new Vertex () { Y = 0 });
 
             UpdateWave ();
@@ -111,6 +115,7 @@ namespace Waveform_Editor {
                 sb.AppendLine (String.Format ("{0}:{1}", "WaveName", WaveName));
                 sb.AppendLine (String.Format ("{0}:{1}", "DrawResolution", DrawResolution));
                 sb.AppendLine (String.Format ("{0}:{1}", "IndexOffset", IndexOffset));
+                sb.AppendLine (String.Format ("{0}:{1}", "SystoleLength", SystoleLength));
 
                 StringBuilder sbVert = new StringBuilder ();
                 for (int i = 0; i < Vertices.Count; i++)
@@ -171,6 +176,7 @@ namespace Waveform_Editor {
                                     case "WaveName": WaveName = pValue; break;
                                     case "DrawResolution": DrawResolution = int.Parse (pValue); break;
                                     case "IndexOffset": IndexOffset = int.Parse (pValue); break;
+                                    case "SystoleLength": SystoleLength = int.Parse (pValue); break;
 
                                     case "Vertices":
                                         Vertices = new List<Vertex> ();
@@ -198,7 +204,7 @@ namespace Waveform_Editor {
                                 }
                             }
                         }
-                        DrawLength = (Vertices.Count * (double)DrawResolution) / 1000;
+                        DrawLength = Vertices.Count * DrawResolution;
                         FilePath = dlgLoad.FileName;
                     } catch {
                         LoadFail ();
@@ -253,7 +259,8 @@ namespace Waveform_Editor {
         private void UpdateUI () {
             txtWaveName.Text = WaveName;
             intDrawResolution.Value = DrawResolution;
-            dblDrawLength.Value = Math.Round ((decimal)DrawLength, 1);
+            intDrawLength.Value = DrawLength;
+            intSystoleLength.Value = SystoleLength;
             intIndexOffset.Value = IndexOffset;
         }
 
@@ -273,7 +280,7 @@ namespace Waveform_Editor {
 
         private void CalculateDrawOffsets () {
             /* +2 accounts for beginning and end margin */
-            drawXMultiplier = cnvDrawing.ActualWidth / (((DrawLength * 1000) / DrawResolution) + 2);
+            drawXMultiplier = cnvDrawing.ActualWidth / ((DrawLength / DrawResolution) + 2);
             drawYMultiplier = -cnvDrawing.ActualHeight / 2;
 
             drawXOffset = (int)drawXMultiplier;
@@ -366,8 +373,8 @@ namespace Waveform_Editor {
             IndexOffset -= removed;
             intIndexOffset.Value = IndexOffset;
 
-            DrawLength = ((double)Vertices.Count * (double)DrawResolution) / 1000;
-            dblDrawLength.Value = (decimal)DrawLength;
+            DrawLength = Vertices.Count * DrawResolution;
+            intDrawLength.Value = DrawLength;
 
             UpdateWave ();
         }
@@ -381,8 +388,8 @@ namespace Waveform_Editor {
                 }
             }
 
-            DrawLength = ((double)Vertices.Count * (double)DrawResolution) / 1000;
-            dblDrawLength.Value = (decimal)DrawLength;
+            DrawLength = Vertices.Count * DrawResolution;
+            intDrawLength.Value = DrawLength;
             UpdateWave ();
         }
 
@@ -393,8 +400,8 @@ namespace Waveform_Editor {
             }
 
             intIndexOffset.Value = IndexOffset;
-            DrawLength = ((double)Vertices.Count * (double)DrawResolution) / 1000;
-            dblDrawLength.Value = (decimal)DrawLength;
+            DrawLength = Vertices.Count * DrawResolution;
+            intDrawLength.Value = DrawLength;
             UpdateWave ();
         }
 
@@ -542,11 +549,11 @@ namespace Waveform_Editor {
             txtWaveName.Text = txtWaveName.Text.Trim ().Replace (' ', '_');
             WaveName = txtWaveName.Text;
             DrawResolution = intDrawResolution.Value ?? 10;
-            DrawLength = (double)(dblDrawLength.Value ?? 1);
+            DrawLength = intDrawLength.Value ?? 1000;
             IndexOffset = intIndexOffset.Value ?? 0;
 
             Vertices = new List<Vertex> ();
-            for (int i = 0; i < ((DrawLength * 1000) / DrawResolution); i++)
+            for (int i = 0; i < (DrawLength / DrawResolution); i++)
                 Vertices.Add (new Vertex () { Y = 0 });
 
             UpdateWave ();
@@ -557,6 +564,10 @@ namespace Waveform_Editor {
 
         private void menuFilterNormalizePositive_Click (object sender, RoutedEventArgs e)
             => Filter_Normalize (0, 1);
+
+        private void intSystoleLength_ValueChanged (object sender, RoutedPropertyChangedEventArgs<object> e) {
+            SystoleLength = intSystoleLength.Value ?? 330;
+        }
 
         private void cnvDrawing_KeyDown (object sender, KeyEventArgs e) {
             if (Keyboard.IsKeyDown (Key.LeftCtrl) || Keyboard.IsKeyDown (Key.RightCtrl))

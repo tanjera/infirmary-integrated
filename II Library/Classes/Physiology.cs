@@ -42,7 +42,7 @@ namespace II {
                     Electrical_Alternans = false;
 
         public Cardiac_Axes Cardiac_Axis = new ();
-        public double QRS_Interval, QTc_Interval;
+        public double QRS_Interval, QTc_Interval;           // In seconds (e.g. 0.1)
         public double []? ST_Elevation, T_Elevation;
 
         /* Obstetric profile */
@@ -401,12 +401,33 @@ namespace II {
         public double GetRRInterval_Inspiratory { get { return (GetRRInterval / (RR_IE_I + RR_IE_E)) * RR_IE_I; } }
         public double GetRRInterval_Expiratory { get { return (GetRRInterval / (RR_IE_I + RR_IE_E)) * RR_IE_E; } }
 
-        // A functional length in seconds of pulsatile rhythms; based on set heart rate (not actual!)
-        // for consistency in irregular rhythms
-        public double GetPulsatility_Seconds { get { return CalculateHRInterval (VS_Settings.HR) * 0.9d; } }
+        /* A functional length in seconds of pulsatile rhythms:
+           - Normocardia (60-100): 1/3 of cardiac cycle (RR interval) is systole; 0.4 bridges better
+           - Bradycardia (<60): RR interval is elongated and would generate stretched waveforms if used
+             ... approximate with 3.3 * QRS interval (bridges @ 60 and holds consistent downward)
+           - Tachycardia: (>100): RR interval is short and would cause overdrawing abnormally narrowed waveforms
+             ... approximate with 2.7 * QRS interval (bridges @ 100 and mimics increased ino/dromotropy
+             ... Goal coefficient should have allow for normal diastolic times @ 100 but have drastically
+                 decreased distolic times > 180-200 to mimic this cause of poor cardiac output
+        */ 
+        public double GetSystole_Seconds {
+            get {
+                if (VS_Settings.HR < 60) {                          // Brady
+                    return Math.Clamp (3.3 * QRS_Interval, 0.1, 1);     // Clamp to prevent GIGO
+                } else if (VS_Settings.HR > 100) {                  // Tachy
+                    return Math.Clamp (2.7 * QRS_Interval, 0.1, 1);     // Clamp to prevent GIGO
+                } else {                                            // Normocardia
+                    return CalculateHRInterval (VS_Settings.HR) * 0.4d; // Bridges w/ brady<->tachy well
+                }
+            }
+        }
 
         // Using Fridericia Formula for QT <-> QTc calculation
-        public double GetQTInterval { get { return System.Math.Pow ((60d / System.Math.Max (1, VS_Actual.HR)), (1 / 3)) * QTc_Interval; } }
+        public double GetQTInterval {
+            get {
+                return System.Math.Pow ((60d / System.Math.Max (1, VS_Actual.HR)), (1 / 3)) * QTc_Interval;
+            }
+        }
 
         public double GetSTInterval { get { return GetQTInterval - QRS_Interval; } }
         public double GetSTSegment { get { return GetSTInterval * (1d / 3d); } }

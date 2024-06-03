@@ -622,22 +622,24 @@ namespace II.Rhythm {
             } else if (CanScale) {
                 double fill = (Length * forwardBuffer) - Last (Points).X;
                 
-                // Interpolate HR Interval (.75 - 5 seconds) to a resolution coefficient of 1 - 100
-                // w/ default resolution of 10ms: @ HR 60 bpm, resolve @ 10ms, @ ~12 bpm, resolve @ 1000ms 
+                // Interpolate HR Interval (.75 - 5 seconds) to a resolution coefficient of 1 - 10
+                // w/ default resolution of 10ms: @ HR 60 bpm, resolve @ 10ms, @ ~12 bpm, resolve @ 100ms 
+                // Note: high resolution times (e.g. 100ms) cuts into drawing of following concatenation!
                 double length = fill > p.GetHRInterval ? fill : p.GetHRInterval;
                 double ilerpHRi = Math.Clamp(Math.InverseLerp (.75, 5, length), 0, 1);
-                double scaleRes = Math.Lerp(1, 100, ilerpHRi);
+                double scaleRes = Math.Lerp(1, 10, ilerpHRi);
                 
                 Concatenate (Scale (p, Draw.Flat_Line (length, 0d, scaleRes)));
             } else {
                 /* Fill waveform through to future buffer with flatline */
                 double fill = (Length * forwardBuffer) - Last (Points).X;
                 
-                // Interpolate HR Interval (.75 - 5 seconds) to a resolution coefficient of 1 - 100
+                // Interpolate HR Interval (.75 - 5 seconds) to a resolution coefficient of 1 - 10
                 // w/ default resolution of 10ms: @ HR 60 bpm, resolve @ 10ms, @ ~12 bpm, resolve @ 100ms 
+                // Note: high resolution times (e.g. 100ms) cuts into drawing of following concatenation!
                 double length = fill > p.GetHRInterval ? fill : p.GetHRInterval;
                 double ilerpHRi = Math.Clamp(Math.InverseLerp (.75, 5, length), 0, 1);
-                double scaleRes = Math.Lerp(1, 100, ilerpHRi);
+                double scaleRes = Math.Lerp(1, 10, ilerpHRi);
                 
                 Concatenate (Draw.Flat_Line (length, 0d, scaleRes));
             }
@@ -705,11 +707,7 @@ namespace II.Rhythm {
                     break;
 
                 case Lead.Values.ICP:
-                    ReplaceAtOver (Draw.ICP_Rhythm (p, 1d));
-                    break;
-
-                case Lead.Values.IAP:
-                    ReplaceAtOver (Draw.IAP_Rhythm (p, 1d));
+                    ReplaceAtOver (Draw.ICP_Rhythm (p, .3d));
                     break;
             }
 
@@ -794,6 +792,10 @@ namespace II.Rhythm {
                 default: return;
                 case Lead.Values.RR: Replace (Draw.RR_Rhythm (p, true, Resolution_Respiratory)); break;
                 case Lead.Values.ETCO2: break;    // End-tidal waveform is only present on expiration!! Is flatline on inspiration.
+                
+                case Lead.Values.IAP:
+                    ReplaceAtOver (Draw.IAP_Rhythm (true, p, 1d));
+                    break;
             }
 
             SortPoints ();
@@ -807,6 +809,10 @@ namespace II.Rhythm {
                 default: break;
                 case Lead.Values.RR: Replace (Draw.RR_Rhythm (p, false, Resolution_Respiratory)); break;
                 case Lead.Values.ETCO2: Replace (Draw.ETCO2_Rhythm (p)); break;
+                
+                case Lead.Values.IAP:
+                    Replace (Draw.IAP_Rhythm (false, p, -1d));
+                    break;
             }
 
             SortPoints ();

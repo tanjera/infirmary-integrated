@@ -11,8 +11,17 @@ namespace II.Waveform {
         public class Plot {
             public int DrawResolution;
             public int IndexOffset;
+            public int SystoleLength;
             public double [] Vertices;
 
+            public double Length_Seconds {
+                get { return (Vertices.Length * DrawResolution) / 1000d; }
+            }
+
+            public int Length_Milliseconds {
+                get { return Vertices.Length * DrawResolution; }
+            }
+            
             public Plot () {
             }
 
@@ -30,6 +39,7 @@ namespace II.Waveform {
             Plot _Out = new (
                 (_Plot1.DrawResolution + _Plot2.DrawResolution) / 2,
                 (_Plot1.IndexOffset + _Plot2.IndexOffset) / 2);
+            _Out.SystoleLength = (_Plot1.SystoleLength + _Plot2.SystoleLength) / 2;
 
             List<double> vertices = new ();
 

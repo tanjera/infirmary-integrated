@@ -81,6 +81,9 @@ namespace II.Waveform {
          */
 
         public static List<PointD> Flat_Line (double _Length, double _Isoelectric, double _Resolution = 1) {
+            // Ensure _Resolution as a double does not cause hyper-resolution (clamp at >= 1)
+            _Resolution = System.Math.Max (1, _Resolution);
+            
             return Plotting.Line ((int)(ResolutionTime * _Resolution), _Length, _Isoelectric, new PointD (0, _Isoelectric));
         }
 
@@ -95,7 +98,7 @@ namespace II.Waveform {
             DampenAmplitude_DiastolicFillTime (_P, ref _Amplitude);
 
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch (Dictionary.SPO2_Rhythm, (double)_P.GetPulsatility_Seconds),
+                Plotting.Stretch_BySystoleRatio (Dictionary.SPO2_Rhythm, _P), 
                 _Amplitude);
         }
 
@@ -123,18 +126,20 @@ namespace II.Waveform {
                 Plotting.Stretch (  // Lerp to change waveform based on intracranial compliance due to ICP
                     Dictionary.Lerp (Dictionary.ICP_HighCompliance, Dictionary.ICP_LowCompliance,
                         Math.Clamp (Math.InverseLerp (15, 25, _P.ICP), 0, 1)),    // ICP compliance coefficient
-                    (double)_P.GetHRInterval),
+                    _P.GetHRInterval),
                 _Amplitude);
         }
 
-        public static List<PointD> IAP_Rhythm (Physiology _P, double _Amplitude) {
+        public static List<PointD> IAP_Rhythm (bool isInspiration, Physiology _P, double _Amplitude) {
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
             DampenAmplitude_PulsusAlternans (_P, ref _Amplitude);
             DampenAmplitude_PulsusParadoxus (_P, ref _Amplitude);
             VaryAmplitude_Random (0.1d, ref _Amplitude);
 
+            // Abdominal pressure increase on inspiration
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch (Dictionary.IAP_Default, (double)_P.GetHRInterval),
+                Plotting.Stretch (Dictionary.IAP_Default, 
+                    isInspiration ? _P.GetRRInterval_Inspiratory : _P.GetRRInterval_Expiratory),
                 _Amplitude);
         }
 
@@ -145,7 +150,7 @@ namespace II.Waveform {
             DampenAmplitude_DiastolicFillTime (_P, ref _Amplitude);
 
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch (Dictionary.ABP_Default, (double)_P.GetPulsatility_Seconds),
+                Plotting.Stretch_BySystoleRatio(Dictionary.ABP_Default, _P),
                 _Amplitude);
         }
 
@@ -156,11 +161,11 @@ namespace II.Waveform {
 
             if (_P.Cardiac_Rhythm.HasPulse_Atrial && !_P.Cardiac_Rhythm.AberrantBeat)
                 return Plotting.Concatenate (new List<PointD> (),
-                    Plotting.Stretch (Dictionary.CVP_Atrioventricular, (double)_P.GetHRInterval),
+                    Plotting.Stretch_BySystoleRatio (Dictionary.CVP_Atrioventricular, _P),
                     _Amplitude);
             else
                 return Plotting.Concatenate (new List<PointD> (),
-                    Plotting.Stretch (Dictionary.CVP_Ventricular, (double)_P.GetHRInterval),
+                    Plotting.Stretch_BySystoleRatio (Dictionary.CVP_Ventricular, _P),
                     _Amplitude);
         }
 
@@ -169,7 +174,7 @@ namespace II.Waveform {
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
 
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch (Dictionary.RV_Default, (double)_P.GetPulsatility_Seconds),
+                Plotting.Stretch_BySystoleRatio (Dictionary.RV_Default, _P),
                 _Amplitude);
         }
 
@@ -178,7 +183,7 @@ namespace II.Waveform {
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
 
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch (Dictionary.PA_Default, (double)_P.GetPulsatility_Seconds),
+                Plotting.Stretch_BySystoleRatio (Dictionary.PA_Default, _P),
                 _Amplitude);
         }
 
@@ -187,7 +192,7 @@ namespace II.Waveform {
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
 
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch (Dictionary.PCW_Default, (double)_P.GetHRInterval),
+                Plotting.Stretch_BySystoleRatio (Dictionary.PCW_Default, _P),
                 _Amplitude);
         }
 
@@ -376,7 +381,8 @@ namespace II.Waveform {
 
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Multiply (
-                    Plotting.Stretch (Dictionary.ECG_Complex_VT, (double)_P.GetHRInterval),
+                    // Draws better w/ regular Stretch(); too much cropping/overdraw w/ Stretch_BySystoleRatio
+                    Plotting.Stretch (Dictionary.ECG_Complex_VT, _P.GetSystole_Seconds),
                 baseLeadCoeff [(int)_L.Value, (int)WavePart.QRST]),
                 GetAmplitude_ElectricalAlternans (_P));
         }
@@ -407,7 +413,7 @@ namespace II.Waveform {
 
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Multiply (
-                    Plotting.Stretch (Dictionary.ECG_Complex_Idioventricular, (double)_P.GetHRInterval),
+                    Plotting.Stretch_BySystoleRatio(Dictionary.ECG_Complex_Idioventricular, _P),
                 baseLeadCoeff [(int)_L.Value, (int)WavePart.QRST]),
                 GetAmplitude_ElectricalAlternans (_P));
         }
@@ -418,7 +424,7 @@ namespace II.Waveform {
 
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Multiply (
-                    Plotting.Stretch (Dictionary.ECG_CPR_Artifact, (double)_P.GetHRInterval),
+                    Plotting.Stretch_BySystoleRatio (Dictionary.ECG_CPR_Artifact, _P),
                 baseLeadCoeff [(int)_L.Value, (int)WavePart.QRST]));
         }
 

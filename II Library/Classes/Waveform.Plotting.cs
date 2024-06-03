@@ -67,6 +67,25 @@ namespace II.Waveform {
             return _Output;
         }
 
+        public static List<PointD> Stretch_BySystoleRatio (Dictionary.Plot _Addition, Physiology _P) {
+            // Interpolate desired length of waveform in seconds to draw from:
+            // Patient model's systolic time compared to waveform systolic time
+            // extrapolated 't' to ratio of waveform length versus waveform's systolic portion of length 
+            
+            int ptSystole = (int)(_P.GetSystole_Seconds * 1000d);
+
+            double length;
+
+            if (_Addition.SystoleLength == 0 || ptSystole == 0) {   // Upstream error
+                length = _P.GetHRInterval;
+            } else {
+                double ratioPatientToPlot = (double)ptSystole / (double)_Addition.SystoleLength;
+                length = _Addition.Length_Seconds * ratioPatientToPlot;
+            }
+
+            return Stretch (_Addition, length);
+        }
+
         public static List<PointD> Normalize (List<PointD> _Addition, double _Min, double _Max) {
             if (_Addition.Count == 0)
                 return new List<PointD> ();

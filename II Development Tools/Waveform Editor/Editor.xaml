@@ -112,6 +112,7 @@
 						<ColumnDefinition Width="*" />
 						<ColumnDefinition Width="*" />
 						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="*" />
 					</Grid.ColumnDefinitions>
 
 					<Grid Grid.Row="0" Grid.Column="0">
@@ -127,22 +128,39 @@
 								 HorizontalAlignment="Stretch" VerticalContentAlignment="Center" />
 					</Grid>
 
-					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
-					Grid.Row="0" Grid.Column="1">
+					<StackPanel Orientation="Horizontal"
+								HorizontalAlignment="Center"
+								Grid.Row="0"
+								Grid.Column="1">
 						<Label Content="Draw Length: " />
-						<xctk:DecimalUpDown Name="dblDrawLength" Value="1" Minimum="0.1" />
-						<Label Content=" seconds" />
+						<xctk:IntegerUpDown Name="intDrawLength"
+											Value="1000"
+											Minimum="100" />
+						<Label Content=" msec" />
 					</StackPanel>
 
-					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
-					Grid.Row="0" Grid.Column="2">
-						<Label Content="Draw Resolution (X Axis): " />
-						<xctk:IntegerUpDown Name="intDrawResolution" Value="10" />
-						<Label Content=" milliseconds per point" />
+					<StackPanel Orientation="Horizontal"
+								HorizontalAlignment="Center"
+								Grid.Row="0"
+								Grid.Column="2">
+						<Label Content="Systole Length: " />
+						<xctk:IntegerUpDown Name="intSystoleLength"
+											Value="300"
+											Minimum="0" 
+											ValueChanged="intSystoleLength_ValueChanged" />
+						<Label Content=" msec" />
+						
 					</StackPanel>
 
 					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
 					Grid.Row="0" Grid.Column="3">
+						<Label Content="Draw Resolution (X Axis): " />
+						<xctk:IntegerUpDown Name="intDrawResolution" Value="10" />
+						<Label Content=" msec per point" />
+					</StackPanel>
+
+					<StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+					Grid.Row="0" Grid.Column="4">
 						<Label Content="Index (X Axis) Offset: " />
 						<xctk:IntegerUpDown Name="intIndexOffset" Value="0" Minimum="0" />
 						<Label Content=" vertices" />

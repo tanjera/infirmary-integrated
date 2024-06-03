@@ -85,6 +85,7 @@ namespace Waveform_Dictionary_Builder {
                 string WaveName = "";
                 int DrawResolution = 0;
                 int IndexOffset = 0;
+                int SystoleLength = 0;
                 List<Vertex> Vertices = new List<Vertex> ();
 
                 /* Load individual .iiwf file */
@@ -106,6 +107,7 @@ namespace Waveform_Dictionary_Builder {
                                 case "WaveName": WaveName = pValue; break;
                                 case "DrawResolution": DrawResolution = int.Parse (pValue); break;
                                 case "IndexOffset": IndexOffset = int.Parse (pValue); break;
+                                case "SystoleLength": SystoleLength = int.Parse (pValue); break;
 
                                 case "Vertices":
                                     Vertices = new List<Vertex> ();
@@ -135,6 +137,7 @@ namespace Waveform_Dictionary_Builder {
                     dictOut.AppendLine (String.Format ("\t\tpublic static Plot {0} = new Plot () {{", WaveName));
                     dictOut.AppendLine (String.Format ("\t\t\tDrawResolution = {0},", DrawResolution));
                     dictOut.AppendLine (String.Format ("\t\t\tIndexOffset = {0},", IndexOffset));
+                    dictOut.AppendLine (String.Format ("\t\t\tSystoleLength = {0},", SystoleLength));
                     dictOut.AppendLine (String.Format ("\t\t\tVertices = new double[] {{", IndexOffset));
 
                     for (int v = 0; v < Vertices.Count; v++) {
