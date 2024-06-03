@@ -133,7 +133,7 @@ namespace Publishing {
                 packName = $"{packTitle}.zip";
                 arguments = $"a -tzip {packName} \"Infirmary Integrated\"";
 
-                Console.WriteLine ($"- Executing 7z {arguments}");
+                Console.WriteLine ($"- Executing zip {arguments}");
 
                 proc.StartInfo.FileName = progVar.path7Zip;
                 proc.StartInfo.Arguments = arguments;

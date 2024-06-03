@@ -33,6 +33,7 @@ namespace Publishing {
                     dirSolution = @"C:\Users\Ibi\Documents\Infirmary Integrated";
                 } else if (OperatingSystem.IsLinux ()) {
                     pathDotnet = "dotnet";
+                    path7Zip = "7z";
                     pathTar = "tar";
                     dirSolution = @"/home/ibi/Documents/Infirmary Integrated";
                 }
