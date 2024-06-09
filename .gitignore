@@ -17,6 +17,9 @@ Code Signing Certificate*
 [Tt]hird Party/
 [Tt]hird_Party/
 
+# Avalonia
+.avalonia-build-tasks
+
 # NetBeans
 II Server/nbproject/private/
 
