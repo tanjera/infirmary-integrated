@@ -1,6 +1,6 @@
 Current Version: 
 
-1.1.8
+1.1.9
 
 Versioning for this solution is kind of silly, but it will help me keep track
 of future changes and give an indexing system...

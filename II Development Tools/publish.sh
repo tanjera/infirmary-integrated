@@ -112,8 +112,8 @@ DIR_SIMULATOR_OBJ="$SOLUTION_PATH/II Simulator/obj"
 
 echo -e "${OUT_PREFIX}Cleaning build files (bin, obj) from '$DIR_SIMULATOR'"
 
-rm -rf "$DIR_SIMULATOR_BIN"
-rm -rf "$DIR_SIMULATOR_OBJ"
+rm -r "$DIR_SIMULATOR_BIN"
+rm -r "$DIR_SIMULATOR_OBJ"
 
 DIR_SCENED="$SOLUTION_PATH/II Scenario Editor"
 DIR_SCENED_BIN="$SOLUTION_PATH/II Scenario Editor/bin"
@@ -121,8 +121,8 @@ DIR_SCENED_OBJ="$SOLUTION_PATH/II Scenario Editor/obj"
 
 echo -e "${OUT_PREFIX}Cleaning build files (bin, obj) from '$DIR_SCENED'"
 
-rm -rf "$DIR_SCENED_BIN"
-rm -rf "$DIR_SCENED_OBJ"
+rm -r "$DIR_SCENED_BIN"
+rm -r "$DIR_SCENED_OBJ"
 
 echo -e "${OUT_PREFIX}Executing 'dotnet clean' on ${DIR_SIMULATOR}\n"
 cd "$DIR_SIMULATOR"
@@ -173,10 +173,51 @@ for arch in ${ARCHITECTURES[*]}; do
 
     # Trim unnecessary files from the packages
     # Specifically: VLC library cherry-picking
-    rm -rf "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated/libvlc/win-x64/locale"
-    rm -rf "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated/libvlc/win-x64/plugins"/video*
-    rm -rf "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated/libvlc/win-x86/locale"
-    rm -rf "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated/libvlc/win-x86/plugins"/video*
+    if [[ $arch == win* ]]; then
+        DIR_VLCX64="${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated/libvlc/win-x64"
+        DIR_VLCX86="${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated/libvlc/win-x86"
+
+        VLC_FOLDERS_ITER=( "control" "demux" "gui" "keystore" "logger" "lua" "meta_engine" "misc" "mux" 
+                            "packetizer" "services_discovery"  "spu" "stream_extractor" "stream_filter" 
+                            "stream_out" "text_renderer" "video_chroma" "video_filter" "video_output" 
+                            "video_splitter" "visualization" )
+        VLC_FILES_ITER=( "liba52_plugin.dll" "libadpcm_plugin.dll" "libaes3_plugin.dll" "libaom_plugin.dll" 
+                            "libaraw_plugin.dll" "libaribsub_plugin.dll" "libcc_plugin.dll" "libcdg_plugin.dll" 
+                            "libcrystalhd_plugin.dll" "libcvdsub_plugin.dll" "libd3d11va_plugin.dll" 
+                            "libdav1d_plugin.dll" "libdca_plugin.dll" "libddummy_plugin.dll" "libdmo_plugin.dll" 
+                            "libdvbsub_plugin.dll" "libdxva2_plugin.dll" "libedummy_plugin.dll" "libfaad_plugin.dll" 
+                            "libflac_plugin.dll" "libfluidsynth_plugin.dll" "libg711_plugin.dll" "libjpeg_plugin.dll" 
+                            "libkate_plugin.dll" "liblibass_plugin.dll" "liblibmpeg2_plugin.dll" "liblpcm_plugin.dll" 
+                            "libmft_plugin.dll" "libmpg123_plugin.dll" "liboggspots_plugin.dll" "libopus_plugin.dll" 
+                            "libpng_plugin.dll" "libqsv_plugin.dll" "librawvideo_plugin.dll" "librtpvideo_plugin.dll" 
+                            "libschroedinger_plugin.dll" "libscte18_plugin.dll" "libscte27_plugin.dll" 
+                            "libsdl_image_plugin.dll" "libspdif_plugin.dll" "libspeex_plugin.dll" "libspudec_plugin.dll" 
+                            "libstl_plugin.dll" "libsubsdec_plugin.dll" "libsubstx3g_plugin.dll" "libsubsusf_plugin.dll" 
+                            "libsvcdsub_plugin.dll" "libt140_plugin.dll" "libtextst_plugin.dll" "libtheora_plugin.dll" 
+                            "libttml_plugin.dll" "libtwolame_plugin.dll" "libuleaddvaudio_plugin.dll" "libvorbis_plugin.dll" 
+                            "libvpx_plugin.dll" "libwebvtt_plugin.dll" "libx26410b_plugin.dll" "libx264_plugin.dll" 
+                            "libx265_plugin.dll" "libzvbi_plugin.dll" )
+
+        for folder in ${VLC_FOLDERS_ITER[*]}; do
+            rm -r "${DIR_VLCX64}/plugins/${folder}"
+            rm -r "${DIR_VLCX86}/plugins/${folder}"
+        done
+
+        for file in ${VLC_FILES_ITER[*]}; do
+            rm "${DIR_VLCX64}/plugins/codec/${file}"
+            rm "${DIR_VLCX86}/plugins/codec/${file}"
+        done
+
+        rm -r "${DIR_VLCX64}/locale"
+        rm -r "${DIR_VLCX86}/locale"
+        rm -r "${DIR_VLCX64}/lua"
+        rm -r "${DIR_VLCX86}/lua"
+        rm -r "${DIR_VLCX64}/hrtfs"
+        rm -r "${DIR_VLCX86}/hrtfs"
+    elif [[ $arch == linux* || $arch == osx* ]]; then
+        rm -r "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated/libvlc/win-x64"
+        rm -r "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated/libvlc/win-x86"
+    fi
 
     # Set executables for *nix systems
     if [[ $arch == linux* || $arch == osx* ]]; then
@@ -195,7 +236,6 @@ for arch in ${ARCHITECTURES[*]}; do
     if [[ $arch == win* ]]; then
         PACK_PATH="${SOLUTION_PATH}/Release/${PACK_NAME}.zip"
         if [ -f "${PACK_PATH}" ]; then
-            echo -e "${OUT_PREFIX}${PACK_PATH} already exists! Deleting and replacing...\n"
             rm "${PACK_PATH}"
         fi
 
@@ -204,8 +244,7 @@ for arch in ${ARCHITECTURES[*]}; do
         zip -r "${RELEASE_PATH}/${PACK_NAME}.zip" "Infirmary Integrated"
     elif [[ $arch == linux* ]]; then
         PACK_PATH="${SOLUTION_PATH}/Release/${PACK_NAME}.tar.gz"
-        if [ -f "${PACK_PATH}" ]; then
-            echo -e "${OUT_PREFIX}${PACK_PATH} already exists! Deleting and replacing...\n"
+        if [ -f "${PACK_PATH}" ]; then            
             rm "${PACK_PATH}"
         fi
 
@@ -241,7 +280,7 @@ for arch in ${ARCHITECTURES[*]}; do
         dpkg-deb --build "$DEB_FS" >> /dev/null
 
         echo -e "Moving .deb package to $RELEASE_PATH/$DEB_PACKAGE\n"
-        mv "$DIR_WORKING/infirmary-integrated.deb" "$RELEASE_PATH/$DEB_PACKAGE"
+        mv -f "$DIR_WORKING/infirmary-integrated.deb" "$RELEASE_PATH/$DEB_PACKAGE"
 
         # ####
         # Package into .rpm; utilizes build files from .deb file structure!
@@ -250,7 +289,7 @@ for arch in ${ARCHITECTURES[*]}; do
         echo -e "${OUT_PREFIX}Creating .rpm file structure\n"
 
         # Set up the build directories
-        rm -rf "$RPMBUILD_DIR"
+        rm -r "$RPMBUILD_DIR"
         mkdir -p "$RPMBUILD_DIR/BUILD"
         mkdir -p "$RPMBUILD_DIR/BUILDROOT"
         mkdir -p "$RPMBUILD_DIR/RPMS"
@@ -259,7 +298,7 @@ for arch in ${ARCHITECTURES[*]}; do
         mkdir -p "$RPMBUILD_DIR/SRPMS"
 
         # Move the file structure into the BUILDROOT
-        rm -rf "$DEB_FS/DEBIAN"
+        rm -r "$DEB_FS/DEBIAN"
 
         BUILDROOT_PACKAGE_DIR="$RPMBUILD_DIR/BUILDROOT/infirmary-integrated-$VERSION-1.x86_64"
         echo -e "${OUT_PREFIX}Copying directory structure to $BUILDROOT_PACKAGE_DIR"
@@ -275,8 +314,8 @@ for arch in ${ARCHITECTURES[*]}; do
         rpmbuild -bb "$RPM_TARGET_SPEC"
 
         echo -e "${OUT_PREFIX}Moving .rpm package to $RELEASE_PATH/\n"
-        mv "$RPMBUILD_DIR/RPMS/x86_64/"* "$RELEASE_PATH"
-        rm -rf "$RPMBUILD_DIR"
+        mv -f "$RPMBUILD_DIR/RPMS/x86_64/"* "$RELEASE_PATH"
+        rm -r "$RPMBUILD_DIR"
     
     elif [[ $arch == osx* ]]; then
 
@@ -317,8 +356,13 @@ for arch in ${ARCHITECTURES[*]}; do
         echo -e "${OUT_PREFIX}Packaging tarball ${PACK_NAME}.tar.gz\n"
         
         cd "$DIR_WORKING"
+
+        if [ -f "${RELEASE_PATH}/${PACK_NAME}.tar.gz" ]; then
+            rm "${RELEASE_PATH}/${PACK_NAME}.tar.gz"
+        fi
+
         tar -czvf "${RELEASE_PATH}/${PACK_NAME}.tar.gz" "Infirmary Integrated.app" "Infirmary Integrated Scenario Editor.app"
     fi
 
-    rm -rf "${DIR_WORKING}"
+    rm -r "${DIR_WORKING}"
 done
