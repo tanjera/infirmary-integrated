@@ -53,4 +53,5 @@ Write-Host "Removing temporary working directory."
 Remove-Item -LiteralPath $pathTemp -Force -Recurse
 
 Write-Host "Signing package using signtool.exe."
+Write-Host "Reminder: security cards are blocked on RDP connections!" -ForegroundColor Yellow
 Invoke-Expression "& '$pathSigntool' sign /n `"Open Source Developer, Ibi Keller`" /t `"http://time.certum.pl`" /fd SHA256 /v '$outFile'"
