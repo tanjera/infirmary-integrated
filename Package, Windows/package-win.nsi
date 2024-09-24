@@ -9,7 +9,7 @@
 
 ; Named variables
 Name ${NAME}
-OutFile "infirmary-integrated-win-arm64.exe"
+OutFile "infirmary-integrated-win.exe"
 
 ; Request application privileges for Windows Vista
 RequestExecutionLevel admin
