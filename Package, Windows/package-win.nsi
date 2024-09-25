@@ -41,7 +41,7 @@ Section "" ;No components page, name is not important
   ; Create the uninstaller and associated registry keys
   WriteUninstaller "$INSTDIR\uninstall.exe"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Infirmary Integrated" \
-                 "DisplayName" "Infirmary Integrated" ; <-- Package_Windows.cs EDIT <--
+                 "DisplayName" "Infirmary Integrated"
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Infirmary Integrated" \
                  "UninstallString" "$\"$INSTDIR\uninstall.exe$\""
   WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\Infirmary Integrated" \
