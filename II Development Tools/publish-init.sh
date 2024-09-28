@@ -250,7 +250,7 @@ for arch in ${ARCHITECTURES[*]}; do
 
         echo -e "${OUT_PREFIX}Packaging into ${RELEASE_PATH}/${PACK_NAME}.tar.gz\n"
         cd "${DIR_WORKING}"
-        tar -czvf "${RELEASE_PATH}/${PACK_NAME}.tar.gz" "Infirmary Integrated"
+        tar -czvf "${RELEASE_PATH}/${PACK_NAME}.tar.gz" "Infirmary Integrated"        
     fi
     
     
@@ -280,7 +280,7 @@ for arch in ${ARCHITECTURES[*]}; do
         dpkg-deb --build "$DEB_FS" >> /dev/null
 
         echo -e "Moving .deb package to $RELEASE_PATH/$DEB_PACKAGE\n"
-        mv -f "$DIR_WORKING/infirmary-integrated.deb" "$RELEASE_PATH/$DEB_PACKAGE"
+        mv -f "$DIR_WORKING/infirmary-integrated.deb" "$RELEASE_PATH/$DEB_PACKAGE"        
 
         # ####
         # Package into .rpm; utilizes build files from .deb file structure!
@@ -313,8 +313,8 @@ for arch in ${ARCHITECTURES[*]}; do
         echo -e "${OUT_PREFIX}Packing .rpm package\n"
         rpmbuild -bb "$RPM_TARGET_SPEC"
 
-        echo -e "${OUT_PREFIX}Moving .rpm package to $RELEASE_PATH/\n"
-        mv -f "$RPMBUILD_DIR/RPMS/x86_64/"* "$RELEASE_PATH"
+        echo -e "${OUT_PREFIX}Moving .rpm package to $RELEASE_PATH/\n"        
+        mv -f "$RPMBUILD_DIR/RPMS/x86_64/"* "$RELEASE_PATH"        
         rm -r "$RPMBUILD_DIR"
     
     elif [[ $arch == osx* ]]; then
@@ -366,3 +366,16 @@ for arch in ${ARCHITECTURES[*]}; do
 
     rm -r "${DIR_WORKING}"
 done
+
+
+# ####
+# Create SHA512 checksums and sign the hash list
+# ####
+
+cd "${RELEASE_PATH}"
+rm sha512sums
+rm sha512sums.sig
+sha512sum *.rpm >> "${RELEASE_PATH}/sha512sums"
+sha512sum *.deb >> "${RELEASE_PATH}/sha512sums"
+sha512sum *linux*.tar.gz >> "${RELEASE_PATH}/sha512sums"
+gpg --detach-sign sha512sums
