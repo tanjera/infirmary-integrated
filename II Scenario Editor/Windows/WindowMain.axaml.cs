@@ -41,7 +41,6 @@ namespace IISE {
         private PanelSimulation IPanelSimulation;
         private PanelStepEditor IPanelStepEditor;
         private PanelParameters IPanelParameters;
-        private PanelRecords IPanelRecords;
 
         /* Data structures for use */
         private string? SaveFilePath;
@@ -51,16 +50,14 @@ namespace IISE {
 
             DataContext = this;
 
-            ITabControl = this.FindControl<TabControl> ("tabControl");
-            IPanelSimulation = this.FindControl<PanelSimulation> ("panelSimulation");
-            IPanelStepEditor = this.FindControl<PanelStepEditor> ("panelStepEditor");
-            IPanelParameters = this.FindControl<PanelParameters> ("panelParameters");
-            IPanelRecords = this.FindControl<PanelRecords> ("panelRecords");
+            ITabControl = this.GetControl<TabControl> ("tabControl");
+            IPanelSimulation = this.GetControl<PanelSimulation> ("panelSimulation");
+            IPanelStepEditor = this.GetControl<PanelStepEditor> ("panelStepEditor");
+            IPanelParameters = this.GetControl<PanelParameters> ("panelParameters");
 
             _ = IPanelSimulation.InitReferences (this);
             _ = IPanelStepEditor.InitReferences (this);
             _ = IPanelParameters.InitReferences (this);
-            _ = IPanelRecords.InitReferences (this);
 
             _ = InitScenario ();
             _ = InitHotkeys ();
@@ -109,9 +106,9 @@ namespace IISE {
         }
 
         private Task InitHotkeys () {
-            var menuNew = IPanelSimulation.FindControl<MenuItem> ("menuNew");
-            var menuLoad = IPanelSimulation.FindControl<MenuItem> ("menuLoad");
-            var menuSave = IPanelSimulation.FindControl<MenuItem> ("menuSave");
+            var menuNew = IPanelSimulation.GetControl<MenuItem> ("menuNew");
+            var menuLoad = IPanelSimulation.GetControl<MenuItem> ("menuLoad");
+            var menuSave = IPanelSimulation.GetControl<MenuItem> ("menuSave");
 
             HotKeyManager.SetHotKey (menuNew, new KeyGesture (Key.N, KeyModifiers.Control));
             HotKeyManager.SetHotKey (menuLoad, new KeyGesture (Key.O, KeyModifiers.Control));
@@ -131,14 +128,12 @@ namespace IISE {
             await IPanelSimulation.SetScenario (Scenario);
             await IPanelStepEditor.SetScenario (Scenario);
             await IPanelParameters.SetStep (null);
-            await IPanelRecords.SetStep (null);
 
             ITabControl.SelectedIndex = 0;
         }
 
         public async Task SetStep (Scenario.Step? step) {
             await IPanelParameters.SetStep (step);
-            await IPanelRecords.SetStep (step);
         }
 
         private async Task NewScenario () {

@@ -297,24 +297,6 @@
           </HeaderedContentControl>
 
           <HeaderedContentControl
-            Name="lblGroupEHR"
-            Background="White"
-            Classes="groupbox"
-            Header="Header">
-            <StackPanel Margin="3">
-              <Button
-                Name="btnRecordMAR"
-                Classes="device"
-                Click="ButtonRecordMAR_Click">
-                <StackPanel Orientation="Horizontal">
-                  <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_RecordMAR_128.png" />
-                  <Label Name="lblRecordMAR" Classes="device" />
-                </StackPanel>
-              </Button>
-            </StackPanel>
-          </HeaderedContentControl>
-
-          <HeaderedContentControl
             Name="lblGroupOptions"
             Background="White"
             Classes="groupbox"
@@ -373,14 +355,6 @@
             Classes="device"
             Click="ButtonDeviceEFM_Click">
             <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_DeviceEFM_128.png" />
-          </Button>
-
-          <Separator Margin="0 6" />
-
-          <Button
-            Classes="device"
-            Click="ButtonRecordMAR_Click">
-            <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_RecordMAR_128.png" />
           </Button>
 
           <Separator Margin="0 6" />

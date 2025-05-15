@@ -41,8 +41,8 @@ namespace IISE.Controls {
                     PropertyChanged -= (EventHandler<PropertyComboEventArgs>)d;
             }
 
-            Label lblKey = this.FindControl<Label> ("lblKey");
-            ComboBox cmbEnumeration = this.FindControl<ComboBox> ("cmbEnumeration");
+            Label lblKey = this.GetControl<Label> ("lblKey");
+            ComboBox cmbEnumeration = this.GetControl<ComboBox> ("cmbEnumeration");
 
             Key = key;
             Values = new List<string> (values);
@@ -53,12 +53,8 @@ namespace IISE.Controls {
                 case Keys.DefaultProgression: lblKey.Content = "Default Step to Progress To: "; break;
             }
 
-            List<ComboBoxItem> listItems = new List<ComboBoxItem> ();
-
             foreach (string s in readable)
-                listItems.Add (new ComboBoxItem () { Content = s });
-
-            cmbEnumeration.Items = listItems;
+                cmbEnumeration.Items.Add (new ComboBoxItem () { Content = s });
 
             if (!isInitiated) {
                 cmbEnumeration.SelectionChanged += SendPropertyChange;
@@ -70,17 +66,15 @@ namespace IISE.Controls {
         }
 
         public Task Update (List<string> values, List<string> readable, int index = 0) {
-            ComboBox cmbEnumeration = this.FindControl<ComboBox> ("cmbEnumeration");
+            ComboBox cmbEnumeration = this.GetControl<ComboBox> ("cmbEnumeration");
 
             cmbEnumeration.SelectionChanged -= SendPropertyChange;
 
             Values = new List<string> (values);
-
-            List<ComboBoxItem> listItems = new List<ComboBoxItem> ();
+            
             foreach (string s in readable)
-                listItems.Add (new ComboBoxItem () { Content = s });
-
-            cmbEnumeration.Items = listItems;
+                cmbEnumeration.Items.Add (new ComboBoxItem () { Content = s });
+            
             cmbEnumeration.SelectedIndex = index;
 
             cmbEnumeration.SelectionChanged += SendPropertyChange;
@@ -89,7 +83,7 @@ namespace IISE.Controls {
         }
 
         public Task Set (int index) {
-            ComboBox cmbEnumeration = this.FindControl<ComboBox> ("cmbEnumeration");
+            ComboBox cmbEnumeration = this.GetControl<ComboBox> ("cmbEnumeration");
 
             cmbEnumeration.SelectionChanged -= SendPropertyChange;
             cmbEnumeration.SelectedIndex = index;
@@ -99,7 +93,7 @@ namespace IISE.Controls {
         }
 
         private void SendPropertyChange (object? sender, EventArgs e) {
-            ComboBox cmbEnumeration = this.FindControl<ComboBox> ("cmbEnumeration");
+            ComboBox cmbEnumeration = this.GetControl<ComboBox> ("cmbEnumeration");
 
             if (cmbEnumeration.SelectedIndex < 0)
                 return;

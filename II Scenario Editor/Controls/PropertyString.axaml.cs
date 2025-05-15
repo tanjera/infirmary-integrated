@@ -53,8 +53,8 @@ namespace IISE.Controls {
                     PropertyChanged -= (EventHandler<PropertyStringEventArgs>)d;
             }
 
-            Label lblKey = this.FindControl<Label> ("lblKey");
-            TextBox txtValue = this.FindControl<TextBox> ("txtValue");
+            Label lblKey = this.GetControl<Label> ("lblKey");
+            TextBox txtValue = this.GetControl<TextBox> ("txtValue");
 
             Key = key;
             switch (Key) {
@@ -87,7 +87,7 @@ namespace IISE.Controls {
         }
 
         public Task Set (string value) {
-            TextBox txtValue = this.FindControl<TextBox> ("txtValue");
+            TextBox txtValue = this.GetControl<TextBox> ("txtValue");
 
             txtValue.TextInput -= SendPropertyChange;
             txtValue.Text = value;
@@ -97,7 +97,7 @@ namespace IISE.Controls {
         }
 
         private void SendPropertyChange (object? sender, EventArgs e) {
-            TextBox txtValue = this.FindControl<TextBox> ("txtValue");
+            TextBox txtValue = this.GetControl<TextBox> ("txtValue");
 
             PropertyStringEventArgs ea = new PropertyStringEventArgs ();
             ea.Key = Key;

@@ -48,11 +48,11 @@ namespace IISE.Controls {
         }
 
         private Task ReferenceView () {
-            plblKey = this.FindControl<Label> ("lblKey");
-            pnumHigh = this.FindControl<NumericUpDown> ("numHigh");
-            pnumLow = this.FindControl<NumericUpDown> ("numLow");
-            pchkEnabled = this.FindControl<CheckBox> ("chkEnabled");
-            pcmbPriority = this.FindControl<ComboBox> ("cmbPriority");
+            plblKey = this.GetControl<Label> ("lblKey");
+            pnumHigh = this.GetControl<NumericUpDown> ("numHigh");
+            pnumLow = this.GetControl<NumericUpDown> ("numLow");
+            pchkEnabled = this.GetControl<CheckBox> ("chkEnabled");
+            pcmbPriority = this.GetControl<ComboBox> ("cmbPriority");
 
             return Task.CompletedTask;
         }
@@ -92,12 +92,11 @@ namespace IISE.Controls {
 
             if (pnumHigh is not null && pnumLow is not null && pchkEnabled is not null && pcmbPriority is not null) {
                 Values = new ();
-                List<ComboBoxItem> listItems = new ();
                 foreach (string s in Enum.GetNames (typeof (Alarm.Priorities))) {
-                    listItems.Add (new ComboBoxItem () { Content = s });
+                    pcmbPriority.Items.Add (new ComboBoxItem () { Content = s });
                     Values.Add (s);
                 }
-                pcmbPriority.Items = listItems;
+                
 
                 if (!isInitiated) {
                     pcmbPriority.SelectionChanged += SendPropertyChange;
@@ -144,10 +143,10 @@ namespace IISE.Controls {
         }
 
         private void SendPropertyChange (object? sender, EventArgs e) {
-            pnumHigh = this.FindControl<NumericUpDown> ("numHigh");
-            pnumLow = this.FindControl<NumericUpDown> ("numLow");
-            pchkEnabled = this.FindControl<CheckBox> ("chkEnabled");
-            pcmbPriority = this.FindControl<ComboBox> ("cmbPriority");
+            pnumHigh = this.GetControl<NumericUpDown> ("numHigh");
+            pnumLow = this.GetControl<NumericUpDown> ("numLow");
+            pchkEnabled = this.GetControl<CheckBox> ("chkEnabled");
+            pcmbPriority = this.GetControl<ComboBox> ("cmbPriority");
 
             PropertyAlarmEventArgs ea = new () {
                 Device = Device,

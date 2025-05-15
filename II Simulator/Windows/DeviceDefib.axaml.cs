@@ -141,50 +141,50 @@ namespace IISIM {
 
             // Populate UI strings per language selection
 
-            this.FindControl<Window> ("wdwDeviceDefib").Title = Instance.Language.Localize ("DEFIB:WindowTitle");
-            this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
-            this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
-            this.FindControl<MenuItem> ("menuAddNumeric").Header = Instance.Language.Localize ("MENU:MenuAddNumeric");
-            this.FindControl<MenuItem> ("menuAddTracing").Header = Instance.Language.Localize ("MENU:MenuAddTracing");
-            this.FindControl<MenuItem> ("menuDefibEnergy").Header = Instance.Language.Localize ("DEFIB:DefibrillationEnergy");
-            this.FindControl<MenuItem> ("menuDefibMaximum").Header = Instance.Language.Localize ("DEFIB:Maximum");
-            this.FindControl<MenuItem> ("menuDefibMaximum_200").Header = $"200 {Instance.Language.Localize ("DEFIB:Joules")}";
-            this.FindControl<MenuItem> ("menuDefibMaximum_360").Header = $"360 {Instance.Language.Localize ("DEFIB:Joules")}";
-            this.FindControl<MenuItem> ("menuDefibIncrement").Header = Instance.Language.Localize ("DEFIB:Increment");
-            this.FindControl<MenuItem> ("menuDefibIncrement_10").Header = $"10 {Instance.Language.Localize ("DEFIB:Joules")}";
-            this.FindControl<MenuItem> ("menuDefibIncrement_20").Header = $"20 {Instance.Language.Localize ("DEFIB:Joules")}";
-            this.FindControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
-            this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
+            this.GetControl<Window> ("wdwDeviceDefib").Title = Instance.Language.Localize ("DEFIB:WindowTitle");
+            this.GetControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
+            this.GetControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+            this.GetControl<MenuItem> ("menuAddNumeric").Header = Instance.Language.Localize ("MENU:MenuAddNumeric");
+            this.GetControl<MenuItem> ("menuAddTracing").Header = Instance.Language.Localize ("MENU:MenuAddTracing");
+            this.GetControl<MenuItem> ("menuDefibEnergy").Header = Instance.Language.Localize ("DEFIB:DefibrillationEnergy");
+            this.GetControl<MenuItem> ("menuDefibMaximum").Header = Instance.Language.Localize ("DEFIB:Maximum");
+            this.GetControl<MenuItem> ("menuDefibMaximum_200").Header = $"200 {Instance.Language.Localize ("DEFIB:Joules")}";
+            this.GetControl<MenuItem> ("menuDefibMaximum_360").Header = $"360 {Instance.Language.Localize ("DEFIB:Joules")}";
+            this.GetControl<MenuItem> ("menuDefibIncrement").Header = Instance.Language.Localize ("DEFIB:Increment");
+            this.GetControl<MenuItem> ("menuDefibIncrement_10").Header = $"10 {Instance.Language.Localize ("DEFIB:Joules")}";
+            this.GetControl<MenuItem> ("menuDefibIncrement_20").Header = $"20 {Instance.Language.Localize ("DEFIB:Joules")}";
+            this.GetControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
+            this.GetControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
 
-            this.FindControl<MenuItem> ("menuAudio").Header = Instance.Language.Localize ("MENU:MenuAudio");
-            this.FindControl<MenuItem> ("menuAudioOff").Header = Instance.Language.Localize ("MENU:MenuAudioOff");
-            this.FindControl<MenuItem> ("menuAudioDefib").Header = Instance.Language.Localize ("MENU:MenuAudioDefib");
-            this.FindControl<MenuItem> ("menuAudioECG").Header = Instance.Language.Localize ("MENU:MenuAudioECG");
-            this.FindControl<MenuItem> ("menuAudioSPO2").Header = Instance.Language.Localize ("MENU:MenuAudioSPO2");
-            this.FindControl<MenuItem> ("menuAudioDisable").Header = Instance.Language.Localize ("MENU:MenuAudioDisable");
-            this.FindControl<MenuItem> ("menuAudioEnable").Header = Instance.Language.Localize ("MENU:MenuAudioEnable");
+            this.GetControl<MenuItem> ("menuAudio").Header = Instance.Language.Localize ("MENU:MenuAudio");
+            this.GetControl<MenuItem> ("menuAudioOff").Header = Instance.Language.Localize ("MENU:MenuAudioOff");
+            this.GetControl<MenuItem> ("menuAudioDefib").Header = Instance.Language.Localize ("MENU:MenuAudioDefib");
+            this.GetControl<MenuItem> ("menuAudioECG").Header = Instance.Language.Localize ("MENU:MenuAudioECG");
+            this.GetControl<MenuItem> ("menuAudioSPO2").Header = Instance.Language.Localize ("MENU:MenuAudioSPO2");
+            this.GetControl<MenuItem> ("menuAudioDisable").Header = Instance.Language.Localize ("MENU:MenuAudioDisable");
+            this.GetControl<MenuItem> ("menuAudioEnable").Header = Instance.Language.Localize ("MENU:MenuAudioEnable");
 
-            this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
-            this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
-            this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
+            this.GetControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
+            this.GetControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
+            this.GetControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
 
-            this.FindControl<TextBlock> ("btntxtDefib").Text = Instance.Language.Localize ("DEFIB:Defibrillator");
-            this.FindControl<TextBlock> ("txtDefibEnergy").Text = Instance.Language.Localize ("DEFIB:Energy");
-            this.FindControl<TextBlock> ("btntxtDefibEnergyDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
-            this.FindControl<TextBlock> ("btntxtDefibEnergyIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
-            this.FindControl<TextBlock> ("btntxtCharge").Text = Instance.Language.Localize ("DEFIB:Charge");
-            this.FindControl<TextBlock> ("btntxtShock").Text = Instance.Language.Localize ("DEFIB:Shock");
-            this.FindControl<TextBlock> ("btntxtAnalyze").Text = Instance.Language.Localize ("DEFIB:Analyze");
-            this.FindControl<TextBlock> ("btntxtSync").Text = Instance.Language.Localize ("DEFIB:Sync");
+            this.GetControl<TextBlock> ("btntxtDefib").Text = Instance.Language.Localize ("DEFIB:Defibrillator");
+            this.GetControl<TextBlock> ("txtDefibEnergy").Text = Instance.Language.Localize ("DEFIB:Energy");
+            this.GetControl<TextBlock> ("btntxtDefibEnergyDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
+            this.GetControl<TextBlock> ("btntxtDefibEnergyIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
+            this.GetControl<TextBlock> ("btntxtCharge").Text = Instance.Language.Localize ("DEFIB:Charge");
+            this.GetControl<TextBlock> ("btntxtShock").Text = Instance.Language.Localize ("DEFIB:Shock");
+            this.GetControl<TextBlock> ("btntxtAnalyze").Text = Instance.Language.Localize ("DEFIB:Analyze");
+            this.GetControl<TextBlock> ("btntxtSync").Text = Instance.Language.Localize ("DEFIB:Sync");
 
-            this.FindControl<TextBlock> ("btntxtPacer").Text = Instance.Language.Localize ("DEFIB:Pacer");
-            this.FindControl<TextBlock> ("txtPaceRate").Text = Instance.Language.Localize ("DEFIB:Rate");
-            this.FindControl<TextBlock> ("btntxtPaceRateDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
-            this.FindControl<TextBlock> ("btntxtPaceRateIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
-            this.FindControl<TextBlock> ("txtPaceEnergy").Text = Instance.Language.Localize ("DEFIB:Energy");
-            this.FindControl<TextBlock> ("btntxtPaceEnergyDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
-            this.FindControl<TextBlock> ("btntxtPaceEnergyIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
-            this.FindControl<TextBlock> ("btntxtPacePause").Text = Instance.Language.Localize ("DEFIB:Pause");
+            this.GetControl<TextBlock> ("btntxtPacer").Text = Instance.Language.Localize ("DEFIB:Pacer");
+            this.GetControl<TextBlock> ("txtPaceRate").Text = Instance.Language.Localize ("DEFIB:Rate");
+            this.GetControl<TextBlock> ("btntxtPaceRateDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
+            this.GetControl<TextBlock> ("btntxtPaceRateIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
+            this.GetControl<TextBlock> ("txtPaceEnergy").Text = Instance.Language.Localize ("DEFIB:Energy");
+            this.GetControl<TextBlock> ("btntxtPaceEnergyDecrease").Text = Instance.Language.Localize ("DEFIB:Decrease");
+            this.GetControl<TextBlock> ("btntxtPaceEnergyIncrease").Text = Instance.Language.Localize ("DEFIB:Increase");
+            this.GetControl<TextBlock> ("btntxtPacePause").Text = Instance.Language.Localize ("DEFIB:Pause");
         }
 
         private void UpdateInterface () {
@@ -200,7 +200,7 @@ namespace IISIM {
                 for (int i = 0; i < listNumerics.Count; i++)
                     listNumerics [i].SetColorScheme (colorScheme);
 
-                Window window = this.FindControl<Window> ("wdwDeviceDefib");
+                Window window = this.GetControl<Window> ("wdwDeviceDefib");
                 window.Background = Color.GetBackground (Color.Devices.DeviceDefib, colorScheme);
             }));
         }
@@ -800,7 +800,7 @@ namespace IISIM {
             }
 
             // Reset the UI container and repopulate with the UI elements
-            Grid gridNumerics = this.FindControl<Grid> ("gridNumerics");
+            Grid gridNumerics = this.GetControl<Grid> ("gridNumerics");
 
             gridNumerics.Children.Clear ();
             gridNumerics.ColumnDefinitions.Clear ();
@@ -810,7 +810,7 @@ namespace IISIM {
                 gridNumerics.Children.Add (listNumerics [i]);
             }
 
-            Grid gridTracings = this.FindControl<Grid> ("gridTracings");
+            Grid gridTracings = this.GetControl<Grid> ("gridTracings");
 
             gridTracings.Children.Clear ();
             gridTracings.RowDefinitions.Clear ();

@@ -55,7 +55,7 @@ namespace IISE.Windows {
 
             DataContext = this;
 
-            ICanvas = this.FindControl<Canvas> ("cnvsDesigner");
+            ICanvas = this.GetControl<Canvas> ("cnvsDesigner");
             ICanvas.PointerPressed += Item_PointerPressed;
 
             _ = InitView ();
@@ -102,11 +102,11 @@ namespace IISE.Windows {
         }
 
         private async Task InitView () {
-            PropertyCombo pcmbProgressFrom = this.FindControl<PropertyCombo> ("pcmbProgressFrom");
-            PropertyCombo pcmbProgressTo = this.FindControl<PropertyCombo> ("pcmbProgressTo");
-            PropertyString pstrStepName = this.FindControl<PropertyString> ("pstrStepName");
-            PropertyString pstrStepDescription = this.FindControl<PropertyString> ("pstrStepDescription");
-            PropertyInt pintProgressTimer = this.FindControl<PropertyInt> ("pintProgressTimer");
+            PropertyCombo pcmbProgressFrom = this.GetControl<PropertyCombo> ("pcmbProgressFrom");
+            PropertyCombo pcmbProgressTo = this.GetControl<PropertyCombo> ("pcmbProgressTo");
+            PropertyString pstrStepName = this.GetControl<PropertyString> ("pstrStepName");
+            PropertyString pstrStepDescription = this.GetControl<PropertyString> ("pstrStepDescription");
+            PropertyInt pintProgressTimer = this.GetControl<PropertyInt> ("pintProgressTimer");
 
             // Initiate controls for editing Scenario properties
 
@@ -189,7 +189,7 @@ namespace IISE.Windows {
         }
 
         private Task UpdateProgressionViewModel () {
-            StackPanel stackProgressions = this.FindControl<StackPanel> ("stackProgressions");
+            StackPanel stackProgressions = this.GetControl<StackPanel> ("stackProgressions");
             stackProgressions.Children.Clear ();
 
             if (ISelectedStep != null) {
@@ -210,11 +210,11 @@ namespace IISE.Windows {
         }
 
         private async Task UpdateStepViewModel () {
-            PropertyInt pintProgressTimer = this.FindControl<PropertyInt> ("pintProgressTimer");
-            PropertyCombo pcmbProgressFrom = this.FindControl<PropertyCombo> ("pcmbProgressFrom");
-            PropertyCombo pcmbProgressTo = this.FindControl<PropertyCombo> ("pcmbProgressTo");
-            PropertyString pstrStepName = this.FindControl<PropertyString> ("pstrStepName");
-            PropertyString pstrStepDescription = this.FindControl<PropertyString> ("pstrStepDescription");
+            PropertyInt pintProgressTimer = this.GetControl<PropertyInt> ("pintProgressTimer");
+            PropertyCombo pcmbProgressFrom = this.GetControl<PropertyCombo> ("pcmbProgressFrom");
+            PropertyCombo pcmbProgressTo = this.GetControl<PropertyCombo> ("pcmbProgressTo");
+            PropertyString pstrStepName = this.GetControl<PropertyString> ("pstrStepName");
+            PropertyString pstrStepDescription = this.GetControl<PropertyString> ("pstrStepDescription");
 
             pintProgressTimer.IsEnabled = (ISelectedStep != null);
             pcmbProgressFrom.IsEnabled = (ISelectedStep != null);
@@ -303,8 +303,7 @@ namespace IISE.Windows {
 
                 item.Description = incItem.Description;
                 item.Step.Description = incItem.Step.Description;
-
-                await item.Step.Records.Load (incItem.Records.Save ());
+                
                 await item.Step.Physiology.Load (incItem.Physiology.Save ());
             } else {
                 item.Name = $"Step #{ISteps.Count}";
@@ -571,30 +570,12 @@ namespace IISE.Windows {
             await CopiedStep.Physiology.Load (ISelectedStep.Physiology.Save ());
         }
 
-        private async Task Action_CopyRecords () {
-            if (ISelectedStep == null)
-                return;
-
-            if (CopiedStep == null)
-                CopiedStep = new ();
-
-            await CopiedStep.Records.Load (ISelectedStep.Records.Save ());
-        }
-
         private async Task Action_PastePhysiology () {
             if (ISelectedStep == null)
                 return;
 
             if (CopiedStep != null)
                 await ISelectedStep.Physiology.Load (CopiedStep.Physiology.Save ());
-        }
-
-        private async Task Action_PasteRecords () {
-            if (ISelectedStep == null)
-                return;
-
-            if (CopiedStep != null)
-                await ISelectedStep.Records.Load (CopiedStep.Records.Save ());
         }
 
         /* Generic Menu Items (across all Panels) */
@@ -636,13 +617,7 @@ namespace IISE.Windows {
 
         private void MenuEditPastePhysiology_Click (object sender, RoutedEventArgs e)
             => _ = Action_PastePhysiology ();
-
-        private void MenuEditCopyRecords_Click (object sender, RoutedEventArgs e)
-            => _ = Action_CopyRecords ();
-
-        private void MenuEditPasteRecords_Click (object sender, RoutedEventArgs e)
-            => _ = Action_PasteRecords ();
-
+        
         /* Any other Routed events for this Panel */
 
         private void ButtonAddStep_Click (object sender, RoutedEventArgs e)
@@ -659,12 +634,6 @@ namespace IISE.Windows {
 
         private void BtnPastePhysiology_Click (object sender, RoutedEventArgs e)
             => _ = Action_PastePhysiology ();
-
-        private void BtnCopyRecords_Click (object sender, RoutedEventArgs e)
-            => _ = Action_CopyRecords ();
-
-        private void BtnPasteRecords_Click (object sender, RoutedEventArgs e)
-            => _ = Action_PasteRecords ();
 
         private void Item_PointerPressed (object? sender, PointerPressedEventArgs e) {
             if (sender is ItemStep item) {

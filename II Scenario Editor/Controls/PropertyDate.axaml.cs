@@ -40,8 +40,8 @@ namespace IISE.Controls {
                     PropertyChanged -= (EventHandler<PropertyDateEventArgs>)d;
             }
 
-            Label lblKey = this.FindControl<Label> ("lblKey");
-            DatePicker dpValue = this.FindControl<DatePicker> ("dpValue");
+            Label lblKey = this.GetControl<Label> ("lblKey");
+            DatePicker dpValue = this.GetControl<DatePicker> ("dpValue");
 
             Key = key;
             switch (Key) {
@@ -71,7 +71,7 @@ namespace IISE.Controls {
             if (value is null)
                 return Task.CompletedTask;
 
-            DatePicker dpValue = this.FindControl<DatePicker> ("dpValue");
+            DatePicker dpValue = this.GetControl<DatePicker> ("dpValue");
 
             dpValue.SelectedDateChanged -= SendPropertyChange;
             dpValue.SelectedDate = new DateTimeOffset (

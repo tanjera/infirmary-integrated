@@ -81,11 +81,11 @@ namespace IISIM.Controls {
 
         private void UpdateInterface () {
             Dispatcher.UIThread.InvokeAsync (() => {
-                Border borderNumeric = this.FindControl<Border> ("borderNumeric");
-                TextBlock lblNumType = this.FindControl<TextBlock> ("lblNumType");
-                TextBlock lblLine1 = this.FindControl<TextBlock> ("lblLine1");
-                TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
-                TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
+                Border borderNumeric = this.GetControl<Border> ("borderNumeric");
+                TextBlock lblNumType = this.GetControl<TextBlock> ("lblNumType");
+                TextBlock lblLine1 = this.GetControl<TextBlock> ("lblLine1");
+                TextBlock lblLine2 = this.GetControl<TextBlock> ("lblLine2");
+                TextBlock lblLine3 = this.GetControl<TextBlock> ("lblLine3");
 
                 borderNumeric.BorderBrush = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
 
@@ -123,9 +123,9 @@ namespace IISIM.Controls {
             if (Instance?.Physiology == null)
                 return;
 
-            TextBlock lblLine1 = this.FindControl<TextBlock> ("lblLine1");
-            TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
-            TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
+            TextBlock lblLine1 = this.GetControl<TextBlock> ("lblLine1");
+            TextBlock lblLine2 = this.GetControl<TextBlock> ("lblLine2");
+            TextBlock lblLine3 = this.GetControl<TextBlock> ("lblLine3");
 
             switch (ControlType?.Value) {
                 default:
@@ -178,7 +178,7 @@ namespace IISIM.Controls {
                     if ((Instance?.Device_IABP?.Running ?? false)
                             && Instance?.Physiology?.IABP_AP < Instance?.Device_IABP?.AugmentationAlarm) {
                         AlarmLine1 = true;
-                        this.FindControl<TextBlock> ("lblLine1").Foreground = (AlarmIterator ?? false) ? Brushes.Red : Brushes.SkyBlue;
+                        this.GetControl<TextBlock> ("lblLine1").Foreground = (AlarmIterator ?? false) ? Brushes.Red : Brushes.SkyBlue;
                     } else {
                         AlarmLine1 = false;
                     }

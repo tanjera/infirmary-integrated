@@ -54,11 +54,11 @@ namespace IISIM.Controls {
             Dispatcher.UIThread.InvokeAsync (() => {
                 TracingBrush = Color.GetLead (Lead?.Value ?? Lead.Values.ECG_I, ColorScheme ?? Color.Schemes.Light);
 
-                Border borderTracing = this.FindControl<Border> ("borderTracing");
-                Label lblLead = this.FindControl<Label> ("lblLead");
-                Label lblScaleAuto = this.FindControl<Label> ("lblScaleAuto");
-                Label lblScaleMin = this.FindControl<Label> ("lblScaleMin");
-                Label lblScaleMax = this.FindControl<Label> ("lblScaleMax");
+                Border borderTracing = this.GetControl<Border> ("borderTracing");
+                Label lblLead = this.GetControl<Label> ("lblLead");
+                Label lblScaleAuto = this.GetControl<Label> ("lblScaleAuto");
+                Label lblScaleMin = this.GetControl<Label> ("lblScaleMin");
+                Label lblScaleMax = this.GetControl<Label> ("lblScaleMax");
 
                 borderTracing.BorderBrush = TracingBrush;
 

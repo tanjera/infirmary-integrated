@@ -50,8 +50,8 @@ namespace IISIM {
 
         public void UpdateScale () {
             if (Strip?.CanScale ?? false) {
-                Label lblScaleMin = this.FindControl<Label> ("lblScaleMin");
-                Label lblScaleMax = this.FindControl<Label> ("lblScaleMax");
+                Label lblScaleMin = this.GetControl<Label> ("lblScaleMin");
+                Label lblScaleMax = this.GetControl<Label> ("lblScaleMax");
 
                 lblScaleMin.Foreground = TracingBrush;
                 lblScaleMax.Foreground = TracingBrush;
@@ -62,7 +62,7 @@ namespace IISIM {
         }
 
         public void CalculateOffsets () {
-            Image imgTracing = this.FindControl<Image> ("imgTracing");
+            Image imgTracing = this.GetControl<Image> ("imgTracing");
 
             II.Rhythm.Tracing.CalculateOffsets (Strip,
                imgTracing.Bounds.Width, imgTracing.Bounds.Height,
@@ -78,7 +78,7 @@ namespace IISIM {
                 return Task.CompletedTask;
             }
 
-            Image imgTracing = this.FindControl<Image> ("imgTracing");
+            Image imgTracing = this.GetControl<Image> ("imgTracing");
 
             PixelSize size = new (    // Must use a size > 0
                 imgTracing.Bounds.Width > 0 ? (int)imgTracing.Bounds.Width : 100,

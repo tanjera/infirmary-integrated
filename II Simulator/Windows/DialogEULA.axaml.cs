@@ -46,9 +46,9 @@ namespace IISIM {
 
             // Populate UI strings per language selection
 
-            this.FindControl<Window> ("dlgEULA").Title = Instance.Language.Localize ("EULA:Title");
-            this.FindControl<TextBlock> ("txtAgreeTerms").Text = Instance.Language.Localize ("EULA:AgreeToTerms");
-            this.FindControl<Button> ("btnContinue").Content = Instance.Language.Localize ("BUTTON:Continue");
+            this.GetControl<Window> ("dlgEULA").Title = Instance.Language.Localize ("EULA:Title");
+            this.GetControl<TextBlock> ("txtAgreeTerms").Text = Instance.Language.Localize ("EULA:AgreeToTerms");
+            this.GetControl<Button> ("btnContinue").Content = Instance.Language.Localize ("BUTTON:Continue");
         }
 
         private void OnClick_Continue (object sender, RoutedEventArgs e) {

@@ -45,7 +45,7 @@ namespace IISE.Controls {
                     PropertyChanged -= (EventHandler<PropertyCheckEventArgs>)d;
             }
 
-            CheckBox chkValue = this.FindControl<CheckBox> ("chkValue");
+            CheckBox chkValue = this.GetControl<CheckBox> ("chkValue");
 
             Key = key;
             switch (Key) {
@@ -69,7 +69,7 @@ namespace IISE.Controls {
         }
 
         public Task Set (bool value) {
-            CheckBox chkValue = this.FindControl<CheckBox> ("chkValue");
+            CheckBox chkValue = this.GetControl<CheckBox> ("chkValue");
 
             chkValue.Checked -= SendPropertyChange;
             chkValue.Unchecked -= SendPropertyChange;
@@ -83,7 +83,7 @@ namespace IISE.Controls {
         }
 
         private void SendPropertyChange (object? sender, EventArgs e) {
-            CheckBox chkValue = this.FindControl<CheckBox> ("chkValue");
+            CheckBox chkValue = this.GetControl<CheckBox> ("chkValue");
 
             PropertyCheckEventArgs ea = new PropertyCheckEventArgs ();
             ea.Key = Key;

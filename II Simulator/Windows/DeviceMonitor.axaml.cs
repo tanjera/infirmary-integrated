@@ -16,6 +16,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
+using Avalonia.Platform;
 using Avalonia.Threading;
 
 using II;
@@ -83,12 +84,11 @@ namespace IISIM {
             base.InitAudio ();
 
             TonePlayer = new MediaPlayer (Instance.AudioLib);
-
-            var assets = AvaloniaLocator.Current.GetService<Avalonia.Platform.IAssetLoader> ();
+            
             AlarmMedia = new () {
-                new (assets.Open (new Uri ("avares://Infirmary Integrated/Resources/Alarm_Low_Priority.wav"))),
-                new (assets.Open (new Uri ("avares://Infirmary Integrated/Resources/Alarm_Medium_Priority.wav"))),
-                new (assets.Open (new Uri ("avares://Infirmary Integrated/Resources/Alarm_High_Priority.wav")))
+                new (AssetLoader.Open (new Uri ("avares://Infirmary Integrated/Resources/Alarm_Low_Priority.wav"))),
+                new (AssetLoader.Open (new Uri ("avares://Infirmary Integrated/Resources/Alarm_Medium_Priority.wav"))),
+                new (AssetLoader.Open (new Uri ("avares://Infirmary Integrated/Resources/Alarm_High_Priority.wav")))
             };
         }
 
@@ -124,28 +124,28 @@ namespace IISIM {
             }
 
             // Populate UI strings per language selection
-            this.FindControl<Window> ("wdwDeviceMonitor").Title = Instance.Language.Localize ("CM:WindowTitle");
-            this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
-            this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
-            this.FindControl<MenuItem> ("menuAddNumeric").Header = Instance.Language.Localize ("MENU:MenuAddNumeric");
-            this.FindControl<MenuItem> ("menuAddTracing").Header = Instance.Language.Localize ("MENU:MenuAddTracing");
-            this.FindControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
-            this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
+            this.GetControl<Window> ("wdwDeviceMonitor").Title = Instance.Language.Localize ("CM:WindowTitle");
+            this.GetControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
+            this.GetControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+            this.GetControl<MenuItem> ("menuAddNumeric").Header = Instance.Language.Localize ("MENU:MenuAddNumeric");
+            this.GetControl<MenuItem> ("menuAddTracing").Header = Instance.Language.Localize ("MENU:MenuAddTracing");
+            this.GetControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
+            this.GetControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
 
-            this.FindControl<MenuItem> ("menuAlarms").Header = Instance.Language.Localize ("MENU:MenuAlarms");
-            this.FindControl<MenuItem> ("menuAlarmsEnable").Header = Instance.Language.Localize ("MENU:MenuAlarmsEnable");
-            this.FindControl<MenuItem> ("menuAlarmsDisable").Header = Instance.Language.Localize ("MENU:MenuAlarmsDisable");
+            this.GetControl<MenuItem> ("menuAlarms").Header = Instance.Language.Localize ("MENU:MenuAlarms");
+            this.GetControl<MenuItem> ("menuAlarmsEnable").Header = Instance.Language.Localize ("MENU:MenuAlarmsEnable");
+            this.GetControl<MenuItem> ("menuAlarmsDisable").Header = Instance.Language.Localize ("MENU:MenuAlarmsDisable");
 
-            this.FindControl<MenuItem> ("menuAudio").Header = Instance.Language.Localize ("MENU:MenuAudio");
-            this.FindControl<MenuItem> ("menuAudioOff").Header = Instance.Language.Localize ("MENU:MenuAudioOff");
-            this.FindControl<MenuItem> ("menuAudioECG").Header = Instance.Language.Localize ("MENU:MenuAudioECG");
-            this.FindControl<MenuItem> ("menuAudioSPO2").Header = Instance.Language.Localize ("MENU:MenuAudioSPO2");
-            this.FindControl<MenuItem> ("menuAudioDisable").Header = Instance.Language.Localize ("MENU:MenuAudioDisable");
-            this.FindControl<MenuItem> ("menuAudioEnable").Header = Instance.Language.Localize ("MENU:MenuAudioEnable");
+            this.GetControl<MenuItem> ("menuAudio").Header = Instance.Language.Localize ("MENU:MenuAudio");
+            this.GetControl<MenuItem> ("menuAudioOff").Header = Instance.Language.Localize ("MENU:MenuAudioOff");
+            this.GetControl<MenuItem> ("menuAudioECG").Header = Instance.Language.Localize ("MENU:MenuAudioECG");
+            this.GetControl<MenuItem> ("menuAudioSPO2").Header = Instance.Language.Localize ("MENU:MenuAudioSPO2");
+            this.GetControl<MenuItem> ("menuAudioDisable").Header = Instance.Language.Localize ("MENU:MenuAudioDisable");
+            this.GetControl<MenuItem> ("menuAudioEnable").Header = Instance.Language.Localize ("MENU:MenuAudioEnable");
 
-            this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
-            this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
-            this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
+            this.GetControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
+            this.GetControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
+            this.GetControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
         }
 
         private void UpdateInterface () {
@@ -156,7 +156,7 @@ namespace IISIM {
                 for (int i = 0; i < listNumerics.Count; i++)
                     listNumerics [i].SetColorScheme (colorScheme);
 
-                Window window = this.FindControl<Window> ("wdwDeviceMonitor");
+                Window window = this.GetControl<Window> ("wdwDeviceMonitor");
                 window.Background = Color.GetBackground (Color.Devices.DeviceMonitor, colorScheme);
             });
         }
@@ -562,8 +562,8 @@ namespace IISIM {
             }
 
             // Reset the UI container and repopulate with the UI elements
-            Grid gridNumerics = this.FindControl<Grid> ("gridNumerics");
-            Grid gridTracings = this.FindControl<Grid> ("gridTracings");
+            Grid gridNumerics = this.GetControl<Grid> ("gridNumerics");
+            Grid gridTracings = this.GetControl<Grid> ("gridTracings");
 
             gridNumerics.Children.Clear ();
             gridNumerics.RowDefinitions.Clear ();

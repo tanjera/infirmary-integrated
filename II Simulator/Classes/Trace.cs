@@ -39,27 +39,30 @@ namespace IISIM {
 
             multiplier ??= new (1d, 1d);
 
-            using (IDrawingContextImpl ctx = bitmap.CreateDrawingContext (null)) {
+            using (DrawingContext ctx = bitmap.CreateDrawingContext (true)) {
                 var sg = new StreamGeometry ();
 
                 using (var sgc = sg.Open ()) {
                     lock (strip.lockPoints) {
                         sgc.BeginFigure (new Point (
-                            (strip.Points [0].X * multiplier.X) + offset.X,
-                            (strip.Points [0].Y * multiplier.Y) + offset.Y),
+                                (strip.Points [0].X * multiplier.X) + offset.X,
+                                (strip.Points [0].Y * multiplier.Y) + offset.Y),
                             false);
 
                         for (int i = 1; i < strip.Points.Count; i++) {
                             sgc.LineTo (new Point (
                                 (strip.Points [i].X * multiplier.X) + offset.X,
                                 (strip.Points [i].Y * multiplier.Y) + offset.Y
-                                ));
+                            ));
                         }
                     }
+
                     sgc.EndFigure (false);
+
                 }
 
-                ctx.DrawGeometry (Brushes.Transparent, pen, sg.PlatformImpl);
+                ctx.DrawGeometry (Brushes.Transparent, pen, sg.Clone ());
+                
             }
         }
     }

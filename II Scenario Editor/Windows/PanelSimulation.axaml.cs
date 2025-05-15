@@ -71,16 +71,16 @@ namespace IISE.Windows {
         }
 
         private Task ReferenceView () {
-            vpstrScenarioAuthor = this.FindControl<PropertyString> ("pstrScenarioAuthor");
-            vpstrScenarioName = this.FindControl<PropertyString> ("pstrScenarioName");
-            vpstrScenarioDescription = this.FindControl<PropertyString> ("pstrScenarioDescription");
+            vpstrScenarioAuthor = this.GetControl<PropertyString> ("pstrScenarioAuthor");
+            vpstrScenarioName = this.GetControl<PropertyString> ("pstrScenarioName");
+            vpstrScenarioDescription = this.GetControl<PropertyString> ("pstrScenarioDescription");
 
-            vpchkMonitorEnabled = this.FindControl<PropertyCheck> ("pchkMonitorEnabled");
-            vpchkDefibEnabled = this.FindControl<PropertyCheck> ("pchkDefibEnabled");
-            vpchkECGEnabled = this.FindControl<PropertyCheck> ("pchkECGEnabled");
-            vpchkIABPEnabled = this.FindControl<PropertyCheck> ("pchkIABPEnabled");
+            vpchkMonitorEnabled = this.GetControl<PropertyCheck> ("pchkMonitorEnabled");
+            vpchkDefibEnabled = this.GetControl<PropertyCheck> ("pchkDefibEnabled");
+            vpchkECGEnabled = this.GetControl<PropertyCheck> ("pchkECGEnabled");
+            vpchkIABPEnabled = this.GetControl<PropertyCheck> ("pchkIABPEnabled");
 
-            vspMonitorAlarms = this.FindControl<StackPanel> ("spMonitorAlarms");
+            vspMonitorAlarms = this.GetControl<StackPanel> ("spMonitorAlarms");
 
             return Task.CompletedTask;
         }

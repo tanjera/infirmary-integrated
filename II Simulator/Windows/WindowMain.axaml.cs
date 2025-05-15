@@ -26,6 +26,8 @@ using Avalonia.Threading;
 using II;
 using II.Localization;
 using II.Server;
+using MsBox.Avalonia.Dto;
+using MsBox.Avalonia.Models;
 
 namespace IISIM {
 
@@ -141,135 +143,128 @@ namespace IISIM {
 
             /* Populate UI strings per language selection */
 
-            this.FindControl<Window> ("wdwMain").Title = Instance.Language.Localize ("PE:WindowTitle");
-            this.FindControl<MenuItem> ("menuNew").Header = Instance.Language.Localize ("PE:MenuNewFile");
-            this.FindControl<MenuItem> ("menuFile").Header = Instance.Language.Localize ("PE:MenuFile");
-            this.FindControl<MenuItem> ("menuLoad").Header = Instance.Language.Localize ("PE:MenuLoadSimulation");
-            this.FindControl<MenuItem> ("menuSave").Header = Instance.Language.Localize ("PE:MenuSaveSimulation");
-            this.FindControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
-            this.FindControl<MenuItem> ("menuExit").Header = Instance.Language.Localize ("PE:MenuExitProgram");
+            this.GetControl<Window> ("wdwMain").Title = Instance.Language.Localize ("PE:WindowTitle");
+            this.GetControl<MenuItem> ("menuNew").Header = Instance.Language.Localize ("PE:MenuNewFile");
+            this.GetControl<MenuItem> ("menuFile").Header = Instance.Language.Localize ("PE:MenuFile");
+            this.GetControl<MenuItem> ("menuLoad").Header = Instance.Language.Localize ("PE:MenuLoadSimulation");
+            this.GetControl<MenuItem> ("menuSave").Header = Instance.Language.Localize ("PE:MenuSaveSimulation");
+            this.GetControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
+            this.GetControl<MenuItem> ("menuExit").Header = Instance.Language.Localize ("PE:MenuExitProgram");
 
-            this.FindControl<MenuItem> ("menuMirror").Header = Instance.Language.Localize ("PE:MenuMirror");
-            this.FindControl<MenuItem> ("menuMirrorDeactivate").Header = Instance.Language.Localize ("PE:MenuMirrorDeactivate");
-            this.FindControl<MenuItem> ("menuMirrorReceive").Header = Instance.Language.Localize ("PE:MenuMirrorReceive");
-            this.FindControl<MenuItem> ("menuMirrorBroadcast").Header = Instance.Language.Localize ("PE:MenuMirrorBroadcast");
+            this.GetControl<MenuItem> ("menuMirror").Header = Instance.Language.Localize ("PE:MenuMirror");
+            this.GetControl<MenuItem> ("menuMirrorDeactivate").Header = Instance.Language.Localize ("PE:MenuMirrorDeactivate");
+            this.GetControl<MenuItem> ("menuMirrorReceive").Header = Instance.Language.Localize ("PE:MenuMirrorReceive");
+            this.GetControl<MenuItem> ("menuMirrorBroadcast").Header = Instance.Language.Localize ("PE:MenuMirrorBroadcast");
 
-            this.FindControl<MenuItem> ("menuSettings").Header = Instance.Language.Localize ("PE:MenuSettings");
-            this.FindControl<MenuItem> ("menuToggleAudio").Header = String.Format ("{0}: {1}",
+            this.GetControl<MenuItem> ("menuSettings").Header = Instance.Language.Localize ("PE:MenuSettings");
+            this.GetControl<MenuItem> ("menuToggleAudio").Header = String.Format ("{0}: {1}",
                 Instance.Language.Localize ("PE:MenuToggleAudio"),
                 Instance.Settings.AudioEnabled ? Instance.Language.Localize ("BOOLEAN:On") : Instance.Language.Localize ("BOOLEAN:Off"));
-            this.FindControl<MenuItem> ("menuSetLanguage").Header = Instance.Language.Localize ("PE:MenuSetLanguage");
+            this.GetControl<MenuItem> ("menuSetLanguage").Header = Instance.Language.Localize ("PE:MenuSetLanguage");
 
-            this.FindControl<MenuItem> ("menuHelp").Header = Instance.Language.Localize ("PE:MenuHelp");
-            this.FindControl<MenuItem> ("menuCheckUpdate").Header = Instance.Language.Localize ("PE:MenuCheckUpdates");
-            this.FindControl<MenuItem> ("menuAbout").Header = Instance.Language.Localize ("PE:MenuAboutProgram");
+            this.GetControl<MenuItem> ("menuHelp").Header = Instance.Language.Localize ("PE:MenuHelp");
+            this.GetControl<MenuItem> ("menuCheckUpdate").Header = Instance.Language.Localize ("PE:MenuCheckUpdates");
+            this.GetControl<MenuItem> ("menuAbout").Header = Instance.Language.Localize ("PE:MenuAboutProgram");
 
-            this.FindControl<HeaderedContentControl> ("lblGroupDevices").Header = Instance.Language.Localize ("PE:Devices");
-            this.FindControl<Label> ("lblDeviceMonitor").Content = Instance.Language.Localize ("PE:CardiacMonitor");
-            this.FindControl<Label> ("lblDevice12LeadECG").Content = Instance.Language.Localize ("PE:12LeadECG");
-            this.FindControl<Label> ("lblDeviceDefibrillator").Content = Instance.Language.Localize ("PE:Defibrillator");
-            this.FindControl<Label> ("lblDeviceIABP").Content = Instance.Language.Localize ("PE:IABP");
-            this.FindControl<Label> ("lblDeviceEFM").Content = Instance.Language.Localize ("PE:EFM");
+            this.GetControl<HeaderedContentControl> ("lblGroupDevices").Header = Instance.Language.Localize ("PE:Devices");
+            this.GetControl<Label> ("lblDeviceMonitor").Content = Instance.Language.Localize ("PE:CardiacMonitor");
+            this.GetControl<Label> ("lblDevice12LeadECG").Content = Instance.Language.Localize ("PE:12LeadECG");
+            this.GetControl<Label> ("lblDeviceDefibrillator").Content = Instance.Language.Localize ("PE:Defibrillator");
+            this.GetControl<Label> ("lblDeviceIABP").Content = Instance.Language.Localize ("PE:IABP");
+            this.GetControl<Label> ("lblDeviceEFM").Content = Instance.Language.Localize ("PE:EFM");
 
-            this.FindControl<HeaderedContentControl> ("lblGroupEHR").Header = Instance.Language.Localize ("PE:EHR");
-            this.FindControl<Label> ("lblRecordMAR").Content = Instance.Language.Localize ("PE:MAR");
+            this.GetControl<HeaderedContentControl> ("lblGroupOptions").Header = Instance.Language.Localize ("PE:Options");
+            this.GetControl<Label> ("lblOptionsHide").Content = Instance.Language.Localize ("PE:HideDevices");
 
-            this.FindControl<HeaderedContentControl> ("lblGroupOptions").Header = Instance.Language.Localize ("PE:Options");
-            this.FindControl<Label> ("lblOptionsHide").Content = Instance.Language.Localize ("PE:HideDevices");
+            this.GetControl<Label> ("lblGroupScenarioPlayer").Content = Instance.Language.Localize ("PE:ScenarioPlayer");
+            this.GetControl<HeaderedContentControl> ("lblProgressionOptions").Header = Instance.Language.Localize ("PE:ProgressionOptions");
 
-            this.FindControl<Label> ("lblGroupScenarioPlayer").Content = Instance.Language.Localize ("PE:ScenarioPlayer");
-            this.FindControl<HeaderedContentControl> ("lblProgressionOptions").Header = Instance.Language.Localize ("PE:ProgressionOptions");
+            this.GetControl<Label> ("lblGroupVitalSigns").Content = Instance.Language.Localize ("PE:VitalSigns");
+            this.GetControl<Label> ("lblHR").Content = $"{Instance.Language.Localize ("PE:HeartRate")}:";
+            this.GetControl<Label> ("lblNIBP").Content = $"{Instance.Language.Localize ("PE:BloodPressure")}:";
+            this.GetControl<Label> ("lblRR").Content = $"{Instance.Language.Localize ("PE:RespiratoryRate")}:";
+            this.GetControl<Label> ("lblSPO2").Content = $"{Instance.Language.Localize ("PE:PulseOximetry")}:";
+            this.GetControl<Label> ("lblT").Content = $"{Instance.Language.Localize ("PE:Temperature")}:";
+            this.GetControl<Label> ("lblCardiacRhythm").Content = $"{Instance.Language.Localize ("PE:CardiacRhythm")}:";
+            this.GetControl<CheckBox> ("checkDefaultVitals").Content = Instance.Language.Localize ("PE:UseDefaultVitalSignRanges");
 
-            this.FindControl<Label> ("lblGroupVitalSigns").Content = Instance.Language.Localize ("PE:VitalSigns");
-            this.FindControl<Label> ("lblHR").Content = $"{Instance.Language.Localize ("PE:HeartRate")}:";
-            this.FindControl<Label> ("lblNIBP").Content = $"{Instance.Language.Localize ("PE:BloodPressure")}:";
-            this.FindControl<Label> ("lblRR").Content = $"{Instance.Language.Localize ("PE:RespiratoryRate")}:";
-            this.FindControl<Label> ("lblSPO2").Content = $"{Instance.Language.Localize ("PE:PulseOximetry")}:";
-            this.FindControl<Label> ("lblT").Content = $"{Instance.Language.Localize ("PE:Temperature")}:";
-            this.FindControl<Label> ("lblCardiacRhythm").Content = $"{Instance.Language.Localize ("PE:CardiacRhythm")}:";
-            this.FindControl<CheckBox> ("checkDefaultVitals").Content = Instance.Language.Localize ("PE:UseDefaultVitalSignRanges");
+            this.GetControl<Label> ("lblGroupHemodynamics").Content = Instance.Language.Localize ("PE:AdvancedHemodynamics");
+            this.GetControl<Label> ("lblETCO2").Content = $"{Instance.Language.Localize ("PE:EndTidalCO2")}:";
+            this.GetControl<Label> ("lblCVP").Content = $"{Instance.Language.Localize ("PE:CentralVenousPressure")}:";
+            this.GetControl<Label> ("lblASBP").Content = $"{Instance.Language.Localize ("PE:ArterialBloodPressure")}:";
+            this.GetControl<Label> ("lblPACatheterPlacement").Content = $"{Instance.Language.Localize ("PE:PulmonaryArteryCatheterPlacement")}:";
+            this.GetControl<Label> ("lblCO").Content = $"{Instance.Language.Localize ("PE:CardiacOutput")}:";
+            this.GetControl<Label> ("lblPSP").Content = $"{Instance.Language.Localize ("PE:PulmonaryArteryPressure")}:";
+            this.GetControl<Label> ("lblICP").Content = $"{Instance.Language.Localize ("PE:IntracranialPressure")}:";
+            this.GetControl<Label> ("lblIAP").Content = $"{Instance.Language.Localize ("PE:IntraabdominalPressure")}:";
 
-            this.FindControl<Label> ("lblGroupHemodynamics").Content = Instance.Language.Localize ("PE:AdvancedHemodynamics");
-            this.FindControl<Label> ("lblETCO2").Content = $"{Instance.Language.Localize ("PE:EndTidalCO2")}:";
-            this.FindControl<Label> ("lblCVP").Content = $"{Instance.Language.Localize ("PE:CentralVenousPressure")}:";
-            this.FindControl<Label> ("lblASBP").Content = $"{Instance.Language.Localize ("PE:ArterialBloodPressure")}:";
-            this.FindControl<Label> ("lblPACatheterPlacement").Content = $"{Instance.Language.Localize ("PE:PulmonaryArteryCatheterPlacement")}:";
-            this.FindControl<Label> ("lblCO").Content = $"{Instance.Language.Localize ("PE:CardiacOutput")}:";
-            this.FindControl<Label> ("lblPSP").Content = $"{Instance.Language.Localize ("PE:PulmonaryArteryPressure")}:";
-            this.FindControl<Label> ("lblICP").Content = $"{Instance.Language.Localize ("PE:IntracranialPressure")}:";
-            this.FindControl<Label> ("lblIAP").Content = $"{Instance.Language.Localize ("PE:IntraabdominalPressure")}:";
+            this.GetControl<Label> ("lblGroupRespiratoryProfile").Content = Instance.Language.Localize ("PE:RespiratoryProfile");
+            this.GetControl<Label> ("lblRespiratoryRhythm").Content = $"{Instance.Language.Localize ("PE:RespiratoryRhythm")}:";
+            this.GetControl<Label> ("lblMechanicallyVentilated").Content = $"{Instance.Language.Localize ("PE:MechanicallyVentilated")}:";
+            this.GetControl<Label> ("lblInspiratoryRatio").Content = $"{Instance.Language.Localize ("PE:InspiratoryExpiratoryRatio")}:";
 
-            this.FindControl<Label> ("lblGroupRespiratoryProfile").Content = Instance.Language.Localize ("PE:RespiratoryProfile");
-            this.FindControl<Label> ("lblRespiratoryRhythm").Content = $"{Instance.Language.Localize ("PE:RespiratoryRhythm")}:";
-            this.FindControl<Label> ("lblMechanicallyVentilated").Content = $"{Instance.Language.Localize ("PE:MechanicallyVentilated")}:";
-            this.FindControl<Label> ("lblInspiratoryRatio").Content = $"{Instance.Language.Localize ("PE:InspiratoryExpiratoryRatio")}:";
+            this.GetControl<Label> ("lblGroupCardiacProfile").Content = Instance.Language.Localize ("PE:CardiacProfile");
+            this.GetControl<Label> ("lblPacemakerCaptureThreshold").Content = $"{Instance.Language.Localize ("PE:PacemakerCaptureThreshold")}:";
+            this.GetControl<Label> ("lblPulsusParadoxus").Content = $"{Instance.Language.Localize ("PE:PulsusParadoxus")}:";
+            this.GetControl<Label> ("lblPulsusAlternans").Content = $"{Instance.Language.Localize ("PE:PulsusAlternans")}:";
+            this.GetControl<Label> ("lblElectricalAlternans").Content = $"{Instance.Language.Localize ("PE:ElectricalAlternans")}:";
+            this.GetControl<Label> ("lblQRSInterval").Content = $"{Instance.Language.Localize ("PE:QRSInterval")}:";
+            this.GetControl<Label> ("lblQTcInterval").Content = $"{Instance.Language.Localize ("PE:QTcInterval")}:";
+            this.GetControl<Label> ("lblCardiacAxis").Content = $"{Instance.Language.Localize ("PE:CardiacAxis")}:";
+            this.GetControl<HeaderedContentControl> ("grpSTSegmentElevation").Header = Instance.Language.Localize ("PE:STSegmentElevation");
+            this.GetControl<HeaderedContentControl> ("grpTWaveElevation").Header = Instance.Language.Localize ("PE:TWaveElevation");
 
-            this.FindControl<Label> ("lblGroupCardiacProfile").Content = Instance.Language.Localize ("PE:CardiacProfile");
-            this.FindControl<Label> ("lblPacemakerCaptureThreshold").Content = $"{Instance.Language.Localize ("PE:PacemakerCaptureThreshold")}:";
-            this.FindControl<Label> ("lblPulsusParadoxus").Content = $"{Instance.Language.Localize ("PE:PulsusParadoxus")}:";
-            this.FindControl<Label> ("lblPulsusAlternans").Content = $"{Instance.Language.Localize ("PE:PulsusAlternans")}:";
-            this.FindControl<Label> ("lblElectricalAlternans").Content = $"{Instance.Language.Localize ("PE:ElectricalAlternans")}:";
-            this.FindControl<Label> ("lblQRSInterval").Content = $"{Instance.Language.Localize ("PE:QRSInterval")}:";
-            this.FindControl<Label> ("lblQTcInterval").Content = $"{Instance.Language.Localize ("PE:QTcInterval")}:";
-            this.FindControl<Label> ("lblCardiacAxis").Content = $"{Instance.Language.Localize ("PE:CardiacAxis")}:";
-            this.FindControl<HeaderedContentControl> ("grpSTSegmentElevation").Header = Instance.Language.Localize ("PE:STSegmentElevation");
-            this.FindControl<HeaderedContentControl> ("grpTWaveElevation").Header = Instance.Language.Localize ("PE:TWaveElevation");
+            this.GetControl<Label> ("lblGroupObstetricProfile").Content = Instance.Language.Localize ("PE:ObstetricProfile");
+            this.GetControl<Label> ("lblFHR").Content = $"{Instance.Language.Localize ("PE:FetalHeartRate")}:";
+            this.GetControl<Label> ("lblFHRRhythms").Content = $"{Instance.Language.Localize ("PE:FetalHeartRhythms")}:";
+            this.GetControl<Label> ("lblFHRVariability").Content = $"{Instance.Language.Localize ("PE:FetalHeartRateVariability")}:";
+            this.GetControl<Label> ("lblUCFrequency").Content = $"{Instance.Language.Localize ("PE:UterineContractionFrequency")}:";
+            this.GetControl<Label> ("lblUCDuration").Content = $"{Instance.Language.Localize ("PE:UterineContractionDuration")}:";
+            this.GetControl<Label> ("lblUCIntensity").Content = $"{Instance.Language.Localize ("PE:UterineContractionIntensity")}:";
+            this.GetControl<Label> ("lblUCResting").Content = $"{Instance.Language.Localize ("PE:UterineRestingTone")}:";
 
-            this.FindControl<Label> ("lblGroupObstetricProfile").Content = Instance.Language.Localize ("PE:ObstetricProfile");
-            this.FindControl<Label> ("lblFHR").Content = $"{Instance.Language.Localize ("PE:FetalHeartRate")}:";
-            this.FindControl<Label> ("lblFHRRhythms").Content = $"{Instance.Language.Localize ("PE:FetalHeartRhythms")}:";
-            this.FindControl<Label> ("lblFHRVariability").Content = $"{Instance.Language.Localize ("PE:FetalHeartRateVariability")}:";
-            this.FindControl<Label> ("lblUCFrequency").Content = $"{Instance.Language.Localize ("PE:UterineContractionFrequency")}:";
-            this.FindControl<Label> ("lblUCDuration").Content = $"{Instance.Language.Localize ("PE:UterineContractionDuration")}:";
-            this.FindControl<Label> ("lblUCIntensity").Content = $"{Instance.Language.Localize ("PE:UterineContractionIntensity")}:";
-            this.FindControl<Label> ("lblUCResting").Content = $"{Instance.Language.Localize ("PE:UterineRestingTone")}:";
+            this.GetControl<CheckBox> ("chkAutoApplyChanges").Content = Instance.Language.Localize ("BUTTON:AutoApplyChanges");
+            this.GetControl<Label> ("lblParametersApply").Content = Instance.Language.Localize ("BUTTON:ApplyChanges");
+            this.GetControl<Label> ("lblParametersReset").Content = Instance.Language.Localize ("BUTTON:ResetParameters");
 
-            this.FindControl<CheckBox> ("chkAutoApplyChanges").Content = Instance.Language.Localize ("BUTTON:AutoApplyChanges");
-            this.FindControl<Label> ("lblParametersApply").Content = Instance.Language.Localize ("BUTTON:ApplyChanges");
-            this.FindControl<Label> ("lblParametersReset").Content = Instance.Language.Localize ("BUTTON:ResetParameters");
+            this.GetControl<CheckBox> ("chkAutoApplyChanges").IsChecked = Instance.Settings.AutoApplyChanges;
+            this.GetControl<Button> ("btnParametersReset").IsEnabled = !Instance.Settings.AutoApplyChanges;
 
-            this.FindControl<CheckBox> ("chkAutoApplyChanges").IsChecked = Instance.Settings.AutoApplyChanges;
-            this.FindControl<Button> ("btnParametersReset").IsEnabled = !Instance.Settings.AutoApplyChanges;
 
-            List<ComboBoxItem> cardiacRhythms = new (),
-                respiratoryRhythms = new (),
-                pulmonaryArteryRhythms = new (),
-                cardiacAxes = new ();
-            List<ListBoxItem> fetalHeartRhythms = new ();
-
+            ItemCollection icCardiacRhythms = this.GetControl<ComboBox> ("comboCardiacRhythm").Items;
             foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
-                cardiacRhythms.Add (new ComboBoxItem () {
+                icCardiacRhythms.Add (new ComboBoxItem () {
                     Content = Instance.Language.Localize (Cardiac_Rhythms.LookupString (v))
                 });
-            this.FindControl<ComboBox> ("comboCardiacRhythm").Items = cardiacRhythms;
 
+            ItemCollection icRespiratoryRhythms = this.GetControl<ComboBox> ("comboRespiratoryRhythm").Items;
             foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
-                respiratoryRhythms.Add (new ComboBoxItem () {
+                icRespiratoryRhythms.Add (new ComboBoxItem () {
                     Tag = v.ToString (),
                     Content = Instance.Language.Localize (Respiratory_Rhythms.LookupString (v))
-                }); ;
-            this.FindControl<ComboBox> ("comboRespiratoryRhythm").Items = respiratoryRhythms;
+                });
 
+            ItemCollection icPACatheterPlacement = this.GetControl<ComboBox> ("comboPACatheterPlacement").Items;
             foreach (PulmonaryArtery_Rhythms.Values v in Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)))
-                pulmonaryArteryRhythms.Add (new ComboBoxItem () {
+                icPACatheterPlacement.Add (new ComboBoxItem () {
                     Tag = v.ToString (),
                     Content = Instance.Language.Localize (PulmonaryArtery_Rhythms.LookupString (v))
                 });
-            this.FindControl<ComboBox> ("comboPACatheterPlacement").Items = pulmonaryArteryRhythms;
 
+            
+            ItemCollection icCardiacAxes = this.GetControl<ComboBox> ("comboCardiacAxis").Items;
             foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
-                cardiacAxes.Add (new ComboBoxItem () {
+                icCardiacAxes.Add (new ComboBoxItem () {
                     Tag = v.ToString (),
                     Content = Instance.Language.Localize (Cardiac_Axes.LookupString (v))
                 });
-            this.FindControl<ComboBox> ("comboCardiacAxis").Items = cardiacAxes;
 
+            ItemCollection icFetalHeartRhythms = this.GetControl<ComboBox> ("comboFHRRhythm").Items;
             foreach (FetalHeart_Rhythms.Values v in Enum.GetValues (typeof (FetalHeart_Rhythms.Values)))
-                fetalHeartRhythms.Add (new ComboBoxItem () {
+                icFetalHeartRhythms.Add (new ComboBoxItem () {
                     Tag = v.ToString (),
                     Content = Instance.Language.Localize (FetalHeart_Rhythms.LookupString (v))
                 });
-            this.FindControl<ComboBox> ("comboFHRRhythm").Items = fetalHeartRhythms;
         }
 
         private void InitInput () {
@@ -292,7 +287,7 @@ namespace IISIM {
             bool upgradeAvailable = Utility.IsNewerVersion (version, Instance.Server.UpgradeVersion);
 
             if (upgradeAvailable) {
-                MenuItem miUpdate = this.FindControl<MenuItem> ("menuUpdate");
+                MenuItem miUpdate = this.GetControl<MenuItem> ("menuUpdate");
                 if (miUpdate is not null) {
                     miUpdate.Header = Instance.Language.Localize ("STATUS:UpdateAvailable");
                     miUpdate.IsVisible = true;
@@ -526,24 +521,6 @@ namespace IISIM {
             });
         }
 
-        private async Task InitRecordMAR () {
-            if (Instance is null) {
-                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitRecordMAR)}");
-                return;
-            }
-
-            await Dispatcher.UIThread.InvokeAsync (() => {
-                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
-                    this.Show ();
-
-                if (Instance.Records_MAR is null || Instance.Records_MAR.State == RecordWindow.States.Closed)
-                    Instance.Records_MAR = new RecordMAR (Instance);
-
-                Instance.Records_MAR.Activate ();
-                Instance.Records_MAR.Show ();
-            });
-        }
-
         private async Task MessageAudioUnavailable () {
             if (Instance is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (MessageAudioUnavailable)}");
@@ -609,7 +586,6 @@ namespace IISIM {
                     await Instance.Mirror.PostStep (
                         new Scenario.Step () {
                             Physiology = Instance.Physiology ?? new Physiology (),
-                            Records = Instance.Records ?? new Record ()
                         },
                         Instance.Server);
             });
@@ -699,7 +675,7 @@ namespace IISIM {
             Instance.Settings.AudioEnabled = toSet;
 
             await Dispatcher.UIThread.InvokeAsync (() => {
-                this.FindControl<MenuItem> ("menuToggleAudio").Header = String.Format ("{0}: {1}",
+                this.GetControl<MenuItem> ("menuToggleAudio").Header = String.Format ("{0}: {1}",
                     Instance.Language.Localize ("PE:MenuToggleAudio"),
                     Instance.Settings.AudioEnabled ? Instance.Language.Localize ("BOOLEAN:On") : Instance.Language.Localize ("BOOLEAN:Off"));
             });
@@ -709,8 +685,8 @@ namespace IISIM {
             HideDeviceLabels = !HideDeviceLabels;
 
             await Dispatcher.UIThread.InvokeAsync (() => {
-                this.FindControl<Panel> ("panelDevicesExpanded").IsVisible = !HideDeviceLabels;
-                this.FindControl<Panel> ("panelDevicesHidden").IsVisible = HideDeviceLabels;
+                this.GetControl<Panel> ("panelDevicesExpanded").IsVisible = !HideDeviceLabels;
+                this.GetControl<Panel> ("panelDevicesHidden").IsVisible = HideDeviceLabels;
             });
         }
 
@@ -774,7 +750,7 @@ namespace IISIM {
 
         private Task UpdateMirrorStatus () {
             Dispatcher.UIThread.InvokeAsync (() => {
-                MenuItem miStatus = this.FindControl<MenuItem> ("menuMirrorStatus");
+                MenuItem miStatus = this.GetControl<MenuItem> ("menuMirrorStatus");
 
                 miStatus.Header = (Instance?.Mirror.Status) switch {
                     Mirror.Statuses.HOST => $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Server")}",
@@ -791,9 +767,9 @@ namespace IISIM {
 
         private Task UpdateExpanders (bool isScene) {
             Dispatcher.UIThread.InvokeAsync (() => {
-                this.FindControl<Border> ("brdScenarioPlayer").IsVisible = isScene;
-                this.FindControl<Expander> ("expScenarioPlayer").IsEnabled = isScene;
-                this.FindControl<Expander> ("expScenarioPlayer").IsExpanded = isScene;
+                this.GetControl<Border> ("brdScenarioPlayer").IsVisible = isScene;
+                this.GetControl<Expander> ("expScenarioPlayer").IsEnabled = isScene;
+                this.GetControl<Expander> ("expScenarioPlayer").IsExpanded = isScene;
             });
 
             return Task.CompletedTask;
@@ -820,7 +796,7 @@ namespace IISIM {
 
         private Task UpdateParameterIndicators () {
             Dispatcher.UIThread.InvokeAsync (() => {
-                Border brdPendingChangesIndicator = this.FindControl<Border> ("brdPendingChangesIndicator");
+                Border brdPendingChangesIndicator = this.GetControl<Border> ("brdPendingChangesIndicator");
 
                 brdPendingChangesIndicator.BorderBrush = ParameterStatus switch {
                     ParameterStatuses.ChangesPending => Brushes.Red,
@@ -1025,7 +1001,7 @@ namespace IISIM {
                                 pValue = line.Substring (line.IndexOf (':') + 1);
                         switch (pName) {
                             default: break;
-                            case "checkDefaultVitals": this.FindControl<CheckBox> ("checkDefaultVitals").IsChecked = bool.Parse (pValue); break;
+                            case "checkDefaultVitals": this.GetControl<CheckBox> ("checkDefaultVitals").IsChecked = bool.Parse (pValue); break;
                         }
                     }
                 }
@@ -1038,26 +1014,23 @@ namespace IISIM {
         }
 
         private async Task LoadFail () {
-            var assets = AvaloniaLocator.Current.GetService<Avalonia.Platform.IAssetLoader> ();
-            var icon = new Bitmap (assets.Open (new Uri ("avares://Infirmary Integrated/Third_Party/Icon_DeviceMonitor_128.png")));
-
-            var msBoxStandardWindow = MessageBox.Avalonia.MessageBoxManager
-            .GetMessageBoxCustomWindow (new MessageBox.Avalonia.DTO.MessageBoxCustomParamsWithImage {
-                ButtonDefinitions = new [] {
-                    new MessageBox.Avalonia.Models.ButtonDefinition {
+            var msBoxStandardWindow = MsBox.Avalonia.MessageBoxManager
+            .GetMessageBoxCustom (new MessageBoxCustomParams() {
+                ButtonDefinitions = new List<ButtonDefinition> {
+                    new ButtonDefinition {
                         Name = "OK",
                         IsCancel=true}
                 },
                 ContentTitle = Instance?.Language.Localize ("PE:LoadFailTitle"),
                 ContentMessage = Instance?.Language.Localize ("PE:LoadFailMessage"),
-                Icon = icon,
+                Icon = MsBox.Avalonia.Enums.Icon.Error,
                 WindowStartupLocation = WindowStartupLocation.CenterScreen,
                 WindowIcon = this.Icon,
                 Topmost = true,
                 CanResize = false,
             });
 
-            await msBoxStandardWindow.Show ();
+            await msBoxStandardWindow.ShowWindowAsync ();
         }
 
         private async Task SaveFile () {
@@ -1065,26 +1038,23 @@ namespace IISIM {
             // Scenario files should be created/edited/saved via II Scenario Editor!
 
             if (Instance?.Scenario?.IsLoaded ?? false) {
-                var assets = AvaloniaLocator.Current.GetService<Avalonia.Platform.IAssetLoader> ();
-                var icon = new Bitmap (assets.Open (new Uri ("avares://Infirmary Integrated/Third_Party/Icon_DeviceMonitor_128.png")));
-
-                var msBoxStandardWindow = MessageBox.Avalonia.MessageBoxManager
-                .GetMessageBoxCustomWindow (new MessageBox.Avalonia.DTO.MessageBoxCustomParamsWithImage {
-                    ButtonDefinitions = new [] {
-                    new MessageBox.Avalonia.Models.ButtonDefinition {
+                var msBoxStandardWindow = MsBox.Avalonia.MessageBoxManager
+                    .GetMessageBoxCustom (new MessageBoxCustomParams {
+                    ButtonDefinitions = new List<ButtonDefinition> () {
+                    new ButtonDefinition {
                         Name = "OK",
                         IsCancel=true}
                     },
                     ContentTitle = ("PE:SaveFailScenarioTitle"),
                     ContentMessage = Instance.Language.Localize ("PE:SaveFailScenarioMessage"),
-                    Icon = icon,
+                    Icon = MsBox.Avalonia.Enums.Icon.Error,
                     WindowStartupLocation = WindowStartupLocation.CenterScreen,
                     WindowIcon = this.Icon,
                     Topmost = true,
                     CanResize = false,
                 });
 
-                await msBoxStandardWindow.Show ();
+                await msBoxStandardWindow.ShowWindowAsync ();
 
                 return;
             }
@@ -1115,10 +1085,6 @@ namespace IISIM {
             }
 
             StringBuilder sb = new ();
-
-            sb.AppendLine ("> Begin: Records");
-            sb.Append (Instance?.Records?.Save ());
-            sb.AppendLine ("> End: Records");
 
             sb.AppendLine ("> Begin: Physiology");
             sb.Append (Instance?.Physiology?.Save ());
@@ -1162,7 +1128,7 @@ namespace IISIM {
         private string SaveOptions () {
             StringBuilder sWrite = new ();
 
-            sWrite.AppendLine (String.Format ("{0}:{1}", "checkDefaultVitals", this.FindControl<CheckBox> ("checkDefaultVitals").IsChecked));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "checkDefaultVitals", this.GetControl<CheckBox> ("checkDefaultVitals").IsChecked));
 
             return sWrite.ToString ();
         }
@@ -1182,7 +1148,6 @@ namespace IISIM {
 
             Instance?.Mirror.TimerTick (
                 new Scenario.Step () {
-                    Records = Instance.Records,
                     Physiology = Instance.Physiology
                 },
                 Instance.Server);
@@ -1210,15 +1175,15 @@ namespace IISIM {
         private void InitStep () {
             Scenario.Step step = Instance?.Scenario?.Current ?? new Scenario.Step ();
 
-            Label lblScenarioStep = this.FindControl<Label> ("lblScenarioStep");
-            Label lblTimerStep = this.FindControl<Label> ("lblTimerStep");
-            StackPanel stackProgressions = this.FindControl<StackPanel> ("stackProgressions");
+            Label lblScenarioStep = this.GetControl<Label> ("lblScenarioStep");
+            Label lblTimerStep = this.GetControl<Label> ("lblTimerStep");
+            StackPanel stackProgressions = this.GetControl<StackPanel> ("stackProgressions");
 
             // Set Previous, Next, Pause, and Play buttons .IsEnabled based on Step properties
-            this.FindControl<Button> ("btnPreviousStep").IsEnabled = (!String.IsNullOrEmpty (step.DefaultSource));
-            this.FindControl<Button> ("btnNextStep").IsEnabled = (!String.IsNullOrEmpty (step.DefaultProgression?.UUID) || step.Progressions.Count > 0);
-            this.FindControl<Button> ("btnPauseStep").IsEnabled = (step.ProgressTimer > 0);
-            this.FindControl<Button> ("btnPlayStep").IsEnabled = false;
+            this.GetControl<Button> ("btnPreviousStep").IsEnabled = (!String.IsNullOrEmpty (step.DefaultSource));
+            this.GetControl<Button> ("btnNextStep").IsEnabled = (!String.IsNullOrEmpty (step.DefaultProgression?.UUID) || step.Progressions.Count > 0);
+            this.GetControl<Button> ("btnPauseStep").IsEnabled = (step.ProgressTimer > 0);
+            this.GetControl<Button> ("btnPlayStep").IsEnabled = false;
 
             // Display Scenario's Step count
             lblScenarioStep.Content = $"{Instance?.Language.Localize ("PE:ProgressionStep")}: {step.Name}";
@@ -1259,7 +1224,7 @@ namespace IISIM {
         }
 
         private async Task NextStep () {
-            StackPanel stackProgressions = this.FindControl<StackPanel> ("stackProgressions");
+            StackPanel stackProgressions = this.GetControl<StackPanel> ("stackProgressions");
 
             if (Instance?.Scenario?.Current?.Progressions.Count == 0)
                 await Instance.Scenario.NextStep ();
@@ -1280,23 +1245,23 @@ namespace IISIM {
         }
 
         private async Task PauseStep () {
-            this.FindControl<Button> ("btnPauseStep").IsEnabled = false;
-            this.FindControl<Button> ("btnPlayStep").IsEnabled = true;
+            this.GetControl<Button> ("btnPauseStep").IsEnabled = false;
+            this.GetControl<Button> ("btnPlayStep").IsEnabled = true;
 
             if (Instance?.Scenario is not null)
                 await Instance.Scenario.PauseStep ();
 
-            this.FindControl<Label> ("lblTimerStep").Content = Instance?.Language.Localize ("PE:ProgressionPaused");
+            this.GetControl<Label> ("lblTimerStep").Content = Instance?.Language.Localize ("PE:ProgressionPaused");
         }
 
         private async Task PlayStep () {
-            this.FindControl<Button> ("btnPauseStep").IsEnabled = true;
-            this.FindControl<Button> ("btnPlayStep").IsEnabled = false;
+            this.GetControl<Button> ("btnPauseStep").IsEnabled = true;
+            this.GetControl<Button> ("btnPlayStep").IsEnabled = false;
 
             if (Instance?.Scenario is not null)
                 await Instance.Scenario.PlayStep ();
 
-            Label lblTimerStep = this.FindControl<Label> ("lblTimerStep");
+            Label lblTimerStep = this.GetControl<Label> ("lblTimerStep");
 
             if (Instance?.Scenario?.Current?.ProgressTimer == -1)
                 lblTimerStep.Content = Instance.Language.Localize ("PE:ProgressionManual");
@@ -1331,112 +1296,112 @@ namespace IISIM {
             if (p is null)
                 return;
 
-            ComboBox comboCardiacRhythm = this.FindControl<ComboBox> ("comboCardiacRhythm");
-            ComboBox comboRespiratoryRhythm = this.FindControl<ComboBox> ("comboRespiratoryRhythm");
-            ComboBox comboPACatheterPlacement = this.FindControl<ComboBox> ("comboPACatheterPlacement");
-            ComboBox comboCardiacAxis = this.FindControl<ComboBox> ("comboCardiacAxis");
-            ComboBox comboFHRRhythm = this.FindControl<ComboBox> ("comboFHRRhythm");
+            ComboBox comboCardiacRhythm = this.GetControl<ComboBox> ("comboCardiacRhythm");
+            ComboBox comboRespiratoryRhythm = this.GetControl<ComboBox> ("comboRespiratoryRhythm");
+            ComboBox comboPACatheterPlacement = this.GetControl<ComboBox> ("comboPACatheterPlacement");
+            ComboBox comboCardiacAxis = this.GetControl<ComboBox> ("comboCardiacAxis");
+            ComboBox comboFHRRhythm = this.GetControl<ComboBox> ("comboFHRRhythm");
 
             await p.UpdateParameters_Cardiac (
                 // Basic vital signs
-                (int)(this.FindControl<NumericUpDown> ("numHR")?.Value ?? 0),
-                (int)(this.FindControl<NumericUpDown> ("numNSBP")?.Value ?? 0),
-                (int)(this.FindControl<NumericUpDown> ("numNDBP")?.Value ?? 0),
-                Physiology.CalculateMAP ((int)(this.FindControl<NumericUpDown> ("numNSBP")?.Value ?? 0), (int)(this.FindControl<NumericUpDown> ("numNDBP")?.Value ?? 0)),
-                (int)(this.FindControl<NumericUpDown> ("numSPO2")?.Value ?? 0),
-                (double)(this.FindControl<NumericUpDown> ("numT")?.Value ?? 0),
+                (int)(this.GetControl<NumericUpDown> ("numHR")?.Value ?? 0),
+                (int)(this.GetControl<NumericUpDown> ("numNSBP")?.Value ?? 0),
+                (int)(this.GetControl<NumericUpDown> ("numNDBP")?.Value ?? 0),
+                Physiology.CalculateMAP ((int)(this.GetControl<NumericUpDown> ("numNSBP")?.Value ?? 0), (int)(this.GetControl<NumericUpDown> ("numNDBP")?.Value ?? 0)),
+                (int)(this.GetControl<NumericUpDown> ("numSPO2")?.Value ?? 0),
+                (double)(this.GetControl<NumericUpDown> ("numT")?.Value ?? 0),
 
                 (Cardiac_Rhythms.Values)(Enum.GetValues (typeof (Cardiac_Rhythms.Values)).GetValue (
                     comboCardiacRhythm.SelectedIndex < 0 ? 0 : comboCardiacRhythm.SelectedIndex)
                     ?? Cardiac_Rhythms.Values.Sinus_Rhythm),
 
                 // Advanced hemodynamics
-                (int)(this.FindControl<NumericUpDown> ("numCVP")?.Value ?? 0),
-                (int)(this.FindControl<NumericUpDown> ("numASBP")?.Value ?? 0),
-                (int)(this.FindControl<NumericUpDown> ("numADBP")?.Value ?? 0),
-                Physiology.CalculateMAP ((int)(this.FindControl<NumericUpDown> ("numASBP")?.Value ?? 0), (int)(this.FindControl<NumericUpDown> ("numADBP")?.Value ?? 0)),
+                (int)(this.GetControl<NumericUpDown> ("numCVP")?.Value ?? 0),
+                (int)(this.GetControl<NumericUpDown> ("numASBP")?.Value ?? 0),
+                (int)(this.GetControl<NumericUpDown> ("numADBP")?.Value ?? 0),
+                Physiology.CalculateMAP ((int)(this.GetControl<NumericUpDown> ("numASBP")?.Value ?? 0), (int)(this.GetControl<NumericUpDown> ("numADBP")?.Value ?? 0)),
 
-                (float)(this.FindControl<NumericUpDown> ("numCO")?.Value ?? 0),
+                (float)(this.GetControl<NumericUpDown> ("numCO")?.Value ?? 0),
 
                 (PulmonaryArtery_Rhythms.Values)(Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)).GetValue (
                     comboPACatheterPlacement.SelectedIndex < 0 ? 0 : comboPACatheterPlacement.SelectedIndex)
                     ?? PulmonaryArtery_Rhythms.Values.Right_Atrium),
 
-                (int)(this.FindControl<NumericUpDown> ("numPSP")?.Value ?? 0),
-                (int)(this.FindControl<NumericUpDown> ("numPDP")?.Value ?? 0),
-                Physiology.CalculateMAP ((int)(this.FindControl<NumericUpDown> ("numPSP")?.Value ?? 0),
-                (int)(this.FindControl<NumericUpDown> ("numPDP")?.Value ?? 0)),
+                (int)(this.GetControl<NumericUpDown> ("numPSP")?.Value ?? 0),
+                (int)(this.GetControl<NumericUpDown> ("numPDP")?.Value ?? 0),
+                Physiology.CalculateMAP ((int)(this.GetControl<NumericUpDown> ("numPSP")?.Value ?? 0),
+                (int)(this.GetControl<NumericUpDown> ("numPDP")?.Value ?? 0)),
 
-                (int)(this.FindControl<NumericUpDown> ("numICP")?.Value ?? 0),
-                (int)(this.FindControl<NumericUpDown> ("numIAP")?.Value ?? 0),
+                (int)(this.GetControl<NumericUpDown> ("numICP")?.Value ?? 0),
+                (int)(this.GetControl<NumericUpDown> ("numIAP")?.Value ?? 0),
 
                 // Cardiac Profile
-                (int)(this.FindControl<NumericUpDown> ("numPacemakerCaptureThreshold")?.Value ?? 0),
-                this.FindControl<CheckBox> ("chkPulsusParadoxus").IsChecked ?? false,
-                this.FindControl<CheckBox> ("chkPulsusAlternans").IsChecked ?? false,
-                this.FindControl<CheckBox> ("chkElectricalAlternans").IsChecked ?? false,
+                (int)(this.GetControl<NumericUpDown> ("numPacemakerCaptureThreshold")?.Value ?? 0),
+                this.GetControl<CheckBox> ("chkPulsusParadoxus").IsChecked ?? false,
+                this.GetControl<CheckBox> ("chkPulsusAlternans").IsChecked ?? false,
+                this.GetControl<CheckBox> ("chkElectricalAlternans").IsChecked ?? false,
 
                 (Cardiac_Axes.Values)(Enum.GetValues (typeof (Cardiac_Axes.Values)).GetValue (
                     comboCardiacAxis.SelectedIndex < 0 ? 0 : comboCardiacAxis.SelectedIndex)
                     ?? Cardiac_Axes.Values.Normal),
 
-                (double)(this.FindControl<NumericUpDown> ("numQRSInterval")?.Value ?? 0),
-                (double)(this.FindControl<NumericUpDown> ("numQTcInterval")?.Value ?? 0),
+                (double)(this.GetControl<NumericUpDown> ("numQRSInterval")?.Value ?? 0),
+                (double)(this.GetControl<NumericUpDown> ("numQTcInterval")?.Value ?? 0),
 
                 new double [] {
-                    (double)(this.FindControl<NumericUpDown>("numSTE_I")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numSTE_II")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numSTE_III")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numSTE_aVR")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numSTE_aVL")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numSTE_aVF")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numSTE_V1")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numSTE_V2")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numSTE_V3")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numSTE_V4")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numSTE_V5")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numSTE_V6")?.Value?? 0)
+                    (double)(this.GetControl<NumericUpDown>("numSTE_I")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSTE_II")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSTE_III")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSTE_aVR")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSTE_aVL")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSTE_aVF")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSTE_V1")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSTE_V2")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSTE_V3")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSTE_V4")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSTE_V5")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSTE_V6")?.Value?? 0)
                 },
                 new double [] {
-                    (double)(this.FindControl<NumericUpDown>("numTWE_I")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numTWE_II")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numTWE_III")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numTWE_aVR")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numTWE_aVL")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numTWE_aVF")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numTWE_V1")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numTWE_V2")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numTWE_V3")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numTWE_V4")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numTWE_V5")?.Value ?? 0),
-                    (double)(this.FindControl<NumericUpDown>("numTWE_V6")?.Value ?? 0)
+                    (double)(this.GetControl<NumericUpDown>("numTWE_I")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTWE_II")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTWE_III")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTWE_aVR")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTWE_aVL")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTWE_aVF")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTWE_V1")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTWE_V2")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTWE_V3")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTWE_V4")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTWE_V5")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTWE_V6")?.Value ?? 0)
                 }
                 );
 
             await p.UpdateParameters_Respiratory (
 
-                (int)(this.FindControl<NumericUpDown> ("numRR")?.Value ?? 0),
+                (int)(this.GetControl<NumericUpDown> ("numRR")?.Value ?? 0),
                 (Respiratory_Rhythms.Values)(Enum.GetValues (typeof (Respiratory_Rhythms.Values)).GetValue (
                     comboRespiratoryRhythm.SelectedIndex < 0 ? 0 : comboRespiratoryRhythm.SelectedIndex)
                     ?? Respiratory_Rhythms.Values.Regular),
-                (int)(this.FindControl<NumericUpDown> ("numETCO2")?.Value ?? 0),
+                (int)(this.GetControl<NumericUpDown> ("numETCO2")?.Value ?? 0),
 
-                this.FindControl<CheckBox> ("chkMechanicallyVentilated").IsChecked ?? false,
-                (float)(this.FindControl<NumericUpDown> ("numInspiratoryRatio")?.Value ?? 0),
-                (float)(this.FindControl<NumericUpDown> ("numExpiratoryRatio")?.Value ?? 0));
+                this.GetControl<CheckBox> ("chkMechanicallyVentilated").IsChecked ?? false,
+                (float)(this.GetControl<NumericUpDown> ("numInspiratoryRatio")?.Value ?? 0),
+                (float)(this.GetControl<NumericUpDown> ("numExpiratoryRatio")?.Value ?? 0));
 
             await p.UpdateParameters_Obstetric (
-                (int)(this.FindControl<NumericUpDown> ("numFHR")?.Value ?? 0),
-                (int)(this.FindControl<NumericUpDown> ("numFHRVariability")?.Value ?? 0),
+                (int)(this.GetControl<NumericUpDown> ("numFHR")?.Value ?? 0),
+                (int)(this.GetControl<NumericUpDown> ("numFHRVariability")?.Value ?? 0),
 
                 (FetalHeart_Rhythms.Values)(Enum.GetValues (typeof (FetalHeart_Rhythms.Values)).GetValue (
                     comboFHRRhythm.SelectedIndex < 0 ? 0 : comboFHRRhythm.SelectedIndex)
                     ?? FetalHeart_Rhythms.Values.Baseline),
 
-                (int)(this.FindControl<NumericUpDown> ("numUCFrequency")?.Value ?? 0),
-                (int)(this.FindControl<NumericUpDown> ("numUCDuration")?.Value ?? 0),
-                (int)(this.FindControl<NumericUpDown> ("numUCIntensity")?.Value ?? 0),
-                (int)(this.FindControl<NumericUpDown> ("numUCResting")?.Value ?? 0));
+                (int)(this.GetControl<NumericUpDown> ("numUCFrequency")?.Value ?? 0),
+                (int)(this.GetControl<NumericUpDown> ("numUCDuration")?.Value ?? 0),
+                (int)(this.GetControl<NumericUpDown> ("numUCIntensity")?.Value ?? 0),
+                (int)(this.GetControl<NumericUpDown> ("numUCResting")?.Value ?? 0));
         }
 
         private void ApplyPhysiologyParameters_Cardiac (object? sender, EventArgs e) {
@@ -1477,7 +1442,6 @@ namespace IISIM {
             if (Instance?.Mirror is not null && Instance?.Server is not null)
                 _ = Instance.Mirror.PostStep (
                     new Scenario.Step () {
-                        Records = Instance.Records,
                         Physiology = Instance.Physiology,
                     },
                     Instance.Server);
@@ -1502,7 +1466,6 @@ namespace IISIM {
             if (Instance?.Mirror is not null && Instance?.Server is not null)
                 _ = Instance.Mirror.PostStep (
                     new Scenario.Step () {
-                        Records = Instance.Records,
                         Physiology = Instance.Physiology,
                     },
                     Instance.Server);
@@ -1529,7 +1492,6 @@ namespace IISIM {
             if (Instance?.Mirror is not null && Instance?.Server is not null)
                 _ = Instance.Mirror.PostStep (
                     new Scenario.Step () {
-                        Records = Instance.Records,
                         Physiology = Instance.Physiology,
                     },
                     Instance.Server);
@@ -1546,84 +1508,84 @@ namespace IISIM {
 
                 if (!ApplyPending_Cardiac) {
                     // Basic vital signs
-                    this.FindControl<NumericUpDown> ("numHR").Value = p.VS_Settings.HR;
-                    this.FindControl<NumericUpDown> ("numNSBP").Value = p.VS_Settings.NSBP;
-                    this.FindControl<NumericUpDown> ("numNDBP").Value = p.VS_Settings.NDBP;
-                    this.FindControl<NumericUpDown> ("numSPO2").Value = p.VS_Settings.SPO2;
-                    this.FindControl<NumericUpDown> ("numT").Value = (double)p.VS_Settings.T;
-                    this.FindControl<ComboBox> ("comboCardiacRhythm").SelectedIndex = (int)p.Cardiac_Rhythm.Value;
+                    this.GetControl<NumericUpDown> ("numHR").Value = p.VS_Settings.HR;
+                    this.GetControl<NumericUpDown> ("numNSBP").Value = p.VS_Settings.NSBP;
+                    this.GetControl<NumericUpDown> ("numNDBP").Value = p.VS_Settings.NDBP;
+                    this.GetControl<NumericUpDown> ("numSPO2").Value = p.VS_Settings.SPO2;
+                    this.GetControl<NumericUpDown> ("numT").Value = (decimal)p.VS_Settings.T;
+                    this.GetControl<ComboBox> ("comboCardiacRhythm").SelectedIndex = (int)p.Cardiac_Rhythm.Value;
 
                     // Advanced hemodynamics
-                    this.FindControl<NumericUpDown> ("numCVP").Value = p.VS_Settings.CVP;
-                    this.FindControl<NumericUpDown> ("numASBP").Value = p.VS_Settings.ASBP;
-                    this.FindControl<NumericUpDown> ("numADBP").Value = p.VS_Settings.ADBP;
-                    this.FindControl<NumericUpDown> ("numCO").Value = (double)p.VS_Settings.CO;
-                    this.FindControl<ComboBox> ("comboPACatheterPlacement").SelectedIndex = (int)p.PulmonaryArtery_Placement.Value;
-                    this.FindControl<NumericUpDown> ("numPSP").Value = p.VS_Settings.PSP;
-                    this.FindControl<NumericUpDown> ("numPDP").Value = p.VS_Settings.PDP;
-                    this.FindControl<NumericUpDown> ("numICP").Value = p.VS_Settings.ICP;
-                    this.FindControl<NumericUpDown> ("numIAP").Value = p.VS_Settings.IAP;
+                    this.GetControl<NumericUpDown> ("numCVP").Value = p.VS_Settings.CVP;
+                    this.GetControl<NumericUpDown> ("numASBP").Value = p.VS_Settings.ASBP;
+                    this.GetControl<NumericUpDown> ("numADBP").Value = p.VS_Settings.ADBP;
+                    this.GetControl<NumericUpDown> ("numCO").Value = (decimal)p.VS_Settings.CO;
+                    this.GetControl<ComboBox> ("comboPACatheterPlacement").SelectedIndex = (int)p.PulmonaryArtery_Placement.Value;
+                    this.GetControl<NumericUpDown> ("numPSP").Value = p.VS_Settings.PSP;
+                    this.GetControl<NumericUpDown> ("numPDP").Value = p.VS_Settings.PDP;
+                    this.GetControl<NumericUpDown> ("numICP").Value = p.VS_Settings.ICP;
+                    this.GetControl<NumericUpDown> ("numIAP").Value = p.VS_Settings.IAP;
 
                     // Cardiac profile
-                    this.FindControl<NumericUpDown> ("numPacemakerCaptureThreshold").Value = p.Pacemaker_Threshold;
-                    this.FindControl<CheckBox> ("chkPulsusParadoxus").IsChecked = p.Pulsus_Paradoxus;
-                    this.FindControl<CheckBox> ("chkPulsusAlternans").IsChecked = p.Pulsus_Alternans;
-                    this.FindControl<CheckBox> ("chkElectricalAlternans").IsChecked = p.Electrical_Alternans;
-                    this.FindControl<ComboBox> ("comboCardiacAxis").SelectedIndex = (int)p.Cardiac_Axis.Value;
+                    this.GetControl<NumericUpDown> ("numPacemakerCaptureThreshold").Value = p.Pacemaker_Threshold;
+                    this.GetControl<CheckBox> ("chkPulsusParadoxus").IsChecked = p.Pulsus_Paradoxus;
+                    this.GetControl<CheckBox> ("chkPulsusAlternans").IsChecked = p.Pulsus_Alternans;
+                    this.GetControl<CheckBox> ("chkElectricalAlternans").IsChecked = p.Electrical_Alternans;
+                    this.GetControl<ComboBox> ("comboCardiacAxis").SelectedIndex = (int)p.Cardiac_Axis.Value;
 
-                    this.FindControl<NumericUpDown> ("numQRSInterval").Value = p.QRS_Interval;
-                    this.FindControl<NumericUpDown> ("numQTcInterval").Value = p.QTc_Interval;
+                    this.GetControl<NumericUpDown> ("numQRSInterval").Value = (decimal)p.QRS_Interval;
+                    this.GetControl<NumericUpDown> ("numQTcInterval").Value = (decimal)p.QTc_Interval;
 
                     if (p.ST_Elevation is not null) {
-                        this.FindControl<NumericUpDown> ("numSTE_I").Value = (double)p.ST_Elevation [(int)Lead.Values.ECG_I];
-                        this.FindControl<NumericUpDown> ("numSTE_II").Value = (double)p.ST_Elevation [(int)Lead.Values.ECG_II];
-                        this.FindControl<NumericUpDown> ("numSTE_III").Value = (double)p.ST_Elevation [(int)Lead.Values.ECG_III];
-                        this.FindControl<NumericUpDown> ("numSTE_aVR").Value = (double)p.ST_Elevation [(int)Lead.Values.ECG_AVR];
-                        this.FindControl<NumericUpDown> ("numSTE_aVL").Value = (double)p.ST_Elevation [(int)Lead.Values.ECG_AVL];
-                        this.FindControl<NumericUpDown> ("numSTE_aVF").Value = (double)p.ST_Elevation [(int)Lead.Values.ECG_AVF];
-                        this.FindControl<NumericUpDown> ("numSTE_V1").Value = (double)p.ST_Elevation [(int)Lead.Values.ECG_V1];
-                        this.FindControl<NumericUpDown> ("numSTE_V2").Value = (double)p.ST_Elevation [(int)Lead.Values.ECG_V2];
-                        this.FindControl<NumericUpDown> ("numSTE_V3").Value = (double)p.ST_Elevation [(int)Lead.Values.ECG_V3];
-                        this.FindControl<NumericUpDown> ("numSTE_V4").Value = (double)p.ST_Elevation [(int)Lead.Values.ECG_V4];
-                        this.FindControl<NumericUpDown> ("numSTE_V5").Value = (double)p.ST_Elevation [(int)Lead.Values.ECG_V5];
-                        this.FindControl<NumericUpDown> ("numSTE_V6").Value = (double)p.ST_Elevation [(int)Lead.Values.ECG_V6];
+                        this.GetControl<NumericUpDown> ("numSTE_I").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_I];
+                        this.GetControl<NumericUpDown> ("numSTE_II").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_II];
+                        this.GetControl<NumericUpDown> ("numSTE_III").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_III];
+                        this.GetControl<NumericUpDown> ("numSTE_aVR").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_AVR];
+                        this.GetControl<NumericUpDown> ("numSTE_aVL").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_AVL];
+                        this.GetControl<NumericUpDown> ("numSTE_aVF").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_AVF];
+                        this.GetControl<NumericUpDown> ("numSTE_V1").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V1];
+                        this.GetControl<NumericUpDown> ("numSTE_V2").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V2];
+                        this.GetControl<NumericUpDown> ("numSTE_V3").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V3];
+                        this.GetControl<NumericUpDown> ("numSTE_V4").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V4];
+                        this.GetControl<NumericUpDown> ("numSTE_V5").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V5];
+                        this.GetControl<NumericUpDown> ("numSTE_V6").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V6];
                     }
 
                     if (p.T_Elevation is not null) {
-                        this.FindControl<NumericUpDown> ("numTWE_I").Value = (double)p.T_Elevation [(int)Lead.Values.ECG_I];
-                        this.FindControl<NumericUpDown> ("numTWE_II").Value = (double)p.T_Elevation [(int)Lead.Values.ECG_II];
-                        this.FindControl<NumericUpDown> ("numTWE_III").Value = (double)p.T_Elevation [(int)Lead.Values.ECG_III];
-                        this.FindControl<NumericUpDown> ("numTWE_aVR").Value = (double)p.T_Elevation [(int)Lead.Values.ECG_AVR];
-                        this.FindControl<NumericUpDown> ("numTWE_aVL").Value = (double)p.T_Elevation [(int)Lead.Values.ECG_AVL];
-                        this.FindControl<NumericUpDown> ("numTWE_aVF").Value = (double)p.T_Elevation [(int)Lead.Values.ECG_AVF];
-                        this.FindControl<NumericUpDown> ("numTWE_V1").Value = (double)p.T_Elevation [(int)Lead.Values.ECG_V1];
-                        this.FindControl<NumericUpDown> ("numTWE_V2").Value = (double)p.T_Elevation [(int)Lead.Values.ECG_V2];
-                        this.FindControl<NumericUpDown> ("numTWE_V3").Value = (double)p.T_Elevation [(int)Lead.Values.ECG_V3];
-                        this.FindControl<NumericUpDown> ("numTWE_V4").Value = (double)p.T_Elevation [(int)Lead.Values.ECG_V4];
-                        this.FindControl<NumericUpDown> ("numTWE_V5").Value = (double)p.T_Elevation [(int)Lead.Values.ECG_V5];
-                        this.FindControl<NumericUpDown> ("numTWE_V6").Value = (double)p.T_Elevation [(int)Lead.Values.ECG_V6];
+                        this.GetControl<NumericUpDown> ("numTWE_I").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_I];
+                        this.GetControl<NumericUpDown> ("numTWE_II").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_II];
+                        this.GetControl<NumericUpDown> ("numTWE_III").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_III];
+                        this.GetControl<NumericUpDown> ("numTWE_aVR").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_AVR];
+                        this.GetControl<NumericUpDown> ("numTWE_aVL").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_AVL];
+                        this.GetControl<NumericUpDown> ("numTWE_aVF").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_AVF];
+                        this.GetControl<NumericUpDown> ("numTWE_V1").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_V1];
+                        this.GetControl<NumericUpDown> ("numTWE_V2").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_V2];
+                        this.GetControl<NumericUpDown> ("numTWE_V3").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_V3];
+                        this.GetControl<NumericUpDown> ("numTWE_V4").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_V4];
+                        this.GetControl<NumericUpDown> ("numTWE_V5").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_V5];
+                        this.GetControl<NumericUpDown> ("numTWE_V6").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_V6];
                     }
                 }
 
                 if (!ApplyPending_Respiratory) {
                     // Respiratory profile
-                    this.FindControl<NumericUpDown> ("numRR").Value = p.VS_Settings.RR;
-                    this.FindControl<ComboBox> ("comboRespiratoryRhythm").SelectedIndex = (int)p.Respiratory_Rhythm.Value;
-                    this.FindControl<NumericUpDown> ("numETCO2").Value = p.VS_Settings.ETCO2;
-                    this.FindControl<CheckBox> ("chkMechanicallyVentilated").IsChecked = p.Mechanically_Ventilated;
-                    this.FindControl<NumericUpDown> ("numInspiratoryRatio").Value = (double)p.VS_Settings.RR_IE_I;
-                    this.FindControl<NumericUpDown> ("numExpiratoryRatio").Value = (double)p.VS_Settings.RR_IE_E;
+                    this.GetControl<NumericUpDown> ("numRR").Value = p.VS_Settings.RR;
+                    this.GetControl<ComboBox> ("comboRespiratoryRhythm").SelectedIndex = (int)p.Respiratory_Rhythm.Value;
+                    this.GetControl<NumericUpDown> ("numETCO2").Value = p.VS_Settings.ETCO2;
+                    this.GetControl<CheckBox> ("chkMechanicallyVentilated").IsChecked = p.Mechanically_Ventilated;
+                    this.GetControl<NumericUpDown> ("numInspiratoryRatio").Value = (decimal)p.VS_Settings.RR_IE_I;
+                    this.GetControl<NumericUpDown> ("numExpiratoryRatio").Value = (decimal)p.VS_Settings.RR_IE_E;
                 }
 
                 if (!ApplyPending_Obstetric) {
                     // Obstetric profile
-                    this.FindControl<NumericUpDown> ("numFHR").Value = p.VS_Settings.FetalHR;
-                    this.FindControl<NumericUpDown> ("numFHRVariability").Value = p.ObstetricFetalRateVariability;
-                    this.FindControl<NumericUpDown> ("numUCFrequency").Value = (double)p.ObstetricContractionFrequency;
-                    this.FindControl<NumericUpDown> ("numUCDuration").Value = p.ObstetricContractionDuration;
-                    this.FindControl<NumericUpDown> ("numUCIntensity").Value = p.ObstetricContractionIntensity;
-                    this.FindControl<NumericUpDown> ("numUCResting").Value = p.ObstetricUterineRestingTone;
-                    this.FindControl<ComboBox> ("comboFHRRhythm").SelectedIndex = (int)p.ObstetricFetalHeartRhythm.Value;
+                    this.GetControl<NumericUpDown> ("numFHR").Value = p.VS_Settings.FetalHR;
+                    this.GetControl<NumericUpDown> ("numFHRVariability").Value = p.ObstetricFetalRateVariability;
+                    this.GetControl<NumericUpDown> ("numUCFrequency").Value = (decimal)p.ObstetricContractionFrequency;
+                    this.GetControl<NumericUpDown> ("numUCDuration").Value = p.ObstetricContractionDuration;
+                    this.GetControl<NumericUpDown> ("numUCIntensity").Value = p.ObstetricContractionIntensity;
+                    this.GetControl<NumericUpDown> ("numUCResting").Value = p.ObstetricUterineRestingTone;
+                    this.GetControl<ComboBox> ("comboFHRRhythm").SelectedIndex = (int)p.ObstetricFetalHeartRhythm.Value;
                 }
 
                 _ = SetParameterStatus (Instance?.Settings.AutoApplyChanges ?? false);     // Re-establish parameter status
@@ -1691,9 +1653,6 @@ namespace IISIM {
         private void ButtonDeviceEFM_Click (object s, RoutedEventArgs e)
             => _ = InitDeviceEFM ();
 
-        private void ButtonRecordMAR_Click (object s, RoutedEventArgs e)
-            => _ = InitRecordMAR ();
-
         private void ButtonOptionsHide_Click (object s, RoutedEventArgs e)
             => _ = ToggleHideDevices ();
 
@@ -1739,8 +1698,8 @@ namespace IISIM {
             if (ParameterStatus == ParameterStatuses.Loading || Instance is null)
                 return;
 
-            Instance.Settings.AutoApplyChanges = this.FindControl<CheckBox> ("chkAutoApplyChanges").IsChecked ?? true;
-            this.FindControl<Button> ("btnParametersReset").IsEnabled = !Instance.Settings.AutoApplyChanges;
+            Instance.Settings.AutoApplyChanges = this.GetControl<CheckBox> ("chkAutoApplyChanges").IsChecked ?? true;
+            this.GetControl<Button> ("btnParametersReset").IsEnabled = !Instance.Settings.AutoApplyChanges;
             Instance.Settings.Save ();
 
             _ = SetParameterStatus (Instance.Settings.AutoApplyChanges);
@@ -1782,10 +1741,10 @@ namespace IISIM {
         }
 
         private void OnCardiacRhythm_Selected (object sender, SelectionChangedEventArgs e) {
-            if (!this.FindControl<CheckBox> ("checkDefaultVitals").IsChecked ?? false || Instance?.Physiology == null)
+            if (!this.GetControl<CheckBox> ("checkDefaultVitals").IsChecked ?? false || Instance?.Physiology == null)
                 return;
 
-            int si = this.FindControl<ComboBox> ("comboCardiacRhythm").SelectedIndex;
+            int si = this.GetControl<ComboBox> ("comboCardiacRhythm").SelectedIndex;
             Array ev = Enum.GetValues (typeof (Cardiac_Rhythms.Values));
             if (si < 0 || si > ev.Length - 1)
                 return;
@@ -1793,18 +1752,18 @@ namespace IISIM {
             Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
                 (Cardiac_Rhythms.Values)(ev.GetValue (si) ?? Cardiac_Rhythms.Values.Sinus_Rhythm));
 
-            this.FindControl<NumericUpDown> ("numHR").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numHR")?.Value ?? 0), v.HRMin, v.HRMax);
-            this.FindControl<NumericUpDown> ("numNSBP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numNSBP")?.Value ?? 0), v.SBPMin, v.SBPMax);
-            this.FindControl<NumericUpDown> ("numNDBP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numNDBP")?.Value ?? 0), v.DBPMin, v.DBPMax);
-            this.FindControl<NumericUpDown> ("numRR").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numRR")?.Value ?? 0), v.RRMin, v.RRMax);
-            this.FindControl<NumericUpDown> ("numSPO2").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numSPO2")?.Value ?? 0), v.SPO2Min, v.SPO2Max);
-            this.FindControl<NumericUpDown> ("numETCO2").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numETCO2")?.Value ?? 0), v.ETCO2Min, v.ETCO2Max);
-            this.FindControl<NumericUpDown> ("numASBP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numASBP")?.Value ?? 0), v.SBPMin, v.SBPMax);
-            this.FindControl<NumericUpDown> ("numADBP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numADBP")?.Value ?? 0), v.DBPMin, v.DBPMax);
-            this.FindControl<NumericUpDown> ("numPSP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numPSP")?.Value ?? 0), v.PSPMin, v.PSPMax);
-            this.FindControl<NumericUpDown> ("numPDP").Value = (int)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numPDP")?.Value ?? 0), v.PDPMin, v.PDPMax);
-            this.FindControl<NumericUpDown> ("numQRSInterval").Value = (double)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numQRSInterval")?.Value ?? 0), v.QRSIntervalMin, v.QRSIntervalMax);
-            this.FindControl<NumericUpDown> ("numQTcInterval").Value = (double)II.Math.Clamp ((double)(this.FindControl<NumericUpDown> ("numQTcInterval")?.Value ?? 0), v.QTCIntervalMin, v.QTCIntervalMax);
+            this.GetControl<NumericUpDown> ("numHR").Value = (int)II.Math.Clamp ((double)(this.GetControl<NumericUpDown> ("numHR")?.Value ?? 0), v.HRMin, v.HRMax);
+            this.GetControl<NumericUpDown> ("numNSBP").Value = (int)II.Math.Clamp ((double)(this.GetControl<NumericUpDown> ("numNSBP")?.Value ?? 0), v.SBPMin, v.SBPMax);
+            this.GetControl<NumericUpDown> ("numNDBP").Value = (int)II.Math.Clamp ((double)(this.GetControl<NumericUpDown> ("numNDBP")?.Value ?? 0), v.DBPMin, v.DBPMax);
+            this.GetControl<NumericUpDown> ("numRR").Value = (int)II.Math.Clamp ((double)(this.GetControl<NumericUpDown> ("numRR")?.Value ?? 0), v.RRMin, v.RRMax);
+            this.GetControl<NumericUpDown> ("numSPO2").Value = (int)II.Math.Clamp ((double)(this.GetControl<NumericUpDown> ("numSPO2")?.Value ?? 0), v.SPO2Min, v.SPO2Max);
+            this.GetControl<NumericUpDown> ("numETCO2").Value = (int)II.Math.Clamp ((double)(this.GetControl<NumericUpDown> ("numETCO2")?.Value ?? 0), v.ETCO2Min, v.ETCO2Max);
+            this.GetControl<NumericUpDown> ("numASBP").Value = (int)II.Math.Clamp ((double)(this.GetControl<NumericUpDown> ("numASBP")?.Value ?? 0), v.SBPMin, v.SBPMax);
+            this.GetControl<NumericUpDown> ("numADBP").Value = (int)II.Math.Clamp ((double)(this.GetControl<NumericUpDown> ("numADBP")?.Value ?? 0), v.DBPMin, v.DBPMax);
+            this.GetControl<NumericUpDown> ("numPSP").Value = (int)II.Math.Clamp ((double)(this.GetControl<NumericUpDown> ("numPSP")?.Value ?? 0), v.PSPMin, v.PSPMax);
+            this.GetControl<NumericUpDown> ("numPDP").Value = (int)II.Math.Clamp ((double)(this.GetControl<NumericUpDown> ("numPDP")?.Value ?? 0), v.PDPMin, v.PDPMax);
+            this.GetControl<NumericUpDown> ("numQRSInterval").Value = (decimal)II.Math.Clamp ((double)(this.GetControl<NumericUpDown> ("numQRSInterval")?.Value ?? 0), v.QRSIntervalMin, v.QRSIntervalMax);
+            this.GetControl<NumericUpDown> ("numQTcInterval").Value = (decimal)II.Math.Clamp ((double)(this.GetControl<NumericUpDown> ("numQTcInterval")?.Value ?? 0), v.QTCIntervalMin, v.QTCIntervalMax);
 
             OnUIPhysiologyParameter_Process (sender, e);
         }
@@ -1816,11 +1775,11 @@ namespace IISIM {
         private void OnCentralVenousPressure_Changed (object sender, NumericUpDownValueChangedEventArgs e) {
             if (Instance?.Physiology is not null
                 && Instance.Physiology.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Atrium) {
-                NumericUpDown numPSP = this.FindControl<NumericUpDown> ("numPSP");
-                NumericUpDown numPDP = this.FindControl<NumericUpDown> ("numPDP");
+                NumericUpDown numPSP = this.GetControl<NumericUpDown> ("numPSP");
+                NumericUpDown numPDP = this.GetControl<NumericUpDown> ("numPDP");
 
-                numPSP.Value = (int)System.Math.Ceiling (e.NewValue + System.Math.Max (1, e.NewValue * 0.25));
-                numPDP.Value = (int)System.Math.Floor (e.NewValue - System.Math.Max (1, e.NewValue * 0.25));
+                numPSP.Value = (int)System.Math.Ceiling ((e.NewValue ?? 1) + System.Math.Max (1, (e.NewValue ?? 1) * 0.25m));
+                numPDP.Value = (int)System.Math.Floor ((e.NewValue ?? 1) - System.Math.Max (1, (e.NewValue ?? 1) * 0.25m));
             }
 
             OnUIPhysiologyParameter_Process (sender, e);
@@ -1830,15 +1789,15 @@ namespace IISIM {
             if (Instance?.Physiology is null)
                 return;
 
-            int si = this.FindControl<ComboBox> ("comboPACatheterPlacement").SelectedIndex;
+            int si = this.GetControl<ComboBox> ("comboPACatheterPlacement").SelectedIndex;
             Array ev = Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values));
             if (si < 0 || si > ev.Length - 1)
                 return;
 
             PulmonaryArtery_Rhythms.Values sel = (PulmonaryArtery_Rhythms.Values)(ev.GetValue (si) ?? PulmonaryArtery_Rhythms.Values.Pulmonary_Artery);
 
-            NumericUpDown numPSP = this.FindControl<NumericUpDown> ("numPSP");
-            NumericUpDown numPDP = this.FindControl<NumericUpDown> ("numPDP");
+            NumericUpDown numPSP = this.GetControl<NumericUpDown> ("numPSP");
+            NumericUpDown numPDP = this.GetControl<NumericUpDown> ("numPDP");
 
             // If the PA placement is RV, PA, or PAWP, utilize default vital sign ranges
             // But if it is in the RA... utilize the current CVP reading

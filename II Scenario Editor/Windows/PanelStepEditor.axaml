@@ -87,14 +87,6 @@
                   Header="Paste Physiology"
                   Click="MenuEditPastePhysiology_Click" />
 
-        <Separator />
-
-        <MenuItem Name="menuEditCopyRecords"
-              Header="Copy Medical Records"
-              Click="MenuEditCopyRecords_Click" />
-        <MenuItem Name="menuEditPasteRecords"
-                  Header="Paste Medical Records"
-                  Click="MenuEditPasteRecords_Click" />
       </MenuItem>
 
       <MenuItem Name="menuHelp"
@@ -212,22 +204,6 @@
 
             <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_Device12LeadECG_128.png"
                    ToolTip.Tip="Paste Physiology" />
-          </Button>
-
-          <Separator Margin="3, 10" />
-
-          <Button Name="btnCopyRecords"
-              Click="BtnCopyRecords_Click"
-              Classes="imgbtn">
-            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_CopyData_128.png"
-                   ToolTip.Tip="Copy Medical Records" />
-          </Button>
-          <Button Name="btnPasteRecords"
-                  Click="BtnPasteRecords_Click"
-                  Classes="imgbtn">
-
-            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_Clipboard_128.png"
-                   ToolTip.Tip="Paste Medical Records" />
           </Button>
         </StackPanel>
 

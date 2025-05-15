@@ -94,38 +94,36 @@ namespace IISIM.Controls {
         private void InitInterface () {
             // Context Menu (right-click menu!)
             ContextMenu contextMenu = new ();
-            List<object> menuitemsContext = new ();
 
-            this.FindControl<Grid> ("layoutGrid").ContextMenu = contextMenu;
-            this.FindControl<TextBlock> ("lblNumType").ContextMenu = contextMenu;
-            this.FindControl<TextBlock> ("lblLine1").ContextMenu = contextMenu;
-            this.FindControl<TextBlock> ("lblLine2").ContextMenu = contextMenu;
-            this.FindControl<TextBlock> ("lblLine3").ContextMenu = contextMenu;
+            this.GetControl<Grid> ("layoutGrid").ContextMenu = contextMenu;
+            this.GetControl<TextBlock> ("lblNumType").ContextMenu = contextMenu;
+            this.GetControl<TextBlock> ("lblLine1").ContextMenu = contextMenu;
+            this.GetControl<TextBlock> ("lblLine2").ContextMenu = contextMenu;
+            this.GetControl<TextBlock> ("lblLine3").ContextMenu = contextMenu;
 
             uiMenuZeroTransducer = new ();
             uiMenuZeroTransducer.Header = Instance?.Language.Localize ("MENU:MenuZeroTransducer");
             uiMenuZeroTransducer.Classes.Add ("item");
             uiMenuZeroTransducer.Click += MenuZeroTransducer_Click;
-            menuitemsContext.Add (uiMenuZeroTransducer);
+            contextMenu.Items.Add (uiMenuZeroTransducer);
 
-            menuitemsContext.Add (new Separator ());
+            contextMenu.Items.Add (new Separator ());
 
             MenuItem menuAddNumeric = new ();
             menuAddNumeric.Header = Instance?.Language.Localize ("MENU:MenuAddNumeric");
             menuAddNumeric.Classes.Add ("item");
             menuAddNumeric.Click += MenuAddNumeric_Click;
-            menuitemsContext.Add (menuAddNumeric);
+            contextMenu.Items.Add (menuAddNumeric);
 
             MenuItem menuRemoveNumeric = new ();
             menuRemoveNumeric.Header = Instance?.Language.Localize ("MENU:MenuRemoveNumeric");
             menuRemoveNumeric.Classes.Add ("item");
             menuRemoveNumeric.Click += MenuRemoveNumeric_Click;
-            menuitemsContext.Add (menuRemoveNumeric);
+            contextMenu.Items.Add (menuRemoveNumeric);
 
-            menuitemsContext.Add (new Separator ());
+            contextMenu.Items.Add (new Separator ());
 
             MenuItem menuSelectInput = new ();
-            List<object> menuitemsSelectInput = new ();
             menuSelectInput.Header = Instance?.Language.Localize ("MENU:MenuSelectInputSource");
             menuSelectInput.Classes.Add ("item");
 
@@ -135,13 +133,8 @@ namespace IISIM.Controls {
                 mi.Classes.Add ("item");
                 mi.Name = v.ToString ();
                 mi.Click += MenuSelectInputSource;
-                menuitemsSelectInput.Add (mi);
+                menuSelectInput.Items.Add (mi);
             }
-
-            menuSelectInput.Items = menuitemsSelectInput;
-
-            menuitemsContext.Add (menuSelectInput);
-            contextMenu.Items = menuitemsContext;
         }
 
         public void SetColorScheme (Color.Schemes scheme) {
@@ -154,11 +147,11 @@ namespace IISIM.Controls {
                 return;
 
             Dispatcher.UIThread.InvokeAsync (() => {
-                Border borderNumeric = this.FindControl<Border> ("borderNumeric");
-                TextBlock lblNumType = this.FindControl<TextBlock> ("lblNumType");
-                TextBlock lblLine1 = this.FindControl<TextBlock> ("lblLine1");
-                TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
-                TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
+                Border borderNumeric = this.GetControl<Border> ("borderNumeric");
+                TextBlock lblNumType = this.GetControl<TextBlock> ("lblNumType");
+                TextBlock lblLine1 = this.GetControl<TextBlock> ("lblLine1");
+                TextBlock lblLine2 = this.GetControl<TextBlock> ("lblLine2");
+                TextBlock lblLine3 = this.GetControl<TextBlock> ("lblLine3");
 
                 borderNumeric.BorderBrush = Color.GetLead (ControlType.GetLead_Color, ColorScheme);
 
@@ -227,9 +220,9 @@ namespace IISIM.Controls {
             if (Instance?.Physiology == null)
                 return;
 
-            TextBlock lblLine1 = this.FindControl<TextBlock> ("lblLine1");
-            TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
-            TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
+            TextBlock lblLine1 = this.GetControl<TextBlock> ("lblLine1");
+            TextBlock lblLine2 = this.GetControl<TextBlock> ("lblLine2");
+            TextBlock lblLine3 = this.GetControl<TextBlock> ("lblLine3");
 
             switch (ControlType?.Value) {
                 default:
@@ -403,9 +396,9 @@ namespace IISIM.Controls {
         }
 
         public override void OnTick_Alarm (object? sender, EventArgs e) {
-            TextBlock lblLine1 = this.FindControl<TextBlock> ("lblLine1");
-            TextBlock lblLine2 = this.FindControl<TextBlock> ("lblLine2");
-            TextBlock lblLine3 = this.FindControl<TextBlock> ("lblLine3");
+            TextBlock lblLine1 = this.GetControl<TextBlock> ("lblLine1");
+            TextBlock lblLine2 = this.GetControl<TextBlock> ("lblLine2");
+            TextBlock lblLine3 = this.GetControl<TextBlock> ("lblLine3");
 
             AlarmIterator = !AlarmIterator;
 

@@ -44,12 +44,7 @@ namespace IISE.Controls {
         public static Thickness
             StrokeThickness_Default = new Thickness (.5d),
             StrokeThickness_Selected = new Thickness (2.0d);
-
-        public II.Record Records {
-            get { return Step.Records; }
-            set { Step.Records = value; }
-        }
-
+        
         public II.Physiology Physiology {
             get { return Step.Physiology; }
             set { Step.Physiology = value; }
@@ -59,7 +54,7 @@ namespace IISE.Controls {
             get { return Step.Name ?? ""; }
             set {
                 Step.Name = value;
-                this.FindControl<Label> ("lblName").Content = value;
+                this.GetControl<Label> ("lblName").Content = value;
             }
         }
 
@@ -67,7 +62,7 @@ namespace IISE.Controls {
             get { return Step.Description ?? ""; }
             set {
                 Step.Description = value;
-                this.FindControl<Label> ("lblDescription").Content = value;
+                this.GetControl<Label> ("lblDescription").Content = value;
             }
         }
 
@@ -99,7 +94,7 @@ namespace IISE.Controls {
         public ItemStep () {
             InitializeComponent ();
 
-            IStepEnd = this.FindControl<ItemStepEnd> ("iseStepEnd");
+            IStepEnd = this.GetControl<ItemStepEnd> ("iseStepEnd");
             _ = IStepEnd.SetStep (this);
         }
 
@@ -108,21 +103,21 @@ namespace IISE.Controls {
         }
 
         public Task UpdateViewModel () {
-            this.FindControl<Label> ("lblName").Content = Name;
-            this.FindControl<Label> ("lblDescription").Content = Description;
+            this.GetControl<Label> ("lblName").Content = Name;
+            this.GetControl<Label> ("lblDescription").Content = Description;
 
             return Task.CompletedTask;
         }
 
         public Task SetStep_Border (bool isSelected) {
-            Border step = this.FindControl<Border> ("brdStep");
+            Border step = this.GetControl<Border> ("brdStep");
             step.BorderThickness = (isSelected) ? StrokeThickness_Selected : StrokeThickness_Default;
 
             return Task.CompletedTask;
         }
 
         public Task SetStep_Fill (Brush brush) {
-            Border step = this.FindControl<Border> ("brdStep");
+            Border step = this.GetControl<Border> ("brdStep");
             step.Background = brush;
 
             return Task.CompletedTask;

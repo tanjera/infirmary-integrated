@@ -44,8 +44,8 @@ namespace IISE.Controls {
                     PropertyChanged -= (EventHandler<PropertyDoubleEventArgs>)d;
             }
 
-            Label lblKey = this.FindControl<Label> ("lblKey");
-            NumericUpDown numValue = this.FindControl<NumericUpDown> ("numValue");
+            Label lblKey = this.GetControl<Label> ("lblKey");
+            NumericUpDown numValue = this.GetControl<NumericUpDown> ("numValue");
 
             Key = key;
             switch (Key) {
@@ -66,9 +66,9 @@ namespace IISE.Controls {
                 case Keys.RRInspiratoryRatio: lblKey.Content = "Inspiratory Ratio: "; break;
             }
 
-            numValue.Increment = increment;
-            numValue.Minimum = minvalue;
-            numValue.Maximum = maxvalue;
+            numValue.Increment = (decimal)increment;
+            numValue.Minimum = (decimal)minvalue;
+            numValue.Maximum = (decimal)maxvalue;
 
             if (!isInitiated) {
                 numValue.ValueChanged += SendPropertyChange;
@@ -81,21 +81,21 @@ namespace IISE.Controls {
         }
 
         public Task Set (double value) {
-            NumericUpDown numValue = this.FindControl<NumericUpDown> ("numValue");
+            NumericUpDown numValue = this.GetControl<NumericUpDown> ("numValue");
 
             numValue.ValueChanged -= SendPropertyChange;
-            numValue.Value = value;
+            numValue.Value = (decimal)value;
             numValue.ValueChanged += SendPropertyChange;
 
             return Task.CompletedTask;
         }
 
         private void SendPropertyChange (object? sender, EventArgs e) {
-            NumericUpDown numValue = this.FindControl<NumericUpDown> ("numValue");
+            NumericUpDown numValue = this.GetControl<NumericUpDown> ("numValue");
 
             PropertyDoubleEventArgs ea = new PropertyDoubleEventArgs ();
             ea.Key = Key;
-            ea.Value = numValue.Value;
+            ea.Value = (double?)numValue.Value;
 
             Debug.WriteLine ($"PropertyChanged: {ea.Key} '{ea.Value}'");
             PropertyChanged?.Invoke (this, ea);

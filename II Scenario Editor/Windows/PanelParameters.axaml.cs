@@ -87,45 +87,45 @@ namespace IISE.Windows {
             }
 
             // Find all controls and attach to reference
-            PropertyBP pbpNBP = this.FindControl<PropertyBP> ("pbpNBP");
-            PropertyBP pbpABP = this.FindControl<PropertyBP> ("pbpABP");
-            PropertyBP pbpPBP = this.FindControl<PropertyBP> ("pbpPBP");
+            PropertyBP pbpNBP = this.GetControl<PropertyBP> ("pbpNBP");
+            PropertyBP pbpABP = this.GetControl<PropertyBP> ("pbpABP");
+            PropertyBP pbpPBP = this.GetControl<PropertyBP> ("pbpPBP");
 
-            PropertyCheck pchkMechanicallyVentilated = this.FindControl<PropertyCheck> ("pchkMechanicallyVentilated");
-            PropertyCheck pchkPulsusParadoxus = this.FindControl<PropertyCheck> ("pchkPulsusParadoxus");
-            PropertyCheck pchkPulsusAlternans = this.FindControl<PropertyCheck> ("pchkPulsusAlternans");
-            PropertyCheck pchkElectricalAlternans = this.FindControl<PropertyCheck> ("pchkElectricalAlternans");
+            PropertyCheck pchkMechanicallyVentilated = this.GetControl<PropertyCheck> ("pchkMechanicallyVentilated");
+            PropertyCheck pchkPulsusParadoxus = this.GetControl<PropertyCheck> ("pchkPulsusParadoxus");
+            PropertyCheck pchkPulsusAlternans = this.GetControl<PropertyCheck> ("pchkPulsusAlternans");
+            PropertyCheck pchkElectricalAlternans = this.GetControl<PropertyCheck> ("pchkElectricalAlternans");
 
-            PropertyDouble pdblT = this.FindControl<PropertyDouble> ("pdblT");
-            PropertyDouble pdblCO = this.FindControl<PropertyDouble> ("pdblCO");
-            PropertyDouble pdblQRSInterval = this.FindControl<PropertyDouble> ("pdblQRSInterval");
-            PropertyDouble pdblQTcInterval = this.FindControl<PropertyDouble> ("pdblQTcInterval");
-            PropertyDouble pdblInspiratoryRatio = this.FindControl<PropertyDouble> ("pdblInspiratoryRatio");
-            PropertyDouble pdblExpiratoryRatio = this.FindControl<PropertyDouble> ("pdblExpiratoryRatio");
+            PropertyDouble pdblT = this.GetControl<PropertyDouble> ("pdblT");
+            PropertyDouble pdblCO = this.GetControl<PropertyDouble> ("pdblCO");
+            PropertyDouble pdblQRSInterval = this.GetControl<PropertyDouble> ("pdblQRSInterval");
+            PropertyDouble pdblQTcInterval = this.GetControl<PropertyDouble> ("pdblQTcInterval");
+            PropertyDouble pdblInspiratoryRatio = this.GetControl<PropertyDouble> ("pdblInspiratoryRatio");
+            PropertyDouble pdblExpiratoryRatio = this.GetControl<PropertyDouble> ("pdblExpiratoryRatio");
 
-            PropertyECGSegment pecgSTSegment = this.FindControl<PropertyECGSegment> ("pecgSTSegment");
-            PropertyECGSegment pecgTWave = this.FindControl<PropertyECGSegment> ("pecgTWave");
+            PropertyECGSegment pecgSTSegment = this.GetControl<PropertyECGSegment> ("pecgSTSegment");
+            PropertyECGSegment pecgTWave = this.GetControl<PropertyECGSegment> ("pecgTWave");
 
-            PropertyEnum penmCardiacRhythms = this.FindControl<PropertyEnum> ("penmCardiacRhythms");
-            PropertyEnum penmRespiratoryRhythms = this.FindControl<PropertyEnum> ("penmRespiratoryRhythms");
-            PropertyEnum penmCardiacAxis = this.FindControl<PropertyEnum> ("penmCardiacAxis");
-            PropertyEnum penmPACatheterRhythm = this.FindControl<PropertyEnum> ("penmPACatheterRhythm");
-            PropertyEnum penmFetalHeartRhythm = this.FindControl<PropertyEnum> ("penmFetalHeartRhythm");
+            PropertyEnum penmCardiacRhythms = this.GetControl<PropertyEnum> ("penmCardiacRhythms");
+            PropertyEnum penmRespiratoryRhythms = this.GetControl<PropertyEnum> ("penmRespiratoryRhythms");
+            PropertyEnum penmCardiacAxis = this.GetControl<PropertyEnum> ("penmCardiacAxis");
+            PropertyEnum penmPACatheterRhythm = this.GetControl<PropertyEnum> ("penmPACatheterRhythm");
+            PropertyEnum penmFetalHeartRhythm = this.GetControl<PropertyEnum> ("penmFetalHeartRhythm");
 
-            PropertyInt pintHR = this.FindControl<PropertyInt> ("pintHR");
-            PropertyInt pintRR = this.FindControl<PropertyInt> ("pintRR");
-            PropertyInt pintSPO2 = this.FindControl<PropertyInt> ("pintSPO2");
-            PropertyInt pintETCO2 = this.FindControl<PropertyInt> ("pintETCO2");
-            PropertyInt pintCVP = this.FindControl<PropertyInt> ("pintCVP");
-            PropertyInt pintICP = this.FindControl<PropertyInt> ("pintICP");
-            PropertyInt pintIAP = this.FindControl<PropertyInt> ("pintIAP");
-            PropertyInt pintPacemakerThreshold = this.FindControl<PropertyInt> ("pintPacemakerThreshold");
-            PropertyInt pintFHR = this.FindControl<PropertyInt> ("pintFHR");
-            PropertyInt pintFHRVariability = this.FindControl<PropertyInt> ("pintFHRVariability");
-            PropertyInt pintUCFreq = this.FindControl<PropertyInt> ("pintUCFreq");
-            PropertyInt pintUCDur = this.FindControl<PropertyInt> ("pintUCDur");
-            PropertyInt pintUCIntensity = this.FindControl<PropertyInt> ("pintUCIntensity");
-            PropertyInt pintUCResting = this.FindControl<PropertyInt> ("pintUCResting");
+            PropertyInt pintHR = this.GetControl<PropertyInt> ("pintHR");
+            PropertyInt pintRR = this.GetControl<PropertyInt> ("pintRR");
+            PropertyInt pintSPO2 = this.GetControl<PropertyInt> ("pintSPO2");
+            PropertyInt pintETCO2 = this.GetControl<PropertyInt> ("pintETCO2");
+            PropertyInt pintCVP = this.GetControl<PropertyInt> ("pintCVP");
+            PropertyInt pintICP = this.GetControl<PropertyInt> ("pintICP");
+            PropertyInt pintIAP = this.GetControl<PropertyInt> ("pintIAP");
+            PropertyInt pintPacemakerThreshold = this.GetControl<PropertyInt> ("pintPacemakerThreshold");
+            PropertyInt pintFHR = this.GetControl<PropertyInt> ("pintFHR");
+            PropertyInt pintFHRVariability = this.GetControl<PropertyInt> ("pintFHRVariability");
+            PropertyInt pintUCFreq = this.GetControl<PropertyInt> ("pintUCFreq");
+            PropertyInt pintUCDur = this.GetControl<PropertyInt> ("pintUCDur");
+            PropertyInt pintUCIntensity = this.GetControl<PropertyInt> ("pintUCIntensity");
+            PropertyInt pintUCResting = this.GetControl<PropertyInt> ("pintUCResting");
 
             // Initiate controls for editing Patient values
             pbpNBP.Init (PropertyBP.Keys.NSBP, 5, 0, 300, 5, 0, 200);
@@ -332,7 +332,7 @@ namespace IISE.Windows {
         }
 
         private void UpdateCardiacRhythm (object? sender, PropertyEnum.PropertyEnumEventArgs e) {
-            CheckBox chkClampVitals = this.FindControl<CheckBox> ("chkClampVitals");
+            CheckBox chkClampVitals = this.GetControl<CheckBox> ("chkClampVitals");
             if ((!chkClampVitals.IsChecked ?? false) || e.Value == null || this.Physiology == null)
                 return;
 
@@ -356,7 +356,7 @@ namespace IISE.Windows {
         }
 
         private void UpdateRespiratoryRhythm (object? sender, PropertyEnum.PropertyEnumEventArgs e) {
-            CheckBox chkClampVitals = this.FindControl<CheckBox> ("chkClampVitals");
+            CheckBox chkClampVitals = this.GetControl<CheckBox> ("chkClampVitals");
 
             if ((!chkClampVitals.IsChecked ?? false) || e.Value == null || Physiology == null)
                 return;
@@ -385,49 +385,49 @@ namespace IISE.Windows {
         }
 
         private async Task UpdateView () {
-            Label lblActiveStep = this.FindControl<Label> ("lblActiveStep");
+            Label lblActiveStep = this.GetControl<Label> ("lblActiveStep");
 
-            CheckBox chkClampVitals = this.FindControl<CheckBox> ("chkClampVitals");
+            CheckBox chkClampVitals = this.GetControl<CheckBox> ("chkClampVitals");
 
-            PropertyBP pbpNBP = this.FindControl<PropertyBP> ("pbpNBP");
-            PropertyBP pbpABP = this.FindControl<PropertyBP> ("pbpABP");
-            PropertyBP pbpPBP = this.FindControl<PropertyBP> ("pbpPBP");
+            PropertyBP pbpNBP = this.GetControl<PropertyBP> ("pbpNBP");
+            PropertyBP pbpABP = this.GetControl<PropertyBP> ("pbpABP");
+            PropertyBP pbpPBP = this.GetControl<PropertyBP> ("pbpPBP");
 
-            PropertyCheck pchkMechanicallyVentilated = this.FindControl<PropertyCheck> ("pchkMechanicallyVentilated");
-            PropertyCheck pchkPulsusParadoxus = this.FindControl<PropertyCheck> ("pchkPulsusParadoxus");
-            PropertyCheck pchkPulsusAlternans = this.FindControl<PropertyCheck> ("pchkPulsusAlternans");
-            PropertyCheck pchkElectricalAlternans = this.FindControl<PropertyCheck> ("pchkElectricalAlternans");
+            PropertyCheck pchkMechanicallyVentilated = this.GetControl<PropertyCheck> ("pchkMechanicallyVentilated");
+            PropertyCheck pchkPulsusParadoxus = this.GetControl<PropertyCheck> ("pchkPulsusParadoxus");
+            PropertyCheck pchkPulsusAlternans = this.GetControl<PropertyCheck> ("pchkPulsusAlternans");
+            PropertyCheck pchkElectricalAlternans = this.GetControl<PropertyCheck> ("pchkElectricalAlternans");
 
-            PropertyDouble pdblT = this.FindControl<PropertyDouble> ("pdblT");
-            PropertyDouble pdblCO = this.FindControl<PropertyDouble> ("pdblCO");
-            PropertyDouble pdblQRSInterval = this.FindControl<PropertyDouble> ("pdblQRSInterval");
-            PropertyDouble pdblQTcInterval = this.FindControl<PropertyDouble> ("pdblQTcInterval");
-            PropertyDouble pdblInspiratoryRatio = this.FindControl<PropertyDouble> ("pdblInspiratoryRatio");
-            PropertyDouble pdblExpiratoryRatio = this.FindControl<PropertyDouble> ("pdblExpiratoryRatio");
+            PropertyDouble pdblT = this.GetControl<PropertyDouble> ("pdblT");
+            PropertyDouble pdblCO = this.GetControl<PropertyDouble> ("pdblCO");
+            PropertyDouble pdblQRSInterval = this.GetControl<PropertyDouble> ("pdblQRSInterval");
+            PropertyDouble pdblQTcInterval = this.GetControl<PropertyDouble> ("pdblQTcInterval");
+            PropertyDouble pdblInspiratoryRatio = this.GetControl<PropertyDouble> ("pdblInspiratoryRatio");
+            PropertyDouble pdblExpiratoryRatio = this.GetControl<PropertyDouble> ("pdblExpiratoryRatio");
 
-            PropertyECGSegment pecgSTSegment = this.FindControl<PropertyECGSegment> ("pecgSTSegment");
-            PropertyECGSegment pecgTWave = this.FindControl<PropertyECGSegment> ("pecgTWave");
+            PropertyECGSegment pecgSTSegment = this.GetControl<PropertyECGSegment> ("pecgSTSegment");
+            PropertyECGSegment pecgTWave = this.GetControl<PropertyECGSegment> ("pecgTWave");
 
-            PropertyEnum penmCardiacRhythms = this.FindControl<PropertyEnum> ("penmCardiacRhythms");
-            PropertyEnum penmRespiratoryRhythms = this.FindControl<PropertyEnum> ("penmRespiratoryRhythms");
-            PropertyEnum penmCardiacAxis = this.FindControl<PropertyEnum> ("penmCardiacAxis");
-            PropertyEnum penmPACatheterRhythm = this.FindControl<PropertyEnum> ("penmPACatheterRhythm");
-            PropertyEnum penmFetalHeartRhythm = this.FindControl<PropertyEnum> ("penmFetalHeartRhythm");
+            PropertyEnum penmCardiacRhythms = this.GetControl<PropertyEnum> ("penmCardiacRhythms");
+            PropertyEnum penmRespiratoryRhythms = this.GetControl<PropertyEnum> ("penmRespiratoryRhythms");
+            PropertyEnum penmCardiacAxis = this.GetControl<PropertyEnum> ("penmCardiacAxis");
+            PropertyEnum penmPACatheterRhythm = this.GetControl<PropertyEnum> ("penmPACatheterRhythm");
+            PropertyEnum penmFetalHeartRhythm = this.GetControl<PropertyEnum> ("penmFetalHeartRhythm");
 
-            PropertyInt pintHR = this.FindControl<PropertyInt> ("pintHR");
-            PropertyInt pintRR = this.FindControl<PropertyInt> ("pintRR");
-            PropertyInt pintSPO2 = this.FindControl<PropertyInt> ("pintSPO2");
-            PropertyInt pintETCO2 = this.FindControl<PropertyInt> ("pintETCO2");
-            PropertyInt pintCVP = this.FindControl<PropertyInt> ("pintCVP");
-            PropertyInt pintICP = this.FindControl<PropertyInt> ("pintICP");
-            PropertyInt pintIAP = this.FindControl<PropertyInt> ("pintIAP");
-            PropertyInt pintPacemakerThreshold = this.FindControl<PropertyInt> ("pintPacemakerThreshold");
-            PropertyInt pintFHR = this.FindControl<PropertyInt> ("pintFHR");
-            PropertyInt pintFHRVariability = this.FindControl<PropertyInt> ("pintFHRVariability");
-            PropertyInt pintUCFreq = this.FindControl<PropertyInt> ("pintUCFreq");
-            PropertyInt pintUCDur = this.FindControl<PropertyInt> ("pintUCDur");
-            PropertyInt pintUCIntensity = this.FindControl<PropertyInt> ("pintUCIntensity");
-            PropertyInt pintUCResting = this.FindControl<PropertyInt> ("pintUCResting");
+            PropertyInt pintHR = this.GetControl<PropertyInt> ("pintHR");
+            PropertyInt pintRR = this.GetControl<PropertyInt> ("pintRR");
+            PropertyInt pintSPO2 = this.GetControl<PropertyInt> ("pintSPO2");
+            PropertyInt pintETCO2 = this.GetControl<PropertyInt> ("pintETCO2");
+            PropertyInt pintCVP = this.GetControl<PropertyInt> ("pintCVP");
+            PropertyInt pintICP = this.GetControl<PropertyInt> ("pintICP");
+            PropertyInt pintIAP = this.GetControl<PropertyInt> ("pintIAP");
+            PropertyInt pintPacemakerThreshold = this.GetControl<PropertyInt> ("pintPacemakerThreshold");
+            PropertyInt pintFHR = this.GetControl<PropertyInt> ("pintFHR");
+            PropertyInt pintFHRVariability = this.GetControl<PropertyInt> ("pintFHRVariability");
+            PropertyInt pintUCFreq = this.GetControl<PropertyInt> ("pintUCFreq");
+            PropertyInt pintUCDur = this.GetControl<PropertyInt> ("pintUCDur");
+            PropertyInt pintUCIntensity = this.GetControl<PropertyInt> ("pintUCIntensity");
+            PropertyInt pintUCResting = this.GetControl<PropertyInt> ("pintUCResting");
 
             lblActiveStep.Content = String.Format ("Editing Step: {0} ({1})",
                 Step is null ? "N/A" : Step.Name,

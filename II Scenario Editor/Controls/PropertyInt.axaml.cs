@@ -51,8 +51,8 @@ namespace IISE.Controls {
                     PropertyChanged -= (EventHandler<PropertyIntEventArgs>)d;
             }
 
-            Label lblKey = this.FindControl<Label> ("lblKey");
-            NumericUpDown numValue = this.FindControl<NumericUpDown> ("numValue");
+            Label lblKey = this.GetControl<Label> ("lblKey");
+            NumericUpDown numValue = this.GetControl<NumericUpDown> ("numValue");
 
             Key = key;
             switch (Key) {
@@ -88,7 +88,7 @@ namespace IISE.Controls {
         }
 
         public Task Set (int value) {
-            NumericUpDown numValue = this.FindControl<NumericUpDown> ("numValue");
+            NumericUpDown numValue = this.GetControl<NumericUpDown> ("numValue");
 
             numValue.ValueChanged -= SendPropertyChange;
             numValue.Value = value;
@@ -98,7 +98,7 @@ namespace IISE.Controls {
         }
 
         private void SendPropertyChange (object? sender, EventArgs e) {
-            NumericUpDown numValue = this.FindControl<NumericUpDown> ("numValue");
+            NumericUpDown numValue = this.GetControl<NumericUpDown> ("numValue");
 
             PropertyIntEventArgs ea = new PropertyIntEventArgs ();
             ea.Key = Key;

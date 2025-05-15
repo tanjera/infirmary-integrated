@@ -40,19 +40,19 @@ namespace IISE.Controls {
                     PropertyChanged -= (EventHandler<PropertyECGEventArgs>)d;
             }
 
-            Label lblKey = this.FindControl<Label> ("lblKey");
-            NumericUpDown dblI = this.FindControl<NumericUpDown> ("dblI");
-            NumericUpDown dblII = this.FindControl<NumericUpDown> ("dblII");
-            NumericUpDown dblIII = this.FindControl<NumericUpDown> ("dblIII");
-            NumericUpDown dblaVR = this.FindControl<NumericUpDown> ("dblaVR");
-            NumericUpDown dblaVL = this.FindControl<NumericUpDown> ("dblaVL");
-            NumericUpDown dblaVF = this.FindControl<NumericUpDown> ("dblaVF");
-            NumericUpDown dblV1 = this.FindControl<NumericUpDown> ("dblV1");
-            NumericUpDown dblV2 = this.FindControl<NumericUpDown> ("dblV2");
-            NumericUpDown dblV3 = this.FindControl<NumericUpDown> ("dblV3");
-            NumericUpDown dblV4 = this.FindControl<NumericUpDown> ("dblV4");
-            NumericUpDown dblV5 = this.FindControl<NumericUpDown> ("dblV5");
-            NumericUpDown dblV6 = this.FindControl<NumericUpDown> ("dblV6");
+            Label lblKey = this.GetControl<Label> ("lblKey");
+            NumericUpDown dblI = this.GetControl<NumericUpDown> ("dblI");
+            NumericUpDown dblII = this.GetControl<NumericUpDown> ("dblII");
+            NumericUpDown dblIII = this.GetControl<NumericUpDown> ("dblIII");
+            NumericUpDown dblaVR = this.GetControl<NumericUpDown> ("dblaVR");
+            NumericUpDown dblaVL = this.GetControl<NumericUpDown> ("dblaVL");
+            NumericUpDown dblaVF = this.GetControl<NumericUpDown> ("dblaVF");
+            NumericUpDown dblV1 = this.GetControl<NumericUpDown> ("dblV1");
+            NumericUpDown dblV2 = this.GetControl<NumericUpDown> ("dblV2");
+            NumericUpDown dblV3 = this.GetControl<NumericUpDown> ("dblV3");
+            NumericUpDown dblV4 = this.GetControl<NumericUpDown> ("dblV4");
+            NumericUpDown dblV5 = this.GetControl<NumericUpDown> ("dblV5");
+            NumericUpDown dblV6 = this.GetControl<NumericUpDown> ("dblV6");
 
             Key = key;
             switch (Key) {
@@ -98,18 +98,18 @@ namespace IISE.Controls {
             if (values is null || values.Length != 12)
                 return Task.CompletedTask;
 
-            NumericUpDown dblI = this.FindControl<NumericUpDown> ("dblI");
-            NumericUpDown dblII = this.FindControl<NumericUpDown> ("dblII");
-            NumericUpDown dblIII = this.FindControl<NumericUpDown> ("dblIII");
-            NumericUpDown dblaVR = this.FindControl<NumericUpDown> ("dblaVR");
-            NumericUpDown dblaVL = this.FindControl<NumericUpDown> ("dblaVL");
-            NumericUpDown dblaVF = this.FindControl<NumericUpDown> ("dblaVF");
-            NumericUpDown dblV1 = this.FindControl<NumericUpDown> ("dblV1");
-            NumericUpDown dblV2 = this.FindControl<NumericUpDown> ("dblV2");
-            NumericUpDown dblV3 = this.FindControl<NumericUpDown> ("dblV3");
-            NumericUpDown dblV4 = this.FindControl<NumericUpDown> ("dblV4");
-            NumericUpDown dblV5 = this.FindControl<NumericUpDown> ("dblV5");
-            NumericUpDown dblV6 = this.FindControl<NumericUpDown> ("dblV6");
+            NumericUpDown dblI = this.GetControl<NumericUpDown> ("dblI");
+            NumericUpDown dblII = this.GetControl<NumericUpDown> ("dblII");
+            NumericUpDown dblIII = this.GetControl<NumericUpDown> ("dblIII");
+            NumericUpDown dblaVR = this.GetControl<NumericUpDown> ("dblaVR");
+            NumericUpDown dblaVL = this.GetControl<NumericUpDown> ("dblaVL");
+            NumericUpDown dblaVF = this.GetControl<NumericUpDown> ("dblaVF");
+            NumericUpDown dblV1 = this.GetControl<NumericUpDown> ("dblV1");
+            NumericUpDown dblV2 = this.GetControl<NumericUpDown> ("dblV2");
+            NumericUpDown dblV3 = this.GetControl<NumericUpDown> ("dblV3");
+            NumericUpDown dblV4 = this.GetControl<NumericUpDown> ("dblV4");
+            NumericUpDown dblV5 = this.GetControl<NumericUpDown> ("dblV5");
+            NumericUpDown dblV6 = this.GetControl<NumericUpDown> ("dblV6");
 
             dblI.ValueChanged -= SendPropertyChange;
             dblII.ValueChanged -= SendPropertyChange;
@@ -124,18 +124,18 @@ namespace IISE.Controls {
             dblV5.ValueChanged -= SendPropertyChange;
             dblV6.ValueChanged -= SendPropertyChange;
 
-            dblI.Value = values [0];
-            dblII.Value = values [1];
-            dblIII.Value = values [2];
-            dblaVR.Value = values [3];
-            dblaVL.Value = values [4];
-            dblaVF.Value = values [5];
-            dblV1.Value = values [6];
-            dblV2.Value = values [7];
-            dblV3.Value = values [8];
-            dblV4.Value = values [9];
-            dblV5.Value = values [10];
-            dblV6.Value = values [11];
+            dblI.Value = (decimal?)values [0];
+            dblII.Value = (decimal?)values [1];
+            dblIII.Value = (decimal?)values [2];
+            dblaVR.Value = (decimal?)values [3];
+            dblaVL.Value = (decimal?)values [4];
+            dblaVF.Value = (decimal?)values [5];
+            dblV1.Value = (decimal?)values [6];
+            dblV2.Value = (decimal?)values [7];
+            dblV3.Value = (decimal?)values [8];
+            dblV4.Value = (decimal?)values [9];
+            dblV5.Value = (decimal?)values [10];
+            dblV6.Value = (decimal?)values [11];
 
             dblI.ValueChanged += SendPropertyChange;
             dblII.ValueChanged += SendPropertyChange;
@@ -154,26 +154,34 @@ namespace IISE.Controls {
         }
 
         private void SendPropertyChange (object? sender, EventArgs e) {
-            NumericUpDown dblI = this.FindControl<NumericUpDown> ("dblI");
-            NumericUpDown dblII = this.FindControl<NumericUpDown> ("dblII");
-            NumericUpDown dblIII = this.FindControl<NumericUpDown> ("dblIII");
-            NumericUpDown dblaVR = this.FindControl<NumericUpDown> ("dblaVR");
-            NumericUpDown dblaVL = this.FindControl<NumericUpDown> ("dblaVL");
-            NumericUpDown dblaVF = this.FindControl<NumericUpDown> ("dblaVF");
-            NumericUpDown dblV1 = this.FindControl<NumericUpDown> ("dblV1");
-            NumericUpDown dblV2 = this.FindControl<NumericUpDown> ("dblV2");
-            NumericUpDown dblV3 = this.FindControl<NumericUpDown> ("dblV3");
-            NumericUpDown dblV4 = this.FindControl<NumericUpDown> ("dblV4");
-            NumericUpDown dblV5 = this.FindControl<NumericUpDown> ("dblV5");
-            NumericUpDown dblV6 = this.FindControl<NumericUpDown> ("dblV6");
+            NumericUpDown dblI = this.GetControl<NumericUpDown> ("dblI");
+            NumericUpDown dblII = this.GetControl<NumericUpDown> ("dblII");
+            NumericUpDown dblIII = this.GetControl<NumericUpDown> ("dblIII");
+            NumericUpDown dblaVR = this.GetControl<NumericUpDown> ("dblaVR");
+            NumericUpDown dblaVL = this.GetControl<NumericUpDown> ("dblaVL");
+            NumericUpDown dblaVF = this.GetControl<NumericUpDown> ("dblaVF");
+            NumericUpDown dblV1 = this.GetControl<NumericUpDown> ("dblV1");
+            NumericUpDown dblV2 = this.GetControl<NumericUpDown> ("dblV2");
+            NumericUpDown dblV3 = this.GetControl<NumericUpDown> ("dblV3");
+            NumericUpDown dblV4 = this.GetControl<NumericUpDown> ("dblV4");
+            NumericUpDown dblV5 = this.GetControl<NumericUpDown> ("dblV5");
+            NumericUpDown dblV6 = this.GetControl<NumericUpDown> ("dblV6");
 
             PropertyECGEventArgs ea = new PropertyECGEventArgs ();
             ea.Key = Key;
             ea.Values = new double [] {
-                dblI.Value, dblII.Value, dblIII.Value,
-                dblaVR.Value, dblaVL.Value, dblaVF.Value,
-                dblV1.Value, dblV2.Value, dblV3.Value,
-                dblV4.Value, dblV5.Value, dblV6.Value
+                (double)(dblI.Value ?? 0), 
+                (double)(dblII.Value ?? 0),
+                (double)(dblIII.Value ?? 0),
+                (double)(dblaVR.Value ?? 0),
+                (double)(dblaVL.Value ?? 0), 
+                (double)(dblaVF.Value ?? 0),
+                (double)(dblV1.Value ?? 0), 
+                (double)(dblV2.Value ?? 0),
+                (double)(dblV3.Value ?? 0),
+                (double)(dblV4.Value ?? 0), 
+                (double)(dblV5.Value ?? 0),
+                (double)(dblV6.Value ?? 0)
                 };
 
             Debug.WriteLine ($"PropertyChanged: {ea.Key} '{ea.Values}'");

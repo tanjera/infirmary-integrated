@@ -16,6 +16,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.Threading;
 
 using II;
@@ -62,27 +63,26 @@ namespace IISIM {
             }
 
             /* Populate UI strings per language selection */
-            this.FindControl<Window> ("wdwDeviceEFM").Title = Instance.Language.Localize ("EFM:WindowTitle");
-            this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
-            this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
-            this.FindControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
-            this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
-            this.FindControl<MenuItem> ("menuStripSpeed").Header = Instance.Language.Localize ("MENU:StripSpeed");
-            this.FindControl<MenuItem> ("menuStripSpeedx1").Header = Instance.Language.Localize ("MENU:StripSpeedx1");
-            this.FindControl<MenuItem> ("menuStripxSpeedx10").Header = Instance.Language.Localize ("MENU:StripSpeedx10");
-            this.FindControl<MenuItem> ("menuStripxSpeedx25").Header = Instance.Language.Localize ("MENU:StripSpeedx25");
-            //this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
-            //this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
-            //this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
+            this.GetControl<Window> ("wdwDeviceEFM").Title = Instance.Language.Localize ("EFM:WindowTitle");
+            this.GetControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
+            this.GetControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+            this.GetControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
+            this.GetControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
+            this.GetControl<MenuItem> ("menuStripSpeed").Header = Instance.Language.Localize ("MENU:StripSpeed");
+            this.GetControl<MenuItem> ("menuStripSpeedx1").Header = Instance.Language.Localize ("MENU:StripSpeedx1");
+            this.GetControl<MenuItem> ("menuStripxSpeedx10").Header = Instance.Language.Localize ("MENU:StripSpeedx10");
+            this.GetControl<MenuItem> ("menuStripxSpeedx25").Header = Instance.Language.Localize ("MENU:StripSpeedx25");
+            //this.GetControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
+            //this.GetControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
+            //this.GetControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
 
-            Grid displayGrid = this.FindControl<Grid> ("displayGrid");
+            Grid displayGrid = this.GetControl<Grid> ("displayGrid");
 
             // Instantiate and load backgroung images
-            var assets = AvaloniaLocator.Current.GetService<Avalonia.Platform.IAssetLoader> ();
-            gridFHR = new ImageBrush (new Bitmap (assets.Open (new Uri ("avares://Infirmary Integrated/Resources/FHR_Grid.png"))));
+            gridFHR = new ImageBrush (new Bitmap (AssetLoader.Open (new Uri ("avares://Infirmary Integrated/Resources/FHR_Grid.png"))));
             gridFHR.Stretch = Stretch.Fill;
 
-            gridToco = new ImageBrush (new Bitmap (assets.Open (new Uri ("avares://Infirmary Integrated/Resources/Toco_Grid.png"))));
+            gridToco = new ImageBrush (new Bitmap (AssetLoader.Open (new Uri ("avares://Infirmary Integrated/Resources/Toco_Grid.png"))));
             gridToco.Stretch = Stretch.Fill;
 
             // Instantiate and add Tracings to UI
@@ -106,7 +106,7 @@ namespace IISIM {
                 for (int i = 0; i < listTracings.Count; i++)
                     listTracings [i].SetColorScheme (colorScheme);
 
-                Window window = this.FindControl<Window> ("wdwDeviceEFM");
+                Window window = this.GetControl<Window> ("wdwDeviceEFM");
                 window.Background = Color.GetBackground (Color.Devices.DeviceEFM, colorScheme);
             });
         }

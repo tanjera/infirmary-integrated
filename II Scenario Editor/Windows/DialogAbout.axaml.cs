@@ -33,7 +33,7 @@ namespace IISE {
         public void Init () {
             DataContext = this;
 
-            this.FindControl<Label> ("lblVersion").Content = String.Format ("Version {0}",
+            this.GetControl<Label> ("lblVersion").Content = String.Format ("Version {0}",
                 Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0");
         }
 

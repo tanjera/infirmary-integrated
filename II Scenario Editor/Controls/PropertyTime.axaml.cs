@@ -39,8 +39,8 @@ namespace IISE.Controls {
                     PropertyChanged -= (EventHandler<PropertyTimeEventArgs>)d;
             }
 
-            Label lblKey = this.FindControl<Label> ("lblKey");
-            TimePicker tpValue = this.FindControl<TimePicker> ("tpValue");
+            Label lblKey = this.GetControl<Label> ("lblKey");
+            TimePicker tpValue = this.GetControl<TimePicker> ("tpValue");
 
             Key = key;
             switch (Key) {
@@ -69,7 +69,7 @@ namespace IISE.Controls {
             if (value is null)
                 return Task.CompletedTask;
 
-            TimePicker tpValue = this.FindControl<TimePicker> ("tpValue");
+            TimePicker tpValue = this.GetControl<TimePicker> ("tpValue");
 
             tpValue.SelectedTimeChanged -= SendPropertyChange;
             tpValue.SelectedTime = new TimeSpan (

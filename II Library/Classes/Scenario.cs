@@ -26,7 +26,6 @@ namespace II {
         public List<Step> Steps = new ();
         public Timer ProgressTimer = new ();
 
-        public Settings.Record RecordMAR = new (Settings.Record.Records.MAR);
         public Settings.Device DeviceMonitor = new (Settings.Device.Devices.Monitor);
         public Settings.Device DeviceDefib = new (Settings.Device.Devices.Defib);
         public Settings.Device DeviceECG = new (Settings.Device.Devices.ECG);
@@ -93,12 +92,7 @@ namespace II {
             get { return Current?.Physiology; }
             set { if (Current != null) Current.Physiology = value; }
         }
-
-        public Record? Records {
-            get { return Current?.Records; }
-            set { if (Current != null) Current.Records = value; }
-        }
-
+        
         public async Task Load (string inc) {
             using StringReader sRead = new (inc);
             string? line, pline;
@@ -120,14 +114,6 @@ namespace II {
                         Step s = new ();
                         await s.Load (pbuffer.ToString ());
                         Steps.Add (s);
-                    } else if (line == "> Begin: RecordMAR") {
-                        pbuffer = new StringBuilder ();
-
-                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
-                                && pline != "> End: RecordMAR")
-                            pbuffer.AppendLine (pline);
-
-                        await RecordMAR.Load (pbuffer.ToString ());
                     } else if (line == "> Begin: DeviceMonitor") {
                         pbuffer = new StringBuilder ();
 
@@ -194,10 +180,6 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Beginning", BeginStep));
 
             /* Save() each Device's Settings */
-            sWrite.AppendLine ($"{dent}> Begin: RecordMAR");
-            sWrite.Append (await RecordMAR.Save (indent + 1));
-            sWrite.AppendLine ($"{dent}> End: RecordMAR");
-
             sWrite.AppendLine ($"{dent}> Begin: DeviceMonitor");
             sWrite.Append (await DeviceMonitor.Save (indent + 1));
             sWrite.AppendLine ($"{dent}> End: DeviceMonitor");
@@ -353,7 +335,6 @@ namespace II {
 
         public class Step {
             public string? UUID = null;
-            public Record? Records;
             public Physiology? Physiology;
             public string? Name, Description;
 
@@ -369,7 +350,6 @@ namespace II {
             public Step () {
                 UUID = Guid.NewGuid ().ToString ();
 
-                Records = new Record ();
                 Physiology = new Physiology ();
             }
 
@@ -381,15 +361,7 @@ namespace II {
                 try {
                     while (!String.IsNullOrEmpty (line = await sRead.ReadLineAsync ())) {
                         line = line.Trim ();
-                        if (line == "> Begin: Records") {
-                            pbuffer = new ();
-
-                            while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
-                                    && pline.Trim () != "> End: Records")
-                                pbuffer.AppendLine (pline);
-
-                            await (Records?.Load (pbuffer.ToString ()) ?? Task.CompletedTask);
-                        } else if (line == "> Begin: Physiology") {
+                        if (line == "> Begin: Physiology") {
                             pbuffer = new ();
 
                             while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
@@ -446,10 +418,6 @@ namespace II {
                 sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ProgressTime", ProgressTimer));
                 sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "IISEPositionX", IISEPositionX));
                 sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "IISEPositionY", IISEPositionY));
-
-                sWrite.AppendLine ($"{dent}> Begin: Records");
-                sWrite.Append (Records?.Save (indent + 1));
-                sWrite.AppendLine ($"{dent}> End: Records");
 
                 sWrite.AppendLine ($"{dent}> Begin: Physiology");
                 sWrite.Append (Physiology?.Save (indent + 1));

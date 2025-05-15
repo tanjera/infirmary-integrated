@@ -10,7 +10,7 @@
 	Height="480"
 	Background="Transparent"
 	CanResize="False"
-	HasSystemDecorations="False"
+	SystemDecorations="0"
 	Icon="avares://Infirmary Integrated Scenario Editor/Resources/Icon_IISE.ico"
 	Topmost="True"
 	WindowStartupLocation="CenterScreen"

@@ -54,7 +54,7 @@ namespace IISIM.Controls {
             Dispatcher.UIThread.InvokeAsync (() => {
                 TracingBrush = Color.GetLead (Lead?.Value ?? Lead.Values.ECG_I, ColorScheme ?? Color.Schemes.Light);
 
-                Label lblLead = this.FindControl<Label> ("lblLead");
+                Label lblLead = this.GetControl<Label> ("lblLead");
 
                 lblLead.Foreground = TracingBrush;
                 lblLead.Content = Instance?.Language.Localize (Lead.LookupString (Lead?.Value ?? Lead.Values.ECG_I, true));

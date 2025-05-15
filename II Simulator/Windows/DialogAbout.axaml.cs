@@ -45,11 +45,11 @@ namespace IISIM {
                 return;
             }
 
-            this.FindControl<Window> ("dlgAbout").Title = Instance.Language.Localize ("ABOUT:AboutProgram");
-            this.FindControl<Label> ("lblInfirmaryIntegrated").Content = Instance.Language.Localize ("II:InfirmaryIntegrated");
-            this.FindControl<Label> ("lblVersion").Content = String.Format (Instance.Language.Localize ("ABOUT:Version"),
+            this.GetControl<Window> ("dlgAbout").Title = Instance.Language.Localize ("ABOUT:AboutProgram");
+            this.GetControl<Label> ("lblInfirmaryIntegrated").Content = Instance.Language.Localize ("II:InfirmaryIntegrated");
+            this.GetControl<Label> ("lblVersion").Content = String.Format (Instance.Language.Localize ("ABOUT:Version"),
                 Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0");
-            this.FindControl<TextBlock> ("tblDescription").Text = Instance.Language.Localize ("ABOUT:Description");
+            this.GetControl<TextBlock> ("tblDescription").Text = Instance.Language.Localize ("ABOUT:Description");
         }
 
         private void Hyperlink_Website (object sender, RoutedEventArgs e)

@@ -67,16 +67,15 @@ namespace IISIM {
         }
 
         public void UpdateViewModel () {
-            TextBlock lblMessage = this.FindControl<TextBlock> ("lblMessage");
-            Image imgIcon = this.FindControl<Image> ("imgIcon");
-            Button btnLeft = this.FindControl<Button> ("btnLeft");
-            Button btnRight = this.FindControl<Button> ("btnRight");
+            TextBlock lblMessage = this.GetControl<TextBlock> ("lblMessage");
+            Image imgIcon = this.GetControl<Image> ("imgIcon");
+            Button btnLeft = this.GetControl<Button> ("btnLeft");
+            Button btnRight = this.GetControl<Button> ("btnRight");
 
             lblMessage.Text = string.IsNullOrEmpty (Message) ? "" : Message;
 
             if (!string.IsNullOrEmpty (IconSources [Indicator.GetHashCode ()])) {
-                var al = AvaloniaLocator.Current.GetService<IAssetLoader> ();
-                var asset = al?.Open (new Uri (IconSources [Indicator.GetHashCode ()]));
+                var asset = AssetLoader.Open (new Uri (IconSources [Indicator.GetHashCode ()]));
                 if (asset != null)
                     imgIcon.Source = new Bitmap (asset);
             }

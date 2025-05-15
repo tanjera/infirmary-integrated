@@ -49,8 +49,8 @@ namespace IISIM.Controls {
             // Context Menu (right-click menu!)
             ContextMenu menuContext = new ();
             List<object> menuitemsContext = new ();
-            this.FindControl<Image> ("imgTracing").ContextMenu = menuContext;
-            this.FindControl<Label> ("lblLead").ContextMenu = menuContext;
+            this.GetControl<Image> ("imgTracing").ContextMenu = menuContext;
+            this.GetControl<Label> ("lblLead").ContextMenu = menuContext;
 
             uiMenuZeroTransducer = new MenuItem ();
             uiMenuZeroTransducer.Header = Instance?.Language.Localize ("MENU:MenuZeroTransducer");
@@ -130,9 +130,9 @@ namespace IISIM.Controls {
 
             menuitemsContext.Add (menuSelectInput);
 
-            menuSelectInput.Items = menuitemsSelectInput;
-            menuECGLeads.Items = menuitemsECGLeads;
-            menuContext.Items = menuitemsContext;
+            menuSelectInput.Items.Add (menuitemsSelectInput);
+            menuECGLeads.Items.Add (menuitemsECGLeads);
+            menuContext.Items.Add (menuitemsContext);
         }
 
         public void SetColorScheme (Color.Schemes scheme) {
@@ -147,11 +147,11 @@ namespace IISIM.Controls {
             Dispatcher.UIThread.InvokeAsync (() => {
                 TracingBrush = Color.GetLead (Lead?.Value ?? Lead.Values.ECG_I, ColorScheme ?? Color.Schemes.Light);
 
-                Border borderTracing = this.FindControl<Border> ("borderTracing");
-                Label lblLead = this.FindControl<Label> ("lblLead");
-                Label lblScaleAuto = this.FindControl<Label> ("lblScaleAuto");
-                Label lblScaleMin = this.FindControl<Label> ("lblScaleMin");
-                Label lblScaleMax = this.FindControl<Label> ("lblScaleMax");
+                Border borderTracing = this.GetControl<Border> ("borderTracing");
+                Label lblLead = this.GetControl<Label> ("lblLead");
+                Label lblScaleAuto = this.GetControl<Label> ("lblScaleAuto");
+                Label lblScaleMin = this.GetControl<Label> ("lblScaleMin");
+                Label lblScaleMax = this.GetControl<Label> ("lblScaleMax");
 
                 borderTracing.BorderBrush = TracingBrush;
 

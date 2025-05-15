@@ -14,8 +14,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Allergy.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\Record.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\Medication.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Alarm.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Audio.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Drawing.cs" />

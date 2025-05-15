@@ -30,7 +30,6 @@ namespace IISIM {
 
         public Scenario? Scenario;
         public Physiology? Physiology { get => Scenario?.Physiology; }
-        public Record? Records { get => Scenario?.Records; }
 
         public WindowSplash? Window_Splash;
         public WindowMain? Window_Main;
@@ -40,7 +39,6 @@ namespace IISIM {
         public DeviceDefib? Device_Defib;
         public DeviceIABP? Device_IABP;
         public DeviceEFM? Device_EFM;
-        public RecordMAR? Records_MAR;
 
         public System.Timers.Timer Timer_Main = new ();
 
@@ -113,7 +111,6 @@ namespace IISIM {
             Device_ECG?.Close ();
             Device_IABP?.Close ();
             Device_EFM?.Close ();
-            Records_MAR?.Close ();
 
             Window_Main?.Close ();
 

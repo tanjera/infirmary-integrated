@@ -40,9 +40,9 @@ namespace IISIM {
                 return;
             }
 
-            this.FindControl<Window> ("dlgUpgradeCurrent").Title = Instance.Language.Localize ("UPGRADE:Upgrade");
-            this.FindControl<TextBlock> ("txtMessage").Text = Instance.Language.Localize ("UPGRADE:NoUpdateAvailable");
-            this.FindControl<Button> ("btnContinue").Content = Instance.Language.Localize ("BUTTON:Continue");
+            this.GetControl<Window> ("dlgUpgradeCurrent").Title = Instance.Language.Localize ("UPGRADE:Upgrade");
+            this.GetControl<TextBlock> ("txtMessage").Text = Instance.Language.Localize ("UPGRADE:NoUpdateAvailable");
+            this.GetControl<Button> ("btnContinue").Content = Instance.Language.Localize ("BUTTON:Continue");
         }
 
         private void ButtonOK_Click (object s, RoutedEventArgs e) => this.Close ();

@@ -42,8 +42,8 @@ namespace IISE.Controls {
             if (values.Length != readable.Count)
                 return Task.CompletedTask;
 
-            Label lblKey = this.FindControl<Label> ("lblKey");
-            ListBox listBox = this.FindControl<ListBox> ("listBox");
+            Label lblKey = this.GetControl<Label> ("lblKey");
+            ListBox listBox = this.GetControl<ListBox> ("listBox");
 
             Key = key;
             Values = new List<string> (values);
@@ -52,15 +52,12 @@ namespace IISE.Controls {
                 default: break;
             }
 
-            List<ListBoxItem> listItems = new ();
-
             for (int i = 0; i < values.Length; i++)
-                listItems.Add (new ComboBoxItem () {
+                listBox.Items.Add (new ComboBoxItem () {
                     Tag = values [i],
                     Content = readable [i]
                 });
 
-            listBox.Items = listItems;
             listBox.SelectedItems.Clear ();
 
             listBox.SelectionMode = multiselect ? SelectionMode.Multiple : SelectionMode.Single;
@@ -78,20 +75,18 @@ namespace IISE.Controls {
             if (values.Count != readable.Count)
                 return Task.CompletedTask;
 
-            ListBox listBox = this.FindControl<ListBox> ("listBox");
+            ListBox listBox = this.GetControl<ListBox> ("listBox");
 
             listBox.SelectionChanged -= SendPropertyChange;
 
             Values = new List<string> (values);
 
-            List<ListBoxItem> listItems = new ();
             for (int i = 0; i < values.Count; i++)
-                listItems.Add (new ComboBoxItem () {
+                listBox.Items.Add (new ComboBoxItem () {
                     Tag = values [i],
                     Content = readable [i]
                 });
 
-            listBox.Items = listItems;
             listBox.SelectedItems.Clear ();
 
             foreach (ListBoxItem i in listBox.Items)
@@ -104,7 +99,7 @@ namespace IISE.Controls {
         }
 
         public Task Set (List<string> selected) {
-            ListBox listBox = this.FindControl<ListBox> ("listBox");
+            ListBox listBox = this.GetControl<ListBox> ("listBox");
 
             listBox.SelectionChanged -= SendPropertyChange;
 
@@ -120,7 +115,7 @@ namespace IISE.Controls {
         }
 
         private void SendPropertyChange (object? sender, EventArgs e) {
-            ListBox listBox = this.FindControl<ListBox> ("listBox");
+            ListBox listBox = this.GetControl<ListBox> ("listBox");
 
             PropertyListEventArgs ea = new PropertyListEventArgs ();
             ea.Key = Key;

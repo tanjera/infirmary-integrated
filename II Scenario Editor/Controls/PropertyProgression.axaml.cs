@@ -46,8 +46,8 @@ namespace IISE.Controls {
             StepToName = stepToName;
             Description = desc;
 
-            Label lblProgressionProperty = this.FindControl<Label> ("lblProgressionProperty");
-            TextBox txtDescription = this.FindControl<TextBox> ("txtDescription");
+            Label lblProgressionProperty = this.GetControl<Label> ("lblProgressionProperty");
+            TextBox txtDescription = this.GetControl<TextBox> ("txtDescription");
 
             txtDescription.Text = Description;
             lblProgressionProperty.Content = $"Progression To: {StepToName}";
@@ -71,8 +71,8 @@ namespace IISE.Controls {
         }
 
         private void SendPropertyChange (object? sender, EventArgs e) {
-            TextBox txtStepTo = this.FindControl<TextBox> ("txtStepTo");
-            TextBox txtDescription = this.FindControl<TextBox> ("txtDescription");
+            TextBox txtStepTo = this.GetControl<TextBox> ("txtStepTo");
+            TextBox txtDescription = this.GetControl<TextBox> ("txtDescription");
 
             PropertyProgressionEventArgs ea = new PropertyProgressionEventArgs ();
             ea.UUID = UUID;

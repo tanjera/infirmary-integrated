@@ -10,7 +10,7 @@
 	Height="480"
 	Background="Transparent"
 	CanResize="False"
-	HasSystemDecorations="False"
+	SystemDecorations="0"
 	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
 	Topmost="True"
 	WindowStartupLocation="CenterScreen"

@@ -16,6 +16,7 @@ using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
+using Avalonia.Platform;
 using Avalonia.Threading;
 
 using II;
@@ -126,10 +127,9 @@ namespace IISIM {
             }
 
             base.InitAudio ();
-
-            var assets = AvaloniaLocator.Current.GetService<Avalonia.Platform.IAssetLoader> ();
+            
             if (AudioPlayer is not null)
-                AudioPlayer.Media = new Media (Instance.AudioLib, new StreamMediaInput (assets.Open (new Uri ("avares://Infirmary Integrated/Resources/Alarm_IABP_Augmentation.wav"))));
+                AudioPlayer.Media = new Media (Instance.AudioLib, new StreamMediaInput (AssetLoader.Open (new Uri ("avares://Infirmary Integrated/Resources/Alarm_IABP_Augmentation.wav"))));
         }
 
         private void InitInterface () {
@@ -140,35 +140,35 @@ namespace IISIM {
 
             // Populate UI strings per language selection
 
-            this.FindControl<Window> ("wdwDeviceIABP").Title = Instance.Language.Localize ("IABP:WindowTitle");
-            this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
-            this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
-            this.FindControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
-            this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
-            this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
-            this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
-            this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
+            this.GetControl<Window> ("wdwDeviceIABP").Title = Instance.Language.Localize ("IABP:WindowTitle");
+            this.GetControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
+            this.GetControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+            this.GetControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
+            this.GetControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
+            this.GetControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
+            this.GetControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
+            this.GetControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
 
-            this.FindControl<TextBlock> ("buttonModeAuto").Text = Instance.Language.Localize ("IABPMODE:Auto");
-            this.FindControl<TextBlock> ("buttonModeSemiAuto").Text = Instance.Language.Localize ("IABPMODE:SemiAuto");
-            this.FindControl<TextBlock> ("buttonZero").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:ZeroPressure"));
-            this.FindControl<TextBlock> ("buttonStart").Text = Instance.Language.Localize ("IABPBUTTON:Start");
-            this.FindControl<TextBlock> ("buttonPause").Text = Instance.Language.Localize ("IABPBUTTON:Pause");
-            this.FindControl<TextBlock> ("btntxtTrigger").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:Trigger"));
-            this.FindControl<TextBlock> ("btntxtFrequency").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:Frequency"));
-            this.FindControl<TextBlock> ("buttonPrimeBalloon").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:PrimeBalloon"));
-            this.FindControl<TextBlock> ("btntxtInflationTiming").Text = Utility.WrapString (Instance.Language.Localize ("IABP:InflationTiming"));
-            this.FindControl<TextBlock> ("btntxtAugmentationPressure").Text = Utility.WrapString (Instance.Language.Localize ("IABP:AugmentationPressure"));
-            this.FindControl<TextBlock> ("btntxtAugmentationAlarm").Text = Utility.WrapString (Instance.Language.Localize ("IABP:AugmentationAlarm"));
-            this.FindControl<TextBlock> ("btntxtIncrease").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:Increase"));
-            this.FindControl<TextBlock> ("btntxtDecrease").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:Decrease"));
+            this.GetControl<TextBlock> ("buttonModeAuto").Text = Instance.Language.Localize ("IABPMODE:Auto");
+            this.GetControl<TextBlock> ("buttonModeSemiAuto").Text = Instance.Language.Localize ("IABPMODE:SemiAuto");
+            this.GetControl<TextBlock> ("buttonZero").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:ZeroPressure"));
+            this.GetControl<TextBlock> ("buttonStart").Text = Instance.Language.Localize ("IABPBUTTON:Start");
+            this.GetControl<TextBlock> ("buttonPause").Text = Instance.Language.Localize ("IABPBUTTON:Pause");
+            this.GetControl<TextBlock> ("btntxtTrigger").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:Trigger"));
+            this.GetControl<TextBlock> ("btntxtFrequency").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:Frequency"));
+            this.GetControl<TextBlock> ("buttonPrimeBalloon").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:PrimeBalloon"));
+            this.GetControl<TextBlock> ("btntxtInflationTiming").Text = Utility.WrapString (Instance.Language.Localize ("IABP:InflationTiming"));
+            this.GetControl<TextBlock> ("btntxtAugmentationPressure").Text = Utility.WrapString (Instance.Language.Localize ("IABP:AugmentationPressure"));
+            this.GetControl<TextBlock> ("btntxtAugmentationAlarm").Text = Utility.WrapString (Instance.Language.Localize ("IABP:AugmentationAlarm"));
+            this.GetControl<TextBlock> ("btntxtIncrease").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:Increase"));
+            this.GetControl<TextBlock> ("btntxtDecrease").Text = Utility.WrapString (Instance.Language.Localize ("IABPBUTTON:Decrease"));
 
             // Random helium tank remaining amount... it's for show!
-            this.FindControl<TextBlock> ("lblHelium").Text = String.Format ("{0}: {1:0}%",
+            this.GetControl<TextBlock> ("lblHelium").Text = String.Format ("{0}: {1:0}%",
                 Utility.WrapString (Instance.Language.Localize ("IABP:Helium")),
                 II.Math.RandomInt (20, 80));
 
-            Grid displayGrid = this.FindControl<Grid> ("displayGrid");
+            Grid displayGrid = this.GetControl<Grid> ("displayGrid");
 
             // Instantiate and add Tracings to UI
             listTracings.Add (new Controls.IABPTracing (Instance, new Strip (Lead.Values.ECG_II, 6f), colorScheme));
@@ -201,24 +201,24 @@ namespace IISIM {
                 for (int i = 0; i < listNumerics.Count; i++)
                     listNumerics [i].SetColorScheme (colorScheme);
 
-                Window window = this.FindControl<Window> ("wdwDeviceIABP");
+                Window window = this.GetControl<Window> ("wdwDeviceIABP");
                 window.Background = Color.GetBackground (Color.Devices.DeviceIABP, colorScheme);
 
-                Border brdStatusInfo = this.FindControl<Border> ("brdStatusInfo");
+                Border brdStatusInfo = this.GetControl<Border> ("brdStatusInfo");
 
-                TextBlock lblTriggerSource = this.FindControl<TextBlock> ("lblTriggerSource");
-                TextBlock lblOperationMode = this.FindControl<TextBlock> ("lblOperationMode");
-                TextBlock lblFrequency = this.FindControl<TextBlock> ("lblFrequency");
-                TextBlock lblMachineStatus = this.FindControl<TextBlock> ("lblMachineStatus");
-                TextBlock lblTubingStatus = this.FindControl<TextBlock> ("lblTubingStatus");
-                TextBlock lblHelium = this.FindControl<TextBlock> ("lblHelium");
+                TextBlock lblTriggerSource = this.GetControl<TextBlock> ("lblTriggerSource");
+                TextBlock lblOperationMode = this.GetControl<TextBlock> ("lblOperationMode");
+                TextBlock lblFrequency = this.GetControl<TextBlock> ("lblFrequency");
+                TextBlock lblMachineStatus = this.GetControl<TextBlock> ("lblMachineStatus");
+                TextBlock lblTubingStatus = this.GetControl<TextBlock> ("lblTubingStatus");
+                TextBlock lblHelium = this.GetControl<TextBlock> ("lblHelium");
 
-                Border brdTriggerSource = this.FindControl<Border> ("brdTriggerSource");
-                Border brdOperationMode = this.FindControl<Border> ("brdOperationMode");
-                Border brdFrequency = this.FindControl<Border> ("brdFrequency");
-                Border brdMachineStatus = this.FindControl<Border> ("brdMachineStatus");
-                Border brdTubingStatus = this.FindControl<Border> ("brdTubingStatus");
-                Border brdHelium = this.FindControl<Border> ("brdHelium");
+                Border brdTriggerSource = this.GetControl<Border> ("brdTriggerSource");
+                Border brdOperationMode = this.GetControl<Border> ("brdOperationMode");
+                Border brdFrequency = this.GetControl<Border> ("brdFrequency");
+                Border brdMachineStatus = this.GetControl<Border> ("brdMachineStatus");
+                Border brdTubingStatus = this.GetControl<Border> ("brdTubingStatus");
+                Border brdHelium = this.GetControl<Border> ("brdHelium");
 
                 brdStatusInfo.BorderBrush = colorScheme == Color.Schemes.Dark ? Brushes.SkyBlue : Brushes.Black;
 
@@ -396,11 +396,11 @@ namespace IISIM {
         }
 
         private void SelectSetting (Settings s) {
-            Button buttonTrigger = this.FindControl<Button> ("buttonTrigger");
-            Button buttonFrequency = this.FindControl<Button> ("buttonFrequency");
-            Button buttonInflationTiming = this.FindControl<Button> ("buttonInflationTiming");
-            Button buttonAugmentationPressure = this.FindControl<Button> ("buttonAugmentationPressure");
-            Button buttonAugmentationAlarm = this.FindControl<Button> ("buttonAugmentationAlarm");
+            Button buttonTrigger = this.GetControl<Button> ("buttonTrigger");
+            Button buttonFrequency = this.GetControl<Button> ("buttonFrequency");
+            Button buttonInflationTiming = this.GetControl<Button> ("buttonInflationTiming");
+            Button buttonAugmentationPressure = this.GetControl<Button> ("buttonAugmentationPressure");
+            Button buttonAugmentationAlarm = this.GetControl<Button> ("buttonAugmentationAlarm");
 
             buttonTrigger.Background = Brushes.PowderBlue;
             buttonFrequency.Background = Brushes.PowderBlue;

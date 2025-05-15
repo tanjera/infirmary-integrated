@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
     <StartupObject>IISE.Program</StartupObject>    
     <TrimMode>copyused</TrimMode>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <AssemblyName>Infirmary Integrated Scenario Editor</AssemblyName>
-    <Version>1.1.5</Version>
+    <Version>1.1.6</Version>
     <Company>Infirmary Integrated</Company>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageProjectUrl>https://www.infirmary-integrated.com/</PackageProjectUrl>
@@ -20,7 +20,7 @@
     <RootNamespace>IISE</RootNamespace>
     <Title>Infirmary Integrated Scenario Editor</Title>
     <Authors>Ibi Keller</Authors>
-    <Copyright>© 2017-2023, Ibi Keller</Copyright>
+    <Copyright>© 2017-2025, Ibi Keller</Copyright>
     <PackageReadmeFile>Readme.md</PackageReadmeFile>
   </PropertyGroup>  
   <ItemGroup>
@@ -31,11 +31,11 @@
     <TrimmableAssembly Include="Avalonia.Themes.Default" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="0.10.21" />
-    <PackageReference Include="Avalonia.Desktop" Version="0.10.21" />
+    <PackageReference Include="Avalonia" Version="11.3.0" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.0" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.21" />
-    <PackageReference Include="XamlNameReferenceGenerator" Version="1.6.1" />
+    <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.3.0" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Controls\ItemStepEnd.axaml.cs">
@@ -53,9 +53,6 @@
     <Compile Update="Controls\PropertyAlarm.axaml.cs">
       <DependentUpon>PropertyAlarm.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Controls\PropertyRxOrder.axaml.cs">
-      <DependentUpon>PropertyRxOrder.axaml</DependentUpon>
-    </Compile>
     <Compile Update="Controls\PropertyDate.axaml.cs">
       <DependentUpon>PropertyDate.axaml</DependentUpon>
     </Compile>
@@ -64,9 +61,6 @@
     </Compile>
     <Compile Update="Windows\DialogAbout.axaml.cs">
       <DependentUpon>%(Filename)</DependentUpon>
-    </Compile>
-    <Compile Update="Windows\PanelRecords.axaml.cs">
-      <DependentUpon>PanelRecords.axaml</DependentUpon>
     </Compile>
     <Compile Update="Windows\PanelParameters.axaml.cs">
       <DependentUpon>PanelParameters.axaml</DependentUpon>

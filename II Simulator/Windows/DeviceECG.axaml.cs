@@ -16,6 +16,7 @@ using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using Avalonia.Threading;
 
 using II;
@@ -58,21 +59,20 @@ namespace IISIM {
 
             /* Populate UI strings per language selection */
 
-            this.FindControl<Window> ("wdwDeviceECG").Title = Instance.Language.Localize ("ECG:WindowTitle");
-            this.FindControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
-            this.FindControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
-            this.FindControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
-            this.FindControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
-            this.FindControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
-            this.FindControl<MenuItem> ("menuColorGrid").Header = Instance.Language.Localize ("MENU:MenuColorSchemeGrid");
-            this.FindControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
-            this.FindControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
+            this.GetControl<Window> ("wdwDeviceECG").Title = Instance.Language.Localize ("ECG:WindowTitle");
+            this.GetControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
+            this.GetControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+            this.GetControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
+            this.GetControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
+            this.GetControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
+            this.GetControl<MenuItem> ("menuColorGrid").Header = Instance.Language.Localize ("MENU:MenuColorSchemeGrid");
+            this.GetControl<MenuItem> ("menuColorLight").Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
+            this.GetControl<MenuItem> ("menuColorDark").Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
 
-            Grid layoutGrid = this.FindControl<Grid> ("layoutGrid");
+            Grid layoutGrid = this.GetControl<Grid> ("layoutGrid");
 
             /* Set background image for grid lines */
-            var assets = AvaloniaLocator.Current.GetService<Avalonia.Platform.IAssetLoader> ();
-            gridBackground = new ImageBrush (new Bitmap (assets.Open (new Uri ("avares://Infirmary Integrated/Resources/12L_ECG_Grid.png"))));
+            gridBackground = new ImageBrush (new Bitmap (AssetLoader.Open (new Uri ("avares://Infirmary Integrated/Resources/12L_ECG_Grid.png"))));
             gridBackground.Stretch = Stretch.Fill;
 
             /* 12 Lead ECG Interface layout */
@@ -118,7 +118,7 @@ namespace IISIM {
                 for (int i = 0; i < listTracings.Count; i++)
                     listTracings [i].SetColorScheme (colorScheme);
 
-                Window window = this.FindControl<Window> ("wdwDeviceECG");
+                Window window = this.GetControl<Window> ("wdwDeviceECG");
                 if (colorScheme == Color.Schemes.Grid)
                     window.Background = gridBackground;
                 else

@@ -52,14 +52,14 @@ namespace IISE.Controls {
         }
 
         public Task SetEndStep_Border (bool isSelected) {
-            Border end = this.FindControl<Border> ("brdStepEnd");
+            Border end = this.GetControl<Border> ("brdStepEnd");
             end.BorderThickness = isSelected ? Thickness_Selected : Thickness_Default;
 
             return Task.CompletedTask;
         }
 
         public Task SetEndStep_Fill (Brush brush) {
-            Border end = this.FindControl<Border> ("brdStepEnd");
+            Border end = this.GetControl<Border> ("brdStepEnd");
             end.Background = brush;
 
             return Task.CompletedTask;

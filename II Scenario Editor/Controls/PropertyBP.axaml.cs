@@ -43,9 +43,9 @@ namespace IISE.Controls {
                     PropertyChanged -= (EventHandler<PropertyIntEventArgs>)d;
             }
 
-            Label lblKey = this.FindControl<Label> ("lblKey");
-            NumericUpDown numSystolic = this.FindControl<NumericUpDown> ("numSystolic");
-            NumericUpDown numDiastolic = this.FindControl<NumericUpDown> ("numDiastolic");
+            Label lblKey = this.GetControl<Label> ("lblKey");
+            NumericUpDown numSystolic = this.GetControl<NumericUpDown> ("numSystolic");
+            NumericUpDown numDiastolic = this.GetControl<NumericUpDown> ("numDiastolic");
 
             Key = key;
             switch (Key) {
@@ -76,8 +76,8 @@ namespace IISE.Controls {
         }
 
         public Task Set (int systolic, int diastolic) {
-            NumericUpDown numSystolic = this.FindControl<NumericUpDown> ("numSystolic");
-            NumericUpDown numDiastolic = this.FindControl<NumericUpDown> ("numDiastolic");
+            NumericUpDown numSystolic = this.GetControl<NumericUpDown> ("numSystolic");
+            NumericUpDown numDiastolic = this.GetControl<NumericUpDown> ("numDiastolic");
 
             numSystolic.ValueChanged -= SendPropertyChange;
             numDiastolic.ValueChanged -= SendPropertyChange;
@@ -92,8 +92,8 @@ namespace IISE.Controls {
         }
 
         private void SendPropertyChange (object? sender, EventArgs e) {
-            NumericUpDown numSystolic = this.FindControl<NumericUpDown> ("numSystolic");
-            NumericUpDown numDiastolic = this.FindControl<NumericUpDown> ("numDiastolic");
+            NumericUpDown numSystolic = this.GetControl<NumericUpDown> ("numSystolic");
+            NumericUpDown numDiastolic = this.GetControl<NumericUpDown> ("numDiastolic");
 
             PropertyIntEventArgs ea = new PropertyIntEventArgs ();
             List<Keys> keys = new List<Keys> ();
