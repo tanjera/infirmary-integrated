@@ -34,7 +34,7 @@ SCRIPT_PATH=$( pwd )
 cd ..
 SOLUTION_PATH=$( pwd )
 
-VERSION_DOTNET="net6.0";
+VERSION_DOTNET="net9.0";
 ARCHITECTURES=( "win-x64" "win-arm64" "linux-x64" "linux-arm64" "osx-x64" "osx-arm64" )
 
 OUT_PREFIX="\n${BCyan}>>>>>${Reset} "
@@ -373,8 +373,8 @@ done
 # ####
 
 cd "${RELEASE_PATH}"
-rm sha512sums
-rm sha512sums.sig
+rm -fv sha512sums
+rm -fv sha512sums.sig
 sha512sum *.rpm >> "${RELEASE_PATH}/sha512sums"
 sha512sum *.deb >> "${RELEASE_PATH}/sha512sums"
 sha512sum *linux*.tar.gz >> "${RELEASE_PATH}/sha512sums"
