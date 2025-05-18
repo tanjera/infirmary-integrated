@@ -9,6 +9,7 @@ using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
 
@@ -54,7 +55,11 @@ namespace IISIM {
             this.GetControl<Label> ("lblChooseLanguage").Content = Instance.Language.Localize ("LANGUAGE:Select");
             this.GetControl<Button> ("btnContinue").Content = Instance.Language.Localize ("BUTTON:Continue");
 
-            this.GetControl<ComboBox> ("cmbLanguages").Items.Add (II.Localization.Language.Descriptions);
+            ComboBox cmbLanguages = this.GetControl<ComboBox> ("cmbLanguages");
+                foreach (string each in II.Localization.Language.Descriptions)
+                cmbLanguages.Items.Add(new MenuItem() {
+                    Header =  each,
+                });
             this.GetControl<ComboBox> ("cmbLanguages").SelectedIndex = (int)II.Localization.Language.Values.ENG;
         }
 

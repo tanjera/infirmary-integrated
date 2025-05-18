@@ -58,9 +58,6 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="*" />
           </Grid.RowDefinitions>
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-          </Grid.ColumnDefinitions>
 
           <TextBlock
             Name="lblLine1"

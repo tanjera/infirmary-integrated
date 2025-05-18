@@ -96,41 +96,31 @@ namespace IISIM.Controls {
             ContextMenu contextMenu = new ();
 
             this.GetControl<Grid> ("layoutGrid").ContextMenu = contextMenu;
-            this.GetControl<TextBlock> ("lblNumType").ContextMenu = contextMenu;
-            this.GetControl<TextBlock> ("lblLine1").ContextMenu = contextMenu;
-            this.GetControl<TextBlock> ("lblLine2").ContextMenu = contextMenu;
-            this.GetControl<TextBlock> ("lblLine3").ContextMenu = contextMenu;
 
             uiMenuZeroTransducer = new ();
             uiMenuZeroTransducer.Header = Instance?.Language.Localize ("MENU:MenuZeroTransducer");
-            uiMenuZeroTransducer.Classes.Add ("item");
             uiMenuZeroTransducer.Click += MenuZeroTransducer_Click;
             contextMenu.Items.Add (uiMenuZeroTransducer);
-
             contextMenu.Items.Add (new Separator ());
 
             MenuItem menuAddNumeric = new ();
             menuAddNumeric.Header = Instance?.Language.Localize ("MENU:MenuAddNumeric");
-            menuAddNumeric.Classes.Add ("item");
             menuAddNumeric.Click += MenuAddNumeric_Click;
             contextMenu.Items.Add (menuAddNumeric);
 
             MenuItem menuRemoveNumeric = new ();
             menuRemoveNumeric.Header = Instance?.Language.Localize ("MENU:MenuRemoveNumeric");
-            menuRemoveNumeric.Classes.Add ("item");
             menuRemoveNumeric.Click += MenuRemoveNumeric_Click;
             contextMenu.Items.Add (menuRemoveNumeric);
-
             contextMenu.Items.Add (new Separator ());
 
             MenuItem menuSelectInput = new ();
             menuSelectInput.Header = Instance?.Language.Localize ("MENU:MenuSelectInputSource");
-            menuSelectInput.Classes.Add ("item");
+            contextMenu.Items.Add (menuSelectInput);
 
             foreach (ControlTypes.Values v in Enum.GetValues (typeof (ControlTypes.Values))) {
                 MenuItem mi = new ();
                 mi.Header = Instance?.Language.Localize (ControlTypes.LookupString (v));
-                mi.Classes.Add ("item");
                 mi.Name = v.ToString ();
                 mi.Click += MenuSelectInputSource;
                 menuSelectInput.Items.Add (mi);

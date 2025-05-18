@@ -25,9 +25,6 @@
         <RowDefinition Height="*" />
         <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition />
-      </Grid.ColumnDefinitions>
 
       <Image
 				Name="imgTracing"

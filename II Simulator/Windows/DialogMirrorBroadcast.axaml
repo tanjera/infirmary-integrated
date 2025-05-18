@@ -109,7 +109,7 @@
 
         <Button
 					Grid.Column="1"
-					Width="25"
+					Width="30"
 					Click="ButtonGenerateAccessionKey_Click"
 					Content="+" />
       </Grid>
@@ -133,7 +133,7 @@
 
         <Button
 					Grid.Column="1"
-					Width="25"
+					Width="30"
 					Click="ButtonGenerateAccessPassword_Click"
 					Content="+" />
       </Grid>

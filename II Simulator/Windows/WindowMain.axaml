@@ -6,8 +6,8 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	Name="wdwMain"
 	Title="Main Window"
-	d:DesignHeight="800"
-	d:DesignWidth="1000"
+	Height="800"
+	Width="1000"
 	Activated="OnActivated"
 	Closed="OnClosed"
 	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
@@ -19,6 +19,10 @@
       <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
+	  <Style Selector="Expander">
+		  <Setter Property="HorizontalAlignment" Value="Stretch" />
+	  </Style>
+	  
     <Style Selector="HeaderedContentControl.groupbox">
       <Setter Property="Template">
         <Setter.Value>

@@ -48,7 +48,6 @@ namespace IISIM.Controls {
         private void InitInterface () {
             // Context Menu (right-click menu!)
             ContextMenu menuContext = new ();
-            List<object> menuitemsContext = new ();
             this.GetControl<Image> ("imgTracing").ContextMenu = menuContext;
             this.GetControl<Label> ("lblLead").ContextMenu = menuContext;
 
@@ -56,50 +55,48 @@ namespace IISIM.Controls {
             uiMenuZeroTransducer.Header = Instance?.Language.Localize ("MENU:MenuZeroTransducer");
             uiMenuZeroTransducer.Classes.Add ("item");
             uiMenuZeroTransducer.Click += MenuZeroTransducer_Click;
-            menuitemsContext.Add (uiMenuZeroTransducer);
+            menuContext.Items.Add (uiMenuZeroTransducer);
 
-            menuitemsContext.Add (new Separator ());
+            menuContext.Items.Add (new Separator ());
 
             MenuItem menuAddTracing = new ();
             menuAddTracing.Header = Instance?.Language.Localize ("MENU:MenuAddTracing");
             menuAddTracing.Classes.Add ("item");
             menuAddTracing.Click += MenuAddTracing_Click;
-            menuitemsContext.Add (menuAddTracing);
+            menuContext.Items.Add (menuAddTracing);
 
             MenuItem menuRemoveTracing = new ();
             menuRemoveTracing.Header = Instance?.Language.Localize ("MENU:MenuRemoveTracing");
             menuRemoveTracing.Classes.Add ("item");
             menuRemoveTracing.Click += MenuRemoveTracing_Click;
-            menuitemsContext.Add (menuRemoveTracing);
+            menuContext.Items.Add (menuRemoveTracing);
 
-            menuitemsContext.Add (new Separator ());
+            menuContext.Items.Add (new Separator ());
 
             MenuItem menuIncreaseAmplitude = new ();
             menuIncreaseAmplitude.Header = Instance?.Language.Localize ("MENU:IncreaseAmplitude");
             menuIncreaseAmplitude.Classes.Add ("item");
             menuIncreaseAmplitude.Click += MenuIncreaseAmplitude_Click;
-            menuitemsContext.Add (menuIncreaseAmplitude);
+            menuContext.Items.Add (menuIncreaseAmplitude);
 
             MenuItem menuDecreaseAmplitude = new ();
             menuDecreaseAmplitude.Header = Instance?.Language.Localize ("MENU:DecreaseAmplitude");
             menuDecreaseAmplitude.Classes.Add ("item");
             menuDecreaseAmplitude.Click += MenuDecreaseAmplitude_Click;
-            menuitemsContext.Add (menuDecreaseAmplitude);
+            menuContext.Items.Add (menuDecreaseAmplitude);
 
-            menuitemsContext.Add (new Separator ());
+            menuContext.Items.Add (new Separator ());
 
             uiMenuToggleAutoScale = new MenuItem ();
             uiMenuToggleAutoScale.Header = Instance?.Language.Localize ("MENU:ToggleAutoScaling");
             uiMenuToggleAutoScale.Classes.Add ("item");
             uiMenuToggleAutoScale.Click += MenuToggleAutoScale_Click;
-            menuitemsContext.Add (uiMenuToggleAutoScale);
+            menuContext.Items.Add (uiMenuToggleAutoScale);
 
-            menuitemsContext.Add (new Separator ());
+            menuContext.Items.Add (new Separator ());
 
             MenuItem menuSelectInput = new (),
                      menuECGLeads = new ();
-            List<object> menuitemsSelectInput = new (),
-                menuitemsECGLeads = new ();
 
             menuSelectInput.Header = Instance?.Language.Localize ("MENU:MenuSelectInputSource");
             menuSelectInput.Classes.Add ("item");
@@ -107,7 +104,7 @@ namespace IISIM.Controls {
             menuECGLeads.Header = Instance?.Language.Localize ("TRACING:ECG");
             menuECGLeads.Classes.Add ("item");
 
-            menuitemsSelectInput.Add (menuECGLeads);
+            menuSelectInput.Items.Add (menuECGLeads);
 
             foreach (Lead.Values v in Enum.GetValues (typeof (Lead.Values))) {
                 // Only include certain leads- e.g. bedside monitors don't interface with IABP or EFM
@@ -122,16 +119,12 @@ namespace IISIM.Controls {
                 mi.Name = v.ToString ();
                 mi.Click += MenuSelectInputSource;
                 if (mi.Name.StartsWith ("ECG"))
-                    menuitemsECGLeads.Add (mi);
+                    menuECGLeads.Items.Add (mi);
                 else
-                    menuitemsSelectInput.Add (mi);
+                    menuSelectInput.Items.Add (mi);
             }
 
-            menuitemsContext.Add (menuSelectInput);
-
-            menuSelectInput.Items.Add (menuitemsSelectInput);
-            menuECGLeads.Items.Add (menuitemsECGLeads);
-            menuContext.Items.Add (menuitemsContext);
+            menuContext.Items.Add (menuSelectInput);
         }
 
         public void SetColorScheme (Color.Schemes scheme) {

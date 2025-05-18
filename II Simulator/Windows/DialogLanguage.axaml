@@ -12,18 +12,6 @@
 	WindowStartupLocation="CenterScreen"
 	mc:Ignorable="d">
 
-  <Window.Styles>
-    <Style Selector="Border.grp">
-      <Setter Property="BorderBrush" Value="Black" />
-      <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
-    </Style>
-
-    <Style Selector="Label.url">
-      <Setter Property="Foreground" Value="Blue" />
-      <Setter Property="BorderBrush" Value="Blue" />
-      <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
-    </Style>
-  </Window.Styles>
 
   <Grid
 		Margin="15,10"
@@ -53,8 +41,10 @@
 			Grid.Row="1"
 			Grid.Column="0"
 			Margin="5"
-			Padding="5,2,5,5"
-			HorizontalAlignment="Stretch" />
+			Padding="5,2"
+			HorizontalAlignment="Stretch"
+			HorizontalContentAlignment="Left"
+			VerticalContentAlignment="Center"/>
 
     <Button
 			Name="btnContinue"

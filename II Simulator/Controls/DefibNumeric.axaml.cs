@@ -7,6 +7,7 @@ using System.Text;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
+using Avalonia.Layout;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Threading;
@@ -89,44 +90,35 @@ namespace IISIM.Controls {
 
         private void InitInterface () {
             // Context Menu (right-click menu!)
-            ContextMenu contextMenu = new ();
-
+            ContextMenu contextMenu = new ContextMenu ();
+            
+            // Note: children inherit the context menu (e.g. TextBlocks on the Grid)
             this.GetControl<Grid> ("layoutGrid").ContextMenu = contextMenu;
-            this.GetControl<TextBlock> ("lblNumType").ContextMenu = contextMenu;
-            this.GetControl<TextBlock> ("lblLine1").ContextMenu = contextMenu;
-            this.GetControl<TextBlock> ("lblLine2").ContextMenu = contextMenu;
-            this.GetControl<TextBlock> ("lblLine3").ContextMenu = contextMenu;
 
-            uiMenuZeroTransducer = new MenuItem ();
+            uiMenuZeroTransducer = new();
             uiMenuZeroTransducer.Header = Instance?.Language.Localize ("MENU:MenuZeroTransducer");
-            uiMenuZeroTransducer.Classes.Add ("item");
             uiMenuZeroTransducer.Click += MenuZeroTransducer_Click;
             contextMenu.Items.Add (uiMenuZeroTransducer);
-
             contextMenu.Items.Add (new Separator ());
 
-            MenuItem menuAddNumeric = new ();
+            MenuItem menuAddNumeric = new();
             menuAddNumeric.Header = Instance?.Language.Localize ("MENU:MenuAddNumeric");
-            menuAddNumeric.Classes.Add ("item");
             menuAddNumeric.Click += MenuAddNumeric_Click;
             contextMenu.Items.Add (menuAddNumeric);
 
-            MenuItem menuRemoveNumeric = new ();
+            MenuItem menuRemoveNumeric = new();
             menuRemoveNumeric.Header = Instance?.Language.Localize ("MENU:MenuRemoveNumeric");
-            menuRemoveNumeric.Classes.Add ("item");
             menuRemoveNumeric.Click += MenuRemoveNumeric_Click;
             contextMenu.Items.Add (menuRemoveNumeric);
-
             contextMenu.Items.Add (new Separator ());
 
-            MenuItem menuSelectInput = new ();
+            MenuItem menuSelectInput = new();
             menuSelectInput.Header = Instance?.Language.Localize ("MENU:MenuSelectInputSource");
-            menuSelectInput.Classes.Add ("item");
+            contextMenu.Items.Add (menuSelectInput);
 
             foreach (ControlTypes.Values v in Enum.GetValues (typeof (ControlTypes.Values))) {
-                MenuItem mi = new ();
+                MenuItem mi = new();
                 mi.Header = Instance?.Language.Localize (ControlTypes.LookupString (v));
-                mi.Classes.Add ("item");
                 mi.Name = v.ToString ();
                 mi.Click += MenuSelectInputSource;
                 menuSelectInput.Items.Add (mi);
