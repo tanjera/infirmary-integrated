@@ -22,6 +22,10 @@
       <Setter Property="Height" Value="64" />
     </Style>
 
+      <Style Selector="Expander">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+      </Style>
+      
     <Style Selector="Button.imgbtn">
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="Background" Value="Transparent" />

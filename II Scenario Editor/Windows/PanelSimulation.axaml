@@ -25,12 +25,15 @@
 
     <Style Selector="Expander.exgrpf">
       <Setter Property="IsExpanded" Value="False" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="Margin" Value="0" />
+      
     </Style>
 
     <Style Selector="Expander.exgrpt">
       <Setter Property="IsExpanded" Value="True" />
       <Setter Property="Margin" Value="0" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
     </Style>
   </UserControl.Styles>
 

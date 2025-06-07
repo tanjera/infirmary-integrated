@@ -22,6 +22,7 @@
     <Style Selector="Expander.exgrp">
       <Setter Property="IsExpanded" Value="False" />
       <Setter Property="Margin" Value="0" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
     </Style>
   </UserControl.Styles>
   <DockPanel LastChildFill="True">

@@ -26,16 +26,18 @@ namespace IISE.Controls {
 
         /* Permanents for reference/interface styling */
 
-        public static Brush
-            Fill_Default = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#dddddd")),
-            Fill_NoProgressions = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#ff4e36")),
-            Fill_NoDefaultProgression = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#d4a29b")),
-            Fill_NoOptionalProgression = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#dee685")),
-            Fill_MultipleProgressions = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#b9cfa3"));
+        
+        public static Color
+            Fill_Default = Color.FromRgb(221, 221, 221),
+            Fill_NoProgressions = Color.FromRgb(255, 78, 54),
+            Fill_NoDefaultProgression = Color.FromRgb(212, 162, 155),
+            Fill_NoOptionalProgression = Color.FromRgb(222, 230, 133),
+            Fill_MultipleProgressions = Color.FromRgb(185, 207, 163);
 
-        public static Thickness
-            Thickness_Default = new Thickness (.5d),
-            Thickness_Selected = new Thickness (2.0d);
+        public static double
+            Thickness_Default = .5d,
+            Thickness_Selected = 2.0d;
+
 
         public ItemStepEnd () {
             InitializeComponent ();
@@ -53,14 +55,14 @@ namespace IISE.Controls {
 
         public Task SetEndStep_Border (bool isSelected) {
             Border end = this.GetControl<Border> ("brdStepEnd");
-            end.BorderThickness = isSelected ? Thickness_Selected : Thickness_Default;
+            end.BorderThickness = new Thickness(isSelected ? Thickness_Selected : Thickness_Default);
 
             return Task.CompletedTask;
         }
 
-        public Task SetEndStep_Fill (Brush brush) {
+        public Task SetEndStep_Fill (Color color) {
             Border end = this.GetControl<Border> ("brdStepEnd");
-            end.Background = brush;
+            end.Background = new SolidColorBrush(color);
 
             return Task.CompletedTask;
         }

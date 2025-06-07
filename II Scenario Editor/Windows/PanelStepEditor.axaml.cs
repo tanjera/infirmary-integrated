@@ -404,6 +404,7 @@ namespace IISE.Windows {
                         await item.SetStep_Fill (ItemStep.Fill_Linked);
                     else
                         await item.SetStep_Fill (ItemStep.Fill_Unlinked);
+                        
                 }
 
                 // Color StepEnd's Background depending on whether it has progressions

@@ -35,16 +35,18 @@ namespace IISE.Controls {
 
         /* Permanents for reference/interface styling */
 
-        public static Brush
-            Fill_Default = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#dddddd")),
-            Fill_FirstStep = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#38761d")),
-            Fill_Linked = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#b0d68b")),
-            Fill_Unlinked = (SolidColorBrush)(new BrushConverter ().ConvertFrom ("#ea9999"));
-
-        public static Thickness
-            StrokeThickness_Default = new Thickness (.5d),
-            StrokeThickness_Selected = new Thickness (2.0d);
         
+        public static Color
+            Fill_Default = Color.FromRgb(221, 221, 221),
+            Fill_FirstStep = Color.FromRgb(56,118,29),
+            Fill_Linked = Color.FromRgb(176,214,139),
+            Fill_Unlinked = Color.FromRgb(234,153,153);
+            
+
+        public static double
+            StrokeThickness_Default = .5d,
+            StrokeThickness_Selected = 2.0d;
+      
         public II.Physiology Physiology {
             get { return Step.Physiology; }
             set { Step.Physiology = value; }
@@ -111,14 +113,14 @@ namespace IISE.Controls {
 
         public Task SetStep_Border (bool isSelected) {
             Border step = this.GetControl<Border> ("brdStep");
-            step.BorderThickness = (isSelected) ? StrokeThickness_Selected : StrokeThickness_Default;
+            step.BorderThickness = new Thickness(isSelected ? StrokeThickness_Selected : StrokeThickness_Default);
 
             return Task.CompletedTask;
         }
 
-        public Task SetStep_Fill (Brush brush) {
+        public Task SetStep_Fill (Color color) {
             Border step = this.GetControl<Border> ("brdStep");
-            step.Background = brush;
+            step.Background = new SolidColorBrush(color);
 
             return Task.CompletedTask;
         }
@@ -126,7 +128,7 @@ namespace IISE.Controls {
         public async Task SetEndStep_Border (bool isSelected)
             => await IStepEnd.SetEndStep_Border (isSelected);
 
-        public async Task SetEndStep_Fill (Brush brush)
-            => await IStepEnd.SetEndStep_Fill (brush);
+        public async Task SetEndStep_Fill (Color color)
+            => await IStepEnd.SetEndStep_Fill (color);
     }
 }
