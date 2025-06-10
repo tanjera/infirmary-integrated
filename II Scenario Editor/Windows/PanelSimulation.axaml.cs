@@ -191,17 +191,6 @@ namespace IISE.Windows {
         private void MenuHelpAbout_Click (object sender, RoutedEventArgs e)
             => IMain?.MenuHelpAbout_Click (sender, e);
 
-        /* Menu Commands: For HotKey support!! */
-
-        private void MenuFileNew_Command ()
-            => IMain?.MenuFileNew_Click (this, new RoutedEventArgs ());
-
-        private void MenuFileLoad_Command ()
-            => IMain?.MenuFileLoad_Click (this, new RoutedEventArgs ());
-
-        private void MenuFileSave_Command ()
-            => IMain?.MenuFileSave_Click (this, new RoutedEventArgs ());
-
         /* Menu Items specific to this Panel */
 
         /* Any other Routed events for this Panel */

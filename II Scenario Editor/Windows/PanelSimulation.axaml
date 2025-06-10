@@ -45,16 +45,16 @@
                   Header="_File">
         <MenuItem Name="menuNew"
                   Header="New"
-                  Command="{Binding MenuFileNew_Command}"
+                  InputGesture="Ctrl+N"
                   Click="MenuFileNew_Click" />
         <Separator />
         <MenuItem Name="menuLoad"
               Header="_Open"
-              Command="{Binding MenuFileLoad_Command}"
+              InputGesture="Ctrl+O"
               Click="MenuFileLoad_Click" />
         <MenuItem Name="menuSave"
               Header="_Save"
-              Command="{Binding MenuFileSave_Command}"
+              InputGesture="Ctrl+S"
               Click="MenuFileSave_Click" />
         <MenuItem Name="menuSaveAs"
               Header="Save As"
@@ -62,6 +62,7 @@
         <Separator />
         <MenuItem Name="menuExit"
               Header="E_xit Program"
+              InputGesture="Alt+F4"
               Click="MenuFileExit_Click" />
       </MenuItem>
 

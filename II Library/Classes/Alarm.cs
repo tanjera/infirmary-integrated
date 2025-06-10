@@ -112,8 +112,8 @@ namespace II {
                 if (parts.Length == 5) {
                     Parameter = String.IsNullOrEmpty (parts [0]) ? null : (Alarm.Parameters)Enum.Parse (typeof (Alarm.Parameters), parts [0]);
                     Enabled = String.IsNullOrEmpty (parts [1]) ? false : bool.Parse (parts [1]);
-                    Low = String.IsNullOrEmpty (parts [3]) ? 0 : int.Parse (parts [3]);
-                    High = String.IsNullOrEmpty (parts [2]) ? 0 : int.Parse (parts [2]);
+                    Low = String.IsNullOrEmpty (parts [2]) ? 0 : int.Parse (parts [2]);
+                    High = String.IsNullOrEmpty (parts [3]) ? 0 : int.Parse (parts [3]);
                     Priority = String.IsNullOrEmpty (parts [4]) ? Priorities.Low : (Priorities)Enum.Parse (typeof (Priorities), parts [4]);
                 }
             } catch {

@@ -34,13 +34,16 @@
                   Header="_File">
         <MenuItem Name="menuNew"
                   Header="New"
+                  InputGesture="Ctrl+N"
                   Click="MenuFileNew_Click" />
         <Separator />
         <MenuItem Name="menuLoad"
               Header="_Open"
+              InputGesture="Ctrl+O"
               Click="MenuFileLoad_Click" />
         <MenuItem Name="menuSave"
               Header="_Save"
+              InputGesture="Ctrl+S"
               Click="MenuFileSave_Click" />
         <MenuItem Name="menuSaveAs"
               Header="Save As"
@@ -48,6 +51,7 @@
         <Separator />
         <MenuItem Name="menuExit"
               Header="E_xit Program"
+              InputGesture="Alt+F4"
               Click="MenuFileExit_Click" />
       </MenuItem>
 

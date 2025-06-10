@@ -399,6 +399,21 @@ namespace IISIM {
 
             /* Tie PatientEvents to the PatientEditor UI! And trigger. */
             Instance.Physiology.PhysiologyEvent += OnPhysiologyEvent;
+            
+            /* Tie PatientEvents to each device! So devices change and trace according to the patient! */
+            if (Instance.Physiology is not null) {
+                if (Instance.Device_Monitor is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_Monitor.OnPhysiologyEvent;
+                if (Instance.Device_Defib is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_Defib.OnPhysiologyEvent;
+                if (Instance.Device_ECG is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_ECG.OnPhysiologyEvent;
+                if (Instance.Device_EFM is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_EFM.OnPhysiologyEvent;
+                if (Instance.Device_IABP is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_IABP.OnPhysiologyEvent;
+            }
+            
             OnPhysiologyEvent (this, new Physiology.PhysiologyEventArgs (Instance.Physiology, Physiology.PhysiologyEventTypes.Vitals_Change));
         }
 

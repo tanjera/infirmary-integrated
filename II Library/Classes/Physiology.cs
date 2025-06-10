@@ -535,7 +535,7 @@ namespace II {
 
         public Task OnPhysiologyEvent (PhysiologyEventTypes e) {
             PhysiologyEventArgs ea = new (this, e);
-
+            
             lock (lockListPhysiologyEvents) {
                 ListPhysiologyEvents.Add (ea);
             }

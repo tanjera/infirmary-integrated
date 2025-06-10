@@ -210,10 +210,10 @@ namespace II {
             StepChangeRequest?.Invoke (this, new EventArgs ());
 
             string? progFrom = AtStep;
-
+            
             if (String.IsNullOrEmpty (optProg)) {                            // Default Progression
                 AtStep = Current?.DefaultProgression?.DestinationUUID;
-            } else {                                                                // Optional Progression
+            } else {                                                         // Optional Progression
                 AtStep = optProg;
             }
 
@@ -224,7 +224,9 @@ namespace II {
                 Step? stepFrom = Steps.Find (s => s.UUID == progFrom);
 
                 if (stepFrom != null) {
+                    // Carry device status and physiology event list (for numerics e.g. HR calculation) from previous step
                     CopyDeviceStatus (stepFrom.Physiology, Current?.Physiology);
+                    Current?.Physiology?.ListPhysiologyEvents.AddRange (stepFrom?.Physiology?.ListPhysiologyEvents ?? new List<Physiology.PhysiologyEventArgs> ());
                     await (stepFrom?.Physiology?.Deactivate () ?? Task.CompletedTask);                   // Additional unlinking of events and timers!
                 }
             }
@@ -252,7 +254,9 @@ namespace II {
                 Step? stepFrom = Steps.Find (s => s.UUID == progFrom);
 
                 if (stepFrom != null) {
+                    // Carry device status and physiology event list (for numerics e.g. HR calculation) from previous step
                     CopyDeviceStatus (stepFrom.Physiology, Current.Physiology);
+                    Current?.Physiology?.ListPhysiologyEvents.AddRange (stepFrom?.Physiology?.ListPhysiologyEvents ?? new List<Physiology.PhysiologyEventArgs> ());
                     await (stepFrom?.Physiology?.Deactivate () ?? Task.CompletedTask);                   // Additional unlinking of events and timers!
                 }
             }
@@ -285,7 +289,9 @@ namespace II {
                 Step? stepFrom = Steps.Find (s => s.UUID == (progFrom ?? ""));
 
                 if (stepFrom != null) {
+                    // Carry device status and physiology event list (for numerics e.g. HR calculation) from previous step
                     CopyDeviceStatus (stepFrom.Physiology, Current.Physiology);
+                    Current?.Physiology?.ListPhysiologyEvents.AddRange (stepFrom?.Physiology?.ListPhysiologyEvents ?? new List<Physiology.PhysiologyEventArgs> ());
                     await (stepFrom?.Physiology?.Deactivate () ?? Task.CompletedTask);                   // Additional unlinking of events and timers!
                 }
             }
