@@ -384,7 +384,7 @@ namespace IISE.Windows {
             _ = UpdateView ();
         }
 
-        private async Task UpdateView () {
+        public async Task UpdateView () {
             Label lblActiveStep = this.GetControl<Label> ("lblActiveStep");
 
             CheckBox chkClampVitals = this.GetControl<CheckBox> ("chkClampVitals");

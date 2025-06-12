@@ -577,6 +577,8 @@ namespace IISE.Windows {
 
             if (CopiedStep != null)
                 await ISelectedStep.Physiology.Load (CopiedStep.Physiology.Save ());
+
+            IMain?.UpdateStep ();
         }
 
         /* Generic Menu Items (across all Panels) */
@@ -702,5 +704,10 @@ namespace IISE.Windows {
                 _ = DrawIProgressions ();
             }
         }
+
+        private void cnvsDesigner_LayoutChanged (object? sender, EventArgs e) {
+            _ = DrawISteps ();
+            _ = DrawIProgressions ();
+        } 
     }
 }

@@ -123,6 +123,10 @@ namespace IISE {
             await IPanelParameters.SetStep (step);
         }
 
+        public async Task UpdateStep () {
+            await IPanelParameters.UpdateView ();
+        }
+
         private async Task NewScenario () {
             if (await PromptUnsavedWork () == false)
                 return;

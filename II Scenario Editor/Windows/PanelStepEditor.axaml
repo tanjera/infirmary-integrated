@@ -226,6 +226,7 @@
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Margin="0"
+                LayoutUpdated="cnvsDesigner_LayoutChanged"
                 Background="Transparent" />
       </Grid>
     </Grid>

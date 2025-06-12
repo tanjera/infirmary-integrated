@@ -71,6 +71,7 @@ namespace IISE.Controls {
             cmbEnumeration.SelectionChanged -= SendPropertyChange;
 
             Values = new List<string> (values);
+            cmbEnumeration.Items.Clear ();
             
             foreach (string s in readable)
                 cmbEnumeration.Items.Add (new ComboBoxItem () { Content = s });
