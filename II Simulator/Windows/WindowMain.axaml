@@ -157,18 +157,6 @@
     </Style>
   </Window.Styles>
 
-  <Window.KeyBindings>
-    <KeyBinding Gesture="Ctrl+N" Command="{Binding NewScenario}" />
-    <KeyBinding Gesture="Ctrl+O" Command="{Binding LoadFile}" />
-    <KeyBinding Gesture="Ctrl+S" Command="{Binding SaveFile}" />
-    <KeyBinding Gesture="Alt + Enter" Command="{Binding ToggleFullscreen}" />
-    <KeyBinding Gesture="Alt + F4" Command="{Binding Exit}" />
-
-    <KeyBinding Gesture="Ctrl+A" Command="{Binding ToggleAudio}" />
-
-    <KeyBinding Gesture="Ctrl+H" Command="{Binding ToggleHideDevices}" />
-  </Window.KeyBindings>
-
   <DockPanel LastChildFill="True">
     <!--  Main Menu  -->
     <Grid DockPanel.Dock="Top">
@@ -181,14 +169,24 @@
       </Grid.ColumnDefinitions>
       <Menu Grid.Column="0">
         <MenuItem Name="menuFile">
-          <MenuItem Name="menuNew" Click="MenuNewSimulation_Click" InputGesture="Ctrl+N" />
+          <MenuItem Name="menuNew" Click="MenuNewSimulation_Click" 
+                    HotKey="Ctrl+N" 
+                    InputGesture="Ctrl+N" />
           <Separator />
-          <MenuItem Name="menuLoad" Click="MenuLoadFile_Click" InputGesture="Ctrl+O" />
-          <MenuItem Name="menuSave" Click="MenuSaveFile_Click" InputGesture="Ctrl+S" />
+          <MenuItem Name="menuLoad" Click="MenuLoadFile_Click" 
+                    HotKey="Ctrl+O" 
+                    InputGesture="Ctrl+O" />
+          <MenuItem Name="menuSave" Click="MenuSaveFile_Click" 
+                    HotKey="Ctrl+S" 
+                    InputGesture="Ctrl+S" />
           <Separator />
-          <MenuItem Name="menuToggleFullscreen" Click="MenuToggleFullscreen_Click" InputGesture="Alt+Enter" />
+          <MenuItem Name="menuToggleFullscreen" Click="MenuToggleFullscreen_Click" 
+                    HotKey="Alt+Enter"
+                    InputGesture="Alt+Enter" />
           <Separator />
-          <MenuItem Name="menuExit" Click="MenuExit_Click" InputGesture="Alt+F4" />
+          <MenuItem Name="menuExit" Click="MenuExit_Click" 
+                    HotKey="Alt+F4"
+                    InputGesture="Alt+F4" />
         </MenuItem>
 
         <MenuItem Name="menuMirror">
@@ -201,7 +199,9 @@
         </MenuItem>
 
         <MenuItem Name="menuSettings">
-          <MenuItem Name="menuToggleAudio" Click="MenuToggleAudio_Click" InputGesture="Ctrl+A" />
+          <MenuItem Name="menuToggleAudio" Click="MenuToggleAudio_Click" 
+                    HotKey="Ctrl+A"
+                    InputGesture="Ctrl+A" />
           <Separator />
           <MenuItem Name="menuSetLanguage" Click="MenuSetLanguage_Click" />
         </MenuItem>
@@ -309,6 +309,7 @@
               <Button
                 Name="btnOptionsHide"
                 Classes="device"
+                HotKey="Ctrl+H"
                 Click="ButtonOptionsHide_Click">
                 <StackPanel Orientation="Horizontal">
                   <Image Classes="device" Source="avares://Infirmary Integrated/Third_Party/Icon_Clipboard_128.png" />

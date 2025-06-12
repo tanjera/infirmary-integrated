@@ -60,29 +60,31 @@
     </Style>
   </Window.Styles>
 
-  <Window.KeyBindings>
-    <KeyBinding Gesture="Pause" Command="{Binding TogglePause}" />
-    <KeyBinding Gesture="Alt + Enter" Command="{Binding ToggleFullscreen}" />
-    <KeyBinding Gesture="Alt + F4" Command="{Binding Close}" />
-
-    <KeyBinding Gesture="F1" Command="{Binding SetColorScheme_Light}" />
-    <KeyBinding Gesture="F2" Command="{Binding SetColorScheme_Dark}" />
-  </Window.KeyBindings>
 
   <DockPanel LastChildFill="True">
     <!--  Main Menu  -->
     <Menu Background="White" DockPanel.Dock="Top">
       <MenuItem Name="menuDevice">
-        <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" InputGesture="Pause" />
+        <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" 
+                  HotKey="Pause"
+                  InputGesture="Pause" />
         <Separator />
-        <MenuItem Name="menuToggleFullscreen" Click="MenuToggleFullscreen_Click" InputGesture="Alt+Enter" />
+        <MenuItem Name="menuToggleFullscreen" Click="MenuToggleFullscreen_Click" 
+                  HotKey="Alt+Enter"
+                  InputGesture="Alt+Enter" />
         <Separator />
-        <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGesture="Alt+F4" />
+        <MenuItem Name="menuCloseDevice" Click="MenuClose_Click"
+                  HotKey="Alt+F4"
+                  InputGesture="Alt+F4" />
       </MenuItem>
 
       <MenuItem Name="menuColor">
-        <MenuItem Name="menuColorLight" Click="MenuColorScheme_Light" InputGesture="F1" />
-        <MenuItem Name="menuColorDark" Click="MenuColorScheme_Dark" InputGesture="F2" />
+        <MenuItem Name="menuColorLight" Click="MenuColorScheme_Light" 
+                  HotKey="F1"
+                  InputGesture="F1" />
+        <MenuItem Name="menuColorDark" Click="MenuColorScheme_Dark"
+                  HotKey="F2"
+                  InputGesture="F2" />
       </MenuItem>
     </Menu>
     <Grid Name="mainGrid">

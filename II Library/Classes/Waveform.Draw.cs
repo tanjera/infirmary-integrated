@@ -113,7 +113,8 @@ namespace II.Waveform {
 
         public static List<PointD> ETCO2_Rhythm (Physiology _P) {
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch (Dictionary.ETCO2_Default, (double)_P.GetRRInterval_Expiratory));
+                Plotting.Stretch (Dictionary.ETCO2_Default, (double)_P.GetRRInterval_Expiratory),
+                Math.InverseLerp(0, 80, Math.Clamp(_P.ETCO2, 0, 80)) * 1.5);
         }
 
         public static List<PointD> ICP_Rhythm (Physiology _P, double _Amplitude) {

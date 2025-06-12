@@ -90,7 +90,6 @@ namespace IISIM {
 
             /* Init essential functions first */
             InitInterface ();
-            InitInput ();
             InitMirroring ();
             InitScenario (true);
             InitTimers ();
@@ -265,13 +264,6 @@ namespace IISIM {
                     Tag = v.ToString (),
                     Content = Instance.Language.Localize (FetalHeart_Rhythms.LookupString (v))
                 });
-        }
-
-        private void InitInput () {
-            if (Instance is null) {
-                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitInput)}");
-                return;
-            }
         }
 
         private async Task InitUpgrade () {

@@ -122,7 +122,7 @@ namespace IISIM {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitInterface)}");
                 return;
             }
-
+            
             // Populate UI strings per language selection
             this.GetControl<Window> ("wdwDeviceMonitor").Title = Instance.Language.Localize ("CM:WindowTitle");
             this.GetControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
@@ -312,21 +312,21 @@ namespace IISIM {
                 listTracings.ForEach (c => c.Strip?.Unpause ());
         }
 
-        public void SetTracing_1 () => SetTracing (1);
+        public void SetTracing_1 (object s, RoutedEventArgs e) => SetTracing (1);
 
-        public void SetTracing_2 () => SetTracing (2);
+        public void SetTracing_2 (object s, RoutedEventArgs e) => SetTracing (2);
 
-        public void SetTracing_3 () => SetTracing (3);
+        public void SetTracing_3 (object s, RoutedEventArgs e) => SetTracing (3);
 
-        public void SetTracing_4 () => SetTracing (4);
+        public void SetTracing_4 (object s, RoutedEventArgs e) => SetTracing (4);
 
-        public void SetTracing_5 () => SetTracing (5);
+        public void SetTracing_5 (object s, RoutedEventArgs e) => SetTracing (5);
 
-        public void SetTracing_6 () => SetTracing (6);
+        public void SetTracing_6 (object s, RoutedEventArgs e) => SetTracing (6);
 
-        public void SetTracing_7 () => SetTracing (7);
+        public void SetTracing_7 (object s, RoutedEventArgs e) => SetTracing (7);
 
-        public void SetTracing_8 () => SetTracing (8);
+        public void SetTracing_8 (object s, RoutedEventArgs e) => SetTracing (8);
 
         public void SetTracing (int amount) {
             rowsTracings = amount;
@@ -344,21 +344,21 @@ namespace IISIM {
             OnLayoutChange ();
         }
 
-        public void SetNumeric_1 () => SetNumeric (1);
+        public void SetNumeric_1 (object s, RoutedEventArgs e) => SetNumeric (1);
 
-        public void SetNumeric_2 () => SetNumeric (2);
+        public void SetNumeric_2 (object s, RoutedEventArgs e) => SetNumeric (2);
 
-        public void SetNumeric_3 () => SetNumeric (3);
+        public void SetNumeric_3 (object s, RoutedEventArgs e) => SetNumeric (3);
 
-        public void SetNumeric_4 () => SetNumeric (4);
+        public void SetNumeric_4 (object s, RoutedEventArgs e) => SetNumeric (4);
 
-        public void SetNumeric_5 () => SetNumeric (5);
+        public void SetNumeric_5 (object s, RoutedEventArgs e) => SetNumeric (5);
 
-        public void SetNumeric_6 () => SetNumeric (6);
+        public void SetNumeric_6 (object s, RoutedEventArgs e) => SetNumeric (6);
 
-        public void SetNumeric_7 () => SetNumeric (7);
+        public void SetNumeric_7 (object s, RoutedEventArgs e) => SetNumeric (7);
 
-        public void SetNumeric_8 () => SetNumeric (8);
+        public void SetNumeric_8 (object s, RoutedEventArgs e) => SetNumeric (8);
 
         public void SetNumeric (int amount) {
             rowsNumerics = amount;

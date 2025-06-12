@@ -250,7 +250,7 @@ namespace II {
             AtStep = Current.DefaultSource;
 
             if (progFrom != AtStep) {                                       // If the actual step Index changed
-                Current.DefaultSource = progFrom;
+                //Current.DefaultSource = progFrom; <-- Don't enable this- it will turn "Last Step" into an endless short loop!
                 Step? stepFrom = Steps.Find (s => s.UUID == progFrom);
 
                 if (stepFrom != null) {

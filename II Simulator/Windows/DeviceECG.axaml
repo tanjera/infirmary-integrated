@@ -13,36 +13,35 @@
 	Background="Black"
 	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
 	mc:Ignorable="d">
-
-  <Window.KeyBindings>
-    <KeyBinding Gesture="Pause" Command="{Binding TogglePause}" />
-
-    <KeyBinding Gesture="Alt + Enter" Command="{Binding ToggleFullscreen}" />
-
-    <KeyBinding Gesture="Alt + F4" Command="{Binding Close}" />
-
-    <KeyBinding Gesture="F1" Command="{Binding SetColorScheme_Grid}" />
-    <KeyBinding Gesture="F2" Command="{Binding SetColorScheme_Light}" />
-    <KeyBinding Gesture="F3" Command="{Binding SetColorScheme_Dark}" />
-  </Window.KeyBindings>
-
   <DockPanel LastChildFill="True">
 
     <!--  Main Menu  -->
     <Menu Background="White" DockPanel.Dock="Top">
 
       <MenuItem Name="menuDevice">
-        <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" InputGesture="Pause" />
+        <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" 
+                  HotKey="Pause"
+                  InputGesture="Pause" />
         <Separator />
-        <MenuItem Name="menuToggleFullscreen" Click="MenuToggleFullscreen_Click" InputGesture="Alt+Enter" />
+        <MenuItem Name="menuToggleFullscreen" Click="MenuToggleFullscreen_Click" 
+                  HotKey="Alt+Enter"
+                  InputGesture="Alt+Enter" />
         <Separator />
-        <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGesture="Alt+F4" />
+        <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" 
+                  HotKey="Alt+F4"
+                  InputGesture="Alt+F4" />
       </MenuItem>
 
       <MenuItem Name="menuColor">
-        <MenuItem Name="menuColorGrid" Click="MenuColorGrid_Click" InputGesture="F1" />
-        <MenuItem Name="menuColorLight" Click="MenuColorScheme_Light" InputGesture="F2" />
-        <MenuItem Name="menuColorDark" Click="MenuColorScheme_Dark" InputGesture="F3" />
+        <MenuItem Name="menuColorGrid" Click="MenuColorGrid_Click" 
+                  HotKey="F1"
+                  InputGesture="F1" />
+        <MenuItem Name="menuColorLight" Click="MenuColorScheme_Light" 
+                  HotKey="F2"
+                  InputGesture="F2" />
+        <MenuItem Name="menuColorDark" Click="MenuColorScheme_Dark" 
+                  HotKey="F3"
+                  InputGesture="F3"/>
       </MenuItem>
     </Menu>
 

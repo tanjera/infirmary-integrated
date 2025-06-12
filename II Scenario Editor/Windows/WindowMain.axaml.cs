@@ -60,7 +60,6 @@ namespace IISE {
             _ = IPanelParameters.InitReferences (this);
 
             _ = InitScenario ();
-            _ = InitHotkeys ();
         }
 
         private void InitializeComponent () {
@@ -103,18 +102,6 @@ namespace IISE {
                 return (response != null && response == DialogMessage.Responses.Yes);
             } else
                 return true;
-        }
-
-        private Task InitHotkeys () {
-            var menuNew = IPanelSimulation.GetControl<MenuItem> ("menuNew");
-            var menuLoad = IPanelSimulation.GetControl<MenuItem> ("menuLoad");
-            var menuSave = IPanelSimulation.GetControl<MenuItem> ("menuSave");
-
-            HotKeyManager.SetHotKey (menuNew, new KeyGesture (Key.N, KeyModifiers.Control));
-            HotKeyManager.SetHotKey (menuLoad, new KeyGesture (Key.O, KeyModifiers.Control));
-            HotKeyManager.SetHotKey (menuSave, new KeyGesture (Key.S, KeyModifiers.Control));
-
-            return Task.CompletedTask;
         }
 
         private async Task InitScenario () {
