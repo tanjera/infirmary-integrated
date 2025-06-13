@@ -66,5 +66,11 @@ namespace II {
 
             return RandomDbl ((value - (value * percent)), (value + (value * percent)));
         }
+
+        public static double RoundOff (double value, double interval) {
+            double remainder = value % interval;
+            value += (remainder < interval / 2) ? -remainder : (interval - remainder);
+            return value;
+        }
     }
 }

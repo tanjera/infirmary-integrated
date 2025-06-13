@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -34,7 +35,6 @@ namespace IISE.Controls {
         public string? UUID { get { return Step.UUID; } }
 
         /* Permanents for reference/interface styling */
-
         
         public static Color
             Fill_Default = Color.FromRgb(221, 221, 221),
@@ -98,6 +98,8 @@ namespace IISE.Controls {
 
             IStepEnd = this.GetControl<ItemStepEnd> ("iseStepEnd");
             _ = IStepEnd.SetStep (this);
+
+            this.PointerReleased += SnapToGrid;
         }
 
         private void InitializeComponent () {
@@ -130,5 +132,14 @@ namespace IISE.Controls {
 
         public async Task SetEndStep_Fill (Color color)
             => await IStepEnd.SetEndStep_Fill (color);
+
+        public void SnapToGrid (object? o, PointerReleasedEventArgs e) {
+            int interval = 10;
+            
+            Border step = this.GetControl<Border> ("brdStep");
+            
+            Canvas.SetLeft (this, II.Math.RoundOff (this.Bounds.Position.X, interval) - step.BorderThickness.Left);
+            Canvas.SetTop (this, II.Math.RoundOff (this.Bounds.Position.Y, interval) - step.BorderThickness.Top);
+        }
     }
 }

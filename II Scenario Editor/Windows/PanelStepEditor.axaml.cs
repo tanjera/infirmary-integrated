@@ -295,7 +295,7 @@ namespace IISE.Windows {
             Scenario.Steps.Add (step);
             ISteps.Add (item);
             ICanvas.Children.Add (item);
-
+            
             if (incItem != null) {  // Duplicate
                                     // Copy interface properties and interface item properties
                 item.Name = incItem.Name;
