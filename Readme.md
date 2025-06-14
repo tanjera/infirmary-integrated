@@ -12,7 +12,7 @@ Infirmary Integrated currently functions as a simulator for the following health
 - 12-lead electrocardiograph (ECG)
 - Intra-aortic balloon pump (IABP)
 - External fetal monitor, cardiotocograph (EFM/CTG)
-- Medication administration record (MAR)
+- Electronic health record (EHR) & Medication administration record (MAR)
 
 ![Infirmary Integrated Demonstration](https://www.infirmary-integrated.com/wp-content/uploads/2023/09/II-Demonstration.jpg)
 
@@ -111,12 +111,19 @@ Infirmary Integrated also simulates the following fetal heart rhythms:
 
 ![Fetal Heart Monitor](https://www.infirmary-integrated.com/wp-content/uploads/2022/07/efm-accels.png)
 
-Infirmary Integrated also simulates features of an electronic health record (EHR) including:
-- Navigating drug orders and doses due on an electronic Medication Administration Record (MAR)
+Infirmary Integrated also has a web-based Electronic Health Record (EHR) module that can simulate informatics functions including:
 
-![Medication Administration Record](https://www.infirmary-integrated.com/wp-content/uploads/2022/08/mar-mw.png)
+- Entering and navigating patients’ demographic information, allergies, and clinical notes.
+- Entering and navigating patients’ diagnostic reports, which supports image attachments to replicate diagnostic imaging reports such as stored x-ray or ECG results.
+- Computerized provider order entry (CPOE) with entry of general orders and medication orders that then populate the Medication Administration Record (MAR).
+- Medication Administration Record (MAR) for viewing and charting drug dose administration.
+- The EHR module is web-based, requiring a login, so that users’ permissions and levels of licensure can be specified, allowing for different privileges. For example, advanced-practice providers may write medication orders whereas registered nurses may not, but can administer drug doses via the MAR.
+- The EHR is designed to replicate an inpatient hospital, complete with bed placement functionality and views for each unit’s census. Simulations can be built with an entire unit or hospital of simulated patients!
 
-Infirmary Integrated also supports full localization (translation) for the following languages:
+
+![Medication Administration Record](https://www.infirmary-integrated.com/wp-content/uploads/2025/06/Screenshot-from-2025-06-13-20-14-32.png)
+
+Infirmary Integrated’s device simulator also supports full localization (translation) for the following languages:
 - አማርኛ (Amharic)
 - عربى (Arabic)
 - 中文 (Chinese)
