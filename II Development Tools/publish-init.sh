@@ -51,12 +51,12 @@ DEB_DIR="$SOLUTION_PATH/Package, Linux/DEB"
 RPM_DIR="$SOLUTION_PATH/Package, Linux/RPM"
 RPM_SPEC="$RPM_DIR/infirmary-integrated.spec"
 RPMBUILD_DIR="/home/ibi/rpmbuild"
-OSX_SIM_INFO_PLIST="$SOLUTION_PATH/Package, MacOS/Infirmary Integrated/Info.plist"
-OSX_SIM_ICON_PATH="$SOLUTION_PATH/Package, MacOS/Infirmary Integrated/Icon_II.icns"
-OSX_SIM_ICON_FILE="Icon_II.icns"
-OSX_SCENED_INFO_PLIST="$SOLUTION_PATH/Package, MacOS/Infirmary Integrated Scenario Editor/Info.plist"
-OSX_SCENED_ICON_PATH="$SOLUTION_PATH/Package, MacOS/Infirmary Integrated Scenario Editor/Icon_IISE.icns"
-OSX_SCENED_ICON_FILE="Icon_IISE.icns"
+MAC_SIM_INFO_PLIST="$SOLUTION_PATH/Package, MacOS/Infirmary Integrated/Info.plist"
+MAC_SIM_ICON_PATH="$SOLUTION_PATH/Package, MacOS/Infirmary Integrated/Icon_II.icns"
+MAC_SIM_ICON_FILE="Icon_II.icns"
+MAC_SCENED_INFO_PLIST="$SOLUTION_PATH/Package, MacOS/Infirmary Integrated Scenario Editor/Info.plist"
+MAC_SCENED_ICON_PATH="$SOLUTION_PATH/Package, MacOS/Infirmary Integrated Scenario Editor/Icon_IISE.icns"
+MAC_SCENED_ICON_FILE="Icon_IISE.icns"
 
 
 # ####
@@ -104,16 +104,33 @@ read VERSION
 
 # ####
 # Clean build locations for projects
+# Each OS has its own "II Simulator" project directory for native cross-platform runtimes!
+# Windows & Linux use C#/.NET project structures; MacOS uses Swift/AppKit project structure!
 # ####
 
-DIR_SIMULATOR="$SOLUTION_PATH/II Simulator"
-DIR_SIMULATOR_BIN="$SOLUTION_PATH/II Simulator/bin"
-DIR_SIMULATOR_OBJ="$SOLUTION_PATH/II Simulator/obj"
+WIN_DIR_SIMULATOR="$SOLUTION_PATH/II Simulator, Windows"
+WIN_DIR_SIMULATOR_BIN="$SOLUTION_PATH/II Simulator, Windows/bin"
+WIN_DIR_SIMULATOR_OBJ="$SOLUTION_PATH/II Simulator, Windows/obj"
 
-echo -e "${OUT_PREFIX}Cleaning build files (bin, obj) from '$DIR_SIMULATOR'"
+LINUX_DIR_SIMULATOR="$SOLUTION_PATH/II Simulator, Linux"
+LINUX_DIR_SIMULATOR_BIN="$SOLUTION_PATH/II Simulator, Linux/bin"
+LINUX_DIR_SIMULATOR_OBJ="$SOLUTION_PATH/II Simulator, Linux/obj"
 
-rm -r "$DIR_SIMULATOR_BIN"
-rm -r "$DIR_SIMULATOR_OBJ"
+# TODO: Add MacOS build preparation HERE
+
+echo -e "${OUT_PREFIX}Cleaning build files (bin, obj) from '$WIN_DIR_SIMULATOR'"
+
+rm -r "$WIN_DIR_SIMULATOR_BIN"
+rm -r "$WIN_DIR_SIMULATOR_OBJ"
+
+echo -e "${OUT_PREFIX}Cleaning build files (bin, obj) from '$LINUX_DIR_SIMULATOR'"
+
+rm -r "$LINUX_DIR_SIMULATOR_BIN"
+rm -r "$LINUX_DIR_SIMULATOR_OBJ"
+
+# ####
+# All projects use Avalonia (C#/.NET) for the Scenario Editor
+# ####
 
 DIR_SCENED="$SOLUTION_PATH/II Scenario Editor"
 DIR_SCENED_BIN="$SOLUTION_PATH/II Scenario Editor/bin"
@@ -138,13 +155,17 @@ dotnet clean
 
 for arch in ${ARCHITECTURES[*]}; do
 
-    # Build II Simulator
-    echo -e "${OUT_PREFIX}Building II Simulator for ${arch}\n"
-    cd "$DIR_SIMULATOR"
-    if [[ $arch == osx* ]]; then
-        dotnet publish -c Release --sc -r $arch -p:UseAppHost=true
-    else
-        dotnet publish -c Release --sc -r $arch
+    if [[ $arch == win* || $arch == linux* ]]; then
+        # Build II Simulator
+        echo -e "${OUT_PREFIX}Building II Simulator for ${arch}\n"
+        cd "$DIR_SIMULATOR"
+        if [[ $arch == osx* ]]; then
+            dotnet publish -c Release --sc -r $arch -p:UseAppHost=true
+        else
+            dotnet publish -c Release --sc -r $arch
+        fi
+    elif [[ $arch == mac* ]]; then
+        # TODO: Implement MacOS building (Swift/AppKit)
     fi
 
     # Build II Scenario Editor
@@ -166,59 +187,16 @@ for arch in ${ARCHITECTURES[*]}; do
 
     # Move the published projects to the temporary directories
     echo -e "${OUT_PREFIX}Moving project files to ${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated\n"
-    mv "${DIR_SIMULATOR_BIN}/Release/${VERSION_DOTNET}/${arch}/publish" "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated"
+    if [[ $arch == win* || $arch == linux* ]]; then
+        mv "${DIR_SIMULATOR_BIN}/Release/${VERSION_DOTNET}/${arch}/publish" "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated"
+    elif [[ $arch == mac* ]]; then
+        # TODO: Implement moving MacOS project to publishing preparation directory
+    fi
 
     echo -e "${OUT_PREFIX}Moving project files to ${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated Scenario Editor\n"
     mv "${DIR_SCENED_BIN}/Release/${VERSION_DOTNET}/${arch}/publish" "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated Scenario Editor"
 
-    # Trim unnecessary files from the packages
-    # Specifically: VLC library cherry-picking
-    if [[ $arch == win* ]]; then
-        DIR_VLCX64="${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated/libvlc/win-x64"
-        DIR_VLCX86="${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated/libvlc/win-x86"
-
-        VLC_FOLDERS_ITER=( "control" "demux" "gui" "keystore" "logger" "lua" "meta_engine" "misc" "mux" 
-                            "packetizer" "services_discovery"  "spu" "stream_extractor" "stream_filter" 
-                            "stream_out" "text_renderer" "video_chroma" "video_filter" "video_output" 
-                            "video_splitter" "visualization" )
-        VLC_FILES_ITER=( "liba52_plugin.dll" "libadpcm_plugin.dll" "libaes3_plugin.dll" "libaom_plugin.dll" 
-                            "libaraw_plugin.dll" "libaribsub_plugin.dll" "libcc_plugin.dll" "libcdg_plugin.dll" 
-                            "libcrystalhd_plugin.dll" "libcvdsub_plugin.dll" "libd3d11va_plugin.dll" 
-                            "libdav1d_plugin.dll" "libdca_plugin.dll" "libddummy_plugin.dll" "libdmo_plugin.dll" 
-                            "libdvbsub_plugin.dll" "libdxva2_plugin.dll" "libedummy_plugin.dll" "libfaad_plugin.dll" 
-                            "libflac_plugin.dll" "libfluidsynth_plugin.dll" "libg711_plugin.dll" "libjpeg_plugin.dll" 
-                            "libkate_plugin.dll" "liblibass_plugin.dll" "liblibmpeg2_plugin.dll" "liblpcm_plugin.dll" 
-                            "libmft_plugin.dll" "libmpg123_plugin.dll" "liboggspots_plugin.dll" "libopus_plugin.dll" 
-                            "libpng_plugin.dll" "libqsv_plugin.dll" "librawvideo_plugin.dll" "librtpvideo_plugin.dll" 
-                            "libschroedinger_plugin.dll" "libscte18_plugin.dll" "libscte27_plugin.dll" 
-                            "libsdl_image_plugin.dll" "libspdif_plugin.dll" "libspeex_plugin.dll" "libspudec_plugin.dll" 
-                            "libstl_plugin.dll" "libsubsdec_plugin.dll" "libsubstx3g_plugin.dll" "libsubsusf_plugin.dll" 
-                            "libsvcdsub_plugin.dll" "libt140_plugin.dll" "libtextst_plugin.dll" "libtheora_plugin.dll" 
-                            "libttml_plugin.dll" "libtwolame_plugin.dll" "libuleaddvaudio_plugin.dll" "libvorbis_plugin.dll" 
-                            "libvpx_plugin.dll" "libwebvtt_plugin.dll" "libx26410b_plugin.dll" "libx264_plugin.dll" 
-                            "libx265_plugin.dll" "libzvbi_plugin.dll" )
-
-        for folder in ${VLC_FOLDERS_ITER[*]}; do
-            rm -r "${DIR_VLCX64}/plugins/${folder}"
-            rm -r "${DIR_VLCX86}/plugins/${folder}"
-        done
-
-        for file in ${VLC_FILES_ITER[*]}; do
-            rm "${DIR_VLCX64}/plugins/codec/${file}"
-            rm "${DIR_VLCX86}/plugins/codec/${file}"
-        done
-
-        rm -r "${DIR_VLCX64}/locale"
-        rm -r "${DIR_VLCX86}/locale"
-        rm -r "${DIR_VLCX64}/lua"
-        rm -r "${DIR_VLCX86}/lua"
-        rm -r "${DIR_VLCX64}/hrtfs"
-        rm -r "${DIR_VLCX86}/hrtfs"
-    elif [[ $arch == linux* || $arch == osx* ]]; then
-        rm -r "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated/libvlc/win-x64"
-        rm -r "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated/libvlc/win-x86"
-    fi
-
+    
     # Set executables for *nix systems
     if [[ $arch == linux* || $arch == osx* ]]; then
         echo -e "${OUT_PREFIX}Setting *nix file permissions\n"
@@ -339,11 +317,11 @@ for arch in ${ARCHITECTURES[*]}; do
 
         echo -e "${OUT_PREFIX}Copying package contents into .app structure\n"
 
-        cp "$OSX_SIM_INFO_PLIST" "$SIM_APP_PATH/Contents/Info.plist"
-        cp "$OSX_SIM_ICON_PATH" "$SIM_APP_PATH/Contents/Resources/$OSX_SIM_ICON_FILE"
+        cp "$MAC_SIM_INFO_PLIST" "$SIM_APP_PATH/Contents/Info.plist"
+        cp "$MAC_SIM_ICON_PATH" "$SIM_APP_PATH/Contents/Resources/$MAC_SIM_ICON_FILE"
 
-        cp "$OSX_SCENED_INFO_PLIST" "$SCENED_APP_PATH/Contents/Info.plist"
-        cp "$OSX_SCENED_ICON_PATH" "$SCENED_APP_PATH/Contents/Resources/$OSX_SCENED_ICON_FILE"
+        cp "$MAC_SCENED_INFO_PLIST" "$SCENED_APP_PATH/Contents/Info.plist"
+        cp "$MAC_SCENED_ICON_PATH" "$SCENED_APP_PATH/Contents/Resources/$MAC_SCENED_ICON_FILE"
 
         mv "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated"/* "$SIM_APP_PATH/Contents/MacOS"
         mv "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated Scenario Editor"/* "$SCENED_APP_PATH/Contents/MacOS"
