@@ -7,6 +7,63 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <RootNamespace>IISIM</RootNamespace>
+    <StartupObject>IISIM.App</StartupObject>
+    <AssemblyName>IISIM</AssemblyName>
+    <Authors>Tanjera</Authors>
+    <Product>Infirmary Integrated Simulator</Product>
+    <Title>Infirmary Integrated</Title>
   </PropertyGroup>
+
+  <Import Project="..\II Library, C#\II Library.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="4.7.25104.5739" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\12L_ECG_Grid.png" />
+    <Resource Include="Resources\Alarm_High_Priority.wav" />
+    <Resource Include="Resources\Alarm_IABP_Augmentation.wav" />
+    <Resource Include="Resources\Alarm_Low_Priority.wav" />
+    <Resource Include="Resources\Alarm_Medium_Priority.wav" />
+    <Resource Include="Resources\EFM_Grid.png" />
+    <Resource Include="Resources\FHR_Grid.png" />
+    <Resource Include="Resources\Icon_Check_32.png" />
+    <Resource Include="Resources\Icon_Cross_32.png" />
+    <Resource Include="Resources\Icon_II.ico" />
+    <Resource Include="Resources\Icon_IISE.ico" />
+    <Resource Include="Resources\SplashScreen_Infirmary_800x480.png" />
+    <Resource Include="Resources\Toco_Grid.png" />
+    <Resource Include="Third_Party\Icon_ArrowDown_128.png" />
+    <Resource Include="Third_Party\Icon_ArrowLeft_128.png" />
+    <Resource Include="Third_Party\Icon_ArrowRight_128.png" />
+    <Resource Include="Third_Party\Icon_ArrowUp_128.png" />
+    <Resource Include="Third_Party\Icon_Clipboard_128.png" />
+    <Resource Include="Third_Party\Icon_Clock_128.png" />
+    <Resource Include="Third_Party\Icon_CopyData_128.png" />
+    <Resource Include="Third_Party\Icon_Device12LeadECG_128.png" />
+    <Resource Include="Third_Party\Icon_DeviceDefibrillator_128.png" />
+    <Resource Include="Third_Party\Icon_DeviceEFM_128.png" />
+    <Resource Include="Third_Party\Icon_DeviceIABP_128.png" />
+    <Resource Include="Third_Party\Icon_DeviceMonitor_128.png" />
+    <Resource Include="Third_Party\Icon_Error_128.png" />
+    <Resource Include="Third_Party\Icon_PasteData_128.png" />
+    <Resource Include="Third_Party\Icon_PlayerAdd_128.png" />
+    <Resource Include="Third_Party\Icon_PlayerArrowBack_128.png" />
+    <Resource Include="Third_Party\Icon_PlayerArrowNext_128.png" />
+    <Resource Include="Third_Party\Icon_PlayerArrowPlayReverse_128.png" />
+    <Resource Include="Third_Party\Icon_PlayerArrowPlay_128.png" />
+    <Resource Include="Third_Party\Icon_PlayerPause_128.png" />
+    <Resource Include="Third_Party\Icon_RecordMAR_128.png" />
+    <Resource Include="Third_Party\Icon_Stack_128.png" />
+    <Resource Include="Third_Party\Icon_TrashBin_128.png" />
+    <Resource Include="Third_Party\Icon_UpgradeLater_128.png" />
+    <Resource Include="Third_Party\Icon_UpgradeMute_128.png" />
+    <Resource Include="Third_Party\Icon_UpgradeWebsite_128.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controls\" />
+  </ItemGroup>
 
 </Project>
