@@ -58,6 +58,6 @@ namespace IISIM {
         }
 
         private void Hyperlink_Terms (object sender, RoutedEventArgs e)
-            => II.InterOp.OpenBrowser ("http://www.infirmary-integrated.com/license-and-data-collection/");
+            => II.InterOp.OpenBrowser ("https://github.com/tanjera/infirmary-integrated");
     }
 }

@@ -108,10 +108,6 @@ namespace IISIM {
 
                     /* Run useful but otherwise vanity functions last */
 
-#if !DEBUG
-                    await InitUsageStatistics ();
-#endif
-
                     if (Instance?.AudioLib is null)
                         await MessageAudioUnavailable ();
 
@@ -124,14 +120,6 @@ namespace IISIM {
             if (!global::II.Settings.Simulator.Exists ()) {
                 DialogEULA ();
             }
-        }
-
-        private async Task InitUsageStatistics () {
-            Server.UsageStat stat = new ();
-            await stat.Init (Instance?.Language ?? new Language ());
-
-            /* Send usage statistics to server in background */
-            _ = Instance?.Server.Run_UsageStats (stat);
         }
 
         private void InitInterface () {
