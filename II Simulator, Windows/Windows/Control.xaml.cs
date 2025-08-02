@@ -60,27 +60,188 @@ namespace IISIM.Windows {
 
         public Control (App? app) {
             InitializeComponent ();
-            // TODO: Implement
+
+            Instance = app;
+
+            Init ();
         }
 
         public Control () {
             InitializeComponent ();
-            // TODO: Implement
+
+            Instance = (IISIM.App)App.Current;
+
+            Init ();
         }
 
         private void Init () {
-            // TODO: Implement
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (Init)}");
+                return;
+            }
+
+            DataContext = this;
+
+            Instance.MainWindow = this;
+
+            InitInitialRun ();
+
+            /* Init essential functions first */
+            InitInterface ();
+            InitMirroring ();
+            InitScenario (true);
+            InitTimers ();
+
+            App.Current.Dispatcher.InvokeAsync (async () => {
+                /* Init important but non-essential functions */
+                if (Instance.StartArgs?.Length > 0) {
+                    string loadfile = Instance.StartArgs [0].Trim (' ', '\n', '\r');
+                    if (!String.IsNullOrEmpty (loadfile))
+                        await LoadOpen (loadfile);
+                }
+
+                /* Update UI from loading functionality */
+                await SetParameterStatus (Instance?.Settings.AutoApplyChanges ?? false);
+
+                /* Run useful but otherwise vanity functions last */
+
+                await InitUpgrade ();
+            });
         }
 
         private void InitInitialRun () {
-            if (!global::II.Settings.Simulator.Exists ()) {
+            DialogEULA ();
+            if (!II.Settings.Simulator.Exists ()) {
                 DialogEULA ();
             }
-            // TODO: Implement
         }
 
         private void InitInterface () {
-            // TODO: Implement
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitInterface)}");
+                return;
+            }
+
+            /* Populate UI strings per language selection */
+
+            wdwControl.Title = Instance.Language.Localize ("PE:WindowTitle");
+            menuNew.Header = Instance.Language.Localize ("PE:MenuNewFile");
+            menuFile.Header = Instance.Language.Localize ("PE:MenuFile");
+            menuLoad.Header = Instance.Language.Localize ("PE:MenuLoadSimulation");
+            menuSave.Header = Instance.Language.Localize ("PE:MenuSaveSimulation");
+            menuToggleFullscreen.Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
+            menuExit.Header = Instance.Language.Localize ("PE:MenuExitProgram");
+
+            menuMirror.Header = Instance.Language.Localize ("PE:MenuMirror");
+            menuMirrorDeactivate.Header = Instance.Language.Localize ("PE:MenuMirrorDeactivate");
+            menuMirrorReceive.Header = Instance.Language.Localize ("PE:MenuMirrorReceive");
+            menuMirrorBroadcast.Header = Instance.Language.Localize ("PE:MenuMirrorBroadcast");
+
+            menuSettings.Header = Instance.Language.Localize ("PE:MenuSettings");
+            menuToggleAudio.Header = String.Format ("{0}: {1}",
+                Instance.Language.Localize ("PE:MenuToggleAudio"),
+                Instance.Settings.AudioEnabled ? Instance.Language.Localize ("BOOLEAN:On") : Instance.Language.Localize ("BOOLEAN:Off"));
+            menuSetLanguage.Header = Instance.Language.Localize ("PE:MenuSetLanguage");
+
+            menuHelp.Header = Instance.Language.Localize ("PE:MenuHelp");
+            menuCheckUpdate.Header = Instance.Language.Localize ("PE:MenuCheckUpdates");
+            menuAbout.Header = Instance.Language.Localize ("PE:MenuAboutProgram");
+
+            lblDeviceMonitor.Content = Instance.Language.Localize ("PE:CardiacMonitor");
+            lblDevice12LeadECG.Content = Instance.Language.Localize ("PE:12LeadECG");
+            lblDeviceDefibrillator.Content = Instance.Language.Localize ("PE:Defibrillator");
+            lblDeviceIABP.Content = Instance.Language.Localize ("PE:IABP");
+            lblDeviceEFM.Content = Instance.Language.Localize ("PE:EFM");
+
+            lblOptionsHide.Content = Instance.Language.Localize ("PE:HideDevices");
+
+            lblGroupScenarioPlayer.Content = Instance.Language.Localize ("PE:ScenarioPlayer");
+            lblProgressionOptions.Header = Instance.Language.Localize ("PE:ProgressionOptions");
+
+            lblGroupVitalSigns.Content = Instance.Language.Localize ("PE:VitalSigns");
+            lblHR.Content = $"{Instance.Language.Localize ("PE:HeartRate")}:";
+            lblNIBP.Content = $"{Instance.Language.Localize ("PE:BloodPressure")}:";
+            lblRR.Content = $"{Instance.Language.Localize ("PE:RespiratoryRate")}:";
+            lblSPO2.Content = $"{Instance.Language.Localize ("PE:PulseOximetry")}:";
+            lblT.Content = $"{Instance.Language.Localize ("PE:Temperature")}:";
+            lblCardiacRhythm.Content = $"{Instance.Language.Localize ("PE:CardiacRhythm")}:";
+            checkDefaultVitals.Content = Instance.Language.Localize ("PE:UseDefaultVitalSignRanges");
+
+            lblGroupHemodynamics.Content = Instance.Language.Localize ("PE:AdvancedHemodynamics");
+            lblETCO2.Content = $"{Instance.Language.Localize ("PE:EndTidalCO2")}:";
+            lblCVP.Content = $"{Instance.Language.Localize ("PE:CentralVenousPressure")}:";
+            lblASBP.Content = $"{Instance.Language.Localize ("PE:ArterialBloodPressure")}:";
+            lblPACatheterPlacement.Content = $"{Instance.Language.Localize ("PE:PulmonaryArteryCatheterPlacement")}:";
+            lblCO.Content = $"{Instance.Language.Localize ("PE:CardiacOutput")}:";
+            lblPSP.Content = $"{Instance.Language.Localize ("PE:PulmonaryArteryPressure")}:";
+            lblICP.Content = $"{Instance.Language.Localize ("PE:IntracranialPressure")}:";
+            lblIAP.Content = $"{Instance.Language.Localize ("PE:IntraabdominalPressure")}:";
+
+            lblGroupRespiratoryProfile.Content = Instance.Language.Localize ("PE:RespiratoryProfile");
+            lblRespiratoryRhythm.Content = $"{Instance.Language.Localize ("PE:RespiratoryRhythm")}:";
+            lblMechanicallyVentilated.Content = $"{Instance.Language.Localize ("PE:MechanicallyVentilated")}:";
+            lblInspiratoryRatio.Content = $"{Instance.Language.Localize ("PE:InspiratoryExpiratoryRatio")}:";
+
+            lblGroupCardiacProfile.Content = Instance.Language.Localize ("PE:CardiacProfile");
+            lblPacemakerCaptureThreshold.Content = $"{Instance.Language.Localize ("PE:PacemakerCaptureThreshold")}:";
+            lblPulsusParadoxus.Content = $"{Instance.Language.Localize ("PE:PulsusParadoxus")}:";
+            lblPulsusAlternans.Content = $"{Instance.Language.Localize ("PE:PulsusAlternans")}:";
+            lblElectricalAlternans.Content = $"{Instance.Language.Localize ("PE:ElectricalAlternans")}:";
+            lblQRSInterval.Content = $"{Instance.Language.Localize ("PE:QRSInterval")}:";
+            lblQTcInterval.Content = $"{Instance.Language.Localize ("PE:QTcInterval")}:";
+            lblCardiacAxis.Content = $"{Instance.Language.Localize ("PE:CardiacAxis")}:";
+            grpSTSegmentElevation.Header = Instance.Language.Localize ("PE:STSegmentElevation");
+            grpTWaveElevation.Header = Instance.Language.Localize ("PE:TWaveElevation");
+
+            lblGroupObstetricProfile.Content = Instance.Language.Localize ("PE:ObstetricProfile");
+            lblFHR.Content = $"{Instance.Language.Localize ("PE:FetalHeartRate")}:";
+            lblFHRRhythms.Content = $"{Instance.Language.Localize ("PE:FetalHeartRhythms")}:";
+            lblFHRVariability.Content = $"{Instance.Language.Localize ("PE:FetalHeartRateVariability")}:";
+            lblUCFrequency.Content = $"{Instance.Language.Localize ("PE:UterineContractionFrequency")}:";
+            lblUCDuration.Content = $"{Instance.Language.Localize ("PE:UterineContractionDuration")}:";
+            lblUCIntensity.Content = $"{Instance.Language.Localize ("PE:UterineContractionIntensity")}:";
+            lblUCResting.Content = $"{Instance.Language.Localize ("PE:UterineRestingTone")}:";
+
+            chkAutoApplyChanges.Content = Instance.Language.Localize ("BUTTON:AutoApplyChanges");
+            lblParametersApply.Content = Instance.Language.Localize ("BUTTON:ApplyChanges");
+            lblParametersReset.Content = Instance.Language.Localize ("BUTTON:ResetParameters");
+
+            chkAutoApplyChanges.IsChecked = Instance.Settings.AutoApplyChanges;
+            btnParametersReset.IsEnabled = !Instance.Settings.AutoApplyChanges;
+
+            ItemCollection icCardiacRhythms = comboCardiacRhythm.Items;
+            foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
+                icCardiacRhythms.Add (new ComboBoxItem () {
+                    Content = Instance.Language.Localize (Cardiac_Rhythms.LookupString (v))
+                });
+
+            ItemCollection icRespiratoryRhythms = comboRespiratoryRhythm.Items;
+            foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
+                icRespiratoryRhythms.Add (new ComboBoxItem () {
+                    Tag = v.ToString (),
+                    Content = Instance.Language.Localize (Respiratory_Rhythms.LookupString (v))
+                });
+
+            ItemCollection icPACatheterPlacement = comboPACatheterPlacement.Items;
+            foreach (PulmonaryArtery_Rhythms.Values v in Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)))
+                icPACatheterPlacement.Add (new ComboBoxItem () {
+                    Tag = v.ToString (),
+                    Content = Instance.Language.Localize (PulmonaryArtery_Rhythms.LookupString (v))
+                });
+
+            ItemCollection icCardiacAxes = comboCardiacAxis.Items;
+            foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
+                icCardiacAxes.Add (new ComboBoxItem () {
+                    Tag = v.ToString (),
+                    Content = Instance.Language.Localize (Cardiac_Axes.LookupString (v))
+                });
+
+            ItemCollection icFetalHeartRhythms = comboFHRRhythm.Items;
+            foreach (FetalHeart_Rhythms.Values v in Enum.GetValues (typeof (FetalHeart_Rhythms.Values)))
+                icFetalHeartRhythms.Add (new ComboBoxItem () {
+                    Tag = v.ToString (),
+                    Content = Instance.Language.Localize (FetalHeart_Rhythms.LookupString (v))
+                });
         }
 
         private async Task InitUpgrade () {
@@ -146,7 +307,11 @@ namespace IISIM.Windows {
         }
 
         private void DialogEULA () {
-            // TODO: Implement
+            App.Current.Dispatcher.InvokeAsync (() => {
+                DialogEULA dlg = new (Instance);
+                dlg.Activate ();
+                dlg.ShowDialog ();
+            });
         }
 
         private async Task DialogLanguage (bool reloadUI = false) {
@@ -162,7 +327,11 @@ namespace IISIM.Windows {
         }
 
         public async Task DialogAbout () {
-            // TODO: Implement
+            await App.Current.Dispatcher.InvokeAsync (() => {
+                DialogAbout dlg = new (Instance);
+                dlg.Activate ();
+                dlg.ShowDialog ();
+            });
         }
 
         private async Task DialogUpgrade () {

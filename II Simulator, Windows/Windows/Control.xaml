@@ -1,4 +1,5 @@
 ﻿<Window x:Class="IISIM.Windows.Control"
+		x:Name="wdwControl"
 		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
 		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -20,6 +21,8 @@
 		<Style TargetType="Expander">
 			<Setter Property="HorizontalAlignment"
 					Value="Stretch" />
+			<Setter Property="Margin"
+					Value="5" />
 		</Style>
 
 		<Style TargetType="Button"
@@ -171,7 +174,7 @@
 		<Style TargetType="ComboBox"
 			   x:Key="vitals_cmb">
 			<Setter Property="Margin"
-					Value="0" />
+					Value="0,2" />
 			<Setter Property="MinWidth"
 					Value="100" />
 			<Setter Property="HorizontalAlignment"
@@ -225,7 +228,9 @@
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition Width="*" />
 			</Grid.ColumnDefinitions>
-			<Menu Grid.Column="0">
+			<Menu Grid.Column="0"
+				  Grid.ColumnSpan="2"
+				  HorizontalAlignment="Stretch">
 				<MenuItem Name="menuFile">
 					<MenuItem Name="menuNew"
 							  Click="MenuNewSimulation_Click"
@@ -901,6 +906,7 @@
 										<Label Name="lblExpiratoryRatio"
 											   Grid.Row="1"
 											   Grid.Column="2"
+											   Style="{StaticResource divider_lbl}"
 											   Content=":" />
 										<xctk:DecimalUpDown Name="numExpiratoryRatio"
 															Grid.Row="1"

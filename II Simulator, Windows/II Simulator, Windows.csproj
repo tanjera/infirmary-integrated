@@ -12,6 +12,7 @@
     <Authors>Tanjera</Authors>
     <Product>Infirmary Integrated Simulator</Product>
     <Title>Infirmary Integrated</Title>
+    <Version>3.0.0-alpha.4</Version>
   </PropertyGroup>
 
   <Import Project="..\II Library, C#\II Library.projitems" Label="Shared" />
@@ -64,6 +65,24 @@
 
   <ItemGroup>
     <Folder Include="Controls\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Windows\DeviceEFM.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Windows\DeviceIABP.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Windows\DeviceDefib.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Windows\DeviceECG.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Windows\DialogEULA.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
 </Project>
