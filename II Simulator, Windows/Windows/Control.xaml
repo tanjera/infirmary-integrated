@@ -13,6 +13,23 @@
 		Icon="/Resources/Icon_II.ico">
 
 	<Window.Resources>
+		<Style TargetType="Menu">
+			<Setter Property="Padding"
+					Value="2" />
+		</Style>
+
+		<Style TargetType="MenuItem">
+			<Setter Property="Padding"
+					Value="5,2" />
+			<Setter Property="Margin"
+					Value="2,0" />
+		</Style>
+
+		<Style TargetType="CheckBox">
+			<Setter Property="Margin"
+					Value="0,5" />
+		</Style>
+
 		<Style TargetType="Label">
 			<Setter Property="VerticalContentAlignment"
 					Value="Center" />
@@ -280,15 +297,6 @@
 					<MenuItem Name="menuAbout"
 							  Click="MenuAbout_Click" />
 				</MenuItem>
-			</Menu>
-
-			<Menu Grid.Column="1"
-				  Margin="10,0"
-				  HorizontalAlignment="Right">
-				<MenuItem Name="menuUpdate"
-						  Background="LightYellow"
-						  Click="MenuUpdate_Click"
-						  Visibility="Hidden" />
 			</Menu>
 		</Grid>
 
@@ -671,6 +679,7 @@
 												  Grid.Row="7"
 												  Grid.Column="0"
 												  Grid.ColumnSpan="4"
+												  Margin="5"
 												  IsChecked="True" />
 									</Grid>
 								</Expander>

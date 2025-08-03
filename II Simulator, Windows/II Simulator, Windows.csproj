@@ -12,10 +12,66 @@
     <Authors>Tanjera</Authors>
     <Product>Infirmary Integrated Simulator</Product>
     <Title>Infirmary Integrated</Title>
-    <Version>3.0.0-alpha.4</Version>
+    <Version>3.0.0-alpha.5</Version>
   </PropertyGroup>
 
   <Import Project="..\II Library, C#\II Library.projitems" Label="Shared" />
+
+  <ItemGroup>
+    <None Remove="Third_Party\SVGs\iconfinder-ArrowUp.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder-Ellipses.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder-List.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder-PatientRecord.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder-Stack.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder-TrashBin.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_112_1117289.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_16-01_3407877.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_26_copy_1241439.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_54_1241461.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_59_1241430.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_73_1241428.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_90_1241464.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_91_1241466.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_94_1241465.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_97_1236508.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Anesthesiology_1289463.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Appointment_Request_340916.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Blogging_Services_330819.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Blood_Pressure_345029.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Cardiology_340931.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Custom_Coding_330457.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Diagnostic_340771.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Doctor_2_340770.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Doctor_340769.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_eHealth_340904.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Electrocardiography_340757.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Emergency_Medicine_1289474.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_First_Aid_Kit_345039.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Friend_Profile_268968.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Global_Health_340903.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Heart_Disease_Prevention_1302399.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Hospitalization_340905.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Laptop_267470.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Link_Building_330485.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Obstetrics_352992.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Pharmaceutical_Drugs_345040.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Printer_262125.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Pulmonology_340917.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_School_Admission_Form_487617.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_School_Test_487609.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Seo_Maintenance_330473.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_SEO_Monitoring_330799.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Stethoscope_345035.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Treatment_345038.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Video_Search_2_330465.svg" />
+    <None Remove="Third_Party\SVGs\iconfinder_Website_Optimization_330459.svg" />
+    <None Remove="Third_Party\SVGs\Icon_Clock.svg" />
+    <None Remove="Third_Party\SVGs\Icon_PlayerAdd.svg" />
+    <None Remove="Third_Party\SVGs\Icon_PlayerArrowBack.svg" />
+    <None Remove="Third_Party\SVGs\Icon_PlayerArrowNext.svg" />
+    <None Remove="Third_Party\SVGs\Icon_PlayerArrowPlay.svg" />
+    <None Remove="Third_Party\SVGs\Icon_PlayerPause.svg" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Extended.Wpf.Toolkit" Version="4.7.25104.5739" />
@@ -61,6 +117,59 @@
     <Resource Include="Third_Party\Icon_UpgradeLater_128.png" />
     <Resource Include="Third_Party\Icon_UpgradeMute_128.png" />
     <Resource Include="Third_Party\Icon_UpgradeWebsite_128.png" />
+    <Resource Include="Third_Party\SVGs\iconfinder-ArrowUp.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder-Ellipses.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder-List.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder-PatientRecord.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder-Stack.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder-TrashBin.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_112_1117289.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_16-01_3407877.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_26_copy_1241439.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_54_1241461.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_59_1241430.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_73_1241428.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_90_1241464.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_91_1241466.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_94_1241465.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_97_1236508.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Anesthesiology_1289463.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Appointment_Request_340916.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Blogging_Services_330819.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Blood_Pressure_345029.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Cardiology_340931.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Custom_Coding_330457.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Diagnostic_340771.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Doctor_2_340770.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Doctor_340769.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_eHealth_340904.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Electrocardiography_340757.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Emergency_Medicine_1289474.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_First_Aid_Kit_345039.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Friend_Profile_268968.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Global_Health_340903.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Heart_Disease_Prevention_1302399.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Hospitalization_340905.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Laptop_267470.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Link_Building_330485.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Obstetrics_352992.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Pharmaceutical_Drugs_345040.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Printer_262125.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Pulmonology_340917.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_School_Admission_Form_487617.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_School_Test_487609.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Seo_Maintenance_330473.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_SEO_Monitoring_330799.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Stethoscope_345035.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Treatment_345038.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Video_Search_2_330465.svg" />
+    <Resource Include="Third_Party\SVGs\iconfinder_Website_Optimization_330459.svg" />
+    <Resource Include="Third_Party\SVGs\Icon_Clock.svg" />
+    <Resource Include="Third_Party\SVGs\Icon_PlayerAdd.svg" />
+    <Resource Include="Third_Party\SVGs\Icon_PlayerArrowBack.svg" />
+    <Resource Include="Third_Party\SVGs\Icon_PlayerArrowNext.svg" />
+    <Resource Include="Third_Party\SVGs\Icon_PlayerArrowPlay.svg" />
+    <Resource Include="Third_Party\SVGs\Icon_PlayerPause.svg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -78,6 +187,15 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Windows\DeviceECG.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Windows\DialogLanguage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Windows\DialogInformation.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Windows\DialogUpgrade.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Windows\DialogEULA.xaml.cs">

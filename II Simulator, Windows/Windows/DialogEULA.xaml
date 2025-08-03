@@ -10,8 +10,9 @@
 		WindowStartupLocation="CenterScreen"
 		Topmost="True"
 		Icon="/Resources/Icon_II.ico"
-		Height="150"
-		Width="500">
+		Height="360"
+		Width="550"
+		SizeToContent="Height">
 
 	<Window.Resources>
 
@@ -43,6 +44,7 @@
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
 				<RowDefinition Height="Auto" />
+				<RowDefinition Height="Auto" />
 			</Grid.RowDefinitions>
 
 			<Grid.ColumnDefinitions>
@@ -71,10 +73,21 @@
 				https://github.com/tanjera/infirmary-integrated
 			</Label>
 
+			<TextBox Name="tbLicense"
+					 Grid.Row="2"
+					 Grid.Column="0"
+					 Margin="5,10,5,5"
+					 Padding="5,2"
+					 Height="200"
+					 HorizontalAlignment="Stretch"
+					 VerticalAlignment="Center"
+					 HorizontalScrollBarVisibility="Auto"
+					 VerticalScrollBarVisibility="Auto" />
+
 			<Button Name="btnContinue"
-					Grid.Row="2"
+					Grid.Row="3"
 					Grid.Column="0"
-					Margin="5,10"
+					Margin="5,10,5,5"
 					Padding="5"
 					HorizontalAlignment="Stretch"
 					HorizontalContentAlignment="Center"

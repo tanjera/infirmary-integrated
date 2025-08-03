@@ -110,7 +110,6 @@ namespace IISIM.Windows {
         }
 
         private void InitInitialRun () {
-            DialogEULA ();
             if (!II.Settings.Simulator.Exists ()) {
                 DialogEULA ();
             }
@@ -245,11 +244,49 @@ namespace IISIM.Windows {
         }
 
         private async Task InitUpgrade () {
-            // TODO: Implement
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitUpgrade)}");
+                return;
+            }
+
+            // Newer version available? Check Server, populate status bar, prompt user for upgrade
+            await Instance.Server.Get_LatestVersion ();
+
+            string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
+            bool upgradeAvailable = Utility.IsNewerVersion (version, Instance.Server.UpgradeVersion);
+
+            if (!upgradeAvailable) {    // If no update available, no status update; remove any notification muting
+                Instance.Settings.MuteUpgrade = false;
+                Instance.Settings.Save ();
+                return;
+            }
+
+            if (Instance.Settings.MuteUpgrade) {
+                if (DateTime.Compare (Instance.Settings.MuteUpgradeDate, DateTime.Now - new TimeSpan (30, 0, 0, 0)) < 0) {
+                    Instance.Settings.MuteUpgrade = false;              // Reset the notification mute every 30 days
+                    Instance.Settings.Save ();
+                } else {        // Mutes update popup notification
+                    return;
+                }
+            }
+
+            // Show the upgrade dialog to the user
+            await DialogUpgrade ();
         }
 
         private void InitMirroring () {
-            // TODO: Implement
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitMirroring)}");
+                return;
+            }
+
+            Instance.Timer_Main.Elapsed += Instance.Mirror.ProcessTimer;
+            Instance.Mirror.timerUpdate.Tick += OnMirrorTick;
+
+            Task.Run (async () => {
+                await Instance.Mirror.timerUpdate.ResetStart (5000);
+                await UpdateMirrorStatus ();
+            });
         }
 
         private void InitScenario (bool toInit) {
@@ -315,7 +352,17 @@ namespace IISIM.Windows {
         }
 
         private async Task DialogLanguage (bool reloadUI = false) {
-            // TODO: Implement
+            await App.Current.Dispatcher.InvokeAsync (() => {
+                var oldLang = Instance?.Language.Value;
+                DialogLanguage dlg = new (Instance);
+                dlg.Activate ();
+                dlg.ShowDialog ();
+
+                reloadUI = oldLang != Instance?.Language.Value;
+
+                if (reloadUI)
+                    InitInterface ();
+            });
         }
 
         private async Task DialogMirrorBroadcast () {
@@ -335,7 +382,40 @@ namespace IISIM.Windows {
         }
 
         private async Task DialogUpgrade () {
-            // TODO: Implement
+            await App.Current.Dispatcher.InvokeAsync (() => {
+                DialogUpgrade.UpgradeOptions decision = IISIM.Windows.DialogUpgrade.UpgradeOptions.None;
+
+                DialogUpgrade dlg = new (Instance);
+                dlg.Activate ();
+
+                dlg.OnUpgradeRoute += (s, ea) => decision = ea.Route;
+
+                dlg.ShowDialog ();
+
+                dlg.OnUpgradeRoute -= (s, ea) => decision = ea.Route;
+
+                switch (decision) {
+                    default:
+                    case IISIM.Windows.DialogUpgrade.UpgradeOptions.None:
+                    case IISIM.Windows.DialogUpgrade.UpgradeOptions.Delay:
+                        return;
+
+                    case IISIM.Windows.DialogUpgrade.UpgradeOptions.Mute:
+                        if (Instance is not null) {
+                            Instance.Settings.MuteUpgrade = true;
+                            Instance.Settings.MuteUpgradeDate = DateTime.Now;
+                            Instance.Settings.Save ();
+                        }
+                        return;
+
+                    case IISIM.Windows.DialogUpgrade.UpgradeOptions.Website:
+                        string url = String.IsNullOrEmpty (Instance?.Server.UpgradeWebpage)
+                            ? "https://github.com/tanjera/infirmary-integrated/releases".Replace ("&", "^&")
+                            : Instance.Server.UpgradeWebpage;
+                        Process.Start (new ProcessStartInfo ("cmd", $"/c start {url}") { CreateNoWindow = true });
+                        return;
+                }
+            });
         }
 
         public async Task ToggleAudio () {
@@ -364,27 +444,74 @@ namespace IISIM.Windows {
         }
 
         private async Task CheckUpgrade () {
-            // TODO: Implement
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (CheckUpgrade)}");
+                return;
+            }
+
+            // Check with server for updated version of Infirmary Integrated- notify user either way
+            await Instance.Server.Get_LatestVersion ();
+
+            string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
+            if (Utility.IsNewerVersion (version, Instance.Server.UpgradeVersion)) {
+                await DialogUpgrade ();
+            } else {
+                await App.Current.Dispatcher.InvokeAsync (() => {
+                    DialogInformation dlg = new (Instance) {
+                        Title = Instance.Language.Localize ("UPGRADE:Upgrade"),
+                        Message = Instance.Language.Localize ("UPGRADE:NoUpdateAvailable"),
+                        Button = Instance.Language.Localize ("BUTTON:Continue")
+                    };
+                    dlg.Activate ();
+                    dlg.ShowDialog ();
+                });
+            }
         }
 
-        private async Task OpenUpgrade () {
-            // TODO: Implement
+        private Task OpenUpgrade () {
+            string url = String.IsNullOrEmpty (Instance?.Server.UpgradeWebpage)
+                            ? "https://github.com/tanjera/infirmary-integrated/releases".Replace ("&", "^&")
+                            : Instance.Server.UpgradeWebpage;
+            Process.Start (new ProcessStartInfo ("cmd", $"/c start {url}") { CreateNoWindow = true });
+            return Task.CompletedTask;
         }
 
         private async Task MirrorDeactivate () {
-            // TODO: Implement
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (MirrorDeactivate)}");
+                return;
+            }
+
+            Instance.Mirror.Status = Mirror.Statuses.INACTIVE;
+
+            await UpdateMirrorStatus ();
+            await UpdateExpanders (false);
         }
 
         private async Task MirrorBroadcast () {
-            // TODO: Implement
+            await DialogMirrorBroadcast ();
+
+            await UpdateMirrorStatus ();
+            await UpdateExpanders (false);
         }
 
         private async Task MirrorReceive () {
-            // TODO: Implement
+            await DialogMirrorReceive ();
+
+            await UpdateMirrorStatus ();
+            await UpdateExpanders (false);
         }
 
-        private async Task UpdateMirrorStatus () {
-            // TODO: Implement
+        private Task UpdateMirrorStatus () {
+            App.Current.Dispatcher.Invoke (() => {
+                menuMirrorStatus.Header = (Instance?.Mirror.Status) switch {
+                    Mirror.Statuses.HOST => $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Server")}",
+                    Mirror.Statuses.CLIENT => $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Client")}",
+                    _ => $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Inactive")}",
+                };
+            });
+
+            return Task.CompletedTask;
         }
 
         private async Task UpdateExpanders ()
@@ -549,9 +676,6 @@ namespace IISIM.Windows {
 
         private void MenuCheckUpdate_Click (object s, RoutedEventArgs e)
             => _ = CheckUpgrade ();
-
-        private void MenuUpdate_Click (object s, RoutedEventArgs e)
-            => _ = OpenUpgrade ();
 
         private void ButtonDeviceMonitor_Click (object s, RoutedEventArgs e)
             => _ = InitDeviceMonitor ();
