@@ -1,4 +1,9 @@
-﻿using System;
+﻿using II;
+using II.Localization;
+using II.Server;
+using IISIM;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -14,13 +19,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-
-using II;
-using II.Localization;
-using II.Server;
-
-using IISIM;
-
 using Xceed.Wpf.Toolkit;
 using Xceed.Wpf.Toolkit.Primitives;
 
@@ -290,57 +288,198 @@ namespace IISIM.Windows {
         }
 
         private void InitScenario (bool toInit) {
-            // TODO: Implement
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitScenario)}");
+                return;
+            }
+
+            Instance.Scenario = new Scenario (toInit);
+            Instance.Scenario.StepChangeRequest += OnStepChangeRequest;     // Allows unlinking of Timers immediately prior to Step change
+            Instance.Scenario.StepChanged += OnStepChanged;                 // Updates IIApp.Patient, allows PatientEditor UI to update
+            Instance.Timer_Main.Elapsed += Instance.Scenario.ProcessTimer;
+
+            if (toInit)         // If toInit is false, Patient is null- InitPatient() will need to be called manually
+                InitScenarioStep ();
         }
 
         private async Task UnloadScenario () {
-            // TODO: Implement
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (UnloadScenario)}");
+                return;
+            }
+
+            if (Instance.Scenario != null) {
+                Instance.Timer_Main.Elapsed -= Instance.Scenario.ProcessTimer;   // Unlink Scenario from App/Main Timer
+                await Instance.Scenario.Dispose ();        // Disposes Scenario's events and timer, and all Patients' events and timers
+            }
         }
 
         private void NewScenario () => _ = RefreshScenario (true);
 
         private async Task RefreshScenario (bool toInit) {
-            // TODO: Implement
+            await UnloadScenario ();
+            InitScenario (toInit);
+
+            await UpdateExpanders ();
         }
 
         private void InitTimers () {
-            // TODO: Implement
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitTimers)}");
+                return;
+            }
+
+            Instance.Timer_Main.Elapsed += ApplyTimer_Cardiac.Process;
+            Instance.Timer_Main.Elapsed += ApplyTimer_Respiratory.Process;
+            Instance.Timer_Main.Elapsed += ApplyTimer_Obstetric.Process;
+
+            ApplyTimer_Cardiac.Tick += ApplyPhysiologyParameters_Cardiac;
+            ApplyTimer_Respiratory.Tick += ApplyPhysiologyParameters_Respiratory;
+            ApplyTimer_Obstetric.Tick += ApplyPhysiologyParameters_Obstetric;
+
+            Task.Run (async () => {
+                await ApplyTimer_Cardiac.Set (5000);
+                await ApplyTimer_Respiratory.Set (5000);
+                await ApplyTimer_Obstetric.Set (30000);
+            });
         }
 
         private void InitScenarioStep () {
-            // TODO: Implement
+            InitPhysiologyEvents ();
+            InitStep ();
         }
 
         private void InitPhysiologyEvents () {
-            // TODO: Implement
+            if (Instance?.Physiology is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitPhysiologyEvents)}");
+                return;
+            }
+
+            /* Tie the Patient's Timer to the Main Timer */
+            Instance.Timer_Main.Elapsed += Instance.Physiology.ProcessTimers;
+
+            /* Tie PatientEvents to the PatientEditor UI! And trigger. */
+            Instance.Physiology.PhysiologyEvent += OnPhysiologyEvent;
+
+            /* Tie PatientEvents to each device! So devices change and trace according to the patient! */
+            if (Instance.Physiology is not null) {
+                if (Instance.Device_Monitor is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_Monitor.OnPhysiologyEvent;
+                if (Instance.Device_Defib is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_Defib.OnPhysiologyEvent;
+                if (Instance.Device_ECG is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_ECG.OnPhysiologyEvent;
+                if (Instance.Device_EFM is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_EFM.OnPhysiologyEvent;
+                if (Instance.Device_IABP is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_IABP.OnPhysiologyEvent;
+            }
+
+            OnPhysiologyEvent (this, new Physiology.PhysiologyEventArgs (Instance.Physiology, Physiology.PhysiologyEventTypes.Vitals_Change));
         }
 
         private async Task UnloadPatientEvents () {
-            // TODO: Implement
+            if (Instance?.Physiology is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (UnloadPatientEvents)}");
+                return;
+            }
+
+            /* Unloading the Patient from the Main Timer also stops all the Patient's Timers
+            /* and results in that Patient not triggering PatientEvent's */
+            Instance.Timer_Main.Elapsed -= Instance.Physiology.ProcessTimers;
+
+            /* But it's still important to clear PatientEvent subscriptions so they're not adding
+            /* as duplicates when InitPatientEvents() is called!! */
+            await Instance.Physiology.UnsubscribePhysiologyEvent ();
         }
 
         private async Task InitDeviceMonitor () {
-            // TODO: Implement
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitDeviceMonitor)}");
+                return;
+            }
+
+            await App.Current.Dispatcher.InvokeAsync (() => {
+                if (Instance.Device_Monitor is null || Instance.Device_Monitor.State == DeviceMonitor.States.Closed)
+                    Instance.Device_Monitor = new DeviceMonitor (Instance);
+
+                Instance.Device_Monitor.Activate ();
+                Instance.Device_Monitor.Show ();
+
+                if (Instance.Physiology is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_Monitor.OnPhysiologyEvent;
+            });
         }
 
         private async Task InitDeviceECG () {
-            // TODO: Implement
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitDeviceECG)}");
+                return;
+            }
+
+            await App.Current.Dispatcher.InvokeAsync (() => {
+                if (Instance.Device_ECG is null || Instance.Device_ECG.State == DeviceECG.States.Closed)
+                    Instance.Device_ECG = new DeviceECG (Instance);
+
+                Instance.Device_ECG.Activate ();
+                Instance.Device_ECG.Show ();
+
+                if (Instance.Physiology is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_ECG.OnPhysiologyEvent;
+            });
         }
 
         private async Task InitDeviceDefib () {
-            // TODO: Implement
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitDeviceDefib)}");
+                return;
+            }
+
+            await App.Current.Dispatcher.InvokeAsync (() => {
+                if (Instance.Device_Defib is null || Instance.Device_Defib.State == DeviceDefib.States.Closed)
+                    Instance.Device_Defib = new DeviceDefib (Instance);
+
+                Instance.Device_Defib.Activate ();
+                Instance.Device_Defib.Show ();
+
+                if (Instance.Physiology is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_Defib.OnPhysiologyEvent;
+            });
         }
 
         private async Task InitDeviceIABP () {
-            // TODO: Implement
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitDeviceIABP)}");
+                return;
+            }
+
+            await App.Current.Dispatcher.InvokeAsync (() => {
+                if (Instance.Device_IABP is null || Instance.Device_IABP.State == DeviceIABP.States.Closed)
+                    Instance.Device_IABP = new DeviceIABP (Instance);
+
+                Instance.Device_IABP.Activate ();
+                Instance.Device_IABP.Show ();
+
+                if (Instance.Physiology is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_IABP.OnPhysiologyEvent;
+            });
         }
 
         private async Task InitDeviceEFM () {
-            // TODO: Implement
-        }
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitDeviceEFM)}");
+                return;
+            }
+            await App.Current.Dispatcher.InvokeAsync (() => {
+                if (Instance.Device_EFM is null || Instance.Device_EFM.State == DeviceEFM.States.Closed)
+                    Instance.Device_EFM = new DeviceEFM (Instance);
 
-        private async Task MessageAudioUnavailable () {
-            // TODO: Implement
+                Instance.Device_EFM.Activate ();
+                Instance.Device_EFM.Show ();
+
+                if (Instance.Physiology is not null)
+                    Instance.Physiology.PhysiologyEvent += Instance.Device_EFM.OnPhysiologyEvent;
+            });
         }
 
         private void DialogEULA () {
@@ -366,11 +505,26 @@ namespace IISIM.Windows {
         }
 
         private async Task DialogMirrorBroadcast () {
-            // TODO: Implement
+            await App.Current.Dispatcher.InvokeAsync (async () => {
+                DialogMirrorBroadcast dlg = new (Instance);
+                dlg.Activate ();
+                dlg.ShowDialog ();
+
+                if (Instance is not null)
+                    await Instance.Mirror.PostStep (
+                        new Scenario.Step () {
+                            Physiology = Instance.Physiology ?? new Physiology (),
+                        },
+                        Instance.Server);
+            });
         }
 
         private async Task DialogMirrorReceive () {
-            // TODO: Implement
+            await App.Current.Dispatcher.InvokeAsync (() => {
+                DialogMirrorReceive dlg = new (Instance);
+                dlg.Activate ();
+                dlg.ShowDialog ();
+            });
         }
 
         public async Task DialogAbout () {
@@ -419,7 +573,12 @@ namespace IISIM.Windows {
         }
 
         public async Task ToggleAudio () {
-            // TODO: Implement
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (ToggleAudio)}");
+                return;
+            }
+
+            await SetAudio (!Instance.Settings.AudioEnabled);
         }
 
         public void SetAudio_On () => _ = SetAudio (true);
@@ -427,7 +586,18 @@ namespace IISIM.Windows {
         public void SetAudio_Off () => _ = SetAudio (false);
 
         public async Task SetAudio (bool toSet) {
-            // TODO: Implement
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (SetAudio)}");
+                return;
+            }
+
+            Instance.Settings.AudioEnabled = toSet;
+
+            await App.Current.Dispatcher.InvokeAsync (() => {
+                menuToggleAudio.Header = String.Format ("{0}: {1}",
+                    Instance.Language.Localize ("PE:MenuToggleAudio"),
+                    Instance.Settings.AudioEnabled ? Instance.Language.Localize ("BOOLEAN:On") : Instance.Language.Localize ("BOOLEAN:Off"));
+            });
         }
 
         private async Task ToggleHideDevices () {
@@ -457,13 +627,10 @@ namespace IISIM.Windows {
                 await DialogUpgrade ();
             } else {
                 await App.Current.Dispatcher.InvokeAsync (() => {
-                    DialogInformation dlg = new (Instance) {
-                        Title = Instance.Language.Localize ("UPGRADE:Upgrade"),
-                        Message = Instance.Language.Localize ("UPGRADE:NoUpdateAvailable"),
-                        Button = Instance.Language.Localize ("BUTTON:Continue")
-                    };
-                    dlg.Activate ();
-                    dlg.ShowDialog ();
+                    System.Windows.MessageBox.Show (
+                    Instance.Language.Localize ("UPGRADE:NoUpdateAvailable"),
+                    Instance.Language.Localize ("UPGRADE:Upgrade"),
+                    MessageBoxButton.OK, MessageBoxImage.Error);
                 });
             }
         }
@@ -518,127 +685,820 @@ namespace IISIM.Windows {
             => await UpdateExpanders (Instance?.Scenario?.IsLoaded ?? false);
 
         private async Task UpdateExpanders (bool isScene) {
-            // TODO: Implement
+            await App.Current.Dispatcher.InvokeAsync (() => {
+                expScenarioPlayer.IsEnabled = isScene;
+                expScenarioPlayer.IsExpanded = isScene;
+            });
         }
 
         private async Task SetParameterStatus (bool autoApplyChanges) {
-            // TODO: Implement
+            ParameterStatus = autoApplyChanges
+               ? ParameterStatuses.AutoApply
+               : ParameterStatuses.ChangesApplied;
+
+            await UpdateParameterIndicators ();
         }
 
         private async Task AdvanceParameterStatus (ParameterStatuses status) {
-            // TODO: Implement
+            /* Toggles between pending changes or changes applied; bypasses if auto-applying or null */
+
+            if (status == ParameterStatuses.ChangesApplied && ParameterStatus == ParameterStatuses.ChangesPending)
+                ParameterStatus = ParameterStatuses.ChangesApplied;
+            else if (status == ParameterStatuses.ChangesPending && ParameterStatus == ParameterStatuses.ChangesApplied)
+                ParameterStatus = ParameterStatuses.ChangesPending;
+
+            await UpdateParameterIndicators ();
         }
 
         private async Task UpdateParameterIndicators () {
-            // TODO: Implement
+            await App.Current.Dispatcher.InvokeAsync (() => {
+                brdPendingChangesIndicator.BorderBrush = ParameterStatus switch {
+                    ParameterStatuses.ChangesPending => Brushes.Red,
+                    ParameterStatuses.ChangesApplied => Brushes.Green,
+                    ParameterStatuses.AutoApply => Brushes.Orange,
+                    _ => Brushes.Transparent,
+                };
+            });
         }
 
         private async Task LoadFile () {
-            // TODO: Implement
+            Stream s;
+            Microsoft.Win32.OpenFileDialog dlgLoad = new Microsoft.Win32.OpenFileDialog ();
+
+            dlgLoad.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
+            dlgLoad.FilterIndex = 1;
+            dlgLoad.RestoreDirectory = true;
+
+            if (dlgLoad.ShowDialog () == true) {
+                if ((s = dlgLoad.OpenFile ()) != null) {
+                    await LoadInit (s);
+                    s.Close ();
+                }
+            }
         }
 
         private async Task LoadOpen (string fileName) {
-            // TODO: Implement
+            if (System.IO.File.Exists (fileName)) {
+                await LoadInit (fileName);
+            } else {
+                await LoadFail ();
+            }
+
+            OnPhysiologyEvent (this, new Physiology.PhysiologyEventArgs (Instance?.Physiology, Physiology.PhysiologyEventTypes.Vitals_Change));
+        }
+
+        private async Task LoadInit (Stream incFile) {
+            using StreamReader sr = new (incFile);
+            string? metadata = await sr.ReadLineAsync ();
+            string? data = await sr.ReadToEndAsync ();
+            sr.Close ();
+
+            /* Read savefile metadata indicating data formatting
+                * Multiple data formats for forward compatibility
+                */
+
+            if (!String.IsNullOrEmpty (metadata) && metadata.StartsWith (".ii:t1"))
+                await LoadValidateT1 (data);
+            else
+                await LoadFail ();
         }
 
         private async Task LoadInit (string incFile) {
-            // TODO: Implement
+            using StreamReader sr = new (incFile);
+            string? metadata = await sr.ReadLineAsync ();
+            string? data = await sr.ReadToEndAsync ();
+            sr.Close ();
+
+            /* Read savefile metadata indicating data formatting
+                * Multiple data formats for forward compatibility
+                */
+
+            if (!String.IsNullOrEmpty (metadata) && metadata.StartsWith (".ii:t1"))
+                await LoadValidateT1 (data);
+            else
+                await LoadFail ();
         }
 
         private async Task LoadValidateT1 (string data) {
-            // TODO: Implement
+            using StringReader sr = new (data);
+
+            try {
+                /* Savefile type 1: validated and encrypted
+                    * Line 1 is metadata (.ii:t1)
+                    * Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
+                    * Line 3 is savefile data encrypted by AES encoding
+                    */
+
+                string? hash = (await sr.ReadLineAsync ())?.Trim ();
+                string? file = Encryption.DecryptAES ((await sr.ReadToEndAsync ())?.Trim ());
+                sr.Close ();
+
+                // Original save files used MD5, later changed to SHA256
+                if (hash == Encryption.HashSHA256 (file) || hash == Encryption.HashMD5 (file))
+                    await LoadProcess (file);
+                else
+                    await LoadFail ();
+            } catch {
+                await LoadFail ();
+            } finally {
+                sr.Close ();
+            }
         }
 
         private async Task LoadProcess (string incFile) {
-            // TODO: Implement
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (LoadProcess)}");
+                return;
+            }
+
+            using StringReader sRead = new (incFile);
+            string? line, pline;
+            StringBuilder pbuffer;
+
+            try {
+                while ((line = (await sRead.ReadLineAsync ())?.Trim ()) != null) {
+                    if (Instance is null)
+                        continue;
+
+                    if (line == "> Begin: Physiology") {           // Load files saved by Infirmary Integrated (base)
+                        if (Instance.Scenario?.Physiology is null)
+                            Instance.Scenario = new (true);
+
+                        pbuffer = new StringBuilder ();
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Physiology")
+                            pbuffer.AppendLine (pline);
+
+                        await RefreshScenario (true);
+                        await (Instance?.Physiology?.Load (pbuffer.ToString ()) ?? Task.CompletedTask);
+                    } else if (line == "> Begin: Scenario") {   // Load files saved by Infirmary Integrated Scenario Editor
+                        Instance.Scenario ??= new (false);
+
+                        pbuffer = new StringBuilder ();
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Scenario")
+                            pbuffer.AppendLine (pline);
+
+                        await RefreshScenario (false);
+                        await Instance.Scenario.Load (pbuffer.ToString ());
+                        InitScenarioStep ();     // Needs to be called manually since InitScenario(false) doesn't init a Patient
+                    } else if (line == "> Begin: Editor") {
+                        pbuffer = new StringBuilder ();
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Editor")
+                            pbuffer.AppendLine (pline);
+
+                        await this.LoadOptions (pbuffer.ToString ());
+                    } else if (line == "> Begin: Cardiac Monitor") {
+                        pbuffer = new StringBuilder ();
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Cardiac Monitor")
+                            pbuffer.AppendLine (pline);
+
+                        Instance.Device_Monitor = new DeviceMonitor (Instance);
+                        await InitDeviceMonitor ();
+                        await Instance.Device_Monitor.Load (pbuffer.ToString ());
+                    } else if (line == "> Begin: 12 Lead ECG") {
+                        pbuffer = new StringBuilder ();
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: 12 Lead ECG")
+                            pbuffer.AppendLine (pline);
+
+                        Instance.Device_ECG = new DeviceECG (Instance);
+                        await InitDeviceECG ();
+                        await Instance.Device_ECG.Load (pbuffer.ToString ());
+                    } else if (line == "> Begin: Defibrillator") {
+                        pbuffer = new StringBuilder ();
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Defibrillator")
+                            pbuffer.AppendLine (pline);
+
+                        Instance.Device_Defib = new DeviceDefib (Instance);
+                        await InitDeviceDefib ();
+                        await Instance.Device_Defib.Load (pbuffer.ToString ());
+                    } else if (line == "> Begin: Intra-aortic Balloon Pump") {
+                        pbuffer = new StringBuilder ();
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Intra-aortic Balloon Pump")
+                            pbuffer.AppendLine (pline);
+
+                        Instance.Device_IABP = new DeviceIABP (Instance);
+                        await InitDeviceIABP ();
+                        await Instance.Device_IABP.Load (pbuffer.ToString ());
+                    }
+                }
+            } catch {
+                await LoadFail ();
+            } finally {
+                sRead.Close ();
+            }
+
+            // On loading a file, ensure Mirroring is not in Client mode! Will conflict...
+            if (Instance.Mirror.Status == Mirror.Statuses.CLIENT) {
+                Instance.Mirror.Status = Mirror.Statuses.INACTIVE;
+                Instance.Mirror.CancelOperation ();      // Attempt to cancel any possible Mirror downloads
+            }
+
+            // Initialize the first step of the scenario
+            if (Instance?.Scenario?.IsLoaded ?? false) {
+                InitStep ();
+
+                if (Instance.Scenario.DeviceMonitor.IsEnabled)
+                    await InitDeviceMonitor ();
+                if (Instance.Scenario.DeviceDefib.IsEnabled)
+                    await InitDeviceDefib ();
+                if (Instance.Scenario.DeviceECG.IsEnabled)
+                    await InitDeviceECG ();
+                if (Instance.Scenario.DeviceIABP.IsEnabled)
+                    await InitDeviceIABP ();
+            }
+
+            // Set UI Expanders IsExpanded and IsEnabled on whether is a Scenario
+            await UpdateExpanders ();
+
+            /* Load completed but possibly in any order (e.g. physiology before devices)
+             * Fire events to begin synchronizing devices with physiology
+             */
+            Instance?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change);
         }
 
         private async Task LoadOptions (string inc) {
-            // TODO: Implement
+            using StringReader sRead = new (inc);
+
+            try {
+                string? line;
+                while ((line = await sRead.ReadLineAsync ()) != null) {
+                    if (line.Contains (':')) {
+                        string pName = line.Substring (0, line.IndexOf (':')),
+                                pValue = line.Substring (line.IndexOf (':') + 1);
+                        switch (pName) {
+                            default: break;
+                            case "checkDefaultVitals": checkDefaultVitals.IsChecked = bool.Parse (pValue); break;
+                        }
+                    }
+                }
+            } catch {
+                sRead.Close ();
+                return;
+            }
+
+            sRead.Close ();
         }
 
-        private async Task LoadFail () {
-            // TODO: Implement
+        private Task LoadFail () {
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (LoadFail)}");
+                return Task.CompletedTask;
+            }
+
+            System.Windows.MessageBox.Show (
+                    Instance.Language.Localize ("PE:LoadFailMessage"),
+                    Instance.Language.Localize ("PE:LoadFailTitle"),
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+
+            return Task.CompletedTask;
         }
 
         private async Task SaveFile () {
-            // TODO: Implement
+            // Only save single Patient files in base Infirmary Integrated!
+            // Scenario files should be created/edited/saved via II Scenario Editor!
+
+            if (Instance?.Scenario?.IsLoaded ?? false) {
+                System.Windows.MessageBox.Show (
+                    Instance.Language.Localize ("PE:SaveFailScenarioMessage"),
+                    Instance.Language.Localize ("PE:SaveFailScenarioTitle"),
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            Stream s;
+            Microsoft.Win32.SaveFileDialog dlgSave = new Microsoft.Win32.SaveFileDialog ();
+
+            dlgSave.Filter = "Infirmary Integrated simulation files (*.ii)|*.ii|All files (*.*)|*.*";
+            dlgSave.FilterIndex = 1;
+            dlgSave.RestoreDirectory = true;
+
+            if (dlgSave.ShowDialog () == true) {
+                if ((s = dlgSave.OpenFile ()) != null) {
+                    await SaveT1 (s);
+                }
+            }
         }
 
         private async Task SaveT1 (string filename) {
-            // TODO: Implement
+            if (System.IO.File.Exists (filename))
+                System.IO.File.Delete (filename);
+
+            using FileStream s = new (filename, FileMode.OpenOrCreate, FileAccess.Write);
+            await SaveT1 (s);
+        }
+
+        private async Task SaveT1 (Stream stream) {
+            // Ensure only saving Patient file, not Scenario file; is screened in SaveFile()
+            if (Instance?.Scenario != null && Instance.Scenario.IsLoaded) {
+                stream.Close ();
+                return;
+            }
+
+            StringBuilder sb = new ();
+
+            sb.AppendLine ("> Begin: Physiology");
+            sb.Append (Instance?.Physiology?.Save ());
+            sb.AppendLine ("> End: Physiology");
+
+            sb.AppendLine ("> Begin: Editor");
+            sb.Append (this.SaveOptions ());
+            sb.AppendLine ("> End: Editor");
+
+            if (Instance?.Device_Monitor is not null) {
+                sb.AppendLine ("> Begin: Cardiac Monitor");
+                sb.Append (Instance.Device_Monitor.Save ());
+                sb.AppendLine ("> End: Cardiac Monitor");
+            }
+            if (Instance?.Device_ECG is not null) {
+                sb.AppendLine ("> Begin: 12 Lead ECG");
+                sb.Append (Instance.Device_ECG.Save ());
+                sb.AppendLine ("> End: 12 Lead ECG");
+            }
+            if (Instance?.Device_Defib is not null) {
+                sb.AppendLine ("> Begin: Defibrillator");
+                sb.Append (Instance.Device_Defib.Save ());
+                sb.AppendLine ("> End: Defibrillator");
+            }
+            if (Instance?.Device_IABP is not null) {
+                sb.AppendLine ("> Begin: Intra-aortic Balloon Pump");
+                sb.Append (Instance.Device_IABP.Save ());
+                sb.AppendLine ("> End: Intra-aortic Balloon Pump");
+            }
+
+            using StreamWriter sw = new (stream);
+            await sw.WriteLineAsync (".ii:t1");                                           // Metadata (type 1 savefile)
+            await sw.WriteLineAsync (Encryption.HashSHA256 (sb.ToString ().Trim ()));     // Hash for validation
+            await sw.WriteAsync (Encryption.EncryptAES (sb.ToString ().Trim ()));         // Savefile data encrypted with AES
+            await sw.FlushAsync ();
+
+            sw.Close ();
+            stream.Close ();
         }
 
         private string SaveOptions () {
-            // TODO: Implement
-            return "";
+            StringBuilder sWrite = new ();
+
+            sWrite.AppendLine (String.Format ("{0}:{1}", "checkDefaultVitals", checkDefaultVitals.IsChecked));
+
+            return sWrite.ToString ();
         }
 
-        public async Task Exit () {
-            // TODO: Implement
+        public Task Exit () {
+            Instance?.Settings.Save ();
+            Instance?.Shutdown ();
+
+            return Task.CompletedTask;
         }
 
         private void OnMirrorTick (object? sender, EventArgs e) {
-            // TODO: Implement
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (OnMirrorTick)}");
+                return;
+            }
+
+            Instance?.Mirror.TimerTick (
+                new Scenario.Step () {
+                    Physiology = Instance.Physiology
+                },
+                Instance.Server);
+
+            if (Instance?.Mirror.Status == Mirror.Statuses.CLIENT) {
+                UpdateView (Instance.Physiology);
+            }
         }
 
         private void OnStepChangeRequest (object? sender, EventArgs e)
             => _ = UnloadPatientEvents ();
 
         private void OnStepChanged (object? sender, EventArgs e) {
-            // TODO: Implement
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (OnStepChanged)}");
+                return;
+            }
+
+            InitPhysiologyEvents ();
+            InitStep ();
+
+            UpdateView (Instance?.Physiology);
         }
 
         private void InitStep () {
-            // TODO: Implement
+            Scenario.Step step = Instance?.Scenario?.Current ?? new Scenario.Step ();
+
+            // Set Previous, Next, Pause, and Play buttons .IsEnabled based on Step properties
+            btnPreviousStep.IsEnabled = (!String.IsNullOrEmpty (step.DefaultSource));
+            btnNextStep.IsEnabled = (!String.IsNullOrEmpty (step.DefaultProgression?.UUID) || step.Progressions.Count > 0);
+            btnPauseStep.IsEnabled = (step.ProgressTimer > 0);
+            btnPlayStep.IsEnabled = false;
+
+            // Display Scenario's Step count
+            lblScenarioStep.Content = $"{Instance?.Language.Localize ("PE:ProgressionStep")}: {step.Name}";
+
+            // Display Progress Timer if applicable, otherwise instruct that the Step requires manual progression
+            if (step.ProgressTimer == -1)
+                lblTimerStep.Content = Instance?.Language.Localize ("PE:ProgressionManual");
+            else
+                lblTimerStep.Content = String.Format ("{0} {1} {2}",
+                    Instance?.Language.Localize ("PE:ProgressionAutomatic"),
+                    step.ProgressTimer,
+                    Instance?.Language.Localize ("PE:ProgressionSeconds"));
+
+            // Re-populate a StackPanel with RadioButtons for Progression options, including "Default Option"
+            stackProgressions.Children.Clear ();
+
+            if (step.Progressions.Count == 0) {
+                stackProgressions.Children.Add (new Label () {
+                    Content = Instance?.Language.Localize ("PE:ProgressionNoneAvailable"),
+                    Margin = new Thickness (10)
+                });
+            } else {
+                for (int i = 0; i < step.Progressions.Count; i++) {
+                    Scenario.Step.Progression prog = step.Progressions [i];
+                    Scenario.Step? stepTo = Instance?.Scenario?.Steps?.Find (s => s.UUID == prog.DestinationUUID);
+
+                    stackProgressions.Children.Add (new RadioButton () {
+                        IsChecked = (step.DefaultProgression?.UUID == prog.UUID),
+                        Content = String.Format ("{0}{1}",
+                            ((step.DefaultProgression?.UUID == prog.UUID) ? $"{Instance?.Language.Localize ("PE:ProgressionDefault")}: " : ""),
+                            !String.IsNullOrEmpty (prog.Description) ? prog.Description : stepTo?.Name),
+                        Name = String.Format ("radioProgression_{0}", prog.DestinationUUID),
+                        GroupName = "ProgressionOptions",
+                        Margin = (i == step.Progressions.Count - 1 ? new Thickness (10, 5, 10, 10) : new Thickness (10, 5, 10, 5))
+                    });
+                }
+            }
         }
 
         private async Task NextStep () {
-            // TODO: Implement
+            if (Instance?.Scenario?.Current?.Progressions.Count == 0)
+                await Instance.Scenario.NextStep ();
+            else {
+                foreach (RadioButton rb in stackProgressions.Children.Cast<RadioButton> ())
+                    if (rb.IsChecked ?? false && rb.Name.Contains ('_')) {
+                        string? prog = rb.Name?.Substring (rb.Name.IndexOf ('_') + 1);
+                        if (Instance?.Scenario is not null)
+                            await Instance.Scenario.NextStep (prog == "Default" ? null : prog);
+                        break;
+                    }
+            }
         }
 
         private async Task PreviousStep () {
-            // TODO: Implement
+            if (Instance?.Scenario is not null)
+                await Instance.Scenario.LastStep ();
         }
 
         private async Task PauseStep () {
-            // TODO: Implement
+            btnPauseStep.IsEnabled = false;
+            btnPlayStep.IsEnabled = true;
+
+            if (Instance?.Scenario is not null)
+                await Instance.Scenario.PauseStep ();
+
+            lblTimerStep.Content = Instance?.Language.Localize ("PE:ProgressionPaused");
         }
 
         private async Task PlayStep () {
-            // TODO: Implement
+            btnPauseStep.IsEnabled = true;
+            btnPlayStep.IsEnabled = false;
+
+            if (Instance?.Scenario is not null)
+                await Instance.Scenario.PlayStep ();
+
+            if (Instance?.Scenario?.Current?.ProgressTimer == -1)
+                lblTimerStep.Content = Instance.Language.Localize ("PE:ProgressionManual");
+            else
+                lblTimerStep.Content = String.Format ("{0} {1} {2}",
+                    Instance?.Language.Localize ("PE:ProgressionAutomatic"),
+                    Instance?.Scenario?.Current?.ProgressTimer - (Instance?.Scenario?.ProgressTimer.Elapsed / 1000),
+                    Instance?.Language.Localize ("PE:ProgressionSeconds"));
         }
 
-        private async Task ResetPhysiologyParameters () {
-            // TODO: Implement
+        private Task ResetPhysiologyParameters () {
+            UpdateView (Instance?.Physiology);
+            return Task.CompletedTask;
         }
 
         private async Task ApplyPhysiologyParameters () {
-            // TODO: Implement
+            await AdvanceParameterStatus (ParameterStatuses.ChangesApplied);
+
+            ApplyBuffer ??= new ();
+
+            await ApplyPhysiologyParameters_Buffer (ApplyBuffer);
+            ApplyPending_Cardiac = true;
+            ApplyPending_Respiratory = true;
+            ApplyPending_Obstetric = true;
+
+            await ApplyTimer_Cardiac.ResetStart ();
+            await ApplyTimer_Respiratory.ResetStart ();
+            await ApplyTimer_Obstetric.ResetStart ();
         }
 
         private async Task ApplyPhysiologyParameters_Buffer (Physiology? p) {
-            // TODO: Implement
+            if (p is null)
+                return;
+
+            await p.UpdateParameters_Cardiac (
+                // Basic vital signs
+                (int)(numHR?.Value ?? 0),
+                (int)(numNSBP?.Value ?? 0),
+                (int)(numNDBP?.Value ?? 0),
+                Physiology.CalculateMAP ((int)(numNSBP?.Value ?? 0), (int)(numNDBP?.Value ?? 0)),
+                (int)(numSPO2?.Value ?? 0),
+                (double)(numT?.Value ?? 0),
+
+                (Cardiac_Rhythms.Values)(Enum.GetValues (typeof (Cardiac_Rhythms.Values)).GetValue (
+                    comboCardiacRhythm.SelectedIndex < 0 ? 0 : comboCardiacRhythm.SelectedIndex)
+                    ?? Cardiac_Rhythms.Values.Sinus_Rhythm),
+
+                // Advanced hemodynamics
+                (int)(numCVP?.Value ?? 0),
+                (int)(numASBP?.Value ?? 0),
+                (int)(numADBP?.Value ?? 0),
+                Physiology.CalculateMAP ((int)(numASBP?.Value ?? 0), (int)(numADBP?.Value ?? 0)),
+
+                (float)(numCO?.Value ?? 0),
+
+                (PulmonaryArtery_Rhythms.Values)(Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)).GetValue (
+                    comboPACatheterPlacement.SelectedIndex < 0 ? 0 : comboPACatheterPlacement.SelectedIndex)
+                    ?? PulmonaryArtery_Rhythms.Values.Right_Atrium),
+
+                (int)(numPSP?.Value ?? 0),
+                (int)(numPDP?.Value ?? 0),
+                Physiology.CalculateMAP ((int)(numPSP?.Value ?? 0),
+                (int)(numPDP?.Value ?? 0)),
+
+                (int)(numICP?.Value ?? 0),
+                (int)(numIAP?.Value ?? 0),
+
+                // Cardiac Profile
+                (int)(numPacemakerCaptureThreshold?.Value ?? 0),
+                chkPulsusParadoxus.IsChecked ?? false,
+                chkPulsusAlternans.IsChecked ?? false,
+                chkElectricalAlternans.IsChecked ?? false,
+
+                (Cardiac_Axes.Values)(Enum.GetValues (typeof (Cardiac_Axes.Values)).GetValue (
+                    comboCardiacAxis.SelectedIndex < 0 ? 0 : comboCardiacAxis.SelectedIndex)
+                    ?? Cardiac_Axes.Values.Normal),
+
+                (double)(numQRSInterval?.Value ?? 0),
+                (double)(numQTcInterval?.Value ?? 0),
+
+                new double [] {
+                    (double)(numSTE_I?.Value ?? 0),
+                    (double)(numSTE_II?.Value ?? 0),
+                    (double)(numSTE_III?.Value ?? 0),
+                    (double)(numSTE_aVR?.Value ?? 0),
+                    (double)(numSTE_aVL?.Value ?? 0),
+                    (double)(numSTE_aVF?.Value ?? 0),
+                    (double)(numSTE_V1?.Value ?? 0),
+                    (double)(numSTE_V2?.Value ?? 0),
+                    (double)(numSTE_V3?.Value ?? 0),
+                    (double)(numSTE_V4?.Value ?? 0),
+                    (double)(numSTE_V5?.Value ?? 0),
+                    (double)(numSTE_V6?.Value?? 0)
+                },
+                new double [] {
+                    (double)(numTWE_I?.Value ?? 0),
+                    (double)(numTWE_II?.Value ?? 0),
+                    (double)(numTWE_III?.Value ?? 0),
+                    (double)(numTWE_aVR?.Value ?? 0),
+                    (double)(numTWE_aVL?.Value ?? 0),
+                    (double)(numTWE_aVF?.Value ?? 0),
+                    (double)(numTWE_V1?.Value ?? 0),
+                    (double)(numTWE_V2?.Value ?? 0),
+                    (double)(numTWE_V3?.Value ?? 0),
+                    (double)(numTWE_V4?.Value ?? 0),
+                    (double)(numTWE_V5?.Value ?? 0),
+                    (double)(numTWE_V6?.Value ?? 0)
+                }
+                );
+
+            await p.UpdateParameters_Respiratory (
+
+                (int)(numRR?.Value ?? 0),
+                (Respiratory_Rhythms.Values)(Enum.GetValues (typeof (Respiratory_Rhythms.Values)).GetValue (
+                    comboRespiratoryRhythm.SelectedIndex < 0 ? 0 : comboRespiratoryRhythm.SelectedIndex)
+                    ?? Respiratory_Rhythms.Values.Regular),
+                (int)(numETCO2?.Value ?? 0),
+
+                chkMechanicallyVentilated.IsChecked ?? false,
+                (float)(numInspiratoryRatio?.Value ?? 0),
+                (float)(numExpiratoryRatio?.Value ?? 0));
+
+            await p.UpdateParameters_Obstetric (
+                (int)(numFHR?.Value ?? 0),
+                (int)(numFHRVariability?.Value ?? 0),
+
+                (FetalHeart_Rhythms.Values)(Enum.GetValues (typeof (FetalHeart_Rhythms.Values)).GetValue (
+                    comboFHRRhythm.SelectedIndex < 0 ? 0 : comboFHRRhythm.SelectedIndex)
+                    ?? FetalHeart_Rhythms.Values.Baseline),
+
+                (int)(numUCFrequency?.Value ?? 0),
+                (int)(numUCDuration?.Value ?? 0),
+                (int)(numUCIntensity?.Value ?? 0),
+                (int)(numUCResting?.Value ?? 0));
         }
 
         private void ApplyPhysiologyParameters_Cardiac (object? sender, EventArgs e) {
-            // TODO: Implement
+            if (ApplyPending_Cardiac != true || ApplyBuffer is null)
+                return;
+
+            ApplyPending_Cardiac = false;
+            _ = ApplyTimer_Cardiac.ResetStop ();
+
+            if (Instance?.Physiology is not null) {
+                _ = Instance.Physiology.UpdateParameters_Cardiac (
+                    ApplyBuffer.HR,
+                    ApplyBuffer.NSBP, ApplyBuffer.NDBP, ApplyBuffer.NMAP,
+                    ApplyBuffer.SPO2,
+                    ApplyBuffer.T,
+                    ApplyBuffer.Cardiac_Rhythm.Value,
+
+                    ApplyBuffer.CVP,
+                    ApplyBuffer.ASBP, ApplyBuffer.ADBP, ApplyBuffer.AMAP,
+
+                    ApplyBuffer.CO,
+                    ApplyBuffer.PulmonaryArtery_Placement.Value,
+                    ApplyBuffer.PSP, ApplyBuffer.PDP, ApplyBuffer.PMP,
+
+                    ApplyBuffer.ICP,
+                    ApplyBuffer.IAP,
+
+                    ApplyBuffer.Pacemaker_Threshold,
+                    ApplyBuffer.Pulsus_Paradoxus,
+                    ApplyBuffer.Pulsus_Alternans,
+                    ApplyBuffer.Electrical_Alternans,
+
+                    ApplyBuffer.Cardiac_Axis.Value,
+                    ApplyBuffer.QRS_Interval, ApplyBuffer.QTc_Interval,
+                    ApplyBuffer.ST_Elevation, ApplyBuffer.T_Elevation);
+            }
+
+            if (Instance?.Mirror is not null && Instance?.Server is not null)
+                _ = Instance.Mirror.PostStep (
+                    new Scenario.Step () {
+                        Physiology = Instance.Physiology,
+                    },
+                    Instance.Server);
         }
 
         private void ApplyPhysiologyParameters_Respiratory (object? sender, EventArgs e) {
-            // TODO: Implement
+            if (ApplyPending_Respiratory != true || ApplyBuffer is null)
+                return;
+
+            ApplyPending_Respiratory = false;
+            _ = ApplyTimer_Respiratory.ResetStop ();
+
+            if (Instance?.Physiology is not null) {
+                _ = Instance.Physiology.UpdateParameters_Respiratory (
+                    ApplyBuffer.RR,
+                    ApplyBuffer.Respiratory_Rhythm.Value,
+                    ApplyBuffer.ETCO2,
+                    ApplyBuffer.Mechanically_Ventilated,
+                    ApplyBuffer.RR_IE_I, ApplyBuffer.RR_IE_E);
+            }
+
+            if (Instance?.Mirror is not null && Instance?.Server is not null)
+                _ = Instance.Mirror.PostStep (
+                    new Scenario.Step () {
+                        Physiology = Instance.Physiology,
+                    },
+                    Instance.Server);
         }
 
         private void ApplyPhysiologyParameters_Obstetric (object? sender, EventArgs e) {
-            // TODO: Implement
+            if (ApplyPending_Obstetric != true || ApplyBuffer is null)
+                return;
+
+            ApplyPending_Obstetric = false;
+            _ = ApplyTimer_Obstetric.ResetStop ();
+
+            if (Instance?.Physiology is not null) {
+                _ = Instance.Physiology.UpdateParameters_Obstetric (
+                    ApplyBuffer.Fetal_HR,
+                    ApplyBuffer.ObstetricFetalRateVariability,
+                    ApplyBuffer.ObstetricFetalHeartRhythm.Value,
+                    ApplyBuffer.ObstetricContractionFrequency,
+                    ApplyBuffer.ObstetricContractionDuration,
+                    ApplyBuffer.ObstetricContractionIntensity,
+                    ApplyBuffer.ObstetricUterineRestingTone);
+            }
+
+            if (Instance?.Mirror is not null && Instance?.Server is not null)
+                _ = Instance.Mirror.PostStep (
+                    new Scenario.Step () {
+                        Physiology = Instance.Physiology,
+                    },
+                    Instance.Server);
         }
 
         private void UpdateView (Physiology? p) {
-            // TODO: Implement
+            App.Current.Dispatcher.InvokeAsync (() => {                        // Updating the UI requires being on the proper thread
+                ParameterStatus = ParameterStatuses.Loading;                // To prevent each form update from auto-applying back to Patient
+
+                if (p is null) {
+                    Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitDeviceMonitor)}");
+                    return;
+                }
+
+                if (!ApplyPending_Cardiac) {
+                    // Basic vital signs
+                    numHR.Value = p.VS_Settings.HR;
+                    numNSBP.Value = p.VS_Settings.NSBP;
+                    numNDBP.Value = p.VS_Settings.NDBP;
+                    numSPO2.Value = p.VS_Settings.SPO2;
+                    numT.Value = (decimal)p.VS_Settings.T;
+                    comboCardiacRhythm.SelectedIndex = (int)p.Cardiac_Rhythm.Value;
+
+                    // Advanced hemodynamics
+                    numCVP.Value = p.VS_Settings.CVP;
+                    numASBP.Value = p.VS_Settings.ASBP;
+                    numADBP.Value = p.VS_Settings.ADBP;
+                    numCO.Value = (decimal)p.VS_Settings.CO;
+                    comboPACatheterPlacement.SelectedIndex = (int)p.PulmonaryArtery_Placement.Value;
+                    numPSP.Value = p.VS_Settings.PSP;
+                    numPDP.Value = p.VS_Settings.PDP;
+                    numICP.Value = p.VS_Settings.ICP;
+                    numIAP.Value = p.VS_Settings.IAP;
+
+                    // Cardiac profile
+                    numPacemakerCaptureThreshold.Value = p.Pacemaker_Threshold;
+                    chkPulsusParadoxus.IsChecked = p.Pulsus_Paradoxus;
+                    chkPulsusAlternans.IsChecked = p.Pulsus_Alternans;
+                    chkElectricalAlternans.IsChecked = p.Electrical_Alternans;
+                    comboCardiacAxis.SelectedIndex = (int)p.Cardiac_Axis.Value;
+
+                    numQRSInterval.Value = (decimal)p.QRS_Interval;
+                    numQTcInterval.Value = (decimal)p.QTc_Interval;
+
+                    if (p.ST_Elevation is not null) {
+                        numSTE_I.Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_I];
+                        numSTE_II.Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_II];
+                        numSTE_III.Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_III];
+                        numSTE_aVR.Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_AVR];
+                        numSTE_aVL.Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_AVL];
+                        numSTE_aVF.Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_AVF];
+                        numSTE_V1.Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V1];
+                        numSTE_V2.Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V2];
+                        numSTE_V3.Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V3];
+                        numSTE_V4.Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V4];
+                        numSTE_V5.Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V5];
+                        numSTE_V6.Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V6];
+                    }
+
+                    if (p.T_Elevation is not null) {
+                        numTWE_I.Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_I];
+                        numTWE_II.Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_II];
+                        numTWE_III.Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_III];
+                        numTWE_aVR.Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_AVR];
+                        numTWE_aVL.Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_AVL];
+                        numTWE_aVF.Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_AVF];
+                        numTWE_V1.Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_V1];
+                        numTWE_V2.Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_V2];
+                        numTWE_V3.Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_V3];
+                        numTWE_V4.Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_V4];
+                        numTWE_V5.Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_V5];
+                        numTWE_V6.Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_V6];
+                    }
+                }
+
+                if (!ApplyPending_Respiratory) {
+                    // Respiratory profile
+                    numRR.Value = p.VS_Settings.RR;
+                    comboRespiratoryRhythm.SelectedIndex = (int)p.Respiratory_Rhythm.Value;
+                    numETCO2.Value = p.VS_Settings.ETCO2;
+                    chkMechanicallyVentilated.IsChecked = p.Mechanically_Ventilated;
+                    numInspiratoryRatio.Value = (decimal)p.VS_Settings.RR_IE_I;
+                    numExpiratoryRatio.Value = (decimal)p.VS_Settings.RR_IE_E;
+                }
+
+                if (!ApplyPending_Obstetric) {
+                    // Obstetric profile
+                    numFHR.Value = p.VS_Settings.FetalHR;
+                    numFHRVariability.Value = p.ObstetricFetalRateVariability;
+                    numUCFrequency.Value = (decimal)p.ObstetricContractionFrequency;
+                    numUCDuration.Value = p.ObstetricContractionDuration;
+                    numUCIntensity.Value = p.ObstetricContractionIntensity;
+                    numUCResting.Value = p.ObstetricUterineRestingTone;
+                    comboFHRRhythm.SelectedIndex = (int)p.ObstetricFetalHeartRhythm.Value;
+                }
+
+                _ = SetParameterStatus (Instance?.Settings.AutoApplyChanges ?? false);     // Re-establish parameter status
+            });
         }
 
         public void ToggleFullscreen () {
-            // TODO: Implement
+            if (wdwControl.WindowState == System.Windows.WindowState.Maximized)
+                wdwControl.WindowState = System.Windows.WindowState.Normal;
+            else
+                wdwControl.WindowState = System.Windows.WindowState.Maximized;
         }
 
         private void MenuNewSimulation_Click (object sender, RoutedEventArgs e)

@@ -1449,10 +1449,10 @@
 										<Label Name="lblUCFrequency"
 											   Grid.Row="3"
 											   Grid.Column="0" />
-										<xctk:IntegerUpDown Name="numUCFrequency"
+										<xctk:DecimalUpDown Name="numUCFrequency"
 															Grid.Row="3"
 															Grid.Column="1"
-															Style="{StaticResource vitals_iud}"
+															Style="{StaticResource vitals_dud}"
 															FormatString="{}{0:#0}"
 															Increment="30"
 															KeyDown="OnUIPhysiologyParameter_KeyDown"

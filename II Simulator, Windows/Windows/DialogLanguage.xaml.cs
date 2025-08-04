@@ -69,13 +69,10 @@ namespace IISIM.Windows {
             Instance.Settings.Save ();
 
             // Show messagebox prompting user to restart the program for changes to take effect
-            DialogInformation dlg = new (Instance) {
-                Title = Instance.Language.Localize ("MESSAGE:Restart"),
-                Message = Instance.Language.Localize ("MESSAGE:RestartForChanges"),
-                Button = Instance.Language.Localize ("BUTTON:Continue")
-            };
-            dlg.Activate ();
-            dlg.ShowDialog ();
+            System.Windows.MessageBox.Show (
+                    Instance.Language.Localize ("MESSAGE:RestartForChanges"),
+                    Instance.Language.Localize ("MESSAGE:Restart"),
+                    MessageBoxButton.OK, MessageBoxImage.Error);
 
             this.Close ();
         }

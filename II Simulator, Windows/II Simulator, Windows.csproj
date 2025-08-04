@@ -12,7 +12,7 @@
     <Authors>Tanjera</Authors>
     <Product>Infirmary Integrated Simulator</Product>
     <Title>Infirmary Integrated</Title>
-    <Version>3.0.0-alpha.5</Version>
+    <Version>3.0.0-alpha.6</Version>
   </PropertyGroup>
 
   <Import Project="..\II Library, C#\II Library.projitems" Label="Shared" />
@@ -189,10 +189,13 @@
     <Compile Update="Windows\DeviceECG.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Windows\DialogLanguage.xaml.cs">
+    <Compile Update="Windows\DialogMirrorReceive.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Windows\DialogInformation.xaml.cs">
+    <Compile Update="Windows\DialogMirrorBroadcast.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Windows\DialogLanguage.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Windows\DialogUpgrade.xaml.cs">

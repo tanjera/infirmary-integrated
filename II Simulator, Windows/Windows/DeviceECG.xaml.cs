@@ -129,6 +129,16 @@ namespace IISIM.Windows {
                 State = States.Running;
         }
 
+        public Task Load (string inc) {
+            // TODO: Implement
+            return Task.CompletedTask;
+        }
+
+        public string Save () {
+            // TODO: Implement
+            return "";
+        }
+
         public virtual void OnClosed (object? sender, EventArgs e) {
             State = States.Closed;
 
