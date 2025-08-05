@@ -15,6 +15,7 @@ using System.Diagnostics;
 using II.Waveform;
 
 namespace II {
+
     public class Cardiac_Rhythms {
         public Values Value;
 
@@ -193,6 +194,7 @@ namespace II {
         }
 
         public class Default_Vitals {
+
             public int HRMin, HRMax,
                         RRMin, RRMax,
                         SPO2Min, SPO2Max,
@@ -262,9 +264,9 @@ namespace II {
             // Interpolate HR Interval (.75 - 5 seconds) to a resolution coefficient of 1 - 10
             // w/ default resolution of 10ms: @ HR 60 bpm, resolve @ 10ms, @ ~12 bpm, resolve @ 10ms
             // Note: high resolution times (e.g. 100ms) cuts into drawing of following concatenation!
-            double ilerpHRi = Math.Clamp(Math.InverseLerp (.75, 5, p.GetHRInterval), 0, 1);
-            double scaleRes = Math.Lerp(1, 10, ilerpHRi);
-            
+            double ilerpHRi = Math.Clamp (Math.InverseLerp (.75, 5, p.GetHRInterval), 0, 1);
+            double scaleRes = Math.Lerp (1, 10, ilerpHRi);
+
             switch (Value) {
                 case Values.Asystole: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
                 case Values.Atrial_Fibrillation: s.Concatenate (Draw.ECG_Isoelectric__Atrial_Fibrillation (p, s.Lead)); return;

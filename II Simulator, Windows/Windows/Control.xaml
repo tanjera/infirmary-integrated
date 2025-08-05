@@ -10,7 +10,10 @@
 		Title="Infirmary Integrated: Device Simulator"
 		Height="800"
 		Width="1200"
-		Icon="/Resources/Icon_II.ico">
+		Icon="/Resources/Icon_II.ico"
+		Activated="OnActivated"
+		Closed="OnClosed"
+		LayoutUpdated="OnLayoutUpdated">
 
 	<Window.Resources>
 		<Style TargetType="Menu">

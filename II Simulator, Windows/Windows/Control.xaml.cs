@@ -31,6 +31,7 @@ namespace IISIM.Windows {
         public App? Instance;
 
         private bool HideDeviceLabels = false;
+        private bool IsUILoadCompleted = false;
 
         /* Buffers for ViewModel handling and temporal smoothing of upstream Model data changes */
         private Physiology? ApplyBuffer;
@@ -42,9 +43,6 @@ namespace IISIM.Windows {
         private II.Timer ApplyTimer_Cardiac = new (),
                       ApplyTimer_Respiratory = new (),
                       ApplyTimer_Obstetric = new ();
-
-        /* Variables for UI loading */
-        private bool IsUILoadCompleted = false;
 
         /* Variables for Auto-Apply functionality */
         private ParameterStatuses ParameterStatus = ParameterStatuses.Loading;
@@ -1400,7 +1398,7 @@ namespace IISIM.Windows {
         }
 
         private void UpdateView (Physiology? p) {
-            App.Current.Dispatcher.InvokeAsync (() => {                        // Updating the UI requires being on the proper thread
+            App.Current.Dispatcher.InvokeAsync (() => {                     // Updating the UI requires being on the proper thread
                 ParameterStatus = ParameterStatuses.Loading;                // To prevent each form update from auto-applying back to Patient
 
                 if (p is null) {
@@ -1573,23 +1571,42 @@ namespace IISIM.Windows {
         private void ButtonApplyParameters_Click (object sender, RoutedEventArgs e)
             => _ = ApplyPhysiologyParameters ();
 
-        private void OnActivated (object sender, EventArgs e) {
-            // TODO: Implement
-        }
-
         private void OnClosed (object sender, EventArgs e)
             => _ = Exit ();
 
+        private void OnActivated (object sender, EventArgs e) {
+            if (!IsUILoadCompleted) {
+                /* Re-apply window settings from prior run */
+                wdwControl.Left = Instance?.Settings.WindowPosition.X ?? 0;
+                wdwControl.Top = Instance?.Settings.WindowPosition.Y ?? 0;
+                IsUILoadCompleted = true;
+            }
+        }
+
         private void OnLayoutUpdated (object sender, EventArgs e) {
-            // TODO: Implement
+            if (!IsUILoadCompleted) {
+                wdwControl.Width = Instance?.Settings.WindowSize.X ?? 0;
+                wdwControl.Height = Instance?.Settings.WindowSize.Y ?? 0;
+            } else if (Instance is not null) {
+                Instance.Settings.WindowSize.X = (int)wdwControl.Width;
+                Instance.Settings.WindowSize.Y = (int)wdwControl.Height;
+            }
         }
 
         private void OnAutoApplyChanges_Changed (object sender, RoutedEventArgs e) {
-            // TODO: Implement
+            if (ParameterStatus == ParameterStatuses.Loading || Instance is null)
+                return;
+
+            Instance.Settings.AutoApplyChanges = chkAutoApplyChanges.IsChecked ?? true;
+            btnParametersReset.IsEnabled = !Instance.Settings.AutoApplyChanges;
+            Instance.Settings.Save ();
+
+            _ = SetParameterStatus (Instance.Settings.AutoApplyChanges);
         }
 
         private void OnUIPhysiologyParameter_KeyDown (object sender, KeyEventArgs e) {
-            // TODO: Implement
+            if (e.Key == Key.Enter)
+                OnUIPhysiologyParameter_Process (sender, e);
         }
 
         private void OnUIPhysiologyParameter_Changed (object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -1605,27 +1622,125 @@ namespace IISIM.Windows {
             => OnUIPhysiologyParameter_Process (sender, e);
 
         private void OnUIPhysiologyParameter_Process (object sender, RoutedEventArgs e) {
-            // TODO: Implement
+            switch (ParameterStatus) {
+                default:
+                case ParameterStatuses.Loading:            // For loading state
+                    break;
+
+                case ParameterStatuses.ChangesApplied:
+                case ParameterStatuses.ChangesPending:
+                    _ = AdvanceParameterStatus (ParameterStatuses.ChangesPending);
+                    break;
+
+                case ParameterStatuses.AutoApply:
+                    _ = ApplyPhysiologyParameters ();
+                    _ = UpdateParameterIndicators ();
+                    break;
+            }
         }
 
         private void OnCardiacRhythm_Selected (object sender, SelectionChangedEventArgs e) {
-            // TODO: Implement
+            if (!checkDefaultVitals.IsChecked ?? false || Instance?.Physiology == null)
+                return;
+
+            int si = comboCardiacRhythm.SelectedIndex;
+            Array ev = Enum.GetValues (typeof (Cardiac_Rhythms.Values));
+            if (si < 0 || si > ev.Length - 1)
+                return;
+
+            Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
+                (Cardiac_Rhythms.Values)(ev.GetValue (si) ?? Cardiac_Rhythms.Values.Sinus_Rhythm));
+
+            numHR.Value = II.Math.Clamp (numHR?.Value ?? 0, v.HRMin, v.HRMax);
+            numNSBP.Value = II.Math.Clamp (numNSBP?.Value ?? 0, v.SBPMin, v.SBPMax);
+            numNDBP.Value = II.Math.Clamp (numNDBP?.Value ?? 0, v.DBPMin, v.DBPMax);
+            numRR.Value = II.Math.Clamp (numRR?.Value ?? 0, v.RRMin, v.RRMax);
+            numSPO2.Value = II.Math.Clamp (numSPO2?.Value ?? 0, v.SPO2Min, v.SPO2Max);
+            numETCO2.Value = II.Math.Clamp (numETCO2?.Value ?? 0, v.ETCO2Min, v.ETCO2Max);
+            numASBP.Value = II.Math.Clamp (numASBP?.Value ?? 0, v.SBPMin, v.SBPMax);
+            numADBP.Value = II.Math.Clamp (numADBP?.Value ?? 0, v.DBPMin, v.DBPMax);
+            numPSP.Value = II.Math.Clamp (numPSP?.Value ?? 0, v.PSPMin, v.PSPMax);
+            numPDP.Value = II.Math.Clamp (numPDP?.Value ?? 0, v.PDPMin, v.PDPMax);
+            numQRSInterval.Value = (decimal)II.Math.Clamp ((double)(numQRSInterval?.Value ?? 0), v.QRSIntervalMin, v.QRSIntervalMax);
+            numQTcInterval.Value = (decimal)II.Math.Clamp ((double)(numQTcInterval?.Value ?? 0), v.QTCIntervalMin, v.QTCIntervalMax);
+
+            OnUIPhysiologyParameter_Process (sender, e);
         }
 
         private void OnRespiratoryRhythm_Selected (object sender, SelectionChangedEventArgs e) {
-            // TODO: Implement
+            OnUIPhysiologyParameter_Process (sender, e);
         }
 
         private void OnCentralVenousPressure_Changed (object sender, RoutedPropertyChangedEventArgs<object> e) {
-            // TODO: Implement
+            if (Instance?.Physiology is not null
+                && checkDefaultVitals.IsChecked == true
+                && Instance.Physiology.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Atrium) {
+                /* This handles logic if the PA catheter is in the right atrium, because the PA pressures and the CVP
+                 * are reading the same physiologic pressure, but the monitor filters the CVP into one average pressure,
+                 * whereas the PA pressure will display as a systolic / diastolic (mean).
+                 */
+
+                int nv = e?.NewValue is null || e.NewValue is not int
+                    ? 1 : (int)e.NewValue;
+
+                numPSP.Value = (int)System.Math.Ceiling (nv + System.Math.Max (1, nv * 0.25m));
+                numPDP.Value = (int)System.Math.Floor (nv - System.Math.Max (1, nv * 0.25m));
+            }
+
+            OnUIPhysiologyParameter_Process (sender, e);
         }
 
         private void OnPulmonaryArteryRhythm_Selected (object sender, SelectionChangedEventArgs e) {
-            // TODO: Implement
+            if (Instance?.Physiology is null)
+                return;
+
+            int si = comboPACatheterPlacement.SelectedIndex;
+            Array ev = Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values));
+            if (si < 0 || si > ev.Length - 1)
+                return;
+
+            PulmonaryArtery_Rhythms.Values sel = (PulmonaryArtery_Rhythms.Values)(ev.GetValue (si) ?? PulmonaryArtery_Rhythms.Values.Pulmonary_Artery);
+
+            // If the PA placement is RV, PA, or PAWP, utilize default vital sign ranges
+            // But if it is in the RA... utilize the current CVP reading
+            if (checkDefaultVitals.IsChecked == true) {
+                if (sel != PulmonaryArtery_Rhythms.Values.Right_Atrium) {
+                    PulmonaryArtery_Rhythms.Default_Vitals v = PulmonaryArtery_Rhythms.DefaultVitals (sel);
+                    numPSP.Value = (int)II.Math.Clamp ((double)(numPSP?.Value ?? 0), v.PSPMin, v.PSPMax);
+                    numPDP.Value = (int)II.Math.Clamp ((double)(numPDP?.Value ?? 0), v.PDPMin, v.PDPMax);
+                } else if (sel == PulmonaryArtery_Rhythms.Values.Right_Atrium) {
+                    numPSP.Value = (int)System.Math.Ceiling (Instance.Physiology.CVP + System.Math.Max (1, Instance.Physiology.CVP * 0.25));
+                    numPDP.Value = (int)System.Math.Floor (Instance.Physiology.CVP - System.Math.Max (1, Instance.Physiology.CVP * 0.25));
+                }
+            }
+
+            OnUIPhysiologyParameter_Process (sender, e);
         }
 
         private void OnPhysiologyEvent (object? sender, Physiology.PhysiologyEventArgs e) {
-            // TODO: Implement
+            if (e.Physiology is null)
+                return;
+
+            switch (e.EventType) {
+                default:
+                    break;
+
+                case Physiology.PhysiologyEventTypes.Cardiac_Baseline:
+                    ApplyPhysiologyParameters_Cardiac (sender, new EventArgs ());
+                    break;
+
+                case Physiology.PhysiologyEventTypes.Respiratory_Baseline:
+                    ApplyPhysiologyParameters_Respiratory (sender, new EventArgs ());
+                    break;
+
+                case Physiology.PhysiologyEventTypes.Obstetric_Baseline:
+                    ApplyPhysiologyParameters_Obstetric (sender, new EventArgs ());
+                    break;
+
+                case Physiology.PhysiologyEventTypes.Vitals_Change:
+                    UpdateView (e.Physiology);
+                    break;
+            }
         }
     }
 }
