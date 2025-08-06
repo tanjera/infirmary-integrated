@@ -8,8 +8,61 @@
 		mc:Ignorable="d"
 		Title="Infirmary Integrated: Device Simulator"
 		Icon="/Resources/Icon_II.ico"
-		Height="450"
-		Width="800">
-	<Grid>
-	</Grid>
+		Background="Black"
+		Width="1200"
+		Height="800">
+
+	<Window.Resources>
+		<Style TargetType="Menu">
+			<Setter Property="Padding"
+					Value="2" />
+		</Style>
+
+		<Style TargetType="MenuItem">
+			<Setter Property="Padding"
+					Value="5,2" />
+			<Setter Property="Margin"
+					Value="2,0" />
+			<Setter Property="FontSize"
+					Value="12" />
+		</Style>
+	</Window.Resources>
+
+	<DockPanel LastChildFill="True">
+
+		<!--  Main Menu  -->
+		<Menu DockPanel.Dock="Top">
+
+			<MenuItem Name="menuDevice">
+				<MenuItem Name="menuPauseDevice"
+						  Click="MenuTogglePause_Click"
+						  InputGestureText="Pause" />
+				<Separator />
+				<MenuItem Name="menuToggleFullscreen"
+						  Click="MenuToggleFullscreen_Click"
+						  InputGestureText="Alt+Enter" />
+				<Separator />
+				<MenuItem Name="menuCloseDevice"
+						  Click="MenuClose_Click"
+						  InputGestureText="Alt+F4" />
+			</MenuItem>
+
+			<MenuItem Name="menuColor">
+				<MenuItem Name="menuColorGrid"
+						  Click="MenuColorGrid_Click"
+						  InputGestureText="F1" />
+				<MenuItem Name="menuColorLight"
+						  Click="MenuColorScheme_Light"
+						  InputGestureText="F2" />
+				<MenuItem Name="menuColorDark"
+						  Click="MenuColorScheme_Dark"
+						  InputGestureText="F3" />
+			</MenuItem>
+		</Menu>
+
+		<!--  12 Lead ECG Tracings added to layoutGrid programmatically  -->
+		<Grid Name="layoutGrid"
+			  HorizontalAlignment="Stretch"
+			  VerticalAlignment="Stretch" />
+	</DockPanel>
 </Window>

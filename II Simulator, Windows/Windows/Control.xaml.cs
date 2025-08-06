@@ -239,6 +239,30 @@ namespace IISIM.Windows {
                     Tag = v.ToString (),
                     Content = Instance.Language.Localize (FetalHeart_Rhythms.LookupString (v))
                 });
+
+            /* Init Hotkeys (Commands & InputBinding) */
+
+            RoutedCommand
+                cmdMenuNewSimulation_Click = new (),
+                cmdMenuLoadFile_Click = new (),
+                cmdMenuSaveFile_Click = new (),
+                cmdMenuToggleFullscreen_Click = new (),
+                cmdMenuToggleAudio_Click = new ();
+
+            cmdMenuNewSimulation_Click.InputGestures.Add (new KeyGesture (Key.N, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdMenuNewSimulation_Click, MenuNewSimulation_Click));
+
+            cmdMenuLoadFile_Click.InputGestures.Add (new KeyGesture (Key.O, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdMenuLoadFile_Click, MenuLoadFile_Click));
+
+            cmdMenuSaveFile_Click.InputGestures.Add (new KeyGesture (Key.S, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdMenuSaveFile_Click, MenuSaveFile_Click));
+
+            cmdMenuToggleFullscreen_Click.InputGestures.Add (new KeyGesture (Key.Enter, ModifierKeys.Alt));
+            CommandBindings.Add (new CommandBinding (cmdMenuToggleFullscreen_Click, MenuToggleFullscreen_Click));
+
+            cmdMenuToggleAudio_Click.InputGestures.Add (new KeyGesture (Key.A, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdMenuToggleAudio_Click, MenuToggleAudio_Click));
         }
 
         private async Task InitUpgrade () {
@@ -1688,9 +1712,10 @@ namespace IISIM.Windows {
 
                 numPSP.Value = (int)System.Math.Ceiling (nv + System.Math.Max (1, nv * 0.25m));
                 numPDP.Value = (int)System.Math.Floor (nv - System.Math.Max (1, nv * 0.25m));
-            }
 
-            OnUIPhysiologyParameter_Process (sender, e);
+                if (e is not null)
+                    OnUIPhysiologyParameter_Process (sender, e);
+            }
         }
 
         private void OnPulmonaryArteryRhythm_Selected (object sender, SelectionChangedEventArgs e) {

@@ -12,7 +12,7 @@
     <Authors>Tanjera</Authors>
     <Product>Infirmary Integrated Simulator</Product>
     <Title>Infirmary Integrated</Title>
-    <Version>3.0.0-alpha.8</Version>
+    <Version>3.0.0-alpha.9</Version>
   </PropertyGroup>
 
   <Import Project="..\II Library, C#\II Library.projitems" Label="Shared" />
@@ -170,10 +170,6 @@
     <Resource Include="Third_Party\SVGs\Icon_PlayerArrowNext.svg" />
     <Resource Include="Third_Party\SVGs\Icon_PlayerArrowPlay.svg" />
     <Resource Include="Third_Party\SVGs\Icon_PlayerPause.svg" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Controls\" />
   </ItemGroup>
 
   <ItemGroup>
