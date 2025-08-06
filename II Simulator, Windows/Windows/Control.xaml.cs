@@ -142,12 +142,14 @@ namespace IISIM.Windows {
             menuCheckUpdate.Header = Instance.Language.Localize ("PE:MenuCheckUpdates");
             menuAbout.Header = Instance.Language.Localize ("PE:MenuAboutProgram");
 
+            gbDevices.Header = Instance.Language.Localize ("PE:Devices");
             lblDeviceMonitor.Content = Instance.Language.Localize ("PE:CardiacMonitor");
             lblDevice12LeadECG.Content = Instance.Language.Localize ("PE:12LeadECG");
             lblDeviceDefibrillator.Content = Instance.Language.Localize ("PE:Defibrillator");
             lblDeviceIABP.Content = Instance.Language.Localize ("PE:IABP");
             lblDeviceEFM.Content = Instance.Language.Localize ("PE:EFM");
 
+            gbOptions.Header = Instance.Language.Localize ("PE:Options");
             lblOptionsHide.Content = Instance.Language.Localize ("PE:HideDevices");
 
             lblGroupScenarioPlayer.Content = Instance.Language.Localize ("PE:ScenarioPlayer");
@@ -197,7 +199,7 @@ namespace IISIM.Windows {
             lblUCIntensity.Content = $"{Instance.Language.Localize ("PE:UterineContractionIntensity")}:";
             lblUCResting.Content = $"{Instance.Language.Localize ("PE:UterineRestingTone")}:";
 
-            chkAutoApplyChanges.Content = Instance.Language.Localize ("BUTTON:AutoApplyChanges");
+            lblAutoApplyChanges.Content = Instance.Language.Localize ("BUTTON:AutoApplyChanges");
             lblParametersApply.Content = Instance.Language.Localize ("BUTTON:ApplyChanges");
             lblParametersReset.Content = Instance.Language.Localize ("BUTTON:ResetParameters");
 
@@ -1597,7 +1599,8 @@ namespace IISIM.Windows {
             if (ParameterStatus == ParameterStatuses.Loading || Instance is null)
                 return;
 
-            Instance.Settings.AutoApplyChanges = chkAutoApplyChanges.IsChecked ?? true;
+            Instance.Settings.AutoApplyChanges = !Instance.Settings.AutoApplyChanges;
+            chkAutoApplyChanges.IsChecked = Instance.Settings.AutoApplyChanges;
             btnParametersReset.IsEnabled = !Instance.Settings.AutoApplyChanges;
             Instance.Settings.Save ();
 

@@ -26,16 +26,32 @@
 					Value="5,2" />
 			<Setter Property="Margin"
 					Value="2,0" />
+			<Setter Property="FontSize"
+					Value="12" />
 		</Style>
 
 		<Style TargetType="CheckBox">
 			<Setter Property="Margin"
 					Value="0,5" />
+			<Setter Property="FontSize"
+					Value="12" />
+		</Style>
+
+		<Style TargetType="ComboBox">
+			<Setter Property="FontSize"
+					Value="12" />
+		</Style>
+
+		<Style TargetType="ComboBoxItem">
+			<Setter Property="FontSize"
+					Value="12" />
 		</Style>
 
 		<Style TargetType="Label">
 			<Setter Property="VerticalContentAlignment"
 					Value="Center" />
+			<Setter Property="FontSize"
+					Value="12" />
 		</Style>
 
 		<Style TargetType="Expander">
@@ -43,6 +59,17 @@
 					Value="Stretch" />
 			<Setter Property="Margin"
 					Value="5" />
+		</Style>
+
+		<Style TargetType="GroupBox">
+			<Setter Property="BorderBrush"
+					Value="Black" />
+			<Setter Property="BorderThickness"
+					Value="0.5" />
+			<Setter Property="FontSize"
+					Value="14" />
+			<Setter Property="FontWeight"
+					Value="Bold" />
 		</Style>
 
 		<Style TargetType="Button"
@@ -78,7 +105,9 @@
 			<Setter Property="Margin"
 					Value="2" />
 			<Setter Property="Padding"
-					Value="10,5" />
+					Value="10,2" />
+			<Setter Property="BorderThickness"
+					Value="0" />
 		</Style>
 
 		<Style TargetType="Image"
@@ -86,19 +115,21 @@
 			<Setter Property="Margin"
 					Value="2" />
 			<Setter Property="Width"
-					Value="48" />
+					Value="40" />
 			<Setter Property="Height"
-					Value="48" />
+					Value="40" />
 		</Style>
 
 		<Style TargetType="Label"
 			   x:Key="device_lbl">
 			<Setter Property="Margin"
-					Value="2" />
+					Value="2,2,10,2" />
 			<Setter Property="VerticalAlignment"
 					Value="Center" />
 			<Setter Property="FontSize"
-					Value="16" />
+					Value="14" />
+			<Setter Property="FontWeight"
+					Value="Normal" />
 		</Style>
 
 		<Style TargetType="Button"
@@ -113,6 +144,8 @@
 					Value="2" />
 			<Setter Property="Padding"
 					Value="5" />
+			<Setter Property="BorderThickness"
+					Value="0" />
 		</Style>
 
 		<Style TargetType="Border"
@@ -132,7 +165,7 @@
 			<Setter Property="Margin"
 					Value="2" />
 			<Setter Property="FontSize"
-					Value="13" />
+					Value="14" />
 			<Setter Property="FontWeight"
 					Value="Bold" />
 		</Style>
@@ -142,9 +175,13 @@
 			<Setter Property="MinWidth"
 					Value="60" />
 			<Setter Property="Height"
-					Value="20" />
+					Value="22" />
+			<Setter Property="VerticalContentAlignment"
+					Value="Center" />
 			<Setter Property="ClipValueToMinMax"
 					Value="True" />
+			<Setter Property="FontSize"
+					Value="12" />
 		</Style>
 
 		<Style TargetType="xctk:DecimalUpDown"
@@ -152,13 +189,19 @@
 			<Setter Property="MinWidth"
 					Value="60" />
 			<Setter Property="Height"
-					Value="20" />
+					Value="22" />
+			<Setter Property="VerticalContentAlignment"
+					Value="Center" />
 			<Setter Property="ClipValueToMinMax"
 					Value="True" />
+			<Setter Property="FontSize"
+					Value="12" />
 		</Style>
 
 		<Style TargetType="Label"
 			   x:Key="divider_lbl">
+			<Setter Property="FontSize"
+					Value="12" />
 			<Setter Property="HorizontalContentAlignment"
 					Value="Center" />
 		</Style>
@@ -167,6 +210,8 @@
 			   x:Key="wavepart_lbl">
 			<Setter Property="HorizontalContentAlignment"
 					Value="Right" />
+			<Setter Property="FontSize"
+					Value="12" />
 		</Style>
 
 		<Style TargetType="xctk:DecimalUpDown"
@@ -186,9 +231,13 @@
 			<Setter Property="MinWidth"
 					Value="60" />
 			<Setter Property="Height"
-					Value="20" />
+					Value="22" />
+			<Setter Property="VerticalContentAlignment"
+					Value="Center" />
 			<Setter Property="ClipValueToMinMax"
 					Value="True" />
+			<Setter Property="FontSize"
+					Value="12" />
 		</Style>
 
 		<Style TargetType="ComboBox"
@@ -215,8 +264,26 @@
 					Value="Black" />
 			<Setter Property="BorderThickness"
 					Value="0.5" />
+			<Setter Property="FontSize"
+					Value="12" />
 		</Style>
-
+		<Style TargetType="ToggleButton"
+			   x:Key="apply_tgbtn">
+			<Setter Property="HorizontalAlignment"
+					Value="Stretch" />
+			<Setter Property="Background"
+					Value="White" />
+			<Setter Property="Margin"
+					Value="2" />
+			<Setter Property="Padding"
+					Value="10,2" />
+			<Setter Property="BorderBrush"
+					Value="Black" />
+			<Setter Property="BorderThickness"
+					Value="0.5" />
+			<Setter Property="FontSize"
+					Value="12" />
+		</Style>
 		<Style TargetType="Image"
 			   x:Key="apply_img">
 			<Setter Property="Margin"
@@ -316,80 +383,84 @@
 			<!--  Column for Devices (opening Cardiac Monitor, Ventilator, etc.  -->
 
 			<StackPanel Name="panelDevicesExpanded"
-						MinWidth="400"
 						Grid.Row="0"
 						Grid.Column="0"
 						Margin="5"
 						VerticalAlignment="Top"
 						Orientation="Vertical">
 
-				<Button Name="btnDeviceMonitor"
-						Style="{StaticResource device_btn}"
-						Click="ButtonDeviceMonitor_Click">
-					<StackPanel Orientation="Horizontal">
-						<Image Source="/Third_Party/Icon_DeviceMonitor_128.png"
-							   Style="{StaticResource device_img}" />
-						<Label Name="lblDeviceMonitor"
-							   Style="{StaticResource device_lbl}" />
-					</StackPanel>
-				</Button>
+				<GroupBox Name="gbDevices">
+					<StackPanel>
+						<Button Name="btnDeviceMonitor"
+								Style="{StaticResource device_btn}"
+								Click="ButtonDeviceMonitor_Click">
+							<StackPanel Orientation="Horizontal">
+								<Image Source="/Third_Party/Icon_DeviceMonitor_128.png"
+									   Style="{StaticResource device_img}" />
+								<Label Name="lblDeviceMonitor"
+									   Style="{StaticResource device_lbl}" />
+							</StackPanel>
+						</Button>
 
-				<Button Name="btnDeviceDefibrillator"
-						Style="{StaticResource device_btn}"
-						Click="ButtonDeviceDefib_Click">
-					<StackPanel Orientation="Horizontal">
-						<Image Source="/Third_Party/Icon_DeviceDefibrillator_128.png"
-							   Style="{StaticResource device_img}" />
-						<Label Name="lblDeviceDefibrillator"
-							   Style="{StaticResource device_lbl}" />
-					</StackPanel>
-				</Button>
+						<Button Name="btnDeviceDefibrillator"
+								Style="{StaticResource device_btn}"
+								Click="ButtonDeviceDefib_Click">
+							<StackPanel Orientation="Horizontal">
+								<Image Source="/Third_Party/Icon_DeviceDefibrillator_128.png"
+									   Style="{StaticResource device_img}" />
+								<Label Name="lblDeviceDefibrillator"
+									   Style="{StaticResource device_lbl}" />
+							</StackPanel>
+						</Button>
 
-				<Button Name="btnDevice12LeadECG"
-						Style="{StaticResource device_btn}"
-						Click="ButtonDeviceECG_Click">
-					<StackPanel Orientation="Horizontal">
-						<Image Source="/Third_Party/Icon_Device12LeadECG_128.png"
-							   Style="{StaticResource device_img}" />
-						<Label Name="lblDevice12LeadECG"
-							   Style="{StaticResource device_lbl}" />
-					</StackPanel>
-				</Button>
+						<Button Name="btnDevice12LeadECG"
+								Style="{StaticResource device_btn}"
+								Click="ButtonDeviceECG_Click">
+							<StackPanel Orientation="Horizontal">
+								<Image Source="/Third_Party/Icon_Device12LeadECG_128.png"
+									   Style="{StaticResource device_img}" />
+								<Label Name="lblDevice12LeadECG"
+									   Style="{StaticResource device_lbl}" />
+							</StackPanel>
+						</Button>
 
-				<Button Name="btnDeviceIABP"
-						Style="{StaticResource device_btn}"
-						Click="ButtonDeviceIABP_Click">
-					<StackPanel Orientation="Horizontal">
-						<Image Source="/Third_Party/Icon_DeviceIABP_128.png"
-							   Style="{StaticResource device_img}" />
-						<Label Name="lblDeviceIABP"
-							   Style="{StaticResource device_lbl}" />
-					</StackPanel>
-				</Button>
+						<Button Name="btnDeviceIABP"
+								Style="{StaticResource device_btn}"
+								Click="ButtonDeviceIABP_Click">
+							<StackPanel Orientation="Horizontal">
+								<Image Source="/Third_Party/Icon_DeviceIABP_128.png"
+									   Style="{StaticResource device_img}" />
+								<Label Name="lblDeviceIABP"
+									   Style="{StaticResource device_lbl}" />
+							</StackPanel>
+						</Button>
 
-				<Button Name="btnDeviceEFM"
-						Style="{StaticResource device_btn}"
-						Click="ButtonDeviceEFM_Click">
-					<StackPanel Orientation="Horizontal">
-						<Image Source="/Third_Party/Icon_DeviceEFM_128.png"
-							   Style="{StaticResource device_img}" />
-						<Label Name="lblDeviceEFM"
-							   Style="{StaticResource device_lbl}" />
+						<Button Name="btnDeviceEFM"
+								Style="{StaticResource device_btn}"
+								Click="ButtonDeviceEFM_Click">
+							<StackPanel Orientation="Horizontal">
+								<Image Source="/Third_Party/Icon_DeviceEFM_128.png"
+									   Style="{StaticResource device_img}" />
+								<Label Name="lblDeviceEFM"
+									   Style="{StaticResource device_lbl}" />
+							</StackPanel>
+						</Button>
 					</StackPanel>
-				</Button>
+				</GroupBox>
 
-				<Button Name="btnOptionsHide"
-						Style="{StaticResource device_btn}"
-						Click="ButtonOptionsHide_Click">
-					<StackPanel Orientation="Horizontal">
-						<Image Source="/Third_Party/Icon_Clipboard_128.png"
-							   Style="{StaticResource device_img}" />
-						<Label Name="lblOptionsHide"
-							   Style="{StaticResource device_lbl}" />
-					</StackPanel>
-				</Button>
+				<GroupBox Name="gbOptions">
+					<Button Name="btnOptionsHide"
+							Style="{StaticResource device_btn}"
+							Click="ButtonOptionsHide_Click">
+						<StackPanel Orientation="Horizontal">
+							<Image Source="/Third_Party/Icon_Clipboard_128.png"
+								   Style="{StaticResource device_img}" />
+							<Label Name="lblOptionsHide"
+								   Style="{StaticResource device_lbl}" />
+						</StackPanel>
+					</Button>
+				</GroupBox>
 			</StackPanel>
-
 			<StackPanel Name="panelDevicesHidden"
 						Grid.Row="0"
 						Grid.Column="0"
@@ -398,42 +469,49 @@
 						VerticalAlignment="Top"
 						Visibility="Hidden"
 						Orientation="Vertical">
+				<GroupBox Name="gbDevicesHidden"
+						  BorderThickness="0, 0, 0, 0.5">
+					<StackPanel>
 
-				<Button Click="ButtonDeviceMonitor_Click"
-						Style="{StaticResource device_hidden_btn}">
-					<Image Source="/Third_Party/Icon_DeviceMonitor_128.png"
-						   Style="{StaticResource device_img}" />
-				</Button>
+						<Button Click="ButtonDeviceMonitor_Click"
+								Style="{StaticResource device_hidden_btn}">
+							<Image Source="/Third_Party/Icon_DeviceMonitor_128.png"
+								   Style="{StaticResource device_img}" />
+						</Button>
 
-				<Button Click="ButtonDeviceDefib_Click"
-						Style="{StaticResource device_hidden_btn}">
-					<Image Source="/Third_Party/Icon_DeviceDefibrillator_128.png"
-						   Style="{StaticResource device_img}" />
-				</Button>
+						<Button Click="ButtonDeviceDefib_Click"
+								Style="{StaticResource device_hidden_btn}">
+							<Image Source="/Third_Party/Icon_DeviceDefibrillator_128.png"
+								   Style="{StaticResource device_img}" />
+						</Button>
 
-				<Button Click="ButtonDeviceECG_Click"
-						Style="{StaticResource device_hidden_btn}">
-					<Image Source="/Third_Party/Icon_Device12LeadECG_128.png"
-						   Style="{StaticResource device_img}" />
-				</Button>
+						<Button Click="ButtonDeviceECG_Click"
+								Style="{StaticResource device_hidden_btn}">
+							<Image Source="/Third_Party/Icon_Device12LeadECG_128.png"
+								   Style="{StaticResource device_img}" />
+						</Button>
 
-				<Button Click="ButtonDeviceIABP_Click"
-						Style="{StaticResource device_hidden_btn}">
-					<Image Source="/Third_Party/Icon_DeviceIABP_128.png"
-						   Style="{StaticResource device_img}" />
-				</Button>
+						<Button Click="ButtonDeviceIABP_Click"
+								Style="{StaticResource device_hidden_btn}">
+							<Image Source="/Third_Party/Icon_DeviceIABP_128.png"
+								   Style="{StaticResource device_img}" />
+						</Button>
 
-				<Button Click="ButtonDeviceEFM_Click"
-						Style="{StaticResource device_hidden_btn}">
-					<Image Source="/Third_Party/Icon_DeviceEFM_128.png"
-						   Style="{StaticResource device_img}" />
-				</Button>
-
-				<Button Click="ButtonOptionsHide_Click"
-						Style="{StaticResource device_hidden_btn}">
-					<Image Source="/Third_Party/Icon_Clipboard_128.png"
-						   Style="{StaticResource device_img}" />
-				</Button>
+						<Button Click="ButtonDeviceEFM_Click"
+								Style="{StaticResource device_hidden_btn}">
+							<Image Source="/Third_Party/Icon_DeviceEFM_128.png"
+								   Style="{StaticResource device_img}" />
+						</Button>
+					</StackPanel>
+				</GroupBox>
+				<GroupBox Name="gbOptionsHidden"
+						  BorderThickness="0">
+					<Button Click="ButtonOptionsHide_Click"
+							Style="{StaticResource device_hidden_btn}">
+						<Image Source="/Third_Party/Icon_Clipboard_128.png"
+							   Style="{StaticResource device_img}" />
+					</Button>
+				</GroupBox>
 			</StackPanel>
 
 			<!--  Column for Patient Editor  -->
@@ -1518,13 +1596,33 @@
 								  HorizontalAlignment="Stretch">
 								<Grid.RowDefinitions>
 									<RowDefinition />
+									<RowDefinition />
 								</Grid.RowDefinitions>
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition />
 									<ColumnDefinition />
 								</Grid.ColumnDefinitions>
+
+								<Button Name="btnAutoApplyChanges"
+										Grid.Column="0"
+										Grid.ColumnSpan="2"
+										Grid.Row="0"
+										Style="{StaticResource apply_btn}"
+										Click="OnAutoApplyChanges_Changed">
+									<StackPanel HorizontalAlignment="Center"
+												Orientation="Horizontal">
+
+										<CheckBox Name="chkAutoApplyChanges"
+												  VerticalAlignment="Center"
+												  Margin="5,0" />
+										<Label Name="lblAutoApplyChanges"
+											   Style="{StaticResource apply_lbl}" />
+									</StackPanel>
+								</Button>
+
 								<Button Name="btnParametersReset"
 										Grid.Column="0"
+										Grid.Row="1"
 										Style="{StaticResource apply_btn}"
 										Click="ButtonResetParameters_Click">
 									<StackPanel HorizontalAlignment="Center"
@@ -1537,22 +1635,18 @@
 								</Button>
 								<Button Name="btnParametersApply"
 										Grid.Column="1"
+										Grid.Row="1"
 										Style="{StaticResource apply_btn}"
 										Click="ButtonApplyParameters_Click">
 									<StackPanel HorizontalAlignment="Center"
 												Orientation="Horizontal">
-										<Label Name="lblParametersApply"
-											   Style="{StaticResource apply_lbl}" />
 										<Image Source="/Third_Party/Icon_PasteData_128.png"
 											   Style="{StaticResource apply_img}" />
+										<Label Name="lblParametersApply"
+											   Style="{StaticResource apply_lbl}" />
 									</StackPanel>
 								</Button>
 							</Grid>
-
-							<CheckBox Name="chkAutoApplyChanges"
-									  HorizontalAlignment="Center"
-									  Checked="OnAutoApplyChanges_Changed"
-									  Unchecked="OnAutoApplyChanges_Changed" />
 						</StackPanel>
 					</Border>
 				</StackPanel>
