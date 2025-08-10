@@ -192,7 +192,6 @@ namespace IISIM.Windows {
             layoutGrid.RowDefinitions.Add (new RowDefinition ());
             layoutGrid.Children.Add (listTracings [indexLeads]);
 
-
             /* Init Hotkeys (Commands & InputBinding) */
 
             RoutedCommand
@@ -219,17 +218,44 @@ namespace IISIM.Windows {
         }
 
         private void UpdateInterface () {
-            // TODO: Implement
+            App.Current.Dispatcher.InvokeAsync (() => {
+                for (int i = 0; i < listTracings.Count; i++)
+                    listTracings [i].SetColorScheme (colorScheme);
+
+                if (colorScheme == Color.Schemes.Grid)
+                    wdwDeviceECG.Background = gridBackground;
+                else
+                    wdwDeviceECG.Background = Color.GetBackground (Color.Devices.DeviceECG, colorScheme);
+            });
         }
 
-        public Task Load (string inc) {
-            // TODO: Implement
-            return Task.CompletedTask;
+        public async Task Load (string inc) {
+            using StringReader sRead = new (inc);
+
+            try {
+                string? line;
+                while ((line = await sRead.ReadLineAsync ()) != null) {
+                    if (line.Contains (':')) {
+                        string pName = line.Substring (0, line.IndexOf (':')),
+                                pValue = line.Substring (line.IndexOf (':') + 1);
+                        switch (pName) {
+                            default: break;
+                            case "colorScheme": colorScheme = (Color.Schemes)Enum.Parse (typeof (Color.Schemes), pValue); break;
+                        }
+                    }
+                }
+            } catch {
+            } finally {
+                sRead.Close ();
+            }
         }
 
         public string Save () {
-            // TODO: Implement
-            return "";
+            StringBuilder sWrite = new ();
+
+            sWrite.AppendLine (String.Format ("{0}:{1}", "colorScheme", colorScheme));
+
+            return sWrite.ToString ();
         }
 
         public void SetColorScheme_Grid () => SetColorScheme (Color.Schemes.Grid);
@@ -257,42 +283,50 @@ namespace IISIM.Windows {
         }
 
         public void ToggleFullscreen () {
+            if (wdwDeviceECG.WindowState == System.Windows.WindowState.Maximized)
+                wdwDeviceECG.WindowState = System.Windows.WindowState.Normal;
+            else
+                wdwDeviceECG.WindowState = System.Windows.WindowState.Maximized;
         }
 
         private void MenuToggleFullscreen_Click (object s, RoutedEventArgs e)
             => ToggleFullscreen ();
 
         private void MenuClose_Click (object s, RoutedEventArgs e) {
-            // TODO: Implement
+            wdwDeviceECG.Close ();
         }
 
         private void MenuTogglePause_Click (object s, RoutedEventArgs e)
             => TogglePause ();
 
-        private void MenuColorGrid_Click (object sender, RoutedEventArgs e) {
-            // TODO: Implement
-        }
+        private void MenuColorGrid_Click (object sender, RoutedEventArgs e)
+            => SetColorScheme (Color.Schemes.Grid);
 
-        private void MenuColorScheme_Light (object sender, RoutedEventArgs e) {
-            // TODO: Implement
-        }
+        private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
+            => SetColorScheme (Color.Schemes.Light);
 
-        private void MenuColorScheme_Dark (object sender, RoutedEventArgs e) {
-            // TODO: Implement
-        }
+        private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
+            => SetColorScheme (Color.Schemes.Dark);
 
         public virtual void OnClosing (object? sender, CancelEventArgs e) {
             TimerAlarm?.Dispose ();
             DisposeAudio ();
 
-            // TODO: Implement
+            if (Instance?.Physiology is not null)
+                Instance.Physiology.PhysiologyEvent -= OnPhysiologyEvent;
         }
 
         public virtual void OnTick_Alarm (object? sender, EventArgs e) {
         }
 
         public void OnTick_Tracing (object? sender, EventArgs e) {
-            // TODO: Implement
+            if (State != States.Running)
+                return;
+
+            for (int i = 0; i < listTracings.Count; i++) {
+                listTracings [i].Strip?.Scroll ();
+                App.Current.Dispatcher.InvokeAsync (listTracings [i].DrawTracing);
+            }
         }
 
         public virtual void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
@@ -302,7 +336,44 @@ namespace IISIM.Windows {
         }
 
         public void OnPhysiologyEvent (object? sender, Physiology.PhysiologyEventArgs e) {
-            // TODO: Implement
+            switch (e.EventType) {
+                default: break;
+                case Physiology.PhysiologyEventTypes.Vitals_Change:
+                    listTracings.ForEach (c => {
+                        c.Strip?.ClearFuture (Instance?.Physiology);
+                        c.Strip?.Add_Baseline (Instance?.Physiology);
+                    });
+
+                    break;
+
+                case Physiology.PhysiologyEventTypes.Defibrillation:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (Instance?.Physiology));
+                    break;
+
+                case Physiology.PhysiologyEventTypes.Pacermaker_Spike:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (Instance?.Physiology));
+                    break;
+
+                case Physiology.PhysiologyEventTypes.Cardiac_Baseline:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology));
+                    break;
+
+                case Physiology.PhysiologyEventTypes.Cardiac_Atrial_Electric:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Electrical (Instance?.Physiology));
+                    break;
+
+                case Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Electric:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Physiology));
+                    break;
+
+                case Physiology.PhysiologyEventTypes.Cardiac_Atrial_Mechanical:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Mechanical (Instance?.Physiology));
+                    break;
+
+                case Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Mechanical:
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Physiology));
+                    break;
+            }
         }
     }
 }
