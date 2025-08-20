@@ -86,9 +86,9 @@ namespace IISIM {
             TonePlayer = new MediaPlayer (Instance.AudioLib);
             
             AlarmMedia = new () {
-                new (AssetLoader.Open (new Uri ("avares://Infirmary Integrated/Resources/Alarm_Low_Priority.wav"))),
-                new (AssetLoader.Open (new Uri ("avares://Infirmary Integrated/Resources/Alarm_Medium_Priority.wav"))),
-                new (AssetLoader.Open (new Uri ("avares://Infirmary Integrated/Resources/Alarm_High_Priority.wav")))
+                new (AssetLoader.Open (new Uri ("avares://infirmary-integrated/Resources/Alarm_Low_Priority.wav"))),
+                new (AssetLoader.Open (new Uri ("avares://infirmary-integrated/Resources/Alarm_Medium_Priority.wav"))),
+                new (AssetLoader.Open (new Uri ("avares://infirmary-integrated/Resources/Alarm_High_Priority.wav")))
             };
         }
 

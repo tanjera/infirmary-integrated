@@ -9,7 +9,7 @@
 	Height="200"
 	d:DesignHeight="200"
 	d:DesignWidth="500"
-	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
+	Icon="avares://infirmary-integrated/Resources/Icon_II.ico"
 	Topmost="True"
 	WindowStartupLocation="CenterScreen"
 	mc:Ignorable="d">
@@ -46,7 +46,7 @@
 			Height="48"
 			Margin="5"
 			VerticalAlignment="Center"
-			Source="avares://Infirmary Integrated/Third_Party/Icon_Clipboard_128.png" />
+			Source="avares://infirmary-integrated/Third_Party/Icon_Clipboard_128.png" />
 
     <TextBlock
 			Name="txtMessage"

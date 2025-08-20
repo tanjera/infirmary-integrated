@@ -11,12 +11,12 @@
 	Background="Transparent"
 	CanResize="False"
 	SystemDecorations="0"
-	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
+	Icon="avares://infirmary-integrated/Resources/Icon_II.ico"
 	Topmost="True"
 	WindowStartupLocation="CenterScreen"
 	mc:Ignorable="d">
 
   <DockPanel LastChildFill="True">
-    <Image Name="imgSplash" Source="avares://Infirmary Integrated/Resources/SplashScreen_Infirmary_800x480.png" />
+    <Image Name="imgSplash" Source="avares://infirmary-integrated/Resources/SplashScreen_Infirmary_800x480.png" />
   </DockPanel>
 </Window>

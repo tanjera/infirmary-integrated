@@ -11,13 +11,13 @@
     <key>CFBundleDisplayName</key>
     <string>Infirmary Integrated Scenario Editor</string>
     <key>CFBundleVersion</key>
-    <string>1.1.5</string>
+    <string>1.2.1</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.1.5</string>
+    <string>1.2.1</string>
     <key>LSMinimumSystemVersion</key>
     <string>10.12</string>
     <key>CFBundleExecutable</key>
-    <string>Infirmary Integrated Scenario Editor</string>
+    <string>infirmary-integrated-scenario-editor</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundlePackageType</key>

@@ -72,7 +72,7 @@ namespace IISIM {
             Grid layoutGrid = this.GetControl<Grid> ("layoutGrid");
 
             /* Set background image for grid lines */
-            gridBackground = new ImageBrush (new Bitmap (AssetLoader.Open (new Uri ("avares://Infirmary Integrated/Resources/12L_ECG_Grid.png"))));
+            gridBackground = new ImageBrush (new Bitmap (AssetLoader.Open (new Uri ("avares://infirmary-integrated/Resources/12L_ECG_Grid.png"))));
             gridBackground.Stretch = Stretch.Fill;
 
             /* 12 Lead ECG Interface layout */

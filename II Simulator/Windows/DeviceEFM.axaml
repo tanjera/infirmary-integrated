@@ -11,7 +11,7 @@
 	d:DesignHeight="720"
 	d:DesignWidth="1200"
 	Background="White"
-	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
+	Icon="avares://infirmary-integrated/Resources/Icon_II.ico"
 	mc:Ignorable="d">
 
 

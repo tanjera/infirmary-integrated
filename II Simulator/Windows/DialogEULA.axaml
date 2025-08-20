@@ -8,7 +8,7 @@
 	Title="Agree to Terms"
 	Width="500"
 	Height="110"
-	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
+	Icon="avares://infirmary-integrated/Resources/Icon_II.ico"
 	WindowStartupLocation="CenterScreen"
 	mc:Ignorable="d">
 

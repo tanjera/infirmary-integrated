@@ -41,9 +41,9 @@ OUT_PREFIX="\n${BCyan}>>>>>${Reset} "
 
 # Location of published executable files in the build structure
 RELEASE_PATH="$SOLUTION_PATH/Release"
-PUB_FOLDER="Infirmary Integrated"
-PUB_SIMEXE="Infirmary Integrated/Infirmary Integrated/Infirmary Integrated"
-PUB_SCENEDEXE="Infirmary Integrated/Infirmary Integrated Scenario Editor/Infirmary Integrated Scenario Editor"
+PUB_FOLDER="infirmary-integrated"
+PUB_SIMEXE="infirmary-integrated/infirmary-integrated/infirmary-integrated"
+PUB_SCENEDEXE="infirmary-integrated/infirmary-integrated-scenario-editor/infirmary-integrated-scenario-editor"
 
 # Location of package information templates (for .deb, .rpm, .app)
 PACKAGE_FS="$SOLUTION_PATH/Package, Linux/_filesystem"
@@ -81,17 +81,6 @@ if ! command -v 7z &> /dev/null; then
     exit
 fi
 
-if ! command -v dpkg-deb &> /dev/null; then
-    echo "Error: dpkg-deb could not be found"
-    echo "Please install package"
-    exit
-fi
-
-if ! command -v rpmbuild &> /dev/null; then
-    echo "Error: rpmbuild could not be found"
-    echo "Please install package"
-    exit
-fi
 
 # ####
 # Set up directories to use, gather user information
@@ -162,20 +151,20 @@ for arch in ${ARCHITECTURES[*]}; do
 
     echo -e "${OUT_PREFIX}Creating working directory $DIR_WORKING\n"
 
-    mkdir -p "${DIR_WORKING}/Infirmary Integrated"
+    mkdir -p "${DIR_WORKING}/infirmary-integrated"
 
     # Move the published projects to the temporary directories
-    echo -e "${OUT_PREFIX}Moving project files to ${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated\n"
-    mv "${DIR_SIMULATOR_BIN}/Release/${VERSION_DOTNET}/${arch}/publish" "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated"
+    echo -e "${OUT_PREFIX}Moving project files to ${DIR_WORKING}/infirmary-integrated/infirmary-integrated\n"
+    mv "${DIR_SIMULATOR_BIN}/Release/${VERSION_DOTNET}/${arch}/publish" "${DIR_WORKING}/infirmary-integrated/infirmary-integrated"
 
-    echo -e "${OUT_PREFIX}Moving project files to ${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated Scenario Editor\n"
-    mv "${DIR_SCENED_BIN}/Release/${VERSION_DOTNET}/${arch}/publish" "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated Scenario Editor"
+    echo -e "${OUT_PREFIX}Moving project files to ${DIR_WORKING}/infirmary-integrated/infirmary-integrated-scenario-editor\n"
+    mv "${DIR_SCENED_BIN}/Release/${VERSION_DOTNET}/${arch}/publish" "${DIR_WORKING}/infirmary-integrated/infirmary-integrated-scenario-editor"
 
     # Trim unnecessary files from the packages
     # Specifically: VLC library cherry-picking
     if [[ $arch == win* ]]; then
-        DIR_VLCX64="${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated/libvlc/win-x64"
-        DIR_VLCX86="${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated/libvlc/win-x86"
+        DIR_VLCX64="${DIR_WORKING}/infirmary-integrated/infirmary-integrated/libvlc/win-x64"
+        DIR_VLCX86="${DIR_WORKING}/infirmary-integrated/infirmary-integrated/libvlc/win-x86"
 
         VLC_FOLDERS_ITER=( "control" "demux" "gui" "keystore" "logger" "lua" "meta_engine" "misc" "mux" 
                             "packetizer" "services_discovery"  "spu" "stream_extractor" "stream_filter" 
@@ -215,8 +204,8 @@ for arch in ${ARCHITECTURES[*]}; do
         rm -r "${DIR_VLCX64}/hrtfs"
         rm -r "${DIR_VLCX86}/hrtfs"
     elif [[ $arch == linux* || $arch == osx* ]]; then
-        rm -r "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated/libvlc/win-x64"
-        rm -r "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated/libvlc/win-x86"
+        rm -r "${DIR_WORKING}/infirmary-integrated/infirmary-integrated/libvlc/win-x64"
+        rm -r "${DIR_WORKING}/infirmary-integrated/infirmary-integrated/libvlc/win-x86"
     fi
 
     # Set executables for *nix systems
@@ -241,6 +230,10 @@ for arch in ${ARCHITECTURES[*]}; do
 
         echo -e "${OUT_PREFIX}Packaging into ${RELEASE_PATH}/${PACK_NAME}.zip\n"
         cd "${DIR_WORKING}"
+
+        # Rename top directory per Windows standards
+        mv "infirmary-integrated" "Infirmary Integrated"
+
         zip -r "${RELEASE_PATH}/${PACK_NAME}.zip" "Infirmary Integrated"
     elif [[ $arch == linux* ]]; then
         PACK_PATH="${SOLUTION_PATH}/Release/${PACK_NAME}.tar.gz"
@@ -250,74 +243,20 @@ for arch in ${ARCHITECTURES[*]}; do
 
         echo -e "${OUT_PREFIX}Packaging into ${RELEASE_PATH}/${PACK_NAME}.tar.gz\n"
         cd "${DIR_WORKING}"
-        tar -czvf "${RELEASE_PATH}/${PACK_NAME}.tar.gz" "Infirmary Integrated"        
+        tar -czvf "${RELEASE_PATH}/${PACK_NAME}.tar.gz" "infirmary-integrated"        
     fi
     
     
     # ####
     # Specific publishing packages per OS
+    #
+    # DEB & RPM packaging moved to a separate script! publish-linux.sh
+    # Windows packaging (using NSIS) located in publish-win.ps1 (must be run in Windows)
+    # MacOS packaging consists of creating a proper file structure and zipping appropriately
     # ####
 
-    if [[ $arch == "linux-x64" ]]; then
-
-        # ####
-        # Package into .deb
-        # ####
-
-        DEB_PACKAGE="infirmary-integrated_${VERSION}_amd64.deb"
-
-        echo -e "${OUT_PREFIX}Creating .deb file structure\n"
-        DEB_FS="$DIR_WORKING/infirmary-integrated"
-        mkdir "$DEB_FS"
-
-        cp -R "$DEB_DIR/"* "$DEB_FS"
-        cp -R "$PACKAGE_FS/"* "$DEB_FS"
-        printf "\nVersion: %s\n" $VERSION >> "$DEB_FS/DEBIAN/control"
-        cp -r "$DIR_WORKING/Infirmary Integrated" "$DEB_FS/usr/share/infirmary-integrated"
-        chmod +x "$DEB_FS/usr/bin"/*
-
-        echo -e "${OUT_PREFIX}Packing .deb package\n"
-        dpkg-deb --build "$DEB_FS" >> /dev/null
-
-        echo -e "Moving .deb package to $RELEASE_PATH/$DEB_PACKAGE\n"
-        mv -f "$DIR_WORKING/infirmary-integrated.deb" "$RELEASE_PATH/$DEB_PACKAGE"        
-
-        # ####
-        # Package into .rpm; utilizes build files from .deb file structure!
-        # ####
-
-        echo -e "${OUT_PREFIX}Creating .rpm file structure\n"
-
-        # Set up the build directories
-        rm -r "$RPMBUILD_DIR"
-        mkdir -p "$RPMBUILD_DIR/BUILD"
-        mkdir -p "$RPMBUILD_DIR/BUILDROOT"
-        mkdir -p "$RPMBUILD_DIR/RPMS"
-        mkdir -p "$RPMBUILD_DIR/SOURCES"
-        mkdir -p "$RPMBUILD_DIR/SPECS"
-        mkdir -p "$RPMBUILD_DIR/SRPMS"
-
-        # Move the file structure into the BUILDROOT
-        rm -r "$DEB_FS/DEBIAN"
-
-        BUILDROOT_PACKAGE_DIR="$RPMBUILD_DIR/BUILDROOT/infirmary-integrated-$VERSION-1.x86_64"
-        echo -e "${OUT_PREFIX}Copying directory structure to $BUILDROOT_PACKAGE_DIR"
-        mkdir -p "$BUILDROOT_PACKAGE_DIR"
-        cp -R "$DEB_FS/"* "$BUILDROOT_PACKAGE_DIR"
-
-        # Prepare the .spec file
-        RPM_TARGET_SPEC="$RPMBUILD_DIR/SPECS/infirmary-integrated.spec"
-        printf "Version: $VERSION\n" >> "$RPM_TARGET_SPEC"
-        cat "$RPM_SPEC" >> "$RPM_TARGET_SPEC"
-
-        echo -e "${OUT_PREFIX}Packing .rpm package\n"
-        rpmbuild -bb "$RPM_TARGET_SPEC"
-
-        echo -e "${OUT_PREFIX}Moving .rpm package to $RELEASE_PATH/\n"        
-        mv -f "$RPMBUILD_DIR/RPMS/x86_64/"* "$RELEASE_PATH"        
-        rm -r "$RPMBUILD_DIR"
     
-    elif [[ $arch == osx* ]]; then
+    if [[ $arch == osx* ]]; then
 
         # ####
         # Create .app directory structures
@@ -345,8 +284,8 @@ for arch in ${ARCHITECTURES[*]}; do
         cp "$OSX_SCENED_INFO_PLIST" "$SCENED_APP_PATH/Contents/Info.plist"
         cp "$OSX_SCENED_ICON_PATH" "$SCENED_APP_PATH/Contents/Resources/$OSX_SCENED_ICON_FILE"
 
-        mv "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated"/* "$SIM_APP_PATH/Contents/MacOS"
-        mv "${DIR_WORKING}/Infirmary Integrated/Infirmary Integrated Scenario Editor"/* "$SCENED_APP_PATH/Contents/MacOS"
+        mv "${DIR_WORKING}/infirmary-integrated/infirmary-integrated"/* "$SIM_APP_PATH/Contents/MacOS"
+        mv "${DIR_WORKING}/infirmary-integrated/infirmary-integrated-scenario-editor"/* "$SCENED_APP_PATH/Contents/MacOS"
 
 
         # ####
@@ -375,7 +314,5 @@ done
 cd "${RELEASE_PATH}"
 rm -fv sha512sums
 rm -fv sha512sums.sig
-sha512sum *.rpm >> "${RELEASE_PATH}/sha512sums"
-sha512sum *.deb >> "${RELEASE_PATH}/sha512sums"
-sha512sum *linux*.tar.gz >> "${RELEASE_PATH}/sha512sums"
+sha512sum * >> "${RELEASE_PATH}/sha512sums"
 gpg --detach-sign sha512sums

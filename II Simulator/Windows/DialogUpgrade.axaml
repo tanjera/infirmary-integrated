@@ -8,7 +8,7 @@
 	Title="DialogUpgrade"
 	Width="600"
 	Height="200"
-	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
+	Icon="avares://infirmary-integrated/Resources/Icon_II.ico"
 	Topmost="True"
 	WindowStartupLocation="CenterScreen"
 	mc:Ignorable="d">
@@ -72,7 +72,7 @@
         <Image
 					Grid.Column="0"
 					Classes="btn"
-					Source="avares://Infirmary Integrated/Third_Party/Icon_UpgradeWebsite_128.png" />
+					Source="avares://infirmary-integrated/Third_Party/Icon_UpgradeWebsite_128.png" />
         <Label
 					Name="lblWebsite"
 					Grid.Column="1"
@@ -98,7 +98,7 @@
         <Image
 					Grid.Column="0"
 					Classes="btn"
-					Source="avares://Infirmary Integrated/Third_Party/Icon_UpgradeLater_128.png" />
+					Source="avares://infirmary-integrated/Third_Party/Icon_UpgradeLater_128.png" />
         <Label
 					Name="lblDelay"
 					Grid.Column="1"
@@ -124,7 +124,7 @@
         <Image
 					Grid.Column="0"
 					Classes="btn"
-					Source="avares://Infirmary Integrated/Third_Party/Icon_UpgradeMute_128.png" />
+					Source="avares://infirmary-integrated/Third_Party/Icon_UpgradeMute_128.png" />
         <Label
 					Name="lblMute"
 					Grid.Column="1"

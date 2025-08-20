@@ -6,7 +6,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	Name="dlgAbout"
 	Title="About Infirmary Integrated: Scenario Editor"
-	Icon="avares://Infirmary Integrated Scenario Editor/Resources/Icon_IISE.ico"
+	Icon="avares://infirmary-integrated-scenario-editor/Resources/Icon_IISE.ico"
 	SizeToContent="WidthAndHeight"
 	WindowStartupLocation="CenterScreen"
 	mc:Ignorable="d">
@@ -46,7 +46,7 @@
       Margin="10"
       HorizontalAlignment="Center"
       VerticalAlignment="Center"
-      Source="avares://Infirmary Integrated Scenario Editor/Resources/Icon_IISE.ico" />
+      Source="avares://infirmary-integrated-scenario-editor/Resources/Icon_IISE.ico" />
 
     <StackPanel Grid.Row="0" Grid.Column="1">
 

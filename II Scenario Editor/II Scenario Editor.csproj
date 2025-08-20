@@ -6,7 +6,7 @@
     <StartupObject>IISE.Program</StartupObject>    
     <TrimMode>copyused</TrimMode>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
-    <AssemblyName>Infirmary Integrated Scenario Editor</AssemblyName>
+    <AssemblyName>infirmary-integrated-scenario-editor</AssemblyName>
     <Version>1.2.1</Version>
     <Company>Infirmary Integrated</Company>
     <PackageLicenseFile>License.md</PackageLicenseFile>

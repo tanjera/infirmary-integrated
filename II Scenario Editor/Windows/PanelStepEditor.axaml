@@ -185,20 +185,20 @@
           <Button Name="btnAddStep"
                   Click="ButtonAddStep_Click"
                   Classes="imgbtn">
-            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_PlayerAdd_128.png"
+            <Image Source="avares://infirmary-integrated-scenario-editor/Third_Party/Icon_PlayerAdd_128.png"
                    ToolTip.Tip="Add Step" />
           </Button>
           <Button Name="btnDuplicateStep"
                   Click="ButtonDuplicateStep_Click"
                   Classes="imgbtn">
-            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_Stack_128.png"
+            <Image Source="avares://infirmary-integrated-scenario-editor/Third_Party/Icon_Stack_128.png"
                    ToolTip.Tip="Duplicate Step" />
           </Button>
 
           <Button Name="btnDeleteStep"
                   Click="BtnDeleteStep_Click"
                   Classes="imgbtn">
-            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_TrashBin_128.png"
+            <Image Source="avares://infirmary-integrated-scenario-editor/Third_Party/Icon_TrashBin_128.png"
                    ToolTip.Tip="Delete Step" />
           </Button>
 
@@ -207,14 +207,14 @@
           <Button Name="btnCopyPhysiology"
               Click="BtnCopyPhysiology_Click"
               Classes="imgbtn">
-            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_DeviceMonitor_128.png"
+            <Image Source="avares://infirmary-integrated-scenario-editor/Third_Party/Icon_DeviceMonitor_128.png"
                    ToolTip.Tip="Copy Physiology" />
           </Button>
           <Button Name="btnPastePhysiology"
                   Click="BtnPastePhysiology_Click"
                   Classes="imgbtn">
 
-            <Image Source="avares://Infirmary Integrated Scenario Editor/Third_Party/Icon_Device12LeadECG_128.png"
+            <Image Source="avares://infirmary-integrated-scenario-editor/Third_Party/Icon_Device12LeadECG_128.png"
                    ToolTip.Tip="Paste Physiology" />
           </Button>
         </StackPanel>

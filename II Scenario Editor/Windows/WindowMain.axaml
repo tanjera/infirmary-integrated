@@ -6,7 +6,7 @@
         mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="800"
         x:Class="IISE.WindowMain"
         Title="Infirmary Integrated: Scenario Editor"
-	      Icon="avares://Infirmary Integrated Scenario Editor/Resources/Icon_IISE.ico">
+	      Icon="avares://infirmary-integrated-scenario-editor/Resources/Icon_IISE.ico">
 
   <Window.Styles>
     <Style Selector="TabControl">

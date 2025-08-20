@@ -129,7 +129,7 @@ namespace IISIM {
             base.InitAudio ();
             
             if (AudioPlayer is not null)
-                AudioPlayer.Media = new Media (Instance.AudioLib, new StreamMediaInput (AssetLoader.Open (new Uri ("avares://Infirmary Integrated/Resources/Alarm_IABP_Augmentation.wav"))));
+                AudioPlayer.Media = new Media (Instance.AudioLib, new StreamMediaInput (AssetLoader.Open (new Uri ("avares://infirmary-integrated/Resources/Alarm_IABP_Augmentation.wav"))));
         }
 
         private void InitInterface () {

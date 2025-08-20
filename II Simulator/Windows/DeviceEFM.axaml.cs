@@ -79,10 +79,10 @@ namespace IISIM {
             Grid displayGrid = this.GetControl<Grid> ("displayGrid");
 
             // Instantiate and load backgroung images
-            gridFHR = new ImageBrush (new Bitmap (AssetLoader.Open (new Uri ("avares://Infirmary Integrated/Resources/FHR_Grid.png"))));
+            gridFHR = new ImageBrush (new Bitmap (AssetLoader.Open (new Uri ("avares://infirmary-integrated/Resources/FHR_Grid.png"))));
             gridFHR.Stretch = Stretch.Fill;
 
-            gridToco = new ImageBrush (new Bitmap (AssetLoader.Open (new Uri ("avares://Infirmary Integrated/Resources/Toco_Grid.png"))));
+            gridToco = new ImageBrush (new Bitmap (AssetLoader.Open (new Uri ("avares://infirmary-integrated/Resources/Toco_Grid.png"))));
             gridToco.Stretch = Stretch.Fill;
 
             // Instantiate and add Tracings to UI

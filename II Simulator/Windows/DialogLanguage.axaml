@@ -8,7 +8,7 @@
 	Title="Select Language"
 	Width="500"
 	Height="130"
-	Icon="avares://Infirmary Integrated/Resources/Icon_II.ico"
+	Icon="avares://infirmary-integrated/Resources/Icon_II.ico"
 	WindowStartupLocation="CenterScreen"
 	mc:Ignorable="d">
 

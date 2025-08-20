@@ -45,7 +45,7 @@ namespace IISIM {
 
         public string [] IconSources = {
             "",
-            "avares://Infirmary Integrated/Resources/Icon_II.ico"
+            "avares://infirmary-integrated/Resources/Icon_II.ico"
         };
 
         public DialogMessage () {
