@@ -58,7 +58,7 @@
 			VerticalAlignment="Center"
 			Classes="url"
 			Tapped="Hyperlink_Terms">
-      http://www.infirmary-integrated.com/license-and-data-collection/
+      https://github.com/tanjera/infirmary-integrated
     </Label>
 
     <Button
