@@ -24,11 +24,13 @@ foreach $file (@rel_files) {
 
 print "\n";
 
-# ######
-# Iterate each tarball, package into DEB format
-# ######
+sub package_fpm {
 
-sub package_deb {
+    # #####
+    # Package files using the effing package manager (fpm)
+    # https://github.com/jordansissel/fpm
+    # #####
+
     @parts_file = split(/-/, $_[0]);
 
     # Get version & architecture from tarball name
@@ -57,24 +59,7 @@ sub package_deb {
 
     print "Creating buildroot filesystem...\n";
     `cp -r "$fs_dir"/* $tmp_dir`;
-    `cp -r "$deb_dir"/* $tmp_dir`;
     `mkdir -p $tmp_dir/usr/share/infirmary-integrated`;
-
-    # Add version & architecture to .deb control file
-
-    @control_append = (
-        "Version: $version",
-        "Architecture: $arch",
-        ""      # control needs a trailing newline!
-    );
-
-    $control = "$tmp_dir/DEBIAN/control";
-
-    open($fh, '>>', $control) or die "Could not open file '$control' for appending: $!";
-    foreach $line (@control_append) {
-        print $fh "$line\n";
-    }
-    close($fh) or die "Could not close file '$control': $!";
 
     # Unzip the infirmary-integrated tarball into the buildroot's /usr/share/infirmary-integrated path
 
@@ -82,9 +67,44 @@ sub package_deb {
     `tar -xzf $rel_dir/$_[0] -C $tmp_dir/usr/share`;
 
 
-    # Package .deb using dpkg-deb
-    print "Packaging the .deb into $rel_dir/infirmary-integrated_$version\_$arch.deb...\n";
-    `dpkg-deb --root-owner-group --build $tmp_dir $rel_dir/infirmary-integrated_$version\_$arch.deb`;
+    # Package .deb using fpm
+    print "Using fpm to build a .deb...\n\n";
+    $fpm_command = "fpm \\
+    -s dir -t deb --force \\
+    --package \"$rel_dir\" \\
+    --name infirmary-integrated \\
+    --vendor \"Infirmary Integrated\" \\
+    --license \"Apache 2.0\" \\
+    --description \"Infirmary Integrated is free and open-source software developed to advance healthcare education for medical and nursing professionals and students. Developed as in-depth, accurate, and accessible educational tools, Infirmary Integrated can meet the needs of clinical simulators in emergency, critical care, and many other medical and nursing specialties\" \\
+    --url \"https://www.infirmary-integrated.com\" \\
+    --maintainer \"Ibi Keller <ibi.keller@gmail.com>\" \\
+    --version $version \\
+    --architecture $arch \\
+    --depends vlc --depends libvlc-dev --depends libx11-dev \\
+    -C $tmp_dir \\
+    ."; 
+    print "$fpm_command\n\n";
+    `$fpm_command`;
+
+
+    # Package .rpm using fpm
+    print "Using fpm to build a .rpm...\n\n";
+    $fpm_command = "fpm \\
+    -s dir -t rpm --force \\
+    --package \"$rel_dir\" \\
+    --name infirmary-integrated \\
+    --vendor \"Infirmary Integrated\" \\
+    --license \"Apache 2.0\" \\
+    --description \"Infirmary Integrated is free and open-source software developed to advance healthcare education for medical and nursing professionals and students. Developed as in-depth, accurate, and accessible educational tools, Infirmary Integrated can meet the needs of clinical simulators in emergency, critical care, and many other medical and nursing specialties\" \\
+    --url \"https://www.infirmary-integrated.com\" \\
+    --maintainer \"Ibi Keller <ibi.keller@gmail.com>\" \\
+    --version $version \\
+    --architecture $arch \\
+    --depends vlc --depends vlc-devel --depends libX11-devel \\
+    -C $tmp_dir \\
+    ."; 
+    print "$fpm_command\n\n";
+    `$fpm_command`;
 
 
     # Remove the temporary working directory
@@ -92,8 +112,23 @@ sub package_deb {
     `rm -rf "$tmp_dir"`;
 }
 
+
 foreach $file (@to_process) {
-    print "Processing file into .deb format: $file\n";
-    package_deb($file);
-    print "Finished processing $file into .deb\n\n";
+
+    # Ensure the effing package manager (fpm) works    
+    system("command -v fpm > /dev/null 2>&1");
+    if ($? == 0) {
+        print "fpm exists and is executable... proceeding\n\n";
+    } else {
+        print "fpm does *not* exist or is *not* executable!\n";
+        print "Ensure fpm and dependencies are installed!\n";
+        print "Read for installation instructions: https://fpm.readthedocs.io/en/latest/installation.html\n";
+        print "Or visit the project page: https://github.com/jordansissel/fpm\n";
+        print "Exiting now!\n";
+        exit(0);
+    }
+
+    print "Processing file into fpm package manager: $file\n";
+    package_fpm($file);
+    print "Finished processing $file\n\n";
 }
