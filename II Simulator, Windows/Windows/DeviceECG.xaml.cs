@@ -77,7 +77,7 @@ namespace IISIM.Windows {
             Dispose ();
         }
 
-        public virtual void Dispose () {
+        public void Dispose () {
             /* Clean subscriptions from the Main Timer */
             if (Instance is not null) {
                 Instance.Timer_Main.Elapsed -= TimerTracing.Process;
@@ -97,11 +97,11 @@ namespace IISIM.Windows {
                 Instance.Physiology.PhysiologyEvent -= OnPhysiologyEvent;
         }
 
-        public virtual void DisposeAudio () {
+        public void DisposeAudio () {
             AudioPlayer?.Dispose ();
         }
 
-        public virtual void InitTimers () {
+        public void InitTimers () {
             if (Instance is null)
                 return;
 
@@ -269,14 +269,14 @@ namespace IISIM.Windows {
             UpdateInterface ();
         }
 
-        public virtual void TogglePause () {
+        public void TogglePause () {
             if (State == States.Running)
                 State = States.Paused;
             else if (State == States.Paused)
                 State = States.Running;
         }
 
-        public virtual void OnClosed (object? sender, EventArgs e) {
+        public void OnClosed (object? sender, EventArgs e) {
             State = States.Closed;
 
             Dispose ();
@@ -308,7 +308,7 @@ namespace IISIM.Windows {
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Dark);
 
-        public virtual void OnClosing (object? sender, CancelEventArgs e) {
+        public void OnClosing (object? sender, CancelEventArgs e) {
             TimerAlarm?.Dispose ();
             DisposeAudio ();
 
@@ -316,7 +316,7 @@ namespace IISIM.Windows {
                 Instance.Physiology.PhysiologyEvent -= OnPhysiologyEvent;
         }
 
-        public virtual void OnTick_Alarm (object? sender, EventArgs e) {
+        public void OnTick_Alarm (object? sender, EventArgs e) {
         }
 
         public void OnTick_Tracing (object? sender, EventArgs e) {
@@ -329,10 +329,10 @@ namespace IISIM.Windows {
             }
         }
 
-        public virtual void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
+        public void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
         }
 
-        public virtual void OnTick_Vitals_Respiratory (object? sender, EventArgs e) {
+        public void OnTick_Vitals_Respiratory (object? sender, EventArgs e) {
         }
 
         public void OnPhysiologyEvent (object? sender, Physiology.PhysiologyEventArgs e) {

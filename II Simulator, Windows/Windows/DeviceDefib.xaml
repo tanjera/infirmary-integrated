@@ -8,8 +8,415 @@
 		mc:Ignorable="d"
 		Title="Infirmary Integrated: Device Simulator"
 		Icon="/Resources/Icon_II.ico"
-		Height="450"
-		Width="800">
-	<Grid>
-	</Grid>
+		Background="Black"
+		Width="1200"
+		Height="800">
+
+	<Window.Resources>
+		<Style TargetType="Menu">
+			<Setter Property="Padding"
+					Value="2" />
+		</Style>
+
+		<Style TargetType="MenuItem">
+			<Setter Property="Padding"
+					Value="5,2" />
+			<Setter Property="Margin"
+					Value="2,0" />
+			<Setter Property="FontSize"
+					Value="12" />
+		</Style>
+
+		<Style TargetType="Border"
+			   x:Key="brd_control" />
+
+		<Style TargetType="Button"
+			   x:Key="btn_round">
+			<Setter Property="HorizontalAlignment"
+					Value="Stretch" />
+			<Setter Property="VerticalAlignment"
+					Value="Stretch" />
+			<Setter Property="HorizontalContentAlignment"
+					Value="Center" />
+			<Setter Property="VerticalContentAlignment"
+					Value="Center" />
+			<Setter Property="MinHeight"
+					Value="50" />
+			<Setter Property="MinWidth"
+					Value="60" />
+			<Setter Property="Margin"
+					Value="15,8" />
+		</Style>
+
+		<Style TargetType="TextBlock"
+			   x:Key="tb_button">
+			<Setter Property="HorizontalAlignment"
+					Value="Center" />
+			<Setter Property="VerticalAlignment"
+					Value="Center" />
+			<Setter Property="FontSize"
+					Value="20" />
+			<Setter Property="FontWeight"
+					Value="Bold" />
+			<Setter Property="Padding"
+					Value="10,0" />
+		</Style>
+
+		<Style TargetType="TextBlock"
+			   x:Key="tb_buttonsub">
+			<Setter Property="HorizontalAlignment"
+					Value="Center" />
+			<Setter Property="VerticalAlignment"
+					Value="Center" />
+			<Setter Property="FontSize"
+					Value="16" />
+			<Setter Property="FontWeight"
+					Value="Bold" />
+		</Style>
+	</Window.Resources>
+
+	<DockPanel LastChildFill="True">
+
+		<!--  Main Menu  -->
+		<Menu DockPanel.Dock="Top">
+
+			<MenuItem Name="menuDevice">
+				<MenuItem Name="menuPauseDevice"
+						  Click="MenuTogglePause_Click"
+						  InputGestureText="Pause" />
+
+				<Separator />
+				<MenuItem Name="menuAddNumeric"
+						  Click="MenuAddNumeric_Click"
+						  InputGestureText="N" />
+				<MenuItem Name="menuAddTracing"
+						  Click="MenuAddTracing_Click"
+						  InputGestureText="T" />
+				<Separator />
+				<MenuItem Name="menuDefibEnergy">
+					<MenuItem Name="menuDefibMaximum">
+						<MenuItem Name="menuDefibMaximum_200"
+								  Click="MenuDefibEnergyMaximum_200" />
+						<MenuItem Name="menuDefibMaximum_360"
+								  Click="MenuDefibEnergyMaximum_360" />
+					</MenuItem>
+					<MenuItem Name="menuDefibIncrement">
+						<MenuItem Name="menuDefibIncrement_10"
+								  Click="MenuDefibEnergyIncrement_10" />
+						<MenuItem Name="menuDefibIncrement_20"
+								  Click="MenuDefibEnergyIncrement_20" />
+					</MenuItem>
+				</MenuItem>
+				<Separator />
+
+				<MenuItem Name="menuToggleFullscreen"
+						  Click="MenuToggleFullscreen_Click"
+						  InputGestureText="Alt+Enter" />
+				<Separator />
+				<MenuItem Name="menuCloseDevice"
+						  Click="MenuClose_Click"
+						  InputGestureText="Alt+F4" />
+			</MenuItem>
+
+			<MenuItem Name="menuAudio">
+				<MenuItem Name="menuAudioOff"
+						  Click="MenuAudioOff"
+						  InputGestureText="P" />
+				<MenuItem Name="menuAudioDefib"
+						  Click="MenuAudioDefib"
+						  InputGestureText="OemOpenBrackets" />
+				<MenuItem Name="menuAudioECG"
+						  Click="MenuAudioECG"
+						  InputGestureText="OemCloseBrackets" />
+				<MenuItem Name="menuAudioSPO2"
+						  Click="MenuAudioSPO2"
+						  InputGestureText="OemPipe" />
+				<Separator />
+				<MenuItem Name="menuAudioDisable"
+						  Click="MenuDisableAudio"
+						  InputGestureText="Ctrl+-" />
+				<MenuItem Name="menuAudioEnable"
+						  Click="MenuEnableAudio"
+						  InputGestureText="Ctrl++" />
+			</MenuItem>
+
+			<MenuItem Name="menuColor">
+				<MenuItem Name="menuColorLight"
+						  Click="MenuColorScheme_Light"
+						  InputGestureText="F1" />
+				<MenuItem Name="menuColorDark"
+						  Click="MenuColorScheme_Dark"
+						  InputGestureText="F2" />
+			</MenuItem>
+		</Menu>
+
+		<Grid Name="mainGrid">
+			<!--  Default layout: Horizontal (like actual IABP's), display on top, control panel on bottom  -->
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="8 *" />
+				<ColumnDefinition Width="2 *" />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition />
+			</Grid.RowDefinitions>
+
+			<!--  Display (tracings and numerics)  -->
+			<Grid Name="displayGrid"
+				  Grid.Row="0"
+				  Grid.Column="0">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition />
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="1 *" />
+					<RowDefinition Height="2 *" />
+				</Grid.RowDefinitions>
+
+				<Grid Name="gridNumerics"
+					  Grid.Row="0" />
+				<Grid Name="gridTracings"
+					  Grid.Row="1" />
+			</Grid>
+
+			<!--  Control buttons  -->
+			<Grid Name="controlsGrid"
+				  Grid.Row="0"
+				  Grid.Column="1"
+				  Background="DarkGray">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition />
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="*" />
+					<!--  Fills the space in the button stack  -->
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+					<RowDefinition Height="Auto" />
+				</Grid.RowDefinitions>
+
+				<Border Name="borderManual"
+						Grid.Row="0"
+						Grid.RowSpan="4"
+						Grid.Column="0"
+						Background="White"
+						Style="{StaticResource brd_control}" />
+
+				<Border Name="borderAnalyze"
+						Grid.Row="4"
+						Grid.Column="0"
+						Background="LightBlue"
+						Style="{StaticResource brd_control}" />
+
+				<Border Name="borderSync"
+						Grid.Row="5"
+						Grid.Column="0"
+						Background="PaleGoldenrod"
+						Style="{StaticResource brd_control}" />
+
+				<Border Name="borderPacer"
+						Grid.Row="7"
+						Grid.RowSpan="4"
+						Grid.Column="0"
+						Background="LightGray"
+						Style="{StaticResource brd_control}" />
+
+				<!--  Manual defibrillation controls  -->
+
+				<Button Name="buttonDefib"
+						Grid.Row="0"
+						Grid.Column="0"
+						Background="LightGreen"
+						Style="{StaticResource btn_round}"
+						Click="ButtonDefib_Click">
+					<TextBlock Name="btntxtDefib"
+							   Style="{StaticResource tb_button}" />
+				</Button>
+
+				<Grid Grid.Row="1"
+					  Grid.Column="0">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
+					<Grid.RowDefinitions>
+						<RowDefinition />
+					</Grid.RowDefinitions>
+
+					<Button Name="buttonDefibEnergyDecrease"
+							Grid.Row="0"
+							Grid.Column="0"
+							Background="LightGray"
+							Style="{StaticResource btn_round}"
+							Click="ButtonDefibEnergyDecrease_Click">
+						<TextBlock Name="btntxtDefibEnergyDecrease"
+								   Style="{StaticResource tb_button}" />
+					</Button>
+
+					<TextBlock Name="txtDefibEnergy"
+							   Grid.Row="0"
+							   Grid.Column="1"
+							   VerticalAlignment="Center"
+							   Style="{StaticResource tb_buttonsub}" />
+
+					<Button Name="buttonDefibEnergyIncrease"
+							Grid.Row="0"
+							Grid.Column="2"
+							Background="LightGray"
+							Style="{StaticResource btn_round}"
+							Click="ButtonDefibEnergyIncrease_Click">
+						<TextBlock Name="btntxtDefibEnergyIncrease"
+								   Style="{StaticResource tb_button}" />
+					</Button>
+				</Grid>
+
+				<Button Name="buttonCharge"
+						Grid.Row="2"
+						Grid.Column="0"
+						Background="Yellow"
+						Style="{StaticResource btn_round}"
+						Click="ButtonCharge_Click">
+					<TextBlock Name="btntxtCharge"
+							   Style="{StaticResource tb_button}" />
+				</Button>
+
+				<Button Name="buttonShock"
+						Grid.Row="3"
+						Grid.Column="0"
+						Background="Red"
+						Style="{StaticResource btn_round}"
+						Click="ButtonShock_Click">
+					<TextBlock Name="btntxtShock"
+							   Style="{StaticResource tb_button}" />
+				</Button>
+
+				<!--  AED and sync modes  -->
+
+				<Button Name="buttonAnalyze"
+						Grid.Row="4"
+						Grid.Column="0"
+						Background="Orange"
+						Style="{StaticResource btn_round}"
+						Click="ButtonAnalyze_Click">
+					<TextBlock Name="btntxtAnalyze"
+							   Style="{StaticResource tb_button}" />
+				</Button>
+
+				<Button Name="buttonSync"
+						Grid.Row="5"
+						Grid.Column="0"
+						Background="LightGray"
+						Style="{StaticResource btn_round}"
+						Click="ButtonSync_Click">
+					<TextBlock Name="btntxtSync"
+							   Style="{StaticResource tb_button}" />
+				</Button>
+
+				<!--  Pacing mode  -->
+
+				<Button Name="buttonPacer"
+						Grid.Row="7"
+						Grid.Column="0"
+						Background="BlanchedAlmond"
+						Style="{StaticResource btn_round}"
+						Click="ButtonPacer_Click">
+					<TextBlock Name="btntxtPacer"
+							   Style="{StaticResource tb_button}" />
+				</Button>
+
+				<Grid Grid.Row="8"
+					  Grid.Column="0">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
+					<Grid.RowDefinitions>
+						<RowDefinition />
+					</Grid.RowDefinitions>
+
+					<Button Name="buttonPaceRateDecrease"
+							Grid.Row="0"
+							Grid.Column="0"
+							Background="BlanchedAlmond"
+							Style="{StaticResource btn_round}"
+							Click="ButtonPaceRateDecrease_Click">
+						<TextBlock Name="btntxtPaceRateDecrease"
+								   Style="{StaticResource tb_button}" />
+					</Button>
+
+					<TextBlock Name="txtPaceRate"
+							   Grid.Row="0"
+							   Grid.Column="1"
+							   VerticalAlignment="Center"
+							   Style="{StaticResource tb_buttonsub}" />
+
+					<Button Name="buttonPaceRateIncrease"
+							Grid.Row="0"
+							Grid.Column="2"
+							Background="BlanchedAlmond"
+							Style="{StaticResource btn_round}"
+							Click="ButtonPaceRateIncrease_Click">
+						<TextBlock Name="btntxtPaceRateIncrease"
+								   Style="{StaticResource tb_button}" />
+					</Button>
+				</Grid>
+
+				<Grid Grid.Row="9"
+					  Grid.Column="0">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="*" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
+					<Grid.RowDefinitions>
+						<RowDefinition />
+					</Grid.RowDefinitions>
+
+					<Button Name="buttonPaceEnergyDecrease"
+							Grid.Row="0"
+							Grid.Column="0"
+							Background="BlanchedAlmond"
+							Style="{StaticResource btn_round}"
+							Click="ButtonPaceEnergyDecrease_Click">
+						<TextBlock Name="btntxtPaceEnergyDecrease"
+								   Style="{StaticResource tb_button}" />
+					</Button>
+
+					<TextBlock Name="txtPaceEnergy"
+							   Grid.Row="0"
+							   Grid.Column="1"
+							   VerticalAlignment="Center"
+							   Style="{StaticResource tb_buttonsub}" />
+
+					<Button Name="buttonPaceEnergyIncrease"
+							Grid.Row="0"
+							Grid.Column="2"
+							Background="BlanchedAlmond"
+							Style="{StaticResource btn_round}"
+							Click="ButtonPaceEnergyIncrease_Click">
+						<TextBlock Name="btntxtPaceEnergyIncrease"
+								   Style="{StaticResource tb_button}" />
+					</Button>
+				</Grid>
+
+				<Button Name="buttonPacePause"
+						Grid.Row="10"
+						Grid.Column="0"
+						Background="BlanchedAlmond"
+						Style="{StaticResource btn_round}"
+						Click="ButtonPacePause_Click">
+					<TextBlock Name="btntxtPacePause"
+							   Style="{StaticResource tb_button}" />
+				</Button>
+			</Grid>
+		</Grid>
+	</DockPanel>
 </Window>
