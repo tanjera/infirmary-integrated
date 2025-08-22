@@ -32,6 +32,21 @@ namespace IISIM.Windows {
 
         public States State;
 
+        /* Device settings */
+        public Modes Mode = Modes.DEFIB;
+
+        public ChargeStates Charge;
+        public AnalyzeStates Analyze;
+
+        public int DefibEnergy = 200,
+                    PacerEnergy = 0,
+                    PacerRate = 80;
+
+        private int rowsTracings = 1;
+        private int colsNumerics = 4;
+
+        private int autoScale_iter = Strip.DefaultAutoScale_Iterations;
+
         private Color.Schemes colorScheme = Color.Schemes.Dark;
 
         private List<Controls.DefibTracing> listTracings = new ();

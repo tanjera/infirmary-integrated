@@ -1,8 +1,11 @@
 ﻿using II;
 using II.Localization;
 using II.Server;
+
 using IISIM;
+
 using Microsoft.Win32;
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -19,6 +22,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+
 using Xceed.Wpf.Toolkit;
 using Xceed.Wpf.Toolkit.Primitives;
 
@@ -77,6 +81,9 @@ namespace IISIM.Windows {
             }
 
             DataContext = this;
+
+            Activated += this.OnActivated;
+            Closed += this.OnClosed;
 
             Instance.MainWindow = this;
 
@@ -1597,10 +1604,10 @@ namespace IISIM.Windows {
         private void ButtonApplyParameters_Click (object sender, RoutedEventArgs e)
             => _ = ApplyPhysiologyParameters ();
 
-        private void OnClosed (object sender, EventArgs e)
+        private void OnClosed (object? sender, EventArgs e)
             => _ = Exit ();
 
-        private void OnActivated (object sender, EventArgs e) {
+        private void OnActivated (object? sender, EventArgs e) {
             if (!IsUILoadCompleted) {
                 /* Re-apply window settings from prior run */
                 wdwControl.Left = Instance?.Settings.WindowPosition.X ?? 0;
