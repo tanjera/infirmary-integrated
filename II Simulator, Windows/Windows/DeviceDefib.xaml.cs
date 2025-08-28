@@ -22,6 +22,8 @@ using II.Rhythm;
 using II.Settings;
 using II.Waveform;
 
+using IISIM.Classes;
+
 namespace IISIM.Windows {
 
     /// <summary>
@@ -63,8 +65,12 @@ namespace IISIM.Windows {
         public SoundPlayer? AudioPlayer;
 
         /* Variables for audio tones (QRS or SPO2 beeps) and defibrillator charger */
-        public MediaPlayer? TonePlayer, ChargePlayer;
-        private MemoryStream? ToneMedia, ChargeMedia;
+
+        public MediaPlayer?
+            TonePlayer = new MediaPlayer (),
+            ChargePlayer = new MediaPlayer ();
+
+        private string? ToneMedia = "";
 
         public enum States {
             Running,
@@ -222,7 +228,11 @@ namespace IISIM.Windows {
             btntxtPaceEnergyIncrease.Text = Instance.Language.Localize ("DEFIB:Increase");
             btntxtPacePause.Text = Instance.Language.Localize ("DEFIB:Pause");
 
-            // TODO: Implement tracings & numerics!!
+            /* Init Numeric & Tracing layout */
+
+            OnLayoutChange (
+                new (["DEFIB", "ECG", "NIBP", "SPO2", "ETCO2", "ABP"]),
+                new (["ECG_II", "SPO2", "ETCO2", "ABP"]));
 
             /* Init Hotkeys (Commands & InputBinding) */
 
@@ -248,9 +258,7 @@ namespace IISIM.Windows {
         }
 
         private void UpdateInterface () {
-            /* TODO: Implement
-
-             Dispatcher.UIThread.InvokeAsync ((Action)(() => {
+            App.Current.Dispatcher.InvokeAsync ((Action)(() => {
                 listNumerics
                     .Where<Controls.DefibNumeric> ((Func<Controls.DefibNumeric, bool>)(n => n.ControlType?.Value == Controls.DefibNumeric.ControlTypes.Values.DEFIB))
                     .ToList<Controls.DefibNumeric> ()
@@ -262,50 +270,208 @@ namespace IISIM.Windows {
                 for (int i = 0; i < listNumerics.Count; i++)
                     listNumerics [i].SetColorScheme (colorScheme);
 
-                Window window = this.GetControl<Window> ("wdwDeviceDefib");
-                window.Background = Color.GetBackground (Color.Devices.DeviceDefib, colorScheme);
+                wdwDeviceDefib.Background = Color.GetBackground (Color.Devices.DeviceDefib, colorScheme);
             }));
-             */
         }
 
-        public Task Load (string inc) {
-            // TODO: Implement
-            return Task.CompletedTask;
+        private void OnLayoutChange (List<string>? numericTypes = null, List<string>? tracingTypes = null) {
+            // If numericTypes or tracingTypes are not null... then we are loading a file; clear lNumerics and lTracings!
+            if (numericTypes != null)
+                listNumerics.Clear ();
+            if (tracingTypes != null)
+                listTracings.Clear ();
+
+            // Set default numeric types to populate
+            if (numericTypes == null || numericTypes.Count == 0)
+                numericTypes = new (new string [] { "DEFIB", "ECG", "NIBP", "SPO2", "ETCO2", "ABP" });
+            else if (numericTypes.Count < colsNumerics) {
+                List<string> buffer = new (new string [] { "DEFIB", "ECG", "NIBP", "SPO2", "ETCO2", "ABP" });
+                buffer.RemoveRange (0, numericTypes.Count);
+                numericTypes.AddRange (buffer);
+            }
+
+            for (int i = listNumerics.Count; i < colsNumerics && i < numericTypes.Count; i++) {
+                Controls.DefibNumeric newNum;
+                newNum = new Controls.DefibNumeric (
+                    Instance, this,
+                    (Controls.DefibNumeric.ControlTypes.Values)Enum.Parse (typeof (Controls.DefibNumeric.ControlTypes.Values), numericTypes [i]),
+                    colorScheme);
+                listNumerics.Add (newNum);
+            }
+
+            // Set default tracing types to populate
+            if (tracingTypes == null || tracingTypes.Count == 0)
+                tracingTypes = new (new string [] { "ECG_II", "SPO2", "ETCO2", "ABP" });
+            else if (tracingTypes.Count < rowsTracings) {
+                List<string> buffer = new (new string [] { "ECG_II", "SPO2", "ETCO2", "ABP" });
+                buffer.RemoveRange (0, tracingTypes.Count);
+                tracingTypes.AddRange (buffer);
+            }
+
+            for (int i = listTracings.Count; i < rowsTracings && i < tracingTypes.Count; i++) {
+                Strip newStrip = new ((Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]), 6f);
+                Controls.DefibTracing newTracing = new (Instance, newStrip, colorScheme);
+                listTracings.Add (newTracing);
+            }
+
+            // Reset the UI container and repopulate with the UI elements
+
+            gridNumerics.Children.Clear ();
+            gridNumerics.ColumnDefinitions.Clear ();
+            for (int i = 0; i < colsNumerics && i < listNumerics.Count; i++) {
+                gridNumerics.ColumnDefinitions.Add (new ColumnDefinition ());
+                listNumerics [i].SetValue (Grid.ColumnProperty, i);
+                gridNumerics.Children.Add (listNumerics [i]);
+            }
+
+            gridTracings.Children.Clear ();
+            gridTracings.RowDefinitions.Clear ();
+            for (int i = 0; i < rowsTracings && i < listTracings.Count; i++) {
+                gridTracings.RowDefinitions.Add (new RowDefinition ());
+                listTracings [i].SetValue (Grid.RowProperty, i);
+                gridTracings.Children.Add (listTracings [i]);
+            }
+        }
+
+        public async Task Load (string inc) {
+            using StringReader sRead = new (inc);
+            List<string> numericTypes = new (),
+                         tracingTypes = new ();
+
+            try {
+                string? line;
+                while ((line = await sRead.ReadLineAsync ()) != null) {
+                    if (line.Contains (':')) {
+                        string pName = line.Substring (0, line.IndexOf (':')),
+                                pValue = line.Substring (line.IndexOf (':') + 1);
+                        switch (pName) {
+                            default: break;
+                            case "rowsTracings": rowsTracings = int.Parse (pValue); break;
+                            case "colsNumerics": colsNumerics = int.Parse (pValue); break;
+
+                            case "numericTypes": numericTypes.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
+                            case "tracingTypes": tracingTypes.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
+                            case "Mode": Mode = (Modes)Enum.Parse (typeof (Modes), pValue); break;
+                            case "Charge": Charge = (ChargeStates)Enum.Parse (typeof (ChargeStates), pValue); break;
+                            case "Analyze": Analyze = (AnalyzeStates)Enum.Parse (typeof (AnalyzeStates), pValue); break;
+                            case "DefibEnergy": DefibEnergy = int.Parse (pValue); break;
+                            case "PacerEnergy": PacerEnergy = int.Parse (pValue); break;
+                            case "PacerRate": PacerRate = int.Parse (pValue); break;
+                        }
+                    }
+                }
+            } catch {
+            } finally {
+                sRead.Close ();
+                OnLayoutChange (numericTypes, tracingTypes);
+            }
         }
 
         public string Save () {
-            // TODO: Implement
-            return "";
+            StringBuilder sWrite = new ();
+
+            sWrite.AppendLine (String.Format ("{0}:{1}", "rowsTracings", rowsTracings));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "colsNumerics", colsNumerics));
+
+            List<string> numericTypes = new (),
+                         tracingTypes = new ();
+
+            listNumerics.ForEach ((Action<Controls.DefibNumeric>)(o => {
+                if (o?.ControlType?.Value is not null)
+                    numericTypes.Add ((string)o.ControlType.Value.ToString ());
+            }));
+            listTracings.ForEach (o => { tracingTypes.Add (o.Strip?.Lead?.Value.ToString () ?? ""); });
+            sWrite.AppendLine (String.Format ("{0}:{1}", "numericTypes", string.Join (",", numericTypes)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "tracingTypes", string.Join (",", tracingTypes)));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Mode", Mode));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Charge", Charge));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "Analyze", Analyze));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "DefibEnergy", DefibEnergy));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "PacerEnergy", PacerEnergy));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "PacerRate", PacerRate));
+
+            return sWrite.ToString ();
         }
 
         public Task SetDefibEnergyMaximum (int joules) {
-            // TODO: Implement
+            if (Instance?.Settings is null)
+                return Task.CompletedTask;
+
+            Instance.Settings.DefibEnergyMaximum = joules;
+            Instance.Settings.Save ();
+
+            DefibEnergy = II.Math.Clamp (DefibEnergy, 0, Instance?.Settings?.DefibEnergyMaximum ?? joules);
+            UpdateInterface ();
 
             return Task.CompletedTask;
         }
 
         public Task SetDefibEnergyIncrement (int joules) {
-            // TODO: Implement
+            if (Instance?.Settings is null)
+                return Task.CompletedTask;
+
+            Instance.Settings.DefibEnergyIncrement = joules;
+            Instance.Settings.Save ();
 
             return Task.CompletedTask;
         }
 
         public async Task SetChargeState (ChargeStates charge) {
-            // TODO: Implement
+            Charge = charge;
             await PlayAudioCharge ();
         }
 
         public async Task PlayAudioCharge () {
-            // TODO: Implement
+            if (ChargePlayer is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (PlayAudioCharge)}");
+                return;
+            }
+
+            if (!(Instance?.Settings?.AudioEnabled ?? false) || ((Instance?.Settings?.DefibAudioSource ?? Simulator.ToneSources.Mute) == Simulator.ToneSources.Mute)) {
+                ChargePlayer.Stop ();
+                await ReleaseAudioCharge ();
+            } else {
+                switch (Charge) {
+                    default:
+                        ChargePlayer.Stop ();
+                        break;
+
+                    case ChargeStates.Charging:
+                        ChargePlayer.Stop ();
+                        await ReleaseAudioCharge ();
+
+                        string af_charging = "";
+                        using (MemoryStream ms = await Audio.ToneGenerator (3, 440, true)) {
+                            af_charging = Media.CreateFile_Audio (ms);
+                        }
+
+                        ChargePlayer.Open (new Uri (af_charging));
+                        ChargePlayer.Play ();
+
+                        System.IO.File.Delete (af_charging);
+                        break;
+
+                    case ChargeStates.Charged:
+                        ChargePlayer.Stop ();
+                        await ReleaseAudioCharge ();
+
+                        string af_charged = "";
+                        using (MemoryStream ms = await Audio.ToneGenerator (30, 660, true)) {
+                            af_charged = Media.CreateFile_Audio (ms);
+                        }
+
+                        ChargePlayer.Open (new Uri (af_charged));
+                        ChargePlayer.Play ();
+
+                        System.IO.File.Delete (af_charged);
+                        break;
+                }
+            }
         }
 
-        public void SetAudio_On () {
-            // TODO: Implement
-        }
+        public void SetAudio_On () => _ = Instance?.Window_Control?.SetAudio (true);
 
-        public void SetAudio_Off () {
-            // TODO: Implement
-        }
+        public void SetAudio_Off () => _ = Instance?.Window_Control?.SetAudio (false);
 
         public void SetAudioTone_Off () => _ = SetAudioTone (II.Settings.Simulator.ToneSources.Mute);
 
@@ -315,22 +481,94 @@ namespace IISIM.Windows {
 
         public void SetAudioTone_SPO2 () => _ = SetAudioTone (II.Settings.Simulator.ToneSources.SPO2);
 
-        public Task SetAudioTone (II.Settings.Simulator.ToneSources source) {
-            // TODO: Implement
-            return Task.CompletedTask;
+        public async Task SetAudioTone (II.Settings.Simulator.ToneSources source) {
+            if (Instance?.Settings is null)
+                return;
+
+            Instance.Settings.DefibAudioSource = source;
+            Instance.Settings.Save ();
+
+            if (TonePlayer is not null) {
+                switch (Instance.Settings.DefibAudioSource) {
+                    default:
+                    case Simulator.ToneSources.SPO2:
+                        await ReleaseAudioTone ();
+
+                        break;
+
+                    case Simulator.ToneSources.ECG:
+                        await ReleaseAudioTone ();
+
+                        string af_ecg = "";
+                        using (MemoryStream ms = await Audio.ToneGenerator (30, 660, true)) {
+                            af_ecg = Media.CreateFile_Audio (ms);
+                        }
+
+                        ToneMedia = af_ecg;
+                        TonePlayer.Open (new Uri (af_ecg));
+                        break;
+                }
+            }
+
+            return;
         }
 
         public async Task PlayAudioTone (Simulator.ToneSources trigger, Physiology? p) {
-            // TODO: Implement
+            if (Instance is null || TonePlayer is null) {
+                App.Current.Dispatcher.Invoke (() => Debug.WriteLine ($"Null return at {this.Name}.{nameof (PlayAudioTone)}"));
+                return;
+            }
+
+            if (Instance.Settings.DefibAudioSource == trigger && (Instance?.Settings.AudioEnabled ?? false)) {
+                switch (Instance.Settings.DefibAudioSource) {
+                    default: break;
+
+                    case Simulator.ToneSources.ECG:           // Plays a fixed tone each QRS complex
+                        // Don't ReleaseAudioTone() here! Would close and delete the media...
+                        App.Current.Dispatcher.Invoke (() => {
+                            TonePlayer.Stop ();
+                            TonePlayer.Play ();
+                        });
+                        break;
+
+                    case Simulator.ToneSources.SPO2:          // Plays a variable tone depending on SpO2
+                        await App.Current.Dispatcher.InvokeAsync (async () => {
+                            TonePlayer.Stop ();
+                            await ReleaseAudioTone ();
+
+                            string af_spo2 = "";
+                            using (MemoryStream ms = await Audio.ToneGenerator (0.15, II.Math.Lerp (110, 330, (double)(p?.SPO2 ?? 100) / 100), true)) {
+                                af_spo2 = Media.CreateFile_Audio (ms);
+                            }
+
+                            TonePlayer.Open (new Uri (af_spo2));
+                            TonePlayer.Play ();
+
+                            System.IO.File.Delete (af_spo2);
+                        });
+                        break;
+                }
+            }
         }
 
         private Task ReleaseAudioCharge () {
-            // TODO: Implement
+            ChargePlayer?.Stop ();
+            ChargePlayer?.Close ();
+
             return Task.CompletedTask;
         }
 
         private Task ReleaseAudioTone () {
-            // TODO: Implement
+            TonePlayer?.Stop ();
+            TonePlayer?.Close ();
+
+            if (!String.IsNullOrEmpty (ToneMedia)) {
+                ToneMedia = null;
+
+                if (System.IO.File.Exists (ToneMedia))
+                    System.IO.File.Delete (ToneMedia);
+            }
+
             return Task.CompletedTask;
         }
 
@@ -555,44 +793,40 @@ namespace IISIM.Windows {
         }
 
         public void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
-            /* TODO: Implement
+            if (State != States.Running)
+                return;
 
-           if (State != States.Running)
-               return;
-
-           listNumerics
-               .Where (n
-                   => n.ControlType?.Value != Controls.DefibNumeric.ControlTypes.Values.ETCO2
-                   && n.ControlType?.Value != Controls.DefibNumeric.ControlTypes.Values.RR)
-               .ToList ()
-               .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
-            */
+            listNumerics
+                .Where (n
+                    => n.ControlType?.Value != Controls.DefibNumeric.ControlTypes.Values.ETCO2
+                    && n.ControlType?.Value != Controls.DefibNumeric.ControlTypes.Values.RR)
+                .ToList ()
+                .ForEach (n => App.Current.Dispatcher.InvokeAsync (n.UpdateVitals));
         }
 
         public void OnTick_Vitals_Respiratory (object? sender, EventArgs e) {
-            /* TODO: Implement
+            if (State != States.Running)
+                return;
 
-          if (State != States.Running)
-              return;
-
-          listNumerics
-              .Where (n
-                  => n.ControlType?.Value == Controls.DefibNumeric.ControlTypes.Values.ETCO2
-                  || n.ControlType?.Value == Controls.DefibNumeric.ControlTypes.Values.RR)
-              .ToList ()
-              .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
-           */
+            listNumerics
+                .Where (n
+                    => n.ControlType?.Value == Controls.DefibNumeric.ControlTypes.Values.ETCO2
+                    || n.ControlType?.Value == Controls.DefibNumeric.ControlTypes.Values.RR)
+                .ToList ()
+                .ForEach (n => App.Current.Dispatcher.InvokeAsync (n.UpdateVitals));
         }
 
         public void OnPhysiologyEvent (object? sender, Physiology.PhysiologyEventArgs e) {
             switch (e.EventType) {
                 default: break;
+
                 case Physiology.PhysiologyEventTypes.Vitals_Change:
                     listTracings.ForEach (c => {
                         c.Strip?.ClearFuture (Instance?.Physiology);
                         c.Strip?.Add_Baseline (Instance?.Physiology);
                     });
 
+                    listNumerics.ForEach ((n) => App.Current.Dispatcher.InvokeAsync (n.UpdateVitals));
                     break;
 
                 case Physiology.PhysiologyEventTypes.Defibrillation:
@@ -612,6 +846,9 @@ namespace IISIM.Windows {
                     break;
 
                 case Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Electric:
+                    // QRS audio tone is only triggered by rhythms w/ a ventricular electrical (QRS complex) action
+                    _ = PlayAudioTone (Simulator.ToneSources.ECG, e.Physiology);
+
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Physiology));
                     break;
 
@@ -620,7 +857,31 @@ namespace IISIM.Windows {
                     break;
 
                 case Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Mechanical:
+                    // SPO2 audio tone is only triggered  by rhythms w/ a ventricular mechanical action (systole)
+                    _ = PlayAudioTone (Simulator.ToneSources.SPO2, e.Physiology);
+
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Physiology));
+                    IterateAutoScale ();
+                    break;
+
+                case Physiology.PhysiologyEventTypes.IABP_Balloon_Inflation:
+                    // Note: May draw either IABP or ABP waveforms (e.g. ABP with augmentation in non-pulsatile rhythm cases)
+                    listTracings.ForEach (c => c.Strip?.Add_Beat__IABP_Balloon (Instance?.Physiology));
+
+                    if (Instance?.Physiology is not null && !Instance.Physiology.Cardiac_Rhythm.HasPulse_Ventricular)
+                        IterateAutoScale ();
+                    break;
+
+                case Physiology.PhysiologyEventTypes.Respiratory_Baseline:
+                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Baseline (Instance?.Physiology));
+                    break;
+
+                case Physiology.PhysiologyEventTypes.Respiratory_Inspiration:
+                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Inspiration (Instance?.Physiology));
+                    break;
+
+                case Physiology.PhysiologyEventTypes.Respiratory_Expiration:
+                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Expiration (Instance?.Physiology));
                     break;
             }
         }

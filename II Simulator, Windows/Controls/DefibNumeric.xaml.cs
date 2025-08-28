@@ -22,6 +22,8 @@ using II.Drawing;
 using II.Localization;
 using II.Rhythm;
 
+using IISIM.Windows;
+
 namespace IISIM.Controls {
 
     /// <summary>
@@ -255,7 +257,7 @@ namespace IISIM.Controls {
                     case ControlTypes.Values.T:
                     case ControlTypes.Values.RR:
                     case ControlTypes.Values.CVP:
-                        lblLine1.FontSize = 30;
+                        lblLine1.FontSize = 36;
                         lblLine2.Visibility = Visibility.Hidden;
                         lblLine3.Visibility = Visibility.Hidden;
                         break;
@@ -279,11 +281,133 @@ namespace IISIM.Controls {
         }
 
         public virtual void OnTick_Alarm (object? sender, EventArgs e) {
-            // TODO: Implement (from base class???)
+            // Nothing to do
         }
 
         public void UpdateVitals () {
-            // TODO: Implement
+            if (Instance?.Physiology == null)
+                return;
+
+            switch (ControlType?.Value) {
+                default:
+                case ControlTypes.Values.ECG:
+                    lblLine1.Text = String.Format ("{0:0}", Instance.Physiology.MeasureHR_ECG (
+                        Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
+                    break;
+
+                case ControlTypes.Values.T:
+                    lblLine1.Text = String.Format ("{0:0.0}", Instance.Physiology.T);
+                    break;
+
+                case ControlTypes.Values.SPO2:
+                    lblLine1.Text = String.Format ("{0:0} %", II.Math.RandomPercentRange (Instance.Physiology.SPO2, 0.01f));
+                    lblLine2.Text = String.Format ("@ {0:0}", Instance.Physiology.MeasureHR_SPO2 (
+                        Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
+                    break;
+
+                case ControlTypes.Values.RR:
+                    lblLine1.Text = String.Format ("{0:0}", Instance.Physiology.MeasureRR (
+                        Strip.DefaultLength * Strip.DefaultRespiratoryCoefficient, Strip.DefaultLength * Strip.DefaultBufferLength));
+                    break;
+
+                case ControlTypes.Values.ETCO2:
+                    lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Physiology.ETCO2, 0.02f));
+                    lblLine2.Text = String.Format ("@ {0:0}", Instance.Physiology.MeasureRR (
+                        Strip.DefaultLength * Strip.DefaultRespiratoryCoefficient, Strip.DefaultLength * Strip.DefaultBufferLength));
+                    break;
+
+                case ControlTypes.Values.NIBP:
+                    lblLine1.Text = String.Format ("{0:0}", Instance.Physiology.NSBP);
+                    lblLine2.Text = String.Format ("/ {0:0}", Instance.Physiology.NDBP);
+                    lblLine3.Text = String.Format ("({0:0})", Instance.Physiology.NMAP);
+                    break;
+
+                case ControlTypes.Values.ABP:
+                    if (Instance.Physiology.TransducerZeroed_ABP) {
+                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Physiology.ASBP, 0.02f));
+                        lblLine2.Text = String.Format ("/ {0:0}", II.Math.RandomPercentRange (
+                            (Instance.Physiology.IABP_Active ? Instance.Physiology.IABP_DBP : Instance.Physiology.ADBP), 0.02f));
+                        lblLine3.Text = String.Format ("({0:0})", II.Math.RandomPercentRange (Instance.Physiology.AMAP, 0.02f));
+                    } else {
+                        lblLine1.Text = Utility.WrapString (Instance.Language.Localize ("NUMERIC:ZeroTransducer"));
+                        lblLine2.Text = "";
+                        lblLine3.Text = "";
+                    }
+                    break;
+
+                case ControlTypes.Values.CVP:
+                    if (Instance.Physiology.TransducerZeroed_CVP)
+                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Physiology.CVP, 0.02f));
+                    else
+                        lblLine1.Text = Instance.Language.Localize ("NUMERIC:ZeroTransducer");
+                    break;
+
+                case ControlTypes.Values.PA:
+                    if (Instance.Physiology.TransducerZeroed_PA) {
+                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Physiology.PSP, 0.02f));
+                        lblLine2.Text = String.Format ("/ {0:0}", II.Math.RandomPercentRange (Instance.Physiology.PDP, 0.02f));
+                        lblLine3.Text = String.Format ("({0:0})", II.Math.RandomPercentRange (Instance.Physiology.PMP, 0.02f));
+                    } else {
+                        lblLine1.Text = Instance.Language.Localize ("NUMERIC:ZeroTransducer");
+                        lblLine2.Text = "";
+                        lblLine3.Text = "";
+                    }
+                    break;
+
+                case ControlTypes.Values.DEFIB:
+                    if (Device is not null) {
+                        switch (Device.Mode) {
+                            default:
+                            case DeviceDefib.Modes.DEFIB:
+
+                                lblLine1.Text = Instance.Language.Localize ("DEFIB:Defibrillation");
+                                lblLine2.Text = String.Format ("{0:0} {1}", Device.DefibEnergy, Instance.Language.Localize ("DEFIB:Joules"));
+
+                                if (Device.Analyze == DeviceDefib.AnalyzeStates.Analyzing) {
+                                    lblLine3.Text = Instance.Language.Localize ("DEFIB:Analyzing");
+                                } else if (Device.Analyze == DeviceDefib.AnalyzeStates.Analyzed) {
+                                    switch (Instance.Physiology.Cardiac_Rhythm.Value) {
+                                        default:
+                                            lblLine3.Text = Instance.Language.Localize ("DEFIB:NoShockAdvised");
+                                            break;
+
+                                        case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Coarse:
+                                        case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Fine:
+                                        case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
+                                        case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
+                                        case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Polymorphic:
+                                            lblLine3.Text = Instance.Language.Localize ("DEFIB:ShockAdvised");
+                                            break;
+                                    }
+                                } else {
+                                    lblLine3.Text = Device.Charge switch {
+                                        DeviceDefib.ChargeStates.Charging => Instance.Language.Localize ("DEFIB:Charging"),
+                                        DeviceDefib.ChargeStates.Charged => Instance.Language.Localize ("DEFIB:Charged"),
+                                        _ => ""
+                                    };
+                                }
+
+                                break;
+
+                            case DeviceDefib.Modes.SYNC:
+                                lblLine1.Text = Instance.Language.Localize ("DEFIB:Synchronized");
+                                lblLine2.Text = String.Format ("{0:0} {1}", Device.DefibEnergy, Instance.Language.Localize ("DEFIB:Joules"));
+                                lblLine3.Text = Device.Charge switch {
+                                    DeviceDefib.ChargeStates.Charging => Instance.Language.Localize ("DEFIB:Charging"),
+                                    DeviceDefib.ChargeStates.Charged => Instance.Language.Localize ("DEFIB:Charged"),
+                                    _ => ""
+                                };
+                                break;
+
+                            case DeviceDefib.Modes.PACER:
+                                lblLine1.Text = Instance.Language.Localize ("DEFIB:Pacing");
+                                lblLine2.Text = String.Format ("{0:0} {1}", Device.PacerEnergy, Instance.Language.Localize ("DEFIB:Milliamps"));
+                                lblLine3.Text = String.Format ("{0}: {1:0}", Instance.Language.Localize ("DEFIB:Rate"), Device.PacerRate);
+                                break;
+                        }
+                    }
+                    break;
+            }
         }
 
         private void MenuZeroTransducer_Click (object? sender, RoutedEventArgs e) {
