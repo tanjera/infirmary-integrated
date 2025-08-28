@@ -6,9 +6,32 @@ namespace Tone_Generator {
     internal class Program {
 
         private static void Main (string [] args) {
-            double seconds = 10;
-            string output = "C:\\Users\\Ibi\\Desktop\\output.wav";
+            string outDir = Path.Combine (Directory.GetCurrentDirectory (), "audio");
+            Directory.CreateDirectory (outDir);
 
+            // Generate DeviceDefib -> Charging
+            Console.WriteLine ("Generating DeviceDefib -> Charging");
+            Generate (Path.Combine (outDir, "defib_charging.wav"), 3, 440, true);
+
+            Console.WriteLine ("Generating DeviceDefib -> Charged");
+            Generate (Path.Combine (outDir, "defib_charged.wav"), 30, 660, true);
+
+            // Generate DeviceDefib/Monitor -> QRS tone
+            Console.WriteLine ("Generating DeviceDefib/Monitor -> QRS tone");
+            Generate (Path.Combine (outDir, "tone_qrs.wav"), 0.15, 660, true);
+
+            // Generate DeviceDefib/Monitor -> SpO2 tones
+            for (int i = 0; i <= 100; i++) {
+                Console.WriteLine ($"DeviceDefib/Monitor -> SpO2 tones: SpO2 {i:000}");
+                Generate (Path.Combine (outDir, $"tone_spo2_{i:000}.wav"), 0.15,
+                    Lerp (110, 330, (double)(i) / 100),
+                    true);
+            }
+
+            Console.WriteLine ($"Complete! Files written to {outDir}");
+        }
+
+        private static void Generate (string output, double seconds = 0.1, double frequency = 220, bool fixpop = true) {
             FileStream stream = new FileStream (output, FileMode.Create);
             BinaryWriter writer = new BinaryWriter (stream);
 
@@ -45,34 +68,36 @@ namespace Tone_Generator {
 
             double ampl = 10000;
 
-            for (int k = 0; k < 2; k++) {
-                for (int i = 0; i < (samplesTotal / seconds) * .75; i++) {
-                    double t = (double)i / (double)samplesPerSecond;
-                    short s = (short)(ampl * (System.Math.Sin (t * 330 * 2.0 * System.Math.PI)));
-                    writer.Write (s);
+            for (int i = 0; i < samplesTotal; i++) {
+                double t = (double)i / (double)samplesPerSecond;
+                short s = (short)(ampl * (System.Math.Sin (t * frequency * 2.0 * System.Math.PI)));
+
+                if (fixpop && i > samplesTotal - 1000) {
+                    double c = InverseLerp (samplesTotal, samplesTotal - 1000, i);
+                    s = Convert.ToInt16 (s * c);
                 }
 
-                for (int i = 0; i < (samplesTotal / seconds) * .25; i++) {
-                    double t = (double)i / (double)samplesPerSecond;
-                    short s = (short)(0 * (System.Math.Sin (t * 220 * 2.0 * System.Math.PI)));
-                    writer.Write (s);
-                }
-
-                for (int i = 0; i < (samplesTotal / seconds) * 1; i++) {
-                    double t = (double)i / (double)samplesPerSecond;
-                    short s = (short)(ampl * (System.Math.Sin (t * 220 * 2.0 * System.Math.PI)));
-                    writer.Write (s);
-                }
-
-                for (int i = 0; i < (samplesTotal / seconds) * 3; i++) {
-                    double t = (double)i / (double)samplesPerSecond;
-                    short s = (short)(0 * (System.Math.Sin (t * 220 * 2.0 * System.Math.PI)));
-                    writer.Write (s);
-                }
+                writer.Write (s);
             }
 
             writer.Close ();
             stream.Close ();
+        }
+
+        public static double Lerp (double min, double max, double t) {
+            return min * (1 - t) + max * t;
+        }
+
+        public static int Lerp (int min, int max, double t) {
+            return (int)(min * (1 - t) + max * t);
+        }
+
+        public static double InverseLerp (double min, double max, double current) {
+            return (current - min) / (max - min);
+        }
+
+        public static double InverseLerp (int min, int max, double current) {
+            return ((current - min) / (max - min));
         }
     }
 }

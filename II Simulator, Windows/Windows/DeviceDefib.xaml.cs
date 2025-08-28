@@ -70,7 +70,9 @@ namespace IISIM.Windows {
             TonePlayer = new MediaPlayer (),
             ChargePlayer = new MediaPlayer ();
 
-        private string? ToneMedia = "";
+        private string?
+            ToneMedia,
+            ChargeMedia;
 
         public enum States {
             Running,
@@ -439,31 +441,19 @@ namespace IISIM.Windows {
                     case ChargeStates.Charging:
                         ChargePlayer.Stop ();
                         await ReleaseAudioCharge ();
-
-                        string af_charging = "";
-                        using (MemoryStream ms = await Audio.ToneGenerator (3, 440, true)) {
-                            af_charging = Media.CreateFile_Audio (ms);
-                        }
-
+                        // TODO: Open correct audio Uri from Resources/Audio
                         ChargePlayer.Open (new Uri (af_charging));
                         ChargePlayer.Play ();
 
-                        System.IO.File.Delete (af_charging);
                         break;
 
                     case ChargeStates.Charged:
                         ChargePlayer.Stop ();
                         await ReleaseAudioCharge ();
-
-                        string af_charged = "";
-                        using (MemoryStream ms = await Audio.ToneGenerator (30, 660, true)) {
-                            af_charged = Media.CreateFile_Audio (ms);
-                        }
-
+                        // TODO: Open correct audio Uri from Resources/Audio
                         ChargePlayer.Open (new Uri (af_charged));
                         ChargePlayer.Play ();
 
-                        System.IO.File.Delete (af_charged);
                         break;
                 }
             }
@@ -498,13 +488,7 @@ namespace IISIM.Windows {
 
                     case Simulator.ToneSources.ECG:
                         await ReleaseAudioTone ();
-
-                        string af_ecg = "";
-                        using (MemoryStream ms = await Audio.ToneGenerator (30, 660, true)) {
-                            af_ecg = Media.CreateFile_Audio (ms);
-                        }
-
-                        ToneMedia = af_ecg;
+                        // TODO: Open correct audio Uri from Resources/Audio
                         TonePlayer.Open (new Uri (af_ecg));
                         break;
                 }
@@ -524,7 +508,6 @@ namespace IISIM.Windows {
                     default: break;
 
                     case Simulator.ToneSources.ECG:           // Plays a fixed tone each QRS complex
-                        // Don't ReleaseAudioTone() here! Would close and delete the media...
                         App.Current.Dispatcher.Invoke (() => {
                             TonePlayer.Stop ();
                             TonePlayer.Play ();
@@ -535,16 +518,9 @@ namespace IISIM.Windows {
                         await App.Current.Dispatcher.InvokeAsync (async () => {
                             TonePlayer.Stop ();
                             await ReleaseAudioTone ();
-
-                            string af_spo2 = "";
-                            using (MemoryStream ms = await Audio.ToneGenerator (0.15, II.Math.Lerp (110, 330, (double)(p?.SPO2 ?? 100) / 100), true)) {
-                                af_spo2 = Media.CreateFile_Audio (ms);
-                            }
-
+                            // TODO: Open correct audio Uri from Resources/Audio
                             TonePlayer.Open (new Uri (af_spo2));
                             TonePlayer.Play ();
-
-                            System.IO.File.Delete (af_spo2);
                         });
                         break;
                 }
@@ -564,9 +540,6 @@ namespace IISIM.Windows {
 
             if (!String.IsNullOrEmpty (ToneMedia)) {
                 ToneMedia = null;
-
-                if (System.IO.File.Exists (ToneMedia))
-                    System.IO.File.Delete (ToneMedia);
             }
 
             return Task.CompletedTask;
