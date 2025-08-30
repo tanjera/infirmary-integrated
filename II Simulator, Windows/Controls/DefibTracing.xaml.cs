@@ -211,14 +211,10 @@ namespace IISIM.Controls {
                     DrawMultiplier.Y = (float)((-cnvTracing.ActualHeight / 2f) * Strip.Amplitude);
                     break;
 
+                case Strip.Offsets.Scaled:
                 case Strip.Offsets.Stretch:
                     DrawOffset.Y = (int)(cnvTracing.ActualHeight * (1 - (Strip.ScaleMargin / 2)));
                     DrawMultiplier.Y = (float)(-cnvTracing.ActualHeight * (1 - Strip.ScaleMargin) * Strip.Amplitude);
-                    break;
-
-                case Strip.Offsets.Scaled:
-                    DrawOffset.Y = (int)(cnvTracing.ActualHeight * (1 - Strip.ScaleMargin));
-                    DrawOffset.Y = -(int)cnvTracing.ActualHeight;
                     break;
             }
         }
@@ -259,6 +255,7 @@ namespace IISIM.Controls {
                     }
                 }
             }
+
         }
 
         private void MenuZeroTransducer_Click (object? sender, RoutedEventArgs e) {
