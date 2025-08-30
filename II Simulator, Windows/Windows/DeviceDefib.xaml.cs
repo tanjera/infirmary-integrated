@@ -66,13 +66,13 @@ namespace IISIM.Windows {
 
         /* Variables for audio tones (QRS or SPO2 beeps) and defibrillator charger */
 
-        public MediaPlayer?
-            TonePlayer = new MediaPlayer (),
-            ChargePlayer = new MediaPlayer ();
+        public SoundPlayer?
+            MediaPlayer_Tone = new SoundPlayer (),
+            MediaPlayer_Charge = new SoundPlayer ();
 
-        private string?
-            ToneMedia,
-            ChargeMedia;
+        private MemoryStream?
+            MediaStream_Charge,
+            MediaStream_Tone;
 
         public enum States {
             Running,
@@ -242,7 +242,15 @@ namespace IISIM.Windows {
                 cmdMenuTogglePause_Click = new (),
                 cmdMenuToggleFullscreen_Click = new (),
                 cmdMenuColorScheme_Light = new (),
-                cmdMenuColorScheme_Dark = new ();
+                cmdMenuColorScheme_Dark = new (),
+                cmdMenuAddNumeric = new (),
+                cmdMenuAddTracing = new (),
+                cmdMenuAudioTone_Off = new (),
+                cmdMenuAudioTone_Defib = new (),
+                cmdMenuAudioTone_ECG = new (),
+                cmdMenuAudioTone_SPO2 = new (),
+                cmdMenuAudio_Disable = new (),
+                cmdMenuAudio_Enable = new ();
 
             cmdMenuTogglePause_Click.InputGestures.Add (new KeyGesture (Key.Pause));
             CommandBindings.Add (new CommandBinding (cmdMenuTogglePause_Click, MenuTogglePause_Click));
@@ -256,21 +264,43 @@ namespace IISIM.Windows {
             cmdMenuColorScheme_Dark.InputGestures.Add (new KeyGesture (Key.F2));
             CommandBindings.Add (new CommandBinding (cmdMenuColorScheme_Dark, MenuColorScheme_Dark));
 
-            // TODO: Implement remaining keybindings!!
+            cmdMenuAddNumeric.InputGestures.Add (new KeyGesture (Key.N, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdMenuAddNumeric, MenuAddNumeric_Click));
+
+            cmdMenuAddTracing.InputGestures.Add (new KeyGesture (Key.T, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdMenuAddTracing, MenuAddTracing_Click));
+
+            cmdMenuAudioTone_Off.InputGestures.Add (new KeyGesture (Key.P, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdMenuAudioTone_Off, MenuAudioOff));
+
+            cmdMenuAudioTone_Defib.InputGestures.Add (new KeyGesture (Key.OemOpenBrackets, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdMenuAudioTone_Defib, MenuAudioDefib));
+
+            cmdMenuAudioTone_ECG.InputGestures.Add (new KeyGesture (Key.OemCloseBrackets, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdMenuAudioTone_ECG, MenuAudioECG));
+
+            cmdMenuAudioTone_SPO2.InputGestures.Add (new KeyGesture (Key.OemPipe, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdMenuAudioTone_SPO2, MenuAudioSPO2));
+
+            cmdMenuAudio_Disable.InputGestures.Add (new KeyGesture (Key.OemMinus, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdMenuAudio_Disable, MenuDisableAudio));
+
+            cmdMenuAudio_Enable.InputGestures.Add (new KeyGesture (Key.OemPlus, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdMenuAudio_Enable, MenuEnableAudio));
         }
 
         private void UpdateInterface () {
+            for (int i = 0; i < listTracings.Count; i++)
+                listTracings [i].SetColorScheme (colorScheme);
+
+            for (int i = 0; i < listNumerics.Count; i++)
+                listNumerics [i].SetColorScheme (colorScheme);
+
             App.Current.Dispatcher.InvokeAsync ((Action)(() => {
                 listNumerics
                     .Where<Controls.DefibNumeric> ((Func<Controls.DefibNumeric, bool>)(n => n.ControlType?.Value == Controls.DefibNumeric.ControlTypes.Values.DEFIB))
                     .ToList<Controls.DefibNumeric> ()
                     .ForEach (n => n.UpdateVitals ());
-
-                for (int i = 0; i < listTracings.Count; i++)
-                    listTracings [i].SetColorScheme (colorScheme);
-
-                for (int i = 0; i < listNumerics.Count; i++)
-                    listNumerics [i].SetColorScheme (colorScheme);
 
                 wdwDeviceDefib.Background = Color.GetBackground (Color.Devices.DeviceDefib, colorScheme);
             }));
@@ -317,7 +347,6 @@ namespace IISIM.Windows {
             }
 
             // Reset the UI container and repopulate with the UI elements
-
             gridNumerics.Children.Clear ();
             gridNumerics.ColumnDefinitions.Clear ();
             for (int i = 0; i < colsNumerics && i < listNumerics.Count; i++) {
@@ -424,35 +453,35 @@ namespace IISIM.Windows {
         }
 
         public async Task PlayAudioCharge () {
-            if (ChargePlayer is null) {
+            if (MediaPlayer_Charge is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (PlayAudioCharge)}");
                 return;
             }
 
             if (!(Instance?.Settings?.AudioEnabled ?? false) || ((Instance?.Settings?.DefibAudioSource ?? Simulator.ToneSources.Mute) == Simulator.ToneSources.Mute)) {
-                ChargePlayer.Stop ();
+                MediaPlayer_Charge.Stop ();
                 await ReleaseAudioCharge ();
             } else {
                 switch (Charge) {
                     default:
-                        ChargePlayer.Stop ();
+                        MediaPlayer_Charge.Stop ();
                         break;
 
                     case ChargeStates.Charging:
-                        ChargePlayer.Stop ();
+                        MediaPlayer_Charge.Stop ();
                         await ReleaseAudioCharge ();
-                        // TODO: Open correct audio Uri from Resources/Audio
-                        ChargePlayer.Open (new Uri (af_charging));
-                        ChargePlayer.Play ();
+                        MediaStream_Charge = await Audio.ToneGenerator (3, 440, true);
+                        MediaPlayer_Charge = new SoundPlayer (MediaStream_Charge);
+                        MediaPlayer_Charge.Play ();
 
                         break;
 
                     case ChargeStates.Charged:
-                        ChargePlayer.Stop ();
+                        MediaPlayer_Charge.Stop ();
                         await ReleaseAudioCharge ();
-                        // TODO: Open correct audio Uri from Resources/Audio
-                        ChargePlayer.Open (new Uri (af_charged));
-                        ChargePlayer.Play ();
+                        MediaStream_Charge = await Audio.ToneGenerator (30, 660, true);
+                        MediaPlayer_Charge = new SoundPlayer (MediaStream_Charge);
+                        MediaPlayer_Charge.Play ();
 
                         break;
                 }
@@ -478,7 +507,7 @@ namespace IISIM.Windows {
             Instance.Settings.DefibAudioSource = source;
             Instance.Settings.Save ();
 
-            if (TonePlayer is not null) {
+            if (MediaPlayer_Tone is not null) {
                 switch (Instance.Settings.DefibAudioSource) {
                     default:
                     case Simulator.ToneSources.SPO2:
@@ -488,8 +517,8 @@ namespace IISIM.Windows {
 
                     case Simulator.ToneSources.ECG:
                         await ReleaseAudioTone ();
-                        // TODO: Open correct audio Uri from Resources/Audio
-                        TonePlayer.Open (new Uri (af_ecg));
+                        MediaStream_Tone = await Audio.ToneGenerator (0.15, 660, true);
+                        MediaPlayer_Tone = new SoundPlayer (MediaStream_Tone);
                         break;
                 }
             }
@@ -498,7 +527,7 @@ namespace IISIM.Windows {
         }
 
         public async Task PlayAudioTone (Simulator.ToneSources trigger, Physiology? p) {
-            if (Instance is null || TonePlayer is null) {
+            if (Instance is null || MediaPlayer_Tone is null) {
                 App.Current.Dispatcher.Invoke (() => Debug.WriteLine ($"Null return at {this.Name}.{nameof (PlayAudioTone)}"));
                 return;
             }
@@ -509,18 +538,19 @@ namespace IISIM.Windows {
 
                     case Simulator.ToneSources.ECG:           // Plays a fixed tone each QRS complex
                         App.Current.Dispatcher.Invoke (() => {
-                            TonePlayer.Stop ();
-                            TonePlayer.Play ();
+                            MediaPlayer_Tone.Stop ();
+                            MediaPlayer_Tone.Play ();
                         });
                         break;
 
                     case Simulator.ToneSources.SPO2:          // Plays a variable tone depending on SpO2
                         await App.Current.Dispatcher.InvokeAsync (async () => {
-                            TonePlayer.Stop ();
+                            MediaPlayer_Tone.Stop ();
                             await ReleaseAudioTone ();
-                            // TODO: Open correct audio Uri from Resources/Audio
-                            TonePlayer.Open (new Uri (af_spo2));
-                            TonePlayer.Play ();
+
+                            MediaStream_Tone = await Audio.ToneGenerator (0.15, II.Math.Lerp (110, 330, (double)(p?.SPO2 ?? 100) / 100), true);
+                            MediaPlayer_Tone = new SoundPlayer (MediaStream_Tone);
+                            MediaPlayer_Tone.Play ();
                         });
                         break;
                 }
@@ -528,19 +558,17 @@ namespace IISIM.Windows {
         }
 
         private Task ReleaseAudioCharge () {
-            ChargePlayer?.Stop ();
-            ChargePlayer?.Close ();
+            MediaPlayer_Charge?.Stop ();
+            MediaPlayer_Charge?.Dispose ();
+            MediaStream_Charge?.Dispose ();
 
             return Task.CompletedTask;
         }
 
         private Task ReleaseAudioTone () {
-            TonePlayer?.Stop ();
-            TonePlayer?.Close ();
-
-            if (!String.IsNullOrEmpty (ToneMedia)) {
-                ToneMedia = null;
-            }
+            MediaPlayer_Tone?.Stop ();
+            MediaPlayer_Tone?.Dispose ();
+            MediaStream_Tone?.Dispose ();
 
             return Task.CompletedTask;
         }
@@ -555,13 +583,21 @@ namespace IISIM.Windows {
         }
 
         private void OnTick_AnalyzingComplete (object? sender, EventArgs e) {
-            // TODO: Implement
+            TimerAncillary_Delay.Stop ();
+            TimerAncillary_Delay.Unlock ();
+            TimerAncillary_Delay.Tick -= OnTick_AnalyzingComplete;
+
+            Analyze = AnalyzeStates.Analyzed;
 
             UpdateInterface ();
         }
 
         private void OnTick_ChargingComplete (object? sender, EventArgs e) {
-            // TODO: Implement
+            TimerAncillary_Delay.Stop ();
+            TimerAncillary_Delay.Unlock ();
+            TimerAncillary_Delay.Tick -= OnTick_ChargingComplete;
+
+            _ = SetChargeState (ChargeStates.Charged);
 
             UpdateInterface ();
         }
@@ -603,15 +639,19 @@ namespace IISIM.Windows {
         public void SetTracing_4 () => SetTracing (4);
 
         public void SetTracing (int amount) {
-            // TODO: Implement
+            rowsTracings = amount;
+            OnLayoutChange ();
         }
 
         public void AddTracing () {
-            // TODO: Implement
+            rowsTracings += 1;
+            OnLayoutChange ();
         }
 
         public void RemoveTracing (Controls.DefibTracing requestSender) {
-            // TODO: Implement
+            rowsTracings -= 1;
+            listTracings.Remove (requestSender);
+            OnLayoutChange ();
         }
 
         public void SetNumeric_1 () => SetNumeric (1);
@@ -627,71 +667,179 @@ namespace IISIM.Windows {
         public void SetNumeric_6 () => SetNumeric (6);
 
         public void SetNumeric (int amount) {
-            // TODO: Implement
+            colsNumerics = amount;
+            OnLayoutChange ();
         }
 
         public void AddNumeric () {
-            // TODO: Implement
+            colsNumerics += 1;
+            OnLayoutChange ();
         }
 
         public void RemoveNumeric (Controls.DefibNumeric requestSender) {
-            // TODO: Implement
+            colsNumerics -= 1;
+            listNumerics.Remove (requestSender);
+            OnLayoutChange ();
         }
 
         private void UpdatePacemaker () {
-            // TODO: Implement
+            _ = Instance?.Physiology?.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
         }
 
         private void IterateAutoScale () {
-            // TODO: Implement
+            /* Iterations and trigger for auto-scaling pressure waveform strips */
+            autoScale_iter -= 1;
+
+            if (autoScale_iter <= 0) {
+                for (int i = 0; i < listTracings.Count; i++) {
+                    listTracings [i].Strip?.SetAutoScale (Instance?.Physiology);
+                    App.Current.Dispatcher.InvokeAsync (listTracings [i].UpdateScale);
+                }
+
+                autoScale_iter = Strip.DefaultAutoScale_Iterations;
+            }
         }
 
         private void ButtonDefib_Click (object s, RoutedEventArgs e) {
-            // TODO: Implement
+            Mode = Modes.DEFIB;
+            UpdatePacemaker ();
+            UpdateInterface ();
         }
 
         private void ButtonDefibEnergyDecrease_Click (object s, RoutedEventArgs e) {
-            // TODO: Implement
+            if (Mode != Modes.DEFIB && Mode != Modes.SYNC)
+                return;
+
+            // Discard any charged energy if energy selection buttons are pressed!
+            _ = SetChargeState (ChargeStates.Discharged);
+
+            DefibEnergy = II.Math.Clamp (
+                DefibEnergy - (Instance?.Settings?.DefibEnergyIncrement ?? 20),
+                0,
+                Instance?.Settings?.DefibEnergyMaximum ?? 200);
+
+            UpdateInterface ();
         }
 
         private void ButtonDefibEnergyIncrease_Click (object s, RoutedEventArgs e) {
-            // TODO: Implement
+            if (Mode != Modes.DEFIB && Mode != Modes.SYNC)
+                return;
+
+            // Discard any charged energy if energy selection buttons are pressed!
+            _ = SetChargeState (ChargeStates.Discharged);
+
+            DefibEnergy = II.Math.Clamp (
+                DefibEnergy + (Instance?.Settings?.DefibEnergyIncrement ?? 20),
+                0,
+                Instance?.Settings?.DefibEnergyMaximum ?? 200);
+
+            UpdateInterface ();
         }
 
         private void ButtonCharge_Click (object s, RoutedEventArgs e) {
-            // TODO: Implement
+            // Only charge if in Defib or Sync mode...
+            if (Mode != Modes.DEFIB && Mode != Modes.SYNC)
+                return;
+
+            Analyze = AnalyzeStates.Inactive;
+
+            if (TimerAncillary_Delay.IsLocked) {
+                _ = SetChargeState (ChargeStates.Charged);
+            } else {
+                _ = SetChargeState (ChargeStates.Charging);
+
+                TimerAncillary_Delay.Lock ();
+                TimerAncillary_Delay.Tick += OnTick_ChargingComplete;
+                TimerAncillary_Delay.Set (3000);
+                TimerAncillary_Delay.Start ();
+            }
+
+            UpdateInterface ();
         }
 
         private void ButtonShock_Click (object s, RoutedEventArgs e) {
-            // TODO: Implement
+            if (Charge != ChargeStates.Charged)
+                return;
+
+            _ = SetChargeState (ChargeStates.Discharged);
+
+            switch (Mode) {
+                default: break;
+                case Modes.DEFIB: _ = Instance?.Physiology?.Defibrillate (); break;
+                case Modes.SYNC: _ = Instance?.Physiology?.Cardiovert (); break;
+            }
+
+            UpdateInterface ();
         }
 
         private void ButtonAnalyze_Click (object s, RoutedEventArgs e) {
-            // TODO: Implement
+            if (Mode != Modes.DEFIB)
+                return;
+
+            Analyze = AnalyzeStates.Analyzing;
+
+            if (TimerAncillary_Delay.IsLocked) {
+                Analyze = AnalyzeStates.Analyzed;
+            } else {
+                Analyze = AnalyzeStates.Analyzing;
+
+                TimerAncillary_Delay.Lock ();
+                TimerAncillary_Delay.Tick += OnTick_AnalyzingComplete;
+                TimerAncillary_Delay.Set (3000);
+                TimerAncillary_Delay.Start ();
+            }
+
+            UpdateInterface ();
         }
 
         private void ButtonSync_Click (object s, RoutedEventArgs e) {
-            // TODO: Implement
+            Analyze = AnalyzeStates.Inactive;
+            Mode = (Mode != Modes.SYNC ? Modes.SYNC : Modes.DEFIB);
+            UpdatePacemaker ();
+            UpdateInterface ();
         }
 
         private void ButtonPacer_Click (object s, RoutedEventArgs e) {
-            // TODO: Implement
+            Analyze = AnalyzeStates.Inactive;
+            Mode = (Mode != Modes.PACER ? Modes.PACER : Modes.DEFIB);
+            UpdatePacemaker ();
+            UpdateInterface ();
         }
 
         private void ButtonPaceRateDecrease_Click (object s, RoutedEventArgs e) {
-            // TODO: Implement
+            if (Mode != Modes.PACER)
+                return;
+
+            PacerRate = II.Math.Clamp (PacerRate - 5, 0, 200);
+            UpdatePacemaker ();
+            UpdateInterface ();
         }
 
         private void ButtonPaceRateIncrease_Click (object s, RoutedEventArgs e) {
-            // TODO: Implement
+            if (Mode != Modes.PACER)
+                return;
+
+            PacerRate = II.Math.Clamp (PacerRate + 5, 0, 200);
+            UpdatePacemaker ();
+            UpdateInterface ();
         }
 
         private void ButtonPaceEnergyDecrease_Click (object s, RoutedEventArgs e) {
-            // TODO: Implement
+            if (Mode != Modes.PACER)
+                return;
+
+            PacerEnergy = II.Math.Clamp (PacerEnergy - 5, 0, 200);
+            UpdatePacemaker ();
+            UpdateInterface ();
         }
 
         private void ButtonPaceEnergyIncrease_Click (object s, RoutedEventArgs e) {
-            // TODO: Implement
+            if (Mode != Modes.PACER)
+                return;
+
+            PacerEnergy = II.Math.Clamp (PacerEnergy + 5, 0, 200);
+            UpdatePacemaker ();
+            UpdateInterface ();
         }
 
         private void ButtonPacePause_Click (object s, RoutedEventArgs e)
@@ -705,7 +853,7 @@ namespace IISIM.Windows {
         }
 
         private void MenuAddNumeric_Click (object s, RoutedEventArgs e)
-    => AddNumeric ();
+            => AddNumeric ();
 
         private void MenuAddTracing_Click (object s, RoutedEventArgs e)
             => AddTracing ();

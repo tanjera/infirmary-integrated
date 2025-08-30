@@ -131,11 +131,7 @@ namespace IISIM.Controls {
 
             Instance.Timer_Main.Elapsed += AlarmTimer.Process;
 
-            AlarmTimer.Tick += (s, e) => {
-                App.Current.Dispatcher.Invoke (() => {
-                    OnTick_Alarm (s, e);
-                });
-            };
+            AlarmTimer.Tick += (s, e) => OnTick_Alarm (s, e);
 
             AlarmTimer.Set (1000);
             AlarmTimer.Start ();
@@ -152,7 +148,10 @@ namespace IISIM.Controls {
             ContextMenu contextMenu = new ContextMenu ();
 
             // Note: children inherit the context menu (e.g. TextBlocks on the Grid)
-            layoutGrid.ContextMenu = contextMenu;
+            this.ContextMenu = contextMenu;
+
+            // Note: Background must be set to receive right-clicks for triggering ContextMenu
+            this.Background = Brushes.Transparent;
 
             uiMenuZeroTransducer = new ();
             uiMenuZeroTransducer.Header = Instance?.Language.Localize ("MENU:MenuZeroTransducer");

@@ -88,10 +88,10 @@
 				<Separator />
 				<MenuItem Name="menuAddNumeric"
 						  Click="MenuAddNumeric_Click"
-						  InputGestureText="N" />
+						  InputGestureText="Ctrl+N" />
 				<MenuItem Name="menuAddTracing"
 						  Click="MenuAddTracing_Click"
-						  InputGestureText="T" />
+						  InputGestureText="Ctrl+T" />
 				<Separator />
 				<MenuItem Name="menuDefibEnergy">
 					<MenuItem Name="menuDefibMaximum">
@@ -121,16 +121,16 @@
 			<MenuItem Name="menuAudio">
 				<MenuItem Name="menuAudioOff"
 						  Click="MenuAudioOff"
-						  InputGestureText="P" />
+						  InputGestureText="Ctrl+P" />
 				<MenuItem Name="menuAudioDefib"
 						  Click="MenuAudioDefib"
-						  InputGestureText="OemOpenBrackets" />
+						  InputGestureText="Ctrl+[" />
 				<MenuItem Name="menuAudioECG"
 						  Click="MenuAudioECG"
-						  InputGestureText="OemCloseBrackets" />
+						  InputGestureText="Ctrl+]" />
 				<MenuItem Name="menuAudioSPO2"
 						  Click="MenuAudioSPO2"
-						  InputGestureText="OemPipe" />
+						  InputGestureText="Ctrl+\" />
 				<Separator />
 				<MenuItem Name="menuAudioDisable"
 						  Click="MenuDisableAudio"

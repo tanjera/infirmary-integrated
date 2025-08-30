@@ -10,7 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
+
     public class Audio {
+
         public static Task<MemoryStream> ToneGenerator (double seconds = 0.1, double frequency = 220, bool fixpop = true) {
             MemoryStream stream = new ();
             BinaryWriter writer = new BinaryWriter (stream, Encoding.Default, true);
@@ -62,6 +64,8 @@ namespace II {
 
             writer.Close ();
             writer.Dispose ();
+
+            stream.Position = 0;
 
             return Task.FromResult (stream);
         }

@@ -40,6 +40,11 @@ namespace IISIM.Controls {
         public PointD? DrawOffset = new (0, 0);
         public PointD? DrawMultiplier = new (1, 1);
 
+        /* State machines, flags, properties, and utilities */
+
+        private MenuItem? uiMenuZeroTransducer;
+        private MenuItem? uiMenuToggleAutoScale;
+
         public DefibTracing () {
             InitializeComponent ();
         }
@@ -48,9 +53,13 @@ namespace IISIM.Controls {
             InitializeComponent ();
             DataContext = this;
 
+            LayoutUpdated += UpdateInterface;
+
             Instance = app;
             Strip = strip;
             ColorScheme = cs;
+
+            InitInterface ();
             UpdateInterface ();
         }
 
@@ -58,23 +67,132 @@ namespace IISIM.Controls {
             Strip?.Points?.Clear ();
         }
 
-        public void SetColorScheme (Color.Schemes scheme) {
-            ColorScheme = scheme;
-            UpdateInterface ();
+        public void InitInterface () {
+            // Context Menu (right-click menu!)
+            ContextMenu menuContext = new ();
+
+            // Note: children inherit the context menu (e.g. TextBlocks on the Grid)
+            this.ContextMenu = menuContext;
+
+            // Note: Background must be set to receive right-clicks for triggering ContextMenu
+            this.Background = Brushes.Transparent;
+
+            uiMenuZeroTransducer = new MenuItem ();
+            uiMenuZeroTransducer.Header = Instance?.Language.Localize ("MENU:MenuZeroTransducer");
+            uiMenuZeroTransducer.Click += MenuZeroTransducer_Click;
+            menuContext.Items.Add (uiMenuZeroTransducer);
+
+            menuContext.Items.Add (new Separator ());
+
+            MenuItem menuAddTracing = new ();
+            menuAddTracing.Header = Instance?.Language.Localize ("MENU:MenuAddTracing");
+            menuAddTracing.Click += MenuAddTracing_Click;
+            menuContext.Items.Add (menuAddTracing);
+
+            MenuItem menuRemoveTracing = new ();
+            menuRemoveTracing.Header = Instance?.Language.Localize ("MENU:MenuRemoveTracing");
+            menuRemoveTracing.Click += MenuRemoveTracing_Click;
+            menuContext.Items.Add (menuRemoveTracing);
+
+            menuContext.Items.Add (new Separator ());
+
+            MenuItem menuIncreaseAmplitude = new ();
+            menuIncreaseAmplitude.Header = Instance?.Language.Localize ("MENU:IncreaseAmplitude");
+            menuIncreaseAmplitude.Click += MenuIncreaseAmplitude_Click;
+            menuContext.Items.Add (menuIncreaseAmplitude);
+
+            MenuItem menuDecreaseAmplitude = new ();
+            menuDecreaseAmplitude.Header = Instance?.Language.Localize ("MENU:DecreaseAmplitude");
+            menuDecreaseAmplitude.Click += MenuDecreaseAmplitude_Click;
+            menuContext.Items.Add (menuDecreaseAmplitude);
+
+            menuContext.Items.Add (new Separator ());
+
+            uiMenuToggleAutoScale = new MenuItem ();
+            uiMenuToggleAutoScale.Header = Instance?.Language.Localize ("MENU:ToggleAutoScaling");
+            uiMenuToggleAutoScale.Click += MenuToggleAutoScale_Click;
+            menuContext.Items.Add (uiMenuToggleAutoScale);
+
+            menuContext.Items.Add (new Separator ());
+
+            MenuItem menuSelectInput = new (),
+                     menuECGLeads = new ();
+
+            menuSelectInput.Header = Instance?.Language.Localize ("MENU:MenuSelectInputSource");
+            menuECGLeads.Header = Instance?.Language.Localize ("TRACING:ECG");
+
+            menuSelectInput.Items.Add (menuECGLeads);
+
+            foreach (Lead.Values v in Enum.GetValues (typeof (Lead.Values))) {
+                // Only include certain leads- e.g. bedside monitors don't interface with IABP or EFM
+                string el = v.ToString ();
+                if (!el.StartsWith ("ECG") && el != "SPO2" && el != "CVP" && el != "ABP"
+                    && el != "PA" && el != "RR" && el != "ETCO2")
+                    continue;
+
+                MenuItem mi = new ();
+                mi.Header = Instance?.Language.Localize (Lead.LookupString (v));
+                mi.Name = v.ToString ();
+                mi.Click += MenuSelectInputSource;
+                if (mi.Name.StartsWith ("ECG"))
+                    menuECGLeads.Items.Add (mi);
+                else
+                    menuSelectInput.Items.Add (mi);
+            }
+
+            menuContext.Items.Add (menuSelectInput);
         }
 
         private void UpdateInterface ()
             => UpdateInterface (this, new EventArgs ());
 
-        private void UpdateInterface (object sender, EventArgs e) {
+        private void UpdateInterface (object? sender, EventArgs e) {
             App.Current.Dispatcher.InvokeAsync (() => {
                 TracingBrush = Color.GetLead (Lead?.Value ?? Lead.Values.ECG_I, ColorScheme ?? Color.Schemes.Light);
 
+                brdTracing.BorderBrush = TracingBrush;
+
                 lblLead.Foreground = TracingBrush;
-                lblLead.Content = Instance?.Language.Localize (Lead.LookupString (Lead?.Value ?? Lead.Values.ECG_I, true));
+                lblLead.Content = Instance?.Language.Localize (Lead.LookupString (Lead.Value));
+
+                if (uiMenuZeroTransducer is not null)
+                    uiMenuZeroTransducer.IsEnabled = Strip?.Lead?.IsTransduced () ?? false;
+                if (uiMenuToggleAutoScale is not null)
+                    uiMenuToggleAutoScale.IsEnabled = Strip?.CanScale ?? false;
+
+                lblScaleAuto.Visibility = Strip?.CanScale ?? false ? Visibility.Visible : Visibility.Hidden;
+                lblScaleMin.Visibility = Strip?.CanScale ?? false ? Visibility.Visible : Visibility.Hidden;
+                lblScaleMax.Visibility = Strip?.CanScale ?? false ? Visibility.Visible : Visibility.Hidden;
+
+                if (Strip?.CanScale ?? false) {
+                    lblScaleAuto.Foreground = TracingBrush;
+                    lblScaleMin.Foreground = TracingBrush;
+                    lblScaleMax.Foreground = TracingBrush;
+
+                    lblScaleAuto.Content = Strip.ScaleAuto
+                        ? Instance?.Language.Localize ("TRACING:Auto")
+                        : Instance?.Language.Localize ("TRACING:Fixed");
+                    lblScaleMin.Content = Strip.ScaleMin.ToString ();
+                    lblScaleMax.Content = Strip.ScaleMax.ToString ();
+                }
 
                 CalculateOffsets ();
             });
+        }
+
+        public void UpdateScale () {
+            if (Strip?.CanScale ?? false) {
+                lblScaleMin.Foreground = TracingBrush;
+                lblScaleMax.Foreground = TracingBrush;
+
+                lblScaleMin.Content = Strip.ScaleMin.ToString ();
+                lblScaleMax.Content = Strip.ScaleMax.ToString ();
+            }
+        }
+
+        public void SetColorScheme (Color.Schemes scheme) {
+            ColorScheme = scheme;
+            UpdateInterface ();
         }
 
         public void CalculateOffsets () {
@@ -141,6 +259,53 @@ namespace IISIM.Controls {
                     }
                 }
             }
+        }
+
+        private void MenuZeroTransducer_Click (object? sender, RoutedEventArgs e) {
+            if (Instance is null || Instance.Physiology is null)
+                return;
+
+            switch (Lead?.Value) {
+                case Lead.Values.ABP: Instance.Physiology.TransducerZeroed_ABP = true; return;
+                case Lead.Values.CVP: Instance.Physiology.TransducerZeroed_CVP = true; return;
+                case Lead.Values.PA: Instance.Physiology.TransducerZeroed_PA = true; return;
+                case Lead.Values.ICP: Instance.Physiology.TransducerZeroed_ICP = true; return;
+                case Lead.Values.IAP: Instance.Physiology.TransducerZeroed_IAP = true; return;
+            }
+        }
+
+        private void MenuAddTracing_Click (object? sender, RoutedEventArgs e)
+            => Instance?.Device_Defib?.AddTracing ();
+
+        private void MenuRemoveTracing_Click (object? sender, RoutedEventArgs e)
+            => Instance?.Device_Defib?.RemoveTracing (this);
+
+        private void MenuIncreaseAmplitude_Click (object? sender, RoutedEventArgs e) {
+            Strip?.IncreaseAmplitude ();
+            CalculateOffsets ();
+        }
+
+        private void MenuDecreaseAmplitude_Click (object? sender, RoutedEventArgs e) {
+            Strip?.DecreaseAmplitude ();
+            CalculateOffsets ();
+        }
+
+        private void MenuToggleAutoScale_Click (object? sender, RoutedEventArgs e) {
+            if (Strip is not null)
+                Strip.ScaleAuto = !Strip.ScaleAuto;
+
+            UpdateInterface ();
+        }
+
+        private void MenuSelectInputSource (object? sender, RoutedEventArgs e) {
+            if (sender is null || !Enum.TryParse<Lead.Values> (((MenuItem)sender).Name, out Lead.Values selectedValue))
+                return;
+
+            Strip?.SetLead (selectedValue);
+            Strip?.Reset ();
+
+            CalculateOffsets ();
+            UpdateInterface ();
         }
     }
 }
