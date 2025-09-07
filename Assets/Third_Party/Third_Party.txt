@@ -1,0 +1,35 @@
+All images in the Third_Party folder have been purchased from an artist or vendor
+and are licensed to this project for commercial use but *not* for distribution.
+Specifically, icons purchased from iconfinder.com are licensed under the basic
+license that can be found here:
+
+https://support.iconfinder.com/en/articles/18231-license-basic
+
+Which includes restrictions where licensed material may not be placed "On any
+website in a complete or archived downloadable format. This means you can use
+it on a website for a design/feature purpose, but it cannot be shared with the
+purpose of making it downloadable e.g. with a download button or similar. In
+short, no redistribution is allowed." and also "On any electronic bulletin board
+or downloadable format"
+
+To stay in compliance with this license, the Third Party content has been
+altered significantly so that it can be included in the public code repository
+for Infirmary Integrated, allowing programmers to download the entire code
+repository, compile the code, and run the code without running into errors due
+to missing files. While this does not advance the development of Infirmary
+Integrated, it allows programmers to seamlessly analyze and study the project
+without barrier.
+
+However, the original Third Party content remains encrypted and password protected
+in the /Assets/Third_Party.7z file in thie code repository so the package
+maintainer can place the original assets into the project for the purpose of
+publishing binary releases of Infirmary Integrated. To remain in compliance with
+the licenses covering the Third Party content, the files cannot be shared in
+or posted publicly in their original form.
+
+This notice is being included in response to multiple questions on this topic
+that can be found in the Git discussion board here:
+
+https://github.com/tanjera/infirmary-integrated/discussions/229
+https://github.com/tanjera/infirmary-integrated/issues/228
+
