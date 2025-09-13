@@ -176,7 +176,9 @@
 					Value="22" />
 			<Setter Property="VerticalContentAlignment"
 					Value="Center" />
-			<Setter Property="ClipValueToMinMax"
+            <Setter Property="TextAlignment"
+                    Value="Left" />
+            <Setter Property="ClipValueToMinMax"
 					Value="True" />
 			<Setter Property="FontSize"
 					Value="12" />
@@ -190,6 +192,8 @@
 					Value="22" />
 			<Setter Property="VerticalContentAlignment"
 					Value="Center" />
+            <Setter Property="TextAlignment" 
+                    Value="Left"/>
 			<Setter Property="ClipValueToMinMax"
 					Value="True" />
 			<Setter Property="FontSize"
@@ -232,7 +236,9 @@
 					Value="22" />
 			<Setter Property="VerticalContentAlignment"
 					Value="Center" />
-			<Setter Property="ClipValueToMinMax"
+            <Setter Property="TextAlignment"
+                    Value="Left" />
+            <Setter Property="ClipValueToMinMax"
 					Value="True" />
 			<Setter Property="FontSize"
 					Value="12" />

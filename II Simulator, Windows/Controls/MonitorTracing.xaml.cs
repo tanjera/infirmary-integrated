@@ -25,9 +25,9 @@ using System.Windows.Shapes;
 namespace IISIM.Controls {
 
     /// <summary>
-    /// Interaction logic for DefibTracing.xaml
+    /// Interaction logic for MonitorTracing.xaml
     /// </summary>
-    public partial class DefibTracing : UserControl {
+    public partial class MonitorTracing : UserControl {
         public App? Instance { get; set; }
 
         public Strip? Strip;
@@ -45,11 +45,11 @@ namespace IISIM.Controls {
         private MenuItem? uiMenuZeroTransducer;
         private MenuItem? uiMenuToggleAutoScale;
 
-        public DefibTracing () {
+        public MonitorTracing () {
             InitializeComponent ();
         }
 
-        public DefibTracing (App? app, Strip? strip, Color.Schemes? cs) {
+        public MonitorTracing (App? app, Strip? strip, Color.Schemes? cs) {
             InitializeComponent ();
             DataContext = this;
 
@@ -63,7 +63,7 @@ namespace IISIM.Controls {
             UpdateInterface ();
         }
 
-        ~DefibTracing () {
+        ~MonitorTracing () {
             Strip?.Points?.Clear ();
         }
 
@@ -271,10 +271,10 @@ namespace IISIM.Controls {
         }
 
         private void MenuAddTracing_Click (object? sender, RoutedEventArgs e)
-            => Instance?.Device_Defib?.AddTracing ();
+            => Instance?.Device_Monitor?.AddTracing ();
 
         private void MenuRemoveTracing_Click (object? sender, RoutedEventArgs e)
-            => Instance?.Device_Defib?.RemoveTracing (this);
+            => Instance?.Device_Monitor?.RemoveTracing (this);
 
         private void MenuIncreaseAmplitude_Click (object? sender, RoutedEventArgs e) {
             Strip?.IncreaseAmplitude ();

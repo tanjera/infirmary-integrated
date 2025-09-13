@@ -250,7 +250,23 @@ namespace IISIM.Windows {
                 cmdMenuAudioTone_ECG = new (),
                 cmdMenuAudioTone_SPO2 = new (),
                 cmdMenuAudio_Disable = new (),
-                cmdMenuAudio_Enable = new ();
+                cmdMenuAudio_Enable = new (),
+                cmdSetNumeric_1 = new (),
+                cmdSetNumeric_2 = new (),
+                cmdSetNumeric_3 = new (),
+                cmdSetNumeric_4 = new (),
+                cmdSetNumeric_5 = new (),
+                cmdSetNumeric_6 = new (),
+                cmdSetNumeric_7 = new (),
+                cmdSetNumeric_8 = new (),
+                cmdSetTracing_1 = new (),
+                cmdSetTracing_2 = new (),
+                cmdSetTracing_3 = new (),
+                cmdSetTracing_4 = new (),
+                cmdSetTracing_5 = new (),
+                cmdSetTracing_6 = new (),
+                cmdSetTracing_7 = new (),
+                cmdSetTracing_8 = new ();
 
             cmdMenuTogglePause_Click.InputGestures.Add (new KeyGesture (Key.Pause));
             CommandBindings.Add (new CommandBinding (cmdMenuTogglePause_Click, MenuTogglePause_Click));
@@ -287,6 +303,54 @@ namespace IISIM.Windows {
 
             cmdMenuAudio_Enable.InputGestures.Add (new KeyGesture (Key.OemPlus, ModifierKeys.Control));
             CommandBindings.Add (new CommandBinding (cmdMenuAudio_Enable, MenuEnableAudio));
+
+            cmdSetNumeric_1.InputGestures.Add (new KeyGesture (Key.D1, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdSetNumeric_1, SetNumeric_1));
+
+            cmdSetNumeric_2.InputGestures.Add (new KeyGesture (Key.D2, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdSetNumeric_2, SetNumeric_2));
+
+            cmdSetNumeric_3.InputGestures.Add (new KeyGesture (Key.D3, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdSetNumeric_3, SetNumeric_3));
+
+            cmdSetNumeric_4.InputGestures.Add (new KeyGesture (Key.D4, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdSetNumeric_4, SetNumeric_4));
+
+            cmdSetNumeric_5.InputGestures.Add (new KeyGesture (Key.D5, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdSetNumeric_5, SetNumeric_5));
+
+            cmdSetNumeric_6.InputGestures.Add (new KeyGesture (Key.D6, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdSetNumeric_6, SetNumeric_6));
+
+            cmdSetNumeric_7.InputGestures.Add (new KeyGesture (Key.D7, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdSetNumeric_7, SetNumeric_7));
+
+            cmdSetNumeric_8.InputGestures.Add (new KeyGesture (Key.D8, ModifierKeys.Control));
+            CommandBindings.Add (new CommandBinding (cmdSetNumeric_8, SetNumeric_8));
+
+            cmdSetTracing_1.InputGestures.Add (new KeyGesture (Key.D1, ModifierKeys.Alt));
+            CommandBindings.Add (new CommandBinding (cmdSetTracing_1, SetTracing_1));
+
+            cmdSetTracing_2.InputGestures.Add (new KeyGesture (Key.D2, ModifierKeys.Alt));
+            CommandBindings.Add (new CommandBinding (cmdSetTracing_2, SetTracing_2));
+
+            cmdSetTracing_3.InputGestures.Add (new KeyGesture (Key.D3, ModifierKeys.Alt));
+            CommandBindings.Add (new CommandBinding (cmdSetTracing_3, SetTracing_3));
+
+            cmdSetTracing_4.InputGestures.Add (new KeyGesture (Key.D4, ModifierKeys.Alt));
+            CommandBindings.Add (new CommandBinding (cmdSetTracing_4, SetTracing_4));
+
+            cmdSetTracing_5.InputGestures.Add (new KeyGesture (Key.D5, ModifierKeys.Alt));
+            CommandBindings.Add (new CommandBinding (cmdSetTracing_5, SetTracing_5));
+
+            cmdSetTracing_6.InputGestures.Add (new KeyGesture (Key.D6, ModifierKeys.Alt));
+            CommandBindings.Add (new CommandBinding (cmdSetTracing_6, SetTracing_6));
+
+            cmdSetTracing_7.InputGestures.Add (new KeyGesture (Key.D7, ModifierKeys.Alt));
+            CommandBindings.Add (new CommandBinding (cmdSetTracing_7, SetTracing_7));
+
+            cmdSetTracing_8.InputGestures.Add (new KeyGesture (Key.D8, ModifierKeys.Alt));
+            CommandBindings.Add (new CommandBinding (cmdSetTracing_8, SetTracing_8));
         }
 
         private void UpdateInterface () {
@@ -315,9 +379,9 @@ namespace IISIM.Windows {
 
             // Set default numeric types to populate
             if (numericTypes == null || numericTypes.Count == 0)
-                numericTypes = new (new string [] { "DEFIB", "ECG", "NIBP", "SPO2", "ETCO2", "ABP" });
+                numericTypes = new (new string [] { "DEFIB", "ECG", "NIBP", "SPO2", "RR", "ETCO2", "ABP", "CVP", "T", "PA", "CO", "ICP", "IAP" });
             else if (numericTypes.Count < colsNumerics) {
-                List<string> buffer = new (new string [] { "DEFIB", "ECG", "NIBP", "SPO2", "ETCO2", "ABP" });
+                List<string> buffer = new (new string [] { "DEFIB", "ECG", "NIBP", "SPO2", "RR", "ETCO2", "ABP", "CVP", "T", "PA", "CO", "ICP", "IAP" });
                 buffer.RemoveRange (0, numericTypes.Count);
                 numericTypes.AddRange (buffer);
             }
@@ -333,9 +397,9 @@ namespace IISIM.Windows {
 
             // Set default tracing types to populate
             if (tracingTypes == null || tracingTypes.Count == 0)
-                tracingTypes = new (new string [] { "ECG_II", "SPO2", "ETCO2", "ABP" });
+                tracingTypes = new (new string [] { "ECG_II", "ECG_III", "SPO2", "RR", "ETCO2", "ABP", "CVP", "PA", "ICP" });
             else if (tracingTypes.Count < rowsTracings) {
-                List<string> buffer = new (new string [] { "ECG_II", "SPO2", "ETCO2", "ABP" });
+                List<string> buffer = new (new string [] { "ECG_II", "ECG_III", "SPO2", "RR", "ETCO2", "ABP", "CVP", "PA", "ICP" });
                 buffer.RemoveRange (0, tracingTypes.Count);
                 tracingTypes.AddRange (buffer);
             }
@@ -407,10 +471,7 @@ namespace IISIM.Windows {
             List<string> numericTypes = new (),
                          tracingTypes = new ();
 
-            listNumerics.ForEach ((Action<Controls.DefibNumeric>)(o => {
-                if (o?.ControlType?.Value is not null)
-                    numericTypes.Add ((string)o.ControlType.Value.ToString ());
-            }));
+            listNumerics.ForEach (o => { numericTypes.Add (o.ControlType?.Value.ToString () ?? ""); });
             listTracings.ForEach (o => { tracingTypes.Add (o.Strip?.Lead?.Value.ToString () ?? ""); });
             sWrite.AppendLine (String.Format ("{0}:{1}", "numericTypes", string.Join (",", numericTypes)));
             sWrite.AppendLine (String.Format ("{0}:{1}", "tracingTypes", string.Join (",", tracingTypes)));
@@ -630,13 +691,21 @@ namespace IISIM.Windows {
                 wdwDeviceDefib.WindowState = System.Windows.WindowState.Maximized;
         }
 
-        public void SetTracing_1 () => SetTracing (1);
+        public void SetTracing_1 (object s, RoutedEventArgs e) => SetTracing (1);
 
-        public void SetTracing_2 () => SetTracing (2);
+        public void SetTracing_2 (object s, RoutedEventArgs e) => SetTracing (2);
 
-        public void SetTracing_3 () => SetTracing (3);
+        public void SetTracing_3 (object s, RoutedEventArgs e) => SetTracing (3);
 
-        public void SetTracing_4 () => SetTracing (4);
+        public void SetTracing_4 (object s, RoutedEventArgs e) => SetTracing (4);
+
+        public void SetTracing_5 (object s, RoutedEventArgs e) => SetTracing (5);
+
+        public void SetTracing_6 (object s, RoutedEventArgs e) => SetTracing (6);
+
+        public void SetTracing_7 (object s, RoutedEventArgs e) => SetTracing (7);
+
+        public void SetTracing_8 (object s, RoutedEventArgs e) => SetTracing (8);
 
         public void SetTracing (int amount) {
             rowsTracings = amount;
@@ -654,17 +723,21 @@ namespace IISIM.Windows {
             OnLayoutChange ();
         }
 
-        public void SetNumeric_1 () => SetNumeric (1);
+        public void SetNumeric_1 (object s, RoutedEventArgs e) => SetNumeric (1);
 
-        public void SetNumeric_2 () => SetNumeric (2);
+        public void SetNumeric_2 (object s, RoutedEventArgs e) => SetNumeric (2);
 
-        public void SetNumeric_3 () => SetNumeric (3);
+        public void SetNumeric_3 (object s, RoutedEventArgs e) => SetNumeric (3);
 
-        public void SetNumeric_4 () => SetNumeric (4);
+        public void SetNumeric_4 (object s, RoutedEventArgs e) => SetNumeric (4);
 
-        public void SetNumeric_5 () => SetNumeric (5);
+        public void SetNumeric_5 (object s, RoutedEventArgs e) => SetNumeric (5);
 
-        public void SetNumeric_6 () => SetNumeric (6);
+        public void SetNumeric_6 (object s, RoutedEventArgs e) => SetNumeric (6);
+
+        public void SetNumeric_7 (object s, RoutedEventArgs e) => SetNumeric (7);
+
+        public void SetNumeric_8 (object s, RoutedEventArgs e) => SetNumeric (8);
 
         public void SetNumeric (int amount) {
             colsNumerics = amount;

@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II.Settings {
+
     public class Simulator {
         public string Language;
 
@@ -22,6 +23,8 @@ namespace II.Settings {
         public int DefibEnergyMaximum;
         public int DefibEnergyIncrement;
         public ToneSources DefibAudioSource;
+
+        public ToneSources MonitorAudioSource;
 
         public Point WindowSize;
         public Point WindowPosition;
@@ -100,6 +103,9 @@ namespace II.Settings {
 
                         case "DefibAudioSource": DefibAudioSource = (ToneSources)Enum.Parse (typeof (ToneSources), pValue); break;
 
+                        // Settings for Monitor
+                        case "MonitorAudioSource": MonitorAudioSource = (ToneSources)Enum.Parse (typeof (ToneSources), pValue); break;
+
                         // Settings for the size of the Patient Editor
                         case "WindowSizeX":
                             if (int.TryParse (pValue, out parseInt))
@@ -136,6 +142,7 @@ namespace II.Settings {
             sw.WriteLine ($"DefibEnergyMaximum:{DefibEnergyMaximum}");
             sw.WriteLine ($"DefibEnergyIncrement:{DefibEnergyIncrement}");
             sw.WriteLine ($"DefibAudioSource:{DefibAudioSource}");
+            sw.WriteLine ($"MonitorAudioSource:{MonitorAudioSource}");
             sw.WriteLine ($"WindowSizeX:{WindowSize.X}");
             sw.WriteLine ($"WindowSizeY:{WindowSize.Y}");
             sw.WriteLine ($"WindowPositionX:{WindowPosition.X}");

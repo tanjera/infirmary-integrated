@@ -623,6 +623,7 @@ namespace IISIM.Windows {
             }
 
             Instance.Settings.AudioEnabled = toSet;
+            Instance.Settings.Save ();
 
             await App.Current.Dispatcher.InvokeAsync (() => {
                 menuToggleAudio.Header = String.Format ("{0}: {1}",

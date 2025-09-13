@@ -27,15 +27,24 @@ using IISIM.Windows;
 namespace IISIM.Controls {
 
     /// <summary>
-    /// Interaction logic for DefibNumeric.xaml
+    /// Interaction logic for MonitorNumeric.xaml
     /// </summary>
-    public partial class DefibNumeric : UserControl {
+    public partial class MonitorNumeric : UserControl {
         public App? Instance { get; set; }
-        private Windows.DeviceDefib? Device;
+        private Windows.DeviceMonitor? Device;
 
         /* Drawing variables, offsets and multipliers */
         public Color.Schemes? ColorScheme;
         public Brush? TracingBrush = Brushes.Black;
+
+        /* Variables controlling for visual alarms */
+        public Alarm? AlarmActive;
+        public II.Timer? AlarmTimer = new ();
+        public bool? AlarmIterator = false;
+
+        public bool? AlarmLine1;
+        public bool? AlarmLine2;
+        public bool? AlarmLine3;
 
         /* State machines, flags, properties, and utilities */
 
@@ -53,8 +62,7 @@ namespace IISIM.Controls {
             public enum Values {
                 ECG, T, RR, ETCO2,
                 SPO2, NIBP, ABP, CVP,
-                CO, PA, ICP, IAP,
-                DEFIB
+                CO, PA, ICP, IAP
             }
 
             public Color.Leads GetLead_Color {
@@ -74,7 +82,6 @@ namespace IISIM.Controls {
                 ControlTypes.Values.PA => Color.Leads.PA,
                 ControlTypes.Values.ICP => Color.Leads.ICP,
                 ControlTypes.Values.IAP => Color.Leads.IAP,
-                ControlTypes.Values.DEFIB => Color.Leads.DEFIB,
                 _ => Color.Leads.ECG
             };
 
@@ -92,11 +99,11 @@ namespace IISIM.Controls {
             }
         }
 
-        public DefibNumeric () {
+        public MonitorNumeric () {
             InitializeComponent ();
         }
 
-        public DefibNumeric (App? app, Windows.DeviceDefib device, ControlTypes.Values v, Color.Schemes? cs) {
+        public MonitorNumeric (App? app, Windows.DeviceMonitor device, ControlTypes.Values v, Color.Schemes? cs) {
             InitializeComponent ();
             DataContext = this;
 
@@ -106,6 +113,7 @@ namespace IISIM.Controls {
             LayoutUpdated += this.UpdateInterface;
 
             InitTimers ();
+            InitAlarm ();
 
             ControlType = new ControlTypes (v);
             ColorScheme = cs;
@@ -114,14 +122,31 @@ namespace IISIM.Controls {
             UpdateInterface ();
         }
 
-        ~DefibNumeric () {
+        ~MonitorNumeric () {
+            AlarmTimer?.Dispose ();
         }
 
         public virtual void InitTimers () {
-            if (Instance is null) {
+            if (Instance is null || AlarmTimer is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitTimers)}");
                 return;
             }
+
+            Instance.Timer_Main.Elapsed += AlarmTimer.Process;
+
+            AlarmTimer.Tick += (s, e) =>
+            Application.Current.Dispatcher.Invoke (() => {
+                OnTick_Alarm (s, e);
+            });
+
+            AlarmTimer.Set (1000);
+            AlarmTimer.Start ();
+        }
+
+        public virtual void InitAlarm () {
+            AlarmLine1 = false;
+            AlarmLine2 = false;
+            AlarmLine3 = false;
         }
 
         private void InitInterface () {
@@ -172,7 +197,6 @@ namespace IISIM.Controls {
 
         public void SetColorScheme (Color.Schemes scheme) {
             ColorScheme = scheme;
-
             Application.Current.Dispatcher.Invoke (InitInterface);
         }
 
@@ -181,33 +205,6 @@ namespace IISIM.Controls {
 
         private void UpdateInterface (object? sender, EventArgs e) {
             App.Current.Dispatcher.InvokeAsync (() => {
-                if (ControlType?.Value == ControlTypes.Values.DEFIB && ColorScheme == Color.Schemes.Dark) {
-                    // Defib numeric in dark more (colorful) gets specific colors based on status
-
-                    // Default color scheme settings are still utilized as "default" state
-                    Brush statusColor = Color.GetLead (ControlType?.GetLead_Color, ColorScheme);
-
-                    if (Device?.Mode == Windows.DeviceDefib.Modes.PACER) {
-                        statusColor = Brushes.Orange;
-                    } else if (Device?.Analyze != Windows.DeviceDefib.AnalyzeStates.Inactive) {
-                        statusColor = Device?.Analyze switch {
-                            Windows.DeviceDefib.AnalyzeStates.Analyzing => Brushes.YellowGreen,
-                            _ => statusColor
-                        };
-                    } else if (Device?.Charge != Windows.DeviceDefib.ChargeStates.Discharged) {
-                        statusColor = Device?.Charge switch {
-                            Windows.DeviceDefib.ChargeStates.Charging => Brushes.Yellow,
-                            Windows.DeviceDefib.ChargeStates.Charged => Brushes.Red,
-                            _ => statusColor
-                        };
-                    }
-
-                    borderNumeric.BorderBrush = statusColor;
-                    lblNumType.Foreground = statusColor;
-                    lblLine1.Foreground = statusColor;
-                    lblLine2.Foreground = statusColor;
-                    lblLine3.Foreground = statusColor;
-                }
                 lblLine1.Visibility = Visibility.Visible;
                 lblLine2.Visibility = Visibility.Visible;
                 lblLine3.Visibility = Visibility.Visible;
@@ -221,7 +218,6 @@ namespace IISIM.Controls {
                     case ControlTypes.Values.NIBP:
                     case ControlTypes.Values.ABP:
                     case ControlTypes.Values.PA:
-                    case ControlTypes.Values.DEFIB:
                         lblLine1.FontSize = 30;
                         lblLine2.FontSize = 30;
                         lblLine3.FontSize = 20;
@@ -273,55 +269,105 @@ namespace IISIM.Controls {
             switch (ControlType?.Value) {
                 default:
                 case ControlTypes.Values.ECG:
-                    lblLine1.Text = String.Format ("{0:0}", Instance.Physiology.MeasureHR_ECG (
-                        Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
+                    int? hr = Instance?.Physiology.MeasureHR_ECG (Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength);
+                    lblLine1.Text = String.Format ("{0:0}", hr);
+
+                    AlarmActive = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.HR);
+                    AlarmLine1 = (AlarmActive is not null && AlarmActive.IsSet && AlarmActive.IsEnabled && AlarmActive.ActivateAlarm (hr));
                     break;
 
                 case ControlTypes.Values.T:
-                    lblLine1.Text = String.Format ("{0:0.0}", Instance.Physiology.T);
+                    lblLine1.Text = String.Format ("{0:0.0}", Instance?.Physiology.T);
                     break;
 
                 case ControlTypes.Values.SPO2:
-                    lblLine1.Text = String.Format ("{0:0} %", II.Math.RandomPercentRange (Instance.Physiology.SPO2, 0.01f));
-                    lblLine2.Text = String.Format ("@ {0:0}", Instance.Physiology.MeasureHR_SPO2 (
+                    int? spo2 = (int)II.Math.RandomPercentRange (Instance?.Physiology?.SPO2 ?? 0, 0.01f);
+                    lblLine1.Text = String.Format ("{0:0} %", spo2);
+                    lblLine2.Text = String.Format ("@ {0:0}", Instance?.Physiology.MeasureHR_SPO2 (
                         Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
+
+                    AlarmActive = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.SPO2);
+                    AlarmLine1 = (AlarmActive is not null && AlarmActive.IsSet && AlarmActive.IsEnabled && AlarmActive.ActivateAlarm (spo2));
                     break;
 
                 case ControlTypes.Values.RR:
-                    lblLine1.Text = String.Format ("{0:0}", Instance.Physiology.MeasureRR (
-                        Strip.DefaultLength * Strip.DefaultRespiratoryCoefficient, Strip.DefaultLength * Strip.DefaultBufferLength));
+                    int? rr = Instance?.Physiology.MeasureRR (
+                        Strip.DefaultLength * Strip.DefaultRespiratoryCoefficient, Strip.DefaultLength * Strip.DefaultBufferLength);
+
+                    lblLine1.Text = String.Format ("{0:0}", rr);
+
+                    AlarmActive = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.RR);
+                    AlarmLine1 = (AlarmActive is not null && AlarmActive.IsSet && AlarmActive.IsEnabled && AlarmActive.ActivateAlarm (rr ?? 0));
                     break;
 
                 case ControlTypes.Values.ETCO2:
-                    lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Physiology.ETCO2, 0.02f));
-                    lblLine2.Text = String.Format ("@ {0:0}", Instance.Physiology.MeasureRR (
+                    int? etco2 = (int)II.Math.RandomPercentRange (Instance?.Physiology?.ETCO2 ?? 0, 0.02f);
+
+                    lblLine1.Text = String.Format ("{0:0}", etco2);
+                    lblLine2.Text = String.Format ("@ {0:0}", Instance?.Physiology.MeasureRR (
                         Strip.DefaultLength * Strip.DefaultRespiratoryCoefficient, Strip.DefaultLength * Strip.DefaultBufferLength));
+
+                    AlarmActive = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.ETCO2);
+                    AlarmLine1 = (AlarmActive is not null && AlarmActive.IsSet && AlarmActive.IsEnabled && AlarmActive.ActivateAlarm (etco2));
                     break;
 
                 case ControlTypes.Values.NIBP:
-                    lblLine1.Text = String.Format ("{0:0}", Instance.Physiology.NSBP);
-                    lblLine2.Text = String.Format ("/ {0:0}", Instance.Physiology.NDBP);
-                    lblLine3.Text = String.Format ("({0:0})", Instance.Physiology.NMAP);
+                    lblLine1.Text = String.Format ("{0:0}", Instance?.Physiology.NSBP);
+                    lblLine2.Text = String.Format ("/ {0:0}", Instance?.Physiology.NDBP);
+                    lblLine3.Text = String.Format ("({0:0})", Instance?.Physiology.NMAP);
+
+                    AlarmActive = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.NSBP);
+                    AlarmLine1 = (AlarmActive is not null && AlarmActive.IsSet && AlarmActive.IsEnabled && AlarmActive.ActivateAlarm (Instance?.Physiology.NSBP));
+
+                    AlarmActive = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.NDBP);
+                    AlarmLine2 = (AlarmActive is not null && AlarmActive.IsSet && AlarmActive.IsEnabled && AlarmActive.ActivateAlarm (Instance?.Physiology.NDBP));
+
+                    AlarmActive = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.NMAP);
+                    AlarmLine3 = (AlarmActive is not null && AlarmActive.IsSet && AlarmActive.IsEnabled && AlarmActive.ActivateAlarm (Instance?.Physiology.NMAP));
                     break;
 
                 case ControlTypes.Values.ABP:
-                    if (Instance.Physiology.TransducerZeroed_ABP) {
-                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Physiology.ASBP, 0.02f));
-                        lblLine2.Text = String.Format ("/ {0:0}", II.Math.RandomPercentRange (
-                            (Instance.Physiology.IABP_Active ? Instance.Physiology.IABP_DBP : Instance.Physiology.ADBP), 0.02f));
-                        lblLine3.Text = String.Format ("({0:0})", II.Math.RandomPercentRange (Instance.Physiology.AMAP, 0.02f));
+                    if (Instance?.Physiology.TransducerZeroed_ABP ?? false) {
+                        int asbp = (int)II.Math.RandomPercentRange (Instance?.Physiology?.ASBP, 0.02f);
+                        int adbp = (int)II.Math.RandomPercentRange ((Instance?.Physiology?.IABP_Active ?? false ? Instance?.Physiology.IABP_DBP : Instance?.Physiology.ADBP), 0.02f);
+                        int amap = (int)II.Math.RandomPercentRange (Instance?.Physiology?.AMAP, 0.02f);
+
+                        lblLine1.Text = String.Format ("{0:0}", asbp);
+                        lblLine2.Text = String.Format ("/ {0:0}", adbp);
+                        lblLine3.Text = String.Format ("({0:0})", amap);
+
+                        AlarmActive = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.ASBP);
+                        AlarmLine1 = (AlarmActive is not null && AlarmActive.IsSet && AlarmActive.IsEnabled && AlarmActive.ActivateAlarm (asbp));
+
+                        AlarmActive = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.ADBP);
+                        AlarmLine2 = (AlarmActive is not null && AlarmActive.IsSet && AlarmActive.IsEnabled && AlarmActive.ActivateAlarm (adbp));
+
+                        AlarmActive = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.AMAP);
+                        AlarmLine3 = (AlarmActive is not null && AlarmActive.IsSet && AlarmActive.IsEnabled && AlarmActive.ActivateAlarm (amap));
                     } else {
-                        lblLine1.Text = Utility.WrapString (Instance.Language.Localize ("NUMERIC:ZeroTransducer"));
+                        lblLine1.Text = Utility.WrapString (Instance?.Language.Localize ("NUMERIC:ZeroTransducer"));
                         lblLine2.Text = "";
                         lblLine3.Text = "";
+
+                        AlarmLine1 = false;
+                        AlarmLine2 = false;
+                        AlarmLine3 = false;
                     }
                     break;
 
                 case ControlTypes.Values.CVP:
-                    if (Instance.Physiology.TransducerZeroed_CVP)
-                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Physiology.CVP, 0.02f));
-                    else
-                        lblLine1.Text = Instance.Language.Localize ("NUMERIC:ZeroTransducer");
+                    if (Instance?.Physiology.TransducerZeroed_CVP ?? false) {
+                        int cvp = (int)II.Math.RandomPercentRange (Instance?.Physiology.CVP, 0.02f);
+
+                        lblLine1.Text = String.Format ("{0:0}", cvp);
+
+                        AlarmActive = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.CVP);
+                        AlarmLine1 = (AlarmActive is not null && AlarmActive.IsSet && AlarmActive.IsEnabled && AlarmActive.ActivateAlarm (cvp));
+                    } else {
+                        lblLine1.Text = Instance?.Language.Localize ("NUMERIC:ZeroTransducer");
+
+                        AlarmLine1 = false;
+                    }
                     break;
 
                 case ControlTypes.Values.CO:
@@ -329,14 +375,31 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.PA:
-                    if (Instance.Physiology.TransducerZeroed_PA) {
-                        lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Physiology.PSP, 0.02f));
-                        lblLine2.Text = String.Format ("/ {0:0}", II.Math.RandomPercentRange (Instance.Physiology.PDP, 0.02f));
-                        lblLine3.Text = String.Format ("({0:0})", II.Math.RandomPercentRange (Instance.Physiology.PMP, 0.02f));
+                    if (Instance?.Physiology.TransducerZeroed_PA ?? false) {
+                        int psp = (int)II.Math.RandomPercentRange (Instance?.Physiology.PSP, 0.02f);
+                        int pdp = (int)II.Math.RandomPercentRange (Instance?.Physiology.PDP, 0.02f);
+                        int pmp = (int)II.Math.RandomPercentRange (Instance?.Physiology.PMP, 0.02f);
+
+                        lblLine1.Text = String.Format ("{0:0}", psp);
+                        lblLine2.Text = String.Format ("/ {0:0}", pdp);
+                        lblLine3.Text = String.Format ("({0:0})", pmp);
+
+                        AlarmActive = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.PSP);
+                        AlarmLine1 = (AlarmActive is not null && AlarmActive.IsSet && AlarmActive.IsEnabled && AlarmActive.ActivateAlarm (psp));
+
+                        AlarmActive = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.PDP);
+                        AlarmLine2 = (AlarmActive is not null && AlarmActive.IsSet && AlarmActive.IsEnabled && AlarmActive.ActivateAlarm (pdp));
+
+                        AlarmActive = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.PMP);
+                        AlarmLine3 = (AlarmActive is not null && AlarmActive.IsSet && AlarmActive.IsEnabled && AlarmActive.ActivateAlarm (pmp));
                     } else {
-                        lblLine1.Text = Instance.Language.Localize ("NUMERIC:ZeroTransducer");
+                        lblLine1.Text = Instance?.Language.Localize ("NUMERIC:ZeroTransducer");
                         lblLine2.Text = "";
                         lblLine3.Text = "";
+
+                        AlarmLine1 = false;
+                        AlarmLine2 = false;
+                        AlarmLine3 = false;
                     }
                     break;
 
@@ -346,9 +409,14 @@ namespace IISIM.Controls {
 
                         lblLine1.Text = String.Format ("{0:0}", icp);
                         lblLine2.Text = String.Format ("({0:0})", Physiology.CalculateCPP (Instance?.Physiology.ICP, Instance?.Physiology.AMAP));
+
+                        AlarmActive = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.ICP);
+                        AlarmLine1 = (AlarmActive is not null && AlarmActive.IsSet && AlarmActive.IsEnabled && AlarmActive.ActivateAlarm (icp));
                     } else {
                         lblLine1.Text = Instance?.Language.Localize ("NUMERIC:ZeroTransducer");
                         lblLine2.Text = "";
+
+                        AlarmLine1 = false;
                     }
                     break;
 
@@ -357,64 +425,51 @@ namespace IISIM.Controls {
                         int iap = (int)II.Math.RandomPercentRange (Instance?.Physiology.IAP, 0.02f);
 
                         lblLine1.Text = String.Format ("{0:0}", iap);
+
+                        AlarmActive = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.IAP);
+                        AlarmLine1 = (AlarmActive is not null && AlarmActive.IsSet && AlarmActive.IsEnabled && AlarmActive.ActivateAlarm (iap));
                     } else {
                         lblLine1.Text = Instance?.Language.Localize ("NUMERIC:ZeroTransducer");
+
+                        AlarmLine1 = false;
                     }
                     break;
+            }
+        }
 
-                case ControlTypes.Values.DEFIB:
-                    if (Device is not null) {
-                        switch (Device.Mode) {
-                            default:
-                            case DeviceDefib.Modes.DEFIB:
+        public void OnTick_Alarm (object? sender, EventArgs e) {
+            AlarmIterator = !AlarmIterator;
 
-                                lblLine1.Text = Instance.Language.Localize ("DEFIB:Defibrillation");
-                                lblLine2.Text = String.Format ("{0:0} {1}", Device.DefibEnergy, Instance.Language.Localize ("DEFIB:Joules"));
+            int time = (AlarmActive?.Priority ?? Alarm.Priorities.Low) switch {
+                Alarm.Priorities.Low => 10000,
+                Alarm.Priorities.Medium => 5000,
+                Alarm.Priorities.High => 1000,
+                _ => 10000,
+            };
 
-                                if (Device.Analyze == DeviceDefib.AnalyzeStates.Analyzing) {
-                                    lblLine3.Text = Instance.Language.Localize ("DEFIB:Analyzing");
-                                } else if (Device.Analyze == DeviceDefib.AnalyzeStates.Analyzed) {
-                                    switch (Instance.Physiology.Cardiac_Rhythm.Value) {
-                                        default:
-                                            lblLine3.Text = Instance.Language.Localize ("DEFIB:NoShockAdvised");
-                                            break;
+            _ = AlarmTimer?.ResetStart (time);
 
-                                        case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Coarse:
-                                        case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Fine:
-                                        case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
-                                        case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
-                                        case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Polymorphic:
-                                            lblLine3.Text = Instance.Language.Localize ("DEFIB:ShockAdvised");
-                                            break;
-                                    }
-                                } else {
-                                    lblLine3.Text = Device.Charge switch {
-                                        DeviceDefib.ChargeStates.Charging => Instance.Language.Localize ("DEFIB:Charging"),
-                                        DeviceDefib.ChargeStates.Charged => Instance.Language.Localize ("DEFIB:Charged"),
-                                        _ => ""
-                                    };
-                                }
+            if (ControlType is not null) {
+                if (AlarmLine1 ?? false)
+                    lblLine1.Foreground = AlarmIterator ?? false
+                        ? Color.GetLead (ControlType.GetLead_Color, ColorScheme)
+                        : Color.GetAlarm (ControlType.GetLead_Color, ColorScheme);
+                else
+                    lblLine1.Foreground = Color.GetLead (ControlType.GetLead_Color, ColorScheme);
 
-                                break;
+                if (AlarmLine2 ?? false)
+                    lblLine2.Foreground = AlarmIterator ?? false
+                        ? Color.GetLead (ControlType.GetLead_Color, ColorScheme)
+                        : Color.GetAlarm (ControlType.GetLead_Color, ColorScheme);
+                else
+                    lblLine2.Foreground = Color.GetLead (ControlType.GetLead_Color, ColorScheme);
 
-                            case DeviceDefib.Modes.SYNC:
-                                lblLine1.Text = Instance.Language.Localize ("DEFIB:Synchronized");
-                                lblLine2.Text = String.Format ("{0:0} {1}", Device.DefibEnergy, Instance.Language.Localize ("DEFIB:Joules"));
-                                lblLine3.Text = Device.Charge switch {
-                                    DeviceDefib.ChargeStates.Charging => Instance.Language.Localize ("DEFIB:Charging"),
-                                    DeviceDefib.ChargeStates.Charged => Instance.Language.Localize ("DEFIB:Charged"),
-                                    _ => ""
-                                };
-                                break;
-
-                            case DeviceDefib.Modes.PACER:
-                                lblLine1.Text = Instance.Language.Localize ("DEFIB:Pacing");
-                                lblLine2.Text = String.Format ("{0:0} {1}", Device.PacerEnergy, Instance.Language.Localize ("DEFIB:Milliamps"));
-                                lblLine3.Text = String.Format ("{0}: {1:0}", Instance.Language.Localize ("DEFIB:Rate"), Device.PacerRate);
-                                break;
-                        }
-                    }
-                    break;
+                if (AlarmLine3 ?? false)
+                    lblLine3.Foreground = AlarmIterator ?? false
+                        ? Color.GetLead (ControlType.GetLead_Color, ColorScheme)
+                        : Color.GetAlarm (ControlType.GetLead_Color, ColorScheme);
+                else
+                    lblLine3.Foreground = Color.GetLead (ControlType.GetLead_Color, ColorScheme);
             }
         }
 
@@ -424,15 +479,17 @@ namespace IISIM.Controls {
                     case ControlTypes.Values.ABP: Instance.Physiology.TransducerZeroed_ABP = true; return;
                     case ControlTypes.Values.CVP: Instance.Physiology.TransducerZeroed_CVP = true; return;
                     case ControlTypes.Values.PA: Instance.Physiology.TransducerZeroed_PA = true; return;
+                    case ControlTypes.Values.ICP: Instance.Physiology.TransducerZeroed_ICP = true; return;
+                    case ControlTypes.Values.IAP: Instance.Physiology.TransducerZeroed_IAP = true; return;
                 }
             }
         }
 
         private void MenuAddNumeric_Click (object? sender, RoutedEventArgs e)
-            => Instance?.Device_Defib?.AddNumeric ();
+            => Instance?.Device_Monitor?.AddNumeric ();
 
         private void MenuRemoveNumeric_Click (object? sender, RoutedEventArgs e)
-            => Instance?.Device_Defib?.RemoveNumeric (this);
+            => Instance?.Device_Monitor?.RemoveNumeric (this);
 
         private void MenuSelectInputSource (object? sender, RoutedEventArgs e) {
             ControlTypes.Values selectedValue;
