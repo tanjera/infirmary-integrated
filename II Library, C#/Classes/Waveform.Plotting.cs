@@ -5,11 +5,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 using II.Drawing;
 
 namespace II.Waveform {
+
     public static class Plotting {
         /*
 	     * Shaping and point plotting functions
@@ -70,8 +72,8 @@ namespace II.Waveform {
         public static List<PointD> Stretch_BySystoleRatio (Dictionary.Plot _Addition, Physiology _P) {
             // Interpolate desired length of waveform in seconds to draw from:
             // Patient model's systolic time compared to waveform systolic time
-            // extrapolated 't' to ratio of waveform length versus waveform's systolic portion of length 
-            
+            // extrapolated 't' to ratio of waveform length versus waveform's systolic portion of length
+
             int ptSystole = (int)(_P.GetSystole_Seconds * 1000d);
 
             double length;
@@ -131,7 +133,7 @@ namespace II.Waveform {
         }
 
         public static List<PointD> Curve (int DrawResolution, double _Length, double _mV_Middle, double _mV_End, PointD _Start) {
-            if (_Length < 0)
+            if (_Length <= 0)
                 return new List<PointD> ();
 
             int i;
@@ -151,7 +153,7 @@ namespace II.Waveform {
         }
 
         public static List<PointD> Peak (int DrawResolution, double _Length, double _mV, double _mV_End, PointD _Start) {
-            if (_Length < 0)
+            if (_Length <= 0)
                 return new List<PointD> ();
 
             int i;
@@ -171,7 +173,7 @@ namespace II.Waveform {
         }
 
         public static List<PointD> Line (int DrawResolution, double _Length, double _mV, PointD _Start) {
-            if (_Length < 0)
+            if (_Length <= 0)
                 return new List<PointD> ();
 
             List<PointD> Out = new ();

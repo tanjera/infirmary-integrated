@@ -20,6 +20,8 @@ using II;
 using II.Rhythm;
 using II.Waveform;
 
+using IISIM.Controls;
+
 namespace IISIM.Windows {
 
     /// <summary>
@@ -122,11 +124,12 @@ namespace IISIM.Windows {
             TimerNumerics_Respiratory.Start ();
         }
 
-        public virtual void TogglePause () {
-            if (State == States.Running)
-                State = States.Paused;
-            else if (State == States.Paused)
-                State = States.Running;
+        public void PauseDevice (bool toPause) {
+            // TODO: Implement
+        }
+
+        public void TogglePause () {
+            PauseDevice (State == States.Running);
         }
 
         public Task Load (string inc) {

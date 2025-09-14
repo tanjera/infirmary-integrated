@@ -134,6 +134,9 @@ namespace IISIM.Windows {
             menuToggleFullscreen.Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
             menuExit.Header = Instance.Language.Localize ("PE:MenuExitProgram");
 
+            menuOptions.Header = Instance.Language.Localize ("PE:MenuOptions");
+            menuPauseSimulation.Header = Instance.Language.Localize ("PE:MenuPause");
+
             menuMirror.Header = Instance.Language.Localize ("PE:MenuMirror");
             menuMirrorDeactivate.Header = Instance.Language.Localize ("PE:MenuMirrorDeactivate");
             menuMirrorReceive.Header = Instance.Language.Localize ("PE:MenuMirrorReceive");
@@ -253,6 +256,7 @@ namespace IISIM.Windows {
                 cmdMenuNewSimulation_Click = new (),
                 cmdMenuLoadFile_Click = new (),
                 cmdMenuSaveFile_Click = new (),
+                cmdMenuPauseSimulation_Click = new (),
                 cmdMenuToggleFullscreen_Click = new (),
                 cmdMenuToggleAudio_Click = new ();
 
@@ -264,6 +268,9 @@ namespace IISIM.Windows {
 
             cmdMenuSaveFile_Click.InputGestures.Add (new KeyGesture (Key.S, ModifierKeys.Control));
             CommandBindings.Add (new CommandBinding (cmdMenuSaveFile_Click, MenuSaveFile_Click));
+
+            cmdMenuPauseSimulation_Click.InputGestures.Add (new KeyGesture (Key.Pause));
+            CommandBindings.Add (new CommandBinding (cmdMenuPauseSimulation_Click, MenuPauseSimulation_Click));
 
             cmdMenuToggleFullscreen_Click.InputGestures.Add (new KeyGesture (Key.Enter, ModifierKeys.Alt));
             CommandBindings.Add (new CommandBinding (cmdMenuToggleFullscreen_Click, MenuToggleFullscreen_Click));
@@ -387,6 +394,7 @@ namespace IISIM.Windows {
             }
 
             /* Tie the Patient's Timer to the Main Timer */
+            Instance.Physiology.State = Physiology.States.Running;
             Instance.Timer_Main.Elapsed += Instance.Physiology.ProcessTimers;
 
             /* Tie PatientEvents to the PatientEditor UI! And trigger. */
@@ -1526,6 +1534,32 @@ namespace IISIM.Windows {
             });
         }
 
+        public void PauseSimulation () {
+            if (Instance?.Physiology == null) {
+                return;
+            }
+
+            /* Change the Physiology State and link/unlink the main Timer*/
+            if (Instance.Physiology.State == Physiology.States.Stopped) {
+                Instance.Physiology.State = Physiology.States.Running;
+                Instance.Timer_Main.Start ();
+            } else if (Instance.Physiology.State == Physiology.States.Running) {
+                Instance.Physiology.State = Physiology.States.Stopped;
+                Instance.Timer_Main.Stop ();
+            }
+
+            if (Instance.Device_Monitor is not null)
+                Instance.Device_Monitor.PauseDevice (Instance.Physiology.State == Physiology.States.Stopped);
+            if (Instance.Device_Defib is not null)
+                Instance.Device_Defib.PauseDevice (Instance.Physiology.State == Physiology.States.Stopped);
+            if (Instance.Device_ECG is not null)
+                Instance.Device_ECG.PauseDevice (Instance.Physiology.State == Physiology.States.Stopped);
+            if (Instance.Device_EFM is not null)
+                Instance.Device_EFM.PauseDevice (Instance.Physiology.State == Physiology.States.Stopped);
+            if (Instance.Device_IABP is not null)
+                Instance.Device_IABP.PauseDevice (Instance.Physiology.State == Physiology.States.Stopped);
+        }
+
         public void ToggleFullscreen () {
             if (wdwControl.WindowState == System.Windows.WindowState.Maximized)
                 wdwControl.WindowState = System.Windows.WindowState.Normal;
@@ -1541,6 +1575,9 @@ namespace IISIM.Windows {
 
         private void MenuSaveFile_Click (object s, RoutedEventArgs e)
             => _ = SaveFile ();
+
+        private void MenuPauseSimulation_Click (object s, RoutedEventArgs e)
+            => PauseSimulation ();
 
         private void MenuToggleFullscreen_Click (object s, RoutedEventArgs e)
             => ToggleFullscreen ();

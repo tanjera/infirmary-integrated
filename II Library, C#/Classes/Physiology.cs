@@ -20,6 +20,11 @@ namespace II {
         /* Mirroring variables */
         public DateTime Updated;                    // DateTime this Patient was last updated
 
+        /* Simulation State */
+        public States State = States.Stopped;
+        public ulong Time = 0;
+        public const int Time_UpdateInterval = 10;  // In milliseconds
+
         /* Parameters for patient simulation, e.g. vital signs */
 
         public Vital_Signs VS_Settings = new (),
@@ -119,6 +124,11 @@ namespace II {
         private bool flagObstetricContraction = false;
         private int bufferFetalHeartRhythmWander = 1;
         private FetalHeart_Rhythms.States stateFetalHeartRhythm = FetalHeart_Rhythms.States.Interval;
+
+        public enum States {
+            Running,
+            Stopped
+        }
 
         /* Definitions for Vital_Signs class */
 
@@ -409,7 +419,8 @@ namespace II {
              ... approximate with 2.7 * QRS interval (bridges @ 100 and mimics increased ino/dromotropy
              ... Goal coefficient should have allow for normal diastolic times @ 100 but have drastically
                  decreased distolic times > 180-200 to mimic this cause of poor cardiac output
-        */ 
+        */
+
         public double GetSystole_Seconds {
             get {
                 if (VS_Settings.HR < 60) {                          // Brady
@@ -450,8 +461,8 @@ namespace II {
             lock (lockListPhysiologyEvents) {
                 foreach (PhysiologyEventArgs ea in ListPhysiologyEvents)
                     if (ea.EventType == PhysiologyEventTypes.Cardiac_Ventricular_Electric
-                        && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-(lengthSeconds + offsetSeconds))) >= 0
-                        && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-offsetSeconds)) <= 0)
+                        && ea.Occurred > Time - ((lengthSeconds + offsetSeconds) * 1000)
+                        && ea.Occurred < Time - (offsetSeconds * 1000))
                         counter++;
             }
 
@@ -502,7 +513,7 @@ namespace II {
             public Physiology? Physiology;                         // Remains as a pointer
             public Vital_Signs Vitals;                      // Copies over as a clone, not a pointer
             public PhysiologyEventTypes EventType;
-            public DateTime Occurred;
+            public ulong Occurred;
 
             public PhysiologyEventArgs (Physiology? p, PhysiologyEventTypes e) {
                 p ??= new ();
@@ -510,7 +521,7 @@ namespace II {
                 EventType = e;
                 Physiology = p;
                 Vitals = new Vital_Signs (p.VS_Actual);
-                Occurred = DateTime.Now;
+                Occurred = p.Time;
             }
         }
 
@@ -535,7 +546,7 @@ namespace II {
 
         public Task OnPhysiologyEvent (PhysiologyEventTypes e) {
             PhysiologyEventArgs ea = new (this, e);
-            
+
             lock (lockListPhysiologyEvents) {
                 ListPhysiologyEvents.Add (ea);
             }
@@ -547,9 +558,11 @@ namespace II {
 
         public void CleanListPhysiologyEvents () {
             // Remove all listings older than 1 minute... prevent cluttering memory
+
             lock (lockListPhysiologyEvents) {
                 for (int i = ListPhysiologyEvents.Count - 1; i >= 0; i--)
-                    if (ListPhysiologyEvents [i].Occurred.CompareTo (DateTime.Now.AddMinutes (-1)) < 0)
+                    if (Time > (60 * 1000)  // Prevent the uint overflow from occuring in the first minute...
+                        && ListPhysiologyEvents [i].Occurred < Time - (60 * 1000))
                         ListPhysiologyEvents.RemoveAt (i);
             }
         }
@@ -562,6 +575,9 @@ namespace II {
              * short interval, and call this function on its Tick to process all Patient
              * timers.
              */
+
+            Time += Time_UpdateInterval;        // Overarching Time keeping for Physiology
+
             TimerCardiac_Baseline.Process ();
             TimerCardiac_Atrial_Electric.Process ();
             TimerCardiac_Ventricular_Electric.Process ();
@@ -967,7 +983,49 @@ namespace II {
             return Task.CompletedTask;
         }
 
-        private async Task ResetStartTimers () {
+        /* Only use StartTimers if pausing -> unpausing!!
+         * Otherwise timers need resetting (ResetStart)
+         */
+
+        public async Task StartTimers () {
+            await StartTimers_Cardiac ();
+            await StartTimers_Respiratory ();
+            await StartTimers_Obstetric ();
+        }
+
+        private async Task StartTimers_Cardiac () {
+            await TimerCardiac_Baseline.Start ();
+            await TimerCardiac_Atrial_Electric.Stop ();
+            await TimerCardiac_Ventricular_Electric.Stop ();
+            await TimerCardiac_Atrial_Mechanical.Stop ();
+            await TimerCardiac_Ventricular_Mechanical.Stop ();
+            await TimerIABP_Balloon_Trigger.Stop ();
+
+            await TimerDefibrillation.Start ();
+            if (TimerPacemaker_Baseline.IsRunning)
+                await TimerPacemaker_Baseline.Start ();
+            await TimerPacemaker_Spike.Stop ();
+        }
+
+        private async Task StartTimers_Respiratory () {
+            await TimerRespiratory_Baseline.Start ();
+            await TimerRespiratory_Inspiration.Stop ();
+            await TimerRespiratory_Expiration.Stop ();
+        }
+
+        private async Task StartTimers_Obstetric () {
+            await TimerObstetric_Baseline.Start ();
+            await TimerObstetric_Fetal_Baseline.Start ();
+
+            await TimerObstetric_Fetal_Variability.Stop ();
+            await TimerObstetric_Contraction.Stop ();
+        }
+
+        /* ResetStart resets the interval and starts the timer.
+         * This is the generally desired behavior when setting up or adjusting Physiology!
+         */
+
+        public async Task ResetStartTimers () {
             await ResetStartTimers_Cardiac ();
             await ResetStartTimers_Respiratory ();
             await ResetStartTimers_Obstetric ();
@@ -1003,7 +1061,11 @@ namespace II {
             await TimerObstetric_Contraction.Stop ();
         }
 
-        private async Task StopTimers () {
+        /* Stopping Timers does not reset the interval, so this can be used for both
+         * Pausing and/or breaking down Physiology.
+         */
+
+        public async Task StopTimers () {
             await StopTimers_Cardiac ();
             await StopTimers_Respiratory ();
             await StopTimers_Obstetric ();

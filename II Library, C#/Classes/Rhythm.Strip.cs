@@ -52,7 +52,7 @@ namespace II.Rhythm {
         public int Resolution_Obstetric = 100;
 
         private double forwardBuffer = 1.0d;              // Coefficient of Length to draw into future as "now" for buffer
-        private DateTime scrolledLast = DateTime.UtcNow;
+        private ulong scrolledLast = 0;
         private bool scrollingUnpausing = false;
 
         public Offsets Offset = Offsets.Center;
@@ -206,7 +206,7 @@ namespace II.Rhythm {
                     else
                         j++;
 
-                    switch (Lead.Value) {
+                    switch (Lead?.Value) {
                         default: return;
                         case Lead.Values.ABP:
                             peak += _P.ListPhysiologyEvents [i].Vitals.ASBP;
@@ -321,8 +321,9 @@ namespace II.Rhythm {
 
             double offsetX = Last (Points).X;
             lock (lockPoints) {
-                for (int i = 0; i < addition.Count; i++)
+                for (int i = 0; i < addition.Count; i++) {
                     Points.Add (new PointD (addition [i].X + offsetX, addition [i].Y));
+                }
             }
         }
 
@@ -336,7 +337,10 @@ namespace II.Rhythm {
                 splice [i].X += Length * forwardBuffer;
 
             lock (lockPoints) {
-                Points.RemoveAll (p => { return p.X > splice [0].X && p.X < splice.Last ().X; });
+                Points.RemoveAll (p => {
+                    return p.X > splice [0].X && p.X < splice.Last ().X;
+                });
+
                 Points.AddRange (splice);
             }
         }
@@ -519,7 +523,10 @@ namespace II.Rhythm {
 
         public void TrimPoints () {
             lock (lockPoints) {
-                Points?.RemoveAll (p => { return p is null || p.X < -Length; });
+                Points?.RemoveAll (p => {
+                    return p is null
+                    || p.X < -Length;
+                });
             }
         }
 
@@ -534,20 +541,20 @@ namespace II.Rhythm {
             }
         }
 
-        public void Scroll (int? multiplier = 1) {
+        public void Scroll (ulong time, int? multiplier = 1) {
             if (Points is null)
                 return;
 
             if (scrollingUnpausing) {
                 scrollingUnpausing = false;
-                scrolledLast = DateTime.UtcNow;
+                scrolledLast = time;
                 return;
             }
 
             multiplier ??= 1;
 
-            double scrollBy = (double)(((DateTime.UtcNow - scrolledLast).TotalMilliseconds / 1000) * multiplier);
-            scrolledLast = DateTime.UtcNow;
+            double scrollBy = (double)(((double)(time - scrolledLast) / 1000) * multiplier);
+            scrolledLast = time;
 
             lock (lockPoints) {
                 for (int i = Points.Count - 1; i >= 0; i--)
@@ -817,11 +824,8 @@ namespace II.Rhythm {
         }
 
         public void Add_Beat__Obstetric_Baseline (Physiology? p) {
-            if (p is null || Lead is null || !IsObstetric)
-                return;
-
             /* Only TOCO needs to be drawn at baseline, in DeviceEFM */
-            if (Lead.Value == Lead.Values.FHR)
+            if (p is null || Lead is null || !IsObstetric || Lead.Value == Lead.Values.FHR)
                 return;
 
             SetForwardBuffer (p);

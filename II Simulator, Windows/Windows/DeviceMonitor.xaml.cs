@@ -23,6 +23,7 @@ using II.Settings;
 using II.Waveform;
 
 using IISIM.Classes;
+using IISIM.Controls;
 
 namespace IISIM.Windows {
 
@@ -113,6 +114,9 @@ namespace IISIM.Windows {
         }
 
         public virtual void DisposeAudio () {
+            MediaPlayer_Tone?.Stop ();
+            MediaPlayer_Alarm?.Stop ();
+
             MediaPlayer_Tone?.Dispose ();
             MediaPlayer_Alarm?.Dispose ();
         }
@@ -528,11 +532,42 @@ namespace IISIM.Windows {
             UpdateInterface ();
         }
 
-        public void TogglePause () {
-            if (State == States.Running)
+        public void PauseDevice (bool toPause) {
+            if (toPause) {
                 State = States.Paused;
-            else if (State == States.Paused)
+
+                if (Instance?.Physiology is not null)
+                    Instance.Physiology.PhysiologyEvent -= OnPhysiologyEvent;
+
+                TimerAlarm.Stop ();
+                TimerTracing.Stop ();
+
+                MediaPlayer_Alarm?.Stop ();
+                MediaPlayer_Tone?.Stop ();
+
+                foreach (var n in listNumerics)
+                    n.AlarmTimer?.Stop ();
+            } else if (toPause == false) {
                 State = States.Running;
+
+                /* Trigger an "Unpause" event in each Strip ... otherwise they Scroll() based on DateTime elapsed */
+                foreach (var t in listTracings) {
+                    t.Strip?.Unpause ();
+                }
+
+                TimerAlarm.Start ();
+                TimerTracing.Start ();
+
+                if (Instance?.Physiology is not null)
+                    Instance.Physiology.PhysiologyEvent += OnPhysiologyEvent;
+
+                foreach (var n in listNumerics)
+                    n.AlarmTimer?.Start ();
+            }
+        }
+
+        public void TogglePause () {
+            PauseDevice (State == States.Running);
         }
 
         public void OnClosed (object? sender, EventArgs e) {
@@ -703,16 +738,19 @@ namespace IISIM.Windows {
                 MediaPlayer_Alarm = null;
                 AlarmActive = null;
                 return;
-            } else if (alarm.Priority == AlarmActive) {
+            } else if (alarm.Priority == AlarmActive) {         // Existing alarm is correct priority
                 if (MediaPlayer_Alarm is null && AlarmMedia?.Count () == Enum.GetValues (typeof (Alarm.Priorities)).Length) {
                     MediaPlayer_Alarm = new SoundPlayer (AlarmMedia [alarm.Priority.GetHashCode ()]);
+                    AlarmMedia [alarm.Priority.GetHashCode ()].Position = 0;
                     MediaPlayer_Alarm.PlayLooping ();
                 }
                 return;
-            } else if (alarm.Priority != AlarmActive) {
+            } else if (alarm.Priority != AlarmActive) {         // Alarm switching to different priority
                 MediaPlayer_Alarm?.Stop ();
+
                 if (AlarmMedia?.Count () == Enum.GetValues (typeof (Alarm.Priorities)).Length) {
                     MediaPlayer_Alarm = new SoundPlayer (AlarmMedia [alarm.Priority.GetHashCode ()]);
+                    AlarmMedia [alarm.Priority.GetHashCode ()].Position = 0;
                     MediaPlayer_Alarm.PlayLooping ();
 
                     AlarmActive = alarm.Priority;
@@ -722,17 +760,20 @@ namespace IISIM.Windows {
         }
 
         public void OnTick_Tracing (object? sender, EventArgs e) {
-            for (int i = 0; i < listTracings.Count; i++) {
-                listTracings [i].Strip?.Scroll ();
+            if (State == States.Running) {  // Only pauses advancement of tracing; simulation still active!
+                for (int i = 0; i < listTracings.Count; i++) {
+                    listTracings [i].Strip?.Scroll (Instance?.Physiology?.Time ?? 0);
 
-                if (State == States.Running) {  // Only pauses advancement of tracing; simulation still active!
                     App.Current.Dispatcher.InvokeAsync (listTracings [i].DrawTracing);
                 }
+            } else if (State == States.Paused) {
+                foreach (var t in listTracings)
+                    t.Strip?.Unpause ();
             }
         }
 
         public void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
-            if (State != States.Running) {
+            if (State == States.Running) {
                 listNumerics
                     .Where (n
                         => n.ControlType?.Value != Controls.MonitorNumeric.ControlTypes.Values.ETCO2

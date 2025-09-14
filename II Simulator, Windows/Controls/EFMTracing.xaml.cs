@@ -107,12 +107,6 @@ namespace IISIM.Controls {
 
                         plTracing.Points.Add (new System.Windows.Point (x, y));
                     }
-
-                    if (Strip?.Lead?.Value == Lead.Values.FHR) {
-                        if (plTracing.Points.Count > 0) {
-                            //Debug.WriteLine ("");
-                        }
-                    }
                 }
             }
         }

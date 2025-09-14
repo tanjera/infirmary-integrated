@@ -20,6 +20,8 @@ using II;
 using II.Rhythm;
 using II.Waveform;
 
+using IISIM.Controls;
+
 namespace IISIM.Windows {
 
     /// <summary>
@@ -269,11 +271,33 @@ namespace IISIM.Windows {
             UpdateInterface ();
         }
 
-        public void TogglePause () {
-            if (State == States.Running)
+        public void PauseDevice (bool toPause) {
+            if (toPause) {
                 State = States.Paused;
-            else if (State == States.Paused)
+
+                if (Instance?.Physiology is not null)
+                    Instance.Physiology.PhysiologyEvent -= OnPhysiologyEvent;
+
+                TimerAlarm.Stop ();
+                TimerTracing.Stop ();
+            } else if (toPause == false) {
                 State = States.Running;
+
+                /* Trigger an "Unpause" event in each Strip ... otherwise they Scroll() based on DateTime elapsed */
+                foreach (var t in listTracings) {
+                    t.Strip?.Unpause ();
+                }
+
+                TimerAlarm.Start ();
+                TimerTracing.Start ();
+
+                if (Instance?.Physiology is not null)
+                    Instance.Physiology.PhysiologyEvent += OnPhysiologyEvent;
+            }
+        }
+
+        public void TogglePause () {
+            PauseDevice (State == States.Running);
         }
 
         public void OnClosed (object? sender, EventArgs e) {
@@ -320,12 +344,15 @@ namespace IISIM.Windows {
         }
 
         public void OnTick_Tracing (object? sender, EventArgs e) {
-            for (int i = 0; i < listTracings.Count; i++) {
-                listTracings [i].Strip?.Scroll ();
+            if (State == States.Running) {  // Only pauses advancement of tracing; simulation still active!
+                for (int i = 0; i < listTracings.Count; i++) {
+                    listTracings [i].Strip?.Scroll (Instance?.Physiology?.Time ?? 0);
 
-                if (State == States.Running) {  // Only pauses advancement of tracing; simulation still active!
                     App.Current.Dispatcher.InvokeAsync (listTracings [i].DrawTracing);
                 }
+            } else if (State == States.Paused) {
+                foreach (var t in listTracings)
+                    t.Strip?.Unpause ();
             }
         }
 

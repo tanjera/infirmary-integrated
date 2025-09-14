@@ -176,9 +176,9 @@
 					Value="22" />
 			<Setter Property="VerticalContentAlignment"
 					Value="Center" />
-            <Setter Property="TextAlignment"
-                    Value="Left" />
-            <Setter Property="ClipValueToMinMax"
+			<Setter Property="TextAlignment"
+					Value="Left" />
+			<Setter Property="ClipValueToMinMax"
 					Value="True" />
 			<Setter Property="FontSize"
 					Value="12" />
@@ -192,8 +192,8 @@
 					Value="22" />
 			<Setter Property="VerticalContentAlignment"
 					Value="Center" />
-            <Setter Property="TextAlignment" 
-                    Value="Left"/>
+			<Setter Property="TextAlignment"
+					Value="Left" />
 			<Setter Property="ClipValueToMinMax"
 					Value="True" />
 			<Setter Property="FontSize"
@@ -236,9 +236,9 @@
 					Value="22" />
 			<Setter Property="VerticalContentAlignment"
 					Value="Center" />
-            <Setter Property="TextAlignment"
-                    Value="Left" />
-            <Setter Property="ClipValueToMinMax"
+			<Setter Property="TextAlignment"
+					Value="Left" />
+			<Setter Property="ClipValueToMinMax"
 					Value="True" />
 			<Setter Property="FontSize"
 					Value="12" />
@@ -341,6 +341,12 @@
 					<MenuItem Name="menuExit"
 							  Click="MenuExit_Click"
 							  InputGestureText="Alt+F4" />
+				</MenuItem>
+
+				<MenuItem Name="menuOptions">
+					<MenuItem Name="menuPauseSimulation"
+							  Click="MenuPauseSimulation_Click"
+							  InputGestureText="Pause" />
 				</MenuItem>
 
 				<MenuItem Name="menuMirror">

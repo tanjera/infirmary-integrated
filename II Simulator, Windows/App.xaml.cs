@@ -46,7 +46,7 @@ namespace IISIM {
         public System.Timers.Timer Timer_Main = new ();
 
         private void Init (object sender, StartupEventArgs e) {
-            Timer_Main.Interval = 10; // q 10 milliseconds
+            Timer_Main.Interval = Physiology.Time_UpdateInterval;
             Timer_Main.Start ();
 
             II.File.Init ();                                            // Init file structure (for config file, temp files)
