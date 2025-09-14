@@ -722,37 +722,35 @@ namespace IISIM.Windows {
         }
 
         public void OnTick_Tracing (object? sender, EventArgs e) {
-            if (State != States.Running)
-                return;
-
             for (int i = 0; i < listTracings.Count; i++) {
                 listTracings [i].Strip?.Scroll ();
-                App.Current.Dispatcher.InvokeAsync (listTracings [i].DrawTracing);
+
+                if (State == States.Running) {  // Only pauses advancement of tracing; simulation still active!
+                    App.Current.Dispatcher.InvokeAsync (listTracings [i].DrawTracing);
+                }
             }
         }
 
         public void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
-            if (State != States.Running)
-                return;
-
-            listNumerics
-                .Where (n
-                    => n.ControlType?.Value != Controls.MonitorNumeric.ControlTypes.Values.ETCO2
-                    && n.ControlType?.Value != Controls.MonitorNumeric.ControlTypes.Values.RR)
-                .ToList ()
-                .ForEach (n => App.Current.Dispatcher.InvokeAsync (n.UpdateVitals));
+            if (State != States.Running) {
+                listNumerics
+                    .Where (n
+                        => n.ControlType?.Value != Controls.MonitorNumeric.ControlTypes.Values.ETCO2
+                        && n.ControlType?.Value != Controls.MonitorNumeric.ControlTypes.Values.RR)
+                    .ToList ()
+                    .ForEach (n => App.Current.Dispatcher.InvokeAsync (n.UpdateVitals));
+            }
         }
 
         public void OnTick_Vitals_Respiratory (object? sender, EventArgs e) {
-            if (State != States.Running)
-                return;
-
-            listNumerics
-                .Where (n
-                    => n.ControlType?.Value == Controls.MonitorNumeric.ControlTypes.Values.ETCO2
-                    || n.ControlType?.Value == Controls.MonitorNumeric.ControlTypes.Values.RR)
-                .ToList ()
-                .ForEach (n => App.Current.Dispatcher.InvokeAsync (n.UpdateVitals));
+            if (State == States.Running) {
+                listNumerics
+                    .Where (n
+                        => n.ControlType?.Value == Controls.MonitorNumeric.ControlTypes.Values.ETCO2
+                        || n.ControlType?.Value == Controls.MonitorNumeric.ControlTypes.Values.RR)
+                    .ToList ()
+                    .ForEach (n => App.Current.Dispatcher.InvokeAsync (n.UpdateVitals));
+            }
         }
 
         public void OnPhysiologyEvent (object? sender, Physiology.PhysiologyEventArgs e) {

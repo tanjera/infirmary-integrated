@@ -619,26 +619,26 @@ namespace II.Rhythm {
                 p.Cardiac_Rhythm.ECG_Isoelectric (p, this);
             } else if (CanScale) {
                 double fill = (Length * forwardBuffer) - Last (Points).X;
-                
+
                 // Interpolate HR Interval (.75 - 5 seconds) to a resolution coefficient of 1 - 10
-                // w/ default resolution of 10ms: @ HR 60 bpm, resolve @ 10ms, @ ~12 bpm, resolve @ 100ms 
+                // w/ default resolution of 10ms: @ HR 60 bpm, resolve @ 10ms, @ ~12 bpm, resolve @ 100ms
                 // Note: high resolution times (e.g. 100ms) cuts into drawing of following concatenation!
                 double length = fill > p.GetHRInterval ? fill : p.GetHRInterval;
-                double ilerpHRi = Math.Clamp(Math.InverseLerp (.75, 5, length), 0, 1);
-                double scaleRes = Math.Lerp(1, 10, ilerpHRi);
-                
+                double ilerpHRi = Math.Clamp (Math.InverseLerp (.75, 5, length), 0, 1);
+                double scaleRes = Math.Lerp (1, 10, ilerpHRi);
+
                 Concatenate (Scale (p, Draw.Flat_Line (length, 0d, scaleRes)));
             } else {
                 /* Fill waveform through to future buffer with flatline */
                 double fill = (Length * forwardBuffer) - Last (Points).X;
-                
+
                 // Interpolate HR Interval (.75 - 5 seconds) to a resolution coefficient of 1 - 10
-                // w/ default resolution of 10ms: @ HR 60 bpm, resolve @ 10ms, @ ~12 bpm, resolve @ 100ms 
+                // w/ default resolution of 10ms: @ HR 60 bpm, resolve @ 10ms, @ ~12 bpm, resolve @ 100ms
                 // Note: high resolution times (e.g. 100ms) cuts into drawing of following concatenation!
                 double length = fill > p.GetHRInterval ? fill : p.GetHRInterval;
-                double ilerpHRi = Math.Clamp(Math.InverseLerp (.75, 5, length), 0, 1);
-                double scaleRes = Math.Lerp(1, 10, ilerpHRi);
-                
+                double ilerpHRi = Math.Clamp (Math.InverseLerp (.75, 5, length), 0, 1);
+                double scaleRes = Math.Lerp (1, 10, ilerpHRi);
+
                 Concatenate (Draw.Flat_Line (length, 0d, scaleRes));
             }
 
@@ -790,7 +790,7 @@ namespace II.Rhythm {
                 default: return;
                 case Lead.Values.RR: Replace (Draw.RR_Rhythm (p, true, Resolution_Respiratory)); break;
                 case Lead.Values.ETCO2: break;    // End-tidal waveform is only present on expiration!! Is flatline on inspiration.
-                
+
                 case Lead.Values.IAP:
                     ReplaceAtOver (Draw.IAP_Rhythm (true, p, 1d));
                     break;
@@ -807,7 +807,7 @@ namespace II.Rhythm {
                 default: break;
                 case Lead.Values.RR: Replace (Draw.RR_Rhythm (p, false, Resolution_Respiratory)); break;
                 case Lead.Values.ETCO2: Replace (Draw.ETCO2_Rhythm (p)); break;
-                
+
                 case Lead.Values.IAP:
                     Replace (Draw.IAP_Rhythm (false, p, -1d));
                     break;
@@ -817,8 +817,11 @@ namespace II.Rhythm {
         }
 
         public void Add_Beat__Obstetric_Baseline (Physiology? p) {
-            /* Only TOCO needs to be drawn at baseline, in DeviceEFM */
             if (p is null || Lead is null || !IsObstetric)
+                return;
+
+            /* Only TOCO needs to be drawn at baseline, in DeviceEFM */
+            if (Lead.Value == Lead.Values.FHR)
                 return;
 
             SetForwardBuffer (p);
@@ -827,17 +830,9 @@ namespace II.Rhythm {
             /* Fill waveform through to future buffer with flatline */
             double fill = (Length * forwardBuffer) - Last (Points).X;
 
-            switch (Lead.Value) {
-                default:
-                case Lead.Values.FHR:
-                    break;
-
-                case Lead.Values.TOCO:
-                    Concatenate (Draw.Flat_Line (fill,
-                        Math.Clamp (Math.InverseLerp (DefaultScaleMin_TOCO, DefaultScaleMax_TOCO, p.ObstetricUterineRestingTone)),
-                         Resolution_Obstetric));
-                    break;
-            }
+            Concatenate (Draw.Flat_Line (fill,
+                Math.Clamp (Math.InverseLerp (DefaultScaleMin_TOCO, DefaultScaleMax_TOCO, p.ObstetricUterineRestingTone)),
+                 Resolution_Obstetric));
 
             SortPoints ();
         }

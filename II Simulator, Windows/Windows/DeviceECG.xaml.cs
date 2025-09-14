@@ -320,12 +320,12 @@ namespace IISIM.Windows {
         }
 
         public void OnTick_Tracing (object? sender, EventArgs e) {
-            if (State != States.Running)
-                return;
-
             for (int i = 0; i < listTracings.Count; i++) {
                 listTracings [i].Strip?.Scroll ();
-                App.Current.Dispatcher.InvokeAsync (listTracings [i].DrawTracing);
+
+                if (State == States.Running) {  // Only pauses advancement of tracing; simulation still active!
+                    App.Current.Dispatcher.InvokeAsync (listTracings [i].DrawTracing);
+                }
             }
         }
 
