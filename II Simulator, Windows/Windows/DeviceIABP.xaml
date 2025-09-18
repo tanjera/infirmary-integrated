@@ -8,8 +8,412 @@
 		mc:Ignorable="d"
 		Title="Infirmary Integrated: Device Simulator"
 		Icon="/Resources/Icon_II.ico"
-		Height="450"
-		Width="800">
-	<Grid>
-	</Grid>
+		Background="Black"
+		Width="1200"
+		Height="800">
+
+	<Window.Resources>
+		<Style TargetType="Menu">
+			<Setter Property="Padding"
+					Value="2" />
+		</Style>
+
+		<Style TargetType="MenuItem">
+			<Setter Property="Padding"
+					Value="5,2" />
+			<Setter Property="Margin"
+					Value="2,0" />
+			<Setter Property="FontSize"
+					Value="12" />
+		</Style>
+
+		<Style TargetType="Border"
+			   x:Key="brd_control" />
+
+		<Style TargetType="TextBlock"
+			   x:Key="tb_status_lg">
+			<Setter Property="HorizontalAlignment"
+					Value="Center" />
+			<Setter Property="VerticalAlignment"
+					Value="Center" />
+			<Setter Property="FontSize"
+					Value="30" />
+			<Setter Property="FontWeight"
+					Value="Bold" />
+		</Style>
+
+		<Style TargetType="TextBlock"
+			   x:Key="tb_status_sm">
+			<Setter Property="HorizontalAlignment"
+					Value="Center" />
+			<Setter Property="VerticalAlignment"
+					Value="Center" />
+			<Setter Property="FontSize"
+					Value="24" />
+			<Setter Property="FontWeight"
+					Value="Bold" />
+		</Style>
+
+		<Style TargetType="Button"
+			   x:Key="btn_round">
+			<Setter Property="HorizontalAlignment"
+					Value="Stretch" />
+			<Setter Property="VerticalAlignment"
+					Value="Stretch" />
+			<Setter Property="HorizontalContentAlignment"
+					Value="Center" />
+			<Setter Property="VerticalContentAlignment"
+					Value="Center" />
+			<Setter Property="MinHeight"
+					Value="50" />
+			<Setter Property="MinWidth"
+					Value="60" />
+			<Setter Property="Margin"
+					Value="15,8" />
+		</Style>
+
+		<Style TargetType="TextBlock"
+			   x:Key="tb_button">
+			<Setter Property="HorizontalAlignment"
+					Value="Center" />
+			<Setter Property="VerticalAlignment"
+					Value="Center" />
+			<Setter Property="FontSize"
+					Value="20" />
+			<Setter Property="FontWeight"
+					Value="Bold" />
+			<Setter Property="Padding"
+					Value="10,0" />
+		</Style>
+
+		<Style TargetType="TextBlock"
+			   x:Key="tb_buttonsub">
+			<Setter Property="HorizontalAlignment"
+					Value="Center" />
+			<Setter Property="VerticalAlignment"
+					Value="Center" />
+			<Setter Property="TextAlignment"
+					Value="Center" />
+			<Setter Property="FontSize"
+					Value="16" />
+			<Setter Property="FontWeight"
+					Value="Bold" />
+		</Style>
+	</Window.Resources>
+
+	<DockPanel LastChildFill="True">
+
+		<!--  Main Menu  -->
+		<Menu DockPanel.Dock="Top">
+
+			<MenuItem Name="menuDevice">
+				<MenuItem Name="menuPauseDevice"
+						  Click="MenuTogglePause_Click"
+						  InputGestureText="Pause" />
+
+				<Separator />
+
+				<MenuItem Name="menuToggleFullscreen"
+						  Click="MenuToggleFullscreen_Click"
+						  InputGestureText="Alt+Enter" />
+				<Separator />
+				<MenuItem Name="menuCloseDevice"
+						  Click="MenuClose_Click"
+						  InputGestureText="Alt+F4" />
+			</MenuItem>
+
+			<MenuItem Name="menuColor">
+				<MenuItem Name="menuColorLight"
+						  Click="MenuColorScheme_Light"
+						  InputGestureText="F1" />
+				<MenuItem Name="menuColorDark"
+						  Click="MenuColorScheme_Dark"
+						  InputGestureText="F2" />
+			</MenuItem>
+		</Menu>
+
+		<Grid Name="mainGrid">
+			<!--  Default layout: Horizontal (like actual IABP's), display on top, control panel on bottom  -->
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="6 *" />
+				<RowDefinition Height="4 *" />
+			</Grid.RowDefinitions>
+
+			<!--  Display (tracings and numerics)  -->
+			<Grid Name="displayGrid"
+				  Grid.Row="0"
+				  Grid.Column="0">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="1 *" />
+					<ColumnDefinition Width="4 *" />
+					<ColumnDefinition Width="1 *" />
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*" />
+					<RowDefinition Height="*" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+
+				<!--  IABP Trigger Source, Operation Mode, Current Status, Helium Remaining  -->
+				<Border Name="brdStatusInfo"
+						Grid.Row="0"
+						Grid.RowSpan="3"
+						Grid.Column="0"
+						Margin="5"
+						BorderBrush="SkyBlue"
+						BorderThickness="0.5"
+						CornerRadius="5">
+
+					<Grid Name="layoutStatusInfo">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="*" />
+							<RowDefinition Height="*" />
+							<RowDefinition Height="*" />
+							<RowDefinition Height="*" />
+							<RowDefinition Height="*" />
+							<RowDefinition Height="*" />
+						</Grid.RowDefinitions>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition />
+						</Grid.ColumnDefinitions>
+
+						<Border Name="brdTriggerSource"
+								Grid.Row="0"
+								Grid.Column="0">
+							<TextBlock Name="lblTriggerSource"
+									   Style="{StaticResource tb_status_lg}" />
+						</Border>
+						<Border Name="brdOperationMode"
+								Grid.Row="1"
+								Grid.Column="0">
+							<TextBlock Name="lblOperationMode"
+									   Style="{StaticResource tb_status_lg}" />
+						</Border>
+						<Border Name="brdFrequency"
+								Grid.Row="2"
+								Grid.Column="0">
+							<TextBlock Name="lblFrequency"
+									   Style="{StaticResource tb_status_lg}" />
+						</Border>
+						<Border Name="brdMachineStatus"
+								Grid.Row="3"
+								Grid.Column="0">
+							<TextBlock Name="lblMachineStatus"
+									   Style="{StaticResource tb_status_lg}" />
+						</Border>
+						<Border Name="brdTubingStatus"
+								Grid.Row="4"
+								Grid.Column="0">
+							<TextBlock Name="lblTubingStatus"
+									   Style="{StaticResource tb_status_sm}" />
+						</Border>
+						<Border Name="brdHelium"
+								Grid.Row="5"
+								Grid.Column="0">
+							<TextBlock Name="lblHelium"
+									   Style="{StaticResource tb_status_sm}" />
+						</Border>
+					</Grid>
+				</Border>
+
+				<!--  Populate tracings and numerics programatically at runtime!  -->
+				<!--  IABPTracing of ECG strip top center, IABPNumeric top right  -->
+				<!--  IABPTracing of ABP strip middle center, IABPNumeric middle right  -->
+				<!--  IABPTracing of IABP Balloon strip bottom center  -->
+			</Grid>
+
+			<!--  Control buttons  -->
+			<Grid Name="controlsGrid"
+				  Grid.Row="1"
+				  Grid.Column="0"
+				  Background="LightGray">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition />
+					<ColumnDefinition />
+					<ColumnDefinition />
+					<ColumnDefinition />
+					<ColumnDefinition />
+					<ColumnDefinition />
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*" />
+					<RowDefinition Height="*" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+
+				<!--  1st Row: Operation Mode, Start, Standby  -->
+				<Border Name="borderOperationMode"
+						Grid.Row="0"
+						Grid.Column="0"
+						Grid.ColumnSpan="2"
+						Background="CornflowerBlue" />
+				<Border Name="borderStartStandBy"
+						Grid.Row="0"
+						Grid.Column="4"
+						Grid.ColumnSpan="2"
+						Background="CornflowerBlue" />
+
+				<Button Grid.Row="0"
+						Grid.Column="0"
+						Background="LightGreen"
+						Click="ButtonModeAuto_Click"
+						Style="{StaticResource btn_round}">
+					<TextBlock Name="buttonModeAuto"
+							   Style="{StaticResource tb_buttonsub}" />
+				</Button>
+
+				<Button Grid.Row="0"
+						Grid.Column="1"
+						Background="LightGray"
+						Click="ButtonModeSemiAuto_Click"
+						Style="{StaticResource btn_round}">
+
+					<TextBlock Name="buttonModeSemiAuto"
+							   Style="{StaticResource tb_buttonsub}" />
+				</Button>
+
+				<Button Grid.Row="0"
+						Grid.Column="4"
+						Background="LightGreen"
+						Click="ButtonStart_Click"
+						Style="{StaticResource btn_round}">
+
+					<TextBlock Name="buttonStart"
+							   Style="{StaticResource tb_buttonsub}" />
+				</Button>
+
+				<Button Grid.Row="0"
+						Grid.Column="5"
+						Background="Yellow"
+						Click="ButtonPause_Click"
+						Style="{StaticResource btn_round}">
+
+					<TextBlock Name="buttonPause"
+							   Style="{StaticResource tb_buttonsub}" />
+				</Button>
+
+				<!--  2nd Row  -->
+				<Border Name="borderTrigger"
+						Grid.Row="1"
+						Grid.Column="0"
+						Grid.ColumnSpan="2"
+						Background="LightSkyBlue" />
+				<Border Name="borderTiming"
+						Grid.Row="1"
+						Grid.RowSpan="1"
+						Grid.Column="3"
+						Background="Azure" />
+				<Border Name="borderAugmentation"
+						Grid.Row="1"
+						Grid.RowSpan="2"
+						Grid.Column="4"
+						Background="Gray" />
+				<Border Name="borderIncreaseDecrease"
+						Grid.Row="1"
+						Grid.RowSpan="2"
+						Grid.Column="5"
+						Background="LightSkyBlue" />
+
+				<Button Name="buttonTrigger"
+						Grid.Row="1"
+						Grid.Column="0"
+						Background="PowderBlue"
+						Click="ButtonTrigger_Click"
+						Style="{StaticResource btn_round}">
+					<TextBlock Name="btntxtTrigger" />
+				</Button>
+
+				<Button Name="buttonFrequency"
+						Grid.Row="1"
+						Grid.Column="1"
+						Background="PowderBlue"
+						Click="ButtonFrequency_Click"
+						Style="{StaticResource btn_round}">
+					<TextBlock Name="btntxtFrequency"
+							   Style="{StaticResource tb_buttonsub}" />
+				</Button>
+
+				<Button Name="buttonInflationTiming"
+						Grid.Row="1"
+						Grid.Column="3"
+						Background="PowderBlue"
+						Click="ButtonInflationTiming_Click"
+						Style="{StaticResource btn_round}">
+					<TextBlock Name="btntxtInflationTiming"
+							   Style="{StaticResource tb_buttonsub}" />
+				</Button>
+
+				<Button Name="buttonAugmentationPressure"
+						Grid.Row="1"
+						Grid.Column="4"
+						Background="PowderBlue"
+						Click="ButtonAugmentationPressure_Click"
+						Style="{StaticResource btn_round}">
+					<TextBlock Name="btntxtAugmentationPressure"
+							   Style="{StaticResource tb_buttonsub}" />
+				</Button>
+
+				<Button Name="buttonIncrease"
+						Grid.Row="1"
+						Grid.Column="5"
+						Background="AntiqueWhite"
+						Click="ButtonIncrease_Click"
+						Style="{StaticResource btn_round}">
+					<TextBlock Name="btntxtIncrease"
+							   Style="{StaticResource tb_buttonsub}" />
+				</Button>
+
+				<!--  3rd Row  -->
+				<Border Name="borderSilenceFill"
+						Grid.Row="2"
+						Grid.Column="0"
+						Background="Gray" />
+				<Border Name="borderHelp"
+						Grid.Row="2"
+						Grid.Column="1"
+						Background="Gray" />
+
+				<Button Grid.Row="2"
+						Grid.Column="0"
+						Background="PowderBlue"
+						Click="ButtonPrimeBalloon_Click"
+						Style="{StaticResource btn_round}">
+					<TextBlock Name="buttonPrimeBalloon"
+							   Style="{StaticResource tb_buttonsub}" />
+				</Button>
+
+				<Button Grid.Row="2"
+						Grid.Column="1"
+						Background="PowderBlue"
+						Click="ButtonZeroABP_Click"
+						Style="{StaticResource btn_round}">
+					<TextBlock Name="buttonZero"
+							   Style="{StaticResource tb_buttonsub}" />
+				</Button>
+
+				<Button Name="buttonAugmentationAlarm"
+						Grid.Row="2"
+						Grid.Column="4"
+						Background="PowderBlue"
+						Click="ButtonAugmentationAlarm_Click"
+						Style="{StaticResource btn_round}">
+					<TextBlock Name="btntxtAugmentationAlarm"
+							   Style="{StaticResource tb_buttonsub}" />
+				</Button>
+
+				<Button Name="buttonDecrease"
+						Grid.Row="2"
+						Grid.Column="5"
+						Background="AntiqueWhite"
+						Click="ButtonDecrease_Click"
+						Style="{StaticResource btn_round}">
+					<TextBlock Name="btntxtDecrease"
+							   Style="{StaticResource tb_buttonsub}" />
+				</Button>
+			</Grid>
+		</Grid>
+	</DockPanel>
 </Window>

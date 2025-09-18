@@ -28,7 +28,7 @@ using IISIM.Controls;
 namespace IISIM.Windows {
 
     /// <summary>
-    /// Interaction logic for DeviceMonitor.xaml
+    /// Interaction logic for DeviceDefib.xaml
     /// </summary>
     public partial class DeviceDefib : Window {
         public App? Instance { get; set; }
