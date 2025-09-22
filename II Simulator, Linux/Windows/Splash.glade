@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.40.0 -->
+<interface>
+  <requires lib="gtk+" version="3.18"/>
+  <object class="GtkWindow" id="wdwSplash">
+    <property name="can-focus">False</property>
+    <property name="type">popup</property>
+    <property name="title" translatable="yes">Infirmary Integrated</property>
+    <property name="resizable">False</property>
+    <property name="window-position">center</property>
+    <property name="default-width">800</property>
+    <property name="default-height">480</property>
+    <property name="icon">Resources/Icon_II.ico</property>
+    <property name="decorated">False</property>
+    <property name="startup-id">wdwSplash</property>
+    <child>
+      <object class="GtkBox">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkImage" id="imgSplash">
+            <property name="visible">True</property>
+            <property name="can-focus">False</property>
+            <property name="pixbuf">Resources/SplashScreen_Infirmary_800x480.png</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </object>
+</interface>

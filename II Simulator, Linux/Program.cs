@@ -1,22 +1,51 @@
 using System;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using Gtk;
 
-namespace II_Simulator__Linux
+namespace IISIM
 {
-    class Program
+    class App
     {
-        [STAThread]
-        public static void Main(string[] args)
+        public Gtk.Application Application;
+        public string [] StartArgs;
+
+        public static void Main (string [] args) {
+            App app = new App ();
+
+            app.Run (args);
+        }
+        private void Run(string[] args)
         {
             Application.Init();
 
-            var app = new Application("org.II_Simulator__Linux.II_Simulator__Linux", GLib.ApplicationFlags.None);
-            app.Register(GLib.Cancellable.Current);
-
-            var win = new MainWindow();
-            app.AddWindow(win);
-
-            win.Show();
+            Application = new Application("org.tanjera.infirmary-integrated", GLib.ApplicationFlags.None);
+            Application.Register(GLib.Cancellable.Current);
+            
+            StartArgs = args;
+            
+            var wdwSplash = new Splash(this);
+            Application.AddWindow(wdwSplash);
+            wdwSplash.Show();
+            
+            var wdwControl = new Control(this);
+            Application.AddWindow(wdwControl);
+            
+            int splashTimeout = 2000;                     // Splash screen for 2 seconds for Release version
+#if DEBUG
+            splashTimeout = 200;                          // Shorten splash screen for debug builds; same logic flow though
+#endif
+            
+            Thread thr = new Thread (() => {
+                Thread.Sleep (splashTimeout);
+                wdwSplash.Close();
+                
+                wdwControl.Show();
+            });
+            
+            thr.Start();
             Application.Run();
         }
     }

@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II Simulator, Windows", "II
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Unit Tests", "Unit Tests\Unit Tests.csproj", "{CBAAFF94-19D9-CA27-EB09-AC83990DFBC8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "II Simulator, Linux", "II Simulator, Linux\II Simulator, Linux.csproj", "{22D5940A-4A45-491D-A5B5-941596AEFB27}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,18 @@ Global
 		{CBAAFF94-19D9-CA27-EB09-AC83990DFBC8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CBAAFF94-19D9-CA27-EB09-AC83990DFBC8}.Release|x86.ActiveCfg = Release|Any CPU
 		{CBAAFF94-19D9-CA27-EB09-AC83990DFBC8}.Release|x86.Build.0 = Release|Any CPU
+		{22D5940A-4A45-491D-A5B5-941596AEFB27}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22D5940A-4A45-491D-A5B5-941596AEFB27}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22D5940A-4A45-491D-A5B5-941596AEFB27}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{22D5940A-4A45-491D-A5B5-941596AEFB27}.Debug|x86.Build.0 = Debug|Any CPU
+		{22D5940A-4A45-491D-A5B5-941596AEFB27}.DefaultBuild|Any CPU.ActiveCfg = Debug|Any CPU
+		{22D5940A-4A45-491D-A5B5-941596AEFB27}.DefaultBuild|Any CPU.Build.0 = Debug|Any CPU
+		{22D5940A-4A45-491D-A5B5-941596AEFB27}.DefaultBuild|x86.ActiveCfg = Debug|Any CPU
+		{22D5940A-4A45-491D-A5B5-941596AEFB27}.DefaultBuild|x86.Build.0 = Debug|Any CPU
+		{22D5940A-4A45-491D-A5B5-941596AEFB27}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22D5940A-4A45-491D-A5B5-941596AEFB27}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22D5940A-4A45-491D-A5B5-941596AEFB27}.Release|x86.ActiveCfg = Release|Any CPU
+		{22D5940A-4A45-491D-A5B5-941596AEFB27}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
