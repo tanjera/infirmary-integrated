@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		08163D512E95792F0065521E /* Classes in Resources */ = {isa = PBXBuildFile; fileRef = 08163D502E95792F0065521E /* Classes */; };
+		08163D532E957A1A0065521E /* Physiology.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08163D522E957A1A0065521E /* Physiology.swift */; };
 		082C21632E8490FD00B7E90B /* Splash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 082C21622E8490FD00B7E90B /* Splash.storyboard */; };
 		084196E32E831EA000E6959F /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 084196E22E831EA000E6959F /* App.swift */; };
 		084196E72E831EA600E6959F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 084196E62E831EA600E6959F /* Assets.xcassets */; };
@@ -16,6 +18,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		08163D502E95792F0065521E /* Classes */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Classes; sourceTree = "<group>"; };
+		08163D522E957A1A0065521E /* Physiology.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Physiology.swift; path = "Infirmary Integrated/Classes/Physiology.swift"; sourceTree = "<group>"; };
 		082C21622E8490FD00B7E90B /* Splash.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = Splash.storyboard; sourceTree = "<group>"; };
 		084196DF2E831E9F00E6959F /* Infirmary Integrated.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Infirmary Integrated.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		084196E22E831EA000E6959F /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
@@ -37,9 +41,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		08163D4E2E9576C80065521E /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
 		084196D62E831E9F00E6959F = {
 			isa = PBXGroup;
 			children = (
+				08163D522E957A1A0065521E /* Physiology.swift */,
+				08163D4E2E9576C80065521E /* Packages */,
 				084196E12E831EA000E6959F /* Infirmary Integrated */,
 				084196E02E831E9F00E6959F /* Products */,
 			);
@@ -56,6 +69,7 @@
 		084196E12E831EA000E6959F /* Infirmary Integrated */ = {
 			isa = PBXGroup;
 			children = (
+				08163D502E95792F0065521E /* Classes */,
 				084196F62E8480BF00E6959F /* Windows */,
 				084196E22E831EA000E6959F /* App.swift */,
 				084196E62E831EA600E6959F /* Assets.xcassets */,
@@ -143,6 +157,7 @@
 			files = (
 				084196EA2E831EA600E6959F /* Preview Assets.xcassets in Resources */,
 				084196E72E831EA600E6959F /* Assets.xcassets in Resources */,
+				08163D512E95792F0065521E /* Classes in Resources */,
 				084196F22E8320CC00E6959F /* Resources in Resources */,
 				082C21632E8490FD00B7E90B /* Splash.storyboard in Resources */,
 			);
@@ -155,6 +170,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				08163D532E957A1A0065521E /* Physiology.swift in Sources */,
 				084196E32E831EA000E6959F /* App.swift in Sources */,
 				088803102E8C2BC70046EA22 /* Control.swift in Sources */,
 			);
