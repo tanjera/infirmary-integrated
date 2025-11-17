@@ -94,26 +94,25 @@ namespace IISIM {
             InitScenario (true);
             InitTimers ();
 
-            Task.Run (async () => {
-                await Dispatcher.UIThread.InvokeAsync (async () => {
-                    /* Init important but non-essential functions */
-                    if (Instance.Start_Args?.Length > 0) {
-                        string loadfile = Instance.Start_Args [0].Trim (' ', '\n', '\r');
-                        if (!String.IsNullOrEmpty (loadfile))
-                            await LoadOpen (loadfile);
-                    }
+            Dispatcher.UIThread.InvokeAsync (async () => {
+                /* Init important but non-essential functions */
+                if (Instance.Start_Args?.Length > 0) {
+                    string loadfile = Instance.Start_Args [0].Trim (' ', '\n', '\r');
+                    if (!String.IsNullOrEmpty (loadfile))
+                        await LoadOpen (loadfile);
+                }
 
-                    /* Update UI from loading functionality */
-                    await SetParameterStatus (Instance?.Settings.AutoApplyChanges ?? false);
+                /* Update UI from loading functionality */
+                await SetParameterStatus (Instance?.Settings.AutoApplyChanges ?? false);
 
-                    /* Run useful but otherwise vanity functions last */
+                /* Run useful but otherwise vanity functions last */
 
-                    if (Instance?.AudioLib is null)
-                        await MessageAudioUnavailable ();
+                if (Instance?.AudioLib is null)
+                    await MessageAudioUnavailable ();
 
-                    await InitUpgrade ();
-                });
+                await InitUpgrade ();
             });
+
         }
 
         private void InitInitialRun () {
@@ -300,10 +299,10 @@ namespace IISIM {
             Instance.Timer_Main.Elapsed += Instance.Mirror.ProcessTimer;
             Instance.Mirror.timerUpdate.Tick += OnMirrorTick;
 
-            Task.Run (async () => {
-                await Instance.Mirror.timerUpdate.ResetStart (5000);
-                await UpdateMirrorStatus ();
-            });
+            Task.WhenAll (
+                Instance.Mirror.timerUpdate.ResetStart (5000),
+                UpdateMirrorStatus ()
+            );
         }
 
         private void InitScenario (bool toInit) {
@@ -329,7 +328,7 @@ namespace IISIM {
 
             if (Instance.Scenario != null) {
                 Instance.Timer_Main.Elapsed -= Instance.Scenario.ProcessTimer;   // Unlink Scenario from App/Main Timer
-                await Instance.Scenario.Dispose ();        // Disposes Scenario's events and timer, and all Patients' events and timers
+                Instance.Scenario.Dispose ();        // Disposes Scenario's events and timer, and all Patients' events and timers
             }
         }
 
@@ -356,11 +355,11 @@ namespace IISIM {
             ApplyTimer_Respiratory.Tick += ApplyPhysiologyParameters_Respiratory;
             ApplyTimer_Obstetric.Tick += ApplyPhysiologyParameters_Obstetric;
 
-            Task.Run (async () => {
-                await ApplyTimer_Cardiac.Set (5000);
-                await ApplyTimer_Respiratory.Set (5000);
-                await ApplyTimer_Obstetric.Set (30000);
-            });
+            Task.WhenAll(
+                ApplyTimer_Cardiac.Set (5000),
+                ApplyTimer_Respiratory.Set (5000),
+                ApplyTimer_Obstetric.Set (30000)
+            );
         }
 
         private void InitScenarioStep () {

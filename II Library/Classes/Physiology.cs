@@ -182,7 +182,9 @@ namespace II {
         }
 
         public Physiology () {
-            Task.Run (async () => await UpdateParameters_Cardiac (
+            List<Task> t = new List<Task> ();
+            
+            t.Add (UpdateParameters_Cardiac (
                             // Basic cardiac vital signs
                             80,
                             120, 80, 95,
@@ -208,14 +210,14 @@ namespace II {
                             new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }
                             ));
 
-            Task.Run (async () => await UpdateParameters_Respiratory (
+            t.Add (UpdateParameters_Respiratory (
                             16,
                             Respiratory_Rhythms.Values.Regular,
                             40,
                             false,
                             1d, 2d));
 
-            Task.Run (async () => await UpdateParameters_Obstetric (
+            t.Add (UpdateParameters_Obstetric (
                             145,
                             20,
                             FetalHeart_Rhythms.Values.Baseline,
@@ -223,14 +225,16 @@ namespace II {
                             60,
                             50, 10));
 
-            Task.Run (async () => await InitTimers ());
-            Task.Run (async () => await ResetStartTimers ());
+            Task.WaitAll (t.ToArray());
+            
+            Task.WhenAny(InitTimers ());
+            Task.WhenAny (ResetStartTimers ());
         }
 
-        ~Physiology () => Task.Run (async () => await Dispose ());
+        ~Physiology () => Dispose ();
 
-        public async Task Dispose () {
-            await UnsubscribePhysiologyEvent ();
+        public void Dispose () {
+            Task.WaitAny(UnsubscribePhysiologyEvent());
 
             TimerCardiac_Baseline.Dispose ();
             TimerCardiac_Atrial_Electric.Dispose ();
@@ -1101,7 +1105,7 @@ namespace II {
 
         private void OnCardioversion (object? sender, EventArgs e) {
             TimerCardiac_Ventricular_Electric.Tick -= OnCardioversion;
-            Task.Run (async () => await OnDefibrillation ());
+            Task.WaitAny(OnDefibrillation ());
         }
 
         private async Task OnPacemaker_Baseline () {
