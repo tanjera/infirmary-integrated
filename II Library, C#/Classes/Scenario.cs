@@ -48,18 +48,18 @@ namespace II {
             ProgressTimer.Tick += ProgressTimer_Tick;
         }
 
-        ~Scenario () => _ = Dispose ();
+        ~Scenario () => Dispose ();
 
-        public async Task Dispose () {
-            await UnsubscribeEvents ();
+        public void Dispose () {
+            Task.WhenAny (UnsubscribeEvents ());
 
             foreach (Step s in Steps)
-                await (s.Physiology?.Dispose () ?? Task.CompletedTask);
+                s.Physiology?.Dispose ();
 
             ProgressTimer.Dispose ();
         }
 
-        public Task UnsubscribeEvents () {
+        private Task UnsubscribeEvents () {
             if (StepChangeRequest != null) {
                 foreach (Delegate d in StepChangeRequest.GetInvocationList ())
                     StepChangeRequest -= (EventHandler<EventArgs>)d;

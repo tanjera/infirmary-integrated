@@ -319,10 +319,10 @@ namespace IISIM.Windows {
             Instance.Timer_Main.Elapsed += Instance.Mirror.ProcessTimer;
             Instance.Mirror.timerUpdate.Tick += OnMirrorTick;
 
-            Task.Run (async () => {
-                await Instance.Mirror.timerUpdate.ResetStart (5000);
-                await UpdateMirrorStatus ();
-            });
+            Task.WhenAll (
+                Instance.Mirror.timerUpdate.ResetStart (5000),
+                UpdateMirrorStatus ()
+            );
         }
 
         private void InitScenario (bool toInit) {
@@ -348,7 +348,7 @@ namespace IISIM.Windows {
 
             if (Instance.Scenario != null) {
                 Instance.Timer_Main.Elapsed -= Instance.Scenario.ProcessTimer;   // Unlink Scenario from App/Main Timer
-                await Instance.Scenario.Dispose ();        // Disposes Scenario's events and timer, and all Patients' events and timers
+                Instance.Scenario.Dispose ();        // Disposes Scenario's events and timer, and all Patients' events and timers
             }
         }
 
@@ -375,11 +375,11 @@ namespace IISIM.Windows {
             ApplyTimer_Respiratory.Tick += ApplyPhysiologyParameters_Respiratory;
             ApplyTimer_Obstetric.Tick += ApplyPhysiologyParameters_Obstetric;
 
-            Task.Run (async () => {
-                await ApplyTimer_Cardiac.Set (5000);
-                await ApplyTimer_Respiratory.Set (5000);
-                await ApplyTimer_Obstetric.Set (30000);
-            });
+            Task.WhenAll (
+                await ApplyTimer_Cardiac.Set (5000),
+                await ApplyTimer_Respiratory.Set (5000),
+                await ApplyTimer_Obstetric.Set (30000)
+            );
         }
 
         private void InitScenarioStep () {
