@@ -128,6 +128,18 @@ foreach $file (@to_process) {
         exit(0);
     }
 
+    # Ensure rpmbuild is installed    
+    system("command -v rpmbuild > /dev/null 2>&1");
+    if ($? == 0) {
+        #print "fpm exists and is executable... proceeding\n\n";
+    } else {
+        print "rpmbuild is missing!\n";
+        print "Please install rpmbuild (`apt install rpm`)!\n";
+        print "Exiting now!\n";
+        exit(0);
+    }
+
+
     print "Processing file into fpm package manager: $file\n";
     package_fpm($file);
     print "Finished processing $file\n\n";
