@@ -138,4 +138,6 @@
     <PackageReference Include="GtkSharp" Version="3.24.24.*" />
   </ItemGroup>
 
+  <Import Project="..\II Library, C#\II Library.projitems" Label="Shared" />
+
 </Project>

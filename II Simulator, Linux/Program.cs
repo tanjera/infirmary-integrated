@@ -5,13 +5,34 @@ using System.Threading;
 using System.Threading.Tasks;
 using Gtk;
 
+using II;
+using II.Localization;
+using II.Server;
+
 namespace IISIM
 {
     class App
     {
         public Gtk.Application Application;
-        public string [] StartArgs;
 
+        public string [] StartArgs;
+        
+        public II.Settings.Simulator Settings = new ();
+        public Server Server = new ();
+        public Mirror Mirror = new ();
+        public Language Language = new ();
+
+        public Scenario? Scenario;
+        public Physiology? Physiology { get => Scenario?.Physiology; }
+        
+        /* TODO? Implementation comparison against avlts branch:
+         * Need to declare UI elements for referencing from child functions later?
+         * Including: Window_Splash, Window_Main, Device_Monitor, Device_ECG, Device_Defib,
+         * Device_IABP, and Device_EFM?
+        */
+        
+        public System.Timers.Timer Timer_Main = new ();
+        
         public static void Main (string [] args) {
             App app = new App ();
 
@@ -46,6 +67,14 @@ namespace IISIM
             });
             
             thr.Start();
+            
+            Timer_Main.Interval = 10; // q 10 milliseconds
+            Timer_Main.Start ();
+
+            II.File.Init ();                                            // Init file structure (for config file, temp files)
+            Settings.Load ();                                           // Load config file
+            Language = new (Settings.Language);                 // Load localization dictionary based on settings
+            
             Application.Run();
         }
     }
