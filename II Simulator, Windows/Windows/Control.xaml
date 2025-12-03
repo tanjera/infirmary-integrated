@@ -695,7 +695,7 @@
 															Increment="5"
 															KeyDown="OnUIPhysiologyParameter_KeyDown"
 															LostFocus="OnUIPhysiologyParameter_LostFocus"
-															Maximum="200"
+															Maximum="300"
 															Minimum="0"
 															ValueChanged="OnUIPhysiologyParameter_Changed" />
 
@@ -863,7 +863,7 @@
 															Increment="5"
 															KeyDown="OnUIPhysiologyParameter_KeyDown"
 															LostFocus="OnUIPhysiologyParameter_LostFocus"
-															Maximum="200"
+															Maximum="300"
 															Minimum="0"
 															ValueChanged="OnUIPhysiologyParameter_Changed" />
 
@@ -1124,10 +1124,10 @@
 															Grid.Row="5"
 															Grid.Column="1"
 															Style="{StaticResource vitals_dud}"
-															Increment=".02"
+															Increment="0.02"
 															KeyDown="OnUIPhysiologyParameter_KeyDown"
 															LostFocus="OnUIPhysiologyParameter_LostFocus"
-															Maximum=".4"
+															Maximum="0.4"
 															Minimum="0.04"
 															FormatString="{}{0:0.00}"
 															ValueChanged="OnUIPhysiologyParameter_Changed" />
@@ -1139,10 +1139,10 @@
 															Grid.Row="6"
 															Grid.Column="1"
 															Style="{StaticResource vitals_dud}"
-															Increment=".02"
+															Increment="0.02"
 															KeyDown="OnUIPhysiologyParameter_KeyDown"
 															LostFocus="OnUIPhysiologyParameter_LostFocus"
-															Maximum=".8"
+															Maximum="0.8"
 															Minimum="0.2"
 															FormatString="{}{0:0.00}"
 															ValueChanged="OnUIPhysiologyParameter_Changed" />
