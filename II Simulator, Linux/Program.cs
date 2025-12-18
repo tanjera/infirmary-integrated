@@ -47,27 +47,29 @@ namespace IISIM
             
             StartArgs = args;
             
-            var wdwSplash = new Splash(this);
+            var wdwSplash = new Splash (this);
+            var wdwControl = new Control(this, wdwSplash);
+            
+            Application.AddWindow(wdwControl);
+            wdwControl.Show();
+            
+            wdwSplash.TransientFor = wdwControl;
             Application.AddWindow(wdwSplash);
             wdwSplash.Show();
             
-            var wdwControl = new Control(this);
-            Application.AddWindow(wdwControl);
-            
             int splashTimeout = 2000;                     // Splash screen for 2 seconds for Release version
 #if DEBUG
-            splashTimeout = 200;                          // Shorten splash screen for debug builds; same logic flow though
+            splashTimeout = 500;                          // Shorten splash screen for debug builds; same logic flow though
 #endif
             
             Thread thr = new Thread (() => {
                 Thread.Sleep (splashTimeout);
                 wdwSplash.Close();
-                
-                wdwControl.Show();
+                Application.RemoveWindow (wdwSplash);
             });
             
             thr.Start();
-            
+
             Timer_Main.Interval = 10; // q 10 milliseconds
             Timer_Main.Start ();
 

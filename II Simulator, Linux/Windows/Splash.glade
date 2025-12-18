@@ -7,7 +7,7 @@
     <property name="type">popup</property>
     <property name="title" translatable="yes">Infirmary Integrated</property>
     <property name="resizable">False</property>
-    <property name="window-position">center</property>
+    <property name="window-position">center-on-parent</property>
     <property name="default-width">800</property>
     <property name="default-height">480</property>
     <property name="icon">Resources/Icon_II.ico</property>

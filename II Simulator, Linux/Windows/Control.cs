@@ -113,18 +113,18 @@ namespace IISIM
         private SpinButton numUCIntensity = new SpinButton (0, 10, 5);
         private SpinButton numUCResting = new SpinButton (0, 100, 5);
         private ComboBox comboFHRRhythm = new ComboBox ();
+
         
-        
-        public Control (App inst) : base ("Infirmary Integrated") {
+        public Control (App inst, Window splash) : base (Gtk.WindowType.Toplevel) {
+            
             Instance = inst;
 
             DeleteEvent += OnClose;
             this.Shown += OnShown;
+            splash.Hidden += OnSplashed;
         }
 
         private void OnShown (object sender, EventArgs args) {
-            InitInitialRun ();
-
             /* Init essential functions first */
             InitInterface ();
             InitMirroring ();
@@ -148,6 +148,10 @@ namespace IISIM
             });
         }
         
+        private void OnSplashed (object o, EventArgs args) {
+            InitInitialRun ();
+        }
+        
         private void OnClose(object sender, DeleteEventArgs a) {
             Application.Quit();
         }
@@ -156,6 +160,9 @@ namespace IISIM
             if (!II.Settings.Simulator.Exists ()) {
                 DialogEULA ();
             }
+            
+            // HARDCODED FOR DEBUT TODO REMOVE
+            DialogEULA();
         }
 
         private void InitInterface () {
@@ -452,8 +459,11 @@ namespace IISIM
             Application.Invoke((sender, args) =>
             {
                 var dlgEULA = new DialogEULA(Instance);
+                dlgEULA.TransientFor = this;
+                
                 Application.AddWindow(dlgEULA);
-                dlgEULA.SetPosition(WindowPosition.Center);
+                
+                //dlgEULA.SetPosition(WindowPosition.CenterOnParent);
                 dlgEULA.KeepAbove = true;
                 dlgEULA.Show();
             });
