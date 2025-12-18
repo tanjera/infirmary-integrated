@@ -144,7 +144,7 @@ namespace IISIM
                 Task.WaitAll(SetParameterStatus (Instance?.Settings.AutoApplyChanges ?? false));
 
                 /* Run useful but otherwise vanity functions last */
-                Task.WaitAll(InitUpgrade ());
+                Task.Run(InitUpgrade);
             });
         }
         
@@ -159,8 +159,9 @@ namespace IISIM
         }
 
         private void InitInterface () {
+            Title = Instance.Language.Localize ("PE:WindowTitle");
             SetSizeRequest (640, 480);
-
+            
             HBox hboxMain = new HBox (false, 10);
             hboxMain.BorderWidth = 10;
             
@@ -272,7 +273,34 @@ namespace IISIM
 
         
         private async Task InitUpgrade () {
-            // TODO: IMPLEMENT!!
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitUpgrade)}");
+                return;
+            }
+
+            // Newer version available? Check Server, populate status bar, prompt user for upgrade
+            await Instance.Server.Get_LatestVersion ();
+
+            string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
+            bool upgradeAvailable = Utility.IsNewerVersion (version, Instance.Server.UpgradeVersion);
+
+            if (!upgradeAvailable) {    // If no update available, no status update; remove any notification muting
+                Instance.Settings.MuteUpgrade = false;
+                Instance.Settings.Save ();
+                return;
+            }
+
+            if (Instance.Settings.MuteUpgrade) {
+                if (DateTime.Compare (Instance.Settings.MuteUpgradeDate, DateTime.Now - new TimeSpan (30, 0, 0, 0)) < 0) {
+                    Instance.Settings.MuteUpgrade = false;              // Reset the notification mute every 30 days
+                    Instance.Settings.Save ();
+                } else {        // Mutes update popup notification
+                    return;
+                }
+            }
+
+            // Show the upgrade dialog to the user
+            await DialogUpgrade ();
         }
 
         private void InitMirroring () {
@@ -419,8 +447,16 @@ namespace IISIM
             // TODO: IMPLEMENT!!
         }
 
-        private void DialogEULA () {
-            // TODO: IMPLEMENT!!
+        private void DialogEULA ()
+        {
+            Application.Invoke((sender, args) =>
+            {
+                var dlgEULA = new DialogEULA(Instance);
+                Application.AddWindow(dlgEULA);
+                dlgEULA.SetPosition(WindowPosition.Center);
+                dlgEULA.KeepAbove = true;
+                dlgEULA.Show();
+            });
         }
 
         private async Task DialogLanguage (bool reloadUI = false) {
