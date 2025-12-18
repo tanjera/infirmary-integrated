@@ -17,6 +17,8 @@ namespace II.Settings {
     public class Simulator {
         public string Language;
 
+        public bool AcceptedEULA;
+        
         public bool AudioEnabled;
         public bool AutoApplyChanges;
 
@@ -43,6 +45,8 @@ namespace II.Settings {
             /* Note: These are the DEFAULT settings on 1st run (or Load() failure to parse)! */
 
             Language = "ENG";
+
+            AcceptedEULA = false;
 
             AudioEnabled = true;
             AutoApplyChanges = false;
@@ -79,7 +83,12 @@ namespace II.Settings {
                         default: break;
 
                         case "Language": Language = pValue; break;
-
+                        
+                        case "AcceptedEULA":
+                            if (bool.TryParse (pValue, out parseBool))
+                                AcceptedEULA = parseBool;
+                            break;
+                        
                         case "AudioEnabled":
                             if (bool.TryParse (pValue, out parseBool))
                                 AudioEnabled = parseBool;
@@ -137,6 +146,7 @@ namespace II.Settings {
         public void Save () {
             StreamWriter sw = new (File.GetConfigPath (), false);
             sw.WriteLine ($"Language:{Language}");
+            sw.WriteLine ($"AcceptedEULA:{AcceptedEULA}");
             sw.WriteLine ($"AudioEnabled:{AudioEnabled}");
             sw.WriteLine ($"AutoApplyChanges:{AutoApplyChanges}");
             sw.WriteLine ($"DefibEnergyMaximum:{DefibEnergyMaximum}");

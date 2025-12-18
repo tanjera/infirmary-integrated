@@ -240,16 +240,11 @@ END OF TERMS AND CONDITIONS";
             
             Button btnCancel = new Button(new Label(Instance.Language.Localize ("BUTTON:Cancel")));
             btnCancel.WidthRequest = 150;
-            btnCancel.Pressed += (sender, args) => {
-                Application.Quit ();
-            };
+            btnCancel.Pressed += OnClick_Cancel;
             
             Button btnContinue = new Button(new Label(Instance.Language.Localize ("BUTTON:Continue")));
             btnContinue.WidthRequest = 150;
-            btnContinue.Pressed += (sender, args) =>  
-            {
-                this.Close();
-            };
+            btnContinue.Pressed += OnClick_Continue;
             
             hbButtons.PackStart(btnCancel,false, false, 6);
             hbButtons.PackStart(btnContinue,false, false, 6);
@@ -258,6 +253,17 @@ END OF TERMS AND CONDITIONS";
             Add(vbMain);
             Title = Instance.Language.Localize ("EULA:Title");
             ShowAll();
+        }
+        
+        private void OnClick_Cancel (object sender, EventArgs e) {
+            Application.Quit ();
+        }
+
+        private void OnClick_Continue (object sender, EventArgs e) {
+            Instance.Settings.AcceptedEULA = true;
+            Instance.Settings.Save ();
+
+            this.Close ();
         }
     }
 }

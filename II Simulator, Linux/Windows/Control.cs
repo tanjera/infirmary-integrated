@@ -142,14 +142,14 @@ namespace IISIM
 
                 /* Update UI from loading functionality */
                 Task.WaitAll(SetParameterStatus (Instance?.Settings.AutoApplyChanges ?? false));
-
-                /* Run useful but otherwise vanity functions last */
-                Task.Run(InitUpgrade);
             });
         }
         
         private void OnSplashed (object o, EventArgs args) {
             InitInitialRun ();
+
+            /* Run useful but otherwise vanity functions last */
+            Task.Run (InitUpgrade);
         }
         
         private void OnClose(object sender, DeleteEventArgs a) {
@@ -157,7 +157,7 @@ namespace IISIM
         }
         
         private void InitInitialRun () {
-            if (!II.Settings.Simulator.Exists ()) {
+            if (!II.Settings.Simulator.Exists () || !Instance.Settings.AcceptedEULA) {
                 DialogEULA ();
             }            
         }
