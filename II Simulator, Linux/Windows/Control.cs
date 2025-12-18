@@ -157,9 +157,9 @@ namespace IISIM
         }
         
         private void InitInitialRun () {
-            if (!II.Settings.Simulator.Exists () || !Instance.Settings.AcceptedEULA) {
+            if (!II.Settings.Simulator.Exists () || !(Instance?.Settings.AcceptedEULA ?? false)) {
                 DialogEULA ();
-            }            
+            }   
         }
 
         private void InitInterface () {
@@ -460,14 +460,24 @@ namespace IISIM
                 
                 Application.AddWindow(dlgEULA);
                 
-                //dlgEULA.SetPosition(WindowPosition.CenterOnParent);
+                dlgEULA.SetPosition(WindowPosition.CenterOnParent);
                 dlgEULA.KeepAbove = true;
                 dlgEULA.Show();
             });
         }
 
         private async Task DialogLanguage (bool reloadUI = false) {
-            // TODO: IMPLEMENT!!
+            Application.Invoke((sender, args) =>
+            {
+                var dlgLanguage = new DialogLanguage(Instance);
+                dlgLanguage.TransientFor = this;
+                
+                Application.AddWindow(dlgLanguage);
+                
+                dlgLanguage.SetPosition(WindowPosition.CenterOnParent);
+                dlgLanguage.KeepAbove = true;
+                dlgLanguage.Show();
+            });
         }
 
         private async Task DialogMirrorBroadcast () {

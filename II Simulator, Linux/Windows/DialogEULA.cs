@@ -199,8 +199,10 @@ TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 
 END OF TERMS AND CONDITIONS";
 
-        public DialogEULA(App inst) : base(WindowType.Popup)
-        {
+        public DialogEULA(App inst) : base(WindowType.Popup) {
+            
+            this.Titlebar = new HeaderBar ();
+            
             Instance = inst;
             
             DeleteEvent += OnClose;
@@ -260,8 +262,10 @@ END OF TERMS AND CONDITIONS";
         }
 
         private void OnClick_Continue (object sender, EventArgs e) {
-            Instance.Settings.AcceptedEULA = true;
-            Instance.Settings.Save ();
+            if (Instance is not null) {
+                Instance.Settings.AcceptedEULA = true;
+                Instance.Settings.Save ();
+            }
 
             this.Close ();
         }

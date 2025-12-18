@@ -54,7 +54,7 @@ namespace IISIM.Windows {
                 cmbLanguages.Items.Add (new MenuItem () {
                     Header = each,
                 });
-            cmbLanguages.SelectedIndex = (int)II.Localization.Language.Values.ENG;
+            cmbLanguages.SelectedIndex = Enum.Parse (typeof (II.Localization.Language.Values), Instance.Settings.Language).GetHashCode();
         }
 
         private void OnClick_Continue (object sender, RoutedEventArgs e) {
