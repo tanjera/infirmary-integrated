@@ -113,7 +113,7 @@ namespace IISIM.Windows {
         }
 
         private void InitInitialRun () {
-            if (!II.Settings.Simulator.Exists ()) {
+            if (!II.Settings.Simulator.Exists () || !(Instance?.Settings.AcceptedEULA ?? false)) {
                 DialogEULA ();
             }
         }

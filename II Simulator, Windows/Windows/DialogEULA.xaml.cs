@@ -241,7 +241,10 @@ END OF TERMS AND CONDITIONS";
         }
 
         private void OnClick_Continue (object sender, RoutedEventArgs e) {
-            Instance?.Settings.Save ();
+            if (Instance is not null) {
+                Instance.Settings.AcceptedEULA = true;
+                Instance.Settings.Save ();
+            }
 
             this.Close ();
         }
