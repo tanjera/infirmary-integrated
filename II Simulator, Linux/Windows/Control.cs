@@ -159,10 +159,7 @@ namespace IISIM
         private void InitInitialRun () {
             if (!II.Settings.Simulator.Exists ()) {
                 DialogEULA ();
-            }
-            
-            // HARDCODED FOR DEBUT TODO REMOVE
-            DialogEULA();
+            }            
         }
 
         private void InitInterface () {

@@ -370,7 +370,7 @@ namespace II.Localization {
 			{"LANGUAGE:Title",                                            "Language Selection"},
 			{"LANGUAGE:Select",                                           "Please choose your language:"},
 			{"EULA:Title",                                                "Terms of Use"},
-			{"EULA:AgreeToTerms",                                         "By choosing to continue, you accept to the terms of use at located at"},
+			{"EULA:AgreeToTerms",                                         "By choosing to continue, you accept to the terms of use:"},
 			{"MIRROR:BroadcastTitle",                                     "Broadcast Simulation"},
 			{"MIRROR:ReceiveTitle",                                       "Receive Simulation"},
 			{"MIRROR:EnterSettings",                                      "Enter settings, only using numbers and letters:"},

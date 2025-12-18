@@ -376,9 +376,9 @@ namespace IISIM.Windows {
             ApplyTimer_Obstetric.Tick += ApplyPhysiologyParameters_Obstetric;
 
             Task.WhenAll (
-                await ApplyTimer_Cardiac.Set (5000),
-                await ApplyTimer_Respiratory.Set (5000),
-                await ApplyTimer_Obstetric.Set (30000)
+                ApplyTimer_Cardiac.Set (5000),
+                ApplyTimer_Respiratory.Set (5000),
+                ApplyTimer_Obstetric.Set (30000)
             );
         }
 

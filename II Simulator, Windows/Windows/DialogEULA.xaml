@@ -49,6 +49,7 @@
 
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="*" />
 			</Grid.ColumnDefinitions>
 
 			<Label Name="lblAgreeTerms"
@@ -62,20 +63,10 @@
 						   TextWrapping="Wrap" />
 			</Label>
 
-			<Label Name="lblTermsUri"
-				   Grid.Row="1"
-				   Grid.Column="0"
-				   Padding="5,2"
-				   HorizontalAlignment="Center"
-				   VerticalAlignment="Center"
-				   Style="{StaticResource url}"
-				   MouseDown="Hyperlink_Terms">
-				https://github.com/tanjera/infirmary-integrated
-			</Label>
-
 			<TextBox Name="tbLicense"
 					 Grid.Row="2"
 					 Grid.Column="0"
+					 Grid.ColumnSpan="2"
 					 Margin="5,10,5,5"
 					 Padding="5,2"
 					 Height="200"
@@ -84,9 +75,21 @@
 					 HorizontalScrollBarVisibility="Auto"
 					 VerticalScrollBarVisibility="Auto" />
 
-			<Button Name="btnContinue"
+			<Button Name="btnCancel"
 					Grid.Row="3"
 					Grid.Column="0"
+					Margin="5,10,5,5"
+					Padding="5"
+					HorizontalAlignment="Stretch"
+					HorizontalContentAlignment="Center"
+					Background="White"
+					BorderBrush="Black"
+					BorderThickness="1"
+					Click="OnClick_Cancel" />
+
+			<Button Name="btnContinue"
+					Grid.Row="3"
+					Grid.Column="1"
 					Margin="5,10,5,5"
 					Padding="5"
 					HorizontalAlignment="Stretch"
