@@ -5,15 +5,19 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
-
 using Cairo;
+using GLib;
 using Gtk;
 using Pango;
 
 using II;
 using II.Localization;
 using II.Server;
+using Application = Gtk.Application;
+using DateTime = System.DateTime;
+using Menu = Gtk.Menu;
+using MenuItem = Gtk.MenuItem;
+using Task = System.Threading.Tasks.Task;
 
 namespace IISIM
 {
@@ -46,6 +50,33 @@ namespace IISIM
         }
 
         /* GTK GUI Objects */
+        
+        MenuBar mbMain = new MenuBar ();
+        Menu muFile = new Menu ();
+        Menu muOptions = new Menu ();
+        Menu muMirror = new Menu ();
+        Menu muSettings = new Menu ();
+        Menu muHelp = new Menu ();
+        MenuItem miFile = new MenuItem ();
+        MenuItem miFileNew = new MenuItem ();
+        MenuItem miFileLoad = new MenuItem ();
+        MenuItem miFileSave = new MenuItem ();
+        MenuItem miFileFullScreen = new MenuItem ();
+        MenuItem miFileExit = new MenuItem ();
+        MenuItem miOptions = new MenuItem ();
+        MenuItem miOptionsPause = new MenuItem ();
+        MenuItem miMirror = new MenuItem ();
+        MenuItem miMirrorStatus = new MenuItem ();
+        MenuItem miMirrorDeactivate = new MenuItem ();
+        MenuItem miMirrorReceive = new MenuItem ();
+        MenuItem miMirrorBroadcast = new MenuItem ();
+        MenuItem miSettings = new MenuItem ();
+        MenuItem miSettingsAudio = new MenuItem ();
+        MenuItem miSettingsLanguage = new MenuItem ();
+        MenuItem miHelp = new MenuItem ();
+        MenuItem miHelpUpdate = new MenuItem ();
+        MenuItem miHelpAbout = new MenuItem ();
+        
         private SpinButton numHR = new SpinButton (0, 300, 5);
         private SpinButton numNSBP = new SpinButton (0, 300, 5);
         private SpinButton numNDBP = new SpinButton (0, 300, 5);
@@ -163,50 +194,150 @@ namespace IISIM
         }
 
         private void InitInterface () {
+            int sp = 2;                 // Spacing: General (int)
+            uint usp = 3;               // Spacing: General (uint)
+            uint upd = 5;               // Padding: General (uint)
+            uint tlepd = 2;             // Padding: Top-level elements
+            
+            /* GUI: Top-Level Elements; 1 [ 2 ] */
+            
             Title = Instance.Language.Localize ("PE:WindowTitle");
-            SetSizeRequest (640, 480);
+            VBox vbMain1 = new VBox (false, sp);
+            vbMain1.MarginBottom = 5;
             
-            HBox hboxMain = new HBox (false, 10);
-            hboxMain.BorderWidth = 10;
+            HBox hbMain2 = new HBox (false, sp);
+            hbMain2.BorderWidth = usp;
             
-            VBox vboxDevices = new VBox (false, 10);
+            /* GUI: Menu Bar */
+            
+            mbMain.MarginBottom = 2;
+            mbMain.PackDirection = PackDirection.Ltr;
+
+            /* GUI: Menu Bar: Labels */
+            
+            miFile.Label = Instance.Language.Localize ("PE:MenuFile").Replace ("_", "");
+            miFileNew.Label = Instance.Language.Localize ("PE:MenuNewFile").Replace ("_", "");
+            miFileLoad.Label = Instance.Language.Localize ("PE:MenuLoadSimulation").Replace ("_", "");
+            miFileSave.Label = Instance.Language.Localize ("PE:MenuSaveSimulation").Replace ("_", "");
+            miFileFullScreen.Label = Instance.Language.Localize ("MENU:MenuToggleFullscreen").Replace ("_", "");
+            miFileExit.Label = Instance.Language.Localize ("PE:MenuExitProgram").Replace ("_", "");
+             
+            miOptions.Label = Instance.Language.Localize ("PE:MenuOptions").Replace ("_", "");
+            miOptionsPause.Label = Instance.Language.Localize ("PE:MenuPause").Replace ("_", "");
+             
+            miMirror.Label = Instance.Language.Localize ("PE:MenuMirror").Replace ("_", "");
+            miMirrorStatus.Label = (Instance?.Mirror.Status) switch {
+                Mirror.Statuses.HOST =>
+                    $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Server")}",
+                Mirror.Statuses.CLIENT =>
+                    $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Client")}",
+                _ =>
+                    $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Inactive")}"
+            };
+            
+            miMirrorDeactivate.Label = Instance.Language.Localize ("PE:MenuMirrorDeactivate").Replace ("_", "");
+            miMirrorReceive.Label = Instance.Language.Localize ("PE:MenuMirrorReceive").Replace ("_", "");
+            miMirrorBroadcast.Label = Instance.Language.Localize ("PE:MenuMirrorBroadcast").Replace ("_", "");
+             
+            miSettings.Label = Instance.Language.Localize ("PE:MenuOptions").Replace ("_", "");
+            miSettingsAudio.Label = String.Format ("{0}: {1}",
+                Instance.Language.Localize ("PE:MenuToggleAudio").Replace ("_", ""),
+                Instance.Settings.AudioEnabled ? Instance.Language.Localize ("BOOLEAN:On") : Instance.Language.Localize ("BOOLEAN:Off"));
+            miSettingsLanguage.Label = Instance.Language.Localize ("PE:MenuSetLanguage").Replace ("_", "");
+             
+            miHelp.Label = Instance.Language.Localize ("PE:MenuHelp").Replace ("_", "");
+            miHelpUpdate.Label = Instance.Language.Localize ("PE:MenuCheckUpdates").Replace ("_", "");
+            miHelpAbout.Label = Instance.Language.Localize ("PE:MenuAboutProgram").Replace ("_", "");
+            
+            /* GUI: Event Linking */
+
+            miFileNew.Activated += MenuNewSimulation_Click;
+            miFileLoad.Activated += MenuLoadFile_Click;
+            miFileSave.Activated += MenuSaveFile_Click;
+            miFileFullScreen.Activated += MenuToggleFullscreen_Click;
+            miFileExit.Activated += MenuExit_Click;
+
+            miOptionsPause.Activated += MenuPauseSimulation_Click;
+
+            miMirrorDeactivate.Activated += MenuMirrorDeactivate_Click;
+            miMirrorReceive.Activated += MenuMirrorReceive_Click;
+            miMirrorBroadcast.Activated += MenuMirrorBroadcast_Click;
+
+            miSettingsAudio.Activated += MenuToggleAudio_Click;
+            miSettingsLanguage.Activated += MenuSetLanguage_Click;
+
+            miHelpUpdate.Activated += MenuCheckUpdate_Click;
+            miHelpAbout.Activated += MenuAbout_Click;
+            
+            /* GUI: Menu Bar: Building */
+            
+            miFile.Submenu = muFile;
+            muFile.Append (miFileNew);
+            muFile.Append (miFileLoad);
+            muFile.Append (miFileSave);
+            muFile.Append (miFileFullScreen);
+            muFile.Append (miFileExit);
+            mbMain.Append(miFile);
+            
+            miOptions.Submenu = muOptions;
+            muOptions.Append (miOptionsPause);
+            mbMain.Append(miOptions);
+            
+            miMirror.Submenu = muMirror;
+            muMirror.Append (miMirrorStatus);
+            muMirror.Append (miMirrorDeactivate);
+            muMirror.Append (miMirrorReceive);
+            muMirror.Append (miMirrorBroadcast);
+            mbMain.Append(miMirror);
+            
+            miSettings.Submenu = muSettings;
+            muSettings.Append (miSettingsAudio);
+            muSettings.Append (miSettingsLanguage);
+            mbMain.Append(miSettings);
+            
+            miHelp.Submenu = muHelp;
+            muHelp.Append (miHelpUpdate);
+            muHelp.Append (miHelpAbout);
+            mbMain.Append(miHelp);
             
             /* GUI: Devices Section */
+            
+            VBox vboxDevices = new VBox (false, sp);
             
             Label lblDevices = new Label ();
             lblDevices.Halign = Align.Start;
             lblDevices.UseMarkup = true;
-            lblDevices.Markup = "<span size='12pt' weight='bold'>Devices</span>";
-            vboxDevices.PackStart (lblDevices, false, false, 6);
+            lblDevices.Markup = $"<span size='12pt' weight='bold'>{Instance.Language.Localize ("PE:Devices")}</span>";
+            vboxDevices.PackStart (lblDevices, false, false, upd);
             
-            HBox hboxDeviceCardiacMonitor = new HBox (false, 6);
+            HBox hboxDeviceCardiacMonitor = new HBox (false, sp);
             hboxDeviceCardiacMonitor.PackStart (
                 new Image(new Gdk.Pixbuf("Third_Party/Icon_DeviceMonitor_128.png", 40, 40, true))
-                , false, false, 0);
-            hboxDeviceCardiacMonitor.PackStart(new Label("Cardiac Monitor"), false, false, 6);
+                , false, false, upd);
+            hboxDeviceCardiacMonitor.PackStart(new Label(Instance.Language.Localize ("PE:CardiacMonitor")), false, false, 6);
             
-            HBox hboxDeviceDefibrillator = new HBox (false, 6);
+            HBox hboxDeviceDefibrillator = new HBox (false, sp);
             hboxDeviceDefibrillator.PackStart (
                 new Image(new Gdk.Pixbuf("Third_Party/Icon_DeviceDefibrillator_128.png", 40, 40, true))
-                , false, false, 0);
-            hboxDeviceDefibrillator.PackStart(new Label("Defibrillator"), false, false, 6);
+                , false, false, upd);
+            hboxDeviceDefibrillator.PackStart(new Label(Instance.Language.Localize ("PE:Defibrillator")), false, false, 6);
             
-            HBox hbox12LeadECG = new HBox (false, 6);
+            HBox hbox12LeadECG = new HBox (false, sp);
             hbox12LeadECG.PackStart (
                 new Image(new Gdk.Pixbuf("Third_Party/Icon_Device12LeadECG_128.png", 40, 40, true))
-                , false, false, 0);
-            hbox12LeadECG.PackStart(new Label("12 Lead ECG"), false, false, 6);
+                , false, false, upd);
+            hbox12LeadECG.PackStart(new Label(Instance.Language.Localize ("PE:12LeadECG")), false, false, 6);
             
-            vboxDevices.PackStart (hboxDeviceCardiacMonitor, false, false, 0);
-            vboxDevices.PackStart (hboxDeviceDefibrillator, false, false, 0);
-            vboxDevices.PackStart (hbox12LeadECG, false, false, 0);
+            vboxDevices.PackStart (hboxDeviceCardiacMonitor, false, false, upd);
+            vboxDevices.PackStart (hboxDeviceDefibrillator, false, false, upd);
+            vboxDevices.PackStart (hbox12LeadECG, false, false, upd);
             
             /* GUI: Parameters */
             
             Grid gridParameters = new Grid ();
             
-            gridParameters.RowSpacing = 6;
-            gridParameters.ColumnSpacing = 6;
+            gridParameters.RowSpacing = usp;
+            gridParameters.ColumnSpacing = usp;
             
             /* GUI: Parameters: Vital Signs */
      
@@ -252,24 +383,26 @@ namespace IISIM
             gridParameters.Attach (chkDefaultVitals, 0, 6, 4, 1);
             
             
-            hboxMain.PackStart (vboxDevices, false, false, 10);
-            hboxMain.PackStart (new Separator(Orientation.Vertical), false, false, 0);
+            hbMain2.PackStart (vboxDevices, false, false, 10);
+            hbMain2.PackStart (new Separator(Orientation.Vertical), false, false, 0);
 
             Label lblVitalSigns = new Label ();
             lblVitalSigns.UseMarkup = true;
             lblVitalSigns.Markup = $"<span size='12pt' weight='bold'>  {Instance.Language.Localize ("PE:VitalSigns")}</span>";
             lblVitalSigns.HeightRequest = 34;
+            
             Expander expVitalSigns = new Expander ("Test");
             expVitalSigns.LabelWidget = lblVitalSigns;
             expVitalSigns.Add(gridParameters);
             expVitalSigns.Expanded = true;
             
-            hboxMain.PackStart (expVitalSigns, false, false, 10);
-            
+            hbMain2.PackStart (expVitalSigns, false, false, upd);
             
             /* GUI: Assemble... */
             
-            Add (hboxMain);
+            vbMain1.PackStart (mbMain, false, true, tlepd);
+            vbMain1.PackStart (hbMain2, false, false, tlepd);
+            Add (vbMain1);
             ShowAll ();
             
             // TODO: Implement: Hotkeys!!
@@ -608,8 +741,11 @@ namespace IISIM
             return "";
         }
 
-        public async Task Exit () {
-            // TODO: IMPLEMENT!!
+        public Task Exit () {
+            Instance?.Settings.Save ();
+            this.Close();
+            
+            return Task.CompletedTask;
         }
 
         private void OnMirrorTick (object? sender, EventArgs e) {

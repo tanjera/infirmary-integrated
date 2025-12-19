@@ -43,17 +43,22 @@ namespace IISIM
         }
         
         private void InitInterface () {
-            VBox vbMain = new VBox (false, 10);
-            vbMain.BorderWidth = 10;
+            int sp = 2;                 // Spacing: General (int)
+            uint usp = 3;               // Spacing: General (uint)
+            uint upd = 5;               // Padding: General (uint)
+            uint tlepd = 2;             // Padding: Top-level elements
+            
+            VBox vbMain = new VBox (false, sp);
+            vbMain.BorderWidth = usp;
             
             Label lblChooseLanguage = new Label ($"{Instance.Language.Localize ("LANGUAGE:Select")}");
             lblChooseLanguage.Halign = Align.Center;
-            vbMain.PackStart(lblChooseLanguage,false, false, 6);
+            vbMain.PackStart(lblChooseLanguage,false, false, upd);
             
             foreach (string each in II.Localization.Language.Descriptions)
                 cmbLanguages.AppendText (each);
             cmbLanguages.Active = Enum.Parse (typeof (II.Localization.Language.Values), Instance.Settings.Language).GetHashCode();
-            vbMain.PackStart(cmbLanguages, false, false, 6);
+            vbMain.PackStart(cmbLanguages, false, false, upd);
             
             HBox hbButtons = new HBox();
             hbButtons.Halign = Align.Center;
@@ -66,9 +71,9 @@ namespace IISIM
             btnContinue.WidthRequest = 150;
             btnContinue.Pressed += OnClick_Continue;
             
-            hbButtons.PackStart(btnCancel,false, false, 6);
-            hbButtons.PackStart(btnContinue,false, false, 6);
-            vbMain.PackStart(hbButtons,false, false, 6);
+            hbButtons.PackStart(btnCancel,false, false, upd);
+            hbButtons.PackStart(btnContinue,false, false, upd);
+            vbMain.PackStart(hbButtons,false, false, tlepd);
             
             Add(vbMain);
             Title = Instance.Language.Localize ("LANGUAGE:Title");

@@ -47,6 +47,10 @@ namespace IISIM
             
             StartArgs = args;
             
+            II.File.Init ();                                            // Init file structure (for config file, temp files)
+            Settings.Load ();                                           // Load config file
+            Language = new (Settings.Language);                 // Load localization dictionary based on settings
+            
             var wdwSplash = new Splash (this);
             var wdwControl = new Control(this, wdwSplash);
             
@@ -68,14 +72,10 @@ namespace IISIM
                 Application.RemoveWindow (wdwSplash);
             });
             
-            thr.Start();
-
             Timer_Main.Interval = 10; // q 10 milliseconds
             Timer_Main.Start ();
 
-            II.File.Init ();                                            // Init file structure (for config file, temp files)
-            Settings.Load ();                                           // Load config file
-            Language = new (Settings.Language);                 // Load localization dictionary based on settings
+            thr.Start();
             
             Application.Run();
         }
