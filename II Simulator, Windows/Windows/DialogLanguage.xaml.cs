@@ -50,11 +50,8 @@ namespace IISIM.Windows {
             lblChooseLanguage.Content = Instance.Language.Localize ("LANGUAGE:Select");
             btnContinue.Content = Instance.Language.Localize ("BUTTON:Continue");
 
-            foreach (string each in II.Localization.Language.Descriptions)
-                cmbLanguages.Items.Add (new MenuItem () {
-                    Header = each,
-                });
-            cmbLanguages.SelectedIndex = Enum.Parse (typeof (II.Localization.Language.Values), Instance.Settings.Language).GetHashCode();
+            cmbLanguages.ItemsSource = II.Localization.Language.Descriptions.ToArray ();
+            cmbLanguages.SelectedIndex = Enum.Parse (typeof (II.Localization.Language.Values), Instance.Settings.Language).GetHashCode ();
         }
 
         private void OnClick_Continue (object sender, RoutedEventArgs e) {
