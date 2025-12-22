@@ -1,11 +1,14 @@
+#nullable enable
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Pipes;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using Cairo;
+using Gdk;
 using GLib;
 using Gtk;
 using Pango;
@@ -15,15 +18,18 @@ using II.Localization;
 using II.Server;
 using Application = Gtk.Application;
 using DateTime = System.DateTime;
+using File = II.File;
+using Key = Gdk.Key;
 using Menu = Gtk.Menu;
 using MenuItem = Gtk.MenuItem;
 using Task = System.Threading.Tasks.Task;
+using Window = Gtk.Window;
 
 namespace IISIM
 {
     class Control : Window
     {
-        private App Instance;
+        private App? Instance;
         
         private bool HideDeviceLabels = false;
         private bool IsUILoadCompleted = false;
@@ -152,9 +158,10 @@ namespace IISIM
 
             DeleteEvent += OnClose;
             this.Shown += OnShown;
+            this.KeyPressEvent += OnKeyPressEvent;
             splash.Hidden += OnSplashed;
         }
-
+        
         private void OnShown (object sender, EventArgs args) {
             /* Init essential functions first */
             InitInterface ();
@@ -167,7 +174,7 @@ namespace IISIM
                 if (Instance.StartArgs?.Length > 0) {
                     string loadfile = Instance.StartArgs [0].Trim (' ', '\n', '\r');
                     if (!String.IsNullOrEmpty (loadfile)) {
-                        // TODO: Implement: LoadOpen (loadfile);
+                        LoadOpen (loadfile);
                     }
                 }
 
@@ -178,7 +185,7 @@ namespace IISIM
         
         private void OnSplashed (object o, EventArgs args) {
             InitInitialRun ();
-
+            
             /* Run useful but otherwise vanity functions last */
             Task.Run (InitUpgrade);
         }
@@ -188,7 +195,7 @@ namespace IISIM
         }
         
         private void InitInitialRun () {
-            if (!II.Settings.Simulator.Exists () || !(Instance?.Settings.AcceptedEULA ?? false)) {
+            if (!(Instance?.Settings.AcceptedEULA ?? false)) {
                 DialogEULA ();
             }   
         }
@@ -273,9 +280,12 @@ namespace IISIM
             
             miFile.Submenu = muFile;
             muFile.Append (miFileNew);
+            muFile.Append (new SeparatorMenuItem ());
             muFile.Append (miFileLoad);
             muFile.Append (miFileSave);
+            muFile.Append (new SeparatorMenuItem ());
             muFile.Append (miFileFullScreen);
+            muFile.Append (new SeparatorMenuItem ());
             muFile.Append (miFileExit);
             mbMain.Append(miFile);
             
@@ -285,18 +295,22 @@ namespace IISIM
             
             miMirror.Submenu = muMirror;
             muMirror.Append (miMirrorStatus);
+            muMirror.Append (new SeparatorMenuItem ());
             muMirror.Append (miMirrorDeactivate);
+            muMirror.Append (new SeparatorMenuItem ());
             muMirror.Append (miMirrorReceive);
             muMirror.Append (miMirrorBroadcast);
             mbMain.Append(miMirror);
             
             miSettings.Submenu = muSettings;
             muSettings.Append (miSettingsAudio);
+            muSettings.Append (new SeparatorMenuItem ());
             muSettings.Append (miSettingsLanguage);
             mbMain.Append(miSettings);
             
             miHelp.Submenu = muHelp;
             muHelp.Append (miHelpUpdate);
+            muHelp.Append (new SeparatorMenuItem ());
             muHelp.Append (miHelpAbout);
             mbMain.Append(miHelp);
             
@@ -404,8 +418,6 @@ namespace IISIM
             vbMain1.PackStart (hbMain2, false, false, tlepd);
             Add (vbMain1);
             ShowAll ();
-            
-            // TODO: Implement: Hotkeys!!
         }
 
         
@@ -600,8 +612,7 @@ namespace IISIM
         }
 
         private async Task DialogLanguage (bool reloadUI = false) {
-            Application.Invoke((sender, args) =>
-            {
+            Application.Invoke((sender, args) => {
                 var dlgLanguage = new DialogLanguage(Instance);
                 dlgLanguage.TransientFor = this;
                 
@@ -614,7 +625,28 @@ namespace IISIM
         }
 
         private async Task DialogMirrorBroadcast () {
-            // TODO: IMPLEMENT!!
+            Application.Invoke((sender, args) => {
+                DialogMirrorBroadcast dlgMirrorBroadcast = new DialogMirrorBroadcast(Instance);
+                
+                dlgMirrorBroadcast.TransientFor = this;
+                
+                Application.AddWindow(dlgMirrorBroadcast);
+                
+                dlgMirrorBroadcast.SetPosition(WindowPosition.CenterOnParent);
+                dlgMirrorBroadcast.KeepAbove = true;
+                dlgMirrorBroadcast.Show();
+                
+                // If dlgMirrorBroadcast did not successfully set Instance.Mirror.Status as a HOST, then
+                // the following lines will abort anyway... no need to check the dialog response since
+                // mirror broadcasting already operates on a state machine in Instance
+                Task.Run (() => {
+                    Instance?.Mirror.PostStep (
+                        new Scenario.Step () {
+                            Physiology = Instance.Physiology ?? new Physiology (),
+                        },
+                        Instance.Server);
+                });
+            });
         }
 
         private async Task DialogMirrorReceive () {
@@ -658,7 +690,10 @@ namespace IISIM
         }
 
         private async Task MirrorBroadcast () {
-            // TODO: IMPLEMENT!!
+            await DialogMirrorBroadcast ();
+
+            await UpdateMirrorStatus ();
+            await UpdateExpanders (false);
         }
 
         private async Task MirrorReceive () {
@@ -693,52 +728,360 @@ namespace IISIM
         }
 
         private async Task LoadFile () {
-            // TODO: IMPLEMENT!!
+            FileChooserDialog dlgLoad = new FileChooserDialog (
+                Instance.Language.Localize ("PE:MenuLoadSimulation").Replace ("_", ""),
+                this, FileChooserAction.Open, 
+                Instance.Language.Localize ("BUTTON:Cancel"), ResponseType.Cancel, 
+                Instance.Language.Localize ("BUTTON:Continue"), ResponseType.Accept);
+            dlgLoad.SelectMultiple = false;
+            dlgLoad.SetCurrentFolder (Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+            
+            FileFilter ff = new  FileFilter ();
+            ff.AddPattern ("*.ii");
+            ff.Name = "Infirmary Integrated simulation files (*.ii)";
+            dlgLoad.Filter = ff;
+            
+            
+            dlgLoad.Response += async (o, args) => {
+                if (args.ResponseId == ResponseType.Accept) {
+                    FileStream f = new FileStream(dlgLoad.Filename, FileMode.Open, FileAccess.Read);
+                    
+                    dlgLoad.Destroy ();
+                    await LoadInit (f);
+                } else {
+                    dlgLoad.Destroy ();
+                }
+            };
+            
+            dlgLoad.Show();
         }
 
-        private async Task LoadOpen (string fileName) {
-            // TODO: IMPLEMENT!!
+        private void LoadOpen (string fileName) {
+            if (System.IO.File.Exists (fileName)) {
+                Task.Run(() => LoadInit (fileName));
+            } else {
+                Task.Run(LoadFail);
+            }
+
+            OnPhysiologyEvent (this, new Physiology.PhysiologyEventArgs (Instance?.Physiology, Physiology.PhysiologyEventTypes.Vitals_Change));
         }
 
         private async Task LoadInit (Stream incFile) {
-            // TODO: IMPLEMENT!!
+            using StreamReader sr = new (incFile);
+            string? metadata = await sr.ReadLineAsync ();
+            string? data = await sr.ReadToEndAsync ();
+            sr.Close ();
+
+            /* Read savefile metadata indicating data formatting
+             * Multiple data formats for forward compatibility
+             */
+
+            if (!String.IsNullOrEmpty (metadata) && metadata.StartsWith (".ii:t1"))
+                await LoadValidateT1 (data);
+            else
+                await LoadFail ();
         }
 
         private async Task LoadInit (string incFile) {
-            // TODO: IMPLEMENT!!
+            using StreamReader sr = new (incFile);
+            string? metadata = await sr.ReadLineAsync ();
+            string? data = await sr.ReadToEndAsync ();
+            sr.Close ();
+
+            /* Read savefile metadata indicating data formatting
+             * Multiple data formats for forward compatibility
+             */
+
+            if (!String.IsNullOrEmpty (metadata) && metadata.StartsWith (".ii:t1"))
+                await LoadValidateT1 (data);
+            else
+                await LoadFail ();
         }
 
         private async Task LoadValidateT1 (string data) {
-            // TODO: IMPLEMENT!!
+            using StringReader sr = new (data);
+
+            try {
+                /* Savefile type 1: validated and encrypted
+                 * Line 1 is metadata (.ii:t1)
+                 * Line 2 is hash for validation (hash taken of raw string data, unobfuscated)
+                 * Line 3 is savefile data encrypted by AES encoding
+                 */
+
+                string? hash = (await sr.ReadLineAsync ())?.Trim ();
+                string? file = Encryption.DecryptAES ((await sr.ReadToEndAsync ())?.Trim ());
+                sr.Close ();
+
+                // Original save files used MD5, later changed to SHA256
+                if (hash == Encryption.HashSHA256 (file) || hash == Encryption.HashMD5 (file))
+                    await LoadProcess (file);
+                else
+                    await LoadFail ();
+            } catch {
+                await LoadFail ();
+            } finally {
+                sr.Close ();
+            }
         }
 
         private async Task LoadProcess (string incFile) {
-            // TODO: IMPLEMENT!!
+            using StringReader sRead = new (incFile);
+            string? line, pline;
+            StringBuilder pbuffer;
+
+            try {
+                while ((line = (await sRead.ReadLineAsync ())?.Trim ()) != null) {
+                    if (Instance is null)
+                        continue;
+
+                    if (line == "> Begin: Physiology") {           // Load files saved by Infirmary Integrated (base)
+                        if (Instance.Scenario?.Physiology is null)
+                            Instance.Scenario = new (true);
+
+                        pbuffer = new StringBuilder ();
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Physiology")
+                            pbuffer.AppendLine (pline);
+
+                        await RefreshScenario (true);
+                        await (Instance?.Physiology?.Load (pbuffer.ToString ()) ?? Task.CompletedTask);
+                    } else if (line == "> Begin: Scenario") {   // Load files saved by Infirmary Integrated Scenario Editor
+                        Instance.Scenario ??= new (false);
+
+                        pbuffer = new StringBuilder ();
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Scenario")
+                            pbuffer.AppendLine (pline);
+
+                        await RefreshScenario (false);
+                        await Instance.Scenario.Load (pbuffer.ToString ());
+                        InitScenarioStep ();     // Needs to be called manually since InitScenario(false) doesn't init a Patient
+                    } else if (line == "> Begin: Editor") {
+                        pbuffer = new StringBuilder ();
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Editor")
+                            pbuffer.AppendLine (pline);
+
+                        await this.LoadOptions (pbuffer.ToString ());
+                    } 
+                    
+                    // TODO: Implement
+                    /*
+                    else if (line == "> Begin: Cardiac Monitor") {
+                        pbuffer = new StringBuilder ();
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Cardiac Monitor")
+                            pbuffer.AppendLine (pline);
+
+                        Instance.Device_Monitor = new DeviceMonitor (Instance);
+                        await InitDeviceMonitor ();
+                        await Instance.Device_Monitor.Load (pbuffer.ToString ());
+                    } else if (line == "> Begin: 12 Lead ECG") {
+                        pbuffer = new StringBuilder ();
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: 12 Lead ECG")
+                            pbuffer.AppendLine (pline);
+
+                        Instance.Device_ECG = new DeviceECG (Instance);
+                        await InitDeviceECG ();
+                        await Instance.Device_ECG.Load (pbuffer.ToString ());
+                    } else if (line == "> Begin: Defibrillator") {
+                        pbuffer = new StringBuilder ();
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Defibrillator")
+                            pbuffer.AppendLine (pline);
+
+                        Instance.Device_Defib = new DeviceDefib (Instance);
+                        await InitDeviceDefib ();
+                        await Instance.Device_Defib.Load (pbuffer.ToString ());
+                    } else if (line == "> Begin: Intra-aortic Balloon Pump") {
+                        pbuffer = new StringBuilder ();
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                                && pline != "> End: Intra-aortic Balloon Pump")
+                            pbuffer.AppendLine (pline);
+
+                        Instance.Device_IABP = new DeviceIABP (Instance);
+                        await InitDeviceIABP ();
+                        await Instance.Device_IABP.Load (pbuffer.ToString ());
+                    }
+                    */
+                }
+            } catch {
+                await LoadFail ();
+            } finally {
+                sRead.Close ();
+            }
+
+            // On loading a file, ensure Mirroring is not in Client mode! Will conflict...
+            if (Instance is not null && Instance.Mirror.Status == Mirror.Statuses.CLIENT) {
+                Instance.Mirror.Status = Mirror.Statuses.INACTIVE;
+                Instance.Mirror.CancelOperation ();      // Attempt to cancel any possible Mirror downloads
+            }
+
+            // Initialize the first step of the scenario
+            if (Instance?.Scenario?.IsLoaded ?? false) {
+                InitStep ();
+
+                if (Instance.Scenario.DeviceMonitor.IsEnabled)
+                    await InitDeviceMonitor ();
+                if (Instance.Scenario.DeviceDefib.IsEnabled)
+                    await InitDeviceDefib ();
+                if (Instance.Scenario.DeviceECG.IsEnabled)
+                    await InitDeviceECG ();
+                if (Instance.Scenario.DeviceIABP.IsEnabled)
+                    await InitDeviceIABP ();
+            }
+
+            // Set UI Expanders IsExpanded and IsEnabled on whether is a Scenario
+            await UpdateExpanders ();
+
+            /* Load completed but possibly in any order (e.g. physiology before devices)
+             * Fire events to begin synchronizing devices with physiology
+             */
+            Instance?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change);
         }
 
         private async Task LoadOptions (string inc) {
-            // TODO: IMPLEMENT!!
+            using StringReader sRead = new (inc);
+
+            try {
+                string? line;
+                while ((line = await sRead.ReadLineAsync ()) != null) {
+                    if (line.Contains (':')) {
+                        string pName = line.Substring (0, line.IndexOf (':')),
+                            pValue = line.Substring (line.IndexOf (':') + 1);
+                        switch (pName) {
+                            default: break;
+                            case "checkDefaultVitals": chkDefaultVitals.Active = bool.Parse (pValue); break;
+                        }
+                    }
+                }
+            } catch {
+                sRead.Close ();
+                return;
+            }
+
+            sRead.Close ();
         }
 
-        private async Task LoadFail () {
-            // TODO: IMPLEMENT!!
+        private Task LoadFail () {
+            MessageDialog dlgLoadFail = new MessageDialog (this, 0, MessageType.Error,
+                ButtonsType.Ok, false, Instance.Language.Localize ("PE:LoadFailMessage"));
+            dlgLoadFail.Response += (o, args) => { dlgLoadFail.Destroy (); };
+            dlgLoadFail.Show();
+            
+            return Task.CompletedTask;
         }
 
         private async Task SaveFile () {
-            // TODO: IMPLEMENT!!
+            // Only save single Patient files in base Infirmary Integrated!
+            // Scenario files should be created/edited/saved via II Scenario Editor!
+
+            if (Instance?.Scenario?.IsLoaded ?? false) {
+                MessageDialog dlgSaveFail = new MessageDialog (this, 0, MessageType.Error,
+                    ButtonsType.Ok, false, Instance.Language.Localize ("PE:SaveFailScenarioMessage"));
+                dlgSaveFail.Response += (o, args) => { dlgSaveFail.Destroy (); };
+                dlgSaveFail.Show();
+                
+                return;
+            }
+            
+            FileChooserDialog dlgSave = new FileChooserDialog (
+                Instance.Language.Localize ("PE:MenuSaveSimulation").Replace ("_", ""),
+                this, FileChooserAction.Save,
+                Instance.Language.Localize ("BUTTON:Cancel"), ResponseType.Cancel, 
+                Instance.Language.Localize ("BUTTON:Continue"), ResponseType.Accept);
+            dlgSave.SelectMultiple = false;
+            dlgSave.DoOverwriteConfirmation = true;
+            dlgSave.CurrentName = ".ii";
+            dlgSave.SetCurrentFolder (Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
+            
+            
+            FileFilter ff = new  FileFilter ();
+            ff.AddPattern ("*.ii");
+            ff.Name = "Infirmary Integrated simulation files (*.ii)";
+            dlgSave.Filter = ff;
+            
+            dlgSave.Response += async (o, args) => {
+                if (args.ResponseId == ResponseType.Accept) {
+                    string filename = dlgSave.Filename.EndsWith(".ii") ? dlgSave.Filename : dlgSave.Filename + ".ii";
+                    FileStream f = new FileStream(filename, FileMode.OpenOrCreate, FileAccess.Write);
+                    
+                    dlgSave.Destroy ();
+                    await SaveT1 (f);
+                } else {
+                    dlgSave.Destroy ();
+                }
+            };
+            
+            dlgSave.Show();
         }
 
         private async Task SaveT1 (string filename) {
-            // TODO: IMPLEMENT!!
+            if (System.IO.File.Exists (filename))
+                System.IO.File.Delete (filename);
+
+            using FileStream s = new (filename, FileMode.OpenOrCreate, FileAccess.Write);
+            await SaveT1 (s);
         }
 
         private async Task SaveT1 (Stream stream) {
-            // TODO: IMPLEMENT!!
+             // Ensure only saving Patient file, not Scenario file; is screened in SaveFile()
+            if (Instance?.Scenario != null && Instance.Scenario.IsLoaded) {
+                stream.Close ();
+                return;
+            }
+
+            StringBuilder sb = new ();
+
+            sb.AppendLine ("> Begin: Physiology");
+            sb.Append (Instance?.Physiology?.Save ());
+            sb.AppendLine ("> End: Physiology");
+
+            sb.AppendLine ("> Begin: Editor");
+            sb.Append (this.SaveOptions ());
+            sb.AppendLine ("> End: Editor");
+
+            // TODO: Implement
+            /*
+            if (Instance?.Device_Monitor is not null) {
+                sb.AppendLine ("> Begin: Cardiac Monitor");
+                sb.Append (Instance.Device_Monitor.Save ());
+                sb.AppendLine ("> End: Cardiac Monitor");
+            }
+            if (Instance?.Device_ECG is not null) {
+                sb.AppendLine ("> Begin: 12 Lead ECG");
+                sb.Append (Instance.Device_ECG.Save ());
+                sb.AppendLine ("> End: 12 Lead ECG");
+            }
+            if (Instance?.Device_Defib is not null) {
+                sb.AppendLine ("> Begin: Defibrillator");
+                sb.Append (Instance.Device_Defib.Save ());
+                sb.AppendLine ("> End: Defibrillator");
+            }
+            if (Instance?.Device_IABP is not null) {
+                sb.AppendLine ("> Begin: Intra-aortic Balloon Pump");
+                sb.Append (Instance.Device_IABP.Save ());
+                sb.AppendLine ("> End: Intra-aortic Balloon Pump");
+            }
+            */
+
+            using StreamWriter sw = new (stream);
+            await sw.WriteLineAsync (".ii:t1");                                           // Metadata (type 1 savefile)
+            await sw.WriteLineAsync (Encryption.HashSHA256 (sb.ToString ().Trim ()));     // Hash for validation
+            await sw.WriteAsync (Encryption.EncryptAES (sb.ToString ().Trim ()));         // Savefile data encrypted with AES
+            await sw.FlushAsync ();
+
+            sw.Close ();
+            stream.Close ();
         }
 
         private string SaveOptions () {
-            // TODO: IMPLEMENT!!
-            return "";
+            StringBuilder sWrite = new ();
+
+            sWrite.AppendLine (String.Format ("{0}:{1}", "checkDefaultVitals", chkDefaultVitals.Active));
+
+            return sWrite.ToString ();
         }
 
         public Task Exit () {
@@ -1183,6 +1526,56 @@ namespace IISIM
         private void ButtonApplyParameters_Click (object sender, EventArgs e)
             => _ = ApplyPhysiologyParameters ();
 
+        private void OnKeyPressEvent (object o, KeyPressEventArgs args) {
+            
+            /* GUI Keyboard Shortcuts */
+
+            // Event.State is a bitmask of all modifier buttons; check using & AND
+            
+            // Control
+            if ((args.Event.State.GetHashCode() & ModifierType.ControlMask.GetHashCode()) != 0) {
+                switch (args.Event.Key) {
+                    case Key.N:
+                    case Key.n:
+                        MenuNewSimulation_Click (this, EventArgs.Empty);
+                        break;
+                    
+                    case Key.O:
+                    case Key.o:
+                        MenuLoadFile_Click (this, EventArgs.Empty);
+                        break;
+                    
+                    case Key.S:
+                    case Key.s:
+                        MenuSaveFile_Click(this, EventArgs.Empty);
+                        break;
+                    
+                    case Key.A:
+                    case Key.a:
+                        MenuToggleAudio_Click(this, EventArgs.Empty);
+                        break;
+                }
+            }
+            
+            // Alt
+            if ((args.Event.State.GetHashCode () & ModifierType.Mod1Mask.GetHashCode ()) != 0) {
+                switch (args.Event.Key) {
+                    case Key.Return:
+                        MenuToggleFullscreen_Click(this, EventArgs.Empty);
+                        break;
+                }
+            }
+            
+            // No Modifiers
+            switch (args.Event.Key) {
+                case Key.Pause:
+                    MenuPauseSimulation_Click (this, EventArgs.Empty);
+                    break;
+            }
+
+            //Console.WriteLine($"{args.Event.State} {args.Event.Key}");
+        }
+        
         private void OnClosed (object? sender, EventArgs e)
             => _ = Exit ();
 

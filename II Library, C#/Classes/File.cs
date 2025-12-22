@@ -29,10 +29,6 @@ namespace II {
             return Path.Combine (GetAppDataDir (), GetOSStyling ("config.cfg"));
         }
 
-        public static string GetUsageStatsPath () {
-            return Path.Combine (GetAppDataDir (), GetOSStyling ("usage.stats"));
-        }
-
         public static string GetCacheDir () {
             return Path.Combine (Path.GetTempPath (), GetOSStyling ("Infirmary Integrated"));
         }

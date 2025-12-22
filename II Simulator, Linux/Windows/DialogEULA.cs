@@ -19,7 +19,7 @@ namespace IISIM
 {
     class DialogEULA : Window
     {
-        private App Instance;
+        private App? Instance;
         
         private string LicenseText =
 @"Apache License
@@ -199,7 +199,7 @@ TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 
 END OF TERMS AND CONDITIONS";
 
-        public DialogEULA(App inst) : base(WindowType.Popup) {
+        public DialogEULA(App inst) : base(WindowType.Toplevel) {
             
             this.Titlebar = new HeaderBar ();
             

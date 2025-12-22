@@ -19,12 +19,12 @@ namespace IISIM
 {
     class DialogLanguage : Window
     {
-        private App Instance;
+        private App? Instance;
         
         /* GTK GUI Objects */
         private ComboBoxText cmbLanguages = new ComboBoxText ();
         
-        public DialogLanguage(App inst) : base(WindowType.Popup) {
+        public DialogLanguage(App inst) : base(WindowType.Toplevel) {
             
             this.Titlebar = new HeaderBar ();
             

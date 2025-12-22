@@ -7,6 +7,8 @@
     <Product>Infirmary Integrated Simulator</Product>
     <Title>Infirmary Integrated</Title>
     <Version>3.0.0-alpha.2</Version>
+    <Nullable>enable</Nullable>
+    <AssemblyVersion>0.3.0.11</AssemblyVersion>
 
   </PropertyGroup>
 

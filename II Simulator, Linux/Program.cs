@@ -25,11 +25,11 @@ namespace IISIM
         public Scenario? Scenario;
         public Physiology? Physiology { get => Scenario?.Physiology; }
         
-        /* TODO? Implementation comparison against avlts branch:
-         * Need to declare UI elements for referencing from child functions later?
-         * Including: Window_Splash, Window_Main, Device_Monitor, Device_ECG, Device_Defib,
-         * Device_IABP, and Device_EFM?
-        */
+        public object? Device_Monitor;
+        public object? Device_ECG;
+        public object? Device_Defib;
+        public object? Device_IABP;
+        public object? Device_EFM;
         
         public System.Timers.Timer Timer_Main = new ();
         
