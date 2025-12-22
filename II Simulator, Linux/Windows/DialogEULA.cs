@@ -200,52 +200,60 @@ TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 END OF TERMS AND CONDITIONS";
 
         public DialogEULA(App inst) : base(WindowType.Toplevel) {
-            
-            this.Titlebar = new HeaderBar ();
-            
             Instance = inst;
             
             DeleteEvent += OnClose;
             this.Shown += OnShown;
         }
 
-        private void OnShown (object sender, EventArgs args) {
+        private void OnShown (object? sender, EventArgs args) {
             InitInterface();
         }
         
-        private void OnClose(object sender, DeleteEventArgs a) {
+        private void OnClose(object? sender, DeleteEventArgs a) {
          
         }
         
         private void InitInterface () {
-            VBox vbMain = new VBox (false, 10);
+            int sp = 2;                 // Spacing: General (int)
+            uint usp = 3;               // Spacing: General (uint)
+            uint upd = 0;               // Padding: General (uint)
+            
+            Box vbMain = new Box (Orientation.Vertical, 10);
             vbMain.BorderWidth = 10;
             
-            Label lblAgreeTerms = new Label ($"{Instance.Language.Localize ("EULA:AgreeToTerms")}");
+            Label lblAgreeTerms = new Label ($"{Instance?.Language.Localize ("EULA:AgreeToTerms")}");
             lblAgreeTerms.Halign = Align.Center;
             vbMain.PackStart(lblAgreeTerms,false, false, 6);
-            
-            Label lblLicense = new Label();
-            lblLicense.Halign = Align.Center;
-            lblLicense.Text = LicenseText;
-            lblLicense.LineWrap = true;
-            
-            ScrolledWindow swLicense = new ScrolledWindow();
-            swLicense.MinContentWidth = 500;
-            swLicense.MinContentHeight = 300;
+
+            Label lblLicense = new Label () {
+                Halign = Align.Center,
+                Text = LicenseText,
+                LineWrap = true,
+                Justify = Justification.Center
+            };
+
+            ScrolledWindow swLicense = new ScrolledWindow () {
+                MinContentWidth = 500,
+                MinContentHeight = 300
+            };
             swLicense.Add (lblLicense);
             
             vbMain.PackStart(swLicense,false, false, 6);
+
+            Box hbButtons = new Box (Orientation.Horizontal, sp) {
+                Halign = Align.Center
+            };
             
-            HBox hbButtons = new HBox();
-            hbButtons.Halign = Align.Center;
-            
-            Button btnCancel = new Button(new Label(Instance.Language.Localize ("BUTTON:Cancel")));
-            btnCancel.WidthRequest = 150;
+            Button btnCancel = new Button(new Label(Instance?.Language.Localize ("BUTTON:Cancel"))) {
+                WidthRequest = 150
+            };
             btnCancel.Pressed += OnClick_Cancel;
             
-            Button btnContinue = new Button(new Label(Instance.Language.Localize ("BUTTON:Continue")));
-            btnContinue.WidthRequest = 150;
+            Button btnContinue = new Button(new Label(Instance?.Language.Localize ("BUTTON:Continue"))) {
+                WidthRequest = 150,
+                
+            };
             btnContinue.Pressed += OnClick_Continue;
             
             hbButtons.PackStart(btnCancel,false, false, 6);
@@ -253,21 +261,28 @@ END OF TERMS AND CONDITIONS";
             vbMain.PackStart(hbButtons,false, false, 6);
             
             Add(vbMain);
-            Title = Instance.Language.Localize ("EULA:Title");
+
+            HeaderBar hb = new HeaderBar () {
+                ShowCloseButton = false,
+                Title = Instance?.Language.Localize ("EULA:Title")
+            };
+            this.Titlebar = hb;
+
             ShowAll();
         }
         
-        private void OnClick_Cancel (object sender, EventArgs e) {
+        private void OnClick_Cancel (object? sender, EventArgs e) {
             Application.Quit ();
         }
 
-        private void OnClick_Continue (object sender, EventArgs e) {
+        private void OnClick_Continue (object? sender, EventArgs e) {
             if (Instance is not null) {
                 Instance.Settings.AcceptedEULA = true;
                 Instance.Settings.Save ();
             }
 
             this.Close ();
+            this.Destroy ();
         }
     }
 }

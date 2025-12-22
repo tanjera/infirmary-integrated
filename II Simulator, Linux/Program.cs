@@ -16,6 +16,8 @@ namespace IISIM
         public Gtk.Application Application;
 
         public string [] StartArgs;
+
+        public Compositors DisplayServer = Compositors.Null;
         
         public II.Settings.Simulator Settings = new ();
         public Server Server = new ();
@@ -32,6 +34,12 @@ namespace IISIM
         public object? Device_EFM;
         
         public System.Timers.Timer Timer_Main = new ();
+
+        public enum Compositors {
+            Null,
+            X11,
+            Wayland
+        }
         
         public static void Main (string [] args) {
             App app = new App ();
@@ -51,8 +59,22 @@ namespace IISIM
             Settings.Load ();                                           // Load config file
             Language = new (Settings.Language);                 // Load localization dictionary based on settings
             
+            /* Detect display server or compositor to select best options due to differences in behavior */
+            
+            if (!string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("WAYLAND_DISPLAY")))
+                DisplayServer = Compositors.Wayland;
+            else if (!string.IsNullOrEmpty (Environment.GetEnvironmentVariable ("DISPLAY")))
+                DisplayServer = Compositors.X11;
+            
             var wdwSplash = new Splash (this);
             var wdwControl = new Control(this, wdwSplash);
+
+            wdwControl.SetIconFromFile ("Resources/Icon_Infirmary_128.png");
+
+            // For center-screen positioning for pop-up and child windows: X11 Center; Wayland CenterOnParent
+            wdwSplash.WindowPosition = DisplayServer == Compositors.Wayland
+                ? WindowPosition.CenterOnParent
+                : WindowPosition.Center;
             
             Application.AddWindow(wdwControl);
             wdwControl.Show();

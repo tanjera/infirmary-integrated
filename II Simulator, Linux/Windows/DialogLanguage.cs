@@ -25,20 +25,17 @@ namespace IISIM
         private ComboBoxText cmbLanguages = new ComboBoxText ();
         
         public DialogLanguage(App inst) : base(WindowType.Toplevel) {
-            
-            this.Titlebar = new HeaderBar ();
-            
             Instance = inst;
             
             DeleteEvent += OnClose;
             this.Shown += OnShown;
         }
 
-        private void OnShown (object sender, EventArgs args) {
+        private void OnShown (object? sender, EventArgs args) {
             InitInterface();
         }
         
-        private void OnClose(object sender, DeleteEventArgs a) {
+        private void OnClose(object? sender, DeleteEventArgs a) {
          
         }
         
@@ -48,27 +45,37 @@ namespace IISIM
             uint upd = 5;               // Padding: General (uint)
             uint tlepd = 2;             // Padding: Top-level elements
             
-            VBox vbMain = new VBox (false, sp);
+            Box vbMain = new Box (Orientation.Vertical, sp);
             vbMain.BorderWidth = usp;
             
-            Label lblChooseLanguage = new Label ($"{Instance.Language.Localize ("LANGUAGE:Select")}");
-            lblChooseLanguage.Halign = Align.Center;
+            Label lblChooseLanguage = new Label ($"{Instance?.Language.Localize ("LANGUAGE:Select")}") {
+                Halign = Align.Center
+            };
             vbMain.PackStart(lblChooseLanguage,false, false, upd);
+
+            cmbLanguages = new ComboBoxText () {
+                MarginStart = 6,
+                MarginEnd = 6
+            };
             
             foreach (string each in II.Localization.Language.Descriptions)
                 cmbLanguages.AppendText (each);
-            cmbLanguages.Active = Enum.Parse (typeof (II.Localization.Language.Values), Instance.Settings.Language).GetHashCode();
+            
+            cmbLanguages.Active = Enum.Parse (typeof (II.Localization.Language.Values), Instance?.Settings.Language ?? "ENG").GetHashCode();
             vbMain.PackStart(cmbLanguages, false, false, upd);
             
-            HBox hbButtons = new HBox();
-            hbButtons.Halign = Align.Center;
+            Box hbButtons = new Box(Orientation.Horizontal, sp) {
+                Halign = Align.Center
+            };
             
-            Button btnCancel = new Button(new Label(Instance.Language.Localize ("BUTTON:Cancel")));
-            btnCancel.WidthRequest = 150;
+            Button btnCancel = new Button(new Label(Instance?.Language.Localize ("BUTTON:Cancel"))) {
+                WidthRequest = 150
+            };
             btnCancel.Pressed += OnClick_Cancel;
             
-            Button btnContinue = new Button(new Label(Instance.Language.Localize ("BUTTON:Continue")));
-            btnContinue.WidthRequest = 150;
+            Button btnContinue = new Button(new Label(Instance?.Language.Localize ("BUTTON:Continue"))) {
+                WidthRequest = 150
+            };
             btnContinue.Pressed += OnClick_Continue;
             
             hbButtons.PackStart(btnCancel,false, false, upd);
@@ -76,17 +83,22 @@ namespace IISIM
             vbMain.PackStart(hbButtons,false, false, tlepd);
             
             Add(vbMain);
-            Title = Instance.Language.Localize ("LANGUAGE:Title");
+
+            HeaderBar hb = new HeaderBar () {
+                ShowCloseButton = false,
+                Title = Instance?.Language.Localize ("LANGUAGE:Title")
+            };
+            this.Titlebar = hb;
+
             ShowAll();
         }
         
-        private void OnClick_Cancel (object sender, EventArgs e) {
+        private void OnClick_Cancel (object? sender, EventArgs e) {
             this.Close();
         }
 
-        private void OnClick_Continue (object sender, EventArgs e) {
+        private void OnClick_Continue (object? sender, EventArgs e) {
             if (Instance is not null) {
-                
                 string language = cmbLanguages.ActiveText;
                 int index = cmbLanguages.Active;
                 
@@ -97,11 +109,12 @@ namespace IISIM
             
             // Show messagebox prompting user to restart the program for changes to take effect
             MessageDialog dlgRestart = new MessageDialog (this, 0, MessageType.Info,
-                ButtonsType.Ok, false, Instance.Language.Localize ("MESSAGE:RestartForChanges"));
+                ButtonsType.Ok, false, Instance?.Language.Localize ("MESSAGE:RestartForChanges"));
             dlgRestart.Response += (o, args) => { dlgRestart.Destroy (); };
             dlgRestart.Show();
             
             this.Close ();
+            this.Destroy ();
         }
     }
 }

@@ -6,9 +6,8 @@
     <Authors>Tanjera</Authors>
     <Product>Infirmary Integrated Simulator</Product>
     <Title>Infirmary Integrated</Title>
-    <Version>3.0.0-alpha.2</Version>
+    <Version>3.0.0-alpha.12</Version>
     <Nullable>enable</Nullable>
-    <AssemblyVersion>0.3.0.11</AssemblyVersion>
 
   </PropertyGroup>
 
@@ -132,6 +131,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Third_Party\Icon_UpgradeWebsite_128.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Icon_Infirmary_128.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

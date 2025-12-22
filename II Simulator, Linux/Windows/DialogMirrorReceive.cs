@@ -18,16 +18,15 @@ using II.Server;
 
 namespace IISIM
 {
-    class DialogMirrorBroadcast : Window
+    class DialogMirrorReceive : Window
     {
         private App? Instance;
         
         /* GTK GUI Objects */
         private Entry tbAccessionKey = new Entry ();
         private Entry tbAccessPassword = new Entry ();
-        private Entry tbAdminPassword = new Entry ();
         
-        public DialogMirrorBroadcast(App inst) : base(WindowType.Toplevel) {
+        public DialogMirrorReceive(App inst) : base(WindowType.Toplevel) {
             Instance = inst;
             
             DeleteEvent += OnClose;
@@ -49,7 +48,7 @@ namespace IISIM
             uint tlepd = 2;             // Padding: Top-level elements
 
             tbAccessionKey.IsEditable = true;
-
+            
             Box vbMain1 = new Box (Orientation.Vertical, sp) {
                 BorderWidth = usp,
                 MarginBottom = 2
@@ -59,8 +58,8 @@ namespace IISIM
                 Halign = Align.Center
             };
             vbMain1.PackStart(txtMessage,false, false, upd);
-
-            Box hbMain2 = new Box (Orientation.Horizontal, sp) {
+            
+            Box hbMain2 = new Box(Orientation.Horizontal, sp) {
                 Halign = Align.Center,
                 MarginEnd = 6
             };
@@ -77,46 +76,19 @@ namespace IISIM
                 ColumnSpacing = usp
             };
 
-            Label lblAccessionKey = new Label (Instance?.Language.Localize ("MIRROR:AccessionKey")) {
+            Label lblAccessionKey = new Label (Instance.Language.Localize ("MIRROR:AccessionKey")) {
                 Halign = Align.Start
             };
-
-            Button btnGenAccessionKey = new Button () {
-                Label = "+",
-                WidthRequest = 30
-            };
             
-            btnGenAccessionKey.Pressed += (sender, args) => {
-                tbAccessionKey.Text = Utility.RandomString (8);
-            };
-
             gdKeys.Attach (lblAccessionKey, 0, 0, 1, 1);
-            gdKeys.Attach (tbAccessionKey, 1, 0, 4, 1);
-            gdKeys.Attach (btnGenAccessionKey, 5, 0, 1, 1);
-
-            Label lblAccessPassword = new Label (Instance?.Language.Localize ("MIRROR:AccessPassword")) {
+            gdKeys.Attach (tbAccessionKey, 1, 0, 5, 1);
+            
+            Label lblAccessPassword = new Label (Instance.Language.Localize ("MIRROR:AccessPassword")) {
                 Halign = Align.Start
-            };
-
-            Button btnGenAccessPassword = new Button () {
-                Label = "+",
-                WidthRequest = 30
             };
             
-            btnGenAccessPassword.Pressed += (sender, args) => {
-                tbAccessPassword.Text = Utility.RandomString (8);
-            };
-
             gdKeys.Attach (lblAccessPassword, 0, 1, 1, 1);
-            gdKeys.Attach (tbAccessPassword, 1, 1, 4, 1);
-            gdKeys.Attach (btnGenAccessPassword, 5, 1, 1, 1);
-
-            Label lblAdminPassword = new Label (Instance?.Language.Localize ("MIRROR:AdminPassword")) {
-                Halign = Align.Start
-            };
-
-            gdKeys.Attach (lblAdminPassword, 0, 2, 1, 1);
-            gdKeys.Attach (tbAdminPassword, 1, 2, 5, 1);
+            gdKeys.Attach (tbAccessPassword, 1, 1, 5, 1);
             
             hbMain2.PackStart(gdKeys,false, false, tlepd);
             vbMain1.PackStart(hbMain2,false, false, tlepd);
@@ -124,13 +96,13 @@ namespace IISIM
             Box hbButtons = new Box (Orientation.Horizontal, sp) {
                 Halign = Align.Center
             };
-
-            Button btnCancel = new Button (new Label (Instance?.Language.Localize ("BUTTON:Cancel"))) {
+            
+            Button btnCancel = new Button(new Label(Instance.Language.Localize ("BUTTON:Cancel"))) {
                 WidthRequest = 150
             };
             btnCancel.Pressed += OnClick_Cancel;
-
-            Button btnContinue = new Button (new Label (Instance?.Language.Localize ("BUTTON:Continue"))) {
+            
+            Button btnContinue = new Button(new Label(Instance.Language.Localize ("BUTTON:Continue"))) {
                 WidthRequest = 150
             };
             btnContinue.Pressed += OnClick_Continue;
@@ -141,31 +113,32 @@ namespace IISIM
             vbMain1.PackStart(hbButtons,false, false, tlepd);
             
             Add(vbMain1);
-
-            HeaderBar hb = new HeaderBar () {
+            
+            HeaderBar hb = new HeaderBar() {
                 ShowCloseButton = false,
-                Title = Instance?.Language.Localize ("MIRROR:BroadcastTitle")
+                Title = Instance?.Language.Localize ("MIRROR:ReceiveTitle")
             };
             this.Titlebar = hb;
 
             ShowAll();
         }
         
-        private void OnClick_Cancel (object? sender, EventArgs e) {
+        private void OnClick_Cancel (object sender, EventArgs e) {
             this.Close();
         }
 
-        private void OnClick_Continue (object? sender, EventArgs e) {
+        private void OnClick_Continue (object sender, EventArgs e) {
             if (Instance is not null) {
-                Regex regex = new ("^[a-zA-Z0-9]*$");
+
+
+                Regex regex = new("^[a-zA-Z0-9]*$");
                 if ((tbAccessionKey.Text ?? "").Length > 0
                     && regex.IsMatch (tbAccessionKey.Text ?? "")) {
-                    Instance.Mirror.Status = II.Server.Mirror.Statuses.HOST;
+                    Instance.Mirror.Status = II.Server.Mirror.Statuses.CLIENT;
                     Instance.Mirror.Accession = tbAccessionKey.Text ?? "";
                     Instance.Mirror.PasswordAccess = tbAccessPassword.Text ?? "";
-                    Instance.Mirror.PasswordEdit = tbAdminPassword.Text ?? "";
 
-                    this.Close();
+                    this.Close ();
                 } else {
                     MessageDialog dlgSettingsInvalid = new MessageDialog (this, 0, MessageType.Error,
                         ButtonsType.Ok, false, Instance.Language.Localize ("MIRROR:SettingsInvalid"));
@@ -175,7 +148,7 @@ namespace IISIM
                     this.Close ();
                 }
             }
-            
+
             this.Destroy ();
         }
     }

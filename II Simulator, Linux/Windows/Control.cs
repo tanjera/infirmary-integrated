@@ -55,33 +55,12 @@ namespace IISIM
             ChangesApplied
         }
 
-        /* GTK GUI Objects */
+        /* GTK GUI Objects: Items that need class-wide scope */
         
-        MenuBar mbMain = new MenuBar ();
-        Menu muFile = new Menu ();
-        Menu muOptions = new Menu ();
-        Menu muMirror = new Menu ();
-        Menu muSettings = new Menu ();
-        Menu muHelp = new Menu ();
-        MenuItem miFile = new MenuItem ();
-        MenuItem miFileNew = new MenuItem ();
-        MenuItem miFileLoad = new MenuItem ();
-        MenuItem miFileSave = new MenuItem ();
-        MenuItem miFileFullScreen = new MenuItem ();
-        MenuItem miFileExit = new MenuItem ();
-        MenuItem miOptions = new MenuItem ();
-        MenuItem miOptionsPause = new MenuItem ();
-        MenuItem miMirror = new MenuItem ();
-        MenuItem miMirrorStatus = new MenuItem ();
-        MenuItem miMirrorDeactivate = new MenuItem ();
-        MenuItem miMirrorReceive = new MenuItem ();
-        MenuItem miMirrorBroadcast = new MenuItem ();
-        MenuItem miSettings = new MenuItem ();
-        MenuItem miSettingsAudio = new MenuItem ();
-        MenuItem miSettingsLanguage = new MenuItem ();
-        MenuItem miHelp = new MenuItem ();
-        MenuItem miHelpUpdate = new MenuItem ();
-        MenuItem miHelpAbout = new MenuItem ();
+        private MenuItem miSettingsAudio;
+        private MenuItem miMirrorStatus;
+        private Box bxDevicesCompact;
+        private Box bxDevicesExpanded;
         
         private SpinButton numHR = new SpinButton (0, 300, 5);
         private SpinButton numNSBP = new SpinButton (0, 300, 5);
@@ -171,7 +150,7 @@ namespace IISIM
 
             Application.Invoke ((sender, args) => {
                 /* Init important but non-essential functions */
-                if (Instance.StartArgs?.Length > 0) {
+                if (Instance?.StartArgs?.Length > 0) {
                     string loadfile = Instance.StartArgs [0].Trim (' ', '\n', '\r');
                     if (!String.IsNullOrEmpty (loadfile)) {
                         LoadOpen (loadfile);
@@ -208,53 +187,92 @@ namespace IISIM
             
             /* GUI: Top-Level Elements; 1 [ 2 ] */
             
-            Title = Instance.Language.Localize ("PE:WindowTitle");
-            VBox vbMain1 = new VBox (false, sp);
-            vbMain1.MarginBottom = 5;
-            
-            HBox hbMain2 = new HBox (false, sp);
-            hbMain2.BorderWidth = usp;
-            
-            /* GUI: Menu Bar */
-            
-            mbMain.MarginBottom = 2;
-            mbMain.PackDirection = PackDirection.Ltr;
-
-            /* GUI: Menu Bar: Labels */
-            
-            miFile.Label = Instance.Language.Localize ("PE:MenuFile").Replace ("_", "");
-            miFileNew.Label = Instance.Language.Localize ("PE:MenuNewFile").Replace ("_", "");
-            miFileLoad.Label = Instance.Language.Localize ("PE:MenuLoadSimulation").Replace ("_", "");
-            miFileSave.Label = Instance.Language.Localize ("PE:MenuSaveSimulation").Replace ("_", "");
-            miFileFullScreen.Label = Instance.Language.Localize ("MENU:MenuToggleFullscreen").Replace ("_", "");
-            miFileExit.Label = Instance.Language.Localize ("PE:MenuExitProgram").Replace ("_", "");
-             
-            miOptions.Label = Instance.Language.Localize ("PE:MenuOptions").Replace ("_", "");
-            miOptionsPause.Label = Instance.Language.Localize ("PE:MenuPause").Replace ("_", "");
-             
-            miMirror.Label = Instance.Language.Localize ("PE:MenuMirror").Replace ("_", "");
-            miMirrorStatus.Label = (Instance?.Mirror.Status) switch {
-                Mirror.Statuses.HOST =>
-                    $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Server")}",
-                Mirror.Statuses.CLIENT =>
-                    $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Client")}",
-                _ =>
-                    $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Inactive")}"
+            Box vbMain1 = new Box (Orientation.Vertical, sp) {
+                MarginBottom = 5
             };
             
-            miMirrorDeactivate.Label = Instance.Language.Localize ("PE:MenuMirrorDeactivate").Replace ("_", "");
-            miMirrorReceive.Label = Instance.Language.Localize ("PE:MenuMirrorReceive").Replace ("_", "");
-            miMirrorBroadcast.Label = Instance.Language.Localize ("PE:MenuMirrorBroadcast").Replace ("_", "");
-             
-            miSettings.Label = Instance.Language.Localize ("PE:MenuOptions").Replace ("_", "");
-            miSettingsAudio.Label = String.Format ("{0}: {1}",
-                Instance.Language.Localize ("PE:MenuToggleAudio").Replace ("_", ""),
-                Instance.Settings.AudioEnabled ? Instance.Language.Localize ("BOOLEAN:On") : Instance.Language.Localize ("BOOLEAN:Off"));
-            miSettingsLanguage.Label = Instance.Language.Localize ("PE:MenuSetLanguage").Replace ("_", "");
-             
-            miHelp.Label = Instance.Language.Localize ("PE:MenuHelp").Replace ("_", "");
-            miHelpUpdate.Label = Instance.Language.Localize ("PE:MenuCheckUpdates").Replace ("_", "");
-            miHelpAbout.Label = Instance.Language.Localize ("PE:MenuAboutProgram").Replace ("_", "");
+            Box hbMain2 = new Box (Orientation.Horizontal, sp) {
+                BorderWidth = usp
+            };
+            
+            /* GUI: Menu Bar Item Instantiation*/
+
+            MenuBar mbMain = new MenuBar () {
+                Margin = 4,
+                PackDirection = PackDirection.Ltr
+            };
+            
+            Menu muFile = new Menu ();
+            Menu muOptions = new Menu ();
+            Menu muMirror = new Menu ();
+            Menu muSettings = new Menu ();
+            Menu muHelp = new Menu ();
+            MenuItem miFile = new MenuItem () {
+                Label = Instance?.Language.Localize ("PE:MenuFile").Replace ("_", "")
+            };
+            MenuItem miFileNew = new MenuItem () {
+                Label = Instance?.Language.Localize ("PE:MenuNewFile").Replace ("_", "")
+            };
+            MenuItem miFileLoad = new MenuItem () {
+                Label = Instance?.Language.Localize ("PE:MenuLoadSimulation").Replace ("_", "")
+            };
+            MenuItem miFileSave = new MenuItem () {
+                Label = Instance?.Language.Localize ("PE:MenuSaveSimulation").Replace ("_", "")
+            };
+            MenuItem miFileFullScreen = new MenuItem () {
+                Label = Instance?.Language.Localize ("MENU:MenuToggleFullscreen").Replace ("_", "")
+            };
+            MenuItem miFileExit = new MenuItem () {
+                Label = Instance?.Language.Localize ("PE:MenuExitProgram").Replace ("_", "")
+            };
+            MenuItem miOptions = new MenuItem () {
+                Label = Instance?.Language.Localize ("PE:MenuOptions").Replace ("_", "")
+            };
+            MenuItem miOptionsPause = new MenuItem () {
+                Label = Instance?.Language.Localize ("PE:MenuPause").Replace ("_", "")
+            };
+            MenuItem miMirror = new MenuItem () {
+                Label = Instance?.Language.Localize ("PE:MenuMirror").Replace ("_", "")
+            };
+            MenuItem miMirrorStatus = new MenuItem () {
+                Label = (Instance?.Mirror.Status) switch {
+                    Mirror.Statuses.HOST =>
+                        $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Server")}",
+                    Mirror.Statuses.CLIENT =>
+                        $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Client")}",
+                    _ =>
+                        $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Inactive")}"
+                }
+            };
+            MenuItem miMirrorDeactivate = new MenuItem () {
+                Label = Instance?.Language.Localize ("PE:MenuMirrorDeactivate").Replace ("_", "")
+            };
+            MenuItem miMirrorReceive = new MenuItem () {
+                Label = Instance?.Language.Localize ("PE:MenuMirrorReceive").Replace ("_", "")
+            };
+            MenuItem miMirrorBroadcast = new MenuItem () {
+                Label = Instance?.Language.Localize ("PE:MenuMirrorBroadcast").Replace ("_", "")
+            };
+            MenuItem miSettings = new MenuItem () {
+                Label = Instance?.Language.Localize ("PE:MenuSettings").Replace ("_", "")
+            };
+            MenuItem miSettingsAudio = new MenuItem () {
+                Label = String.Format ("{0}: {1}",
+                    Instance?.Language.Localize ("PE:MenuToggleAudio").Replace ("_", ""),
+                    Instance?.Settings.AudioEnabled ?? false ? Instance?.Language.Localize ("BOOLEAN:On") : Instance?.Language.Localize ("BOOLEAN:Off"))
+            };
+            MenuItem miSettingsLanguage = new MenuItem () {
+                Label = Instance?.Language.Localize ("PE:MenuSetLanguage").Replace ("_", "")
+            };
+            MenuItem miHelp = new MenuItem () {
+                Label = Instance?.Language.Localize ("PE:MenuHelp").Replace ("_", "")
+            };
+            MenuItem miHelpUpdate = new MenuItem () {
+                Label = Instance?.Language.Localize ("PE:MenuCheckUpdates").Replace ("_", "")
+            };
+            MenuItem miHelpAbout = new MenuItem () {
+                Label = Instance?.Language.Localize ("PE:MenuAboutProgram").Replace ("_", "")
+            };
             
             /* GUI: Event Linking */
 
@@ -314,101 +332,215 @@ namespace IISIM
             muHelp.Append (miHelpAbout);
             mbMain.Append(miHelp);
             
-            /* GUI: Devices Section */
+            /* GUI: Devices Section; Expanded View */
             
-            VBox vboxDevices = new VBox (false, sp);
+            bxDevicesExpanded = new Box (Orientation.Vertical, sp) {
+                MarginBottom = sp
+            };
             
-            Label lblDevices = new Label ();
-            lblDevices.Halign = Align.Start;
-            lblDevices.UseMarkup = true;
-            lblDevices.Markup = $"<span size='12pt' weight='bold'>{Instance.Language.Localize ("PE:Devices")}</span>";
-            vboxDevices.PackStart (lblDevices, false, false, upd);
+            Label lblDevices = new Label () {
+                Halign = Align.Start,
+                UseMarkup = true,
+                Markup = $"<span size='12pt' weight='bold'>{Instance?.Language.Localize ("PE:Devices")}</span>"
+            };
             
-            HBox hboxDeviceCardiacMonitor = new HBox (false, sp);
-            hboxDeviceCardiacMonitor.PackStart (
+            bxDevicesExpanded.PackStart (lblDevices, false, false, upd);
+            
+            Box hbDeviceCardiacMonitor_exp = new Box (Orientation.Horizontal, sp);
+            hbDeviceCardiacMonitor_exp.PackStart (
                 new Image(new Gdk.Pixbuf("Third_Party/Icon_DeviceMonitor_128.png", 40, 40, true))
                 , false, false, upd);
-            hboxDeviceCardiacMonitor.PackStart(new Label(Instance.Language.Localize ("PE:CardiacMonitor")), false, false, 6);
+            hbDeviceCardiacMonitor_exp.PackStart(new Label(Instance?.Language.Localize ("PE:CardiacMonitor")), false, false, 6);
+
+            Button btnDeviceCardiacMonitor_exp = new Button () {
+                Child = hbDeviceCardiacMonitor_exp,
+                Relief = ReliefStyle.None
+            };
             
-            HBox hboxDeviceDefibrillator = new HBox (false, sp);
-            hboxDeviceDefibrillator.PackStart (
+            Box hbDeviceDefibrillator_exp = new Box (Orientation.Horizontal, sp);
+            hbDeviceDefibrillator_exp.PackStart (
                 new Image(new Gdk.Pixbuf("Third_Party/Icon_DeviceDefibrillator_128.png", 40, 40, true))
                 , false, false, upd);
-            hboxDeviceDefibrillator.PackStart(new Label(Instance.Language.Localize ("PE:Defibrillator")), false, false, 6);
+            hbDeviceDefibrillator_exp.PackStart(new Label(Instance?.Language.Localize ("PE:Defibrillator")), false, false, 6);
             
-            HBox hbox12LeadECG = new HBox (false, sp);
-            hbox12LeadECG.PackStart (
+            Button btnDeviceDefibrillator_exp = new Button () {
+                Child = hbDeviceDefibrillator_exp,
+                Relief = ReliefStyle.None
+            };
+            
+            Box hbDevice12LeadECG_exp = new Box (Orientation.Horizontal, sp);
+            hbDevice12LeadECG_exp.PackStart (
                 new Image(new Gdk.Pixbuf("Third_Party/Icon_Device12LeadECG_128.png", 40, 40, true))
                 , false, false, upd);
-            hbox12LeadECG.PackStart(new Label(Instance.Language.Localize ("PE:12LeadECG")), false, false, 6);
+            hbDevice12LeadECG_exp.PackStart(new Label(Instance?.Language.Localize ("PE:12LeadECG")), false, false, 6);
             
-            vboxDevices.PackStart (hboxDeviceCardiacMonitor, false, false, upd);
-            vboxDevices.PackStart (hboxDeviceDefibrillator, false, false, upd);
-            vboxDevices.PackStart (hbox12LeadECG, false, false, upd);
+            Button btnDevice12LeadECG_exp = new Button () {
+                Child = hbDevice12LeadECG_exp,
+                Relief = ReliefStyle.None
+            };
+            
+            bxDevicesExpanded.PackStart (btnDeviceCardiacMonitor_exp, false, false, 0);
+            bxDevicesExpanded.PackStart (btnDeviceDefibrillator_exp, false, false, 0);
+            bxDevicesExpanded.PackStart (btnDevice12LeadECG_exp, false, false, 0);
+
+            bxDevicesExpanded.PackStart(new Separator(Orientation.Horizontal), false, false, 0);
+            
+            Label lblHideDevices = new Label () {
+                Halign = Align.Start,
+                UseMarkup = true,
+                Markup = $"<span size='12pt' weight='bold'>{Instance?.Language.Localize ("PE:Options")}</span>",
+                MarginTop = 10
+            };
+            
+            bxDevicesExpanded.PackStart (lblHideDevices, false, false, upd);
+            
+            Box hbHideDevices = new Box (Orientation.Horizontal, sp);
+            hbHideDevices.PackStart (
+                new Image(new Gdk.Pixbuf("Third_Party/Icon_Clipboard_128.png", 40, 40, true))
+                , false, false, upd);
+            hbHideDevices.PackStart(new Label(Instance?.Language.Localize ("PE:HideDevices")), false, false, 6);
+            
+            Button btnHideDevices = new Button () {
+                Child = hbHideDevices,
+                Relief = ReliefStyle.None
+            };
+
+            btnHideDevices.Pressed += (sender, args) => {
+                ButtonOptionsHide_Click(this, EventArgs.Empty);
+            };
+            
+            bxDevicesExpanded.PackStart (btnHideDevices, false, false, 0);
+
+            /* GUI: Devices Section; Hidden/Compact View */
+            
+            bxDevicesCompact = new Box (Orientation.Vertical, sp){
+                MarginBottom = sp
+            };
+            
+            Box hbDeviceCardiacMonitor_cmp = new Box (Orientation.Horizontal, sp);
+            hbDeviceCardiacMonitor_cmp.PackStart (
+                new Image(new Gdk.Pixbuf("Third_Party/Icon_DeviceMonitor_128.png", 40, 40, true))
+                , false, false, upd);
+
+            Button btnDeviceCardiacMonitor_cmp = new Button () {
+                Child = hbDeviceCardiacMonitor_cmp,
+                Relief = ReliefStyle.None
+            };
+            
+            Box hbDeviceDefibrillator_cmp = new Box (Orientation.Horizontal, sp);
+            hbDeviceDefibrillator_cmp.PackStart (
+                new Image(new Gdk.Pixbuf("Third_Party/Icon_DeviceDefibrillator_128.png", 40, 40, true))
+                , false, false, upd);
+            
+            Button btnDeviceDefibrillator_cmp = new Button () {
+                Child = hbDeviceDefibrillator_cmp,
+                Relief = ReliefStyle.None
+            };
+            
+            Box hbDevice12LeadECG_cmp = new Box (Orientation.Horizontal, sp);
+            hbDevice12LeadECG_cmp.PackStart (
+                new Image(new Gdk.Pixbuf("Third_Party/Icon_Device12LeadECG_128.png", 40, 40, true))
+                , false, false, upd);
+            
+            Button btnDevice12LeadECG_cmp = new Button () {
+                Child = hbDevice12LeadECG_cmp,
+                Relief = ReliefStyle.None
+            };
+            
+            bxDevicesCompact.PackStart (btnDeviceCardiacMonitor_cmp, false, false, 0);
+            bxDevicesCompact.PackStart (btnDeviceDefibrillator_cmp, false, false, 0);
+            bxDevicesCompact.PackStart (btnDevice12LeadECG_cmp, false, false, 0);
+            
+            bxDevicesCompact.PackStart(new Separator(Orientation.Horizontal), false, false, 0);
+            
+            Box hbShowDevices = new Box (Orientation.Horizontal, sp);
+            hbShowDevices.PackStart (
+                new Image(new Gdk.Pixbuf("Third_Party/Icon_Clipboard_128.png", 40, 40, true))
+                , false, false, upd);
+            
+            Button btnShowDevices = new Button () {
+                Child = hbShowDevices,
+                Relief = ReliefStyle.None
+            };
+
+            btnShowDevices.Pressed += (sender, args) => {
+                ButtonOptionsHide_Click(this, EventArgs.Empty);
+            };
+            
+            bxDevicesCompact.PackStart (btnShowDevices, false, false, 0);
             
             /* GUI: Parameters */
             
-            Grid gridParameters = new Grid ();
-            
-            gridParameters.RowSpacing = usp;
-            gridParameters.ColumnSpacing = usp;
+            Grid gridParameters = new Grid () {
+                RowSpacing = usp,
+                ColumnSpacing = usp
+            };
             
             /* GUI: Parameters: Vital Signs */
      
-            Label lblHR = new Label ($"{Instance.Language.Localize ("PE:HeartRate")}:");
-            lblHR.Halign = Align.Start;
+            Label lblHR = new Label ($"{Instance?.Language.Localize ("PE:HeartRate")}:") {
+                Halign = Align.Start
+            };
             gridParameters.Attach (lblHR, 0, 0, 1, 1);
             gridParameters.Attach (numHR, 1, 0, 3, 1);
             
-            Label lblNIBP = new Label ($"{Instance.Language.Localize ("PE:BloodPressure")}:");
-            lblNIBP.Halign = Align.Start;
+            Label lblNIBP = new Label ($"{Instance?.Language.Localize ("PE:BloodPressure")}:") {
+                Halign = Align.Start
+            };
             
             gridParameters.Attach (lblNIBP, 0, 1, 1, 1);
             gridParameters.Attach (numNSBP, 1, 1, 1, 1);
             gridParameters.Attach (new Label("/"), 2, 1, 1, 1);
             gridParameters.Attach (numNDBP, 3, 1, 1, 1);
             
-            Label lblRR = new Label ($"{Instance.Language.Localize ("PE:RespiratoryRate")}:");
-            lblRR.Halign = Align.Start;
+            Label lblRR = new Label ($"{Instance?.Language.Localize ("PE:RespiratoryRate")}:") {
+                Halign = Align.Start
+            };
             gridParameters.Attach (lblRR, 0, 2, 1, 1);
             gridParameters.Attach (numRR, 1, 2, 3, 1);
 
-            Label lblSPO2 = new Label ($"{Instance.Language.Localize ("PE:PulseOximetry")}:");
-            lblSPO2.Halign = Align.Start;
+            Label lblSPO2 = new Label ($"{Instance?.Language.Localize ("PE:PulseOximetry")}:") {
+                Halign = Align.Start
+            };
             gridParameters.Attach (lblSPO2, 0, 3, 1, 1);
             gridParameters.Attach (numSPO2, 1, 3, 3, 1);
             
-            Label lblT = new Label ($"{Instance.Language.Localize ("PE:Temperature")}:");
-            lblT.Halign = Align.Start;
+            Label lblT = new Label ($"{Instance?.Language.Localize ("PE:Temperature")}:") {
+                Halign = Align.Start
+            };
             gridParameters.Attach (lblT, 0, 4, 1, 1);
             gridParameters.Attach (numT, 1, 4, 3, 1);
 
-            Label lblCardiacRhythm = new Label ($"{Instance.Language.Localize ("PE:CardiacRhythm")}:");
-            lblCardiacRhythm.Halign = Align.Start;
+            Label lblCardiacRhythm = new Label ($"{Instance?.Language.Localize ("PE:CardiacRhythm")}:") {
+                Halign = Align.Start
+            };
             gridParameters.Attach (lblCardiacRhythm, 0, 5, 1, 1);
 
             List<string> listCardiacRhythm = new List<string> ();
             foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof(Cardiac_Rhythms.Values)))
-                listCardiacRhythm.Add (Instance.Language.Localize (Cardiac_Rhythms.LookupString (v)));
+                listCardiacRhythm.Add (Instance?.Language.Localize (Cardiac_Rhythms.LookupString (v)));
             cmbCardiacRhythm = new ComboBox(listCardiacRhythm.ToArray ());
             gridParameters.Attach (cmbCardiacRhythm, 1, 5, 3, 1);
             
-            chkDefaultVitals = new CheckButton (Instance.Language.Localize ("PE:UseDefaultVitalSignRanges"));
+            chkDefaultVitals = new CheckButton (Instance?.Language.Localize ("PE:UseDefaultVitalSignRanges"));
             gridParameters.Attach (chkDefaultVitals, 0, 6, 4, 1);
             
             
-            hbMain2.PackStart (vboxDevices, false, false, 10);
+            hbMain2.PackStart (bxDevicesExpanded, false, false, 10);
+            hbMain2.PackStart (bxDevicesCompact, false, false, 10);
             hbMain2.PackStart (new Separator(Orientation.Vertical), false, false, 0);
 
-            Label lblVitalSigns = new Label ();
-            lblVitalSigns.UseMarkup = true;
-            lblVitalSigns.Markup = $"<span size='12pt' weight='bold'>  {Instance.Language.Localize ("PE:VitalSigns")}</span>";
-            lblVitalSigns.HeightRequest = 34;
+            Label lblVitalSigns = new Label () {
+                UseMarkup = true,
+                Markup = $"<span size='12pt' weight='bold'>  {Instance?.Language.Localize ("PE:VitalSigns")}</span>",
+                HeightRequest = 34
+            };
             
-            Expander expVitalSigns = new Expander ("Test");
-            expVitalSigns.LabelWidget = lblVitalSigns;
+            Expander expVitalSigns = new Expander ("Test") {
+                LabelWidget = lblVitalSigns,
+                Expanded = true
+            };
             expVitalSigns.Add(gridParameters);
-            expVitalSigns.Expanded = true;
             
             hbMain2.PackStart (expVitalSigns, false, false, upd);
             
@@ -417,7 +549,16 @@ namespace IISIM
             vbMain1.PackStart (mbMain, false, true, tlepd);
             vbMain1.PackStart (hbMain2, false, false, tlepd);
             Add (vbMain1);
+            
+            HeaderBar hb = new HeaderBar() {
+                ShowCloseButton = true,
+                Title = Instance?.Language.Localize ("PE:WindowTitle")
+            };
+            this.Titlebar = hb;
+            
             ShowAll ();
+            
+            bxDevicesCompact.Hide();
         }
 
         
@@ -602,10 +743,13 @@ namespace IISIM
             {
                 var dlgEULA = new DialogEULA(Instance);
                 dlgEULA.TransientFor = this;
-                
                 Application.AddWindow(dlgEULA);
                 
-                dlgEULA.SetPosition(WindowPosition.CenterOnParent);
+                // For center-screen positioning for pop-up and child windows: X11 Center; Wayland CenterOnParent
+                dlgEULA.SetPosition(
+                    Instance.DisplayServer == App.Compositors.Wayland
+                        ? WindowPosition.CenterOnParent
+                        : WindowPosition.Center);
                 dlgEULA.KeepAbove = true;
                 dlgEULA.Show();
             });
@@ -615,10 +759,13 @@ namespace IISIM
             Application.Invoke((sender, args) => {
                 var dlgLanguage = new DialogLanguage(Instance);
                 dlgLanguage.TransientFor = this;
-                
                 Application.AddWindow(dlgLanguage);
                 
-                dlgLanguage.SetPosition(WindowPosition.CenterOnParent);
+                // For center-screen positioning for pop-up and child windows: X11 Center; Wayland CenterOnParent
+                dlgLanguage.SetPosition(
+                    Instance.DisplayServer == App.Compositors.Wayland
+                        ? WindowPosition.CenterOnParent
+                        : WindowPosition.Center);
                 dlgLanguage.KeepAbove = true;
                 dlgLanguage.Show();
             });
@@ -627,12 +774,14 @@ namespace IISIM
         private async Task DialogMirrorBroadcast () {
             Application.Invoke((sender, args) => {
                 DialogMirrorBroadcast dlgMirrorBroadcast = new DialogMirrorBroadcast(Instance);
-                
                 dlgMirrorBroadcast.TransientFor = this;
-                
                 Application.AddWindow(dlgMirrorBroadcast);
                 
-                dlgMirrorBroadcast.SetPosition(WindowPosition.CenterOnParent);
+                // For center-screen positioning for pop-up and child windows: X11 Center; Wayland CenterOnParent
+                dlgMirrorBroadcast.SetPosition(
+                    Instance.DisplayServer == App.Compositors.Wayland
+                        ? WindowPosition.CenterOnParent
+                        : WindowPosition.Center);
                 dlgMirrorBroadcast.KeepAbove = true;
                 dlgMirrorBroadcast.Show();
                 
@@ -650,43 +799,156 @@ namespace IISIM
         }
 
         private async Task DialogMirrorReceive () {
-            // TODO: IMPLEMENT!!
+            Application.Invoke ((sender, args) => {
+                DialogMirrorReceive dlgMirrorReceive = new DialogMirrorReceive (Instance);
+                dlgMirrorReceive.TransientFor = this;
+                Application.AddWindow (dlgMirrorReceive);
+
+                // For center-screen positioning for pop-up and child windows: X11 Center; Wayland CenterOnParent
+                dlgMirrorReceive.SetPosition(
+                    Instance.DisplayServer == App.Compositors.Wayland
+                        ? WindowPosition.CenterOnParent
+                        : WindowPosition.Center);
+                dlgMirrorReceive.KeepAbove = true;
+                dlgMirrorReceive.Show ();
+            });
         }
 
         public async Task DialogAbout () {
-            // TODO: IMPLEMENT!!
+            Application.Invoke ((sender, args) => {
+                DialogAbout dlgAbout = new DialogAbout (Instance);
+                dlgAbout.TransientFor = this;
+                Application.AddWindow (dlgAbout);
+                
+                // For center-screen positioning for pop-up and child windows: X11 Center; Wayland CenterOnParent
+                dlgAbout.SetPosition(
+                    Instance.DisplayServer == App.Compositors.Wayland
+                        ? WindowPosition.CenterOnParent
+                        : WindowPosition.Center);
+                dlgAbout.KeepAbove = true;
+                dlgAbout.Show ();
+            });
         }
 
         private async Task DialogUpgrade () {
-            // TODO: IMPLEMENT!!
+            Application.Invoke ((sender, args) => {
+                DialogUpgrade dlgUpgrade = new DialogUpgrade (Instance);
+                dlgUpgrade.TransientFor = this;
+                Application.AddWindow (dlgUpgrade);
+                
+                // For center-screen positioning for pop-up and child windows: X11 Center; Wayland CenterOnParent
+                dlgUpgrade.SetPosition(
+                    Instance.DisplayServer == App.Compositors.Wayland
+                        ? WindowPosition.CenterOnParent
+                        : WindowPosition.Center);
+                dlgUpgrade.KeepAbove = true;
+
+                dlgUpgrade.OnUpgradeRoute += (s, e) => {
+                    switch (e.Route) {
+                        default:
+                        case IISIM.DialogUpgrade.UpgradeOptions.None:
+                        case IISIM.DialogUpgrade.UpgradeOptions.Delay:
+                            return;
+
+                        case IISIM.DialogUpgrade.UpgradeOptions.Mute:
+                            if (Instance is not null) {
+                                Instance.Settings.MuteUpgrade = true;
+                                Instance.Settings.MuteUpgradeDate = DateTime.Now;
+                                Instance.Settings.Save ();
+                            }
+                            return;
+
+                        case IISIM.DialogUpgrade.UpgradeOptions.Website:
+                            string url = String.IsNullOrEmpty (Instance?.Server.UpgradeWebpage)
+                                ? "https://github.com/tanjera/infirmary-integrated/releases".Replace ("&", "^&")
+                                : Instance.Server.UpgradeWebpage;
+                            System.Diagnostics.Process.Start (new ProcessStartInfo ("xdg-open", url) { CreateNoWindow = true });
+                            return;
+                    }
+                };
+                
+                dlgUpgrade.Show ();
+            });
         }
 
         public async Task ToggleAudio () {
-            // TODO: IMPLEMENT!!
+            await SetAudio (!Instance?.Settings.AudioEnabled);
         }
 
         public void SetAudio_On () => _ = SetAudio (true);
 
         public void SetAudio_Off () => _ = SetAudio (false);
 
-        public async Task SetAudio (bool toSet) {
-            // TODO: IMPLEMENT!!
+        public Task SetAudio (bool? toSet) {
+            if (Instance is not null && toSet is not null) {
+                Instance.Settings.AudioEnabled = (bool)toSet;
+                Instance.Settings.Save ();
+
+                Application.Invoke((sender, args) => {
+                    miSettingsAudio.Label = String.Format ("{0}: {1}",
+                        Instance.Language.Localize ("PE:MenuToggleAudio"),
+                        Instance.Settings.AudioEnabled
+                            ? Instance.Language.Localize ("BOOLEAN:On")
+                            : Instance.Language.Localize ("BOOLEAN:Off"));
+                });
+            }
+
+            return Task.CompletedTask;
         }
 
-        private async Task ToggleHideDevices () {
-            // TODO: IMPLEMENT!!
+        private Task ToggleHideDevices () {
+            HideDeviceLabels = !HideDeviceLabels;
+            
+            Application.Invoke((sender, args) => {
+                if (HideDeviceLabels) {
+                    bxDevicesExpanded.Hide ();
+                    bxDevicesCompact.Show ();
+                } else {
+                    bxDevicesExpanded.Show ();
+                    bxDevicesCompact.Hide ();
+                }
+            });
+
+            return Task.CompletedTask;
         }
 
         private async Task CheckUpgrade () {
-            // TODO: IMPLEMENT!!
+            if (Instance is null) {
+                Debug.WriteLine ($"Null return at {this.Name}.{nameof (CheckUpgrade)}");
+                return;
+            }
+            
+            // Check with server for updated version of Infirmary Integrated- notify user either way
+            await Instance.Server.Get_LatestVersion ();
+
+            string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
+            if (Utility.IsNewerVersion (version, Instance.Server.UpgradeVersion)) {
+                await DialogUpgrade ();
+            } else {
+                Application.Invoke ((sender, args) => {
+                    MessageDialog dlgNoUpgrade = new MessageDialog (this, 0, MessageType.Info,
+                        ButtonsType.Ok, false, Instance?.Language.Localize ("UPGRADE:NoUpdateAvailable"));
+                    dlgNoUpgrade.Response += (o, args) => { dlgNoUpgrade.Destroy (); };
+                    dlgNoUpgrade.Show();
+                });
+            }
         }
 
-        private async Task OpenUpgrade () {
-            // TODO: IMPLEMENT!!
+        private Task OpenUpgrade () {
+            string url = String.IsNullOrEmpty (Instance?.Server.UpgradeWebpage)
+                ? "https://github.com/tanjera/infirmary-integrated/releases".Replace ("&", "^&")
+                : Instance.Server.UpgradeWebpage;
+            System.Diagnostics.Process.Start (new ProcessStartInfo ("xdg-open", url) { CreateNoWindow = true });
+            
+            return Task.CompletedTask;
         }
 
         private async Task MirrorDeactivate () {
-            // TODO: IMPLEMENT!!
+            if (Instance is not null)
+                Instance.Mirror.Status = Mirror.Statuses.INACTIVE;
+
+            await UpdateMirrorStatus ();
+            await UpdateExpanders (false);
         }
 
         private async Task MirrorBroadcast () {
@@ -697,11 +959,22 @@ namespace IISIM
         }
 
         private async Task MirrorReceive () {
-            // TODO: IMPLEMENT!!
+            await DialogMirrorReceive ();
+
+            await UpdateMirrorStatus ();
+            await UpdateExpanders (false);
         }
 
-        private async Task UpdateMirrorStatus () {
-            // TODO: IMPLEMENT!!
+        private Task UpdateMirrorStatus () {
+            Application.Invoke((sender, args) => {
+                miMirrorStatus.Label = (Instance?.Mirror.Status) switch {
+                    Mirror.Statuses.HOST => $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Server")}",
+                    Mirror.Statuses.CLIENT => $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Client")}",
+                    _ => $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Inactive")}",
+                };
+            });
+
+            return Task.CompletedTask;
         }
 
         private async Task UpdateExpanders ()
@@ -720,7 +993,14 @@ namespace IISIM
         }
 
         private async Task AdvanceParameterStatus (ParameterStatuses status) {
-            // TODO: IMPLEMENT!!
+            /* Toggles between pending changes or changes applied; bypasses if auto-applying or null */
+
+            if (status == ParameterStatuses.ChangesApplied && ParameterStatus == ParameterStatuses.ChangesPending)
+                ParameterStatus = ParameterStatuses.ChangesApplied;
+            else if (status == ParameterStatuses.ChangesPending && ParameterStatus == ParameterStatuses.ChangesApplied)
+                ParameterStatus = ParameterStatuses.ChangesPending;
+
+            await UpdateParameterIndicators ();
         }
 
         private async Task UpdateParameterIndicators () {
@@ -729,10 +1009,10 @@ namespace IISIM
 
         private async Task LoadFile () {
             FileChooserDialog dlgLoad = new FileChooserDialog (
-                Instance.Language.Localize ("PE:MenuLoadSimulation").Replace ("_", ""),
+                Instance?.Language.Localize ("PE:MenuLoadSimulation").Replace ("_", ""),
                 this, FileChooserAction.Open, 
-                Instance.Language.Localize ("BUTTON:Cancel"), ResponseType.Cancel, 
-                Instance.Language.Localize ("BUTTON:Continue"), ResponseType.Accept);
+                Instance?.Language.Localize ("BUTTON:Cancel"), ResponseType.Cancel, 
+                Instance?.Language.Localize ("BUTTON:Continue"), ResponseType.Accept);
             dlgLoad.SelectMultiple = false;
             dlgLoad.SetCurrentFolder (Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
             
@@ -966,7 +1246,7 @@ namespace IISIM
 
         private Task LoadFail () {
             MessageDialog dlgLoadFail = new MessageDialog (this, 0, MessageType.Error,
-                ButtonsType.Ok, false, Instance.Language.Localize ("PE:LoadFailMessage"));
+                ButtonsType.Ok, false, Instance?.Language.Localize ("PE:LoadFailMessage"));
             dlgLoadFail.Response += (o, args) => { dlgLoadFail.Destroy (); };
             dlgLoadFail.Show();
             
@@ -979,7 +1259,7 @@ namespace IISIM
 
             if (Instance?.Scenario?.IsLoaded ?? false) {
                 MessageDialog dlgSaveFail = new MessageDialog (this, 0, MessageType.Error,
-                    ButtonsType.Ok, false, Instance.Language.Localize ("PE:SaveFailScenarioMessage"));
+                    ButtonsType.Ok, false, Instance?.Language.Localize ("PE:SaveFailScenarioMessage"));
                 dlgSaveFail.Response += (o, args) => { dlgSaveFail.Destroy (); };
                 dlgSaveFail.Show();
                 
@@ -987,10 +1267,10 @@ namespace IISIM
             }
             
             FileChooserDialog dlgSave = new FileChooserDialog (
-                Instance.Language.Localize ("PE:MenuSaveSimulation").Replace ("_", ""),
+                Instance?.Language.Localize ("PE:MenuSaveSimulation").Replace ("_", ""),
                 this, FileChooserAction.Save,
-                Instance.Language.Localize ("BUTTON:Cancel"), ResponseType.Cancel, 
-                Instance.Language.Localize ("BUTTON:Continue"), ResponseType.Accept);
+                Instance?.Language.Localize ("BUTTON:Cancel"), ResponseType.Cancel, 
+                Instance?.Language.Localize ("BUTTON:Continue"), ResponseType.Accept);
             dlgSave.SelectMultiple = false;
             dlgSave.DoOverwriteConfirmation = true;
             dlgSave.CurrentName = ".ii";
@@ -1451,82 +1731,82 @@ namespace IISIM
             // TODO: IMPLEMENT!!
         }
 
-        private void MenuNewSimulation_Click (object sender, EventArgs e)
+        private void MenuNewSimulation_Click (object? sender, EventArgs e)
             => _ = RefreshScenario (true);
 
-        private void MenuLoadFile_Click (object s, EventArgs e)
+        private void MenuLoadFile_Click (object? sender, EventArgs e)
             => _ = LoadFile ();
 
-        private void MenuSaveFile_Click (object s, EventArgs e)
+        private void MenuSaveFile_Click (object? sender, EventArgs e)
             => _ = SaveFile ();
 
-        private void MenuPauseSimulation_Click (object s, EventArgs e)
+        private void MenuPauseSimulation_Click (object? sender, EventArgs e)
             => PauseSimulation ();
 
-        private void MenuToggleFullscreen_Click (object s, EventArgs e)
+        private void MenuToggleFullscreen_Click (object? sender, EventArgs e)
             => ToggleFullscreen ();
 
-        private void MenuExit_Click (object s, EventArgs e)
+        private void MenuExit_Click (object? sender, EventArgs e)
             => _ = Exit ();
 
-        private void MenuToggleAudio_Click (object s, EventArgs e)
+        private void MenuToggleAudio_Click (object? sender, EventArgs e)
             => _ = ToggleAudio ();
 
-        private void MenuSetLanguage_Click (object s, EventArgs e)
+        private void MenuSetLanguage_Click (object? sender, EventArgs e)
             => _ = DialogLanguage (true);
 
-        private void MenuMirrorDeactivate_Click (object s, EventArgs e)
+        private void MenuMirrorDeactivate_Click (object? sender, EventArgs e)
             => _ = MirrorDeactivate ();
 
-        private void MenuMirrorBroadcast_Click (object s, EventArgs e)
+        private void MenuMirrorBroadcast_Click (object? sender, EventArgs e)
             => _ = MirrorBroadcast ();
 
-        private void MenuMirrorReceive_Click (object s, EventArgs e)
+        private void MenuMirrorReceive_Click (object? sender, EventArgs e)
             => _ = MirrorReceive ();
 
-        private void MenuAbout_Click (object s, EventArgs e)
+        private void MenuAbout_Click (object? sender, EventArgs e)
             => _ = DialogAbout ();
 
-        private void MenuCheckUpdate_Click (object s, EventArgs e)
+        private void MenuCheckUpdate_Click (object? sender, EventArgs e)
             => _ = CheckUpgrade ();
 
-        private void ButtonDeviceMonitor_Click (object s, EventArgs e)
+        private void ButtonDeviceMonitor_Click (object? sender, EventArgs e)
             => _ = InitDeviceMonitor ();
 
-        private void ButtonDeviceDefib_Click (object s, EventArgs e)
+        private void ButtonDeviceDefib_Click (object? sender, EventArgs e)
             => _ = InitDeviceDefib ();
 
-        private void ButtonDeviceECG_Click (object s, EventArgs e)
+        private void ButtonDeviceECG_Click (object? sender, EventArgs e)
             => _ = InitDeviceECG ();
 
-        private void ButtonDeviceIABP_Click (object s, EventArgs e)
+        private void ButtonDeviceIABP_Click (object? sender, EventArgs e)
             => _ = InitDeviceIABP ();
 
-        private void ButtonDeviceEFM_Click (object s, EventArgs e)
+        private void ButtonDeviceEFM_Click (object? sender, EventArgs e)
             => _ = InitDeviceEFM ();
 
-        private void ButtonOptionsHide_Click (object s, EventArgs e)
+        private void ButtonOptionsHide_Click (object? sender, EventArgs e)
             => _ = ToggleHideDevices ();
 
-        private void ButtonPreviousStep_Click (object s, EventArgs e)
+        private void ButtonPreviousStep_Click (object? sender, EventArgs e)
             => _ = PreviousStep ();
 
-        private void ButtonNextStep_Click (object s, EventArgs e)
+        private void ButtonNextStep_Click (object? sender, EventArgs e)
             => _ = NextStep ();
 
-        private void ButtonPauseStep_Click (object s, EventArgs e)
+        private void ButtonPauseStep_Click (object? sender, EventArgs e)
             => _ = PauseStep ();
 
-        private void ButtonPlayStep_Click (object s, EventArgs e)
+        private void ButtonPlayStep_Click (object? sender, EventArgs e)
             => _ = PlayStep ();
 
-        private void ButtonResetParameters_Click (object s, EventArgs e)
+        private void ButtonResetParameters_Click (object? sender, EventArgs e)
             => _ = ResetPhysiologyParameters ();
 
-        private void ButtonApplyParameters_Click (object sender, EventArgs e)
+        private void ButtonApplyParameters_Click (object? sender, EventArgs e)
             => _ = ApplyPhysiologyParameters ();
 
-        private void OnKeyPressEvent (object o, KeyPressEventArgs args) {
+        private void OnKeyPressEvent (object? sender, KeyPressEventArgs args) {
             
             /* GUI Keyboard Shortcuts */
 
