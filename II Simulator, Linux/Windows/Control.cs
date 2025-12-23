@@ -57,10 +57,10 @@ namespace IISIM
 
         /* GTK GUI Objects: Items that need class-wide scope */
         
-        private MenuItem miSettingsAudio;
-        private MenuItem miMirrorStatus;
-        private Box bxDevicesCompact;
-        private Box bxDevicesExpanded;
+        private MenuItem? miSettingsAudio;
+        private MenuItem? miMirrorStatus;
+        private Box? bxDevicesCompact;
+        private Box? bxDevicesExpanded;
         
         private SpinButton numHR = new SpinButton (0, 300, 5);
         private SpinButton numNSBP = new SpinButton (0, 300, 5);
@@ -967,11 +967,16 @@ namespace IISIM
 
         private Task UpdateMirrorStatus () {
             Application.Invoke((sender, args) => {
-                miMirrorStatus.Label = (Instance?.Mirror.Status) switch {
-                    Mirror.Statuses.HOST => $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Server")}",
-                    Mirror.Statuses.CLIENT => $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Client")}",
-                    _ => $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Inactive")}",
-                };
+                if (miMirrorStatus is not null) {
+                    miMirrorStatus.Label = (Instance?.Mirror.Status) switch {
+                        Mirror.Statuses.HOST =>
+                            $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Server")}",
+                        Mirror.Statuses.CLIENT =>
+                            $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Client")}",
+                        _ =>
+                            $"{Instance?.Language.Localize ("MIRROR:Status")}: {Instance?.Language.Localize ("MIRROR:Inactive")}",
+                    };
+                }
             });
 
             return Task.CompletedTask;
