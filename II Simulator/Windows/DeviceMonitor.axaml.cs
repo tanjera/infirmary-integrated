@@ -343,6 +343,22 @@ namespace IISIM {
             listTracings.Remove (requestSender);
             OnLayoutChange ();
         }
+        
+        public void MoveTracing (Controls.MonitorTracing req, int delta) {
+            int i = listTracings.FindIndex (o => o == req);
+
+            if (i + delta >= 0 && i + delta < listTracings.Count) {
+                listTracings.RemoveAt (i);
+                listTracings.Insert (i + delta, req);
+                OnLayoutChange ();
+            }
+        }
+
+        public void MoveTracing_Up (Controls.MonitorTracing req)
+            => MoveTracing (req, -1);
+
+        public void MoveTracing_Down (Controls.MonitorTracing req) 
+            => MoveTracing (req, 1);
 
         public void SetNumeric_1 (object s, RoutedEventArgs e) => SetNumeric (1);
 
@@ -376,6 +392,22 @@ namespace IISIM {
             OnLayoutChange ();
         }
 
+        public void MoveNumeric (Controls.MonitorNumeric req, int delta) {
+            int i = listNumerics.FindIndex (o => o == req);
+
+            if (i + delta >= 0 && i + delta < listNumerics.Count) {
+                listNumerics.RemoveAt (i);
+                listNumerics.Insert (i + delta, req);
+                OnLayoutChange ();
+            }
+        }
+
+        public void MoveNumeric_Up (Controls.MonitorNumeric req)
+            => MoveNumeric (req, -1);
+
+        public void MoveNumeric_Down (Controls.MonitorNumeric req) 
+            => MoveNumeric (req, 1);
+        
         private void IterateAutoScale () {
             /* Iterations and trigger for auto-scaling pressure waveform strips */
             autoScale_iter -= 1;

@@ -20,7 +20,7 @@
     <RootNamespace>IISE</RootNamespace>
     <Title>Infirmary Integrated Scenario Editor</Title>
     <Authors>Ibi Keller</Authors>
-    <Copyright>© 2017-2025, Ibi Keller</Copyright>
+    <Copyright>© 2017-2026, Ibi Keller</Copyright>
     <PackageReadmeFile>Readme.md</PackageReadmeFile>
   </PropertyGroup>  
   <ItemGroup>

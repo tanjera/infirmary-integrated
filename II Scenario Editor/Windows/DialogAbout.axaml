@@ -67,7 +67,7 @@
       <Label
         Margin="5,0"
         Padding="5,0,5,2"
-        Content="Ibi Keller, (c) 2017-2025" />
+        Content="Ibi Keller, (c) 2017-2026" />
 
       <TextBlock
         Name="tblDescription"

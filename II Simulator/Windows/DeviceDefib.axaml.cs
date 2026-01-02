@@ -455,6 +455,23 @@ namespace IISIM {
             listTracings.Remove (requestSender);
             OnLayoutChange ();
         }
+        
+        public void MoveTracing (Controls.DefibTracing req, int delta) {
+            int i = listTracings.FindIndex (o => o == req);
+
+            if (i + delta >= 0 && i + delta < listTracings.Count) {
+                listTracings.RemoveAt (i);
+                listTracings.Insert (i + delta, req);
+                OnLayoutChange ();
+            }
+        }
+
+        public void MoveTracing_Up (Controls.DefibTracing req)
+            => MoveTracing (req, -1);
+
+        public void MoveTracing_Down (Controls.DefibTracing req) 
+            => MoveTracing (req, 1);
+
 
         public void SetNumeric_1 () => SetNumeric (1);
 
@@ -483,7 +500,24 @@ namespace IISIM {
             listNumerics.Remove (requestSender);
             OnLayoutChange ();
         }
+        
+        public void MoveNumeric (Controls.DefibNumeric req, int delta) {
+            int i = listNumerics.FindIndex (o => o == req);
 
+            if (i + delta >= 0 && i + delta < listNumerics.Count) {
+                listNumerics.RemoveAt (i);
+                listNumerics.Insert (i + delta, req);
+                OnLayoutChange ();
+            }
+        }
+
+        public void MoveNumeric_Left (Controls.DefibNumeric req)
+            => MoveNumeric (req, -1);
+
+        public void MoveNumeric_Right (Controls.DefibNumeric req) 
+            => MoveNumeric (req, 1);
+
+        
         private void UpdatePacemaker () {
             _ = Instance?.Physiology?.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
         }
