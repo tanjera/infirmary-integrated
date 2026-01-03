@@ -365,6 +365,10 @@ namespace IISIM {
         private void InitScenarioStep () {
             InitPhysiologyEvents ();
             InitStep ();
+
+            if (Instance?.Device_Monitor is not null && Instance?.Scenario?.DeviceMonitor is not null) {
+                Instance?.Device_Monitor.SetNumerics (Instance.Scenario.DeviceMonitor);
+            }
         }
 
         private void InitPhysiologyEvents () {

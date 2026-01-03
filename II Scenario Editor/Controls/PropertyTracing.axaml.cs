@@ -12,7 +12,7 @@ using II.Settings;
 
 namespace IISE.Controls {
 
-    public partial class PropertyAlarm : UserControl {
+    public partial class PropertyTracing : UserControl {
         private bool isInitiated = false;
 
         public Device.Devices Device;
@@ -25,15 +25,15 @@ namespace IISE.Controls {
         private CheckBox? pchkEnabled;
         private ComboBox? pcmbPriority;
 
-        public new event EventHandler<PropertyAlarmEventArgs>? PropertyChanged;
+        public new event EventHandler<PropertyTracingEventArgs>? PropertyChanged;
 
-        public class PropertyAlarmEventArgs : EventArgs {
+        public class PropertyTracingEventArgs : EventArgs {
             public Alarm.Parameters Key;
             public Alarm? Value;
             public Device.Devices Device;
         }
-
-        public PropertyAlarm () {
+        
+        public PropertyTracing () {
             InitializeComponent ();
         }
 
@@ -54,7 +54,7 @@ namespace IISE.Controls {
         public async Task Init (Device.Devices device, Alarm.Parameters key) {
             if (PropertyChanged != null) {              // In case of re-initiation, need to wipe all subscriptions
                 foreach (Delegate d in PropertyChanged.GetInvocationList ())
-                    PropertyChanged -= (EventHandler<PropertyAlarmEventArgs>)d;
+                    PropertyChanged -= (EventHandler<PropertyTracingEventArgs>)d;
             }
 
             await ReferenceView ();
@@ -142,7 +142,7 @@ namespace IISE.Controls {
             pchkEnabled = this.GetControl<CheckBox> ("chkEnabled");
             pcmbPriority = this.GetControl<ComboBox> ("cmbPriority");
 
-            PropertyAlarmEventArgs ea = new () {
+            PropertyTracingEventArgs ea = new () {
                 Device = Device,
                 Key = Key
             };

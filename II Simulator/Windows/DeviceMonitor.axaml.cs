@@ -376,6 +376,17 @@ namespace IISIM {
 
         public void SetNumeric_8 (object s, RoutedEventArgs e) => SetNumeric (8);
 
+        public void SetNumerics (II.Settings.Device settings) {
+            List<string> numericTypes = new();
+            
+            foreach (var n in settings.Numerics)
+                numericTypes.Add (n.ToString());
+            
+            rowsNumerics = settings.Numerics.Count;
+            
+            OnLayoutChange (numericTypes, null);
+        }
+        
         public void SetNumeric (int amount) {
             rowsNumerics = amount;
             OnLayoutChange ();
@@ -556,6 +567,16 @@ namespace IISIM {
             if (tracingTypes != null)
                 listTracings.Clear ();
 
+            // If Device settings are present, then a Scenario is loaded; use those settings!
+            if (numericTypes is null && Instance?.Scenario?.DeviceMonitor.Numerics is not null) {
+                numericTypes = new();
+                
+                foreach (var n in Instance.Scenario.DeviceMonitor.Numerics)
+                    numericTypes.Add (n.ToString());
+                
+                rowsNumerics = Instance.Scenario.DeviceMonitor.Numerics.Count;
+            }
+                
             // Set default numeric types to populate
             if (numericTypes == null || numericTypes.Count == 0)
                 numericTypes = new List<string> (new string [] { "ECG", "NIBP", "SPO2", "RR", "ETCO2", "ABP", "CVP", "T", "PA", "ICP", "IAP" });

@@ -1,0 +1,73 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             x:Class="IISE.Controls.PropertyNumeric"
+             HorizontalAlignment="Stretch"
+             Margin="2">
+
+  <UserControl.Styles>
+    <Style Selector="Label">
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="HorizontalAlignment" Value="Right" />
+      <Setter Property="Margin" Value="5 0" />
+    </Style>
+  </UserControl.Styles>
+
+  <UserControl.Styles>
+    <Style Selector="NumericUpDown">
+      <Setter Property="MinWidth" Value="45" />
+      <Setter Property="Height" Value="20" />
+      <Setter Property="Increment" Value="5" />
+      <Setter Property="Minimum" Value="0" />
+      <Setter Property="Maximum"  Value="300" />
+      <Setter Property="FormatString" Value="{}{0:#0}" />
+    </Style>
+
+    <Style Selector="StackPanel">
+      <Setter Property="Margin" Value="10 0" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition />
+      <ColumnDefinition />
+      <ColumnDefinition />
+      <ColumnDefinition />
+      <ColumnDefinition />
+    </Grid.ColumnDefinitions>
+    <Label Name="lblIndex"
+           Grid.Column="0"
+           HorizontalAlignment="Left"
+           Content="Index" />
+    
+    <StackPanel Grid.Column="1"
+                Orientation="Horizontal">
+      <ComboBox Name="cmbNumeric" />
+    </StackPanel>
+    
+    <StackPanel Grid.Column="2"
+                Orientation="Horizontal">
+      <Button Name="btnMoveUp" 
+              Content="↑"
+              Margin="0,0,5,0"
+              Click="BtnMoveUp_Click" />
+      
+      <Button Name="btnMoveDown" 
+              Content="↓" 
+              Margin="0,0,20,0"
+              Click="BtnMoveDown_Click" />
+      
+      <Button Name="btnAddNumeric" 
+              Content="+" 
+              Margin="0,0,20,0"
+              Click="BtnAdd_Click"/>
+      
+      <Button Name="btnRemoveNumeric" 
+              Content="X"
+              Click="BtnRemove_Click"/>
+    </StackPanel>
+  </Grid>
+</UserControl>

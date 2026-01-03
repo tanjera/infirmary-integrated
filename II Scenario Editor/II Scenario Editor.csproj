@@ -7,7 +7,7 @@
     <TrimMode>copyused</TrimMode>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <AssemblyName>infirmary-integrated-scenario-editor</AssemblyName>
-    <Version>1.2.1</Version>
+    <Version>1.2.2</Version>
     <Company>Infirmary Integrated</Company>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageProjectUrl>https://www.infirmary-integrated.com/</PackageProjectUrl>
@@ -76,6 +76,14 @@
     </Compile>
     <Compile Update="Windows\WindowSplash.axaml.cs">
       <DependentUpon>WindowSplash.axaml</DependentUpon>
+    </Compile>
+    <Compile Update="Controls\PropertyNumeric.axaml.cs">
+      <DependentUpon>PropertyNumerics.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\PropertyTracing.axaml.cs">
+      <DependentUpon>PropertyTracing.axaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <Import Project="..\II Library\II Library.projitems" Label="Shared" />

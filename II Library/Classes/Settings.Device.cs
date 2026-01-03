@@ -17,6 +17,7 @@ namespace II.Settings {
         private Devices DeviceType;
 
         public List<Alarm> Alarms;
+        public List<Numeric>? Numerics;
         public bool IsEnabled { get; set; }
 
         public enum Devices {
@@ -24,6 +25,27 @@ namespace II.Settings {
             Defib,
             ECG,
             IABP
+        }
+        
+        public enum Numeric {
+            ECG, T, RR, ETCO2, 
+            SPO2, NIBP, ABP, CVP,
+            CO, PA, ICP, IAP
+        }
+        
+        public enum Tracings {
+            ECG_I, ECG_II, ECG_III,
+            ECG_AVR, ECG_AVL, ECG_AVF,
+            ECG_V1, ECG_V2, ECG_V3,
+            ECG_V4, ECG_V5, ECG_V6,
+
+            SPO2, RR, ETCO2,
+
+            CVP, ABP, PA, ICP, IAP,
+
+            IABP,
+
+            FHR, TOCO
         }
 
         public Device (Devices d) {
@@ -47,10 +69,18 @@ namespace II.Settings {
                         pbuffer = new StringBuilder ();
 
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
-                                && pline != "> End: Alarms")
+                               && pline != "> End: Alarms")
                             pbuffer.AppendLine (pline);
 
                         await LoadAlarms (pbuffer.ToString ());
+                    } else if (line == "> Begin: Numerics") {
+                        pbuffer = new StringBuilder ();
+
+                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
+                               && pline != "> End: Numerics")
+                            pbuffer.AppendLine (pline);
+
+                        await LoadNumerics (pbuffer.ToString ());
                     } else if (line.Contains (":")) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
@@ -74,6 +104,13 @@ namespace II.Settings {
 
             sw.AppendLine (String.Format ("{0}{1}:{2}", dent, "IsEnabled", IsEnabled));
 
+            /* Save() the Numerics */
+            if (Numerics is not null) {
+                sw.AppendLine ($"{dent}> Begin: Numerics");
+                sw.Append (await SaveNumerics (indent + 1));
+                sw.AppendLine ($"{dent}> End: Numerics");
+            }
+            
             /* Save() the Alarms */
             if (Alarms is not null) {
                 sw.AppendLine ($"{dent}> Begin: Alarms");
@@ -103,6 +140,25 @@ namespace II.Settings {
 
             sRead.Close ();
         }
+        
+        public async Task LoadNumerics (string inc) {
+            using StringReader sRead = new (inc);
+            string? line;
+
+            Numerics = new ();
+
+            try {
+                while (!String.IsNullOrEmpty (line = await sRead.ReadLineAsync ())) {
+                    foreach (string s in line.Split (',')) {
+                        Numerics.Add (Enum.Parse<Numeric> (s));
+                    }
+                }
+            } catch {
+                /* If the load fails... just bail on the actual value parsing and continue the load process */
+            }
+
+            sRead.Close ();
+        }
 
         public async Task<string> SaveAlarms (int indent = 1) {
             StringBuilder sb = new ();
@@ -112,6 +168,17 @@ namespace II.Settings {
                 if (l is not null && l.IsSet && !String.IsNullOrEmpty (line = await l.Save (indent)))
                     sb.AppendLine (line);
             }
+
+            return sb.ToString ();
+        }
+        
+        public async Task<string> SaveNumerics (int indent = 1) {
+            StringBuilder sb = new ();
+            string? line;
+
+            sb.AppendLine(String.Format ("{0}{1}", 
+                Utility.Indent (indent), 
+                string.Join (',', Numerics)));
 
             return sb.ToString ();
         }
