@@ -11,12 +11,12 @@
 	Background="Transparent"
 	CanResize="False"
 	SystemDecorations="0"
-	Icon="avares://Infirmary Integrated Scenario Editor/Resources/Icon_IISE.ico"
+	Icon="avares://infirmary-integrated-scenario-editor/Resources/Icon_IISE.ico"
 	Topmost="True"
 	WindowStartupLocation="CenterScreen"
 	mc:Ignorable="d">
 
   <DockPanel LastChildFill="True">
-    <Image Name="imgSplash" Source="avares://Infirmary Integrated Scenario Editor/Resources/SplashScreen_Infirmary_800x480.png" />
+    <Image Name="imgSplash" Source="avares://infirmary-integrated-scenario-editor/Resources/SplashScreen_Infirmary_800x480.png" />
   </DockPanel>
 </Window>

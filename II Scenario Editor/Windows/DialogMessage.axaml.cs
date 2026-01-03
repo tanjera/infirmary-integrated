@@ -43,7 +43,7 @@ namespace IISE {
 
         public string [] IconSources = {
             "",
-            "avares://Infirmary Integrated Scenario Editor/Resources/Icon_IISE.ico"
+            "avares://infirmary-integrated-scenario-editor/Resources/Icon_IISE.ico"
         };
 
         public DialogMessage () {

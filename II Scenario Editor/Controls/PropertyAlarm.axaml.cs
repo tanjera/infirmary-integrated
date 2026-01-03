@@ -8,13 +8,14 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 
 using II;
+using II.Settings;
 
 namespace IISE.Controls {
 
     public partial class PropertyAlarm : UserControl {
         private bool isInitiated = false;
 
-        public Devices Device;
+        public Device.Devices Device;
         public Alarm.Parameters Key;
         public List<string>? Values;
 
@@ -29,14 +30,7 @@ namespace IISE.Controls {
         public class PropertyAlarmEventArgs : EventArgs {
             public Alarm.Parameters Key;
             public Alarm? Value;
-            public Devices Device;
-        }
-
-        public enum Devices {
-            Monitor,
-            Defib,
-            ECG,
-            IABP
+            public Device.Devices Device;
         }
 
         public PropertyAlarm () {
@@ -57,7 +51,7 @@ namespace IISE.Controls {
             return Task.CompletedTask;
         }
 
-        public async Task Init (Devices device, Alarm.Parameters key) {
+        public async Task Init (Device.Devices device, Alarm.Parameters key) {
             if (PropertyChanged != null) {              // In case of re-initiation, need to wipe all subscriptions
                 foreach (Delegate d in PropertyChanged.GetInvocationList ())
                     PropertyChanged -= (EventHandler<PropertyAlarmEventArgs>)d;

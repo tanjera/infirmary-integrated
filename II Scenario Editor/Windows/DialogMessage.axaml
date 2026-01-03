@@ -6,7 +6,7 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	Name="dlgMessage"
 	Title=""
-	Icon="avares://Infirmary Integrated Scenario Editor/Resources/Icon_IISE.ico"
+	Icon="avares://infirmary-integrated-scenario-editor/Resources/Icon_IISE.ico"
 	SizeToContent="WidthAndHeight"
 	WindowStartupLocation="CenterScreen"
 	mc:Ignorable="d">

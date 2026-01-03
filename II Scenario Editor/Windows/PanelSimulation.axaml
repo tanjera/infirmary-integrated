@@ -122,6 +122,25 @@
               </Expander.Header>
               <StackPanel>
                 <iic:PropertyCheck x:Name="pchkMonitorEnabled" />
+                
+                <Expander Classes="exgrpf"
+                          HorizontalContentAlignment="Stretch">
+                  <Expander.Header>
+                    <Label Content="Numerics" />
+                  </Expander.Header>
+                  <StackPanel Name="spMonitorNumerics">
+                  </StackPanel>
+                </Expander>
+                
+                <Expander Classes="exgrpf"
+                          HorizontalContentAlignment="Stretch">
+                  <Expander.Header>
+                    <Label Content="Tracings" />
+                  </Expander.Header>
+                  <StackPanel Name="spMonitorTracings">
+                  </StackPanel>
+                </Expander>
+                
                 <Expander Classes="exgrpf"
                           HorizontalContentAlignment="Stretch">
                   <Expander.Header>
