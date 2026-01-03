@@ -5,7 +5,9 @@ using Avalonia.Markup.Xaml;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
+using Avalonia.Interactivity;
 
 using II;
 using II.Settings;
@@ -15,22 +17,24 @@ namespace IISE.Controls {
     public partial class PropertyTracing : UserControl {
         private bool isInitiated = false;
 
+        public int Index;
         public Device.Devices Device;
-        public Alarm.Parameters Key;
-        public List<string>? Values;
+        public Device.Tracing Tracing;
 
-        private Label? plblKey;
-        private NumericUpDown? pnumHigh;
-        private NumericUpDown? pnumLow;
-        private CheckBox? pchkEnabled;
-        private ComboBox? pcmbPriority;
+        private Label? plblIndex;
+        private ComboBox? pcmbTracing;
 
         public new event EventHandler<PropertyTracingEventArgs>? PropertyChanged;
 
         public class PropertyTracingEventArgs : EventArgs {
-            public Alarm.Parameters Key;
-            public Alarm? Value;
+            public int Index;
+            public Device.Tracing Tracing;
             public Device.Devices Device;
+            
+            public bool toAdd = false;
+            public bool toRemove = false;
+            public bool toMove = false;
+            public int toMove_Delta = 0;
         }
         
         public PropertyTracing () {
@@ -42,16 +46,14 @@ namespace IISE.Controls {
         }
 
         private Task ReferenceView () {
-            plblKey = this.GetControl<Label> ("lblKey");
-            pnumHigh = this.GetControl<NumericUpDown> ("numHigh");
-            pnumLow = this.GetControl<NumericUpDown> ("numLow");
-            pchkEnabled = this.GetControl<CheckBox> ("chkEnabled");
-            pcmbPriority = this.GetControl<ComboBox> ("cmbPriority");
+            plblIndex = this.GetControl<Label> ("lblIndex");
+            pcmbTracing = this.GetControl<ComboBox> ("cmbTracing");
+
 
             return Task.CompletedTask;
         }
 
-        public async Task Init (Device.Devices device, Alarm.Parameters key) {
+        public async Task Init (Device.Devices device, int index, Device.Tracing tracing) {
             if (PropertyChanged != null) {              // In case of re-initiation, need to wipe all subscriptions
                 foreach (Delegate d in PropertyChanged.GetInvocationList ())
                     PropertyChanged -= (EventHandler<PropertyTracingEventArgs>)d;
@@ -60,98 +62,140 @@ namespace IISE.Controls {
             await ReferenceView ();
 
             Device = device;
-            Key = key;
+            Index = index;
+            Tracing = tracing;
 
-            if (plblKey is not null) {
-                switch (Key) {
-                    default: break;
-                    case Alarm.Parameters.HR: plblKey.Content = "Heart Rate (HR):"; break;
-                    case Alarm.Parameters.RR: plblKey.Content = "Respiratory Rate (RR):"; break;
-                    case Alarm.Parameters.SPO2: plblKey.Content = "Pulse Oximetry (SpO2):"; break;
-                    case Alarm.Parameters.ETCO2: plblKey.Content = "End-Tidal CO2 (ETCO2):"; break;
-                    case Alarm.Parameters.CVP: plblKey.Content = "Central Venous Pressure (CVP):"; break;
-                    case Alarm.Parameters.ICP: plblKey.Content = "Intracranial Pressure (ICP):"; break;
-                    case Alarm.Parameters.IAP: plblKey.Content = "Intraabdominal Pressure (IAP):"; break;
-                    case Alarm.Parameters.NSBP: plblKey.Content = "Non-invasive Blood Pressure (NiBP) Systolic:"; break;
-                    case Alarm.Parameters.NDBP: plblKey.Content = "Non-invasive Blood Pressure (NiBP) Diastolic:"; break;
-                    case Alarm.Parameters.NMAP: plblKey.Content = "Non-invasive Blood Pressure (NiBP) Mean (MAP):"; break;
-                    case Alarm.Parameters.ASBP: plblKey.Content = "Arterial Blood Pressure (ABP) Systolic:"; break;
-                    case Alarm.Parameters.ADBP: plblKey.Content = "Arterial Blood Pressure (ABP) Diastolic:"; break;
-                    case Alarm.Parameters.AMAP: plblKey.Content = "Arterial Blood Pressure (ABP) Mean (MAP):"; break;
-                    case Alarm.Parameters.PSP: plblKey.Content = "Pulmonary Arterial Pressure (PAP) Systolic:"; break;
-                    case Alarm.Parameters.PDP: plblKey.Content = "Pulmonary Arterial Pressure (PAP) Diastolic:"; break;
-                    case Alarm.Parameters.PMP: plblKey.Content = "Pulmonary Arterial Pressure (PAP) Mean (mPAP):"; break;
-                }
-            }
+            if (plblIndex is not null && pcmbTracing is not null) {
+                plblIndex.Content = $"{Index + 1}:";
+                
+                foreach (string s in Enum.GetNames (typeof (Device.Tracing))) {
+                    if (s == "IABP" || s == "FHR" || s == "TOCO")
+                        continue;
+                    
+                    pcmbTracing.Items.Add (new ComboBoxItem () {
+                        Content = s switch {
+                            "ECG_I" => "Electrocardiograph (ECG): Lead I",
+                            "ECG_II" => "Electrocardiograph (ECG): Lead II",
+                            "ECG_III" => "Electrocardiograph (ECG): Lead III",
+                            "ECG_AVR" => "Electrocardiograph (ECG): Lead aVR",
+                            "ECG_AVL" => "Electrocardiograph (ECG): Lead aVL",
+                            "ECG_AVF" => "Electrocardiograph (ECG): Lead aVF",
+                            "ECG_V1" => "Electrocardiograph (ECG): Lead V1",
+                            "ECG_V2" => "Electrocardiograph (ECG): Lead V2",
+                            "ECG_V3" => "Electrocardiograph (ECG): Lead V3",
+                            "ECG_V4" => "Electrocardiograph (ECG): Lead V4",
+                            "ECG_V5" => "Electrocardiograph (ECG): Lead V5",
+                            "ECG_V6" => "Electrocardiograph (ECG): Lead V6",
+                            
+                            "SPO2" => "Pulse Oximetry (SpO2)",
+                            "RR" => "Respiratory Rate (RR)",
+                            "ETCO2" => "End-tidal Carbon Dioxide (ETCO2)",
 
-            if (pnumHigh is not null && pnumLow is not null && pchkEnabled is not null && pcmbPriority is not null) {
-                Values = new ();
-                foreach (string s in Enum.GetNames (typeof (Alarm.Priorities))) {
-                    pcmbPriority.Items.Add (new ComboBoxItem () { Content = s });
-                    Values.Add (s);
+                            "CVP" => "Central Venous Pressure (CVP)",
+                            "ABP" => "Arterial Blood Pressure (ABP)",
+                            "PA" => "Pulmonary Arterial Pressures (PA)",
+                            "ICP" => "Intra-cranial Pressure (ICP)",
+                            "IAP" => "Intra-abdominal Pressure (IAP)",
+                            _ => ""
+                        }
+                    });
                 }
                 
-
+                pcmbTracing.SelectedIndex = new List<Device.Tracing>(Enum.GetValues<Device.Tracing>())
+                    .IndexOf(Tracing);
+                
                 if (!isInitiated) {
-                    pcmbPriority.SelectionChanged += SendPropertyChange;
-                    pcmbPriority.LostFocus += SendPropertyChange;
-
-                    pnumHigh.ValueChanged += SendPropertyChange;
-                    pnumHigh.LostFocus += SendPropertyChange;
-                    pnumLow.ValueChanged += SendPropertyChange;
-                    pnumLow.LostFocus += SendPropertyChange;
-
-                    pchkEnabled.Checked += SendPropertyChange;
-                    pchkEnabled.Unchecked += SendPropertyChange;
-                    pchkEnabled.LostFocus += SendPropertyChange;
+                    pcmbTracing.SelectionChanged += SendPropertyChange;
+                    pcmbTracing.LostFocus += SendPropertyChange;
                 }
 
                 isInitiated = true;
             }
         }
 
-        public async Task Set (Alarm? alarm) {
-            if (alarm is null)
+        public void Set (PropertyTracingEventArgs? ptea) {
+            if (ptea is null)
                 return;
 
-            await ReferenceView ();
+            Task.WaitAll(ReferenceView());
 
-            if (pnumHigh is not null && pnumLow is not null && pchkEnabled is not null && pcmbPriority is not null) {
-                pchkEnabled.Checked -= SendPropertyChange;
-                pchkEnabled.Unchecked -= SendPropertyChange;
-                pnumHigh.ValueChanged -= SendPropertyChange;
-                pnumLow.ValueChanged -= SendPropertyChange;
-                pcmbPriority.SelectionChanged -= SendPropertyChange;
+            if (plblIndex is not null && pcmbTracing is not null) {
+                pcmbTracing.SelectionChanged -= SendPropertyChange;
+                pcmbTracing.LostFocus -= SendPropertyChange;
+                
+                Index = ptea.Index;
+                Tracing = ptea.Tracing;
+                Device = ptea.Device;
 
-                pchkEnabled.IsChecked = alarm.Enabled ?? false;
-                pnumHigh.Value = alarm.High ?? 0;
-                pnumLow.Value = alarm.Low ?? 0;
-                pcmbPriority.SelectedIndex = alarm.Priority.GetHashCode ();
-
-                pchkEnabled.Checked += SendPropertyChange;
-                pchkEnabled.Unchecked += SendPropertyChange;
-                pnumHigh.ValueChanged += SendPropertyChange;
-                pnumLow.ValueChanged += SendPropertyChange;
-                pcmbPriority.SelectionChanged += SendPropertyChange;
+                plblIndex.Content = $"{Index + 1}:";
+                pcmbTracing.SelectedIndex = new List<Device.Tracing>(Enum.GetValues<Device.Tracing>())
+                    .IndexOf(ptea.Tracing);
+                
+                pcmbTracing.SelectionChanged += SendPropertyChange;
+                pcmbTracing.LostFocus += SendPropertyChange;
             }
         }
 
+        
         private void SendPropertyChange (object? sender, EventArgs e) {
-            pnumHigh = this.GetControl<NumericUpDown> ("numHigh");
-            pnumLow = this.GetControl<NumericUpDown> ("numLow");
-            pchkEnabled = this.GetControl<CheckBox> ("chkEnabled");
-            pcmbPriority = this.GetControl<ComboBox> ("cmbPriority");
+            pcmbTracing = this.GetControl<ComboBox> ("cmbTracing");
+            Tracing = (Device.Tracing) pcmbTracing.SelectedIndex;
 
-            PropertyTracingEventArgs ea = new () {
+            PropertyTracingEventArgs ptea = new() {
+                Index = Index,
                 Device = Device,
-                Key = Key
+                Tracing = Tracing,
             };
+            
+            Debug.WriteLine ($"PropertyChanged: Tracing {ptea.Device}:{ptea.Index} '{ptea.Tracing.ToString()}'");
+            PropertyChanged?.Invoke (this, ptea);
+        }
 
-            if (Values != null && Values.Count > 0)
-                ea.Value = new Alarm (Key, pchkEnabled.IsChecked, (int)pnumHigh.Value, (int)pnumLow.Value, (Alarm.Priorities)pcmbPriority.SelectedIndex);
-
-            Debug.WriteLine ($"PropertyChanged: Alarm {ea.Device}:{ea.Key} '{ea.Value?.Parameter} {ea.Value?.Enabled} {ea.Value?.Low} {ea.Value?.High}'");
-            PropertyChanged?.Invoke (this, ea);
+        private void BtnMoveUp_Click (object? sender, RoutedEventArgs e) {
+            Debug.WriteLine ($"PropertyChanged: Tracing {Device}:{Index} '{Tracing.ToString()}' toMove -1");
+            
+            PropertyChanged?.Invoke(this, 
+                new PropertyTracingEventArgs () {
+                    Index = Index,
+                    Device = Device,
+                    Tracing = Tracing,
+                    toMove = true,
+                    toMove_Delta = -1
+                });
+        }
+        
+        private void BtnMoveDown_Click (object? sender, RoutedEventArgs e) {
+            Debug.WriteLine ($"PropertyChanged: Tracing {Device}:{Index} '{Tracing.ToString()}' toMove +1");
+            
+            PropertyChanged?.Invoke(this, new PropertyTracingEventArgs () {
+                Index = Index,
+                Device = Device,
+                Tracing = Tracing,
+                toMove = true,
+                toMove_Delta = 1,
+            });
+        }
+        
+        private void BtnAdd_Click (object? sender, RoutedEventArgs e) {
+            Debug.WriteLine ($"PropertyChanged: Tracing {Device}:{Index} '{Tracing.ToString()}' toMove +1");
+            
+            PropertyChanged?.Invoke(this, new PropertyTracingEventArgs () {
+                Index = Index,
+                Device = Device,
+                Tracing = Tracing,
+                toAdd = true,
+            });
+        }
+        
+        private void BtnRemove_Click (object? sender, RoutedEventArgs e) {
+            Debug.WriteLine ($"PropertyChanged: Tracing {Device}:{Index} '{Tracing.ToString()}' toMove +1");
+            
+            PropertyChanged?.Invoke(this, new PropertyTracingEventArgs () {
+                Index = Index,
+                Device = Device,
+                Tracing = Tracing,
+                toRemove = true,
+            });
         }
     }
 }

@@ -30,41 +30,43 @@
     </Style>
   </UserControl.Styles>
 
+
   <Grid>
     <Grid.ColumnDefinitions>
       <ColumnDefinition />
       <ColumnDefinition />
       <ColumnDefinition />
-      <ColumnDefinition />
-      <ColumnDefinition />
     </Grid.ColumnDefinitions>
-    <Label Name="lblKey"
+    <Label Name="lblIndex"
            Grid.Column="0"
            HorizontalAlignment="Left"
-           Content="Key" />
-
+           Content="Index" />
+    
     <StackPanel Grid.Column="1"
                 Orientation="Horizontal">
-      <Label Content="Enabled:" />
-      <CheckBox Name="chkEnabled" />
+      <ComboBox Name="cmbTracing" />
     </StackPanel>
-
+    
     <StackPanel Grid.Column="2"
                 Orientation="Horizontal">
-      <Label Content="Low:" />
-      <NumericUpDown Name="numLow" />
-    </StackPanel>
-
-    <StackPanel Grid.Column="3"
-                Orientation="Horizontal">
-      <Label Content="High:" />
-      <NumericUpDown Name="numHigh" />
-    </StackPanel>
-
-    <StackPanel Grid.Column="4"
-                Orientation="Horizontal">
-      <Label Content="Priority:" />
-      <ComboBox Name="cmbPriority" />
+      <Button Name="btnMoveUp" 
+              Content="↑"
+              Margin="0,0,5,0"
+              Click="BtnMoveUp_Click" />
+      
+      <Button Name="btnMoveDown" 
+              Content="↓" 
+              Margin="0,0,20,0"
+              Click="BtnMoveDown_Click" />
+      
+      <Button Name="btnAddNumeric" 
+              Content="+" 
+              Margin="0,0,20,0"
+              Click="BtnAdd_Click"/>
+      
+      <Button Name="btnRemoveNumeric" 
+              Content="X"
+              Click="BtnRemove_Click"/>
     </StackPanel>
   </Grid>
 </UserControl>

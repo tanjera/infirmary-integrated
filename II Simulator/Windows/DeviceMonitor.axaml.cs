@@ -328,6 +328,19 @@ namespace IISIM {
 
         public void SetTracing_8 (object s, RoutedEventArgs e) => SetTracing (8);
 
+        
+        public void SetTracings (II.Settings.Device settings) {
+            List<string> tracingTypes = new();
+            
+            foreach (var t in settings.Tracings)
+                tracingTypes.Add (t.ToString());
+            
+            rowsTracings = settings.Tracings.Count;
+            
+            OnLayoutChange (null, tracingTypes);
+        }
+
+        
         public void SetTracing (int amount) {
             rowsTracings = amount;
             OnLayoutChange ();
@@ -568,7 +581,8 @@ namespace IISIM {
                 listTracings.Clear ();
 
             // If Device settings are present, then a Scenario is loaded; use those settings!
-            if (numericTypes is null && Instance?.Scenario?.DeviceMonitor.Numerics is not null) {
+            if (numericTypes is null && Instance?.Scenario?.DeviceMonitor.Numerics is not null 
+                && Instance.Scenario.DeviceMonitor.Numerics.Count > 0) {
                 numericTypes = new();
                 
                 foreach (var n in Instance.Scenario.DeviceMonitor.Numerics)
@@ -576,6 +590,17 @@ namespace IISIM {
                 
                 rowsNumerics = Instance.Scenario.DeviceMonitor.Numerics.Count;
             }
+            
+            if (tracingTypes is null && Instance?.Scenario?.DeviceMonitor.Tracings is not null 
+                                     && Instance.Scenario.DeviceMonitor.Tracings.Count > 0) {
+                tracingTypes = new();
+                
+                foreach (var t in Instance.Scenario.DeviceMonitor.Tracings)
+                    tracingTypes.Add (t.ToString());
+                
+                rowsTracings = Instance.Scenario.DeviceMonitor.Tracings.Count;
+            }
+            
                 
             // Set default numeric types to populate
             if (numericTypes == null || numericTypes.Count == 0)

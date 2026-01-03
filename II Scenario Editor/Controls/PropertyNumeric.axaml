@@ -35,8 +35,6 @@
       <ColumnDefinition />
       <ColumnDefinition />
       <ColumnDefinition />
-      <ColumnDefinition />
-      <ColumnDefinition />
     </Grid.ColumnDefinitions>
     <Label Name="lblIndex"
            Grid.Column="0"
