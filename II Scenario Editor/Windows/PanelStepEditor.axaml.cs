@@ -353,6 +353,13 @@ namespace IISE.Windows {
             // Remove the Step from the Scenario model
             Scenario.Steps.RemoveAll (s => s.UUID == item.UUID);
 
+            // If that was the last Step... create a new "initial" Step
+            if (Scenario.Steps.Count == 0) {
+                await AddStep (new ItemStep () {
+                    Name = $"Initial Step",
+                });
+            }
+            
             await UpdateIProgressions ();
             await DrawIProgressions ();
         }

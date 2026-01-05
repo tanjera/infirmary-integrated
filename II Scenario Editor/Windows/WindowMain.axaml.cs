@@ -90,23 +90,24 @@ namespace IISE {
         }
 
         private async Task<bool> PromptUnsavedWork () {
-            if (Scenario.Steps.Count > 0) {
-                DialogMessage dlg = new () {
-                    Title = "Lose Unsaved Work?",
-                    Message = "Are you sure you want to continue? All unsaved work will be lost!",
-                    Option = DialogMessage.Options.YesNo,
-                    Indicator = DialogMessage.Indicators.InfirmaryIntegratedScenarioEditor
-                };
-                DialogMessage.Responses? response = await dlg.AsyncShow (this);
+            DialogMessage dlg = new () {
+                Title = "Lose Unsaved Work?",
+                Message = "Are you sure you want to continue? All unsaved work will be lost!",
+                Option = DialogMessage.Options.YesNo,
+                Indicator = DialogMessage.Indicators.InfirmaryIntegratedScenarioEditor
+            };
+            DialogMessage.Responses? response = await dlg.AsyncShow (this);
 
-                return (response != null && response == DialogMessage.Responses.Yes);
-            } else
-                return true;
+            return (response != null && response == DialogMessage.Responses.Yes);
         }
 
         private async Task InitScenario () {
             SaveFilePath = null;
-            await SetScenario (new Scenario (false));
+
+            Scenario s = new Scenario (true);
+            s.Steps.First().Name = "Initial Step";
+            
+            await SetScenario (s);
         }
 
         private async Task SetScenario (Scenario scenario) {
@@ -149,21 +150,45 @@ namespace IISE {
                 SaveFilePath = filepath;
                 await SetScenario (res);
             }
+
+            if (res is not null && res.Steps.Count == 0) {
+                DialogMessage dlg = new() {
+                    Title = "No Steps Loaded",
+                    Message = "The loaded Scenario has no Step. This may result in unintended Simulator functionality such as empty tracings and no vital signs showing. Please add a Step!",
+                    Option = DialogMessage.Options.OK,
+                    Indicator = DialogMessage.Indicators.InfirmaryIntegratedScenarioEditor
+                };
+                
+                await dlg.AsyncShow (this);
+            }
         }
 
         private async Task SaveScenario (bool useCurrentFile = false) {
-            string filepath;
+            if (Scenario.Steps.Count == 0) {
+                DialogMessage dlg = new() {
+                    Title = "Failed to Save: No Steps Found",
+                    Message = "The Scenario has no Steps and cannot be saved yet. Saving a file without Steps will result in unintended simulator functionality such as empty tracings and no vital signs showing. Please add a Step in order to save!",
+                    Option = DialogMessage.Options.OK,
+                    Indicator = DialogMessage.Indicators.InfirmaryIntegratedScenarioEditor
+                };
+                
+                await dlg.AsyncShow (this);
+                
+            } else {
 
-            if (useCurrentFile && !String.IsNullOrEmpty (SaveFilePath))
-                filepath = SaveFilePath;
-            else
-                filepath = await SaveDialog ();
+                string filepath;
 
-            if (String.IsNullOrEmpty (filepath))
-                return;
+                if (useCurrentFile && !String.IsNullOrEmpty (SaveFilePath))
+                    filepath = SaveFilePath;
+                else
+                    filepath = await SaveDialog ();
 
-            SaveFilePath = filepath;
-            await SaveFile (filepath);
+                if (String.IsNullOrEmpty (filepath))
+                    return;
+
+                SaveFilePath = filepath;
+                await SaveFile (filepath);
+            }
         }
 
         private async Task<string> LoadDialog () {

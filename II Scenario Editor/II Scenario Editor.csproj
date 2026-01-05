@@ -3,11 +3,11 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net9.0</TargetFramework>
     <Nullable>enable</Nullable>
-    <StartupObject>IISE.Program</StartupObject>
+    <StartupObject>IISE.Program</StartupObject>    
     <TrimMode>copyused</TrimMode>
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <AssemblyName>infirmary-integrated-scenario-editor</AssemblyName>
-    <Version>1.2.3</Version>
+    <Version>1.2.4</Version>
     <Company>Infirmary Integrated</Company>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageProjectUrl>https://www.infirmary-integrated.com/</PackageProjectUrl>
@@ -22,7 +22,7 @@
     <Authors>Ibi Keller</Authors>
     <Copyright>© 2017-2026, Ibi Keller</Copyright>
     <PackageReadmeFile>Readme.md</PackageReadmeFile>
-  </PropertyGroup>
+  </PropertyGroup>  
   <ItemGroup>
     <!--This helps with theme dll-s trimming.
 	If you will publish your application in self-contained mode with p:PublishTrimmed=true and it will use Fluent theme Default theme will be trimmed from the output and vice versa.
@@ -86,7 +86,7 @@
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
-  <Import Project="..\II Library, C#\II Library.projitems" Label="Shared" />
+  <Import Project="..\II Library\II Library.projitems" Label="Shared" />
   <ItemGroup>
     <AvaloniaResource Include="Resources\**" />
     <AvaloniaResource Include="Third_Party\**" />
