@@ -121,7 +121,10 @@ namespace IISE.Windows {
 
             for (int i = 0; i < Scenario?.DeviceMonitor.Numerics.Count; i++) {
                 PropertyNumeric pn = new ();
-                await pn.Init(Device.Devices.Monitor, i, Scenario.DeviceMonitor.Numerics[i]);
+                await pn.Init(Device.Devices.Monitor, 
+                    i, 
+                    Scenario.DeviceMonitor.Numerics[i],
+                    Scenario.DeviceMonitor.Numerics_Zeroed.Contains(Scenario.DeviceMonitor.Numerics [i]));
 
                 pn.PropertyChanged += UpdateScenario;
                 
@@ -167,10 +170,24 @@ namespace IISE.Windows {
                                 AddNumeric(sender, e);
                             else if (e.toRemove)
                                 RemoveNumeric(sender, e);
+
+                            // If needed, toggle if the transducer is zeroed
+                            if (e.Numeric_Zeroed && !Scenario.DeviceMonitor.Numerics_Zeroed.Contains(e.Numeric)) {
+                                Scenario.DeviceMonitor.Numerics_Zeroed.Add(e.Numeric);
+                            } else if (!e.Numeric_Zeroed &&
+                                       Scenario.DeviceMonitor.Numerics_Zeroed.Contains (e.Numeric)) {
+                                Scenario.DeviceMonitor.Numerics_Zeroed.Remove(e.Numeric);
+                            }
                             
                             Scenario.DeviceMonitor.Numerics = new ();
-                            foreach (PropertyNumeric pn in listMonitorNumerics)
-                                Scenario.DeviceMonitor.Numerics.Add(pn.Numeric);
+                            
+                            // Iterate all PropertyNumerics and make sure they are valid and correlate
+                            foreach (PropertyNumeric pn in listMonitorNumerics) {
+                                Scenario.DeviceMonitor.Numerics.Add (pn.Numeric);
+                                
+                                // Ensure duplicate PropertyNumerics have matching chkTransducers
+                                pn.SetTransducer (Scenario.DeviceMonitor.Numerics_Zeroed.Contains (pn.Numeric));
+                            }
                         }
                         break;
                 }
@@ -258,12 +275,16 @@ namespace IISE.Windows {
                     listMonitorNumerics [i].Set (new PropertyNumeric.PropertyNumericEventArgs () {
                         Index = i,
                         Device = Device.Devices.Monitor,
-                        Numeric = Scenario.DeviceMonitor.Numerics [i]
+                        Numeric = Scenario.DeviceMonitor.Numerics [i],
+                        Numeric_Zeroed = Scenario.DeviceMonitor.Numerics_Zeroed.Contains(Scenario.DeviceMonitor.Numerics [i])
                     });
                 } else {                                   // Add new as needed
                     PropertyNumeric pn = new ();
                     
-                    await pn.Init(Device.Devices.Monitor, i, Scenario.DeviceMonitor.Numerics[i]);
+                    await pn.Init(Device.Devices.Monitor, 
+                        i, 
+                        Scenario.DeviceMonitor.Numerics[i],
+                        Scenario.DeviceMonitor.Numerics_Zeroed.Contains(Scenario.DeviceMonitor.Numerics [i]));
 
                     pn.PropertyChanged += UpdateScenario;
                 
@@ -281,7 +302,7 @@ namespace IISE.Windows {
             }
             
             // Update PropertyTracings
-            for (int i = 0; i < Scenario.DeviceMonitor.Tracings.Count; i++) {
+            for (int i = 0; i < Scenario?.DeviceMonitor?.Tracings.Count; i++) {
                 if (i < listMonitorTracings.Count) {        // Set existing PropertyTracings
                     listMonitorTracings [i].Set (new PropertyTracing.PropertyTracingEventArgs () {
                         Index = i,
@@ -322,6 +343,10 @@ namespace IISE.Windows {
             if (e.Index >= 0 && e.Index < Scenario?.DeviceMonitor?.Numerics?.Count) {
                 var n =  Scenario.DeviceMonitor.Numerics [e.Index];
                 Scenario.DeviceMonitor.Numerics.Insert (e.Index, n);
+
+                if (e.Numeric_Zeroed && !Scenario.DeviceMonitor.Numerics_Zeroed.Contains (n)) {
+                    Scenario.DeviceMonitor.Numerics_Zeroed.Add (n);
+                }
             }
 
             // In UpdateViewModel, listMonitorNumerics will be rebuilt based on the newly modified Scenario.DeviceMonitor.lNumerics

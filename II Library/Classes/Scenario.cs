@@ -11,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using II.Settings;
 
 namespace II {
     public class Scenario {
@@ -107,18 +108,18 @@ namespace II {
                         pbuffer = new StringBuilder ();
 
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
-                                && pline != "> End: Step")
+                               && pline != "> End: Step")
                             pbuffer.AppendLine (pline);
 
                         IsLoaded = true;
-                        Step s = new ();
+                        Step s = new();
                         await s.Load (pbuffer.ToString ());
                         Steps.Add (s);
                     } else if (line == "> Begin: DeviceMonitor") {
                         pbuffer = new StringBuilder ();
 
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
-                                && pline != "> End: DeviceMonitor")
+                               && pline != "> End: DeviceMonitor")
                             pbuffer.AppendLine (pline);
 
                         await DeviceMonitor.Load (pbuffer.ToString ());
@@ -126,7 +127,7 @@ namespace II {
                         pbuffer = new StringBuilder ();
 
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
-                                && pline != "> End: DeviceDefib")
+                               && pline != "> End: DeviceDefib")
                             pbuffer.AppendLine (pline);
 
                         await DeviceDefib.Load (pbuffer.ToString ());
@@ -134,7 +135,7 @@ namespace II {
                         pbuffer = new StringBuilder ();
 
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
-                                && pline != "> End: DeviceECG")
+                               && pline != "> End: DeviceECG")
                             pbuffer.AppendLine (pline);
 
                         await DeviceECG.Load (pbuffer.ToString ());
@@ -142,13 +143,13 @@ namespace II {
                         pbuffer = new StringBuilder ();
 
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
-                                && pline != "> End: DeviceIABP")
+                               && pline != "> End: DeviceIABP")
                             pbuffer.AppendLine (pline);
 
                         await DeviceIABP.Load (pbuffer.ToString ());
                     } else if (line.Contains (":")) {
                         string pName = line.Substring (0, line.IndexOf (':')),
-                                pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
+                            pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
 
                         switch (pName) {
                             default: break;
@@ -162,11 +163,12 @@ namespace II {
                 }
             } catch {
                 // If the load fails... just bail on the actual value parsing and continue the load process
+            } finally {
+
+                sRead.Close ();
+                
+                _ = SetStep (BeginStep);
             }
-
-            sRead.Close ();
-
-            _ = SetStep (BeginStep);
         }
 
         public async Task<string> Save (int indent = 1) {
@@ -264,7 +266,7 @@ namespace II {
             // Init step regardless of whether step Index changed; step may have been deactivated by StepChangeRequest()
             await SetTimer ();
             await (Current?.Physiology?.Activate () ?? Task.CompletedTask);
-
+            
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
             await (Current?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change) ?? Task.CompletedTask);
@@ -298,6 +300,20 @@ namespace II {
 
             await SetTimer ();
             await (Current?.Physiology?.Activate () ?? Task.CompletedTask);
+            
+            // Translate Device settings flags into Physiology flags when applicable (e.g. transducers)
+            if (Current?.Physiology is not null) {
+                if (DeviceMonitor.Numerics_Zeroed.Contains (Device.Numeric.ABP))
+                    Current.Physiology.TransducerZeroed_ABP = true;
+                if (DeviceMonitor.Numerics_Zeroed.Contains (Device.Numeric.CVP))
+                    Current.Physiology.TransducerZeroed_CVP = true;
+                if (DeviceMonitor.Numerics_Zeroed.Contains (Device.Numeric.IAP))
+                    Current.Physiology.TransducerZeroed_IAP = true;
+                if (DeviceMonitor.Numerics_Zeroed.Contains (Device.Numeric.ICP))
+                    Current.Physiology.TransducerZeroed_ICP = true;
+                if (DeviceMonitor.Numerics_Zeroed.Contains (Device.Numeric.PA))
+                    Current.Physiology.TransducerZeroed_PA = true;
+            }
 
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());

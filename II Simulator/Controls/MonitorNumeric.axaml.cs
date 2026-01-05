@@ -288,7 +288,7 @@ namespace IISIM.Controls {
                 case ControlTypes.Values.ABP:
                     if (Instance?.Physiology.TransducerZeroed_ABP ?? false) {
                         int asbp = (int)II.Math.RandomPercentRange (Instance?.Physiology?.ASBP, 0.02f);
-                        int adbp = (int)II.Math.RandomPercentRange ((Instance?.Physiology?.IABP_Active ?? false ? Instance?.Physiology.IABP_DBP : Instance?.Physiology.ADBP), 0.02f);
+                        int adbp = (int)II.Math.RandomPercentRange ((Instance?.Physiology?.IABP_Active ?? false ? Instance?.Physiology.IABP_DBP : Instance?.Physiology?.ADBP), 0.02f);
                         int amap = (int)II.Math.RandomPercentRange (Instance?.Physiology?.AMAP, 0.02f);
 
                         lblLine1.Text = String.Format ("{0:0}", asbp);

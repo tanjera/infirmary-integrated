@@ -18,6 +18,7 @@ namespace II.Settings {
 
         public List<Alarm> Alarms = new List<Alarm> ();
         public List<Numeric> Numerics = new List<Numeric> ();
+        public List<Numeric> Numerics_Zeroed = new List<Numeric> ();
         public List<Tracing> Tracings = new List<Tracing> ();
         
         public bool IsEnabled { get; set; }
@@ -105,6 +106,17 @@ namespace II.Settings {
 
                                 break;
 
+                            
+                            case "Numerics_Zeroed":
+                                Numerics_Zeroed = new();
+                                foreach (string s in pValue.Split (',')) {
+                                    if (Enum.TryParse<Numeric> (s, true, out Numeric res)) {
+                                        Numerics_Zeroed.Add (res);
+                                    }
+                                }
+
+                                break;
+                            
                             case "Tracings":
                                 Tracings = new();
                                 foreach (string s in pValue.Split (',')) {
@@ -136,6 +148,13 @@ namespace II.Settings {
                     dent,
                     "Numerics", 
                     string.Join (',', Numerics)));
+            }
+            
+            if (Numerics_Zeroed.Count > 0) {
+                sw.AppendLine (String.Format ("{0}{1}:{2}", 
+                    dent,
+                    "Numerics_Zeroed", 
+                    string.Join (',', Numerics_Zeroed)));
             }
             
             /* Save() the Tracings */
