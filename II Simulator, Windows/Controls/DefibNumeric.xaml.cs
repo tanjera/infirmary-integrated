@@ -156,8 +156,19 @@ namespace IISIM.Controls {
             menuRemoveNumeric.Click += MenuRemoveNumeric_Click;
             contextMenu.Items.Add (menuRemoveNumeric);
             contextMenu.Items.Add (new Separator ());
+            
+            MenuItem menuMoveLeft = new ();
+            menuMoveLeft.Header = Instance?.Language.Localize ("MENU:MoveLeft");
+            menuMoveLeft.Click += MenuMoveLeft_Click;
+            contextMenu.Items.Add (menuMoveLeft);
 
-            MenuItem menuSelectInput = new ();
+            MenuItem menuMoveRight = new ();
+            menuMoveRight.Header = Instance?.Language.Localize ("MENU:MoveRight");
+            menuMoveRight.Click += MenuMoveRight_Click;
+            contextMenu.Items.Add (menuMoveRight);
+            contextMenu.Items.Add (new Separator ());
+            
+            MenuItem menuSelectInput = new();
             menuSelectInput.Header = Instance?.Language.Localize ("MENU:MenuSelectInputSource");
             contextMenu.Items.Add (menuSelectInput);
 
@@ -433,6 +444,12 @@ namespace IISIM.Controls {
 
         private void MenuRemoveNumeric_Click (object? sender, RoutedEventArgs e)
             => Instance?.Device_Defib?.RemoveNumeric (this);
+        
+        private void MenuMoveLeft_Click (object? sender, RoutedEventArgs e)
+            => Instance?.Device_Defib?.MoveNumeric_Left (this);
+        
+        private void MenuMoveRight_Click (object? sender, RoutedEventArgs e) 
+            => Instance?.Device_Defib?.MoveNumeric_Right (this);
 
         private void MenuSelectInputSource (object? sender, RoutedEventArgs e) {
             ControlTypes.Values selectedValue;

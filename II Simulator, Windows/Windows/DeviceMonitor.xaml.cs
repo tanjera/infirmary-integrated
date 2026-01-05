@@ -35,8 +35,8 @@ namespace IISIM.Windows {
 
         public States State;
 
-        private int rowsTracings = 3;
-        private int rowsNumerics = 3;
+        private int rowsTracings = 0;
+        private int rowsNumerics = 0;
 
         private int autoScale_iter = Strip.DefaultAutoScale_Iterations;
 
@@ -86,7 +86,7 @@ namespace IISIM.Windows {
             State = States.Running;
 
             InitInterface ();
-            SetColorScheme (colorScheme);
+            OnLayoutChange();
         }
 
         ~DeviceMonitor () {
@@ -190,12 +190,6 @@ namespace IISIM.Windows {
             menuColor.Header = Instance.Language.Localize ("MENU:MenuColorScheme");
             menuColorLight.Header = Instance.Language.Localize ("MENU:MenuColorSchemeLight");
             menuColorDark.Header = Instance.Language.Localize ("MENU:MenuColorSchemeDark");
-
-            /* Init Numeric & Tracing layout */
-
-            OnLayoutChange (
-                new (["ECG", "NIBP", "SPO2", "ETCO2", "ABP"]),
-                new (["ECG_II", "SPO2", "ETCO2", "ABP"]));
 
             /* Init Hotkeys (Commands & InputBinding) */
 
@@ -330,107 +324,100 @@ namespace IISIM.Windows {
             }));
         }
 
-        private void OnLayoutChange (List<string>? numericTypes = null, List<string>? tracingTypes = null) {
-            // If numericTypes or tracingTypes are not null... then we are loading a file; clear lNumerics and lTracings!
-            if (numericTypes != null)
-                listNumerics.Clear ();
-            if (tracingTypes != null)
-                listTracings.Clear ();
-
-            // Set default numeric types to populate
-            if (numericTypes == null || numericTypes.Count == 0)
-                numericTypes = new (new string [] { "ECG", "NIBP", "SPO2", "RR", "ETCO2", "ABP", "CVP", "T", "PA", "CO", "ICP", "IAP" });
-            else if (numericTypes.Count < rowsNumerics) {
-                List<string> buffer = new (new string [] { "ECG", "NIBP", "SPO2", "RR", "ETCO2", "ABP", "CVP", "T", "PA", "CO", "ICP", "IAP" });
-                buffer.RemoveRange (0, numericTypes.Count);
-                numericTypes.AddRange (buffer);
-            }
-
-            for (int i = listNumerics.Count; i < rowsNumerics && i < numericTypes.Count; i++) {
-                Controls.MonitorNumeric newNum;
-                newNum = new Controls.MonitorNumeric (
-                    Instance, this,
-                    (Controls.MonitorNumeric.ControlTypes.Values)Enum.Parse (typeof (Controls.MonitorNumeric.ControlTypes.Values), numericTypes [i]),
-                    colorScheme);
-                listNumerics.Add (newNum);
-            }
-
-            // Set default tracing types to populate
-            if (tracingTypes == null || tracingTypes.Count == 0)
-                tracingTypes = new (new string [] { "ECG_II", "ECG_III", "SPO2", "RR", "ETCO2", "ABP", "CVP", "PA", "ICP" });
-            else if (tracingTypes.Count < rowsTracings) {
-                List<string> buffer = new (new string [] { "ECG_II", "ECG_III", "SPO2", "RR", "ETCO2", "ABP", "CVP", "PA", "ICP" });
-                buffer.RemoveRange (0, tracingTypes.Count);
-                tracingTypes.AddRange (buffer);
-            }
-
-            for (int i = listTracings.Count; i < rowsTracings && i < tracingTypes.Count; i++) {
-                Strip newStrip = new ((Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]), 6f);
-                Controls.MonitorTracing newTracing = new (Instance, newStrip, colorScheme);
-                listTracings.Add (newTracing);
-            }
-
-            // Reset the UI container and repopulate with the UI elements
-            gridNumerics.Children.Clear ();
-            gridNumerics.RowDefinitions.Clear ();
-            for (int i = 0; i < rowsNumerics && i < listNumerics.Count; i++) {
-                gridNumerics.RowDefinitions.Add (new RowDefinition ());
-                listNumerics [i].SetValue (Grid.RowProperty, i);
-                gridNumerics.Children.Add (listNumerics [i]);
-            }
-
-            gridTracings.Children.Clear ();
-            gridTracings.RowDefinitions.Clear ();
-            for (int i = 0; i < rowsTracings && i < listTracings.Count; i++) {
-                gridTracings.RowDefinitions.Add (new RowDefinition ());
-                listTracings [i].SetValue (Grid.RowProperty, i);
-                gridTracings.Children.Add (listTracings [i]);
-            }
-        }
-
         public async Task Load (string inc) {
             using StringReader sRead = new (inc);
-            List<string> numericTypes = new (),
-                         tracingTypes = new ();
+
+            // For backwards-compatibility!
+            int rNumerics = 0,
+                rTracings = 0;
+            List<string> tNumerics = new (),
+                         tTracings = new ();
 
             try {
                 string? line;
                 while ((line = await sRead.ReadLineAsync ()) != null) {
-                    if (line.Contains (':')) {
+                    if (line.Contains (":")) {
                         string pName = line.Substring (0, line.IndexOf (':')),
                                 pValue = line.Substring (line.IndexOf (':') + 1);
                         switch (pName) {
                             default: break;
-                            case "rowsTracings": rowsTracings = int.Parse (pValue); break;
-                            case "colsNumerics": rowsNumerics = int.Parse (pValue); break;
+                            case "rowsTracings": rTracings = int.Parse (pValue); break;
+                            case "rowsNumerics": rNumerics = int.Parse (pValue); break;
+                            case "numericTypes": tNumerics.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
+                            case "tracingTypes": tTracings.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
+                            
+                            case "Numerics":
+                                if (Instance?.Scenario is not null) {
+                                    Instance.Scenario.DeviceMonitor.Numerics = new();
+                                    foreach (string s in pValue.Split (',')) {
+                                        if (Enum.TryParse<II.Settings.Device.Numeric> (s, true, out II.Settings.Device.Numeric res)) {
+                                            Instance.Scenario.DeviceMonitor.Numerics.Add (res);
+                                        }
+                                    }
+                                    
+                                    SetNumerics (Instance.Scenario.DeviceMonitor);
+                                }
+                                break;
+                            
+                            case "Tracings":
+                                if (Instance?.Scenario is not null) {
+                                    Instance.Scenario.DeviceMonitor.Tracings = new();
 
-                            case "numericTypes": numericTypes.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
-                            case "tracingTypes": tracingTypes.AddRange (pValue.Split (',').Where ((o) => o != "")); break;
+                                    foreach (string s in pValue.Split (',')) {
+                                        if (Enum.TryParse<II.Settings.Device.Tracing> (s, true,
+                                                out II.Settings.Device.Tracing res)) {
+                                            Instance.Scenario.DeviceMonitor.Tracings.Add (res);
+                                        }
+                                    }
+                                    
+                                    SetTracings (Instance.Scenario.DeviceMonitor);
+                                }
+                                break;
                         }
                     }
                 }
-            } catch {
+
+                if (rNumerics > 0 && tNumerics.Count > 0 && Instance?.Scenario is not null) {
+                    for (int i = 0; i < rNumerics && i < tNumerics.Count; i++) {
+                        if (Enum.TryParse<II.Settings.Device.Numeric> (tNumerics[i], true, out II.Settings.Device.Numeric res)) {
+                            Instance.Scenario.DeviceMonitor.Numerics.Add (res);
+                        }
+                    } 
+                }
+                
+                if (rTracings > 0 && tTracings.Count > 0 && Instance?.Scenario is not null) {
+                    for (int i = 0; i < rTracings && i < tTracings.Count; i++) {
+                        if (Enum.TryParse<II.Settings.Device.Tracing> (tTracings[i], true, out II.Settings.Device.Tracing res)) {
+                            Instance.Scenario.DeviceMonitor.Tracings.Add (res);
+                        }
+                    } 
+                }
+                
             } finally {
                 sRead.Close ();
-                OnLayoutChange (numericTypes, tracingTypes);
+                OnLayoutChange ();
             }
         }
 
         public string Save () {
-            StringBuilder sWrite = new ();
+            UpdateSettings();
+            
+            StringBuilder sw = new ();
 
-            sWrite.AppendLine (String.Format ("{0}:{1}", "rowsTracings", rowsTracings));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "colsNumerics", rowsNumerics));
-
-            List<string> numericTypes = new (),
-                         tracingTypes = new ();
-
-            listNumerics.ForEach (o => { numericTypes.Add (o.ControlType?.Value.ToString () ?? ""); });
-            listTracings.ForEach (o => { tracingTypes.Add (o.Strip?.Lead?.Value.ToString () ?? ""); });
-            sWrite.AppendLine (String.Format ("{0}:{1}", "numericTypes", string.Join (",", numericTypes)));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "tracingTypes", string.Join (",", tracingTypes)));
-
-            return sWrite.ToString ();
+            if (Instance?.Scenario?.DeviceMonitor.Numerics.Count > 0) {
+                sw.AppendLine (String.Format ("{0}:{1}", 
+                    "Numerics", 
+                    string.Join (',', Instance.Scenario.DeviceMonitor.Numerics)));
+            }
+            
+            /* Save() the Tracings */
+            if (Instance?.Scenario?.DeviceMonitor.Tracings.Count > 0) {
+                sw.AppendLine (String.Format ("{0}:{1}", 
+                    "Tracings", 
+                    string.Join (',', Instance.Scenario.DeviceMonitor.Tracings)));
+            }
+            
+            return sw.ToString ();
         }
 
         public void SetAlarms_On () => SetAlarms (true);
@@ -607,6 +594,13 @@ namespace IISIM.Windows {
 
         public void SetTracing_8 (object s, RoutedEventArgs e) => SetTracing (8);
 
+        
+        public void SetTracings (II.Settings.Device settings) {
+            rowsTracings = 0;           // Reset for re-instantiation
+            listTracings.Clear ();
+        }
+
+        
         public void SetTracing (int amount) {
             rowsTracings = amount;
             OnLayoutChange ();
@@ -618,10 +612,34 @@ namespace IISIM.Windows {
         }
 
         public void RemoveTracing (Controls.MonitorTracing requestSender) {
+            if (rowsTracings == 1) // Don't remove the last Control!
+                return;
+            
             rowsTracings -= 1;
-            listTracings.Remove (requestSender);
-            OnLayoutChange ();
+
+            App.Current.Dispatcher.InvokeAsync (() => {
+                listTracings.Remove (requestSender);
+                OnLayoutChange ();
+            });
         }
+        
+        public void MoveTracing (Controls.MonitorTracing req, int delta) {
+            int i = listTracings.FindIndex (o => o == req);
+
+            if (i + delta >= 0 && i + delta < listTracings.Count) {    // Ensure the proposed move is sane
+                if (i + delta < rowsTracings) {                        // Ensure the proposed move is valid in the existing visuals
+                    listTracings.RemoveAt (i);
+                    listTracings.Insert (i + delta, req);
+                    OnLayoutChange ();
+                }
+            }
+        }
+
+        public void MoveTracing_Up (Controls.MonitorTracing req)
+            => MoveTracing (req, -1);
+
+        public void MoveTracing_Down (Controls.MonitorTracing req) 
+            => MoveTracing (req, 1);
 
         public void SetNumeric_1 (object s, RoutedEventArgs e) => SetNumeric (1);
 
@@ -639,6 +657,11 @@ namespace IISIM.Windows {
 
         public void SetNumeric_8 (object s, RoutedEventArgs e) => SetNumeric (8);
 
+        public void SetNumerics (II.Settings.Device settings) {
+            rowsNumerics = 0;           // Reset for re-instantiation
+            listNumerics.Clear ();
+        }
+        
         public void SetNumeric (int amount) {
             rowsNumerics = amount;
             OnLayoutChange ();
@@ -650,11 +673,36 @@ namespace IISIM.Windows {
         }
 
         public void RemoveNumeric (Controls.MonitorNumeric requestSender) {
+            if (rowsNumerics == 1) // Don't remove the last Control!
+                return;
+            
             rowsNumerics -= 1;
-            listNumerics.Remove (requestSender);
-            OnLayoutChange ();
+
+            App.Current.Dispatcher.InvokeAsync (() => {
+                listNumerics.Remove (requestSender);
+                OnLayoutChange ();
+            });
         }
 
+        public void MoveNumeric (Controls.MonitorNumeric req, int delta) {
+            int i = listNumerics.FindIndex (o => o == req);
+
+            if (i + delta >= 0 && i + delta < listNumerics.Count) {    // Ensure the proposed move is sane
+                if (i + delta < rowsNumerics) {
+                    // Ensure the proposed move is valid in the existing visuals
+                    listNumerics.RemoveAt (i);
+                    listNumerics.Insert (i + delta, req);
+                    OnLayoutChange ();
+                }
+            }
+        }
+
+        public void MoveNumeric_Up (Controls.MonitorNumeric req)
+            => MoveNumeric (req, -1);
+
+        public void MoveNumeric_Down (Controls.MonitorNumeric req) 
+            => MoveNumeric (req, 1);
+        
         private void IterateAutoScale () {
             /* Iterations and trigger for auto-scaling pressure waveform strips */
             autoScale_iter -= 1;
@@ -669,6 +717,39 @@ namespace IISIM.Windows {
             }
         }
 
+        public void RefreshLayout ()
+            => App.Current.Dispatcher.InvokeAsync (OnLayoutChange);
+        
+        
+        private void UpdateSettings () {
+            // Carry current visually present and set Numerics & Tracings into Device.Settings
+            if (Instance?.Scenario?.DeviceMonitor.Numerics is not null) {
+                for (int i = 0; i < rowsNumerics && i < listNumerics.Count; i++) {
+                    if (Enum.TryParse<II.Settings.Device.Numeric> (listNumerics [i]?.ControlType?.Value.ToString (),
+                            true, out Device.Numeric res)) {
+                        if (Instance.Scenario.DeviceMonitor.Numerics.Count <= i) {
+                            Instance.Scenario.DeviceMonitor.Numerics.Add (res);
+                        } else {
+                            Instance.Scenario.DeviceMonitor.Numerics [i] = res;
+                        }
+                    }
+                }
+            }
+            
+            if (Instance?.Scenario?.DeviceMonitor.Tracings is not null) {
+                for (int i = 0; i < rowsTracings && i < listTracings.Count; i++) {
+                    if (Enum.TryParse<II.Settings.Device.Tracing> (listTracings [i].Lead?.Value.ToString (),
+                            true, out Device.Tracing res)) {
+                        if (Instance.Scenario.DeviceMonitor.Tracings.Count <= i) {
+                            Instance.Scenario.DeviceMonitor.Tracings.Add (res);
+                        } else {
+                            Instance.Scenario.DeviceMonitor.Tracings [i] = res;
+                        }
+                    }
+                }
+            }
+        }
+        
         private void MenuToggleFullscreen_Click (object s, RoutedEventArgs e)
             => ToggleFullscreen ();
 
@@ -794,6 +875,100 @@ namespace IISIM.Windows {
             }
         }
 
+        private void OnLayoutChange () {
+            List<string>? numericTypes = new List<string> ();
+            List<string>? tracingTypes = new List<string> ();
+
+            List<string> defaultNumerics =
+                ["ECG", "NIBP", "SPO2", "RR", "ETCO2", "ABP", "CVP", "T", "PA", "ICP", "IAP"];
+            List<string> defaultTracings = ["ECG_II", "ECG_III", "SPO2", "RR", "ETCO2", "ABP", "CVP", "PA", "ICP"];
+            
+            /* Process all Numerics; Load settings, instantiate Controls, and populate Grid */
+            
+            if (rowsNumerics == 0) {    // On instantiation only, use pre-defined or Load()ed settings!
+                // If Device settings are present, then a Scenario is loaded
+                if (Instance?.Scenario?.DeviceMonitor.Numerics is not null
+                    && Instance.Scenario.DeviceMonitor.Numerics.Count > 0) {
+                    foreach (var n in Instance.Scenario.DeviceMonitor.Numerics)
+                        numericTypes.Add (n.ToString ());
+                    
+                    rowsNumerics = Instance.Scenario.DeviceMonitor.Numerics.Count;
+                } else {
+                    rowsNumerics = 3;
+                    numericTypes.AddRange(defaultNumerics.Slice (0, rowsNumerics));
+                }
+            }
+
+            // Cap available amount of numerics
+            rowsNumerics = II.Math.Clamp (rowsNumerics, 1, defaultNumerics.Count);
+            
+            // Rebuild the Numeric visual controls; auto-rectifies as it iterates i vs. rowNumerics 
+            for (int i = 0; i < rowsNumerics; i++) {
+                if (listNumerics.Count <= i) {      // Create new MonitorNumerics only; we don't want to modify existing ones
+                                                    // Because they may have been modified by the user through Add/Remove/Select Input
+                    Controls.MonitorNumeric n = new (
+                        Instance, this,
+                        (Controls.MonitorNumeric.ControlTypes.Values)Enum.Parse (
+                            typeof(Controls.MonitorNumeric.ControlTypes.Values),
+                            numericTypes.Count > i ? numericTypes [i] : defaultNumerics[i]), colorScheme);
+                    listNumerics.Add (n);
+                }
+            }
+            
+            // Reset the UI container and repopulate with the UI elements
+            gridNumerics.Children.Clear ();         // Avalonia Controls do *not* need Dispose()/Destroy() called
+            gridNumerics.RowDefinitions.Clear ();
+            
+            for (int i = 0; i < rowsNumerics && i < listNumerics.Count; i++) {
+                gridNumerics.RowDefinitions.Add (new RowDefinition ());
+                listNumerics [i].SetValue (Grid.RowProperty, i);
+                gridNumerics.Children.Add (listNumerics [i]);
+            }
+
+            
+            /* Process all Tracings; Load settings, instantiate Controls, and populate Grid */
+            
+            if (rowsTracings == 0) {    // On instantiation only, use pre-defined or Load()ed settings!
+                // If Device settings are present, then a Scenario is loaded
+                if (Instance?.Scenario?.DeviceMonitor.Tracings is not null
+                    && Instance.Scenario.DeviceMonitor.Tracings.Count > 0) {
+                    foreach (var n in Instance.Scenario.DeviceMonitor.Tracings)
+                        tracingTypes.Add (n.ToString ());
+                    
+                    rowsTracings = Instance.Scenario.DeviceMonitor.Tracings.Count;
+                } else {
+                    rowsTracings = 3;
+                    tracingTypes.AddRange(defaultTracings.Slice (0, rowsTracings));
+                }
+            }
+
+            // Cap available amount of tracings
+            rowsTracings = II.Math.Clamp (rowsTracings, 1, defaultTracings.Count);
+            
+            // Rebuild the Tracing visual controls; auto-rectifies as it iterates i vs. rowTracings 
+            for (int i = 0; i < rowsTracings; i++) {
+                if (listTracings.Count <= i) {      // Create new MonitorTracings only; we don't want to modify existing ones
+                                                    // Because they may have been modified by the user through Add/Remove/Select Input
+                    Strip s = new ((Lead.Values)Enum.Parse (typeof (Lead.Values), 
+                        tracingTypes.Count > i ? tracingTypes [i] : defaultTracings[i]), 
+                        6f);
+                    Controls.MonitorTracing t = new (Instance, s, colorScheme);
+                    listTracings.Add (t);
+                }
+            }
+
+            // Reset the UI container and repopulate with the UI elements
+            gridTracings.Children.Clear ();         // Avalonia Controls do *not* need Dispose()/Destroy() called
+            gridTracings.RowDefinitions.Clear ();
+            for (int i = 0; i < rowsTracings && i < listTracings.Count; i++) {
+                gridTracings.RowDefinitions.Add (new RowDefinition ());
+                listTracings [i].SetValue (Grid.RowProperty, i);
+                gridTracings.Children.Add (listTracings [i]);
+            }
+            
+            UpdateSettings();
+        }
+        
         public void OnPhysiologyEvent (object? sender, Physiology.PhysiologyEventArgs e) {
             switch (e.EventType) {
                 default: break;

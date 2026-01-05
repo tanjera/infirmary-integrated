@@ -96,6 +96,17 @@ namespace IISIM.Controls {
 
             menuContext.Items.Add (new Separator ());
 
+            MenuItem menuMoveUp = new ();
+            menuMoveUp.Header = Instance?.Language.Localize ("MENU:MoveUp");
+            menuMoveUp.Click += MenuMoveUp_Click;
+            menuContext.Items.Add (menuMoveUp);
+
+            MenuItem menuMoveDown = new ();
+            menuMoveDown.Header = Instance?.Language.Localize ("MENU:MoveDown");
+            menuMoveDown.Click += MenuMoveDown_Click;
+            menuContext.Items.Add (menuMoveDown);
+            menuContext.Items.Add (new Separator ());
+            
             MenuItem menuIncreaseAmplitude = new ();
             menuIncreaseAmplitude.Header = Instance?.Language.Localize ("MENU:IncreaseAmplitude");
             menuIncreaseAmplitude.Click += MenuIncreaseAmplitude_Click;
@@ -276,6 +287,12 @@ namespace IISIM.Controls {
         private void MenuRemoveTracing_Click (object? sender, RoutedEventArgs e)
             => Instance?.Device_Monitor?.RemoveTracing (this);
 
+        private void MenuMoveUp_Click (object? sender, RoutedEventArgs e)
+            => Instance?.Device_Monitor?.MoveTracing_Up (this);
+        
+        private void MenuMoveDown_Click (object? sender, RoutedEventArgs e) 
+            => Instance?.Device_Monitor?.MoveTracing_Down (this);
+        
         private void MenuIncreaseAmplitude_Click (object? sender, RoutedEventArgs e) {
             Strip?.IncreaseAmplitude ();
             CalculateOffsets ();

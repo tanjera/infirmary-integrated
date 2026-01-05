@@ -181,7 +181,18 @@ namespace IISIM.Controls {
             menuRemoveNumeric.Click += MenuRemoveNumeric_Click;
             contextMenu.Items.Add (menuRemoveNumeric);
             contextMenu.Items.Add (new Separator ());
+            
+            MenuItem menuMoveUp = new ();
+            menuMoveUp.Header = Instance?.Language.Localize ("MENU:MoveUp");
+            menuMoveUp.Click += MenuMoveUp_Click;
+            contextMenu.Items.Add (menuMoveUp);
 
+            MenuItem menuMoveDown = new ();
+            menuMoveDown.Header = Instance?.Language.Localize ("MENU:MoveDown");
+            menuMoveDown.Click += MenuMoveDown_Click;
+            contextMenu.Items.Add (menuMoveDown);
+            contextMenu.Items.Add (new Separator ());
+            
             MenuItem menuSelectInput = new ();
             menuSelectInput.Header = Instance?.Language.Localize ("MENU:MenuSelectInputSource");
             contextMenu.Items.Add (menuSelectInput);
@@ -491,6 +502,12 @@ namespace IISIM.Controls {
         private void MenuRemoveNumeric_Click (object? sender, RoutedEventArgs e)
             => Instance?.Device_Monitor?.RemoveNumeric (this);
 
+        private void MenuMoveUp_Click (object? sender, RoutedEventArgs e)
+            => Instance?.Device_Monitor?.MoveNumeric_Up (this);
+        
+        private void MenuMoveDown_Click (object? sender, RoutedEventArgs e) 
+            => Instance?.Device_Monitor?.MoveNumeric_Down (this);
+        
         private void MenuSelectInputSource (object? sender, RoutedEventArgs e) {
             ControlTypes.Values selectedValue;
             if (!Enum.TryParse<ControlTypes.Values> ((sender as MenuItem)?.Name, out selectedValue))

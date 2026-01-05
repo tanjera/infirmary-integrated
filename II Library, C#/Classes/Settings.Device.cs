@@ -17,18 +17,8 @@ namespace II.Settings {
         private Devices DeviceType;
 
         public List<Alarm> Alarms = new List<Alarm> ();
-        
-        public List<Numeric> Numerics = new() {
-            Device.Numeric.ECG,
-            Device.Numeric.NIBP,
-            Device.Numeric.SPO2
-        };
-        
-        public List<Tracing> Tracings =  new() {
-                Device.Tracing.ECG_II,
-                Device.Tracing.ECG_III,
-                Device.Tracing.SPO2
-            };
+        public List<Numeric> Numerics = new List<Numeric> ();
+        public List<Tracing> Tracings = new List<Tracing> ();
         
         public bool IsEnabled { get; set; }
 
@@ -64,6 +54,18 @@ namespace II.Settings {
             DeviceType = d;
 
             if (DeviceType == Devices.Monitor) {
+                Numerics = new List<Numeric> () {
+                    Numeric.ECG,
+                    Numeric.NIBP,
+                    Numeric.SPO2
+                };
+                
+                Tracings = new List<Tracing> () {
+                    Tracing.ECG_II,
+                    Tracing.ECG_III,
+                    Tracing.SPO2
+                };
+                
                 Alarms = new (Alarm.DefaultListing_Adult);
             }
         }
@@ -85,37 +87,41 @@ namespace II.Settings {
                             pbuffer.AppendLine (pline);
 
                         await LoadAlarms (pbuffer.ToString ());
-                    } else if (line == "> Begin: Numerics") {
-                        pbuffer = new StringBuilder ();
-
-                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
-                               && pline != "> End: Numerics")
-                            pbuffer.AppendLine (pline);
-
-                        await LoadNumerics (pbuffer.ToString ());
-                    } else if (line == "> Begin: Tracings") {
-                        pbuffer = new StringBuilder ();
-
-                        while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
-                               && pline != "> End: Tracings")
-                            pbuffer.AppendLine (pline);
-
-                        await LoadTracings (pbuffer.ToString ());
                     } else if (line.Contains (":")) {
                         string pName = line.Substring (0, line.IndexOf (':')),
-                                pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
+                            pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
 
                         switch (pName) {
                             default: break;
                             case "IsEnabled": IsEnabled = bool.Parse (pValue); break;
+
+                            case "Numerics":
+                                Numerics = new();
+                                foreach (string s in pValue.Split (',')) {
+                                    if (Enum.TryParse<Numeric> (s, true, out Numeric res)) {
+                                        Numerics.Add (res);
+                                    }
+                                }
+
+                                break;
+
+                            case "Tracings":
+                                Tracings = new();
+                                foreach (string s in pValue.Split (',')) {
+                                    if (Enum.TryParse<Tracing> (s, true, out Tracing res)) {
+                                        Tracings.Add (res);
+                                    }
+                                }
+
+                                break;
                         }
                     }
                 }
             } catch {
                 /* If the load fails... just bail on the actual value parsing and continue the load process */
+            } finally {
+                sRead.Close ();    
             }
-
-            sRead.Close ();
         }
 
         public async Task<string> Save (int indent = 1) {
@@ -125,65 +131,29 @@ namespace II.Settings {
             sw.AppendLine (String.Format ("{0}{1}:{2}", dent, "IsEnabled", IsEnabled));
 
             /* Save() the Numerics */
-            if (Numerics is not null) {
-                sw.AppendLine ($"{dent}> Begin: Numerics");
-                sw.Append (await SaveNumerics (indent + 1));
-                sw.AppendLine ($"{dent}> End: Numerics");
+            if (Numerics.Count > 0) {
+                sw.AppendLine (String.Format ("{0}{1}:{2}", 
+                    dent,
+                    "Numerics", 
+                    string.Join (',', Numerics)));
             }
             
             /* Save() the Tracings */
-            if (Tracings is not null) {
-                sw.AppendLine ($"{dent}> Begin: Tracings");
-                sw.Append (await SaveTracings (indent + 1));
-                sw.AppendLine ($"{dent}> End: Tracings");
+            if (Tracings.Count > 0) {
+                sw.AppendLine (String.Format ("{0}{1}:{2}", 
+                    dent,
+                    "Tracings", 
+                    string.Join (',', Tracings)));
             }
             
             /* Save() the Alarms */
-            if (Alarms is not null) {
+            if (Alarms.Count > 0) {
                 sw.AppendLine ($"{dent}> Begin: Alarms");
                 sw.Append (await SaveAlarms (indent + 1));
                 sw.AppendLine ($"{dent}> End: Alarms");
             }
 
             return sw.ToString ();
-        }
-        
-        public async Task LoadNumerics (string inc) {
-            using StringReader sRead = new (inc);
-            string? line;
-
-            Numerics = new ();
-
-            try {
-                while (!String.IsNullOrEmpty (line = await sRead.ReadLineAsync ())) {
-                    foreach (string s in line.Split (',')) {
-                        Numerics.Add (Enum.Parse<Numeric> (s));
-                    }
-                }
-            } catch {
-                /* If the load fails... just bail on the actual value parsing and continue the load process */
-            }
-
-            sRead.Close ();
-        }
-        
-        public async Task LoadTracings (string inc) {
-            using StringReader sRead = new (inc);
-            string? line;
-
-            Tracings = new ();
-
-            try {
-                while (!String.IsNullOrEmpty (line = await sRead.ReadLineAsync ())) {
-                    foreach (string s in line.Split (',')) {
-                        Tracings.Add (Enum.Parse<Tracing> (s));
-                    }
-                }
-            } catch {
-                /* If the load fails... just bail on the actual value parsing and continue the load process */
-            }
-
-            sRead.Close ();
         }
 
         public async Task LoadAlarms (string inc) {
@@ -211,31 +181,9 @@ namespace II.Settings {
             string? line;
 
             foreach (Alarm l in Alarms) {
-                if (l is not null && l.IsSet && !String.IsNullOrEmpty (line = await l.Save (indent)))
+                if (l.IsSet && !String.IsNullOrEmpty (line = await l.Save (indent)))
                     sb.AppendLine (line);
             }
-
-            return sb.ToString ();
-        }
-        
-        public async Task<string> SaveNumerics (int indent = 1) {
-            StringBuilder sb = new ();
-            string? line;
-
-            sb.AppendLine(String.Format ("{0}{1}", 
-                Utility.Indent (indent), 
-                string.Join (',', Numerics)));
-
-            return sb.ToString ();
-        }
-        
-        public async Task<string> SaveTracings (int indent = 1) {
-            StringBuilder sb = new ();
-            string? line;
-
-            sb.AppendLine(String.Format ("{0}{1}", 
-                Utility.Indent (indent), 
-                string.Join (',', Tracings)));
 
             return sb.ToString ();
         }

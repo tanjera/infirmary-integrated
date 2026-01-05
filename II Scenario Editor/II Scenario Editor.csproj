@@ -86,7 +86,7 @@
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
-  <Import Project="..\II Library\II Library.projitems" Label="Shared" />
+  <Import Project="..\II Library, C#\II Library.projitems" Label="Shared" />
   <ItemGroup>
     <AvaloniaResource Include="Resources\**" />
     <AvaloniaResource Include="Third_Party\**" />

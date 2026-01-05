@@ -369,63 +369,6 @@ namespace IISIM.Windows {
             }));
         }
 
-        private void OnLayoutChange (List<string>? numericTypes = null, List<string>? tracingTypes = null) {
-            // If numericTypes or tracingTypes are not null... then we are loading a file; clear lNumerics and lTracings!
-            if (numericTypes != null)
-                listNumerics.Clear ();
-            if (tracingTypes != null)
-                listTracings.Clear ();
-
-            // Set default numeric types to populate
-            if (numericTypes == null || numericTypes.Count == 0)
-                numericTypes = new (new string [] { "DEFIB", "ECG", "NIBP", "SPO2", "RR", "ETCO2", "ABP", "CVP", "T", "PA", "CO", "ICP", "IAP" });
-            else if (numericTypes.Count < colsNumerics) {
-                List<string> buffer = new (new string [] { "DEFIB", "ECG", "NIBP", "SPO2", "RR", "ETCO2", "ABP", "CVP", "T", "PA", "CO", "ICP", "IAP" });
-                buffer.RemoveRange (0, numericTypes.Count);
-                numericTypes.AddRange (buffer);
-            }
-
-            for (int i = listNumerics.Count; i < colsNumerics && i < numericTypes.Count; i++) {
-                Controls.DefibNumeric newNum;
-                newNum = new Controls.DefibNumeric (
-                    Instance, this,
-                    (Controls.DefibNumeric.ControlTypes.Values)Enum.Parse (typeof (Controls.DefibNumeric.ControlTypes.Values), numericTypes [i]),
-                    colorScheme);
-                listNumerics.Add (newNum);
-            }
-
-            // Set default tracing types to populate
-            if (tracingTypes == null || tracingTypes.Count == 0)
-                tracingTypes = new (new string [] { "ECG_II", "ECG_III", "SPO2", "RR", "ETCO2", "ABP", "CVP", "PA", "ICP" });
-            else if (tracingTypes.Count < rowsTracings) {
-                List<string> buffer = new (new string [] { "ECG_II", "ECG_III", "SPO2", "RR", "ETCO2", "ABP", "CVP", "PA", "ICP" });
-                buffer.RemoveRange (0, tracingTypes.Count);
-                tracingTypes.AddRange (buffer);
-            }
-
-            for (int i = listTracings.Count; i < rowsTracings && i < tracingTypes.Count; i++) {
-                Strip newStrip = new ((Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]), 6f);
-                Controls.DefibTracing newTracing = new (Instance, newStrip, colorScheme);
-                listTracings.Add (newTracing);
-            }
-
-            // Reset the UI container and repopulate with the UI elements
-            gridNumerics.Children.Clear ();
-            gridNumerics.ColumnDefinitions.Clear ();
-            for (int i = 0; i < colsNumerics && i < listNumerics.Count; i++) {
-                gridNumerics.ColumnDefinitions.Add (new ColumnDefinition ());
-                listNumerics [i].SetValue (Grid.ColumnProperty, i);
-                gridNumerics.Children.Add (listNumerics [i]);
-            }
-
-            gridTracings.Children.Clear ();
-            gridTracings.RowDefinitions.Clear ();
-            for (int i = 0; i < rowsTracings && i < listTracings.Count; i++) {
-                gridTracings.RowDefinitions.Add (new RowDefinition ());
-                listTracings [i].SetValue (Grid.RowProperty, i);
-                gridTracings.Children.Add (listTracings [i]);
-            }
-        }
 
         public async Task Load (string inc) {
             using StringReader sRead = new (inc);
@@ -746,7 +689,23 @@ namespace IISIM.Windows {
             listTracings.Remove (requestSender);
             OnLayoutChange ();
         }
+        
+        public void MoveTracing (Controls.DefibTracing req, int delta) {
+            int i = listTracings.FindIndex (o => o == req);
 
+            if (i + delta >= 0 && i + delta < listTracings.Count) {
+                listTracings.RemoveAt (i);
+                listTracings.Insert (i + delta, req);
+                OnLayoutChange ();
+            }
+        }
+
+        public void MoveTracing_Up (Controls.DefibTracing req)
+            => MoveTracing (req, -1);
+
+        public void MoveTracing_Down (Controls.DefibTracing req) 
+            => MoveTracing (req, 1);
+        
         public void SetNumeric_1 (object s, RoutedEventArgs e) => SetNumeric (1);
 
         public void SetNumeric_2 (object s, RoutedEventArgs e) => SetNumeric (2);
@@ -778,7 +737,23 @@ namespace IISIM.Windows {
             listNumerics.Remove (requestSender);
             OnLayoutChange ();
         }
+        
+        public void MoveNumeric (Controls.DefibNumeric req, int delta) {
+            int i = listNumerics.FindIndex (o => o == req);
 
+            if (i + delta >= 0 && i + delta < listNumerics.Count) {
+                listNumerics.RemoveAt (i);
+                listNumerics.Insert (i + delta, req);
+                OnLayoutChange ();
+            }
+        }
+
+        public void MoveNumeric_Left (Controls.DefibNumeric req)
+            => MoveNumeric (req, -1);
+
+        public void MoveNumeric_Right (Controls.DefibNumeric req) 
+            => MoveNumeric (req, 1);
+        
         private void UpdatePacemaker () {
             _ = Instance?.Physiology?.Pacemaker (Mode == Modes.PACER, PacerRate, PacerEnergy);
         }
@@ -1035,6 +1010,63 @@ namespace IISIM.Windows {
             }
         }
 
+        private void OnLayoutChange (List<string>? numericTypes = null, List<string>? tracingTypes = null) {
+            // If numericTypes or tracingTypes are not null... then we are loading a file; clear lNumerics and lTracings!
+            if (numericTypes != null)
+                listNumerics.Clear ();
+            if (tracingTypes != null)
+                listTracings.Clear ();
+
+            // Set default numeric types to populate
+            if (numericTypes == null || numericTypes.Count == 0)
+                numericTypes = new (new string [] { "DEFIB", "ECG", "NIBP", "SPO2", "RR", "ETCO2", "ABP", "CVP", "T", "PA", "CO", "ICP", "IAP" });
+            else if (numericTypes.Count < colsNumerics) {
+                List<string> buffer = new (new string [] { "DEFIB", "ECG", "NIBP", "SPO2", "RR", "ETCO2", "ABP", "CVP", "T", "PA", "CO", "ICP", "IAP" });
+                buffer.RemoveRange (0, numericTypes.Count);
+                numericTypes.AddRange (buffer);
+            }
+
+            for (int i = listNumerics.Count; i < colsNumerics && i < numericTypes.Count; i++) {
+                Controls.DefibNumeric newNum;
+                newNum = new Controls.DefibNumeric (
+                    Instance, this,
+                    (Controls.DefibNumeric.ControlTypes.Values)Enum.Parse (typeof (Controls.DefibNumeric.ControlTypes.Values), numericTypes [i]),
+                    colorScheme);
+                listNumerics.Add (newNum);
+            }
+
+            // Set default tracing types to populate
+            if (tracingTypes == null || tracingTypes.Count == 0)
+                tracingTypes = new (new string [] { "ECG_II", "ECG_III", "SPO2", "RR", "ETCO2", "ABP", "CVP", "PA", "ICP" });
+            else if (tracingTypes.Count < rowsTracings) {
+                List<string> buffer = new (new string [] { "ECG_II", "ECG_III", "SPO2", "RR", "ETCO2", "ABP", "CVP", "PA", "ICP" });
+                buffer.RemoveRange (0, tracingTypes.Count);
+                tracingTypes.AddRange (buffer);
+            }
+
+            for (int i = listTracings.Count; i < rowsTracings && i < tracingTypes.Count; i++) {
+                Strip newStrip = new ((Lead.Values)Enum.Parse (typeof (Lead.Values), tracingTypes [i]), 6f);
+                Controls.DefibTracing newTracing = new (Instance, newStrip, colorScheme);
+                listTracings.Add (newTracing);
+            }
+
+            // Reset the UI container and repopulate with the UI elements
+            gridNumerics.Children.Clear ();
+            gridNumerics.ColumnDefinitions.Clear ();
+            for (int i = 0; i < colsNumerics && i < listNumerics.Count; i++) {
+                gridNumerics.ColumnDefinitions.Add (new ColumnDefinition ());
+                listNumerics [i].SetValue (Grid.ColumnProperty, i);
+                gridNumerics.Children.Add (listNumerics [i]);
+            }
+
+            gridTracings.Children.Clear ();
+            gridTracings.RowDefinitions.Clear ();
+            for (int i = 0; i < rowsTracings && i < listTracings.Count; i++) {
+                gridTracings.RowDefinitions.Add (new RowDefinition ());
+                listTracings [i].SetValue (Grid.RowProperty, i);
+                gridTracings.Children.Add (listTracings [i]);
+            }
+        }
         public void OnPhysiologyEvent (object? sender, Physiology.PhysiologyEventArgs e) {
             switch (e.EventType) {
                 default: break;
