@@ -368,7 +368,8 @@ namespace IISIM {
 
             if (Instance?.Device_Monitor is not null && Instance?.Scenario?.DeviceMonitor is not null) {
                 Instance?.Device_Monitor.SetNumerics (Instance.Scenario.DeviceMonitor);
-                Instance?.Device_Monitor.SetTracings(Instance.Scenario.DeviceMonitor);
+                Instance?.Device_Monitor.SetTracings (Instance.Scenario.DeviceMonitor);
+                Instance?.Device_Monitor.RefreshLayout ();
             }
         }
 

@@ -386,8 +386,6 @@ namespace IISIM {
         public void SetTracings (II.Settings.Device settings) {
             rowsTracings = 0;           // Reset for re-instantiation
             listTracings.Clear ();
-            
-            OnLayoutChange ();
         }
 
         
@@ -450,8 +448,6 @@ namespace IISIM {
         public void SetNumerics (II.Settings.Device settings) {
             rowsNumerics = 0;           // Reset for re-instantiation
             listNumerics.Clear ();
-            
-            OnLayoutChange ();
         }
         
         public void SetNumeric (int amount) {
@@ -509,6 +505,9 @@ namespace IISIM {
             }
         }
 
+        public void RefreshLayout ()
+            => Dispatcher.UIThread.InvokeAsync (OnLayoutChange);
+        
         private void UpdateSettings () {
             // Carry current visually present and set Numerics & Tracings into Device.Settings
             if (Instance?.Scenario?.DeviceMonitor.Numerics is not null) {
