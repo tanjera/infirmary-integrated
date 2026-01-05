@@ -189,7 +189,7 @@ namespace II {
                             80,
                             120, 80, 95,
                             98,
-                            38.0d,
+                            37.0d,
                             Cardiac_Rhythms.Values.Sinus_Rhythm,
 
                             // Advanced hemodynamics
