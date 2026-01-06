@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace II.Server {
     public class Mirror {
+        /* Parameters for timekeeping re: simulation */
+        public II.Settings.Simulator Simulation;
+        
         private bool ThreadLock = false;
         public Timer timerUpdate = new ();
 
@@ -31,7 +34,9 @@ namespace II.Server {
             set { _Accession = value.ToUpper (); }
         }
 
-        public Mirror () {
+        public Mirror (Settings.Simulator sim) {
+            Simulation = sim;
+            
             ResetBackgroundWorker ();
         }
 
@@ -73,7 +78,7 @@ namespace II.Server {
                     ThreadLock = false;
 
                     if (pBuffer != null) {
-                        step ??= new ();
+                        step ??= new (Simulation);
 
                         await step.Load (pBuffer.Save ());
                     }

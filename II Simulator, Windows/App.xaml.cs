@@ -26,8 +26,9 @@ namespace IISIM {
         public string []? StartArgs;
 
         public II.Settings.Simulator Settings = new ();
-        public Server Server = new ();
-        public Mirror Mirror = new ();
+        
+        public Server? Server;
+        public Mirror? Mirror;
         public Language Language = new ();
 
         public Scenario? Scenario;
@@ -46,9 +47,12 @@ namespace IISIM {
         public System.Timers.Timer Timer_Main = new ();
 
         private void Init (object sender, StartupEventArgs e) {
-            Timer_Main.Interval = Physiology.Time_UpdateInterval;
+            Timer_Main.Interval = II.Settings.Simulator.Time_UpdateInterval;
             Timer_Main.Start ();
 
+            Server = new (Settings);
+            Mirror = new (Settings);
+            
             II.File.Init ();                                            // Init file structure (for config file, temp files)
             Settings.Load ();                                           // Load config file
             Language = new (Settings.Language);                         // Load localization dictionary based on settings

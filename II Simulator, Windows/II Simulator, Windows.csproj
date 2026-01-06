@@ -12,11 +12,11 @@
     <Authors>Tanjera</Authors>
     <Product>Infirmary Integrated Simulator</Product>
     <Title>Infirmary Integrated</Title>
-    <Version>3.0.0-alpha.25</Version>
+    <Version>3.0.0-alpha.26</Version>
     <Description>Medical device simulator for training healthcare professionals.</Description>
     <Copyright>© 2017-2026, Ibi Keller</Copyright>
     <PackageProjectUrl>https://www.infirmary-integrated.com/</PackageProjectUrl>
-    <PackageIcon>Icon_Infirmary_1024.png</PackageIcon>
+    <PackageIcon>Icon_Infirmary_64.png</PackageIcon>
   </PropertyGroup>
 
   <Import Project="..\II Library, C#\II Library.projitems" Label="Shared" />
@@ -75,10 +75,10 @@
     <None Remove="Third_Party\SVGs\Icon_PlayerArrowNext.svg" />
     <None Remove="Third_Party\SVGs\Icon_PlayerArrowPlay.svg" />
     <None Remove="Third_Party\SVGs\Icon_PlayerPause.svg" />
-    <None Include="..\Assets\Icon_Infirmary_1024.png">
+    <None Include="..\Assets\Icon_Infirmary_64.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
-      <Link>Icon_Infirmary_1024.png</Link>
+      <Link>Icon_Infirmary_64.png</Link>
     </None>
   </ItemGroup>
 

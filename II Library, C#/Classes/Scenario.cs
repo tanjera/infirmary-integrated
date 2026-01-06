@@ -7,13 +7,19 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using II.Settings;
+
 namespace II {
+
     public class Scenario {
+        public Settings.Simulator? Simulation;
+        
         public string? Name, Description, Author;
         public DateTime? Updated;
 
@@ -35,9 +41,11 @@ namespace II {
 
         public event EventHandler<EventArgs>? StepChanged;
 
-        public Scenario (bool toInit = false) {
+        public Scenario (Settings.Simulator sim, bool toInit = false) {
+            Simulation = sim;
+            
             if (toInit) {
-                Step s = new ();
+                Step s = new (sim);
 
                 BeginStep = s.UUID;
                 AtStep = s.UUID;
@@ -92,7 +100,7 @@ namespace II {
             get { return Current?.Physiology; }
             set { if (Current != null) Current.Physiology = value; }
         }
-        
+
         public async Task Load (string inc) {
             using StringReader sRead = new (inc);
             string? line, pline;
@@ -111,7 +119,7 @@ namespace II {
                             pbuffer.AppendLine (pline);
 
                         IsLoaded = true;
-                        Step s = new ();
+                        Step s = new (Simulation);
                         await s.Load (pbuffer.ToString ());
                         Steps.Add (s);
                     } else if (line == "> Begin: DeviceMonitor") {
@@ -162,11 +170,11 @@ namespace II {
                 }
             } catch {
                 // If the load fails... just bail on the actual value parsing and continue the load process
+            } finally {
+                sRead.Close ();
+
+                _ = SetStep (BeginStep);
             }
-
-            sRead.Close ();
-
-            _ = SetStep (BeginStep);
         }
 
         public async Task<string> Save (int indent = 1) {
@@ -210,7 +218,7 @@ namespace II {
             StepChangeRequest?.Invoke (this, new EventArgs ());
 
             string? progFrom = AtStep;
-            
+
             if (String.IsNullOrEmpty (optProg)) {                            // Default Progression
                 AtStep = Current?.DefaultProgression?.DestinationUUID;
             } else {                                                         // Optional Progression
@@ -299,6 +307,20 @@ namespace II {
             await SetTimer ();
             await (Current?.Physiology?.Activate () ?? Task.CompletedTask);
 
+            // Translate Device settings flags into Physiology flags when applicable (e.g. transducers)
+            if (Current?.Physiology is not null) {
+                if (DeviceMonitor.Numerics_Zeroed.Contains (Device.Numeric.ABP))
+                    Current.Physiology.TransducerZeroed_ABP = true;
+                if (DeviceMonitor.Numerics_Zeroed.Contains (Device.Numeric.CVP))
+                    Current.Physiology.TransducerZeroed_CVP = true;
+                if (DeviceMonitor.Numerics_Zeroed.Contains (Device.Numeric.IAP))
+                    Current.Physiology.TransducerZeroed_IAP = true;
+                if (DeviceMonitor.Numerics_Zeroed.Contains (Device.Numeric.ICP))
+                    Current.Physiology.TransducerZeroed_ICP = true;
+                if (DeviceMonitor.Numerics_Zeroed.Contains (Device.Numeric.PA))
+                    Current.Physiology.TransducerZeroed_PA = true;
+            }
+
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
             await (Current?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change) ?? Task.CompletedTask);
@@ -353,10 +375,10 @@ namespace II {
             public int IISEPositionX = 0;
             public int IISEPositionY = 0;
 
-            public Step () {
+            public Step (Settings.Simulator sim) {
                 UUID = Guid.NewGuid ().ToString ();
 
-                Physiology = new Physiology ();
+                Physiology = new Physiology (sim);
             }
 
             public async Task Load (string inc) {

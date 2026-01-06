@@ -197,7 +197,9 @@ namespace IISIM.Controls {
             switch (ControlType?.Value) {
                 default:
                 case ControlTypes.Values.ECG:
-                    int? hr = Instance?.Physiology.MeasureHR_ECG (Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength);
+                    int? hr = Instance?.Physiology.MeasureHR_ECG (
+                        Strip.DefaultLength, 
+                        Strip.DefaultLength * Strip.DefaultBufferLength);
                     lblLine1.Text = String.Format ("{0:0}", hr);
 
                     AlarmActive = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.HR);

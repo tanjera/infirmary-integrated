@@ -275,7 +275,7 @@ namespace IISIM.Windows {
         public void OnTick_Tracing (object? sender, EventArgs e) {
             if (State == States.Running) {  // Only pauses advancement of tracing; simulation still active!
                 for (int i = 0; i < listTracings.Count; i++) {
-                    listTracings [i].Strip?.Scroll (Instance?.Physiology?.Time ?? 0, Instance?.Physiology?.TimerObstetric_Multiplier);
+                    listTracings [i].Strip?.Scroll (Instance?.Settings?.Time ?? 0, Instance?.Physiology?.TimerObstetric_Multiplier);
 
                     App.Current.Dispatcher.InvokeAsync (listTracings [i].DrawTracing);
                 }

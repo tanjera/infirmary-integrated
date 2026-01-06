@@ -15,10 +15,16 @@ using System.Threading.Tasks;
 namespace II.Settings {
 
     public class Simulator {
+        /* Simulation State */
+        public States State = States.Stopped;
+        public ulong Time = 0;
+        public const int Time_UpdateInterval = 10;  // In milliseconds
+
+        /* Program Functionality */
         public string Language;
 
         public bool AcceptedEULA;
-        
+
         public bool AudioEnabled;
         public bool AutoApplyChanges;
 
@@ -33,6 +39,11 @@ namespace II.Settings {
 
         public bool MuteUpgrade;
         public DateTime MuteUpgradeDate;
+
+        public enum States {
+            Running,
+            Stopped
+        }
 
         public enum ToneSources {
             Mute,
@@ -83,12 +94,12 @@ namespace II.Settings {
                         default: break;
 
                         case "Language": Language = pValue; break;
-                        
+
                         case "AcceptedEULA":
                             if (bool.TryParse (pValue, out parseBool))
                                 AcceptedEULA = parseBool;
                             break;
-                        
+
                         case "AudioEnabled":
                             if (bool.TryParse (pValue, out parseBool))
                                 AudioEnabled = parseBool;
@@ -162,6 +173,16 @@ namespace II.Settings {
 
             sw.Close ();
             sw.Dispose ();
+        }
+
+        public void ProcessTime (object? sender, EventArgs e) {
+            /* For cross-platform compatibility with different timers ...
+             * When creating a Patient object, create a native thread-safe Timer object,
+             * short interval, and call this function on its Tick to process all Patient
+             * timers.
+             */
+
+            Time += Time_UpdateInterval; // Overarching Time keeping for Physiology
         }
     }
 }

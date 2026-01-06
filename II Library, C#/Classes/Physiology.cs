@@ -20,11 +20,9 @@ namespace II {
         /* Mirroring variables */
         public DateTime Updated;                    // DateTime this Patient was last updated
 
-        /* Simulation State */
-        public States State = States.Stopped;
-        public ulong Time = 0;
-        public const int Time_UpdateInterval = 10;  // In milliseconds
-
+        /* Parameters for timekeeping re: simulation */
+        private II.Settings.Simulator Simulation;
+        
         /* Parameters for patient simulation, e.g. vital signs */
 
         public Vital_Signs VS_Settings = new (),
@@ -125,11 +123,6 @@ namespace II {
         private int bufferFetalHeartRhythmWander = 1;
         private FetalHeart_Rhythms.States stateFetalHeartRhythm = FetalHeart_Rhythms.States.Interval;
 
-        public enum States {
-            Running,
-            Stopped
-        }
-
         /* Definitions for Vital_Signs class */
 
         public class Vital_Signs {
@@ -191,7 +184,9 @@ namespace II {
             }
         }
 
-        public Physiology () {
+        public Physiology (II.Settings.Simulator simulation) {
+            Simulation = simulation;
+            
             List<Task> t = new List<Task> ();
 
             t.Add (UpdateParameters_Cardiac (
@@ -235,16 +230,16 @@ namespace II {
                             60,
                             50, 10));
 
-            Task.WaitAll (t.ToArray());
+            Task.WaitAll (t.ToArray ());
 
-            Task.WhenAny(InitTimers ());
+            Task.WhenAny (InitTimers ());
             Task.WhenAny (ResetStartTimers ());
         }
 
         ~Physiology () => Dispose ();
 
         public void Dispose () {
-            Task.WaitAny(UnsubscribePhysiologyEvent ());
+            Task.WaitAny (UnsubscribePhysiologyEvent ());
 
             TimerCardiac_Baseline.Dispose ();
             TimerCardiac_Atrial_Electric.Dispose ();
@@ -465,8 +460,8 @@ namespace II {
             lock (lockListPhysiologyEvents) {
                 foreach (PhysiologyEventArgs ea in ListPhysiologyEvents)
                     if (ea.EventType == PhysiologyEventTypes.Cardiac_Ventricular_Electric
-                        && ea.Occurred > Time - ((lengthSeconds + offsetSeconds) * 1000)
-                        && ea.Occurred < Time - (offsetSeconds * 1000))
+                        && ea.Occurred > Simulation.Time - ((lengthSeconds + offsetSeconds) * 1000)
+                        && ea.Occurred < Simulation.Time - (offsetSeconds * 1000))
                         counter++;
             }
 
@@ -481,8 +476,8 @@ namespace II {
             lock (lockListPhysiologyEvents) {
                 foreach (PhysiologyEventArgs ea in ListPhysiologyEvents)
                     if (ea.EventType == PhysiologyEventTypes.Respiratory_Inspiration
-                        && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-(lengthSeconds + offsetSeconds))) >= 0
-                        && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-offsetSeconds)) <= 0)
+                         && ea.Occurred > Simulation.Time - ((lengthSeconds + offsetSeconds) * 1000)
+                        && ea.Occurred < Simulation.Time - (offsetSeconds * 1000))
                         counter++;
             }
 
@@ -519,13 +514,14 @@ namespace II {
             public PhysiologyEventTypes EventType;
             public ulong Occurred;
 
-            public PhysiologyEventArgs (Physiology? p, PhysiologyEventTypes e) {
-                p ??= new ();
-
+            public PhysiologyEventArgs (Physiology? p, PhysiologyEventTypes e, ulong? time) {
                 EventType = e;
                 Physiology = p;
                 Vitals = new Vital_Signs (p.VS_Actual);
-                Occurred = p.Time;
+                
+                // Time is important for measuring respiratory and heart rate; otherwise, it is not used for retaining
+                // things like gross vital sign changes; that functions more like a trigger.
+                Occurred = time ?? 0;
             }
         }
 
@@ -549,7 +545,7 @@ namespace II {
         }
 
         public Task OnPhysiologyEvent (PhysiologyEventTypes e) {
-            PhysiologyEventArgs ea = new (this, e);
+            PhysiologyEventArgs ea = new (this, e, Simulation?.Time);
 
             lock (lockListPhysiologyEvents) {
                 ListPhysiologyEvents.Add (ea);
@@ -565,8 +561,8 @@ namespace II {
 
             lock (lockListPhysiologyEvents) {
                 for (int i = ListPhysiologyEvents.Count - 1; i >= 0; i--)
-                    if (Time > (60 * 1000)  // Prevent the uint overflow from occuring in the first minute...
-                        && ListPhysiologyEvents [i].Occurred < Time - (60 * 1000))
+                    if (Simulation.Time > (60 * 1000)  // Prevent the uint overflow from occuring in the first minute...
+                        && ListPhysiologyEvents [i].Occurred < Simulation.Time - (60 * 1000))
                         ListPhysiologyEvents.RemoveAt (i);
             }
         }
@@ -574,14 +570,6 @@ namespace II {
         /* Process all timers for patient modeling */
 
         public void ProcessTimers (object? sender, EventArgs e) {
-            /* For cross-platform compatibility with different timers ...
-             * When creating a Patient object, create a native thread-safe Timer object,
-             * short interval, and call this function on its Tick to process all Patient
-             * timers.
-             */
-
-            Time += Time_UpdateInterval;        // Overarching Time keeping for Physiology
-
             TimerCardiac_Baseline.Process ();
             TimerCardiac_Atrial_Electric.Process ();
             TimerCardiac_Ventricular_Electric.Process ();
@@ -1167,7 +1155,7 @@ namespace II {
 
         private void OnCardioversion (object? sender, EventArgs e) {
             TimerCardiac_Ventricular_Electric.Tick -= OnCardioversion;
-            Task.WaitAny(OnDefibrillation ());
+            Task.WaitAny (OnDefibrillation ());
         }
 
         private async Task OnPacemaker_Baseline () {

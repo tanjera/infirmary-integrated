@@ -1,5 +1,7 @@
 ﻿using II;
+
 using II;
+
 using II.Localization;
 using II.Server;
 
@@ -332,7 +334,7 @@ namespace IISIM.Windows {
                 return;
             }
 
-            Instance.Scenario = new Scenario (toInit);
+            Instance.Scenario = new Scenario (Instance.Settings, toInit);
             Instance.Scenario.StepChangeRequest += OnStepChangeRequest;     // Allows unlinking of Timers immediately prior to Step change
             Instance.Scenario.StepChanged += OnStepChanged;                 // Updates IIApp.Patient, allows PatientEditor UI to update
             Instance.Timer_Main.Elapsed += Instance.Scenario.ProcessTimer;
@@ -341,16 +343,18 @@ namespace IISIM.Windows {
                 InitScenarioStep ();
         }
 
-        private async Task UnloadScenario () {
+        private Task UnloadScenario () {
             if (Instance is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (UnloadScenario)}");
-                return;
+                return Task.CompletedTask;
             }
 
             if (Instance.Scenario != null) {
                 Instance.Timer_Main.Elapsed -= Instance.Scenario.ProcessTimer;   // Unlink Scenario from App/Main Timer
                 Instance.Scenario.Dispose ();        // Disposes Scenario's events and timer, and all Patients' events and timers
             }
+
+            return Task.CompletedTask;
         }
 
         private void NewScenario () => _ = RefreshScenario (true);
@@ -368,6 +372,11 @@ namespace IISIM.Windows {
                 return;
             }
 
+            /* Tie the Patient's Timer to the Main Timer */
+            
+            Instance.Timer_Main.Elapsed += Instance.Settings.ProcessTime;
+            Instance.Settings.State = II.Settings.Simulator.States.Running;
+            
             Instance.Timer_Main.Elapsed += ApplyTimer_Cardiac.Process;
             Instance.Timer_Main.Elapsed += ApplyTimer_Respiratory.Process;
             Instance.Timer_Main.Elapsed += ApplyTimer_Obstetric.Process;
@@ -400,10 +409,8 @@ namespace IISIM.Windows {
                 return;
             }
 
-            /* Tie the Patient's Timer to the Main Timer */
-            Instance.Physiology.State = Physiology.States.Running;
             Instance.Timer_Main.Elapsed += Instance.Physiology.ProcessTimers;
-
+            
             /* Tie PatientEvents to the PatientEditor UI! And trigger. */
             Instance.Physiology.PhysiologyEvent += OnPhysiologyEvent;
 
@@ -421,7 +428,10 @@ namespace IISIM.Windows {
                     Instance.Physiology.PhysiologyEvent += Instance.Device_IABP.OnPhysiologyEvent;
             }
 
-            OnPhysiologyEvent (this, new Physiology.PhysiologyEventArgs (Instance.Physiology, Physiology.PhysiologyEventTypes.Vitals_Change));
+            OnPhysiologyEvent (this, new Physiology.PhysiologyEventArgs (
+                Instance.Physiology, 
+                Physiology.PhysiologyEventTypes.Vitals_Change,
+                Instance.Settings.Time));
         }
 
         private async Task UnloadPatientEvents () {
@@ -448,7 +458,7 @@ namespace IISIM.Windows {
             await App.Current.Dispatcher.InvokeAsync (() => {
                 if (Instance.Device_Monitor is null || Instance.Device_Monitor.State == DeviceMonitor.States.Closed)
                     Instance.Device_Monitor = new DeviceMonitor (Instance);
-
+                
                 Instance.Device_Monitor.Activate ();
                 Instance.Device_Monitor.Show ();
 
@@ -557,9 +567,9 @@ namespace IISIM.Windows {
                 dlg.ShowDialog ();
 
                 if (Instance is not null)
-                    await Instance.Mirror.PostStep (
-                        new Scenario.Step () {
-                            Physiology = Instance.Physiology ?? new Physiology (),
+                    await Instance?.Mirror?.PostStep (
+                        new Scenario.Step (Instance.Settings) {
+                            Physiology = Instance.Physiology ?? new Physiology (Instance.Settings),
                         },
                         Instance.Server);
             });
@@ -776,7 +786,7 @@ namespace IISIM.Windows {
             dlgLoad.FilterIndex = 1;
             dlgLoad.RestoreDirectory = true;
 
-            if (dlgLoad.ShowDialog () == true) {
+            if (dlgLoad.ShowDialog (this) == true) {
                 if ((s = dlgLoad.OpenFile ()) != null) {
                     await LoadInit (s);
                     s.Close ();
@@ -791,7 +801,10 @@ namespace IISIM.Windows {
                 await LoadFail ();
             }
 
-            OnPhysiologyEvent (this, new Physiology.PhysiologyEventArgs (Instance?.Physiology, Physiology.PhysiologyEventTypes.Vitals_Change));
+            OnPhysiologyEvent (this, new Physiology.PhysiologyEventArgs (
+                Instance?.Physiology, 
+                Physiology.PhysiologyEventTypes.Vitals_Change,
+                Instance?.Settings.Time ?? 0));
         }
 
         private async Task LoadInit (Stream incFile) {
@@ -869,7 +882,7 @@ namespace IISIM.Windows {
 
                     if (line == "> Begin: Physiology") {           // Load files saved by Infirmary Integrated (base)
                         if (Instance.Scenario?.Physiology is null)
-                            Instance.Scenario = new (true);
+                            Instance.Scenario = new (Instance.Settings, true);
 
                         pbuffer = new StringBuilder ();
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
@@ -879,7 +892,7 @@ namespace IISIM.Windows {
                         await RefreshScenario (true);
                         await (Instance?.Physiology?.Load (pbuffer.ToString ()) ?? Task.CompletedTask);
                     } else if (line == "> Begin: Scenario") {   // Load files saved by Infirmary Integrated Scenario Editor
-                        Instance.Scenario ??= new (false);
+                        Instance.Scenario ??= new (Instance.Settings,false);
 
                         pbuffer = new StringBuilder ();
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
@@ -1110,7 +1123,7 @@ namespace IISIM.Windows {
             }
 
             Instance?.Mirror.TimerTick (
-                new Scenario.Step () {
+                new Scenario.Step (Instance.Settings) {
                     Physiology = Instance.Physiology
                 },
                 Instance.Server);
@@ -1121,7 +1134,7 @@ namespace IISIM.Windows {
         }
 
         private void OnStepChangeRequest (object? sender, EventArgs e)
-            => _ = UnloadPatientEvents ();
+            => Task.WaitAll (UnloadPatientEvents ());
 
         private void OnStepChanged (object? sender, EventArgs e) {
             if (Instance is null) {
@@ -1136,7 +1149,7 @@ namespace IISIM.Windows {
         }
 
         private void InitStep () {
-            Scenario.Step step = Instance?.Scenario?.Current ?? new Scenario.Step ();
+            Scenario.Step step = Instance?.Scenario?.Current ?? new Scenario.Step (Instance.Settings);
 
             // Set Previous, Next, Pause, and Play buttons .IsEnabled based on Step properties
             btnPreviousStep.IsEnabled = (!String.IsNullOrEmpty (step.DefaultSource));
@@ -1235,7 +1248,7 @@ namespace IISIM.Windows {
         private async Task ApplyPhysiologyParameters () {
             await AdvanceParameterStatus (ParameterStatuses.ChangesApplied);
 
-            ApplyBuffer ??= new ();
+            ApplyBuffer ??= new (Instance.Settings);
 
             await ApplyPhysiologyParameters_Buffer (ApplyBuffer);
             ApplyPending_Cardiac = true;
@@ -1390,7 +1403,7 @@ namespace IISIM.Windows {
 
             if (Instance?.Mirror is not null && Instance?.Server is not null)
                 _ = Instance.Mirror.PostStep (
-                    new Scenario.Step () {
+                    new Scenario.Step (Instance.Settings) {
                         Physiology = Instance.Physiology,
                     },
                     Instance.Server);
@@ -1414,7 +1427,7 @@ namespace IISIM.Windows {
 
             if (Instance?.Mirror is not null && Instance?.Server is not null)
                 _ = Instance.Mirror.PostStep (
-                    new Scenario.Step () {
+                    new Scenario.Step (Instance.Settings) {
                         Physiology = Instance.Physiology,
                     },
                     Instance.Server);
@@ -1440,7 +1453,7 @@ namespace IISIM.Windows {
 
             if (Instance?.Mirror is not null && Instance?.Server is not null)
                 _ = Instance.Mirror.PostStep (
-                    new Scenario.Step () {
+                    new Scenario.Step (Instance.Settings) {
                         Physiology = Instance.Physiology,
                     },
                     Instance.Server);
@@ -1547,24 +1560,24 @@ namespace IISIM.Windows {
             }
 
             /* Change the Physiology State and link/unlink the main Timer*/
-            if (Instance.Physiology.State == Physiology.States.Stopped) {
-                Instance.Physiology.State = Physiology.States.Running;
+            if (Instance.Settings.State == II.Settings.Simulator.States.Stopped) {
+                Instance.Settings.State = II.Settings.Simulator.States.Running;
                 Instance.Timer_Main.Start ();
-            } else if (Instance.Physiology.State == Physiology.States.Running) {
-                Instance.Physiology.State = Physiology.States.Stopped;
+            } else if (Instance.Settings.State == II.Settings.Simulator.States.Running) {
+                Instance.Settings.State = II.Settings.Simulator.States.Stopped;
                 Instance.Timer_Main.Stop ();
             }
 
             if (Instance.Device_Monitor is not null)
-                Instance.Device_Monitor.PauseDevice (Instance.Physiology.State == Physiology.States.Stopped);
+                Instance.Device_Monitor.PauseDevice (Instance.Settings.State == II.Settings.Simulator.States.Stopped);
             if (Instance.Device_Defib is not null)
-                Instance.Device_Defib.PauseDevice (Instance.Physiology.State == Physiology.States.Stopped);
+                Instance.Device_Defib.PauseDevice (Instance.Settings.State == II.Settings.Simulator.States.Stopped);
             if (Instance.Device_ECG is not null)
-                Instance.Device_ECG.PauseDevice (Instance.Physiology.State == Physiology.States.Stopped);
+                Instance.Device_ECG.PauseDevice (Instance.Settings.State == II.Settings.Simulator.States.Stopped);
             if (Instance.Device_EFM is not null)
-                Instance.Device_EFM.PauseDevice (Instance.Physiology.State == Physiology.States.Stopped);
+                Instance.Device_EFM.PauseDevice (Instance.Settings.State == II.Settings.Simulator.States.Stopped);
             if (Instance.Device_IABP is not null)
-                Instance.Device_IABP.PauseDevice (Instance.Physiology.State == Physiology.States.Stopped);
+                Instance.Device_IABP.PauseDevice (Instance.Settings.State == II.Settings.Simulator.States.Stopped);
         }
 
         public void ToggleFullscreen () {

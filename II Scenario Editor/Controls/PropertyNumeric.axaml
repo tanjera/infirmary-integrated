@@ -35,18 +35,23 @@
       <ColumnDefinition />
       <ColumnDefinition />
       <ColumnDefinition />
+      <ColumnDefinition />
     </Grid.ColumnDefinitions>
     <Label Name="lblIndex"
            Grid.Column="0"
            HorizontalAlignment="Left"
            Content="Index" />
     
-    <StackPanel Grid.Column="1"
-                Orientation="Horizontal">
-      <ComboBox Name="cmbNumeric" />
-    </StackPanel>
+    <ComboBox Grid.Column="1" 
+              Name="cmbNumeric" />
     
-    <StackPanel Grid.Column="2"
+    <CheckBox Grid.Column="2"
+              Name="chkTransducer"
+              IsChecked="False"
+              Content="Transducer Zeroed?"
+              IsVisible="False"/>
+    
+    <StackPanel Grid.Column="3"
                 Orientation="Horizontal">
       <Button Name="btnMoveUp" 
               Content="↑"

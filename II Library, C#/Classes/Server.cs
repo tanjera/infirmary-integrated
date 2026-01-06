@@ -28,7 +28,10 @@ using System.Threading.Tasks;
 using II.Localization;
 
 namespace II.Server {
-    public partial class Server {
+    public partial class Server (Settings.Simulator sim) {
+        /* Parameters for timekeeping re: simulation */
+        public II.Settings.Simulator Simulation = sim;
+
         /* Variables for checking for updates, running bootstrapper */
         public string UpgradeVersion = String.Empty;
         public string UpgradeWebpage = String.Empty;
@@ -81,7 +84,7 @@ namespace II.Server {
                 m.ServerQueried = DateTime.UtcNow;
                 m.PatientUpdated = serverUpdated;
 
-                Scenario.Step s = new ();
+                Scenario.Step s = new (m.Simulation);
                 await s.Load (Encryption.DecryptAES (step.Replace (' ', '+')));
 
                 hc.Dispose ();
