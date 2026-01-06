@@ -21,17 +21,16 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 
 using II;
 using II.Localization;
 using II.Server;
-using MsBox.Avalonia.Dto;
-using MsBox.Avalonia.Models;
 
 namespace IISIM {
 
-    public partial class WindowMain : Window {
+    public partial class Control : Window {
         public App? Instance;
 
         private bool HideDeviceLabels = false;
@@ -47,9 +46,6 @@ namespace IISIM {
                       ApplyTimer_Respiratory = new (),
                       ApplyTimer_Obstetric = new ();
 
-        /* Variables for UI loading */
-        private bool IsUILoadCompleted = false;
-
         /* Variables for Auto-Apply functionality */
         private ParameterStatuses ParameterStatus = ParameterStatuses.Loading;
 
@@ -60,7 +56,7 @@ namespace IISIM {
             ChangesApplied
         }
 
-        public WindowMain (App? app) {
+        public Control (App? app) {
             Instance = app;
 
             InitializeComponent ();
@@ -68,7 +64,7 @@ namespace IISIM {
             Init ();
         }
 
-        public WindowMain () {
+        public Control () {
             InitializeComponent ();
         }
 
@@ -103,7 +99,7 @@ namespace IISIM {
                 }
 
                 /* Update UI from loading functionality */
-                await SetParameterStatus (Instance?.Settings.AutoApplyChanges ?? false);
+                await SetParameterStatus (Instance?.Simulation.AutoApplyChanges ?? false);
 
                 /* Run useful but otherwise vanity functions last */
 
@@ -116,7 +112,7 @@ namespace IISIM {
         }
 
         private void InitInitialRun () {
-            if (!global::II.Settings.Simulator.Exists ()) {
+            if (!II.Settings.Simulation.Exists () || !(Instance?.Simulation.AcceptedEULA ?? false)) {
                 DialogEULA ();
             }
         }
@@ -129,7 +125,7 @@ namespace IISIM {
 
             /* Populate UI strings per language selection */
 
-            this.GetControl<Window> ("wdwMain").Title = Instance.Language.Localize ("PE:WindowTitle");
+            this.GetControl<Window> ("wdwControl").Title = Instance.Language.Localize ("PE:WindowTitle");
             this.GetControl<MenuItem> ("menuNew").Header = Instance.Language.Localize ("PE:MenuNewFile");
             this.GetControl<MenuItem> ("menuFile").Header = Instance.Language.Localize ("PE:MenuFile");
             this.GetControl<MenuItem> ("menuLoad").Header = Instance.Language.Localize ("PE:MenuLoadSimulation");
@@ -145,7 +141,7 @@ namespace IISIM {
             this.GetControl<MenuItem> ("menuSettings").Header = Instance.Language.Localize ("PE:MenuSettings");
             this.GetControl<MenuItem> ("menuToggleAudio").Header = String.Format ("{0}: {1}",
                 Instance.Language.Localize ("PE:MenuToggleAudio"),
-                Instance.Settings.AudioEnabled ? Instance.Language.Localize ("BOOLEAN:On") : Instance.Language.Localize ("BOOLEAN:Off"));
+                Instance.Simulation.AudioEnabled ? Instance.Language.Localize ("BOOLEAN:On") : Instance.Language.Localize ("BOOLEAN:Off"));
             this.GetControl<MenuItem> ("menuSetLanguage").Header = Instance.Language.Localize ("PE:MenuSetLanguage");
 
             this.GetControl<MenuItem> ("menuHelp").Header = Instance.Language.Localize ("PE:MenuHelp");
@@ -213,8 +209,8 @@ namespace IISIM {
             this.GetControl<Label> ("lblParametersApply").Content = Instance.Language.Localize ("BUTTON:ApplyChanges");
             this.GetControl<Label> ("lblParametersReset").Content = Instance.Language.Localize ("BUTTON:ResetParameters");
 
-            this.GetControl<CheckBox> ("chkAutoApplyChanges").IsChecked = Instance.Settings.AutoApplyChanges;
-            this.GetControl<Button> ("btnParametersReset").IsEnabled = !Instance.Settings.AutoApplyChanges;
+            this.GetControl<CheckBox> ("chkAutoApplyChanges").IsChecked = Instance.Simulation.AutoApplyChanges;
+            this.GetControl<Button> ("btnParametersReset").IsEnabled = !Instance.Simulation.AutoApplyChanges;
 
 
             ItemCollection icCardiacRhythms = this.GetControl<ComboBox> ("comboCardiacRhythm").Items;
@@ -265,23 +261,19 @@ namespace IISIM {
             string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
             bool upgradeAvailable = Utility.IsNewerVersion (version, Instance.Server.UpgradeVersion);
 
-            if (upgradeAvailable) {
-                MenuItem miUpdate = this.GetControl<MenuItem> ("menuUpdate");
-                if (miUpdate is not null) {
-                    miUpdate.Header = Instance.Language.Localize ("STATUS:UpdateAvailable");
-                    miUpdate.IsVisible = true;
-                }
-            } else {            // If no update available, no status update; remove any notification muting
-                Instance.Settings.MuteUpgrade = false;
-                Instance.Settings.Save ();
+            if (!upgradeAvailable) {            // If no update available, no status update; remove any notification muting
+                Instance.Simulation.MuteUpgrade = false;
+                Instance.Simulation.Save ();
                 return;
-            }
+            } 
 
-            if (Instance.Settings.MuteUpgrade) {
-                if (DateTime.Compare (Instance.Settings.MuteUpgradeDate, DateTime.Now - new TimeSpan (30, 0, 0, 0)) < 0) {
-                    Instance.Settings.MuteUpgrade = false;              // Reset the notification mute every 30 days
-                    Instance.Settings.Save ();
-                } else {        // Mutes update popup notification
+            if (Instance.Simulation.MuteUpgrade) {
+                if (DateTime.Compare (Instance.Simulation.MuteUpgradeDate,
+                        DateTime.Now - new TimeSpan (30, 0, 0, 0)) < 0) {
+                    Instance.Simulation.MuteUpgrade = false; // Reset the notification mute every 30 days
+                    Instance.Simulation.Save ();
+                } else {
+                    // Mutes update popup notification
                     return;
                 }
             }
@@ -426,7 +418,7 @@ namespace IISIM {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (Instance.Device_Monitor is null || Instance.Device_Monitor.State == DeviceWindow.States.Closed)
+            if (Instance.Device_Monitor is null || !Instance.Device_Monitor.IsActive)
                 Instance.Device_Monitor = new DeviceMonitor (Instance);
 
             Instance.Device_Monitor.Activate ();
@@ -448,7 +440,7 @@ namespace IISIM {
                 if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                     this.Show ();
 
-                if (Instance.Device_ECG is null || Instance.Device_ECG.State == DeviceWindow.States.Closed)
+                if (Instance.Device_ECG is null || !Instance.Device_ECG.IsActive)
                     Instance.Device_ECG = new DeviceECG (Instance);
 
                 Instance.Device_ECG.Activate ();
@@ -469,7 +461,7 @@ namespace IISIM {
                 if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                     this.Show ();
 
-                if (Instance.Device_Defib is null || Instance.Device_Defib.State == DeviceWindow.States.Closed)
+                if (Instance.Device_Defib is null || !Instance.Device_Defib.IsActive)
                     Instance.Device_Defib = new DeviceDefib (Instance);
 
                 Instance.Device_Defib.Activate ();
@@ -490,7 +482,7 @@ namespace IISIM {
                 if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                     this.Show ();
 
-                if (Instance.Device_IABP is null || Instance.Device_IABP.State == DeviceWindow.States.Closed)
+                if (Instance.Device_IABP is null || !Instance.Device_IABP.IsActive)
                     Instance.Device_IABP = new DeviceIABP (Instance);
 
                 Instance.Device_IABP.Activate ();
@@ -510,7 +502,7 @@ namespace IISIM {
                 if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                     this.Show ();
 
-                if (Instance.Device_EFM is null || Instance.Device_EFM.State == DeviceWindow.States.Closed)
+                if (Instance.Device_EFM is null || !Instance.Device_EFM.IsActive)
                     Instance.Device_EFM = new DeviceEFM (Instance);
 
                 Instance.Device_EFM.Activate ();
@@ -531,7 +523,7 @@ namespace IISIM {
                 DialogMessage dlg = new (Instance) {
                     Message = Instance.Language.Localize ("MESSAGE:AudioUnavailableMessage"),
                     Title = Instance.Language.Localize ("MESSAGE:AudioUnavailableTitle"),
-                    Indicator = DialogMessage.Indicators.InfirmaryIntegrated,
+                    Indicator = DialogMessage.Indicators.Error,
                     Option = DialogMessage.Options.OK,
                 };
 
@@ -629,7 +621,7 @@ namespace IISIM {
 
                 await dlg.ShowDialog (this);
 
-                dlg.OnUpgradeRoute -= (s, ea) => decision = ea.Route;
+                dlg.Close();
 
                 switch (decision) {
                     default:
@@ -639,9 +631,9 @@ namespace IISIM {
 
                     case IISIM.DialogUpgrade.UpgradeOptions.Mute:
                         if (Instance is not null) {
-                            Instance.Settings.MuteUpgrade = true;
-                            Instance.Settings.MuteUpgradeDate = DateTime.Now;
-                            Instance.Settings.Save ();
+                            Instance.Simulation.MuteUpgrade = true;
+                            Instance.Simulation.MuteUpgradeDate = DateTime.Now;
+                            Instance.Simulation.Save ();
                         }
                         return;
 
@@ -659,7 +651,7 @@ namespace IISIM {
                 return;
             }
 
-            await SetAudio (!Instance.Settings.AudioEnabled);
+            await SetAudio (!Instance.Simulation.AudioEnabled);
         }
 
         public void SetAudio_On () => _ = SetAudio (true);
@@ -672,12 +664,12 @@ namespace IISIM {
                 return;
             }
 
-            Instance.Settings.AudioEnabled = toSet;
+            Instance.Simulation.AudioEnabled = toSet;
 
             await Dispatcher.UIThread.InvokeAsync (() => {
                 this.GetControl<MenuItem> ("menuToggleAudio").Header = String.Format ("{0}: {1}",
                     Instance.Language.Localize ("PE:MenuToggleAudio"),
-                    Instance.Settings.AudioEnabled ? Instance.Language.Localize ("BOOLEAN:On") : Instance.Language.Localize ("BOOLEAN:Off"));
+                    Instance.Simulation.AudioEnabled ? Instance.Language.Localize ("BOOLEAN:On") : Instance.Language.Localize ("BOOLEAN:Off"));
             });
         }
 
@@ -704,13 +696,18 @@ namespace IISIM {
                 await DialogUpgrade ();
             } else {
                 await Dispatcher.UIThread.InvokeAsync (async () => {
-                    DialogUpgradeCurrent dlg = new (Instance);
+                    DialogMessage dlg = new (Instance) {
+                        Title =  Instance.Language.Localize ("UPGRADE:Upgrade"),
+                        Message = Instance.Language.Localize ("UPGRADE:NoUpdateAvailable"),
+                        Indicator = DialogMessage.Indicators.Information,
+                        Option = DialogMessage.Options.OK,
+                    };
                     dlg.Activate ();
 
                     if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                         this.Show ();
 
-                    await dlg.ShowDialog (this);
+                    await dlg.AsyncShow (this);
                 });
             }
         }
@@ -809,15 +806,31 @@ namespace IISIM {
         }
 
         private async Task LoadFile () {
-            OpenFileDialog dlgLoad = new ();
+            Window wdwControl = this.GetControl<Window> ("wdwControl");
+            
+            if (!wdwControl.StorageProvider.CanOpen) {
+                return;
+            }
+            
+            var fpoo = new FilePickerOpenOptions ()
+            {
+                SuggestedFileName = "simulation",
+                AllowMultiple = false,
+                
+                FileTypeFilter = new[] {
+                    new FilePickerFileType("Infirmary Integrated Simulations")
+                    {
+                        Patterns = new[] { "*.ii" },
+                        MimeTypes = new[] { "text/plain" }
+                    }
+                },
+                SuggestedStartLocation = await wdwControl.StorageProvider.TryGetWellKnownFolderAsync(WellKnownFolder.Documents)
+            };
 
-            dlgLoad.Filters.Add (new FileDialogFilter () { Name = "Infirmary Integrated Simulations", Extensions = { "ii" } });
-            dlgLoad.Filters.Add (new FileDialogFilter () { Name = "All files", Extensions = { "*" } });
-            dlgLoad.AllowMultiple = false;
+            var files = await wdwControl.StorageProvider.OpenFilePickerAsync(fpoo);
 
-            string [] loadFile = await dlgLoad.ShowAsync (this);
-            if (loadFile?.Length > 0) {
-                await LoadInit (loadFile [0]);
+            if (files.First()?.TryGetLocalPath() is not null) {
+                await LoadInit (files?.First()?.TryGetLocalPath() ?? "");
             }
         }
 
@@ -832,6 +845,9 @@ namespace IISIM {
         }
 
         private async Task LoadInit (string incFile) {
+            if (String.IsNullOrEmpty (incFile))
+                return;
+            
             using StreamReader sr = new (incFile);
             string? metadata = await sr.ReadLineAsync ();
             string? data = await sr.ReadToEndAsync ();
@@ -1014,65 +1030,76 @@ namespace IISIM {
         }
 
         private async Task LoadFail () {
-            var msBoxStandardWindow = MsBox.Avalonia.MessageBoxManager
-            .GetMessageBoxCustom (new MessageBoxCustomParams() {
-                ButtonDefinitions = new List<ButtonDefinition> {
-                    new ButtonDefinition {
-                        Name = "OK",
-                        IsCancel=true}
-                },
-                ContentTitle = Instance?.Language.Localize ("PE:LoadFailTitle"),
-                ContentMessage = Instance?.Language.Localize ("PE:LoadFailMessage"),
-                Icon = MsBox.Avalonia.Enums.Icon.Error,
-                WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                WindowIcon = this.Icon,
-                Topmost = true,
-                CanResize = false,
-            });
+            await Dispatcher.UIThread.InvokeAsync (async () => {
+                DialogMessage dlg = new (Instance) {
+                    Message = Instance?.Language.Localize ("PE:LoadFailMessage"),
+                    Title = Instance?.Language.Localize ("PE:LoadFailTitle"),
+                    Indicator = DialogMessage.Indicators.Error,
+                    Option = DialogMessage.Options.OK,
+                };
 
-            await msBoxStandardWindow.ShowWindowAsync ();
+                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                    this.Show ();
+
+                await dlg.AsyncShow (this);
+            });
         }
 
         private async Task SaveFile () {
             // Only save single Patient files in base Infirmary Integrated!
             // Scenario files should be created/edited/saved via II Scenario Editor!
-
             if (Instance?.Scenario?.IsLoaded ?? false) {
-                var msBoxStandardWindow = MsBox.Avalonia.MessageBoxManager
-                    .GetMessageBoxCustom (new MessageBoxCustomParams {
-                    ButtonDefinitions = new List<ButtonDefinition> () {
-                    new ButtonDefinition {
-                        Name = "OK",
-                        IsCancel=true}
-                    },
-                    ContentTitle = ("PE:SaveFailScenarioTitle"),
-                    ContentMessage = Instance.Language.Localize ("PE:SaveFailScenarioMessage"),
-                    Icon = MsBox.Avalonia.Enums.Icon.Error,
-                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                    WindowIcon = this.Icon,
-                    Topmost = true,
-                    CanResize = false,
-                });
+                await Dispatcher.UIThread.InvokeAsync (async () => {
+                    DialogMessage dlg = new (Instance) {
+                        Message = Instance.Language.Localize ("PE:SaveFailScenarioMessage"),
+                        Title = Instance.Language.Localize ("PE:SaveFailScenarioTitle"),
+                        Indicator = DialogMessage.Indicators.Error,
+                        Option = DialogMessage.Options.OK,
+                    };
 
-                await msBoxStandardWindow.ShowWindowAsync ();
+                    if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                        this.Show ();
+
+                    await dlg.AsyncShow (this);
+                });
 
                 return;
             }
 
-            SaveFileDialog dlgSave = new ();
+            Window wdwControl = this.GetControl<Window> ("wdwControl");
+            
+            if (!wdwControl.StorageProvider.CanSave) {
+                return;
+            }
 
-            dlgSave.DefaultExtension = "ii";
-            dlgSave.Filters.Add (new FileDialogFilter () { Name = "Infirmary Integrated Simulations", Extensions = { "ii" } });
-            dlgSave.Filters.Add (new FileDialogFilter () { Name = "All files", Extensions = { "*" } });
+            // 3. Define options for the file picker
+            var fpso = new FilePickerSaveOptions
+            {
+                SuggestedFileName = "simulation",
+                DefaultExtension = ".ii",
+                FileTypeChoices = new[] {
+                    new FilePickerFileType("Infirmary Integrated Simulations")
+                    {
+                        Patterns = new[] { "*.ii" },
+                        MimeTypes = new[] { "text/plain" }
+                    }
+                },
+                SuggestedStartLocation = await wdwControl.StorageProvider.TryGetWellKnownFolderAsync(WellKnownFolder.Documents)
+            };
 
-            string file = await dlgSave.ShowAsync (this);
+            // 4. Call SaveFilePickerAsync
+            IStorageFile? file = await wdwControl.StorageProvider.SaveFilePickerAsync(fpso);
 
-            if (!String.IsNullOrEmpty (file)) {
-                await SaveT1 (file);
+            // 5. Process the result
+            if (file is not null && file.TryGetLocalPath () is not null) {
+                await SaveT1 (file.TryGetLocalPath () ?? ""); 
             }
         }
 
         private async Task SaveT1 (string filename) {
+            if (String.IsNullOrEmpty (filename))
+                return;
+            
             if (System.IO.File.Exists (filename))
                 System.IO.File.Delete (filename);
 
@@ -1134,7 +1161,7 @@ namespace IISIM {
         }
 
         public Task Exit () {
-            Instance?.Settings.Save ();
+            Instance?.Simulation.Save ();
             Instance?.Exit ();
 
             return Task.CompletedTask;
@@ -1588,7 +1615,7 @@ namespace IISIM {
                     this.GetControl<ComboBox> ("comboFHRRhythm").SelectedIndex = (int)p.ObstetricFetalHeartRhythm.Value;
                 }
 
-                _ = SetParameterStatus (Instance?.Settings.AutoApplyChanges ?? false);     // Re-establish parameter status
+                _ = SetParameterStatus (Instance?.Simulation.AutoApplyChanges ?? false);     // Re-establish parameter status
             });
         }
 
@@ -1674,35 +1701,25 @@ namespace IISIM {
         private void ButtonApplyParameters_Click (object sender, RoutedEventArgs e)
             => _ = ApplyPhysiologyParameters ();
 
-        private void OnActivated (object sender, EventArgs e) {
-            if (!IsUILoadCompleted) {
-                this.Position = new PixelPoint (Instance?.Settings.WindowPosition.X ?? 0, Instance?.Settings.WindowPosition.Y ?? 0);
-                this.IsUILoadCompleted = true;
-            }
+        private void OnLoaded (object? sender, RoutedEventArgs e) {
+            
         }
 
+        private void OnClosing (object? sender, WindowClosingEventArgs e) {
+            
+        }
         private void OnClosed (object sender, EventArgs e)
             => _ = Exit ();
-
-        private void OnLayoutUpdated (object sender, EventArgs e) {
-            if (!IsUILoadCompleted) {
-                this.Width = Instance?.Settings.WindowSize.X ?? 0;
-                this.Height = Instance?.Settings.WindowSize.Y ?? 0;
-            } else if (Instance is not null) {
-                Instance.Settings.WindowSize.X = (int)this.Width;
-                Instance.Settings.WindowSize.Y = (int)this.Height;
-            }
-        }
 
         private void OnAutoApplyChanges_Changed (object sender, RoutedEventArgs e) {
             if (ParameterStatus == ParameterStatuses.Loading || Instance is null)
                 return;
 
-            Instance.Settings.AutoApplyChanges = this.GetControl<CheckBox> ("chkAutoApplyChanges").IsChecked ?? true;
-            this.GetControl<Button> ("btnParametersReset").IsEnabled = !Instance.Settings.AutoApplyChanges;
-            Instance.Settings.Save ();
+            Instance.Simulation.AutoApplyChanges = this.GetControl<CheckBox> ("chkAutoApplyChanges").IsChecked ?? true;
+            this.GetControl<Button> ("btnParametersReset").IsEnabled = !Instance.Simulation.AutoApplyChanges;
+            Instance.Simulation.Save ();
 
-            _ = SetParameterStatus (Instance.Settings.AutoApplyChanges);
+            _ = SetParameterStatus (Instance.Simulation.AutoApplyChanges);
         }
 
         private void OnUIPhysiologyParameter_KeyDown (object sender, KeyEventArgs e) {
@@ -1842,5 +1859,6 @@ namespace IISIM {
                     break;
             }
         }
+
     }
 }

@@ -6,10 +6,11 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	Name="dlgAbout"
 	Title="DialogAbout"
-	Width="550"
-	Height="300"
+  WindowStartupLocation="CenterScreen"
+  SizeToContent="WidthAndHeight"
+  CanResize="False"
+  Topmost="True"
 	Icon="avares://infirmary-integrated/Resources/Icon_II.ico"
-	WindowStartupLocation="CenterScreen"
 	mc:Ignorable="d">
   <Window.Styles>
     <Style Selector="Label.url">
@@ -66,6 +67,7 @@
         Name="tblDescription"
         Margin="5"
         Padding="5,2"
+        MaxWidth="400"
         HorizontalAlignment="Left"
         VerticalAlignment="Top"
         TextWrapping="Wrap" />

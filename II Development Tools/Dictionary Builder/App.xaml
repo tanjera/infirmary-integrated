@@ -1,8 +1,0 @@
-﻿<Application x:Class="Dictionary_Builder.App"
-			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:local="clr-namespace:Dictionary_Builder"
-			 StartupUri="Dictionary_Builder.xaml">
-	<Application.Resources>
-	</Application.Resources>
-</Application>

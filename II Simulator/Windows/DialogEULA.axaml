@@ -6,10 +6,11 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	Name="dlgEULA"
 	Title="Agree to Terms"
-	Width="500"
-	Height="110"
-	Icon="avares://infirmary-integrated/Resources/Icon_II.ico"
 	WindowStartupLocation="CenterScreen"
+	SizeToContent="WidthAndHeight"
+	CanResize="False"
+	Topmost="True"
+	Icon="avares://infirmary-integrated/Resources/Icon_II.ico"
 	mc:Ignorable="d">
 
   <Window.Styles>
@@ -30,11 +31,12 @@
 		VerticalAlignment="Stretch">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto" />
-      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
       <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
 
     <Grid.ColumnDefinitions>
+	    <ColumnDefinition Width="*" />
       <ColumnDefinition Width="*" />
     </Grid.ColumnDefinitions>
 
@@ -42,6 +44,7 @@
 			Name="lblAgreeTerms"
 			Grid.Row="0"
 			Grid.Column="0"
+			Grid.ColumnSpan="2"
 			Padding="5,5,5,2"
 			HorizontalAlignment="Center"
 			VerticalAlignment="Center">
@@ -49,22 +52,41 @@
       <TextBlock Name="txtAgreeTerms" TextWrapping="Wrap" />
     </Label>
 
-    <Label
-			Name="lblTermsUri"
-			Grid.Row="1"
-			Grid.Column="0"
-			Padding="5,2"
-			HorizontalAlignment="Center"
-			VerticalAlignment="Center"
-			Classes="url"
-			Tapped="Hyperlink_Terms">
-      https://github.com/tanjera/infirmary-integrated
-    </Label>
 
+	  <ScrollViewer
+		  Grid.Row="1"
+		  Grid.Column="0"
+		  Grid.ColumnSpan="2" 
+		  MaxHeight="600"
+		  HorizontalAlignment="Center" 
+		  VerticalAlignment="Center" 
+		  HorizontalScrollBarVisibility="Auto" 
+		  VerticalScrollBarVisibility="Auto">
+		  <TextBox Name="tbLicense"
+		           Margin="5,10,5,5"
+		           Padding="5,2"
+		           HorizontalAlignment="Stretch"
+		           VerticalAlignment="Stretch"
+		           />
+	  </ScrollViewer>
+	  
+	  <Button
+		  Name="btnCancel"
+		  Grid.Row="2"
+		  Grid.Column="0"
+		  Margin="5,10"
+		  Padding="5"
+		  HorizontalAlignment="Stretch"
+		  HorizontalContentAlignment="Center"
+		  Background="White"
+		  BorderBrush="Black"
+		  BorderThickness="1"
+		  Click="OnClick_Cancel" />
+	  
     <Button
 			Name="btnContinue"
 			Grid.Row="2"
-			Grid.Column="0"
+			Grid.Column="1"
 			Margin="5,10"
 			Padding="5"
 			HorizontalAlignment="Stretch"

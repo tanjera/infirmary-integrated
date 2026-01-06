@@ -23,7 +23,7 @@ namespace IISIM {
     public class App : Application {
         public string []? Start_Args;
 
-        public II.Settings.Simulator Settings = new ();
+        public II.Settings.Simulation Simulation = new ();
         public Server Server = new ();
         public Mirror Mirror = new ();
         public Language Language = new ();
@@ -31,8 +31,8 @@ namespace IISIM {
         public Scenario? Scenario;
         public Physiology? Physiology { get => Scenario?.Physiology; }
 
-        public WindowSplash? Window_Splash;
-        public WindowMain? Window_Main;
+        public Splash? Window_Splash;
+        public Control? Window_Main;
 
         public DeviceMonitor? Device_Monitor;
         public DeviceECG? Device_ECG;
@@ -55,8 +55,8 @@ namespace IISIM {
             Timer_Main.Start ();
 
             II.File.Init ();                                            // Init file structure (for config file, temp files)
-            Settings.Load ();                                           // Load config file
-            Language = new (Settings.Language);                         // Load localization dictionary based on settings
+            Simulation.Load ();                                           // Load config file
+            Language = new (Simulation.Language);                         // Load localization dictionary based on settings
 
             try {                                                       // try/catch in case LibVLC is not installed, fails, etc.
                 AudioLib = new ();                                      // Init audio engine library
@@ -81,7 +81,7 @@ namespace IISIM {
 #if RELEASE     // Splash screen for 2 seconds for Release version
                 await Task.Delay (2000);
 #else           // Otherwise (Debug version) immediately close splash screen
-                await Task.Delay (0);
+                await Task.Delay (200);
 #endif
 
                 Window_Splash.Hide ();

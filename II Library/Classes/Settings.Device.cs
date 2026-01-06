@@ -14,6 +14,13 @@ using System.Threading.Tasks;
 
 namespace II.Settings {
     public class Device {
+        /* Scenario-specific Settings:
+         * Specific to a running Scenario- may be unloaded and loaded from different Scenario (.ii) files!
+         *
+         * Do *NOT* place Simulation-wide (e.g. device) settings here!
+         * (e.g. the user has turned off the audio for the device)
+         */
+        
         private Devices DeviceType;
 
         public List<Alarm> Alarms = new List<Alarm> ();

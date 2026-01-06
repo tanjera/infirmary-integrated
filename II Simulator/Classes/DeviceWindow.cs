@@ -25,8 +25,6 @@ namespace IISIM {
     public class DeviceWindow : Window {
         public App? Instance { get; set; }
 
-        public States State;
-
         public Timer
             TimerAlarm = new (),
             TimerTracing = new (),
@@ -36,13 +34,7 @@ namespace IISIM {
 
         /* Variables controlling for audio alarms */
         public MediaPlayer? AudioPlayer;
-
-        public enum States {
-            Running,
-            Paused,
-            Closed
-        }
-
+        
         public DeviceWindow () {
         }
 
@@ -54,8 +46,6 @@ namespace IISIM {
 
             InitAudio ();
             InitTimers ();
-
-            State = States.Running;
         }
 
         ~DeviceWindow () {
@@ -137,16 +127,7 @@ namespace IISIM {
             TimerNumerics_Respiratory.Start ();
         }
 
-        public virtual void TogglePause () {
-            if (State == States.Running)
-                State = States.Paused;
-            else if (State == States.Paused)
-                State = States.Running;
-        }
-
         public virtual void OnClosed (object? sender, EventArgs e) {
-            State = States.Closed;
-
             Dispose ();
         }
 

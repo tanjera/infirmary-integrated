@@ -24,9 +24,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Localization.Dictionary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Math.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Server.Mirror.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\Settings.Chart.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Settings.Device.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Classes\Settings.Simulator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Settings.Simulation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Classes\Settings.Window.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Tracing.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Scales.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Classes\Scenario.cs" />

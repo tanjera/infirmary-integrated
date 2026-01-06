@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 using Avalonia;
 using Avalonia.Controls;
@@ -12,11 +13,10 @@ using Avalonia.Interactivity;
 using Avalonia.Layout;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;
+using Avalonia.Threading;
 
 using II;
 using II.Localization;
-using MsBox.Avalonia.Dto;
-using MsBox.Avalonia.Models;
 
 namespace IISIM {
 
@@ -60,10 +60,12 @@ namespace IISIM {
                 cmbLanguages.Items.Add(new MenuItem() {
                     Header =  each,
                 });
-            this.GetControl<ComboBox> ("cmbLanguages").SelectedIndex = (int)II.Localization.Language.Values.ENG;
+                
+            this.GetControl<ComboBox> ("cmbLanguages").SelectedIndex = 
+                Enum.Parse (typeof (Language.Values), Instance?.Simulation.Language ?? "ENG").GetHashCode();
         }
 
-        private void OnClick_Continue (object sender, RoutedEventArgs e) {
+        private async Task SetLanguage () {
             if (Instance is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (OnClick_Continue)}");
                 return;
@@ -71,32 +73,30 @@ namespace IISIM {
 
             Instance.Language.Value = Enum.GetValues<Language.Values> () [this.GetControl<ComboBox> ("cmbLanguages").SelectedIndex];
 
-            Instance.Settings.Language = Instance.Language.Value.ToString ();
-            Instance.Settings.Save ();
+            Instance.Simulation.Language = Instance.Language.Value.ToString ();
+            Instance.Simulation.Save ();
 
             // Show messagebox prompting user to restart the program for changes to take effect
 
-            var msBoxStandardWindow = MsBox.Avalonia.MessageBoxManager
-                .GetMessageBoxCustom (new MessageBoxCustomParams {
-                    ButtonDefinitions = new List<ButtonDefinition> () {
-                            new ButtonDefinition {
-                                Name = "OK",
-                                IsCancel=true}
-                    },
-                    ContentTitle = Instance.Language.Localize ("MESSAGE:Restart"),
-                    ContentMessage = Instance.Language.Localize ("MESSAGE:RestartForChanges"),
-                    Icon = MsBox.Avalonia.Enums.Icon.Info,
-                    WindowStartupLocation = WindowStartupLocation.CenterScreen,
-                    WindowIcon = this.Icon,
-                    ShowInCenter = true,
-                    SizeToContent = SizeToContent.WidthAndHeight,
-                    Topmost = true,
-                    CanResize = false,
-                });
+            await Dispatcher.UIThread.InvokeAsync (async () => {
+                DialogMessage dlg = new (Instance) {
+                    Message = Instance.Language.Localize ("MESSAGE:RestartForChanges"),
+                    Title = Instance.Language.Localize ("MESSAGE:Restart"),
+                    Indicator = DialogMessage.Indicators.InfirmaryIntegrated,
+                    Option = DialogMessage.Options.OK,
+                };
 
-            msBoxStandardWindow.ShowWindowAsync ();
+                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                    this.Show ();
 
+                await dlg.AsyncShow (this);
+            });
+            
             this.Close ();
         }
+
+        private void OnClick_Continue (object sender, RoutedEventArgs e)
+            => _ = SetLanguage ();
+
     }
 }

@@ -6,9 +6,11 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	Name="dlgMessage"
 	Title=""
+  WindowStartupLocation="CenterScreen"
+  SizeToContent="WidthAndHeight"
+  CanResize="False"
+  Topmost="True"
 	Icon="avares://infirmary-integrated/Resources/Icon_II.ico"
-	SizeToContent="WidthAndHeight"
-	WindowStartupLocation="CenterScreen"
 	mc:Ignorable="d">
 
   <Window.Styles>

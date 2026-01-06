@@ -126,9 +126,9 @@ namespace IISIM {
             }
             
             // Populate UI strings per language selection
-            this.GetControl<Window> ("wdwDeviceMonitor").Title = Instance.Language.Localize ("CM:WindowTitle");
+            this.GetControl<Avalonia.Controls.Window> ("wdwDeviceMonitor").Title = Instance.Language.Localize ("CM:WindowTitle");
             this.GetControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
-            this.GetControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+            this.GetControl<MenuItem> ("menuPauseSimulation").Header = Instance.Language.Localize ("MENU:PauseSimulation");
             this.GetControl<MenuItem> ("menuAddNumeric").Header = Instance.Language.Localize ("MENU:MenuAddNumeric");
             this.GetControl<MenuItem> ("menuAddTracing").Header = Instance.Language.Localize ("MENU:MenuAddTracing");
             this.GetControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
@@ -158,7 +158,7 @@ namespace IISIM {
                 for (int i = 0; i < listNumerics.Count; i++)
                     listNumerics [i].SetColorScheme (colorScheme);
 
-                Window window = this.GetControl<Window> ("wdwDeviceMonitor");
+                Avalonia.Controls.Window window = this.GetControl<Avalonia.Controls.Window> ("wdwDeviceMonitor");
                 window.Background = Color.GetBackground (Color.Devices.DeviceMonitor, colorScheme);
             });
         }
@@ -312,7 +312,7 @@ namespace IISIM {
                 return;
             }
 
-            if (ToneSource == trigger && (Instance?.Settings.AudioEnabled ?? false)) {
+            if (ToneSource == trigger && (Instance?.Simulation.AudioEnabled ?? false)) {
                 switch (ToneSource) {
                     default: break;
 
@@ -357,13 +357,6 @@ namespace IISIM {
                 WindowState = WindowState.Normal;
             else
                 WindowState = WindowState.FullScreen;
-        }
-
-        public override void TogglePause () {
-            base.TogglePause ();
-
-            if (State == States.Running)
-                listTracings.ForEach (c => c.Strip?.Unpause ());
         }
 
         public void SetTracing_1 (object s, RoutedEventArgs e) => SetTracing (1);
@@ -549,8 +542,9 @@ namespace IISIM {
         private void MenuAddTracing_Click (object s, RoutedEventArgs e)
             => AddTracing ();
 
-        private void MenuTogglePause_Click (object s, RoutedEventArgs e)
-            => TogglePause ();
+        private void MenuPauseSimulation_Click (object s, RoutedEventArgs e){
+            return;
+        }
 
         private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Light);
@@ -592,7 +586,7 @@ namespace IISIM {
                 return;
             }
 
-            if (Instance?.Settings.AudioEnabled == false) {
+            if (Instance?.Simulation.AudioEnabled == false) {
                 AudioPlayer.Stop ();
                 AlarmActive = null;
                 return;
@@ -631,7 +625,7 @@ namespace IISIM {
         }
 
         public override void OnTick_Tracing (object? sender, EventArgs e) {
-            if (State != States.Running)
+            if (Instance?.Simulation.State != II.Settings.Simulation.States.Running)
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {
@@ -641,7 +635,7 @@ namespace IISIM {
         }
 
         public override void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
-            if (State != States.Running)
+            if (Instance?.Simulation.State != II.Settings.Simulation.States.Running)
                 return;
 
             listNumerics
@@ -653,7 +647,7 @@ namespace IISIM {
         }
 
         public override void OnTick_Vitals_Respiratory (object? sender, EventArgs e) {
-            if (State != States.Running)
+            if (Instance?.Simulation.State != II.Settings.Simulation.States.Running)
                 return;
 
             listNumerics

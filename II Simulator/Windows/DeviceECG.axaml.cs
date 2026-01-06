@@ -61,7 +61,7 @@ namespace IISIM {
 
             this.GetControl<Window> ("wdwDeviceECG").Title = Instance.Language.Localize ("ECG:WindowTitle");
             this.GetControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
-            this.GetControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+            this.GetControl<MenuItem> ("menuPauseSimulation").Header = Instance.Language.Localize ("MENU:PauseSimulation");
             this.GetControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
             this.GetControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
             this.GetControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
@@ -166,13 +166,6 @@ namespace IISIM {
             UpdateInterface ();
         }
 
-        public override void TogglePause () {
-            base.TogglePause ();
-
-            if (State == States.Running)
-                listTracings.ForEach (c => c.Strip?.Unpause ());
-        }
-
         public void ToggleFullscreen () {
             if (WindowState == WindowState.FullScreen)
                 WindowState = WindowState.Normal;
@@ -186,8 +179,9 @@ namespace IISIM {
         private void MenuClose_Click (object s, RoutedEventArgs e)
             => this.Close ();
 
-        private void MenuTogglePause_Click (object s, RoutedEventArgs e)
-            => TogglePause ();
+        private void MenuPauseSimulation_Click (object s, RoutedEventArgs e){
+            return;
+        }
 
         private void MenuColorGrid_Click (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Grid);
@@ -206,7 +200,7 @@ namespace IISIM {
         }
 
         public override void OnTick_Tracing (object? sender, EventArgs e) {
-            if (State != States.Running)
+            if (Instance?.Simulation.State != II.Settings.Simulation.States.Running)
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {

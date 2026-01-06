@@ -65,9 +65,10 @@
     <!--  Main Menu  -->
     <Menu Background="White" DockPanel.Dock="Top">
       <MenuItem Name="menuDevice">
-        <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" 
+        <MenuItem Name="menuPauseSimulation" Click="MenuPauseSimulation_Click" 
                   HotKey="Pause"
-                  InputGesture="Pause" />
+                  InputGesture="Pause"  
+                  IsVisible="False"/>
         <Separator />
         <MenuItem Name="menuToggleFullscreen" Click="MenuToggleFullscreen_Click" 
                   HotKey="Alt+Enter"

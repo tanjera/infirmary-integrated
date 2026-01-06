@@ -19,10 +19,11 @@
     <!--  Main Menu  -->
     <Menu Background="White" DockPanel.Dock="Top">
       <MenuItem Name="menuDevice">
-        <MenuItem Name="menuPauseDevice" Click="MenuTogglePause_Click" 
-                  HotKey="Pause"
-                  InputGesture="Pause" />
-        <Separator />
+          <MenuItem Name="menuPauseSimulation" Click="MenuPauseSimulation_Click" 
+                    HotKey="Pause"
+                    InputGesture="Pause"  
+                    IsVisible="False"/>
+          <Separator />
         <MenuItem Name="menuAddNumeric" Click="MenuAddNumeric_Click" 
                   HotKey="N"
                   InputGesture="N" />

@@ -13,9 +13,23 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II.Settings {
-    public class Simulator {
+    public class Simulation {
+        /* Simulation-wide Settings:
+         * Specific to the active/running simulation- (e.g. Time, State:Running/Stopped) and the physical device
+         * and user running the simulation- may be loaded from the user's preferences file at runtime!
+         * (e.g. whether the user has accepted the EULA, turned the audio off, and
+         * where the windows have been placed in previous runs) for persistent UX settings.
+         *
+         * Do *NOT* place Scenario-specific settings here! (e.g. this Scenario should have a cardiac monitor with
+         * 5 Numerics ... that should go into Settings.Device.cs)
+         */
+        
         public string Language;
 
+        public States State;
+        
+        public bool AcceptedEULA;
+        
         public bool AudioEnabled;
         public bool AutoApplyChanges;
 
@@ -23,11 +37,21 @@ namespace II.Settings {
         public int DefibEnergyIncrement;
         public ToneSources DefibAudioSource;
 
-        public Point WindowSize;
-        public Point WindowPosition;
-
+        public II.Settings.Window Control;
+        public II.Settings.Window DeviceMonitor;
+        public II.Settings.Window DeviceDefib;
+        public II.Settings.Window DeviceECG;
+        public II.Settings.Window DeviceEFM;
+        public II.Settings.Window DeviceIABP;
+        
         public bool MuteUpgrade;
         public DateTime MuteUpgradeDate;
+
+        public enum States {
+            Running,
+            Paused,
+            Closed
+        }
 
         public enum ToneSources {
             Mute,
@@ -36,10 +60,12 @@ namespace II.Settings {
             SPO2
         }
 
-        public Simulator () {
+        public Simulation () {
             /* Note: These are the DEFAULT settings on 1st run (or Load() failure to parse)! */
 
             Language = "ENG";
+
+            AcceptedEULA = false;
 
             AudioEnabled = true;
             AutoApplyChanges = false;
@@ -48,10 +74,10 @@ namespace II.Settings {
             DefibEnergyIncrement = 20;
             DefibAudioSource = ToneSources.Defibrillator;
 
-            WindowSize = new Point (800, 600);
-
             MuteUpgrade = false;
             MuteUpgradeDate = new DateTime (2000, 1, 1);
+            
+            State = States.Running;
         }
 
         public static bool Exists () {
@@ -77,6 +103,11 @@ namespace II.Settings {
 
                         case "Language": Language = pValue; break;
 
+                        case "AcceptedEULA":
+                            if (bool.TryParse (pValue, out parseBool))
+                                AcceptedEULA = parseBool;
+                            break;
+                        
                         case "AudioEnabled":
                             if (bool.TryParse (pValue, out parseBool))
                                 AudioEnabled = parseBool;
@@ -100,17 +131,6 @@ namespace II.Settings {
 
                         case "DefibAudioSource": DefibAudioSource = (ToneSources)Enum.Parse (typeof (ToneSources), pValue); break;
 
-                        // Settings for the size of the Patient Editor
-                        case "WindowSizeX":
-                            if (int.TryParse (pValue, out parseInt))
-                                WindowSize.X = parseInt;
-                            break;
-
-                        case "WindowSizeY":
-                            if (int.TryParse (pValue, out parseInt))
-                                WindowSize.Y = parseInt;
-                            break;
-
                         // Settings for muting whether new program upgrades are available for download
                         case "MuteUpgrade":
                             if (bool.TryParse (pValue, out parseBool))
@@ -131,15 +151,12 @@ namespace II.Settings {
         public void Save () {
             StreamWriter sw = new (File.GetConfigPath (), false);
             sw.WriteLine ($"Language:{Language}");
+            sw.WriteLine ($"AcceptedEULA:{AcceptedEULA}");
             sw.WriteLine ($"AudioEnabled:{AudioEnabled}");
             sw.WriteLine ($"AutoApplyChanges:{AutoApplyChanges}");
             sw.WriteLine ($"DefibEnergyMaximum:{DefibEnergyMaximum}");
             sw.WriteLine ($"DefibEnergyIncrement:{DefibEnergyIncrement}");
             sw.WriteLine ($"DefibAudioSource:{DefibAudioSource}");
-            sw.WriteLine ($"WindowSizeX:{WindowSize.X}");
-            sw.WriteLine ($"WindowSizeY:{WindowSize.Y}");
-            sw.WriteLine ($"WindowPositionX:{WindowPosition.X}");
-            sw.WriteLine ($"WindowPositionY:{WindowPosition.Y}");
             sw.WriteLine ($"MuteUpgrade:{MuteUpgrade}");
             sw.WriteLine ($"MuteUpgradeDate:{Utility.DateTime_ToString (MuteUpgradeDate)}");
 

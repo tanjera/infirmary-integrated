@@ -70,10 +70,10 @@
     <Compile Update="Windows\DialogEULA.axaml.cs">
       <DependentUpon>DialogEULA.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Windows\WindowMain.axaml.cs">
+    <Compile Update="Windows\Control.axaml.cs">
       <DependentUpon>WindowMain.axaml</DependentUpon>
     </Compile>
-    <Compile Update="Windows\WindowSplash.axaml.cs">
+    <Compile Update="Windows\Splash.axaml.cs">
       <DependentUpon>WindowSplash.axaml</DependentUpon>
     </Compile>
   </ItemGroup>

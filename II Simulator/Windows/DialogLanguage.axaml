@@ -6,10 +6,11 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	Name="dlgLanguage"
 	Title="Select Language"
-	Width="500"
-	Height="130"
-	Icon="avares://infirmary-integrated/Resources/Icon_II.ico"
 	WindowStartupLocation="CenterScreen"
+	SizeToContent="WidthAndHeight"
+	CanResize="False"
+	Topmost="True"
+	Icon="avares://infirmary-integrated/Resources/Icon_II.ico"
 	mc:Ignorable="d">
 
 
@@ -40,6 +41,7 @@
 			Name="cmbLanguages"
 			Grid.Row="1"
 			Grid.Column="0"
+			MinWidth="300"
 			Margin="5"
 			Padding="5,2"
 			HorizontalAlignment="Stretch"

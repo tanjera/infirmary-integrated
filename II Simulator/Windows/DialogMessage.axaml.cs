@@ -21,7 +21,7 @@ namespace IISIM {
 
     public partial class DialogMessage : Window {
         public App? Instance;
-
+        
         public string? Message { get; set; }
         public Indicators Indicator { get; set; }
         public Options Option { get; set; }
@@ -29,7 +29,9 @@ namespace IISIM {
 
         public enum Indicators {
             None,
-            InfirmaryIntegrated
+            InfirmaryIntegrated,
+            Error,
+            Information
         }
 
         public enum Options {
@@ -45,7 +47,10 @@ namespace IISIM {
 
         public string [] IconSources = {
             "",
-            "avares://infirmary-integrated/Resources/Icon_II.ico"
+            "avares://infirmary-integrated/Resources/Icon_II.ico",
+            "avares://infirmary-integrated/Third_Party/Icon_Error_128.png",
+            "avares://infirmary-integrated/Third_Party/Icon_Clipboard_128.png"
+            
         };
 
         public DialogMessage () {
@@ -105,7 +110,7 @@ namespace IISIM {
                 parent.Show ();
 
             UpdateViewModel ();
-
+            
             this.Activate ();
             await this.ShowDialog (parent);
 

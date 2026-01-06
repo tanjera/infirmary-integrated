@@ -8,9 +8,9 @@ using Avalonia.Markup.Xaml;
 
 namespace IISIM {
 
-    public partial class WindowSplash : Window {
+    public partial class Splash : Window {
 
-        public WindowSplash () {
+        public Splash () {
             InitializeComponent ();
 
             DataContext = this;

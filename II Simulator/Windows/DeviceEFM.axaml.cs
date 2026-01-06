@@ -26,6 +26,8 @@ using II.Waveform;
 namespace IISIM {
 
     public partial class DeviceEFM : DeviceWindow {
+        
+        
         private Color.Schemes colorScheme = Color.Schemes.Light;
 
         private List<Controls.EFMTracing> listTracings = new ();
@@ -65,7 +67,7 @@ namespace IISIM {
             /* Populate UI strings per language selection */
             this.GetControl<Window> ("wdwDeviceEFM").Title = Instance.Language.Localize ("EFM:WindowTitle");
             this.GetControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
-            this.GetControl<MenuItem> ("menuPauseDevice").Header = Instance.Language.Localize ("MENU:MenuPauseDevice");
+            this.GetControl<MenuItem> ("menuPauseSimulation").Header = Instance.Language.Localize ("MENU:PauseSimulation");
             this.GetControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
             this.GetControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
             this.GetControl<MenuItem> ("menuStripSpeed").Header = Instance.Language.Localize ("MENU:StripSpeed");
@@ -163,21 +165,15 @@ namespace IISIM {
                 WindowState = WindowState.FullScreen;
         }
 
-        public override void TogglePause () {
-            base.TogglePause ();
-
-            if (State == States.Running)
-                listTracings.ForEach (c => c.Strip?.Unpause ());
-        }
-
         private void MenuToggleFullscreen_Click (object s, RoutedEventArgs e)
             => ToggleFullscreen ();
 
+        private void MenuPauseSimulation_Click (object s, RoutedEventArgs e){
+            return;
+        }
+
         private void MenuClose_Click (object s, RoutedEventArgs e)
             => this.Close ();
-
-        private void MenuTogglePause_Click (object s, RoutedEventArgs e)
-            => TogglePause ();
 
         private void MenuStripSpeed_x1 (object sender, RoutedEventArgs e)
             => SetStripSpeed (1);
@@ -202,7 +198,7 @@ namespace IISIM {
         }
 
         public override void OnTick_Tracing (object? sender, EventArgs e) {
-            if (State != States.Running)
+            if (Instance?.Simulation.State != II.Settings.Simulation.States.Running)
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {
