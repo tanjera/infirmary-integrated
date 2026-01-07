@@ -9,9 +9,10 @@ using System.Timers;
 
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.LogicalTree;
 using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
-
+using Avalonia.VisualTree;
 using II;
 using II.Localization;
 using II.Server;
@@ -104,18 +105,31 @@ namespace IISIM {
         }
 
         public void Exit () {
-            Window_Splash?.Close ();
-
-            Device_Monitor?.Close ();
-            Device_Defib?.Close ();
-            Device_ECG?.Close ();
-            Device_IABP?.Close ();
-            Device_EFM?.Close ();
-
-            Window_Main?.Close ();
-
-            try {               // If not fully initialized, may throw an exception... since exiting, just abort.
-                //AudioLib?.Dispose ();
+            // Close all Windows!
+            if (Window_Splash?.IsActive ?? false)
+                Window_Splash.Close ();
+            
+            if (Window_Main?.IsActive ?? false)
+                Window_Main?.Close ();
+            
+            // Close all Devices!
+            if (Device_Defib?.IsActive ?? false)
+                Device_Defib.Close ();
+            
+            if (Device_ECG?.IsActive ?? false)
+                Device_ECG.Close ();
+            
+            if (Device_EFM?.IsActive ?? false)
+                Device_EFM.Close ();
+            
+            if (Device_IABP?.IsActive ?? false)
+                Device_IABP.Close ();
+            
+            if (Device_Monitor?.IsActive ?? false)
+                Device_Monitor.Close ();
+            
+            try {   // If not fully initialized, may throw an exception... since exiting, just abort.
+                AudioLib?.Dispose ();
             } catch { }
         }
 

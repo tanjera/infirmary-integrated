@@ -1703,14 +1703,24 @@ namespace IISIM {
         
         private void OnLoaded (object? sender, RoutedEventArgs e) {
             if (Instance?.Settings.UI?.Control is not null) {
-                Position = new PixelPoint(Instance.Settings.UI.Control.X ?? Position.X, 
-                    Instance.Settings.UI.Control.Y ?? Position.Y);
-                Width = Instance.Settings.UI.Control.Width ?? Width;
-                Height = Instance.Settings.UI.Control.Height ?? Height;
-                WindowState = Instance.Settings.UI.Control.WindowState ?? WindowState;
+                var pos = new PixelPoint (
+                    Instance.Settings.UI.Control.X < 0 ? 0 : Instance.Settings.UI.Control.X ?? Position.X,
+                    Instance.Settings.UI.Control.Y < 0 ? 0 : Instance.Settings.UI.Control.Y ?? Position.Y);
+
+                if (Screens.All.Any(o => o.WorkingArea.Contains (pos))) { 
+                    Position = pos;
+                }
+
+                if (Instance.Settings.UI.Control.WindowState == WindowState.Normal) {
+                    SizeToContent = SizeToContent.Manual;
+                    Width = Instance.Settings.UI.Control.Width ?? Width;
+                    Height = Instance.Settings.UI.Control.Height ?? Height;
+                } else {
+                    WindowState = Instance.Settings.UI.Control.WindowState ?? WindowState;
+                }
             }
         }
-
+        
         private void OnClosing (object? sender, WindowClosingEventArgs e) {
             if (Instance?.Settings.UI is not null) {
                 Instance.Settings.UI.Control = new() {

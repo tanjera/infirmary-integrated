@@ -196,20 +196,22 @@ namespace IISIM {
             base.OnLoaded(e);
             
             if (Instance?.Settings.UI?.DeviceECG is not null) {
-                var pos = new PixelPoint (Instance.Settings.UI.DeviceECG.X ?? Position.X,
-                    Instance.Settings.UI.DeviceECG.Y ?? Position.Y);
-
-                var s = from screen in Screens.All
-                    where screen.WorkingArea.Contains (pos)
-                    select screen;
+                var pos = new PixelPoint (
+                    Instance.Settings.UI.DeviceECG.X < 0 ? 0 : Instance.Settings.UI.DeviceECG.X ?? Position.X,
+                    Instance.Settings.UI.DeviceECG.Y < 0 ? 0 : Instance.Settings.UI.DeviceECG.Y ?? Position.Y);
                 
-                if (s.Any()) { 
+                if (Screens.All.Any(o => o.WorkingArea.Contains (pos))) { 
                     Position = pos;
+                }
+                
+                // Set Width, Height, and/or WindowState
+                if (Instance.Settings.UI.DeviceECG.WindowState == WindowState.Normal) {
+                    SizeToContent = SizeToContent.Manual;
                     Width = Instance.Settings.UI.DeviceECG.Width ?? Width;
                     Height = Instance.Settings.UI.DeviceECG.Height ?? Height;
+                } else {
+                    WindowState = Instance.Settings.UI.DeviceECG.WindowState ?? WindowState;
                 }
-
-                WindowState = Instance.Settings.UI.DeviceECG.WindowState ?? WindowState;
             }
         }
 

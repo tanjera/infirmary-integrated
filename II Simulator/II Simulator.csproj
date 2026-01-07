@@ -8,7 +8,7 @@
     <AssemblyName>infirmary-integrated</AssemblyName>
     <Copyright>© 2017-2026, Ibi Keller</Copyright>
     <Authors>Ibi Keller</Authors>
-    <Version>2.7.7</Version>
+    <Version>2.7.8</Version>
     <Company>Infirmary Integrated</Company>
     <PackageLicenseFile>License.md</PackageLicenseFile>
     <PackageProjectUrl>https://www.infirmary-integrated.com/</PackageProjectUrl>
