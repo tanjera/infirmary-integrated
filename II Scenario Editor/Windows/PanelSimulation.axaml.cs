@@ -45,14 +45,17 @@ namespace IISE.Windows {
         private PropertyString vpstrScenarioDescription;
         
         private StackPanel vspMonitorNumerics;
-        private List<PropertyNumeric> listMonitorNumerics;
-        
         private StackPanel vspMonitorTracings;
-        private List<PropertyTracing> listMonitorTracings;
-        
         private StackPanel vspMonitorAlarms;
+        private List<PropertyNumeric> listMonitorNumerics;
+        private List<PropertyTracing> listMonitorTracings;
         private List<PropertyAlarm> listMonitorAlarms;
 
+        private StackPanel vspDefibNumerics;
+        private StackPanel vspDefibTracings;
+        private List<PropertyNumeric> listDefibNumerics;
+        private List<PropertyTracing> listDefibTracings;
+        
         public PanelSimulation () {
             InitializeComponent ();
 
@@ -91,6 +94,9 @@ namespace IISE.Windows {
             vspMonitorTracings = this.GetControl<StackPanel> ("spMonitorTracings");
             vspMonitorAlarms = this.GetControl<StackPanel> ("spMonitorAlarms");
 
+            vspDefibNumerics = this.GetControl<StackPanel> ("spDefibNumerics");
+            vspDefibTracings = this.GetControl<StackPanel> ("spDefibTracings");
+            
             return Task.CompletedTask;
         }
 
@@ -116,7 +122,7 @@ namespace IISE.Windows {
             vpstrScenarioName.PropertyChanged += UpdateScenario;
             vpstrScenarioDescription.PropertyChanged += UpdateScenario;
             
-            // Populate PropertyNumeric into StackPanel and initiate
+            // Populate Monitor:PropertyNumeric into StackPanel and initiate
             listMonitorNumerics = new ();
 
             for (int i = 0; i < Scenario?.DeviceMonitor.Numerics.Count; i++) {
@@ -132,7 +138,7 @@ namespace IISE.Windows {
                 listMonitorNumerics.Add (pn);
             }
 
-            // Populate PropertyTracing into StackPanel and initiate
+            // Populate Monitor:PropertyTracing into StackPanel and initiate
             listMonitorTracings = new ();
 
             for (int i = 0; i < Scenario?.DeviceMonitor?.Tracings?.Count; i++) {
@@ -145,7 +151,7 @@ namespace IISE.Windows {
                 listMonitorTracings.Add (pt);
             }
             
-            // Populate PropertyAlarms into StackPanel and initiate
+            // Populate Monitor:PropertyAlarms into StackPanel and initiate
             listMonitorAlarms = new ();
             foreach (Alarm.Parameters param in Enum.GetValues (typeof (Alarm.Parameters))) {
                 PropertyAlarm pa = new ();
@@ -156,12 +162,43 @@ namespace IISE.Windows {
                 vspMonitorAlarms.Children.Add (pa);
                 listMonitorAlarms.Add (pa);
             }
+            
+            
+            // Populate Defib:PropertyNumeric into StackPanel and initiate
+            listDefibNumerics = new ();
+
+            for (int i = 0; i < Scenario?.DeviceDefib.Numerics.Count; i++) {
+                PropertyNumeric pn = new ();
+                await pn.Init(Device.Devices.Defib, 
+                    i, 
+                    Scenario.DeviceDefib.Numerics[i],
+                    Scenario.DeviceDefib.Numerics_Zeroed.Contains(Scenario.DeviceDefib.Numerics [i]));
+
+                pn.PropertyChanged += UpdateScenario;
+                
+                vspDefibNumerics.Children.Add (pn);
+                listDefibNumerics.Add (pn);
+            }
+
+            // Populate Defib:PropertyTracing into StackPanel and initiate
+            listDefibTracings = new ();
+
+            for (int i = 0; i < Scenario?.DeviceDefib?.Tracings?.Count; i++) {
+                PropertyTracing pt = new ();
+                await pt.Init(Device.Devices.Defib, i, Scenario.DeviceDefib.Tracings[i]);
+
+                pt.PropertyChanged += UpdateScenario;
+                
+                vspDefibTracings.Children.Add (pt);
+                listDefibTracings.Add (pt);
+            }
         }
 
         private void UpdateScenario (object? sender, PropertyNumeric.PropertyNumericEventArgs e) {
             if (sender is PropertyNumeric) {
                 switch (e.Device) {
                     default: break;
+                    
                     case Device.Devices.Monitor:
                         if (Scenario is not null) {
                             if (e.toMove)
@@ -190,6 +227,36 @@ namespace IISE.Windows {
                             }
                         }
                         break;
+                    
+                    
+                    case Device.Devices.Defib:
+                        if (Scenario is not null) {
+                            if (e.toMove)
+                                MoveNumeric (sender, e);
+                            else if (e.toAdd)
+                                AddNumeric(sender, e);
+                            else if (e.toRemove)
+                                RemoveNumeric(sender, e);
+
+                            // If needed, toggle if the transducer is zeroed
+                            if (e.Numeric_Zeroed && !Scenario.DeviceDefib.Numerics_Zeroed.Contains(e.Numeric)) {
+                                Scenario.DeviceDefib.Numerics_Zeroed.Add(e.Numeric);
+                            } else if (!e.Numeric_Zeroed &&
+                                       Scenario.DeviceDefib.Numerics_Zeroed.Contains (e.Numeric)) {
+                                Scenario.DeviceDefib.Numerics_Zeroed.Remove(e.Numeric);
+                            }
+                            
+                            Scenario.DeviceDefib.Numerics = new ();
+                            
+                            // Iterate all PropertyNumerics and make sure they are valid and correlate
+                            foreach (PropertyNumeric pn in listDefibNumerics) {
+                                Scenario.DeviceDefib.Numerics.Add (pn.Numeric);
+                                
+                                // Ensure duplicate PropertyNumerics have matching chkTransducers
+                                pn.SetTransducer (Scenario.DeviceDefib.Numerics_Zeroed.Contains (pn.Numeric));
+                            }
+                        }
+                        break;
                 }
             }
         }
@@ -198,6 +265,7 @@ namespace IISE.Windows {
             if (sender is PropertyTracing) {
                 switch (e.Device) {
                     default: break;
+                    
                     case Device.Devices.Monitor:
                         if (Scenario is not null) {
                             if (e.toMove)
@@ -210,6 +278,21 @@ namespace IISE.Windows {
                             Scenario.DeviceMonitor.Tracings = new ();
                             foreach (PropertyTracing pt in listMonitorTracings)
                                 Scenario.DeviceMonitor.Tracings.Add(pt.Tracing);
+                        }
+                        break;
+                    
+                    case Device.Devices.Defib:
+                        if (Scenario is not null) {
+                            if (e.toMove)
+                                MoveTracing (sender, e);
+                            else if (e.toAdd)
+                                AddTracing(sender, e);
+                            else if (e.toRemove)
+                                RemoveTracing(sender, e);
+                            
+                            Scenario.DeviceDefib.Tracings = new ();
+                            foreach (PropertyTracing pt in listDefibTracings)
+                                Scenario.DeviceDefib.Tracings.Add(pt.Tracing);
                         }
                         break;
                 }
@@ -269,8 +352,8 @@ namespace IISE.Windows {
             await vpstrScenarioName.Set (Scenario.Name ?? "");
             await vpstrScenarioDescription.Set (Scenario.Description ?? "");
             
-            // Update PropertyNumerics
-            for (int i = 0; i < Scenario.DeviceMonitor.Numerics.Count; i++) {
+            // Update Monitor:PropertyNumerics
+            for (int i = 0; i < Scenario?.DeviceMonitor.Numerics.Count; i++) {
                 if (i < listMonitorNumerics.Count) {        // Set existing PropertyNumerics
                     listMonitorNumerics [i].Set (new PropertyNumeric.PropertyNumericEventArgs () {
                         Index = i,
@@ -293,7 +376,7 @@ namespace IISE.Windows {
                 }
             }
             
-            // If there were more PropertyNumerics than there should be, trim the excess
+            // If there were more Monitor:PropertyNumerics than there should be, trim the excess
             for (int i = listMonitorNumerics.Count - 1; i >= Scenario?.DeviceMonitor?.Numerics?.Count; i--) {
                 listMonitorNumerics[i].PropertyChanged -= UpdateScenario;
                 
@@ -301,7 +384,7 @@ namespace IISE.Windows {
                 listMonitorNumerics.RemoveAt (i);
             }
             
-            // Update PropertyTracings
+            // Update Monitor:PropertyTracings
             for (int i = 0; i < Scenario?.DeviceMonitor?.Tracings.Count; i++) {
                 if (i < listMonitorTracings.Count) {        // Set existing PropertyTracings
                     listMonitorTracings [i].Set (new PropertyTracing.PropertyTracingEventArgs () {
@@ -321,7 +404,7 @@ namespace IISE.Windows {
                 }
             }
             
-            // If there were more PropertyTracings than there should be, trim the excess
+            // If there were more Monitor:PropertyTracings than there should be, trim the excess
             for (int i = listMonitorTracings.Count - 1; i >= Scenario?.DeviceMonitor?.Tracings?.Count; i--) {
                 listMonitorTracings[i].PropertyChanged -= UpdateScenario;
                 
@@ -329,10 +412,72 @@ namespace IISE.Windows {
                 listMonitorTracings.RemoveAt (i);
             }
             
+            // Update Monitor:Alarms
             foreach (PropertyAlarm pa in listMonitorAlarms) {
                 Alarm? alarm;
                 if ((alarm = Scenario?.DeviceMonitor?.Alarms?.Find (a => a.Parameter == pa.Key)) is not null)
                     await pa.Set (alarm);
+            }
+            
+            
+            // Update Defib:PropertyNumerics
+            for (int i = 0; i < Scenario?.DeviceDefib.Numerics.Count; i++) {
+                if (i < listDefibNumerics.Count) {        // Set existing PropertyNumerics
+                    listDefibNumerics [i].Set (new PropertyNumeric.PropertyNumericEventArgs () {
+                        Index = i,
+                        Device = Device.Devices.Defib,
+                        Numeric = Scenario.DeviceDefib.Numerics [i],
+                        Numeric_Zeroed = Scenario.DeviceDefib.Numerics_Zeroed.Contains(Scenario.DeviceDefib.Numerics [i])
+                    });
+                } else {                                   // Add new as needed
+                    PropertyNumeric pn = new ();
+                    
+                    await pn.Init(Device.Devices.Defib, 
+                        i, 
+                        Scenario.DeviceDefib.Numerics[i],
+                        Scenario.DeviceDefib.Numerics_Zeroed.Contains(Scenario.DeviceDefib.Numerics [i]));
+
+                    pn.PropertyChanged += UpdateScenario;
+                
+                    vspDefibNumerics.Children.Add (pn);
+                    listDefibNumerics.Add (pn);
+                }
+            }
+            
+            // If there were more Defib:PropertyNumerics than there should be, trim the excess
+            for (int i = listDefibNumerics.Count - 1; i >= Scenario?.DeviceDefib?.Numerics?.Count; i--) {
+                listDefibNumerics[i].PropertyChanged -= UpdateScenario;
+                
+                vspDefibNumerics.Children.RemoveAt (i);
+                listDefibNumerics.RemoveAt (i);
+            }
+            
+            // Update Defib:PropertyTracings
+            for (int i = 0; i < Scenario?.DeviceDefib?.Tracings.Count; i++) {
+                if (i < listDefibTracings.Count) {        // Set existing PropertyTracings
+                    listDefibTracings [i].Set (new PropertyTracing.PropertyTracingEventArgs () {
+                        Index = i,
+                        Device = Device.Devices.Defib,
+                        Tracing = Scenario.DeviceDefib.Tracings [i]
+                    });
+                } else {                                   // Add new as needed
+                    PropertyTracing pt = new ();
+                    
+                    await pt.Init(Device.Devices.Defib, i, Scenario.DeviceDefib.Tracings[i]);
+
+                    pt.PropertyChanged += UpdateScenario;
+                
+                    vspDefibTracings.Children.Add (pt);
+                    listDefibTracings.Add (pt);
+                }
+            }
+            
+            // If there were more Defib:PropertyTracings than there should be, trim the excess
+            for (int i = listDefibTracings.Count - 1; i >= Scenario?.DeviceDefib?.Tracings?.Count; i--) {
+                listDefibTracings[i].PropertyChanged -= UpdateScenario;
+                
+                vspDefibTracings.Children.RemoveAt (i);
+                listDefibTracings.RemoveAt (i);
             }
         }
 
@@ -340,12 +485,24 @@ namespace IISE.Windows {
             if (Scenario is null)
                 return;
             
-            if (e.Index >= 0 && e.Index < Scenario?.DeviceMonitor?.Numerics?.Count) {
-                var n =  Scenario.DeviceMonitor.Numerics [e.Index];
-                Scenario.DeviceMonitor.Numerics.Insert (e.Index, n);
+            List<Device.Numeric>? ldn = e.Device switch {
+                Device.Devices.Monitor => Scenario?.DeviceMonitor?.Numerics,
+                Device.Devices.Defib => Scenario?.DeviceDefib?.Numerics,
+                _ => null
+            };
+            
+            List<Device.Numeric>? ldnz = e.Device switch {
+                Device.Devices.Monitor => Scenario?.DeviceMonitor?.Numerics_Zeroed,
+                Device.Devices.Defib => Scenario?.DeviceDefib?.Numerics_Zeroed,
+                _ => null
+            };
+            
+            if (e.Index >= 0 && e.Index < ldn?.Count) {
+                var n =  ldn [e.Index];
+                ldn?.Insert (e.Index, n);
 
-                if (e.Numeric_Zeroed && !Scenario.DeviceMonitor.Numerics_Zeroed.Contains (n)) {
-                    Scenario.DeviceMonitor.Numerics_Zeroed.Add (n);
+                if (e.Numeric_Zeroed && !(ldnz?.Contains (n) ?? true)) {
+                    ldnz?.Add (n);
                 }
             }
 
@@ -356,12 +513,17 @@ namespace IISE.Windows {
         private void AddTracing (object sender, PropertyTracing.PropertyTracingEventArgs e) {
             if (Scenario is null)
                 return;
-            
-            if (e.Index >= 0 && e.Index < Scenario?.DeviceMonitor?.Tracings?.Count) {
-                var t =  Scenario.DeviceMonitor.Tracings [e.Index];
-                Scenario.DeviceMonitor.Tracings.Insert (e.Index, t);
-            }
 
+            List<Device.Tracing>? ldt = e.Device switch {
+                Device.Devices.Monitor => Scenario?.DeviceMonitor?.Tracings,
+                Device.Devices.Defib => Scenario?.DeviceDefib?.Tracings,
+                _ => null
+            };
+            
+            if (e.Index >= 0 && e.Index < ldt?.Count) {
+                ldt?.Insert (e.Index, ldt? [e.Index] ?? new Device.Tracing());
+            }
+            
             // In UpdateViewModel, listMonitorTracings will be rebuilt based on the newly modified Scenario.DeviceMonitor.Tracings
             Task.WaitAll(UpdateViewModel());
         }
@@ -369,12 +531,17 @@ namespace IISE.Windows {
         private void RemoveNumeric (object sender, PropertyNumeric.PropertyNumericEventArgs e) {
             if (Scenario is null)
                 return;
-
-            if (Scenario?.DeviceMonitor?.Numerics?.Count <= 1)
-                return;                             // Don't remove the last Numeric...
             
-            if (e.Index >= 0 && e.Index < Scenario?.DeviceMonitor?.Numerics?.Count) {
-                Scenario.DeviceMonitor.Numerics.RemoveAt (e.Index);
+            List<Device.Numeric>? ldn = e.Device switch {
+                Device.Devices.Monitor => Scenario?.DeviceMonitor?.Numerics,
+                Device.Devices.Defib => Scenario?.DeviceDefib?.Numerics,
+                _ => null
+            };
+            
+            if (ldn?.Count <= 1)
+                return; // Don't remove the last Numeric...
+            if (e.Index >= 0 && e.Index < ldn?.Count) {
+                ldn?.RemoveAt (e.Index);
             }
 
             // In UpdateViewModel, listMonitorNumerics will be rebuilt based on the newly modified Scenario.DeviceMonitor.lNumerics
@@ -385,11 +552,16 @@ namespace IISE.Windows {
             if (Scenario is null)
                 return;
 
-            if (Scenario?.DeviceMonitor?.Tracings?.Count <= 1)
-                return;                             // Don't remove the last Numeric...
+            List<Device.Tracing>? ldt = e.Device switch {
+                Device.Devices.Monitor => Scenario?.DeviceMonitor?.Tracings,
+                Device.Devices.Defib => Scenario?.DeviceDefib?.Tracings,
+                _ => null
+            };
             
-            if (e.Index >= 0 && e.Index < Scenario?.DeviceMonitor?.Tracings?.Count) {
-                Scenario.DeviceMonitor.Tracings.RemoveAt (e.Index);
+            if (ldt?.Count <= 1)
+                return; // Don't remove the last Numeric...
+            if (e.Index >= 0 && e.Index < ldt?.Count) {
+                ldt?.RemoveAt (e.Index);
             }
 
             // In UpdateViewModel, listMonitorTracings will be rebuilt based on the newly modified Scenario.DeviceMonitor.Tracings
@@ -400,10 +572,16 @@ namespace IISE.Windows {
             if (Scenario is null)
                 return;
             
-            if (e.Index + e.toMove_Delta >= 0 && e.Index + e.toMove_Delta < Scenario?.DeviceMonitor?.Numerics?.Count) {
-                var n =  Scenario.DeviceMonitor.Numerics [e.Index];
-                Scenario.DeviceMonitor.Numerics.RemoveAt (e.Index);
-                Scenario.DeviceMonitor.Numerics.Insert (e.Index + e.toMove_Delta, n);
+            List<Device.Numeric>? ldn = e.Device switch {
+                Device.Devices.Monitor => Scenario?.DeviceMonitor?.Numerics,
+                Device.Devices.Defib => Scenario?.DeviceDefib?.Numerics,
+                _ => null
+            };
+            
+            if (e.Index + e.toMove_Delta >= 0 && e.Index + e.toMove_Delta < ldn?.Count) {
+                var n =  ldn [e.Index];
+                ldn.RemoveAt (e.Index);
+                ldn.Insert (e.Index + e.toMove_Delta, n);
             }
 
             // In UpdateViewModel, listMonitorNumerics will be rebuilt based on the newly modified Scenario.DeviceMonitor.lNumerics
@@ -414,10 +592,16 @@ namespace IISE.Windows {
             if (Scenario is null)
                 return;
             
-            if (e.Index + e.toMove_Delta >= 0 && e.Index + e.toMove_Delta < Scenario?.DeviceMonitor?.Tracings?.Count) {
-                var n =  Scenario.DeviceMonitor.Tracings [e.Index];
-                Scenario.DeviceMonitor.Tracings.RemoveAt (e.Index);
-                Scenario.DeviceMonitor.Tracings.Insert (e.Index + e.toMove_Delta, n);
+            List<Device.Tracing>? ldt = e.Device switch {
+                Device.Devices.Monitor => Scenario?.DeviceMonitor?.Tracings,
+                Device.Devices.Defib => Scenario?.DeviceDefib?.Tracings,
+                _ => null
+            };
+            
+            if (e.Index + e.toMove_Delta >= 0 && e.Index + e.toMove_Delta < ldt?.Count) {
+                var n =  ldt [e.Index];
+                ldt.RemoveAt (e.Index);
+                ldt.Insert (e.Index + e.toMove_Delta, n);
             }
 
             // In UpdateViewModel, listMonitorTracingss will be rebuilt based on the newly modified Scenario.DeviceMonitor.Tracings

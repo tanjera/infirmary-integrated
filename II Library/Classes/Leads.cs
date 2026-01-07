@@ -51,16 +51,5 @@ namespace II {
                     return true;
             }
         }
-
-        public static bool IsZeroed (Values value, Physiology p) {
-            switch (value) {
-                default: return false;
-                case Values.ABP: return p.TransducerZeroed_ABP;
-                case Values.CVP: return p.TransducerZeroed_CVP;
-                case Values.PA: return p.TransducerZeroed_PA;
-                case Values.ICP: return p.TransducerZeroed_ICP;
-                case Values.IAP: return p.TransducerZeroed_IAP;
-            }
-        }
     }
 }

@@ -139,9 +139,12 @@ namespace IISIM {
             this.GetControl<MenuItem> ("menuFile").Header = Instance.Language.Localize ("PE:MenuFile");
             this.GetControl<MenuItem> ("menuLoad").Header = Instance.Language.Localize ("PE:MenuLoadSimulation");
             this.GetControl<MenuItem> ("menuSave").Header = Instance.Language.Localize ("PE:MenuSaveSimulation");
-            this.GetControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
             this.GetControl<MenuItem> ("menuExit").Header = Instance.Language.Localize ("PE:MenuExitProgram");
 
+            this.GetControl<MenuItem> ("menuOptions").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
+            this.GetControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
+            this.GetControl<MenuItem> ("menuPauseDevices").Header = Instance.Language.Localize ("MENU:PauseSimulation");
+            
             this.GetControl<MenuItem> ("menuMirror").Header = Instance.Language.Localize ("PE:MenuMirror");
             this.GetControl<MenuItem> ("menuMirrorDeactivate").Header = Instance.Language.Localize ("PE:MenuMirrorDeactivate");
             this.GetControl<MenuItem> ("menuMirrorReceive").Header = Instance.Language.Localize ("PE:MenuMirrorReceive");
@@ -1634,7 +1637,14 @@ namespace IISIM {
             else
                 WindowState = WindowState.FullScreen;
         }
-
+        
+        protected virtual void PauseSimulation () {
+            if (Instance?.Settings.State == II.Settings.Instance.States.Running)
+                Instance.Settings.State = II.Settings.Instance.States.Paused;
+            else if (Instance?.Settings.State == II.Settings.Instance.States.Paused)
+                Instance.Settings.State = II.Settings.Instance.States.Running;
+        }
+        
         private void MenuNewSimulation_Click (object sender, RoutedEventArgs e)
             => _ = RefreshScenario (true);
 
@@ -1647,6 +1657,9 @@ namespace IISIM {
         private void MenuToggleFullscreen_Click (object s, RoutedEventArgs e)
             => ToggleFullscreen ();
 
+        private void MenuPauseDevices_Click (object s, RoutedEventArgs e)
+            => PauseSimulation ();
+        
         private void MenuExit_Click (object s, RoutedEventArgs e)
             => _ = Exit ();
 

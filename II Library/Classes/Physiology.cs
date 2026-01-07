@@ -56,15 +56,7 @@ namespace II {
 
         public FetalHeart_Rhythms ObstetricFetalHeartRhythm = new ();
 
-        /* General Device Settings */
-
-        public bool TransducerZeroed_CVP = false,
-                    TransducerZeroed_ABP = false,
-                    TransducerZeroed_PA = false,
-                    TransducerZeroed_ICP = false,
-                    TransducerZeroed_IAP = false;
-
-        /* Defibrillator parameters */
+        /* Device (implanted?) parameters */
 
         public int Pacemaker_Rate,                  // DeviceDefib's transcutaneous pacemaker rate
                     Pacemaker_Energy;               // DeviceDefib's pacemaker energy delivery amount
@@ -666,11 +658,6 @@ namespace II {
                             case "ObstetricUterineRestingTone": ObstetricUterineRestingTone = int.Parse (pValue); break;
 
                             // Device settings
-                            case "TransducerZeroed_ABP": TransducerZeroed_ABP = bool.Parse (pValue); break;
-                            case "TransducerZeroed_CVP": TransducerZeroed_CVP = bool.Parse (pValue); break;
-                            case "TransducerZeroed_PA": TransducerZeroed_PA = bool.Parse (pValue); break;
-                            case "TransducerZeroed_ICP": TransducerZeroed_ICP = bool.Parse (pValue); break;
-                            case "TransducerZeroed_IAP": TransducerZeroed_IAP = bool.Parse (pValue); break;
 
                             case "Pacemaker_Rate": Pacemaker_Rate = int.Parse (pValue); break;
                             case "Pacemaker_Energy": Pacemaker_Energy = int.Parse (pValue); break;
@@ -761,11 +748,6 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricUterineRestingTone", ObstetricUterineRestingTone));
 
             // Device settings
-            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "TransducerZeroed_ABP", TransducerZeroed_ABP));
-            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "TransducerZeroed_CVP", TransducerZeroed_CVP));
-            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "TransducerZeroed_PA", TransducerZeroed_PA));
-            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "TransducerZeroed_ICP", TransducerZeroed_ICP));
-            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "TransducerZeroed_IAP", TransducerZeroed_IAP));
 
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Pacemaker_Rate", Pacemaker_Rate));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Pacemaker_Energy", Pacemaker_Energy));

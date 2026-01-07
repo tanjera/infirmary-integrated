@@ -21,9 +21,11 @@ using Avalonia.Threading;
 
 using II;
 using II.Rhythm;
+using II.Settings;
 using II.Waveform;
 
 using LibVLCSharp.Shared;
+using Window = Avalonia.Controls.Window;
 
 namespace IISIM {
 
@@ -53,7 +55,15 @@ namespace IISIM {
 
         private List<Controls.IABPTracing> listTracings = new ();
         private List<Controls.IABPNumeric> listNumerics = new ();
-
+        
+        private List<II.Settings.Device.Numeric>? Transducers_Zeroed {
+            set { 
+                if (Instance?.Scenario?.DeviceIABP is not null)
+                    Instance.Scenario.DeviceIABP.Transducers_Zeroed = value ?? new List<II.Settings.Device.Numeric> (); 
+            }
+            get { return Instance?.Scenario?.DeviceIABP.Transducers_Zeroed; }
+        }
+        
         public enum Settings {
             None,
             Trigger,
@@ -445,8 +455,9 @@ namespace IISIM {
         }
 
         private void ButtonZeroABP_Click (object s, RoutedEventArgs e) {
-            if (Instance?.Physiology is not null)
-                Instance.Physiology.TransducerZeroed_ABP = true;
+            if (!(Transducers_Zeroed?.Contains(Device.Numeric.ABP) ?? true))
+                Transducers_Zeroed.Add(Device.Numeric.ABP);
+            
             UpdateInterface ();
         }
 

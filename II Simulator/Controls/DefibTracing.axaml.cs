@@ -18,6 +18,7 @@ using II;
 using II.Drawing;
 using II.Localization;
 using II.Rhythm;
+using II.Settings;
 
 namespace IISIM.Controls {
 
@@ -25,6 +26,14 @@ namespace IISIM.Controls {
         private MenuItem? uiMenuZeroTransducer;
         private MenuItem? uiMenuToggleAutoScale;
 
+        private List<II.Settings.Device.Numeric>? Transducers_Zeroed {
+            set { 
+                if (Instance?.Scenario?.DeviceDefib is not null)
+                    Instance.Scenario.DeviceDefib.Transducers_Zeroed = value ?? new List<II.Settings.Device.Numeric> (); 
+            }
+            get { return Instance?.Scenario?.DeviceDefib.Transducers_Zeroed; }
+        }
+        
         public DefibTracing () {
             InitializeComponent ();
         }
@@ -186,15 +195,31 @@ namespace IISIM.Controls {
         }
 
         private void MenuZeroTransducer_Click (object? sender, RoutedEventArgs e) {
-            if (Instance is null || Instance.Physiology is null)
-                return;
-
             switch (Lead?.Value) {
-                case Lead.Values.ABP: Instance.Physiology.TransducerZeroed_ABP = true; return;
-                case Lead.Values.CVP: Instance.Physiology.TransducerZeroed_CVP = true; return;
-                case Lead.Values.PA: Instance.Physiology.TransducerZeroed_PA = true; return;
-                case Lead.Values.ICP: Instance.Physiology.TransducerZeroed_ICP = true; return;
-                case Lead.Values.IAP: Instance.Physiology.TransducerZeroed_IAP = true; return;
+                case Lead.Values.ABP: 
+                    if (!(Transducers_Zeroed?.Contains(Device.Numeric.ABP) ?? true))
+                        Transducers_Zeroed.Add (Device.Numeric.ABP);
+                    return;
+                
+                case Lead.Values.CVP: 
+                    if (!(Transducers_Zeroed?.Contains(Device.Numeric.CVP) ?? true))
+                        Transducers_Zeroed.Add (Device.Numeric.CVP);
+                    return;
+
+                case Lead.Values.PA: 
+                    if (!(Transducers_Zeroed?.Contains(Device.Numeric.PA) ?? true))
+                        Transducers_Zeroed.Add (Device.Numeric.PA);
+                    return;
+
+                case Lead.Values.ICP: 
+                    if (!(Transducers_Zeroed?.Contains(Device.Numeric.ICP) ?? true))
+                        Transducers_Zeroed.Add (Device.Numeric.ICP);
+                    return;
+
+                case Lead.Values.IAP: 
+                    if (!(Transducers_Zeroed?.Contains(Device.Numeric.IAP) ?? true))
+                        Transducers_Zeroed.Add (Device.Numeric.IAP);
+                    return;
             }
         }
 

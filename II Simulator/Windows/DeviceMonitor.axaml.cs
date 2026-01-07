@@ -51,6 +51,30 @@ namespace IISIM {
         private List<Alarm> AlarmRefs = new ();
         private List<StreamMediaInput>? AlarmMedia;
 
+        private List<II.Settings.Device.Numeric>? Numerics {
+            set { 
+                if (Instance?.Scenario?.DeviceMonitor is not null)
+                    Instance.Scenario.DeviceMonitor.Numerics = value ?? new List<Device.Numeric> (); 
+            }
+            get { return Instance?.Scenario?.DeviceMonitor.Numerics; }
+        }
+        
+        private List<II.Settings.Device.Numeric>? Transducers_Zeroed {
+            set { 
+                if (Instance?.Scenario?.DeviceMonitor is not null)
+                    Instance.Scenario.DeviceMonitor.Transducers_Zeroed = value ?? new List<Device.Numeric> (); 
+            }
+            get { return Instance?.Scenario?.DeviceMonitor.Transducers_Zeroed; }
+        }
+        
+        private List<II.Settings.Device.Tracing>? Tracings {
+            set { 
+                if (Instance?.Scenario?.DeviceMonitor is not null)
+                    Instance.Scenario.DeviceMonitor.Tracings = value ?? new List<Device.Tracing> (); 
+            }
+            get { return Instance?.Scenario?.DeviceMonitor.Tracings; }
+        }
+        
         public enum ToneSources {
             None,
             ECG,
@@ -187,10 +211,10 @@ namespace IISIM {
                             
                             case "Numerics":
                                 if (Instance?.Scenario is not null) {
-                                    Instance.Scenario.DeviceMonitor.Numerics = new();
+                                    Numerics = new();
                                     foreach (string s in pValue.Split (',')) {
-                                        if (Enum.TryParse<II.Settings.Device.Numeric> (s, true, out II.Settings.Device.Numeric res)) {
-                                            Instance.Scenario.DeviceMonitor.Numerics.Add (res);
+                                        if (Enum.TryParse (s, true, out II.Settings.Device.Numeric res)) {
+                                            Numerics.Add (res);
                                         }
                                     }
                                     
@@ -200,12 +224,12 @@ namespace IISIM {
                             
                             case "Tracings":
                                 if (Instance?.Scenario is not null) {
-                                    Instance.Scenario.DeviceMonitor.Tracings = new();
+                                    Tracings = new();
 
                                     foreach (string s in pValue.Split (',')) {
-                                        if (Enum.TryParse<II.Settings.Device.Tracing> (s, true,
+                                        if (Enum.TryParse (s, true,
                                                 out II.Settings.Device.Tracing res)) {
-                                            Instance.Scenario.DeviceMonitor.Tracings.Add (res);
+                                            Tracings.Add (res);
                                         }
                                     }
                                     
@@ -218,16 +242,16 @@ namespace IISIM {
 
                 if (rNumerics > 0 && tNumerics.Count > 0 && Instance?.Scenario is not null) {
                     for (int i = 0; i < rNumerics && i < tNumerics.Count; i++) {
-                        if (Enum.TryParse<II.Settings.Device.Numeric> (tNumerics[i], true, out II.Settings.Device.Numeric res)) {
-                            Instance.Scenario.DeviceMonitor.Numerics.Add (res);
+                        if (Enum.TryParse (tNumerics[i], true, out II.Settings.Device.Numeric res)) {
+                            Numerics?.Add (res);
                         }
                     } 
                 }
                 
                 if (rTracings > 0 && tTracings.Count > 0 && Instance?.Scenario is not null) {
                     for (int i = 0; i < rTracings && i < tTracings.Count; i++) {
-                        if (Enum.TryParse<II.Settings.Device.Tracing> (tTracings[i], true, out II.Settings.Device.Tracing res)) {
-                            Instance.Scenario.DeviceMonitor.Tracings.Add (res);
+                        if (Enum.TryParse (tTracings[i], true, out II.Settings.Device.Tracing res)) {
+                            Tracings?.Add (res);
                         }
                     } 
                 }
@@ -246,14 +270,14 @@ namespace IISIM {
             if (Instance?.Scenario?.DeviceMonitor.Numerics.Count > 0) {
                 sw.AppendLine (String.Format ("{0}:{1}", 
                     "Numerics", 
-                    string.Join (',', Instance.Scenario.DeviceMonitor.Numerics)));
+                    string.Join (',', Numerics ?? new List<Device.Numeric> ())));
             }
             
             /* Save() the Tracings */
             if (Instance?.Scenario?.DeviceMonitor.Tracings.Count > 0) {
                 sw.AppendLine (String.Format ("{0}:{1}", 
                     "Tracings", 
-                    string.Join (',', Instance.Scenario.DeviceMonitor.Tracings)));
+                    string.Join (',', Tracings ?? new List<Device.Tracing> ())));
             }
             
             return sw.ToString ();
@@ -380,7 +404,6 @@ namespace IISIM {
             rowsTracings = 0;           // Reset for re-instantiation
             listTracings.Clear ();
         }
-
         
         public void SetTracing (int amount) {
             rowsTracings = amount;
@@ -503,27 +526,27 @@ namespace IISIM {
         
         private void UpdateSettings () {
             // Carry current visually present and set Numerics & Tracings into Device.Settings
-            if (Instance?.Scenario?.DeviceMonitor.Numerics is not null) {
+            if (Numerics is not null) {
                 for (int i = 0; i < rowsNumerics && i < listNumerics.Count; i++) {
-                    if (Enum.TryParse<II.Settings.Device.Numeric> (listNumerics [i]?.ControlType?.Value.ToString (),
+                    if (Enum.TryParse (listNumerics [i]?.ControlType?.Value.ToString (),
                             true, out Device.Numeric res)) {
-                        if (Instance.Scenario.DeviceMonitor.Numerics.Count <= i) {
-                            Instance.Scenario.DeviceMonitor.Numerics.Add (res);
+                        if (Numerics.Count <= i) {
+                            Numerics.Add (res);
                         } else {
-                            Instance.Scenario.DeviceMonitor.Numerics [i] = res;
+                            Numerics [i] = res;
                         }
                     }
                 }
             }
             
-            if (Instance?.Scenario?.DeviceMonitor.Tracings is not null) {
+            if (Tracings is not null) {
                 for (int i = 0; i < rowsTracings && i < listTracings.Count; i++) {
-                    if (Enum.TryParse<II.Settings.Device.Tracing> (listTracings [i].Lead?.Value.ToString (),
+                    if (Enum.TryParse (listTracings [i].Lead?.Value.ToString (),
                             true, out Device.Tracing res)) {
-                        if (Instance.Scenario.DeviceMonitor.Tracings.Count <= i) {
-                            Instance.Scenario.DeviceMonitor.Tracings.Add (res);
+                        if (Tracings.Count <= i) {
+                            Tracings.Add (res);
                         } else {
-                            Instance.Scenario.DeviceMonitor.Tracings [i] = res;
+                            Tracings [i] = res;
                         }
                     }
                 }
@@ -642,13 +665,13 @@ namespace IISIM {
                 AlarmActive = null;
                 return;
             } else if (alarm.Priority == AlarmActive) {
-                if (!AudioPlayer.IsPlaying) {
+                if (!AudioPlayer.IsPlaying && Instance is not null) {
                     AudioPlayer.Media = new Media (Instance.AudioLib, AlarmMedia [alarm.Priority.GetHashCode ()]);
                     AudioPlayer.Play ();
                 }
 
                 return;
-            } else if (alarm.Priority != AlarmActive) {
+            } else if (alarm.Priority != AlarmActive && Instance is not null) {
                 AudioPlayer.Stop ();
                 AudioPlayer.Media = new Media (Instance.AudioLib, AlarmMedia [alarm.Priority.GetHashCode ()]);
                 AudioPlayer.Play ();
@@ -704,12 +727,11 @@ namespace IISIM {
             
             if (rowsNumerics == 0) {    // On instantiation only, use pre-defined or Load()ed settings!
                 // If Device settings are present, then a Scenario is loaded
-                if (Instance?.Scenario?.DeviceMonitor.Numerics is not null
-                    && Instance.Scenario.DeviceMonitor.Numerics.Count > 0) {
-                    foreach (var n in Instance.Scenario.DeviceMonitor.Numerics)
+                if (Numerics is not null && Numerics.Count > 0) {
+                    foreach (var n in Numerics)
                         numericTypes.Add (n.ToString ());
                     
-                    rowsNumerics = Instance.Scenario.DeviceMonitor.Numerics.Count;
+                    rowsNumerics = Numerics.Count;
                 } else {
                     rowsNumerics = 3;
                     numericTypes.AddRange(defaultNumerics.Slice (0, rowsNumerics));
@@ -749,12 +771,11 @@ namespace IISIM {
             
             if (rowsTracings == 0) {    // On instantiation only, use pre-defined or Load()ed settings!
                 // If Device settings are present, then a Scenario is loaded
-                if (Instance?.Scenario?.DeviceMonitor.Tracings is not null
-                    && Instance.Scenario.DeviceMonitor.Tracings.Count > 0) {
-                    foreach (var n in Instance.Scenario.DeviceMonitor.Tracings)
+                if (Tracings is not null && Tracings.Count > 0) {
+                    foreach (var n in Tracings)
                         tracingTypes.Add (n.ToString ());
                     
-                    rowsTracings = Instance.Scenario.DeviceMonitor.Tracings.Count;
+                    rowsTracings = Tracings.Count;
                 } else {
                     rowsTracings = 3;
                     tracingTypes.AddRange(defaultTracings.Slice (0, rowsTracings));

@@ -15,6 +15,7 @@ using Avalonia.Threading;
 using II;
 using II.Localization;
 using II.Rhythm;
+using II.Settings;
 
 namespace IISIM.Controls {
 
@@ -23,6 +24,14 @@ namespace IISIM.Controls {
 
         private MenuItem? uiMenuZeroTransducer;
 
+        private List<II.Settings.Device.Numeric>? Transducers_Zeroed {
+            set { 
+                if (Instance?.Scenario?.DeviceDefib is not null)
+                    Instance.Scenario.DeviceDefib.Transducers_Zeroed = value ?? new List<II.Settings.Device.Numeric> (); 
+            }
+            get { return Instance?.Scenario?.DeviceDefib.Transducers_Zeroed; }
+        }
+        
         public class ControlTypes {
             public Values Value;
 
@@ -281,7 +290,7 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.ABP:
-                    if (Instance.Physiology.TransducerZeroed_ABP) {
+                    if (Transducers_Zeroed?.Contains(Device.Numeric.ABP) ?? false) {
                         lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Physiology.ASBP, 0.02f));
                         lblLine2.Text = String.Format ("/ {0:0}", II.Math.RandomPercentRange (
                             (Instance.Physiology.IABP_Active ? Instance.Physiology.IABP_DBP : Instance.Physiology.ADBP), 0.02f));
@@ -294,14 +303,14 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.CVP:
-                    if (Instance.Physiology.TransducerZeroed_CVP)
+                    if (Transducers_Zeroed?.Contains(Device.Numeric.CVP) ?? false)
                         lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Physiology.CVP, 0.02f));
                     else
                         lblLine1.Text = Instance.Language.Localize ("NUMERIC:ZeroTransducer");
                     break;
 
                 case ControlTypes.Values.PA:
-                    if (Instance.Physiology.TransducerZeroed_PA) {
+                    if (Transducers_Zeroed?.Contains(Device.Numeric.PA) ?? false) {
                         lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Physiology.PSP, 0.02f));
                         lblLine2.Text = String.Format ("/ {0:0}", II.Math.RandomPercentRange (Instance.Physiology.PDP, 0.02f));
                         lblLine3.Text = String.Format ("({0:0})", II.Math.RandomPercentRange (Instance.Physiology.PMP, 0.02f));
@@ -370,10 +379,22 @@ namespace IISIM.Controls {
 
         private void MenuZeroTransducer_Click (object? sender, RoutedEventArgs e) {
             if (Instance?.Physiology is not null) {
+                
                 switch (ControlType?.Value) {
-                    case ControlTypes.Values.ABP: Instance.Physiology.TransducerZeroed_ABP = true; return;
-                    case ControlTypes.Values.CVP: Instance.Physiology.TransducerZeroed_CVP = true; return;
-                    case ControlTypes.Values.PA: Instance.Physiology.TransducerZeroed_PA = true; return;
+                    case ControlTypes.Values.ABP:
+                        if (!(Transducers_Zeroed?.Contains (II.Settings.Device.Numeric.ABP) ?? true))
+                            Transducers_Zeroed.Add (II.Settings.Device.Numeric.ABP);
+                        return;
+
+                    case ControlTypes.Values.CVP:
+                        if (!(Transducers_Zeroed?.Contains (II.Settings.Device.Numeric.CVP) ?? true))
+                            Transducers_Zeroed.Add (II.Settings.Device.Numeric.CVP);
+                        return;
+
+                    case ControlTypes.Values.PA:
+                        if (!(Transducers_Zeroed?.Contains (II.Settings.Device.Numeric.PA) ?? true))
+                            Transducers_Zeroed.Add (II.Settings.Device.Numeric.PA);
+                        return;
                 }
             }
         }

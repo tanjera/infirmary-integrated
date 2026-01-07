@@ -62,6 +62,7 @@ namespace II.Settings {
             public II.Settings.Window? DeviceECG;
             public II.Settings.Window? DeviceEFM;
             public II.Settings.Window? DeviceIABP;
+            public II.Settings.Window? ScenarioEditor;
         }
 
         public Instance () {
@@ -168,6 +169,10 @@ namespace II.Settings {
                         case "WindowStates_DeviceMonitor":
                             UI.DeviceMonitor = Window.Load (pValue);
                             break;
+                        
+                        case "WindowStates_ScenarioEditor":
+                            UI.ScenarioEditor = Window.Load (pValue);
+                            break;
                     }
                 }
             }
@@ -205,6 +210,9 @@ namespace II.Settings {
             
             if (UI.DeviceMonitor != null)
                 sw.WriteLine ($"WindowStates_DeviceMonitor:{UI.DeviceMonitor.Save()}");
+            
+            if (UI.ScenarioEditor != null)
+                sw.WriteLine ($"WindowStates_ScenarioEditor:{UI.ScenarioEditor.Save()}");
 
             sw.Close ();
             sw.Dispose ();

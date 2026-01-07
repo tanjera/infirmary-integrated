@@ -179,15 +179,25 @@
                     HotKey="Ctrl+S" 
                     InputGesture="Ctrl+S" />
           <Separator />
-          <MenuItem Name="menuToggleFullscreen" Click="MenuToggleFullscreen_Click" 
-                    HotKey="Alt+Enter"
-                    InputGesture="Alt+Enter" />
-          <Separator />
+          
           <MenuItem Name="menuExit" Click="MenuExit_Click" 
                     HotKey="Alt+F4"
                     InputGesture="Alt+F4" />
         </MenuItem>
 
+	      <MenuItem Name="menuOptions">
+		      <MenuItem Name="menuToggleFullscreen" Click="MenuToggleFullscreen_Click" 
+		                HotKey="Alt+Enter"
+		                InputGesture="Alt+Enter" />
+		      
+		      <Separator />
+		      
+		      <MenuItem Name="menuPauseDevices" Click="MenuPauseDevices_Click" 
+		                HotKey="Pause"
+		                InputGesture="Pause"/>
+
+	      </MenuItem>
+	      
         <MenuItem Name="menuMirror">
           <MenuItem Name="menuMirrorStatus" />
           <Separator />

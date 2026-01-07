@@ -15,6 +15,7 @@ using Avalonia.Threading;
 using II;
 using II.Localization;
 using II.Rhythm;
+using II.Settings;
 
 namespace IISIM.Controls {
 
@@ -25,7 +26,15 @@ namespace IISIM.Controls {
 
         /* Variables controlling for visual alarms */
         public Alarm? AlarmRef;
-
+        
+        private List<II.Settings.Device.Numeric>? Transducers_Zeroed {
+            set { 
+                if (Instance?.Scenario?.DeviceMonitor is not null)
+                    Instance.Scenario.DeviceMonitor.Transducers_Zeroed = value ?? new List<II.Settings.Device.Numeric> (); 
+            }
+            get { return Instance?.Scenario?.DeviceMonitor.Transducers_Zeroed; }
+        }
+        
         public class ControlTypes {
             public Values Value;
 
@@ -286,7 +295,7 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.ABP:
-                    if (Instance?.Physiology.TransducerZeroed_ABP ?? false) {
+                    if (Transducers_Zeroed?.Contains(Device.Numeric.ABP) ?? false) {
                         int asbp = (int)II.Math.RandomPercentRange (Instance?.Physiology?.ASBP, 0.02f);
                         int adbp = (int)II.Math.RandomPercentRange ((Instance?.Physiology?.IABP_Active ?? false ? Instance?.Physiology.IABP_DBP : Instance?.Physiology?.ADBP), 0.02f);
                         int amap = (int)II.Math.RandomPercentRange (Instance?.Physiology?.AMAP, 0.02f);
@@ -315,7 +324,7 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.CVP:
-                    if (Instance?.Physiology.TransducerZeroed_CVP ?? false) {
+                    if (Transducers_Zeroed?.Contains(Device.Numeric.CVP)?? false) {
                         int cvp = (int)II.Math.RandomPercentRange (Instance?.Physiology.CVP, 0.02f);
 
                         lblLine1.Text = String.Format ("{0:0}", cvp);
@@ -334,7 +343,7 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.PA:
-                    if (Instance?.Physiology.TransducerZeroed_PA ?? false) {
+                    if (Transducers_Zeroed?.Contains(Device.Numeric.PA) ?? false) {
                         int psp = (int)II.Math.RandomPercentRange (Instance?.Physiology.PSP, 0.02f);
                         int pdp = (int)II.Math.RandomPercentRange (Instance?.Physiology.PDP, 0.02f);
                         int pmp = (int)II.Math.RandomPercentRange (Instance?.Physiology.PMP, 0.02f);
@@ -363,7 +372,7 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.ICP:
-                    if (Instance?.Physiology.TransducerZeroed_ICP ?? false) {
+                    if (Transducers_Zeroed?.Contains(Device.Numeric.ICP) ?? false) {
                         int icp = (int)II.Math.RandomPercentRange (Instance?.Physiology.ICP, 0.02f);
 
                         lblLine1.Text = String.Format ("{0:0}", icp);
@@ -380,7 +389,7 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.IAP:
-                    if (Instance?.Physiology.TransducerZeroed_IAP ?? false) {
+                    if (Transducers_Zeroed?.Contains(Device.Numeric.IAP) ?? false) {
                         int iap = (int)II.Math.RandomPercentRange (Instance?.Physiology.IAP, 0.02f);
 
                         lblLine1.Text = String.Format ("{0:0}", iap);
@@ -441,11 +450,30 @@ namespace IISIM.Controls {
                 return;
 
             switch (ControlType?.Value) {
-                case ControlTypes.Values.ABP: Instance.Physiology.TransducerZeroed_ABP = true; return;
-                case ControlTypes.Values.CVP: Instance.Physiology.TransducerZeroed_CVP = true; return;
-                case ControlTypes.Values.PA: Instance.Physiology.TransducerZeroed_PA = true; return;
-                case ControlTypes.Values.ICP: Instance.Physiology.TransducerZeroed_ICP = true; return;
-                case ControlTypes.Values.IAP: Instance.Physiology.TransducerZeroed_IAP = true; return;
+                case ControlTypes.Values.ABP:
+                    if (!(Transducers_Zeroed?.Contains (II.Settings.Device.Numeric.ABP) ?? true))
+                        Transducers_Zeroed.Add (II.Settings.Device.Numeric.ABP);
+                    return;
+
+                case ControlTypes.Values.CVP:
+                    if (!(Transducers_Zeroed?.Contains (II.Settings.Device.Numeric.CVP) ?? true))
+                        Transducers_Zeroed.Add (II.Settings.Device.Numeric.CVP);
+                    return;
+
+                case ControlTypes.Values.PA:
+                    if (!(Transducers_Zeroed?.Contains (II.Settings.Device.Numeric.PA) ?? true))
+                        Transducers_Zeroed.Add (II.Settings.Device.Numeric.PA);
+                    return;
+
+                case ControlTypes.Values.ICP:
+                    if (!(Transducers_Zeroed?.Contains (II.Settings.Device.Numeric.ICP) ?? true))
+                        Transducers_Zeroed.Add (II.Settings.Device.Numeric.ICP);
+                    return;
+
+                case ControlTypes.Values.IAP:
+                    if (!(Transducers_Zeroed?.Contains (II.Settings.Device.Numeric.IAP) ?? true))
+                        Transducers_Zeroed.Add (II.Settings.Device.Numeric.IAP);
+                    return;
             }
         }
 

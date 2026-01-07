@@ -226,8 +226,7 @@ namespace II {
                 Step? stepFrom = Steps.Find (s => s.UUID == progFrom);
 
                 if (stepFrom != null) {
-                    // Carry device status and physiology event list (for numerics e.g. HR calculation) from previous step
-                    CopyDeviceStatus (stepFrom.Physiology, Current?.Physiology);
+                    // Carry physiology event list (for numerics e.g. HR calculation) from previous step
                     Current?.Physiology?.ListPhysiologyEvents.AddRange (stepFrom?.Physiology?.ListPhysiologyEvents ?? new List<Physiology.PhysiologyEventArgs> ());
                     await (stepFrom?.Physiology?.Deactivate () ?? Task.CompletedTask);                   // Additional unlinking of events and timers!
                 }
@@ -256,8 +255,7 @@ namespace II {
                 Step? stepFrom = Steps.Find (s => s.UUID == progFrom);
 
                 if (stepFrom != null) {
-                    // Carry device status and physiology event list (for numerics e.g. HR calculation) from previous step
-                    CopyDeviceStatus (stepFrom.Physiology, Current.Physiology);
+                    // Carry physiology event list (for numerics e.g. HR calculation) from previous step
                     Current?.Physiology?.ListPhysiologyEvents.AddRange (stepFrom?.Physiology?.ListPhysiologyEvents ?? new List<Physiology.PhysiologyEventArgs> ());
                     await (stepFrom?.Physiology?.Deactivate () ?? Task.CompletedTask);                   // Additional unlinking of events and timers!
                 }
@@ -291,8 +289,7 @@ namespace II {
                 Step? stepFrom = Steps.Find (s => s.UUID == (progFrom ?? ""));
 
                 if (stepFrom != null) {
-                    // Carry device status and physiology event list (for numerics e.g. HR calculation) from previous step
-                    CopyDeviceStatus (stepFrom.Physiology, Current.Physiology);
+                    // Carry physiology event list (for numerics e.g. HR calculation) from previous step
                     Current?.Physiology?.ListPhysiologyEvents.AddRange (stepFrom?.Physiology?.ListPhysiologyEvents ?? new List<Physiology.PhysiologyEventArgs> ());
                     await (stepFrom?.Physiology?.Deactivate () ?? Task.CompletedTask);                   // Additional unlinking of events and timers!
                 }
@@ -301,34 +298,9 @@ namespace II {
             await SetTimer ();
             await (Current?.Physiology?.Activate () ?? Task.CompletedTask);
             
-            // Translate Device settings flags into Physiology flags when applicable (e.g. transducers)
-            if (Current?.Physiology is not null) {
-                if (DeviceMonitor.Numerics_Zeroed.Contains (Device.Numeric.ABP))
-                    Current.Physiology.TransducerZeroed_ABP = true;
-                if (DeviceMonitor.Numerics_Zeroed.Contains (Device.Numeric.CVP))
-                    Current.Physiology.TransducerZeroed_CVP = true;
-                if (DeviceMonitor.Numerics_Zeroed.Contains (Device.Numeric.IAP))
-                    Current.Physiology.TransducerZeroed_IAP = true;
-                if (DeviceMonitor.Numerics_Zeroed.Contains (Device.Numeric.ICP))
-                    Current.Physiology.TransducerZeroed_ICP = true;
-                if (DeviceMonitor.Numerics_Zeroed.Contains (Device.Numeric.PA))
-                    Current.Physiology.TransducerZeroed_PA = true;
-            }
-
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
             await (Current?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change) ?? Task.CompletedTask);
-        }
-
-        public void CopyDeviceStatus (Physiology? lastP, Physiology? thisP) {
-            if (lastP is null || thisP is null)
-                return;
-
-            thisP.TransducerZeroed_CVP = lastP.TransducerZeroed_CVP;
-            thisP.TransducerZeroed_ABP = lastP.TransducerZeroed_ABP;
-            thisP.TransducerZeroed_PA = lastP.TransducerZeroed_PA;
-            thisP.TransducerZeroed_ICP = lastP.TransducerZeroed_ICP;
-            thisP.TransducerZeroed_IAP = lastP.TransducerZeroed_IAP;
         }
 
         public async Task PauseStep () => await ProgressTimer.Stop ();

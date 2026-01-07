@@ -158,6 +158,25 @@
               </Expander.Header>
               <StackPanel>
                 <iic:PropertyCheck x:Name="pchkDefibEnabled" />
+                
+                
+                <Expander Classes="exgrpf"
+                          HorizontalContentAlignment="Stretch">
+                  <Expander.Header>
+                    <Label Content="Numerics" />
+                  </Expander.Header>
+                  <StackPanel Name="spDefibNumerics">
+                  </StackPanel>
+                </Expander>
+                
+                <Expander Classes="exgrpf"
+                          HorizontalContentAlignment="Stretch">
+                  <Expander.Header>
+                    <Label Content="Tracings" />
+                  </Expander.Header>
+                  <StackPanel Name="spDefibTracings">
+                  </StackPanel>
+                </Expander>
               </StackPanel>
             </Expander>
 

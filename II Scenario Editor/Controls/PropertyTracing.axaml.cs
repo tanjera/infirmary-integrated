@@ -67,42 +67,18 @@ namespace IISE.Controls {
 
             if (plblIndex is not null && pcmbTracing is not null) {
                 plblIndex.Content = $"{Index + 1}:";
-                
-                foreach (string s in Enum.GetNames (typeof (Device.Tracing))) {
-                    if (s == "IABP" || s == "FHR" || s == "TOCO")
-                        continue;
-                    
-                    pcmbTracing.Items.Add (new ComboBoxItem () {
-                        Content = s switch {
-                            "ECG_I" => "Electrocardiograph (ECG): Lead I",
-                            "ECG_II" => "Electrocardiograph (ECG): Lead II",
-                            "ECG_III" => "Electrocardiograph (ECG): Lead III",
-                            "ECG_AVR" => "Electrocardiograph (ECG): Lead aVR",
-                            "ECG_AVL" => "Electrocardiograph (ECG): Lead aVL",
-                            "ECG_AVF" => "Electrocardiograph (ECG): Lead aVF",
-                            "ECG_V1" => "Electrocardiograph (ECG): Lead V1",
-                            "ECG_V2" => "Electrocardiograph (ECG): Lead V2",
-                            "ECG_V3" => "Electrocardiograph (ECG): Lead V3",
-                            "ECG_V4" => "Electrocardiograph (ECG): Lead V4",
-                            "ECG_V5" => "Electrocardiograph (ECG): Lead V5",
-                            "ECG_V6" => "Electrocardiograph (ECG): Lead V6",
-                            
-                            "SPO2" => "Pulse Oximetry (SpO2)",
-                            "RR" => "Respiratory Rate (RR)",
-                            "ETCO2" => "End-tidal Carbon Dioxide (ETCO2)",
 
-                            "CVP" => "Central Venous Pressure (CVP)",
-                            "ABP" => "Arterial Blood Pressure (ABP)",
-                            "PA" => "Pulmonary Arterial Pressures (PA)",
-                            "ICP" => "Intra-cranial Pressure (ICP)",
-                            "IAP" => "Intra-abdominal Pressure (IAP)",
-                            _ => ""
-                        }
-                    });
+                foreach (Device.Tracing t in Enum.GetValues<Device.Tracing> ()) {
+                    if (II.Settings.Device.CanUse (Device, t)) {
+                        pcmbTracing.Items.Add (new ComboBoxItem () {
+                            Content = II.Settings.Device.TracingLookup[t]
+                        });
+                    }
                 }
-                
-                pcmbTracing.SelectedIndex = new List<Device.Tracing>(Enum.GetValues<Device.Tracing>())
-                    .IndexOf(Tracing);
+
+                pcmbTracing.SelectedItem = pcmbTracing.ItemsView.Where (
+                        o => (o as ComboBoxItem)?.Content?.ToString () == II.Settings.Device.TracingLookup [Tracing])
+                    ?.First ();
                 
                 if (!isInitiated) {
                     pcmbTracing.SelectionChanged += SendPropertyChange;
@@ -128,8 +104,10 @@ namespace IISE.Controls {
                 Device = ptea.Device;
 
                 plblIndex.Content = $"{Index + 1}:";
-                pcmbTracing.SelectedIndex = new List<Device.Tracing>(Enum.GetValues<Device.Tracing>())
-                    .IndexOf(ptea.Tracing);
+                
+                pcmbTracing.SelectedItem = pcmbTracing.ItemsView.Where (
+                        o => (o as ComboBoxItem)?.Content?.ToString () == II.Settings.Device.TracingLookup [ptea.Tracing])
+                    ?.First ();
                 
                 pcmbTracing.SelectionChanged += SendPropertyChange;
                 pcmbTracing.LostFocus += SendPropertyChange;
@@ -139,7 +117,8 @@ namespace IISE.Controls {
         
         private void SendPropertyChange (object? sender, EventArgs e) {
             pcmbTracing = this.GetControl<ComboBox> ("cmbTracing");
-            Tracing = (Device.Tracing) pcmbTracing.SelectedIndex;
+            Tracing = II.Settings.Device.TracingLookup
+                .First(o => o.Value == (pcmbTracing.SelectedItem as ComboBoxItem)?.Content?.ToString()).Key;
 
             PropertyTracingEventArgs ptea = new() {
                 Index = Index,

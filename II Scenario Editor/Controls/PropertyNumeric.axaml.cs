@@ -72,33 +72,23 @@ namespace IISE.Controls {
             
             if (plblIndex is not null && pcmbNumeric is not null && pchkTransducer is not null) {
                 plblIndex.Content = $"{Index + 1}:";
-                
-                foreach (string s in Enum.GetNames (typeof (Device.Numeric))) {
-                    pcmbNumeric.Items.Add (new ComboBoxItem () {
-                        Content = s switch {
-                            "ECG" => "Electrocardiograph (ECG)",
-                            "T" => "Temperature (T)",
-                            "RR" => "Respiratory Rate (RR)",
-                            "ETCO2" => "End-tidal Carbon Dioxide (ETCO2)",
-                            "SPO2" => "Pulse Oximetry (SpO2)",
-                            "NIBP" => "Non-invasive Blood Pressure (NiBP)",
-                            "ABP" => "Arterial Blood Pressure (ABP)",
-                            "CVP" => "Central Venous Pressure (CVP)",
-                            "CO" => "Cardiac Output (CO)",
-                            "PA" => "Pulmonary Arterial Pressures (PA)",
-                            "ICP" => "Intra-cranial Pressure (ICP)",
-                            "IAP" => "Intra-abdominal Pressure (IAP)",
-                            _ => ""
-                        }
-                    });
+
+                foreach (Device.Numeric n in Enum.GetValues<Device.Numeric> ()) {
+                    if (II.Settings.Device.CanUse (Device, n)) {
+                        pcmbNumeric.Items.Add (new ComboBoxItem () {
+                            Content = II.Settings.Device.NumericLookup [n]
+                        });    
+                    }
                 }
-                
-                pcmbNumeric.SelectedIndex = new List<Device.Numeric>(Enum.GetValues<Device.Numeric>())
-                    .IndexOf(Numeric);
-                
+
+                pcmbNumeric.SelectedItem = pcmbNumeric.ItemsView.Where (
+                        o => (o as ComboBoxItem)?.Content?.ToString () == II.Settings.Device.NumericLookup [Numeric])
+                    ?.First ();
+
                 pchkTransducer.IsChecked = Numeric_Zeroed;
                 
-                switch ((Device.Numeric)pcmbNumeric.SelectedIndex) {
+                switch (II.Settings.Device.NumericLookup
+                            .First(o => o.Value == (pcmbNumeric.SelectedItem as ComboBoxItem)?.Content?.ToString()).Key) {
                     default:
                         pchkTransducer.IsVisible = false;
                         break;
@@ -141,8 +131,10 @@ namespace IISE.Controls {
                 Numeric_Zeroed = pnea.Numeric_Zeroed;
 
                 plblIndex.Content = $"{Index + 1}:";
-                pcmbNumeric.SelectedIndex = new List<Device.Numeric>(Enum.GetValues<Device.Numeric>())
-                    .IndexOf(pnea.Numeric);
+                
+                pcmbNumeric.SelectedItem = pcmbNumeric.ItemsView.Where (
+                        o => (o as ComboBoxItem)?.Content?.ToString () == II.Settings.Device.NumericLookup [pnea.Numeric])
+                    ?.First ();
 
                 switch (pnea.Numeric) {
                     default:
@@ -184,7 +176,8 @@ namespace IISE.Controls {
             pcmbNumeric = this.GetControl<ComboBox> ("cmbNumeric");
             pchkTransducer = this.GetControl<CheckBox> ("chkTransducer");
 
-            switch ((Device.Numeric)pcmbNumeric.SelectedIndex) {
+            switch (II.Settings.Device.NumericLookup
+                        .First(o => o.Value == (pcmbNumeric.SelectedItem as ComboBoxItem)?.Content?.ToString()).Key) {
                 default:
                     pchkTransducer.IsVisible = false;
                     break;
@@ -197,13 +190,15 @@ namespace IISE.Controls {
                     pchkTransducer.IsVisible = true;
                     break;
             }
+            
         }
         
         private void SendPropertyChange (object? sender, EventArgs e) {
             pcmbNumeric = this.GetControl<ComboBox> ("cmbNumeric");
             pchkTransducer = this.GetControl<CheckBox>("chkTransducer");
             
-            Numeric = (Device.Numeric) pcmbNumeric.SelectedIndex;
+            Numeric = II.Settings.Device.NumericLookup
+                .First(o => o.Value == (pcmbNumeric.SelectedItem as ComboBoxItem)?.Content?.ToString()).Key;
             Numeric_Zeroed = pchkTransducer.IsChecked ?? false;
             
             PropertyNumericEventArgs pnea = new() {

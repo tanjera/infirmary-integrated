@@ -14,12 +14,21 @@ using Avalonia.Threading;
 using II;
 using II.Localization;
 using II.Rhythm;
+using II.Settings;
 
 namespace IISIM.Controls {
 
     public partial class IABPNumeric : DeviceNumeric {
         public ControlTypes? ControlType;
-
+        
+        private List<II.Settings.Device.Numeric>? Transducers_Zeroed {
+            set { 
+                if (Instance?.Scenario?.DeviceIABP is not null)
+                    Instance.Scenario.DeviceIABP.Transducers_Zeroed = value ?? new List<II.Settings.Device.Numeric> (); 
+            }
+            get { return Instance?.Scenario?.DeviceIABP.Transducers_Zeroed; }
+        }
+        
         public class ControlTypes {
             public Values Value;
 
@@ -135,7 +144,7 @@ namespace IISIM.Controls {
                     break;
 
                 case ControlTypes.Values.ABP:
-                    if (Instance.Physiology.TransducerZeroed_ABP) {
+                    if (Transducers_Zeroed?.Contains(Device.Numeric.ABP) ?? false) {
                         lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Physiology.ASBP, 0.02f));
                         lblLine2.Text = String.Format ("/ {0:0}", II.Math.RandomPercentRange (
                             (!Instance?.Device_IABP?.Running ?? false
