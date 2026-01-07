@@ -99,7 +99,7 @@ namespace IISIM {
                 }
 
                 /* Update UI from loading functionality */
-                await SetParameterStatus (Instance?.Simulation.AutoApplyChanges ?? false);
+                await SetParameterStatus (Instance?.Settings.AutoApplyChanges ?? false);
 
                 /* Run useful but otherwise vanity functions last */
 
@@ -112,7 +112,7 @@ namespace IISIM {
         }
 
         private void InitInitialRun () {
-            if (!II.Settings.Simulation.Exists () || !(Instance?.Simulation.AcceptedEULA ?? false)) {
+            if (!II.Settings.Instance.Exists () || !(Instance?.Settings.AcceptedEULA ?? false)) {
                 DialogEULA ();
             }
         }
@@ -141,7 +141,7 @@ namespace IISIM {
             this.GetControl<MenuItem> ("menuSettings").Header = Instance.Language.Localize ("PE:MenuSettings");
             this.GetControl<MenuItem> ("menuToggleAudio").Header = String.Format ("{0}: {1}",
                 Instance.Language.Localize ("PE:MenuToggleAudio"),
-                Instance.Simulation.AudioEnabled ? Instance.Language.Localize ("BOOLEAN:On") : Instance.Language.Localize ("BOOLEAN:Off"));
+                Instance.Settings.AudioEnabled ? Instance.Language.Localize ("BOOLEAN:On") : Instance.Language.Localize ("BOOLEAN:Off"));
             this.GetControl<MenuItem> ("menuSetLanguage").Header = Instance.Language.Localize ("PE:MenuSetLanguage");
 
             this.GetControl<MenuItem> ("menuHelp").Header = Instance.Language.Localize ("PE:MenuHelp");
@@ -209,8 +209,8 @@ namespace IISIM {
             this.GetControl<Label> ("lblParametersApply").Content = Instance.Language.Localize ("BUTTON:ApplyChanges");
             this.GetControl<Label> ("lblParametersReset").Content = Instance.Language.Localize ("BUTTON:ResetParameters");
 
-            this.GetControl<CheckBox> ("chkAutoApplyChanges").IsChecked = Instance.Simulation.AutoApplyChanges;
-            this.GetControl<Button> ("btnParametersReset").IsEnabled = !Instance.Simulation.AutoApplyChanges;
+            this.GetControl<CheckBox> ("chkAutoApplyChanges").IsChecked = Instance.Settings.AutoApplyChanges;
+            this.GetControl<Button> ("btnParametersReset").IsEnabled = !Instance.Settings.AutoApplyChanges;
 
 
             ItemCollection icCardiacRhythms = this.GetControl<ComboBox> ("comboCardiacRhythm").Items;
@@ -262,16 +262,16 @@ namespace IISIM {
             bool upgradeAvailable = Utility.IsNewerVersion (version, Instance.Server.UpgradeVersion);
 
             if (!upgradeAvailable) {            // If no update available, no status update; remove any notification muting
-                Instance.Simulation.MuteUpgrade = false;
-                Instance.Simulation.Save ();
+                Instance.Settings.MuteUpgrade = false;
+                Instance.Settings.Save ();
                 return;
             } 
 
-            if (Instance.Simulation.MuteUpgrade) {
-                if (DateTime.Compare (Instance.Simulation.MuteUpgradeDate,
+            if (Instance.Settings.MuteUpgrade) {
+                if (DateTime.Compare (Instance.Settings.MuteUpgradeDate,
                         DateTime.Now - new TimeSpan (30, 0, 0, 0)) < 0) {
-                    Instance.Simulation.MuteUpgrade = false; // Reset the notification mute every 30 days
-                    Instance.Simulation.Save ();
+                    Instance.Settings.MuteUpgrade = false; // Reset the notification mute every 30 days
+                    Instance.Settings.Save ();
                 } else {
                     // Mutes update popup notification
                     return;
@@ -631,9 +631,9 @@ namespace IISIM {
 
                     case IISIM.DialogUpgrade.UpgradeOptions.Mute:
                         if (Instance is not null) {
-                            Instance.Simulation.MuteUpgrade = true;
-                            Instance.Simulation.MuteUpgradeDate = DateTime.Now;
-                            Instance.Simulation.Save ();
+                            Instance.Settings.MuteUpgrade = true;
+                            Instance.Settings.MuteUpgradeDate = DateTime.Now;
+                            Instance.Settings.Save ();
                         }
                         return;
 
@@ -651,7 +651,7 @@ namespace IISIM {
                 return;
             }
 
-            await SetAudio (!Instance.Simulation.AudioEnabled);
+            await SetAudio (!Instance.Settings.AudioEnabled);
         }
 
         public void SetAudio_On () => _ = SetAudio (true);
@@ -664,12 +664,12 @@ namespace IISIM {
                 return;
             }
 
-            Instance.Simulation.AudioEnabled = toSet;
+            Instance.Settings.AudioEnabled = toSet;
 
             await Dispatcher.UIThread.InvokeAsync (() => {
                 this.GetControl<MenuItem> ("menuToggleAudio").Header = String.Format ("{0}: {1}",
                     Instance.Language.Localize ("PE:MenuToggleAudio"),
-                    Instance.Simulation.AudioEnabled ? Instance.Language.Localize ("BOOLEAN:On") : Instance.Language.Localize ("BOOLEAN:Off"));
+                    Instance.Settings.AudioEnabled ? Instance.Language.Localize ("BOOLEAN:On") : Instance.Language.Localize ("BOOLEAN:Off"));
             });
         }
 
@@ -1161,7 +1161,7 @@ namespace IISIM {
         }
 
         public Task Exit () {
-            Instance?.Simulation.Save ();
+            Instance?.Settings.Save ();
             Instance?.Exit ();
 
             return Task.CompletedTask;
@@ -1615,7 +1615,7 @@ namespace IISIM {
                     this.GetControl<ComboBox> ("comboFHRRhythm").SelectedIndex = (int)p.ObstetricFetalHeartRhythm.Value;
                 }
 
-                _ = SetParameterStatus (Instance?.Simulation.AutoApplyChanges ?? false);     // Re-establish parameter status
+                _ = SetParameterStatus (Instance?.Settings.AutoApplyChanges ?? false);     // Re-establish parameter status
             });
         }
 
@@ -1700,14 +1700,31 @@ namespace IISIM {
 
         private void ButtonApplyParameters_Click (object sender, RoutedEventArgs e)
             => _ = ApplyPhysiologyParameters ();
-
+        
         private void OnLoaded (object? sender, RoutedEventArgs e) {
-            
+            if (Instance?.Settings.UI?.Control is not null) {
+                Position = new PixelPoint(Instance.Settings.UI.Control.X ?? Position.X, 
+                    Instance.Settings.UI.Control.Y ?? Position.Y);
+                Width = Instance.Settings.UI.Control.Width ?? Width;
+                Height = Instance.Settings.UI.Control.Height ?? Height;
+                WindowState = Instance.Settings.UI.Control.WindowState ?? WindowState;
+            }
         }
 
         private void OnClosing (object? sender, WindowClosingEventArgs e) {
-            
+            if (Instance?.Settings.UI is not null) {
+                Instance.Settings.UI.Control = new() {
+                    X = Position.X,
+                    Y = Position.Y,
+                    Width = Width,
+                    Height = Height,
+                    WindowState = WindowState
+                };
+                
+                Instance.Settings.Save();
+            }
         }
+        
         private void OnClosed (object sender, EventArgs e)
             => _ = Exit ();
 
@@ -1715,11 +1732,11 @@ namespace IISIM {
             if (ParameterStatus == ParameterStatuses.Loading || Instance is null)
                 return;
 
-            Instance.Simulation.AutoApplyChanges = this.GetControl<CheckBox> ("chkAutoApplyChanges").IsChecked ?? true;
-            this.GetControl<Button> ("btnParametersReset").IsEnabled = !Instance.Simulation.AutoApplyChanges;
-            Instance.Simulation.Save ();
+            Instance.Settings.AutoApplyChanges = this.GetControl<CheckBox> ("chkAutoApplyChanges").IsChecked ?? true;
+            this.GetControl<Button> ("btnParametersReset").IsEnabled = !Instance.Settings.AutoApplyChanges;
+            Instance.Settings.Save ();
 
-            _ = SetParameterStatus (Instance.Simulation.AutoApplyChanges);
+            _ = SetParameterStatus (Instance.Settings.AutoApplyChanges);
         }
 
         private void OnUIPhysiologyParameter_KeyDown (object sender, KeyEventArgs e) {
@@ -1859,6 +1876,5 @@ namespace IISIM {
                     break;
             }
         }
-
     }
 }

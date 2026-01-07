@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Avalonia;
-using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Markup.Xaml;
@@ -16,9 +15,11 @@ using Avalonia.Threading;
 
 using II;
 using II.Rhythm;
+using II.Settings;
 using II.Waveform;
 
 using LibVLCSharp.Shared;
+using Window = Avalonia.Controls.Window;
 
 namespace IISIM {
 
@@ -41,6 +42,7 @@ namespace IISIM {
         public DeviceWindow (App? app) {
             Instance = app;
 
+            Loaded += this.OnLoaded;
             Closed += this.OnClosed;
             Closing += this.OnClosing;
 
@@ -127,11 +129,21 @@ namespace IISIM {
             TimerNumerics_Respiratory.Start ();
         }
 
-        public virtual void OnClosed (object? sender, EventArgs e) {
+        protected virtual void PauseSimulation () {
+            if (Instance?.Settings.State == II.Settings.Instance.States.Running)
+                Instance.Settings.State = II.Settings.Instance.States.Paused;
+            else if (Instance?.Settings.State == II.Settings.Instance.States.Paused)
+                Instance.Settings.State = II.Settings.Instance.States.Running;
+        }
+
+        protected virtual void OnLoaded (object? sender, RoutedEventArgs e) {
+        }
+
+        protected virtual void OnClosed (object? sender, EventArgs e) {
             Dispose ();
         }
 
-        public virtual void OnClosing (object? sender, CancelEventArgs e) {
+        protected virtual void OnClosing (object? sender, CancelEventArgs e) {
             TimerAlarm?.Dispose ();
             DisposeAudio ();
         }
@@ -142,13 +154,13 @@ namespace IISIM {
         public virtual void OnTick_Alarm (object? sender, EventArgs e) {
         }
 
-        public virtual void OnTick_Tracing (object? sender, EventArgs e) {
+        protected virtual void OnTick_Tracing (object? sender, EventArgs e) {
         }
 
-        public virtual void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
+        protected virtual void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
         }
 
-        public virtual void OnTick_Vitals_Respiratory (object? sender, EventArgs e) {
+        protected virtual void OnTick_Vitals_Respiratory (object? sender, EventArgs e) {
         }
     }
 }

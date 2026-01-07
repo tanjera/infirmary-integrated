@@ -576,9 +576,8 @@ namespace IISIM {
         private void MenuClose_Click (object s, RoutedEventArgs e)
             => this.Close ();
 
-        private void MenuPauseSimulation_Click (object s, RoutedEventArgs e){
-            return;
-        }
+        private void MenuPauseSimulation_Click (object s, RoutedEventArgs e)
+            => PauseSimulation();
 
         private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Light);
@@ -586,8 +585,41 @@ namespace IISIM {
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Dark);
 
-        public override void OnClosing (object? sender, CancelEventArgs e) {
+        protected override void OnLoaded (RoutedEventArgs e) {
+            base.OnLoaded(e);
+            
+            if (Instance?.Settings.UI?.DeviceIABP is not null) {
+                var pos = new PixelPoint (Instance.Settings.UI.DeviceIABP.X ?? Position.X,
+                    Instance.Settings.UI.DeviceIABP.Y ?? Position.Y);
+
+                var s = from screen in Screens.All
+                    where screen.WorkingArea.Contains (pos)
+                    select screen;
+                
+                if (s.Any()) { 
+                    Position = pos;
+                    Width = Instance.Settings.UI.DeviceIABP.Width ?? Width;
+                    Height = Instance.Settings.UI.DeviceIABP.Height ?? Height;
+                }
+
+                WindowState = Instance.Settings.UI.DeviceIABP.WindowState ?? WindowState;
+            }
+        }
+
+        protected override void OnClosing (object? sender, CancelEventArgs e) {
             base.OnClosing (sender, e);
+
+            if (Instance?.Settings.UI is not null) {
+                Instance.Settings.UI.DeviceIABP = new() {
+                    X = Position.X,
+                    Y = Position.Y,
+                    Width = Width,
+                    Height = Height,
+                    WindowState = WindowState
+                };
+                
+                Instance.Settings.Save();
+            }
 
             if (Instance?.Physiology is not null)
                 Instance.Physiology.PhysiologyEvent -= OnPhysiologyEvent;
@@ -615,7 +647,7 @@ namespace IISIM {
                 return;
             }
 
-            if (Instance?.Simulation.AudioEnabled == false) {
+            if (Instance?.Settings.AudioEnabled == false) {
                 AudioPlayer.Stop ();
                 return;
             }
@@ -630,8 +662,8 @@ namespace IISIM {
             }
         }
 
-        public override void OnTick_Tracing (object? sender, EventArgs e) {
-            if (Instance?.Simulation.State != II.Settings.Simulation.States.Running)
+        protected override void OnTick_Tracing (object? sender, EventArgs e) {
+            if (Instance?.Settings.State != II.Settings.Instance.States.Running)
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {
@@ -640,9 +672,9 @@ namespace IISIM {
             }
         }
 
-        public override void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
+        protected override void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
             
-            if (Instance?.Simulation.State != II.Settings.Simulation.States.Running
+            if (Instance?.Settings.State != II.Settings.Instance.States.Running
                 || Instance?.Physiology is null)
                 return;
 

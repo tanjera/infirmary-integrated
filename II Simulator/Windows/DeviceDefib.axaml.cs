@@ -84,7 +84,7 @@ namespace IISIM {
             DataContext = this;
 
             // Initiate Device variables per Instance.Settings
-            DefibEnergy = Instance?.Simulation?.DefibEnergyMaximum ?? 200;
+            DefibEnergy = Instance?.Settings?.DefibEnergyMaximum ?? 200;
 
             InitInterface ();
             OnLayoutChange ();
@@ -271,24 +271,24 @@ namespace IISIM {
         }
 
         public Task SetDefibEnergyMaximum (int joules) {
-            if (Instance?.Simulation is null)
+            if (Instance?.Settings is null)
                 return Task.CompletedTask;
 
-            Instance.Simulation.DefibEnergyMaximum = joules;
-            Instance.Simulation.Save ();
+            Instance.Settings.DefibEnergyMaximum = joules;
+            Instance.Settings.Save ();
 
-            DefibEnergy = II.Math.Clamp (DefibEnergy, 0, Instance?.Simulation?.DefibEnergyMaximum ?? joules);
+            DefibEnergy = II.Math.Clamp (DefibEnergy, 0, Instance?.Settings?.DefibEnergyMaximum ?? joules);
             UpdateInterface ();
 
             return Task.CompletedTask;
         }
 
         public Task SetDefibEnergyIncrement (int joules) {
-            if (Instance?.Simulation is null)
+            if (Instance?.Settings is null)
                 return Task.CompletedTask;
 
-            Instance.Simulation.DefibEnergyIncrement = joules;
-            Instance.Simulation.Save ();
+            Instance.Settings.DefibEnergyIncrement = joules;
+            Instance.Settings.Save ();
 
             return Task.CompletedTask;
         }
@@ -304,7 +304,7 @@ namespace IISIM {
                 return;
             }
 
-            if (!(Instance?.Simulation?.AudioEnabled ?? false) || ((Instance?.Simulation?.DefibAudioSource ?? Simulation.ToneSources.Mute) == Simulation.ToneSources.Mute)) {
+            if (!(Instance?.Settings?.AudioEnabled ?? false) || ((Instance?.Settings?.DefibAudioSource ?? II.Settings.Instance.ToneSources.Mute) == II.Settings.Instance.ToneSources.Mute)) {
                 ChargePlayer.Stop ();
                 await ReleaseAudioCharge ();
             } else {
@@ -336,29 +336,29 @@ namespace IISIM {
 
         public void SetAudio_Off () => _ = Instance?.Window_Main?.SetAudio (false);
 
-        public void SetAudioTone_Off () => _ = SetAudioTone (II.Settings.Simulation.ToneSources.Mute);
+        public void SetAudioTone_Off () => _ = SetAudioTone (II.Settings.Instance.ToneSources.Mute);
 
-        public void SetAudioTone_Defib () => _ = SetAudioTone (II.Settings.Simulation.ToneSources.Defibrillator);
+        public void SetAudioTone_Defib () => _ = SetAudioTone (II.Settings.Instance.ToneSources.Defibrillator);
 
-        public void SetAudioTone_ECG () => _ = SetAudioTone (II.Settings.Simulation.ToneSources.ECG);
+        public void SetAudioTone_ECG () => _ = SetAudioTone (II.Settings.Instance.ToneSources.ECG);
 
-        public void SetAudioTone_SPO2 () => _ = SetAudioTone (II.Settings.Simulation.ToneSources.SPO2);
+        public void SetAudioTone_SPO2 () => _ = SetAudioTone (II.Settings.Instance.ToneSources.SPO2);
 
-        public async Task SetAudioTone (II.Settings.Simulation.ToneSources source) {
-            if (Instance?.Simulation is null)
+        public async Task SetAudioTone (II.Settings.Instance.ToneSources source) {
+            if (Instance?.Settings is null)
                 return;
 
-            Instance.Simulation.DefibAudioSource = source;
-            Instance.Simulation.Save ();
+            Instance.Settings.DefibAudioSource = source;
+            Instance.Settings.Save ();
 
             if (TonePlayer is not null && Instance?.AudioLib is not null) {
-                switch (Instance.Simulation.DefibAudioSource) {
+                switch (Instance.Settings.DefibAudioSource) {
                     default:
-                    case Simulation.ToneSources.SPO2:
+                    case II.Settings.Instance.ToneSources.SPO2:
                         await ReleaseAudioTone ();
                         break;
 
-                    case Simulation.ToneSources.ECG:
+                    case II.Settings.Instance.ToneSources.ECG:
                         await ReleaseAudioTone ();
                         ToneMedia = await Audio.ToneGenerator (0.15, 330, true);
                         TonePlayer.Media = new Media (Instance.AudioLib, new StreamMediaInput (ToneMedia));
@@ -369,22 +369,22 @@ namespace IISIM {
             return;
         }
 
-        public async Task PlayAudioTone (Simulation.ToneSources trigger, Physiology? p) {
+        public async Task PlayAudioTone (Instance.ToneSources trigger, Physiology? p) {
             if (TonePlayer is null || Instance?.AudioLib is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (PlayAudioTone)}");
                 return;
             }
 
-            if (Instance.Simulation.DefibAudioSource == trigger && (Instance?.Simulation.AudioEnabled ?? false)) {
-                switch (Instance.Simulation.DefibAudioSource) {
+            if (Instance.Settings.DefibAudioSource == trigger && (Instance?.Settings.AudioEnabled ?? false)) {
+                switch (Instance.Settings.DefibAudioSource) {
                     default: break;
 
-                    case Simulation.ToneSources.ECG:           // Plays a fixed tone each QRS complex
+                    case II.Settings.Instance.ToneSources.ECG:           // Plays a fixed tone each QRS complex
                         TonePlayer.Stop ();
                         TonePlayer.Play ();
                         break;
 
-                    case Simulation.ToneSources.SPO2:          // Plays a variable tone depending on SpO2
+                    case II.Settings.Instance.ToneSources.SPO2:          // Plays a variable tone depending on SpO2
                         TonePlayer.Stop ();
                         await ReleaseAudioTone ();
                         ToneMedia = await Audio.ToneGenerator (0.15, II.Math.Lerp (110, 330, (double)(p?.SPO2 ?? 100) / 100), true);
@@ -544,9 +544,9 @@ namespace IISIM {
             _ = SetChargeState (ChargeStates.Discharged);
 
             DefibEnergy = II.Math.Clamp (
-                DefibEnergy - (Instance?.Simulation?.DefibEnergyIncrement ?? 20),
+                DefibEnergy - (Instance?.Settings?.DefibEnergyIncrement ?? 20),
                 0,
-                Instance?.Simulation?.DefibEnergyMaximum ?? 200);
+                Instance?.Settings?.DefibEnergyMaximum ?? 200);
 
             UpdateInterface ();
         }
@@ -559,9 +559,9 @@ namespace IISIM {
             _ = SetChargeState (ChargeStates.Discharged);
 
             DefibEnergy = II.Math.Clamp (
-                DefibEnergy + (Instance?.Simulation?.DefibEnergyIncrement ?? 20),
+                DefibEnergy + (Instance?.Settings?.DefibEnergyIncrement ?? 20),
                 0,
-                Instance?.Simulation?.DefibEnergyMaximum ?? 200);
+                Instance?.Settings?.DefibEnergyMaximum ?? 200);
 
             UpdateInterface ();
         }
@@ -687,9 +687,8 @@ namespace IISIM {
         private void MenuAddTracing_Click (object s, RoutedEventArgs e)
             => AddTracing ();
 
-        private void MenuPauseSimulation_Click (object s, RoutedEventArgs e) {
-            return;
-        }
+        private void MenuPauseSimulation_Click (object s, RoutedEventArgs e) 
+            => PauseSimulation();
 
         private void MenuDefibEnergyMaximum_200 (object s, RoutedEventArgs e)
             => _ = SetDefibEnergyMaximum (200);
@@ -710,16 +709,16 @@ namespace IISIM {
             => SetAudio_Off ();
 
         private void MenuAudioOff (object sender, RoutedEventArgs e)
-            => _ = SetAudioTone (Simulation.ToneSources.Mute);
+            => _ = SetAudioTone (II.Settings.Instance.ToneSources.Mute);
 
         private void MenuAudioDefib (object sender, RoutedEventArgs e)
-            => _ = SetAudioTone (Simulation.ToneSources.Defibrillator);
+            => _ = SetAudioTone (II.Settings.Instance.ToneSources.Defibrillator);
 
         private void MenuAudioECG (object sender, RoutedEventArgs e)
-            => _ = SetAudioTone (Simulation.ToneSources.ECG);
+            => _ = SetAudioTone (II.Settings.Instance.ToneSources.ECG);
 
         private void MenuAudioSPO2 (object sender, RoutedEventArgs e)
-            => _ = SetAudioTone (Simulation.ToneSources.SPO2);
+            => _ = SetAudioTone (II.Settings.Instance.ToneSources.SPO2);
 
         private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Light);
@@ -747,15 +746,48 @@ namespace IISIM {
             UpdateInterface ();
         }
 
-        public override void OnClosing (object? sender, CancelEventArgs e) {
+        protected override void OnLoaded (RoutedEventArgs e) {
+            base.OnLoaded(e);
+            
+            if (Instance?.Settings.UI?.DeviceDefib is not null) {
+                var pos = new PixelPoint (Instance.Settings.UI.DeviceDefib.X ?? Position.X,
+                    Instance.Settings.UI.DeviceDefib.Y ?? Position.Y);
+
+                var s = from screen in Screens.All
+                    where screen.WorkingArea.Contains (pos)
+                    select screen;
+                
+                if (s.Any()) { 
+                    Position = pos;
+                    Width = Instance.Settings.UI.DeviceDefib.Width ?? Width;
+                    Height = Instance.Settings.UI.DeviceDefib.Height ?? Height;
+                }
+
+                WindowState = Instance.Settings.UI.DeviceDefib.WindowState ?? WindowState;
+            }
+        }
+
+        protected override void OnClosing (object? sender, CancelEventArgs e) {
             base.OnClosing (sender, e);
+
+            if (Instance?.Settings.UI is not null) {
+                Instance.Settings.UI.DeviceDefib = new() {
+                    X = Position.X,
+                    Y = Position.Y,
+                    Width = Width,
+                    Height = Height,
+                    WindowState = WindowState
+                };
+                
+                Instance.Settings.Save();
+            }
 
             if (Instance?.Physiology is not null)
                 Instance.Physiology.PhysiologyEvent -= OnPhysiologyEvent;
         }
 
-        public override void OnTick_Tracing (object? sender, EventArgs e) {
-            if (Instance?.Simulation.State != II.Settings.Simulation.States.Running)
+        protected override void OnTick_Tracing (object? sender, EventArgs e) {
+            if (Instance?.Settings.State != II.Settings.Instance.States.Running)
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {
@@ -764,8 +796,8 @@ namespace IISIM {
             }
         }
 
-        public override void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
-            if (Instance?.Simulation.State != II.Settings.Simulation.States.Running)
+        protected override void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
+            if (Instance?.Settings.State != II.Settings.Instance.States.Running)
                 return;
 
             listNumerics
@@ -776,8 +808,8 @@ namespace IISIM {
                 .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }
 
-        public override void OnTick_Vitals_Respiratory (object? sender, EventArgs e) {
-            if (Instance?.Simulation.State != II.Settings.Simulation.States.Running)
+        protected override void OnTick_Vitals_Respiratory (object? sender, EventArgs e) {
+            if (Instance?.Settings.State != II.Settings.Instance.States.Running)
                 return;
 
             listNumerics
@@ -881,7 +913,7 @@ namespace IISIM {
 
                 case Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Electric:
                     // QRS audio tone is only triggered by rhythms w/ a ventricular electrical (QRS complex) action
-                    _ = PlayAudioTone (Simulation.ToneSources.ECG, e.Physiology);
+                    _ = PlayAudioTone (II.Settings.Instance.ToneSources.ECG, e.Physiology);
 
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Physiology));
                     break;
@@ -892,7 +924,7 @@ namespace IISIM {
 
                 case Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Mechanical:
                     // SPO2 audio tone is only triggered  by rhythms w/ a ventricular mechanical action (systole)
-                    _ = PlayAudioTone (Simulation.ToneSources.SPO2, e.Physiology);
+                    _ = PlayAudioTone (II.Settings.Instance.ToneSources.SPO2, e.Physiology);
 
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Physiology));
                     IterateAutoScale ();

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -179,9 +180,8 @@ namespace IISIM {
         private void MenuClose_Click (object s, RoutedEventArgs e)
             => this.Close ();
 
-        private void MenuPauseSimulation_Click (object s, RoutedEventArgs e){
-            return;
-        }
+        private void MenuPauseSimulation_Click (object s, RoutedEventArgs e)
+            => PauseSimulation();
 
         private void MenuColorGrid_Click (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Grid);
@@ -192,15 +192,48 @@ namespace IISIM {
         private void MenuColorScheme_Dark (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Dark);
 
-        public override void OnClosing (object? sender, CancelEventArgs e) {
+        protected override void OnLoaded (RoutedEventArgs e) {
+            base.OnLoaded(e);
+            
+            if (Instance?.Settings.UI?.DeviceECG is not null) {
+                var pos = new PixelPoint (Instance.Settings.UI.DeviceECG.X ?? Position.X,
+                    Instance.Settings.UI.DeviceECG.Y ?? Position.Y);
+
+                var s = from screen in Screens.All
+                    where screen.WorkingArea.Contains (pos)
+                    select screen;
+                
+                if (s.Any()) { 
+                    Position = pos;
+                    Width = Instance.Settings.UI.DeviceECG.Width ?? Width;
+                    Height = Instance.Settings.UI.DeviceECG.Height ?? Height;
+                }
+
+                WindowState = Instance.Settings.UI.DeviceECG.WindowState ?? WindowState;
+            }
+        }
+
+        protected override void OnClosing (object? sender, CancelEventArgs e) {
             base.OnClosing (sender, e);
+
+            if (Instance?.Settings.UI is not null) {
+                Instance.Settings.UI.DeviceECG = new() {
+                    X = Position.X,
+                    Y = Position.Y,
+                    Width = Width,
+                    Height = Height,
+                    WindowState = WindowState
+                };
+                
+                Instance.Settings.Save();
+            }
 
             if (Instance?.Physiology is not null)
                 Instance.Physiology.PhysiologyEvent -= OnPhysiologyEvent;
         }
 
-        public override void OnTick_Tracing (object? sender, EventArgs e) {
-            if (Instance?.Simulation.State != II.Settings.Simulation.States.Running)
+        protected override void OnTick_Tracing (object? sender, EventArgs e) {
+            if (Instance?.Settings.State != II.Settings.Instance.States.Running)
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {

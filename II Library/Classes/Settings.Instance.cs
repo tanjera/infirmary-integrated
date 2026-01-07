@@ -13,7 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace II.Settings {
-    public class Simulation {
+    public class Instance {
         /* Simulation-wide Settings:
          * Specific to the active/running simulation- (e.g. Time, State:Running/Stopped) and the physical device
          * and user running the simulation- may be loaded from the user's preferences file at runtime!
@@ -37,13 +37,8 @@ namespace II.Settings {
         public int DefibEnergyIncrement;
         public ToneSources DefibAudioSource;
 
-        public II.Settings.Window Control;
-        public II.Settings.Window DeviceMonitor;
-        public II.Settings.Window DeviceDefib;
-        public II.Settings.Window DeviceECG;
-        public II.Settings.Window DeviceEFM;
-        public II.Settings.Window DeviceIABP;
-        
+        public WindowStates UI = new WindowStates ();
+
         public bool MuteUpgrade;
         public DateTime MuteUpgradeDate;
 
@@ -59,8 +54,17 @@ namespace II.Settings {
             ECG,
             SPO2
         }
+        
+        public class WindowStates {
+            public II.Settings.Window? Control;
+            public II.Settings.Window? DeviceMonitor;
+            public II.Settings.Window? DeviceDefib;
+            public II.Settings.Window? DeviceECG;
+            public II.Settings.Window? DeviceEFM;
+            public II.Settings.Window? DeviceIABP;
+        }
 
-        public Simulation () {
+        public Instance () {
             /* Note: These are the DEFAULT settings on 1st run (or Load() failure to parse)! */
 
             Language = "ENG";
@@ -140,6 +144,30 @@ namespace II.Settings {
                         case "MuteUpgradeDate":
                             MuteUpgradeDate = Utility.DateTime_FromString (pValue);
                             break;
+                        
+                        case "WindowStates_Control":
+                            UI.Control = Window.Load (pValue);
+                            break;
+                        
+                        case "WindowStates_DeviceDefib":
+                            UI.DeviceDefib = Window.Load (pValue);
+                            break;
+                        
+                        case "WindowStates_DeviceECG":
+                            UI.DeviceECG = Window.Load (pValue);
+                            break;
+                        
+                        case "WindowStates_DeviceEFM":
+                            UI.DeviceEFM = Window.Load (pValue);
+                            break;
+                        
+                        case "WindowStates_DeviceIABP":
+                            UI.DeviceIABP = Window.Load (pValue);
+                            break;
+                        
+                        case "WindowStates_DeviceMonitor":
+                            UI.DeviceMonitor = Window.Load (pValue);
+                            break;
                     }
                 }
             }
@@ -159,6 +187,24 @@ namespace II.Settings {
             sw.WriteLine ($"DefibAudioSource:{DefibAudioSource}");
             sw.WriteLine ($"MuteUpgrade:{MuteUpgrade}");
             sw.WriteLine ($"MuteUpgradeDate:{Utility.DateTime_ToString (MuteUpgradeDate)}");
+            
+            if (UI.Control != null)
+                sw.WriteLine ($"WindowStates_Control:{UI.Control.Save()}");
+            
+            if (UI.DeviceDefib != null)
+                sw.WriteLine ($"WindowStates_DeviceDefib:{UI.DeviceDefib.Save()}");
+            
+            if (UI.DeviceECG != null)
+                sw.WriteLine ($"WindowStates_DeviceECG:{UI.DeviceECG.Save()}");
+            
+            if (UI.DeviceEFM != null)
+                sw.WriteLine ($"WindowStates_DeviceEFM:{UI.DeviceEFM.Save()}");
+            
+            if (UI.DeviceIABP != null)
+                sw.WriteLine ($"WindowStates_DeviceIABP:{UI.DeviceIABP.Save()}");
+            
+            if (UI.DeviceMonitor != null)
+                sw.WriteLine ($"WindowStates_DeviceMonitor:{UI.DeviceMonitor.Save()}");
 
             sw.Close ();
             sw.Dispose ();

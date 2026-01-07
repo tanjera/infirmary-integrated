@@ -23,7 +23,7 @@ namespace IISIM {
     public class App : Application {
         public string []? Start_Args;
 
-        public II.Settings.Simulation Simulation = new ();
+        public II.Settings.Instance Settings = new ();
         public Server Server = new ();
         public Mirror Mirror = new ();
         public Language Language = new ();
@@ -55,8 +55,8 @@ namespace IISIM {
             Timer_Main.Start ();
 
             II.File.Init ();                                            // Init file structure (for config file, temp files)
-            Simulation.Load ();                                           // Load config file
-            Language = new (Simulation.Language);                         // Load localization dictionary based on settings
+            Settings.Load ();                                           // Load config file
+            Language = new (Settings.Language);                         // Load localization dictionary based on settings
 
             try {                                                       // try/catch in case LibVLC is not installed, fails, etc.
                 AudioLib = new ();                                      // Init audio engine library

@@ -312,7 +312,7 @@ namespace IISIM {
                 return;
             }
 
-            if (ToneSource == trigger && (Instance?.Simulation.AudioEnabled ?? false)) {
+            if (ToneSource == trigger && (Instance?.Settings.AudioEnabled ?? false)) {
                 switch (ToneSource) {
                     default: break;
 
@@ -542,9 +542,8 @@ namespace IISIM {
         private void MenuAddTracing_Click (object s, RoutedEventArgs e)
             => AddTracing ();
 
-        private void MenuPauseSimulation_Click (object s, RoutedEventArgs e){
-            return;
-        }
+        private void MenuPauseSimulation_Click (object s, RoutedEventArgs e)
+            => PauseSimulation();
 
         private void MenuColorScheme_Light (object sender, RoutedEventArgs e)
             => SetColorScheme (Color.Schemes.Light);
@@ -573,9 +572,42 @@ namespace IISIM {
         private void MenuAudioSPO2 (object sender, RoutedEventArgs e)
             => _ = SetAudioTone (ToneSources.SPO2);
 
-        public override void OnClosing (object? sender, CancelEventArgs e) {
+        protected override void OnLoaded (RoutedEventArgs e) {
+            base.OnLoaded(e);
+            
+            if (Instance?.Settings.UI?.DeviceMonitor is not null) {
+                var pos = new PixelPoint (Instance.Settings.UI.DeviceMonitor.X ?? Position.X,
+                    Instance.Settings.UI.DeviceMonitor.Y ?? Position.Y);
+
+                var s = from screen in Screens.All
+                    where screen.WorkingArea.Contains (pos)
+                    select screen;
+                
+                if (s.Any()) { 
+                    Position = pos;
+                    Width = Instance.Settings.UI.DeviceMonitor.Width ?? Width;
+                    Height = Instance.Settings.UI.DeviceMonitor.Height ?? Height;
+                }
+
+                WindowState = Instance.Settings.UI.DeviceMonitor.WindowState ?? WindowState;
+            }
+        }
+
+        protected override void OnClosing (object? sender, CancelEventArgs e) {
             base.OnClosing (sender, e);
 
+            if (Instance?.Settings.UI is not null) {
+                Instance.Settings.UI.DeviceMonitor = new() {
+                    X = Position.X,
+                    Y = Position.Y,
+                    Width = Width,
+                    Height = Height,
+                    WindowState = WindowState
+                };
+                
+                Instance.Settings.Save();
+            }
+            
             if (Instance?.Physiology is not null)
                 Instance.Physiology.PhysiologyEvent -= OnPhysiologyEvent;
         }
@@ -586,7 +618,7 @@ namespace IISIM {
                 return;
             }
 
-            if (Instance?.Simulation.AudioEnabled == false) {
+            if (Instance?.Settings.AudioEnabled == false) {
                 AudioPlayer.Stop ();
                 AlarmActive = null;
                 return;
@@ -624,8 +656,8 @@ namespace IISIM {
             }
         }
 
-        public override void OnTick_Tracing (object? sender, EventArgs e) {
-            if (Instance?.Simulation.State != II.Settings.Simulation.States.Running)
+        protected override void OnTick_Tracing (object? sender, EventArgs e) {
+            if (Instance?.Settings.State != II.Settings.Instance.States.Running)
                 return;
 
             for (int i = 0; i < listTracings.Count; i++) {
@@ -634,8 +666,8 @@ namespace IISIM {
             }
         }
 
-        public override void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
-            if (Instance?.Simulation.State != II.Settings.Simulation.States.Running)
+        protected override void OnTick_Vitals_Cardiac (object? sender, EventArgs e) {
+            if (Instance?.Settings.State != II.Settings.Instance.States.Running)
                 return;
 
             listNumerics
@@ -646,8 +678,8 @@ namespace IISIM {
                 .ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
         }
 
-        public override void OnTick_Vitals_Respiratory (object? sender, EventArgs e) {
-            if (Instance?.Simulation.State != II.Settings.Simulation.States.Running)
+        protected override void OnTick_Vitals_Respiratory (object? sender, EventArgs e) {
+            if (Instance?.Settings.State != II.Settings.Instance.States.Running)
                 return;
 
             listNumerics
