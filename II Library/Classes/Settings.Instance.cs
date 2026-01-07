@@ -190,8 +190,6 @@ namespace II.Settings {
             
             if (UI.Control != null)
                 sw.WriteLine ($"WindowStates_Control:{UI.Control.Save()}");
-            if (UI.Control.X == 0)
-                Console.WriteLine ($"!!");
                 
             if (UI.DeviceDefib != null)
                 sw.WriteLine ($"WindowStates_DeviceDefib:{UI.DeviceDefib.Save()}");

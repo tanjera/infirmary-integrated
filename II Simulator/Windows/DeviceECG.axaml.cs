@@ -218,7 +218,7 @@ namespace IISIM {
         protected override void OnClosing (object? sender, CancelEventArgs e) {
             base.OnClosing (sender, e);
 
-            if (Instance?.Settings.UI is not null) {
+            if (Instance?.Settings.UI is not null && WindowStatus == WindowStates.Active) {
                 Instance.Settings.UI.DeviceECG = new() {
                     X = Position.X,
                     Y = Position.Y,

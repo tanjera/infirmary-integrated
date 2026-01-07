@@ -106,31 +106,35 @@ namespace IISIM {
 
         public void Exit () {
             // Close all Windows!
-            if (Window_Splash?.IsActive ?? false)
-                Window_Splash.Close ();
+                Window_Splash?.Close ();
             
-            if (Window_Main?.IsActive ?? false)
+            if (Window_Main?.WindowStatus != Control.WindowStates.Closed)
                 Window_Main?.Close ();
             
             // Close all Devices!
-            if (Device_Defib?.IsActive ?? false)
-                Device_Defib.Close ();
+            if (Device_Defib?.WindowStatus != DeviceWindow.WindowStates.Closed)
+                Device_Defib?.Close ();
             
-            if (Device_ECG?.IsActive ?? false)
-                Device_ECG.Close ();
+            if (Device_ECG?.WindowStatus != DeviceWindow.WindowStates.Closed)
+                Device_ECG?.Close ();
             
-            if (Device_EFM?.IsActive ?? false)
-                Device_EFM.Close ();
+            if (Device_EFM?.WindowStatus != DeviceWindow.WindowStates.Closed)
+                Device_EFM?.Close ();
             
-            if (Device_IABP?.IsActive ?? false)
-                Device_IABP.Close ();
+            if (Device_IABP?.WindowStatus != DeviceWindow.WindowStates.Closed)
+                Device_IABP?.Close ();
             
-            if (Device_Monitor?.IsActive ?? false)
-                Device_Monitor.Close ();
-            
-            try {   // If not fully initialized, may throw an exception... since exiting, just abort.
+            if (Device_Monitor?.WindowStatus != DeviceWindow.WindowStates.Closed)
+                Device_Monitor?.Close ();
+
+            try {
+                // If not fully initialized, may throw an exception... since exiting, just abort.
                 AudioLib?.Dispose ();
-            } catch { }
+            } finally {
+                if (Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime dl){
+                    dl.Shutdown();
+                }
+            }
         }
 
         public static Task MacOSRegisterLaunchServices () {

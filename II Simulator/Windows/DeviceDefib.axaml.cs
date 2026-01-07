@@ -749,7 +749,7 @@ namespace IISIM {
         protected override void OnLoaded (RoutedEventArgs e) {
             base.OnLoaded(e);
             
-            if (Instance?.Settings.UI?.DeviceDefib is not null) {
+            if (Instance?.Settings.UI?.DeviceDefib is not null && WindowStatus == WindowStates.Active) {
                 var pos = new PixelPoint (
                     Instance.Settings.UI.DeviceDefib.X < 0 ? 0 : Instance.Settings.UI.DeviceDefib.X ?? Position.X,
                     Instance.Settings.UI.DeviceDefib.Y < 0 ? 0 : Instance.Settings.UI.DeviceDefib.Y ?? Position.Y);

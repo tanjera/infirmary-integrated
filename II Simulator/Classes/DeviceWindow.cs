@@ -33,8 +33,16 @@ namespace IISIM {
             TimerNumerics_Respiratory = new (),
             TimerAncillary_Delay = new ();
 
+        public WindowStates WindowStatus = WindowStates.Null;
+        
         /* Variables controlling for audio alarms */
         public MediaPlayer? AudioPlayer;
+
+        public enum WindowStates {
+            Null,
+            Active,
+            Closed
+        }
         
         public DeviceWindow () {
         }
@@ -137,9 +145,12 @@ namespace IISIM {
         }
 
         protected virtual void OnLoaded (object? sender, RoutedEventArgs e) {
+            WindowStatus = WindowStates.Active;
         }
 
         protected virtual void OnClosed (object? sender, EventArgs e) {
+            WindowStatus = WindowStates.Closed;
+            
             Dispose ();
         }
 

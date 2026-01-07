@@ -33,6 +33,8 @@ namespace IISIM {
     public partial class Control : Window {
         public App? Instance;
 
+        public WindowStates WindowStatus = WindowStates.Null;
+        
         private bool HideDeviceLabels = false;
 
         /* Buffers for ViewModel handling and temporal smoothing of upstream Model data changes */
@@ -46,9 +48,16 @@ namespace IISIM {
                       ApplyTimer_Respiratory = new (),
                       ApplyTimer_Obstetric = new ();
 
+        
         /* Variables for Auto-Apply functionality */
         private ParameterStatuses ParameterStatus = ParameterStatuses.Loading;
 
+        public enum WindowStates {
+            Null,
+            Active,
+            Closed
+        }
+        
         private enum ParameterStatuses {
             Loading,
             AutoApply,
@@ -1702,6 +1711,8 @@ namespace IISIM {
             => _ = ApplyPhysiologyParameters ();
         
         private void OnLoaded (object? sender, RoutedEventArgs e) {
+            WindowStatus = WindowStates.Active;
+            
             if (Instance?.Settings.UI?.Control is not null) {
                 var pos = new PixelPoint (
                     Instance.Settings.UI.Control.X < 0 ? 0 : Instance.Settings.UI.Control.X ?? Position.X,
@@ -1722,7 +1733,7 @@ namespace IISIM {
         }
         
         private void OnClosing (object? sender, WindowClosingEventArgs e) {
-            if (Instance?.Settings.UI is not null) {
+            if (Instance?.Settings.UI is not null && WindowStatus == WindowStates.Active) {
                 Instance.Settings.UI.Control = new() {
                     X = Position.X,
                     Y = Position.Y,
@@ -1734,9 +1745,12 @@ namespace IISIM {
                 Instance.Settings.Save();
             }
         }
-        
-        private void OnClosed (object sender, EventArgs e)
-            => _ = Exit ();
+
+        private void OnClosed (object sender, EventArgs e) {
+            WindowStatus = WindowStates.Closed;
+            
+            Exit ();
+        }
 
         private void OnAutoApplyChanges_Changed (object sender, RoutedEventArgs e) {
             if (ParameterStatus == ParameterStatuses.Loading || Instance is null)
