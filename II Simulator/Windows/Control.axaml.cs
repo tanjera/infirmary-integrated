@@ -33,7 +33,7 @@ namespace IISIM {
     public partial class Control : Window {
         public App? Instance;
 
-        public WindowStates WindowStatus = WindowStates.Null;
+        public WindowStates WindowStatus = WindowStates.Null;   // Monitors status of the Window; Active? Closed?
         
         private bool HideDeviceLabels = false;
 
@@ -427,7 +427,7 @@ namespace IISIM {
             if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                 this.Show ();
 
-            if (Instance.Device_Monitor is null || !Instance.Device_Monitor.IsActive)
+            if (Instance.Device_Monitor is null || Instance.Device_Monitor.WindowStatus != DeviceWindow.WindowStates.Active)
                 Instance.Device_Monitor = new DeviceMonitor (Instance);
 
             Instance.Device_Monitor.Activate ();
@@ -449,7 +449,7 @@ namespace IISIM {
                 if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                     this.Show ();
 
-                if (Instance.Device_ECG is null || !Instance.Device_ECG.IsActive)
+                if (Instance.Device_ECG is null || Instance.Device_ECG.WindowStatus != DeviceWindow.WindowStates.Active)
                     Instance.Device_ECG = new DeviceECG (Instance);
 
                 Instance.Device_ECG.Activate ();
@@ -470,7 +470,7 @@ namespace IISIM {
                 if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                     this.Show ();
 
-                if (Instance.Device_Defib is null || !Instance.Device_Defib.IsActive)
+                if (Instance.Device_Defib is null || Instance.Device_Defib.WindowStatus != DeviceWindow.WindowStates.Active)
                     Instance.Device_Defib = new DeviceDefib (Instance);
 
                 Instance.Device_Defib.Activate ();
@@ -491,7 +491,7 @@ namespace IISIM {
                 if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                     this.Show ();
 
-                if (Instance.Device_IABP is null || !Instance.Device_IABP.IsActive)
+                if (Instance.Device_IABP is null || Instance.Device_IABP.WindowStatus != DeviceWindow.WindowStates.Active)
                     Instance.Device_IABP = new DeviceIABP (Instance);
 
                 Instance.Device_IABP.Activate ();
@@ -511,7 +511,7 @@ namespace IISIM {
                 if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
                     this.Show ();
 
-                if (Instance.Device_EFM is null || !Instance.Device_EFM.IsActive)
+                if (Instance.Device_EFM is null || Instance.Device_EFM.WindowStatus != DeviceWindow.WindowStates.Active)
                     Instance.Device_EFM = new DeviceEFM (Instance);
 
                 Instance.Device_EFM.Activate ();

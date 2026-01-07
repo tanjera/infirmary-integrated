@@ -33,7 +33,12 @@ namespace IISIM {
             TimerNumerics_Respiratory = new (),
             TimerAncillary_Delay = new ();
 
-        public WindowStates WindowStatus = WindowStates.Null;
+        // WindowStates/Status is necessary for knowing if an Avalonia.Controls.Window has been Closed
+        // For example: you cannot Show() a Window that has been closed ... but there is no other flag to check
+        // to know if it has been closed... and will fail and/or throw an Exception if attempted!
+        // Also used to prevent logic from running multiple times if OnClosing is triggered several times (e.g.
+        // if a Window closes and then is told to Close() again.
+        public WindowStates WindowStatus = WindowStates.Null;   // Monitors status of the Window; Active? Closed?
         
         /* Variables controlling for audio alarms */
         public MediaPlayer? AudioPlayer;
