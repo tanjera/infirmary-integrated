@@ -23,11 +23,14 @@ namespace IISIM {
 
     public class App : Application {
         public string []? Start_Args;
-
+        
+        public II.Timer Timer_Simulation = new();
+        public System.Timers.Timer Timer_Main = new ();
+        
         public II.Settings.Instance Settings = new ();
-        public Server Server = new ();
-        public Mirror Mirror = new ();
-        public Language Language = new ();
+        public Server Server;
+        public Mirror Mirror;
+        public Language Language;
 
         public Scenario? Scenario;
         public Physiology? Physiology { get => Scenario?.Physiology; }
@@ -41,7 +44,6 @@ namespace IISIM {
         public DeviceIABP? Device_IABP;
         public DeviceEFM? Device_EFM;
 
-        public System.Timers.Timer Timer_Main = new ();
 
         /* For temporary unpacking of files on runtime e.g. audio */
         public string PathTemporary = Path.Combine (Path.GetTempPath (), Guid.NewGuid ().ToString ());
@@ -52,9 +54,17 @@ namespace IISIM {
         public override void Initialize () {
             AvaloniaXamlLoader.Load (this);
 
+            Server = new Server (Timer_Simulation);
+            Mirror = new Mirror (Timer_Simulation);
+            Language = new ();
+            
             Timer_Main.Interval = 10; // q 10 milliseconds
             Timer_Main.Start ();
 
+            Timer_Main.Elapsed += Timer_Simulation.Process;
+            Timer_Simulation.Set (10);
+            Timer_Simulation.Start ();
+            
             II.File.Init ();                                            // Init file structure (for config file, temp files)
             Settings.Load ();                                           // Load config file
             Language = new (Settings.Language);                         // Load localization dictionary based on settings
@@ -99,6 +109,17 @@ namespace IISIM {
             base.OnFrameworkInitializationCompleted ();
         }
 
+        public void PauseSimulation () {
+            if (Settings.State == II.Settings.Instance.States.Running) {
+                Timer_Simulation.Pause ();
+                Settings.State = II.Settings.Instance.States.Paused;
+                
+            } else if (Settings.State == II.Settings.Instance.States.Paused) {
+                Timer_Simulation.Unpause ();
+                Settings.State = II.Settings.Instance.States.Running;
+            }
+        }
+        
         public void OnMenuAbout_Click (object sender, EventArgs e) {
             if (Window_Main is not null)
                 _ = Window_Main.DialogAbout ();

@@ -7,11 +7,13 @@ using System;
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using II.Settings;
 
 namespace II.Server {
     public class Mirror {
         private bool ThreadLock = false;
-        public Timer timerUpdate = new ();
+        public Timer? TimerSimulation;
+        public Timer TimerUpdate = new ();
 
         public enum Statuses { INACTIVE, HOST, CLIENT };
 
@@ -34,7 +36,8 @@ namespace II.Server {
             set { _Accession = value.ToUpper (); }
         }
 
-        public Mirror () {
+        public Mirror (Timer? timerSimulation) {
+            TimerSimulation = timerSimulation;
             ResetBackgroundWorker ();
         }
 
@@ -44,11 +47,11 @@ namespace II.Server {
         }
 
         public void ProcessTimer (object? sender, EventArgs e) {
-            timerUpdate.Process ();
+            TimerUpdate.Process ();
         }
 
         public void TimerTick (Scenario.Step? step, Server s) {
-            _ = timerUpdate.ResetStart (5000);
+            _ = TimerUpdate.ResetStart (5000);
             _ = GetStep (step, s);
         }
 
@@ -71,11 +74,11 @@ namespace II.Server {
                 // Using a thread lock to prevent multiple web calls from generating race conditions against each other
                 if (!ThreadLock) {
                     ThreadLock = true;
-                    Scenario.Step? pBuffer = await Server.Get_StepMirror (this);
+                    Scenario.Step? pBuffer = await s.Get_StepMirror (this);
                     ThreadLock = false;
 
                     if (pBuffer != null) {
-                        step ??= new ();
+                        step ??= new (TimerSimulation);
 
                         await step.Load (pBuffer.Save ());
                     }

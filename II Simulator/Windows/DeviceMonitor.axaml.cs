@@ -843,9 +843,6 @@ namespace IISIM {
                     break;
 
                 case Physiology.PhysiologyEventTypes.Cardiac_Baseline:
-                    
-                    Debug.WriteLine($"{DateTime.Now} Cardiac_Baseline");
-                    
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology));
                     break;
 

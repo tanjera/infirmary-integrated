@@ -301,10 +301,10 @@ namespace IISIM {
             }
 
             Instance.Timer_Main.Elapsed += Instance.Mirror.ProcessTimer;
-            Instance.Mirror.timerUpdate.Tick += OnMirrorTick;
+            Instance.Mirror.TimerUpdate.Tick += OnMirrorTick;
 
             Task.WhenAll (
-                Instance.Mirror.timerUpdate.ResetStart (5000),
+                Instance.Mirror.TimerUpdate.ResetStart (5000),
                 UpdateMirrorStatus ()
             );
         }
@@ -315,10 +315,10 @@ namespace IISIM {
                 return;
             }
 
-            Instance.Scenario = new Scenario (toInit);
+            Instance.Scenario = new Scenario (Instance.Timer_Simulation, toInit);
             Instance.Scenario.StepChangeRequest += OnStepChangeRequest;    // Allows unlinking of Timers immediately prior to Step change
             Instance.Scenario.StepChanged += OnStepChanged;                  // Updates IIApp.Patient, allows PatientEditor UI to update
-            Instance.Timer_Main.Elapsed += Instance.Scenario.ProcessTimer;
+            Instance.Timer_Simulation.Tick += Instance.Scenario.ProcessTimer;
 
             if (toInit)         // If toInit is false, Patient is null- InitPatient() will need to be called manually
                 InitScenarioStep ();
@@ -331,7 +331,7 @@ namespace IISIM {
             }
 
             if (Instance.Scenario != null) {
-                Instance.Timer_Main.Elapsed -= Instance.Scenario.ProcessTimer;   // Unlink Scenario from App/Main Timer
+                Instance.Timer_Simulation.Tick -= Instance.Scenario.ProcessTimer;   // Unlink Scenario from App/Main Timer
                 Instance.Scenario.Dispose ();        // Disposes Scenario's events and timer, and all Patients' events and timers
             }
         }
@@ -351,9 +351,9 @@ namespace IISIM {
                 return;
             }
 
-            Instance.Timer_Main.Elapsed += ApplyTimer_Cardiac.Process;
-            Instance.Timer_Main.Elapsed += ApplyTimer_Respiratory.Process;
-            Instance.Timer_Main.Elapsed += ApplyTimer_Obstetric.Process;
+            Instance.Timer_Simulation.Tick += ApplyTimer_Cardiac.Process;
+            Instance.Timer_Simulation.Tick += ApplyTimer_Respiratory.Process;
+            Instance.Timer_Simulation.Tick += ApplyTimer_Obstetric.Process;
 
             ApplyTimer_Cardiac.Tick += ApplyPhysiologyParameters_Cardiac;
             ApplyTimer_Respiratory.Tick += ApplyPhysiologyParameters_Respiratory;
@@ -383,8 +383,8 @@ namespace IISIM {
                 return;
             }
 
-            /* Tie the Patient's Timer to the Main Timer */
-            Instance.Timer_Main.Elapsed += Instance.Physiology.ProcessTimers;
+            /* Tie the Patient's Timer to the main Simulation Timer */
+            Instance.Timer_Simulation.Tick += Instance.Physiology.ProcessTimers;
 
             /* Tie PatientEvents to the PatientEditor UI! And trigger. */
             Instance.Physiology.PhysiologyEvent += OnPhysiologyEvent;
@@ -403,7 +403,9 @@ namespace IISIM {
                     Instance.Physiology.PhysiologyEvent += Instance.Device_IABP.OnPhysiologyEvent;
             }
             
-            OnPhysiologyEvent (this, new Physiology.PhysiologyEventArgs (Instance.Physiology, Physiology.PhysiologyEventTypes.Vitals_Change));
+            OnPhysiologyEvent (this, new Physiology.PhysiologyEventArgs (Instance.Physiology, 
+                Physiology.PhysiologyEventTypes.Vitals_Change, 
+                Instance.Timer_Simulation));
         }
 
         private async Task UnloadPatientEvents () {
@@ -414,7 +416,7 @@ namespace IISIM {
 
             /* Unloading the Patient from the Main Timer also stops all the Patient's Timers
             /* and results in that Patient not triggering PatientEvent's */
-            Instance.Timer_Main.Elapsed -= Instance.Physiology.ProcessTimers;
+            Instance.Timer_Simulation.Tick -= Instance.Physiology.ProcessTimers;
 
             /* But it's still important to clear PatientEvent subscriptions so they're not adding
             /* as duplicates when InitPatientEvents() is called!! */
@@ -588,8 +590,8 @@ namespace IISIM {
 
                 if (Instance is not null)
                     await Instance.Mirror.PostStep (
-                        new Scenario.Step () {
-                            Physiology = Instance.Physiology ?? new Physiology (),
+                        new Scenario.Step (Instance.Timer_Simulation) {
+                            Physiology = Instance.Physiology ?? new Physiology (Instance.Timer_Simulation),
                         },
                         Instance.Server);
             });
@@ -700,7 +702,7 @@ namespace IISIM {
                 return;
             }
 
-            // Check with server for updated version of Infirmary Integrated- notify user either way
+            // Check with server for updated version of Infirmary Integrated - notify user either way
             await Instance.Server.Get_LatestVersion ();
 
             string version = Assembly.GetExecutingAssembly ()?.GetName ()?.Version?.ToString (3) ?? "0.0.0";
@@ -853,7 +855,10 @@ namespace IISIM {
                 await LoadFail ();
             }
 
-            OnPhysiologyEvent (this, new Physiology.PhysiologyEventArgs (Instance?.Physiology, Physiology.PhysiologyEventTypes.Vitals_Change));
+            OnPhysiologyEvent (this, new Physiology.PhysiologyEventArgs (
+                Instance?.Physiology, 
+                Physiology.PhysiologyEventTypes.Vitals_Change,
+                Instance?.Timer_Simulation));
         }
 
         private async Task LoadInit (string incFile) {
@@ -918,7 +923,7 @@ namespace IISIM {
 
                     if (line == "> Begin: Physiology") {           // Load files saved by Infirmary Integrated (base)
                         if (Instance.Scenario?.Physiology is null)
-                            Instance.Scenario = new (true);
+                            Instance.Scenario = new (Instance.Timer_Simulation,true);
 
                         pbuffer = new StringBuilder ();
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
@@ -928,7 +933,7 @@ namespace IISIM {
                         await RefreshScenario (true);
                         await (Instance?.Physiology?.Load (pbuffer.ToString ()) ?? Task.CompletedTask);
                     } else if (line == "> Begin: Scenario") {   // Load files saved by Infirmary Integrated Scenario Editor
-                        Instance.Scenario ??= new (false);
+                        Instance.Scenario ??= new (Instance.Timer_Simulation,false);
 
                         pbuffer = new StringBuilder ();
                         while ((pline = (await sRead.ReadLineAsync ())?.Trim ()) != null
@@ -1015,7 +1020,9 @@ namespace IISIM {
             /* Load completed but possibly in any order (e.g. physiology before devices)
              * Fire events to begin synchronizing devices with physiology
              */
-            Instance?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change);
+            Instance?.Physiology?.OnPhysiologyEvent (
+                Physiology.PhysiologyEventTypes.Vitals_Change,
+                Instance?.Timer_Simulation);
         }
 
         private async Task LoadOptions (string inc) {
@@ -1186,7 +1193,7 @@ namespace IISIM {
             }
 
             Instance?.Mirror.TimerTick (
-                new Scenario.Step () {
+                new Scenario.Step (Instance.Timer_Simulation) {
                     Physiology = Instance.Physiology
                 },
                 Instance.Server);
@@ -1212,7 +1219,7 @@ namespace IISIM {
         }
 
         private void InitStep () {
-            Scenario.Step step = Instance?.Scenario?.Current ?? new Scenario.Step ();
+            Scenario.Step step = Instance?.Scenario?.Current ?? new Scenario.Step (Instance?.Timer_Simulation);
 
             Label lblScenarioStep = this.GetControl<Label> ("lblScenarioStep");
             Label lblTimerStep = this.GetControl<Label> ("lblTimerStep");
@@ -1319,7 +1326,7 @@ namespace IISIM {
         private async Task ApplyPhysiologyParameters () {
             await AdvanceParameterStatus (ParameterStatuses.ChangesApplied);
 
-            ApplyBuffer ??= new ();
+            ApplyBuffer ??= new (Instance?.Timer_Simulation);
 
             await ApplyPhysiologyParameters_Buffer (ApplyBuffer);
             ApplyPending_Cardiac = true;
@@ -1480,7 +1487,7 @@ namespace IISIM {
 
             if (Instance?.Mirror is not null && Instance?.Server is not null)
                 _ = Instance.Mirror.PostStep (
-                    new Scenario.Step () {
+                    new Scenario.Step (Instance.Timer_Simulation) {
                         Physiology = Instance.Physiology,
                     },
                     Instance.Server);
@@ -1504,7 +1511,7 @@ namespace IISIM {
 
             if (Instance?.Mirror is not null && Instance?.Server is not null)
                 _ = Instance.Mirror.PostStep (
-                    new Scenario.Step () {
+                    new Scenario.Step (Instance.Timer_Simulation) {
                         Physiology = Instance.Physiology,
                     },
                     Instance.Server);
@@ -1530,7 +1537,7 @@ namespace IISIM {
 
             if (Instance?.Mirror is not null && Instance?.Server is not null)
                 _ = Instance.Mirror.PostStep (
-                    new Scenario.Step () {
+                    new Scenario.Step (Instance.Timer_Simulation) {
                         Physiology = Instance.Physiology,
                     },
                     Instance.Server);
@@ -1638,12 +1645,9 @@ namespace IISIM {
                 WindowState = WindowState.FullScreen;
         }
         
-        protected virtual void PauseSimulation () {
-            if (Instance?.Settings.State == II.Settings.Instance.States.Running)
-                Instance.Settings.State = II.Settings.Instance.States.Paused;
-            else if (Instance?.Settings.State == II.Settings.Instance.States.Paused)
-                Instance.Settings.State = II.Settings.Instance.States.Running;
-        }
+        protected virtual void PauseSimulation () 
+           => Instance?.PauseSimulation();
+        
         
         private void MenuNewSimulation_Click (object sender, RoutedEventArgs e)
             => _ = RefreshScenario (true);

@@ -15,6 +15,8 @@ using II.Settings;
 
 namespace II {
     public class Scenario {
+        public Timer? Timer_Simulation;
+        
         public string? Name, Description, Author;
         public DateTime? Updated;
 
@@ -36,9 +38,11 @@ namespace II {
 
         public event EventHandler<EventArgs>? StepChanged;
 
-        public Scenario (bool toInit = false) {
+        public Scenario (Timer timerSimulation, bool toInit = false) {
+            Timer_Simulation = timerSimulation;
+            
             if (toInit) {
-                Step s = new ();
+                Step s = new (timerSimulation);
 
                 BeginStep = s.UUID;
                 AtStep = s.UUID;
@@ -112,7 +116,7 @@ namespace II {
                             pbuffer.AppendLine (pline);
 
                         IsLoaded = true;
-                        Step s = new();
+                        Step s = new(Timer_Simulation);
                         await s.Load (pbuffer.ToString ());
                         Steps.Add (s);
                     } else if (line == "> Begin: DeviceMonitor") {
@@ -238,7 +242,7 @@ namespace II {
 
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
-            await (Current?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change) ?? Task.CompletedTask);
+            await (Current?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change, null) ?? Task.CompletedTask);
         }
 
         public async Task LastStep () {
@@ -267,7 +271,7 @@ namespace II {
             
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
-            await (Current?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change) ?? Task.CompletedTask);
+            await (Current?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change, null) ?? Task.CompletedTask);
         }
 
         public async Task SetStep (string? incUUID) {
@@ -300,7 +304,7 @@ namespace II {
             
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
-            await (Current?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change) ?? Task.CompletedTask);
+            await (Current?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change, null) ?? Task.CompletedTask);
         }
 
         public async Task PauseStep () => await ProgressTimer.Stop ();
@@ -341,10 +345,10 @@ namespace II {
             public int IISEPositionX = 0;
             public int IISEPositionY = 0;
 
-            public Step () {
+            public Step (Timer? timerSimulation) {
                 UUID = Guid.NewGuid ().ToString ();
 
-                Physiology = new Physiology ();
+                Physiology = new Physiology (timerSimulation);
             }
 
             public async Task Load (string inc) {

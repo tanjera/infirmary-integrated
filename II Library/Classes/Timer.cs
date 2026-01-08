@@ -1,5 +1,5 @@
 ﻿/* Timer.cs
- * Infirmary Integrated
+    * Infirmary Integrated
  * By Ibi Keller (Tanjera), (c) 2023
  */
 
@@ -14,10 +14,21 @@ namespace II {
         private DateTime Last;
         private bool Running = false;
 
+        /* For Epoch timekeeping (for simulation purposes e.g. pausing) */
+        private DateTime? Paused;
+        private ulong? Gap = 0;
+        private ulong _Epoch = 0;
+        public ulong Epoch { get => _Epoch; }
+
         public bool IsRunning { get { return Running; } }
 
+        public enum Bases {
+            Realtime,
+            Simulation
+        }
+        
         public event EventHandler<EventArgs>? Tick;
-
+        
         ~Timer () => Dispose ();
 
         public void Dispose () {
@@ -169,6 +180,29 @@ namespace II {
             => await ResetStop ((int)interval);
 
         /// <summary>
+        /// Pauses the Timer without actually Stopping it (for Epoch time gap calculation) 
+        /// </summary>
+        /// <returns></returns>
+        public Task Pause () {
+            Paused ??= DateTime.Now;        // Don't wipe Paused if Pause() is called multiple times!
+            return Task.CompletedTask;
+        }
+        
+        /// <summary>
+        /// Unpauses the Timer and calculates Epoch time gap
+        /// </summary>
+        /// <returns></returns>
+        public Task Unpause () {
+            if (Paused is not null) {
+                Gap ??= 0;
+                Gap += (ulong)(((DateTime.Now - Paused)?.TotalSeconds * 1000) ?? 0);
+                Paused = null;
+            }
+
+            return Task.CompletedTask;
+        }
+        
+        /// <summary>
         /// Invokes the Timer's Tick event
         /// </summary>
         /// <returns></returns>
@@ -185,9 +219,14 @@ namespace II {
             if (!Running)
                 return;
 
-            if ((DateTime.Now - Last).TotalSeconds * 1000 > _Interval) {
+            if ((Paused is null && (DateTime.Now - Last).TotalSeconds * 1000 > _Interval)
+            || (Paused is not null 
+                && ((DateTime.Now - Last) + (DateTime.Now - Paused.Value)).TotalSeconds * 1000 > _Interval)) {
+                _Epoch += (ulong)((DateTime.Now - Last).TotalSeconds * 1000) - (Gap ?? 0);
+                Gap = 0;
+                
                 Last = DateTime.Now;
-                Tick?.Invoke (this, new EventArgs ());
+                Tick?.Invoke (this, EventArgs.Empty);
             }
         }
 
