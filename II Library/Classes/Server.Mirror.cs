@@ -21,8 +21,11 @@ namespace II.Server {
 
         public Statuses Status = Statuses.INACTIVE;
 
-        public string PasswordAccess = "",
-                        PasswordEdit = "";
+        public static string DefaultServer = "http://server.infirmary-integrated.com/";
+        
+        public string ServerAddress = DefaultServer,
+            PasswordAccess = "",
+            PasswordEdit = "";
 
         public DateTime PatientUpdated, ServerQueried;
 
@@ -52,7 +55,6 @@ namespace II.Server {
         public void CancelOperation () {
             try {
                 _BackgroundWorker.CancelAsync ();
-            } catch {
             } finally {
                 ThreadLock = false;
                 ResetBackgroundWorker ();

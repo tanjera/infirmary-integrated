@@ -13,8 +13,6 @@ $get_key_access = $_GET['key_access'] ?? "";
 $get_key_edit = $_GET['key_edit'] ?? "";
 $get_patient = $_GET['patient'] ?? "";
 $get_updated = $_GET['updated'] ?? "";
-$get_client_ip = $_GET['client_ip'] ?? "";
-$get_client_user = $_GET['client_user'] ?? "";
 
 try {
     $sql = $conn->prepare(
@@ -40,7 +38,7 @@ try {
 
             if ($sql = $conn->prepare(
                     "UPDATE mirrors SET key_access = ?, key_edit = ?, " .
-                    "patient = ?, updated = ?, client_ip = ?, client_user = ? " .
+                    "patient = ?, updated = ? " .
                     "WHERE accession = ?")) {
 
                 $sql->bind_param("sssssss",
@@ -48,8 +46,6 @@ try {
                         $get_key_edit,
                         $get_patient,
                         $get_updated,
-                        $get_client_ip,
-                        $get_client_user,
                         $get_accession);
 
                 $sql->execute();
@@ -65,18 +61,16 @@ try {
 
         if ($sql = $conn->prepare(
                 "INSERT INTO mirrors " .
-                "(accession, key_access, key_edit, patient, updated, client_ip, client_user) " .
+                "(accession, key_access, key_edit, patient, updated) " .
                 "VALUES " .
-                "(?, ?, ?, ?, ?, ?, ?)")) {
+                "(?, ?, ?, ?, ?)")) {
 
             $sql->bind_param("sssssss",
                     $get_accession,
                     $get_key_access,
                     $get_key_edit,
                     $get_patient,
-                    $get_updated,
-                    $get_client_ip,
-                    $get_client_user);
+                    $get_updated);
 
             $sql->execute();
             $sql->close();

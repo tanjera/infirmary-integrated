@@ -269,22 +269,28 @@ namespace IISIM {
                                             Numerics?.Add (res);
                                         }
                                     }
-                                    
                                     SetNumerics (Instance.Scenario.DeviceDefib);
+                                }
+                                break;
+                            
+                            case "Numerics_Zeroed":
+                                Transducers_Zeroed = new();
+                                foreach (string s in pValue.Split (',')) {
+                                    if (Enum.TryParse (s, true, out II.Settings.Device.Numeric res)) {
+                                        Transducers_Zeroed.Add (res);
+                                    }
                                 }
                                 break;
                             
                             case "Tracings":
                                 if (Instance?.Scenario is not null) {
                                     Tracings = new();
-
                                     foreach (string s in pValue.Split (',')) {
                                         if (Enum.TryParse<II.Settings.Device.Tracing> (s, true,
                                                 out II.Settings.Device.Tracing res)) {
                                             Tracings.Add (res);
                                         }
                                     }
-                                    
                                     SetTracings (Instance.Scenario.DeviceDefib);
                                 }
                                 break;
@@ -326,7 +332,12 @@ namespace IISIM {
                     string.Join (',', Numerics)));
             }
             
-            /* Save() the Tracings */
+            if (Transducers_Zeroed?.Count > 0) {
+                sw.AppendLine (String.Format ("{0}:{1}", 
+                    "Numerics_Zeroed", 
+                    string.Join (',', Transducers_Zeroed)));
+            }
+            
             if (Tracings?.Count > 0) {
                 sw.AppendLine (String.Format ("{0}:{1}", 
                     "Tracings", 

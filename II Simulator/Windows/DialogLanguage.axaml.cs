@@ -77,7 +77,6 @@ namespace IISIM {
             Instance.Settings.Save ();
 
             // Show messagebox prompting user to restart the program for changes to take effect
-
             await Dispatcher.UIThread.InvokeAsync (async () => {
                 DialogMessage dlg = new (Instance) {
                     Message = Instance.Language.Localize ("MESSAGE:RestartForChanges"),

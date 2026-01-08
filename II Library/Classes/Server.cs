@@ -57,10 +57,9 @@ namespace II.Server {
             HttpClient hc = new ();
 
             try {
-                HttpResponseMessage resp = await hc.GetAsync (FormatForPHP (String.Format (
-                    "http://server.infirmary-integrated.com/mirror_get.php?accession={0}&accesshash={1}",
-                    m.Accession,
-                    Encryption.HashSHA256 (m.PasswordAccess))));
+                HttpResponseMessage resp = await hc.GetAsync (FormatForPHP (
+                    $"{m.ServerAddress}{(m.ServerAddress.EndsWith('/') ? String.Empty : '/')}" 
+                    + $"mirror_get.php?accession={m.Accession}&accesshash={Encryption.HashSHA256 (m.PasswordAccess)}"));
 
                 // We want this exception thrown in case of web disconnect- it will finish the task and end the faux ThreadLock
                 resp.EnsureSuccessStatusCode ();
@@ -96,18 +95,11 @@ namespace II.Server {
             HttpClient hc = new ();
 
             try {
-                string ipAddress = (await hc.GetStringAsync ("http://icanhazip.com")).Trim ().Trim ('\n');
-
-                HttpResponseMessage resp = await hc.GetAsync (FormatForPHP (String.Format (
-                    "http://server.infirmary-integrated.com/mirror_post.php" +
-                    "?accession={0}&key_access={1}&key_edit={2}&patient={3}&updated={4}&client_ip={5}&client_user={6}",
-                    m.Accession,
-                    Encryption.HashSHA256 (m.PasswordAccess),
-                    Encryption.HashSHA256 (m.PasswordEdit),
-                    Encryption.EncryptAES (pStr),
-                    Utility.DateTime_ToString (pUp),
-                    Encryption.HashSHA256 (ipAddress),
-                    Encryption.HashSHA256 (Environment.UserName))));
+                HttpResponseMessage resp = await hc.GetAsync (FormatForPHP (
+                    $"{m.ServerAddress}{(m.ServerAddress.EndsWith('/') ? String.Empty : '/')}" 
+                    + $"mirror_post.php?accession={m.Accession}"
+                    + $"&key_access={Encryption.HashSHA256 (m.PasswordAccess)}&key_edit={Encryption.HashSHA256 (m.PasswordEdit)}"
+                    + $"&patient={Encryption.EncryptAES (pStr)}&updated={Utility.DateTime_ToString (pUp)}"));
 
                 hc.Dispose ();
             } catch {

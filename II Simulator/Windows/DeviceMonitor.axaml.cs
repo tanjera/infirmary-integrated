@@ -217,22 +217,28 @@ namespace IISIM {
                                             Numerics.Add (res);
                                         }
                                     }
-                                    
                                     SetNumerics (Instance.Scenario.DeviceMonitor);
+                                }
+                                break;
+                            
+                            case "Numerics_Zeroed":
+                                Transducers_Zeroed = new();
+                                foreach (string s in pValue.Split (',')) {
+                                    if (Enum.TryParse (s, true, out II.Settings.Device.Numeric res)) {
+                                        Transducers_Zeroed.Add (res);
+                                    }
                                 }
                                 break;
                             
                             case "Tracings":
                                 if (Instance?.Scenario is not null) {
                                     Tracings = new();
-
                                     foreach (string s in pValue.Split (',')) {
                                         if (Enum.TryParse (s, true,
                                                 out II.Settings.Device.Tracing res)) {
                                             Tracings.Add (res);
                                         }
                                     }
-                                    
                                     SetTracings (Instance.Scenario.DeviceMonitor);
                                 }
                                 break;
@@ -267,14 +273,19 @@ namespace IISIM {
             
             StringBuilder sw = new ();
 
-            if (Instance?.Scenario?.DeviceMonitor.Numerics.Count > 0) {
+            if (Numerics?.Count > 0) {
                 sw.AppendLine (String.Format ("{0}:{1}", 
                     "Numerics", 
                     string.Join (',', Numerics ?? new List<Device.Numeric> ())));
             }
             
-            /* Save() the Tracings */
-            if (Instance?.Scenario?.DeviceMonitor.Tracings.Count > 0) {
+            if (Transducers_Zeroed?.Count > 0) {
+                sw.AppendLine (String.Format ("{0}:{1}", 
+                    "Numerics_Zeroed", 
+                    string.Join (',', Transducers_Zeroed)));
+            }
+            
+            if (Tracings?.Count > 0) {
                 sw.AppendLine (String.Format ("{0}:{1}", 
                     "Tracings", 
                     string.Join (',', Tracings ?? new List<Device.Tracing> ())));

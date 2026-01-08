@@ -317,27 +317,41 @@ namespace IISIM {
                             case "Mode": Mode.Value = (Modes.Values)Enum.Parse (typeof (Modes.Values), pValue); break;
                             case "Running": Running = bool.Parse (pValue); break;
                             case "Primed": Primed = bool.Parse (pValue); break;
+                            
+                            case "Numerics_Zeroed":
+                                Transducers_Zeroed = new();
+                                foreach (string s in pValue.Split (',')) {
+                                    if (Enum.TryParse (s, true, out II.Settings.Device.Numeric res)) {
+                                        Transducers_Zeroed.Add (res);
+                                    }
+                                }
+                                break;
                         }
                     }
                 }
-            } catch {
             } finally {
                 sRead.Close ();
             }
         }
 
         public string Save () {
-            StringBuilder sWrite = new ();
+            StringBuilder sw = new ();
 
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Frequency", Frequency));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Augmentation", Augmentation));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "AugmentationAlarm", AugmentationAlarm));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Trigger", Trigger.Value));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Mode", Mode.Value));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Running", Running));
-            sWrite.AppendLine (String.Format ("{0}:{1}", "Primed", Primed));
+            sw.AppendLine (String.Format ("{0}:{1}", "Frequency", Frequency));
+            sw.AppendLine (String.Format ("{0}:{1}", "Augmentation", Augmentation));
+            sw.AppendLine (String.Format ("{0}:{1}", "AugmentationAlarm", AugmentationAlarm));
+            sw.AppendLine (String.Format ("{0}:{1}", "Trigger", Trigger.Value));
+            sw.AppendLine (String.Format ("{0}:{1}", "Mode", Mode.Value));
+            sw.AppendLine (String.Format ("{0}:{1}", "Running", Running));
+            sw.AppendLine (String.Format ("{0}:{1}", "Primed", Primed));
+            
+            if (Transducers_Zeroed?.Count > 0) {
+                sw.AppendLine (String.Format ("{0}:{1}", 
+                    "Numerics_Zeroed", 
+                    string.Join (',', Transducers_Zeroed)));
+            }
 
-            return sWrite.ToString ();
+            return sw.ToString ();
         }
 
         private void SetColorScheme_Light () => SetColorScheme (Color.Schemes.Light);

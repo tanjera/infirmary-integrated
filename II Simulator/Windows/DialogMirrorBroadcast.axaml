@@ -52,6 +52,7 @@
 			Grid.Column="1"
 			Grid.ColumnSpan="2"
 			Margin="5"
+			TextAlignment="Center"
 			HorizontalAlignment="Stretch"
 			VerticalAlignment="Center"
 			TextWrapping="Wrap" />
@@ -66,30 +67,43 @@
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
         <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
       </Grid.RowDefinitions>
       <Grid.ColumnDefinitions>
         <ColumnDefinition Width="Auto" />
         <ColumnDefinition Width="*" />
       </Grid.ColumnDefinitions>
 
+	    <TextBlock
+		    Name="txtServerAddress"
+		    Grid.Row="1"
+		    Grid.Column="0"
+		    Classes="item" />
       <TextBlock
 				Name="txtAccessionKey"
-				Grid.Row="1"
-				Grid.Column="0"
-				Classes="item" />
-      <TextBlock
-				Name="txtAccessPassword"
 				Grid.Row="2"
 				Grid.Column="0"
 				Classes="item" />
       <TextBlock
-				Name="txtAdminPassword"
+				Name="txtAccessPassword"
 				Grid.Row="3"
 				Grid.Column="0"
 				Classes="item" />
+      <TextBlock
+				Name="txtAdminPassword"
+				Grid.Row="4"
+				Grid.Column="0"
+				Classes="item" />
 
+	    <TextBox
+		    Name="tbServerAddress"
+		    Grid.Row="1"
+		    Grid.Column="1"
+		    MinWidth="300"
+		    Classes="item"/>
+	    
       <Grid
-				Grid.Row="1"
+				Grid.Row="2"
 				Grid.Column="1"
 				HorizontalAlignment="Stretch">
 
@@ -113,7 +127,7 @@
       </Grid>
 
       <Grid
-				Grid.Row="2"
+				Grid.Row="3"
 				Grid.Column="1"
 				HorizontalAlignment="Stretch">
 
@@ -137,7 +151,7 @@
       </Grid>
       <TextBox
 				Name="tbAdminPassword"
-				Grid.Row="3"
+				Grid.Row="4"
 				Grid.Column="1"
 				Classes="item" />
     </Grid>

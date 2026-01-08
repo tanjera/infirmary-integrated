@@ -239,7 +239,6 @@ namespace II.Settings {
                                         Transducers_Zeroed.Add (res);
                                     }
                                 }
-
                                 break;
                             
                             case "Tracings":
@@ -249,7 +248,6 @@ namespace II.Settings {
                                         Tracings.Add (res);
                                     }
                                 }
-
                                 break;
                         }
                     }
