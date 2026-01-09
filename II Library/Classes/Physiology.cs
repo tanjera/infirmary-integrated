@@ -435,45 +435,80 @@ namespace II {
         public double GetSTSegment { get { return GetSTInterval * (1d / 3d); } }
         public double GetTInterval { get { return GetSTInterval * (2d / 3d); } }
 
-        public int MeasureHR_ECG (double lengthSeconds, double offsetSeconds)
-            => MeasureHR (lengthSeconds, offsetSeconds, false);
+        public int MeasureHR_ECG (double offsetSeconds)
+            => MeasureHR (offsetSeconds, false);
 
-        public int MeasureHR_SPO2 (double lengthSeconds, double offsetSeconds)
-            => MeasureHR (lengthSeconds, offsetSeconds, true);
+        public int MeasureHR_SPO2 (double offsetSeconds)
+            => MeasureHR (offsetSeconds, true);
 
-        public int MeasureHR (double lengthSeconds, double offsetSeconds, bool isPulse = false) {
+        public int MeasureHR (double offsetSeconds, bool isPulse = false) {
             CleanListPhysiologyEvents ();
 
             if (isPulse && !Cardiac_Rhythm.HasPulse_Ventricular)
                 return 0;
 
+            /* Note on sampling and counting measurements:
+             * Attempting numerous sampling methods including:
+             * - Sampling at multiple timeframes (3 sec, 6, 12, 15, 20, and 30 seconds)
+             * - Presenting one, an average, or a simple moving average of the sampling periods
+             * None of them presented as true-to-life as a simple 6-second or 12-second sample
+             * 6 second samples: resolve easily on the base-10 for regular vital sign ranges
+             * 12 second samples: resolve easily to the base-5 for regular vital sign ranges
+             * They also update to an interval consistent with the visual strip (6-second strips are routine)
+             * and therefore correspond to visual input for correlation with manual counting.
+             */
+            int sampleTime = TimerSimulation?.Epoch switch {
+                < 6000 => 3,
+                < 9000 => 6,
+                < 12000 => 9,
+                _ => 12
+            };
             int counter = 0;
+            
             lock (lockListPhysiologyEvents) {
-                foreach (PhysiologyEventArgs ea in ListPhysiologyEvents)
-                    if (ea.EventType == PhysiologyEventTypes.Cardiac_Ventricular_Electric
-                        && ea.Occurred >= (TimerSimulation?.Epoch + (-(lengthSeconds + offsetSeconds) * 1000)) 
+                foreach (PhysiologyEventArgs ea in ListPhysiologyEvents
+                             .Where (o => o.EventType == PhysiologyEventTypes.Cardiac_Ventricular_Electric)) {
+                    if (ea.Occurred >= (TimerSimulation?.Epoch + (-(sampleTime + offsetSeconds) * 1000))
                         && ea.Occurred <= (TimerSimulation?.Epoch + (-offsetSeconds * 1000)))
-                        counter++;
-            }
-
-            return (int)(counter / (lengthSeconds / 60d));
-        }
-
-        public int MeasureRR (double lengthSeconds, double offsetSeconds) {
-            CleanListPhysiologyEvents ();
-
-            int counter = 0;
-
-            lock (lockListPhysiologyEvents) {
-                foreach (PhysiologyEventArgs ea in ListPhysiologyEvents)
-                    if (ea.EventType == PhysiologyEventTypes.Respiratory_Inspiration
-                        && TimerSimulation?.Epoch is not null
-                        && ea.Occurred >= (TimerSimulation?.Epoch + (-(lengthSeconds + offsetSeconds) * 1000)) 
-                        && ea.Occurred <= (TimerSimulation?.Epoch + (-offsetSeconds * 1000)))
-                        counter++;
+                        counter += 1;                                      // Store how many events occured in the sampling period
+                }
             }
             
-            return (int)(counter / (lengthSeconds / 60));
+            int raw = (int)System.Math.Round(counter / (sampleTime / 60d), MidpointRounding.ToEven);
+            // Only return a round number (0, 5, 10) or an even number (52)
+            return raw % 5 == 0 ? raw : raw - (raw % 2);
+        }
+
+        public int MeasureRR (double offsetSeconds) {
+            double lengthSeconds = 15d;
+            
+            CleanListPhysiologyEvents ();
+
+            /* See note on sampling in MeasureHR
+             * Major difference for respiratory rate: sampling times need to be longer due to reduced rate of respirations
+             * compared to heart rates             
+             */
+            int sampleTime = TimerSimulation?.Epoch switch {
+                < 10000 => 5,
+                < 20000 => 10,
+                < 40000 => 20,
+                < 60000 => 40,
+                _ => 60
+            };
+            int counter = 0;
+
+            lock (lockListPhysiologyEvents) {
+                foreach (PhysiologyEventArgs ea in ListPhysiologyEvents
+                             .Where (o => o.EventType == PhysiologyEventTypes.Respiratory_Inspiration)) {
+                    if (ea.Occurred >= (TimerSimulation?.Epoch + (-(sampleTime + offsetSeconds) * 1000))
+                        && ea.Occurred <= (TimerSimulation?.Epoch + (-offsetSeconds * 1000)))
+                        counter += 1;                                      // Store how many events occured in the sampling period
+                }
+            }
+            
+            int raw = (int)System.Math.Round(counter / (sampleTime / 60d), MidpointRounding.ToEven);
+            // Only return a an even number (52)
+            return raw % 2 == 0 ? raw : raw - (raw % 2);
         }
 
         public async Task Activate () {
@@ -570,6 +605,8 @@ namespace II {
              * short interval, and call this function on its Tick to process all Patient
              * timers.
              */
+            
+            Console.WriteLine($" {TimerSimulation?.Epoch} ProcessTimers");
             
             TimerCardiac_Baseline.Process ();
             TimerCardiac_Atrial_Electric.Process ();

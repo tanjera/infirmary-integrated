@@ -802,7 +802,7 @@ namespace IISIM {
                                                     // Because they may have been modified by the user through Add/Remove/Select Input
                     Strip s = new ((Lead.Values)Enum.Parse (typeof (Lead.Values), 
                         tracingTypes.Count > i ? tracingTypes [i] : defaultTracings[i]), 
-                        6f);
+                        6f, Instance?.Timer_Simulation);
                     Controls.MonitorTracing t = new (Instance, s, colorScheme);
                     listTracings.Add (t);
                 }

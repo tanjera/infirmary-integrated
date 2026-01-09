@@ -259,7 +259,7 @@ namespace IISIM.Controls {
                 default:
                 case ControlTypes.Values.ECG:
                     lblLine1.Text = String.Format ("{0:0}", Instance.Physiology.MeasureHR_ECG (
-                        Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
+                        Strip.DefaultLength * Strip.DefaultBufferLength));
                     break;
 
                 case ControlTypes.Values.T:
@@ -269,18 +269,18 @@ namespace IISIM.Controls {
                 case ControlTypes.Values.SPO2:
                     lblLine1.Text = String.Format ("{0:0} %", II.Math.RandomPercentRange (Instance.Physiology.SPO2, 0.01f));
                     lblLine2.Text = String.Format ("@ {0:0}", Instance.Physiology.MeasureHR_SPO2 (
-                        Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
+                        Strip.DefaultLength * Strip.DefaultBufferLength));
                     break;
 
                 case ControlTypes.Values.RR:
                     lblLine1.Text = String.Format ("{0:0}", Instance.Physiology.MeasureRR (
-                        Strip.DefaultLength * Strip.DefaultRespiratoryCoefficient, Strip.DefaultLength * Strip.DefaultBufferLength));
+                        Strip.DefaultLength * Strip.DefaultBufferLength));
                     break;
 
                 case ControlTypes.Values.ETCO2:
                     lblLine1.Text = String.Format ("{0:0}", II.Math.RandomPercentRange (Instance.Physiology.ETCO2, 0.02f));
                     lblLine2.Text = String.Format ("@ {0:0}", Instance.Physiology.MeasureRR (
-                        Strip.DefaultLength * Strip.DefaultRespiratoryCoefficient, Strip.DefaultLength * Strip.DefaultBufferLength));
+                        Strip.DefaultLength * Strip.DefaultBufferLength));
                     break;
 
                 case ControlTypes.Values.NIBP:

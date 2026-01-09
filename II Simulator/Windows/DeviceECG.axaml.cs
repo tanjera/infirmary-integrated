@@ -96,7 +96,7 @@ namespace IISIM {
             // Populate the grid with tracings for each lead
             for (int iColumns = 0; iColumns < amtColumns; iColumns++) {
                 for (int iRows = 0; iRows < amtRows && indexLeads < listLeads.Count; iRows++) {
-                    listTracings.Add (new Controls.ECGTracing (Instance, new Strip (listLeads [indexLeads], (4 - iColumns) * 2.5f, 2.5f), colorScheme));
+                    listTracings.Add (new Controls.ECGTracing (Instance, new Strip (listLeads [indexLeads], (4 - iColumns) * 2.5f, 2.5f, Instance?.Timer_Simulation), colorScheme));
                     listTracings [indexLeads].SetValue (Grid.ColumnProperty, iColumns);
                     listTracings [indexLeads].SetValue (Grid.RowProperty, iRows);
                     layoutGrid.Children.Add (listTracings [indexLeads]);
@@ -105,7 +105,7 @@ namespace IISIM {
             }
 
             // Add Lead II running along bottom spanning all columns
-            Controls.ECGTracing leadII = new (Instance, new Strip (Lead.Values.ECG_II, 10f), colorScheme);
+            Controls.ECGTracing leadII = new (Instance, new Strip (Lead.Values.ECG_II, 10f, Instance?.Timer_Simulation), colorScheme);
             leadII.SetValue (Grid.ColumnProperty, 0);
             leadII.SetValue (Grid.RowProperty, 4);
             leadII.SetValue (Grid.ColumnSpanProperty, 4);

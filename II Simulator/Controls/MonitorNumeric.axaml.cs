@@ -237,7 +237,7 @@ namespace IISIM.Controls {
             switch (ControlType?.Value) {
                 default:
                 case ControlTypes.Values.ECG:
-                    int? hr = Instance?.Physiology.MeasureHR_ECG (Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength);
+                    int? hr = Instance?.Physiology.MeasureHR_ECG (Strip.DefaultLength * Strip.DefaultBufferLength);
                     lblLine1.Text = String.Format ("{0:0}", hr);
 
                     AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.HR);
@@ -251,16 +251,15 @@ namespace IISIM.Controls {
                 case ControlTypes.Values.SPO2:
                     int? spo2 = (int)II.Math.RandomPercentRange (Instance?.Physiology?.SPO2 ?? 0, 0.01f);
                     lblLine1.Text = String.Format ("{0:0} %", spo2);
-                    lblLine2.Text = String.Format ("@ {0:0}", Instance?.Physiology.MeasureHR_SPO2 (
-                        Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
+                    lblLine2.Text = String.Format ("@ {0:0}", Instance?.Physiology?.MeasureHR_SPO2 (
+                        Strip.DefaultLength * Strip.DefaultBufferLength));
 
                     AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.SPO2);
                     AlarmLine1 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (spo2));
                     break;
 
                 case ControlTypes.Values.RR:
-                    int? rr = Instance?.Physiology.MeasureRR (
-                        Strip.DefaultLength * Strip.DefaultRespiratoryCoefficient, Strip.DefaultLength * Strip.DefaultBufferLength);
+                    int? rr = Instance?.Physiology.MeasureRR (Strip.DefaultLength * Strip.DefaultBufferLength);
 
                     lblLine1.Text = String.Format ("{0:0}", rr);
 
@@ -272,8 +271,7 @@ namespace IISIM.Controls {
                     int? etco2 = (int)II.Math.RandomPercentRange (Instance?.Physiology?.ETCO2 ?? 0, 0.02f);
 
                     lblLine1.Text = String.Format ("{0:0}", etco2);
-                    lblLine2.Text = String.Format ("@ {0:0}", Instance?.Physiology.MeasureRR (
-                        Strip.DefaultLength * Strip.DefaultRespiratoryCoefficient, Strip.DefaultLength * Strip.DefaultBufferLength));
+                    lblLine2.Text = String.Format ("@ {0:0}", Instance?.Physiology?.MeasureRR (Strip.DefaultLength * Strip.DefaultBufferLength));
 
                     AlarmRef = Instance?.Scenario?.DeviceMonitor.Alarms.Find (a => a.Parameter == Alarm.Parameters.ETCO2);
                     AlarmLine1 = (AlarmRef is not null && AlarmRef.IsSet && AlarmRef.IsEnabled && AlarmRef.ActivateAlarm (etco2));

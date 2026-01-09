@@ -26,7 +26,7 @@ namespace IISE.Controls {
 
     public partial class ItemStep : UserControl {
         /* Data structures */
-        public Scenario.Step Step = new Scenario.Step ();
+        public Scenario.Step Step = new Scenario.Step (new Timer());
 
         public ItemStepEnd IStepEnd;
         public List<Progression> Progressions = new List<Progression> ();
