@@ -14,9 +14,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using II.Settings;
 
 namespace II {
     public class Physiology {
+        /* References */
+        private II.Timer? TimerSimulation;
+        
         /* Mirroring variables */
         public DateTime Updated;                    // DateTime this Patient was last updated
 
@@ -173,7 +177,9 @@ namespace II {
             }
         }
 
-        public Physiology () {
+        public Physiology (Timer? timerSimulation) {
+            TimerSimulation = timerSimulation;
+            
             List<Task> t = new List<Task> ();
             
             t.Add (UpdateParameters_Cardiac (
@@ -429,45 +435,80 @@ namespace II {
         public double GetSTSegment { get { return GetSTInterval * (1d / 3d); } }
         public double GetTInterval { get { return GetSTInterval * (2d / 3d); } }
 
-        public int MeasureHR_ECG (double lengthSeconds, double offsetSeconds)
-            => MeasureHR (lengthSeconds, offsetSeconds, false);
+        public int MeasureHR_ECG (double offsetSeconds)
+            => MeasureHR (offsetSeconds, false);
 
-        public int MeasureHR_SPO2 (double lengthSeconds, double offsetSeconds)
-            => MeasureHR (lengthSeconds, offsetSeconds, true);
+        public int MeasureHR_SPO2 (double offsetSeconds)
+            => MeasureHR (offsetSeconds, true);
 
-        public int MeasureHR (double lengthSeconds, double offsetSeconds, bool isPulse = false) {
+        public int MeasureHR (double offsetSeconds, bool isPulse = false) {
             CleanListPhysiologyEvents ();
 
             if (isPulse && !Cardiac_Rhythm.HasPulse_Ventricular)
                 return 0;
 
+            /* Note on sampling and counting measurements:
+             * Attempting numerous sampling methods including:
+             * - Sampling at multiple timeframes (3 sec, 6, 12, 15, 20, and 30 seconds)
+             * - Presenting one, an average, or a simple moving average of the sampling periods
+             * None of them presented as true-to-life as a simple 6-second or 12-second sample
+             * 6 second samples: resolve easily on the base-10 for regular vital sign ranges
+             * 12 second samples: resolve easily to the base-5 for regular vital sign ranges
+             * They also update to an interval consistent with the visual strip (6-second strips are routine)
+             * and therefore correspond to visual input for correlation with manual counting.
+             */
+            int sampleTime = TimerSimulation?.Epoch switch {
+                < 6000 => 3,
+                < 9000 => 6,
+                < 12000 => 9,
+                _ => 12
+            };
             int counter = 0;
-
+            
             lock (lockListPhysiologyEvents) {
-                foreach (PhysiologyEventArgs ea in ListPhysiologyEvents)
-                    if (ea.EventType == PhysiologyEventTypes.Cardiac_Ventricular_Electric
-                        && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-(lengthSeconds + offsetSeconds))) >= 0
-                        && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-offsetSeconds)) <= 0)
-                        counter++;
+                foreach (PhysiologyEventArgs ea in ListPhysiologyEvents
+                             .Where (o => o.EventType == PhysiologyEventTypes.Cardiac_Ventricular_Electric)) {
+                    if (ea.Occurred >= (TimerSimulation?.Epoch + (-(sampleTime + offsetSeconds) * 1000))
+                        && ea.Occurred <= (TimerSimulation?.Epoch + (-offsetSeconds * 1000)))
+                        counter += 1;                                      // Store how many events occured in the sampling period
+                }
             }
-
-            return (int)(counter / (lengthSeconds / 60d));
+            
+            int raw = (int)System.Math.Round(counter / (sampleTime / 60d), MidpointRounding.ToEven);
+            // Only return a round number (0, 5, 10) or an even number (52)
+            return raw % 5 == 0 ? raw : raw - (raw % 2);
         }
 
-        public int MeasureRR (double lengthSeconds, double offsetSeconds) {
+        public int MeasureRR (double offsetSeconds) {
+            double lengthSeconds = 15d;
+            
             CleanListPhysiologyEvents ();
 
+            /* See note on sampling in MeasureHR
+             * Major difference for respiratory rate: sampling times need to be longer due to reduced rate of respirations
+             * compared to heart rates             
+             */
+            int sampleTime = TimerSimulation?.Epoch switch {
+                < 10000 => 5,
+                < 20000 => 10,
+                < 40000 => 20,
+                < 60000 => 40,
+                _ => 60
+            };
             int counter = 0;
 
             lock (lockListPhysiologyEvents) {
-                foreach (PhysiologyEventArgs ea in ListPhysiologyEvents)
-                    if (ea.EventType == PhysiologyEventTypes.Respiratory_Inspiration
-                        && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-(lengthSeconds + offsetSeconds))) >= 0
-                        && ea.Occurred.CompareTo (DateTime.Now.AddSeconds (-offsetSeconds)) <= 0)
-                        counter++;
+                foreach (PhysiologyEventArgs ea in ListPhysiologyEvents
+                             .Where (o => o.EventType == PhysiologyEventTypes.Respiratory_Inspiration)) {
+                    if (ea.Occurred >= (TimerSimulation?.Epoch + (-(sampleTime + offsetSeconds) * 1000))
+                        && ea.Occurred <= (TimerSimulation?.Epoch + (-offsetSeconds * 1000)))
+                        counter += 1;                                      // Store how many events occured in the sampling period
+                }
             }
-
-            return (int)(counter / (lengthSeconds / 60));
+            
+            int raw = (int)System.Math.Round(counter / (sampleTime / 60d), MidpointRounding.ToEven);
+            // Only return a an even number (52)
+            return raw % 2 == 0 ? raw : raw - (raw % 2);
         }
 
         public async Task Activate () {
@@ -495,18 +536,18 @@ namespace II {
         public event EventHandler<PhysiologyEventArgs>? PhysiologyEvent;
 
         public class PhysiologyEventArgs : EventArgs {
-            public Physiology? Physiology;                         // Remains as a pointer
+            public Physiology? Physiology;                  // Remains as a pointer
             public Vital_Signs Vitals;                      // Copies over as a clone, not a pointer
             public PhysiologyEventTypes EventType;
-            public DateTime Occurred;
+            public ulong Occurred;                          // Use Epoch timing for Physiology! 
 
-            public PhysiologyEventArgs (Physiology? p, PhysiologyEventTypes e) {
-                p ??= new ();
+            public PhysiologyEventArgs (Physiology? p, PhysiologyEventTypes e, II.Timer? t) {
+                p ??= new (t);
 
                 EventType = e;
                 Physiology = p;
                 Vitals = new Vital_Signs (p.VS_Actual);
-                Occurred = DateTime.Now;
+                Occurred = t?.Epoch ?? 0;
             }
         }
 
@@ -529,8 +570,8 @@ namespace II {
             Obstetric_Contraction_End
         }
 
-        public Task OnPhysiologyEvent (PhysiologyEventTypes e) {
-            PhysiologyEventArgs ea = new (this, e);
+        public Task OnPhysiologyEvent (PhysiologyEventTypes e, Timer? t) {
+            PhysiologyEventArgs ea = new (this, e, t);
             
             lock (lockListPhysiologyEvents) {
                 ListPhysiologyEvents.Add (ea);
@@ -543,10 +584,16 @@ namespace II {
 
         public void CleanListPhysiologyEvents () {
             // Remove all listings older than 1 minute... prevent cluttering memory
+            // ... But make sure to wait a minute before doing the math (uint overflow!)
             lock (lockListPhysiologyEvents) {
-                for (int i = ListPhysiologyEvents.Count - 1; i >= 0; i--)
-                    if (ListPhysiologyEvents [i].Occurred.CompareTo (DateTime.Now.AddMinutes (-1)) < 0)
-                        ListPhysiologyEvents.RemoveAt (i);
+                if (TimerSimulation?.Epoch is not null) {
+                    for (int i = ListPhysiologyEvents.Count - 1; i >= 0; i--) {
+                        if (TimerSimulation?.Epoch > 60000
+                            && ListPhysiologyEvents [i].Occurred < TimerSimulation?.Epoch - 60000) {
+                            ListPhysiologyEvents.RemoveAt (i);
+                        }
+                    }
+                }
             }
         }
 
@@ -558,6 +605,9 @@ namespace II {
              * short interval, and call this function on its Tick to process all Patient
              * timers.
              */
+            
+            Console.WriteLine($" {TimerSimulation?.Epoch} ProcessTimers");
+            
             TimerCardiac_Baseline.Process ();
             TimerCardiac_Atrial_Electric.Process ();
             TimerCardiac_Ventricular_Electric.Process ();
@@ -683,7 +733,7 @@ namespace II {
             await OnCardiac_Baseline ();
             await OnRespiratory_Baseline ();
 
-            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change, TimerSimulation);
         }
 
         /* Process for saving Patient{} information to simulation file  */
@@ -840,7 +890,7 @@ namespace II {
             await VS_Actual.Set (VS_Settings);
 
             await OnCardiac_Baseline ();
-            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change, TimerSimulation);
         }
 
         public async Task UpdateParameters_Respiratory (
@@ -875,7 +925,7 @@ namespace II {
             await VS_Actual.Set (VS_Settings);
 
             await OnRespiratory_Baseline ();
-            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change, TimerSimulation);
         }
 
         public async Task UpdateParameters_Obstetric (
@@ -896,7 +946,7 @@ namespace II {
             await VS_Actual.Set (VS_Settings);
 
             await OnObstetric_Baseline ();
-            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change, TimerSimulation);
         }
 
         public async Task ClampVitals (
@@ -927,7 +977,7 @@ namespace II {
             await OnRespiratory_Baseline ();
             await OnObstetric_Baseline ();
 
-            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Vitals_Change, TimerSimulation);
         }
 
         private Task InitTimers () {
@@ -1077,7 +1127,7 @@ namespace II {
             await TimerDefibrillation.ResetStart (20);
 
             // Invoke the defibrillation event *after* starting the timer- IsDefibrillating() checks the timer!
-            await OnPhysiologyEvent (PhysiologyEventTypes.Defibrillation);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Defibrillation, TimerSimulation);
         }
 
         private async Task OnDefibrillation_End () {
@@ -1092,7 +1142,7 @@ namespace II {
 
         private async Task OnPacemaker_Baseline () {
             if (Pacemaker_Energy > 0)
-                await OnPhysiologyEvent (PhysiologyEventTypes.Pacermaker_Spike);
+                await OnPhysiologyEvent (PhysiologyEventTypes.Pacermaker_Spike, TimerSimulation);
 
             if (Pacemaker_Energy >= Pacemaker_Threshold)
                 await TimerPacemaker_Spike.ResetStart (40);          // Adds an interval between the spike and the QRS complex
@@ -1109,13 +1159,18 @@ namespace II {
                 await OnCardiac_Ventricular_Electric ();
                 Cardiac_Rhythm.AberrantBeat = false;
 
-                await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Baseline);  // Triggers drawing isoelectric lines (important for a-fib/flutter)
+                await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Baseline, TimerSimulation);  // Triggers drawing isoelectric lines (important for a-fib/flutter)
                 await TimerCardiac_Baseline.ResetStart ();                   // Resets heart's intrinsic timer, allows pacemaker overdrive modeling
             }
         }
 
+        private Task OnSimulation_Baseline () {
+            return Task.CompletedTask;
+        }
+        
+
         private async Task OnCardiac_Baseline () {
-            await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Baseline);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Baseline, TimerSimulation);
             await TimerCardiac_Baseline.Set ((int)(GetHRInterval * 1000d));
 
             switch (Cardiac_Rhythm.Value) {
@@ -1264,7 +1319,7 @@ namespace II {
         }
 
         private async Task OnCardiac_Atrial_Electric () {
-            await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Atrial_Electric);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Atrial_Electric, TimerSimulation);
 
             if (Cardiac_Rhythm.HasPulse_Atrial)
                 await TimerCardiac_Atrial_Mechanical.ResetStart (Default_Electromechanical_Delay);
@@ -1335,7 +1390,7 @@ namespace II {
         }
 
         private async Task OnCardiac_Ventricular_Electric () {
-            await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Ventricular_Electric);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Ventricular_Electric, TimerSimulation);
 
             if (IABP_Active && IABP_Trigger == IABP_Triggers.ECG) {
                 IABP_DelayDynamic = (int)((GetHRInterval * 1000) * .34);
@@ -1352,13 +1407,13 @@ namespace II {
         }
 
         private async Task OnCardiac_Atrial_Mechanical () {
-            await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Atrial_Mechanical);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Atrial_Mechanical, TimerSimulation);
 
             await TimerCardiac_Atrial_Mechanical.Stop ();
         }
 
         private async Task OnCardiac_Ventricular_Mechanical () {
-            await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Ventricular_Mechanical);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Cardiac_Ventricular_Mechanical, TimerSimulation);
 
             if (IABP_Active && IABP_Trigger == IABP_Triggers.Pressure) {
                 IABP_DelayDynamic = (int)((GetHRInterval * 1000) * .34);
@@ -1381,13 +1436,13 @@ namespace II {
         }
 
         private async Task OnIABP_Balloon_Inflate () {
-            await OnPhysiologyEvent (PhysiologyEventTypes.IABP_Balloon_Inflation);
+            await OnPhysiologyEvent (PhysiologyEventTypes.IABP_Balloon_Inflation, TimerSimulation);
 
             await TimerIABP_Balloon_Trigger.Stop ();
         }
 
         private async Task OnRespiratory_Baseline () {
-            await OnPhysiologyEvent (PhysiologyEventTypes.Respiratory_Baseline);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Respiratory_Baseline, TimerSimulation);
             await TimerRespiratory_Baseline.Set ((int)(GetRRInterval * 1000d));
 
             double c;
@@ -1455,7 +1510,7 @@ namespace II {
 
         private async Task OnRespiratory_Inspiration () {
             Respiration_Inflated = true;
-            await OnPhysiologyEvent (PhysiologyEventTypes.Respiratory_Inspiration);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Respiratory_Inspiration, TimerSimulation);
             await TimerRespiratory_Inspiration.Stop ();
 
             // Process pulsus paradoxus (numerical values) for inspiration here
@@ -1493,7 +1548,7 @@ namespace II {
 
         private async Task OnRespiratory_Expiration () {
             Respiration_Inflated = false;
-            await OnPhysiologyEvent (PhysiologyEventTypes.Respiratory_Expiration);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Respiratory_Expiration, TimerSimulation);
             await TimerRespiratory_Expiration.Stop ();
 
             // Process pulsus paradoxus (numerical values) for expiration here
@@ -1515,14 +1570,14 @@ namespace II {
         }
 
         private async Task OnObstetric_Baseline () {
-            await OnPhysiologyEvent (PhysiologyEventTypes.Obstetric_Baseline);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Obstetric_Baseline, TimerSimulation);
             await TimerObstetric_Baseline.ResetStart (1000);
 
             await OnObstetric_RunTimers ();
         }
 
         private async Task OnObstetric_Fetal_Baseline () {
-            await OnPhysiologyEvent (PhysiologyEventTypes.Obstetric_Fetal_Baseline);
+            await OnPhysiologyEvent (PhysiologyEventTypes.Obstetric_Fetal_Baseline, TimerSimulation);
 
             // Must be divided by the TimerObstetric_Multiplier or else the speed multiplier effects the actual waveform drawing
             await TimerObstetric_Fetal_Baseline.ResetStart (2500 / TimerObstetric_Multiplier);
@@ -1665,7 +1720,7 @@ namespace II {
                 flagObstetricContraction = true;
                 await TimerObstetric_Contraction.ResetStart ((int)(ObstetricContractionDuration * 1000d / TimerObstetric_Multiplier));
 
-                await OnPhysiologyEvent (PhysiologyEventTypes.Obstetric_Contraction_Start);
+                await OnPhysiologyEvent (PhysiologyEventTypes.Obstetric_Contraction_Start, TimerSimulation);
 
                 // No need for triggering lockouts (e.g. Refractory state) when triggering based on contractions
                 switch (ObstetricFetalHeartRhythm.Value) {
@@ -1688,7 +1743,7 @@ namespace II {
                 flagObstetricContraction = false;
                 await TimerObstetric_Contraction.ResetStart ((int)(ObstetricContractionFrequency * 1000d / TimerObstetric_Multiplier));
 
-                await OnPhysiologyEvent (PhysiologyEventTypes.Obstetric_Contraction_End);
+                await OnPhysiologyEvent (PhysiologyEventTypes.Obstetric_Contraction_End, TimerSimulation);
             }
         }
     }

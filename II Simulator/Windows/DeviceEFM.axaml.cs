@@ -89,14 +89,14 @@ namespace IISIM {
             gridToco.Stretch = Stretch.Fill;
 
             // Instantiate and add Tracings to UI
-            Controls.EFMTracing fhrTracing = new (Instance, new Strip (Lead.Values.FHR, 600d), colorScheme);
+            Controls.EFMTracing fhrTracing = new (Instance, new Strip (Lead.Values.FHR, 600d, Instance?.Timer_Simulation), colorScheme);
             fhrTracing.SetValue (Grid.RowProperty, 0);
             fhrTracing.SetValue (Grid.ColumnProperty, 0);
             fhrTracing.Background = gridFHR;
             listTracings.Add (fhrTracing);
             displayGrid.Children.Add (fhrTracing);
 
-            Controls.EFMTracing tocoTracing = new (Instance, new Strip (Lead.Values.TOCO, 600d), colorScheme);
+            Controls.EFMTracing tocoTracing = new (Instance, new Strip (Lead.Values.TOCO, 600d, Instance?.Timer_Simulation), colorScheme);
             tocoTracing.SetValue (Grid.RowProperty, 2);
             tocoTracing.SetValue (Grid.ColumnProperty, 0);
             tocoTracing.Background = gridToco;

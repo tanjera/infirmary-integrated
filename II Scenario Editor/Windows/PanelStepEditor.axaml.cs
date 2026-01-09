@@ -288,7 +288,7 @@ namespace IISE.Windows {
 
             // Create data structures
             ItemStep item = new ();
-            Scenario.Step step = new ();
+            Scenario.Step step = new (new Timer());
 
             // Reference all relevant and interwoven data structures
             item.Step = step;
@@ -573,7 +573,7 @@ namespace IISE.Windows {
                 return;
 
             if (CopiedStep == null)
-                CopiedStep = new ();
+                CopiedStep = new (new Timer());
 
             await CopiedStep.Physiology.Load (ISelectedStep.Physiology.Save ());
         }

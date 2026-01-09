@@ -70,10 +70,10 @@ namespace IISIM {
         public virtual void Dispose () {
             /* Clean subscriptions from the Main Timer */
             if (Instance is not null) {
-                Instance.Timer_Main.Elapsed -= TimerTracing.Process;
-                Instance.Timer_Main.Elapsed -= TimerNumerics_Cardiac.Process;
-                Instance.Timer_Main.Elapsed -= TimerNumerics_Respiratory.Process;
-                Instance.Timer_Main.Elapsed -= TimerAncillary_Delay.Process;
+                Instance.Timer_Simulation.Tick -= TimerTracing.Process;
+                Instance.Timer_Simulation.Tick -= TimerNumerics_Cardiac.Process;
+                Instance.Timer_Simulation.Tick -= TimerNumerics_Respiratory.Process;
+                Instance.Timer_Simulation.Tick -= TimerAncillary_Delay.Process;
             }
 
             /* Dispose of local Timers */
@@ -119,12 +119,12 @@ namespace IISIM {
              * specific uses (e.g. IABP priming, Defib charging, etc.) ... only want to link it
              * to Timer_Main, otherwise do not set, start, or link to any events here!
              */
-            Instance.Timer_Main.Elapsed += TimerAncillary_Delay.Process;
+            Instance.Timer_Simulation.Tick += TimerAncillary_Delay.Process;
 
-            Instance.Timer_Main.Elapsed += TimerAlarm.Process;
-            Instance.Timer_Main.Elapsed += TimerTracing.Process;
-            Instance.Timer_Main.Elapsed += TimerNumerics_Cardiac.Process;
-            Instance.Timer_Main.Elapsed += TimerNumerics_Respiratory.Process;
+            Instance.Timer_Simulation.Tick += TimerAlarm.Process;
+            Instance.Timer_Simulation.Tick += TimerTracing.Process;
+            Instance.Timer_Simulation.Tick += TimerNumerics_Cardiac.Process;
+            Instance.Timer_Simulation.Tick += TimerNumerics_Respiratory.Process;
 
             TimerAlarm.Tick += OnTick_Alarm;
             TimerTracing.Tick += OnTick_Tracing;
@@ -142,12 +142,9 @@ namespace IISIM {
             TimerNumerics_Respiratory.Start ();
         }
 
-        protected virtual void PauseSimulation () {
-            if (Instance?.Settings.State == II.Settings.Instance.States.Running)
-                Instance.Settings.State = II.Settings.Instance.States.Paused;
-            else if (Instance?.Settings.State == II.Settings.Instance.States.Paused)
-                Instance.Settings.State = II.Settings.Instance.States.Running;
-        }
+        protected virtual void PauseSimulation () 
+            => Instance?.PauseSimulation();
+        
 
         protected virtual void OnLoaded (object? sender, RoutedEventArgs e) {
             WindowStatus = WindowStates.Active;

@@ -53,7 +53,7 @@ namespace IISIM {
                 return;
             }
 
-            Instance.Timer_Main.Elapsed += AlarmTimer.Process;
+            Instance.Timer_Simulation.Tick += AlarmTimer.Process;
 
             AlarmTimer.Tick += (s, e) => { Dispatcher.UIThread.InvokeAsync (() => { OnTick_Alarm (s, e); }); };
 

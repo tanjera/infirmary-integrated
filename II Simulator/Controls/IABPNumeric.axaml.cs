@@ -140,7 +140,7 @@ namespace IISIM.Controls {
                 default:
                 case ControlTypes.Values.ECG:
                     lblLine1.Text = String.Format ("{0:0}", Instance?.Physiology.MeasureHR_ECG (
-                        Strip.DefaultLength, Strip.DefaultLength * Strip.DefaultBufferLength));
+                        Strip.DefaultLength * Strip.DefaultBufferLength));
                     break;
 
                 case ControlTypes.Values.ABP:

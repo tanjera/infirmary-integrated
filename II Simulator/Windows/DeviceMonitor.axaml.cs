@@ -802,7 +802,7 @@ namespace IISIM {
                                                     // Because they may have been modified by the user through Add/Remove/Select Input
                     Strip s = new ((Lead.Values)Enum.Parse (typeof (Lead.Values), 
                         tracingTypes.Count > i ? tracingTypes [i] : defaultTracings[i]), 
-                        6f);
+                        6f, Instance?.Timer_Simulation);
                     Controls.MonitorTracing t = new (Instance, s, colorScheme);
                     listTracings.Add (t);
                 }
@@ -843,9 +843,6 @@ namespace IISIM {
                     break;
 
                 case Physiology.PhysiologyEventTypes.Cardiac_Baseline:
-                    
-                    Debug.WriteLine($"{DateTime.Now} Cardiac_Baseline");
-                    
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology));
                     break;
 

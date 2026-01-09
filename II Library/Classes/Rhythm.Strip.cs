@@ -52,8 +52,10 @@ namespace II.Rhythm {
         public int Resolution_Obstetric = 100;
 
         private double forwardBuffer = 1.0d;              // Coefficient of Length to draw into future as "now" for buffer
-        private DateTime scrolledLast = DateTime.UtcNow;
-        private bool scrollingUnpausing = false;
+        
+        /* References and variables for time resolution */
+        public Timer? TimerSimulation; 
+        private ulong? scrolledLast;
 
         public Offsets Offset = Offsets.Center;
         public double Amplitude = 1d;
@@ -74,20 +76,21 @@ namespace II.Rhythm {
             Scaled
         }
 
-        public Strip (Lead.Values lead) {
+        public Strip (Lead.Values lead, Timer? timer) {
             double length = IsRespiratory ? DefaultLength * DefaultRespiratoryCoefficient : DefaultLength;
-            Initialize (lead, length, length);
+            Initialize (lead, length, length, timer);
         }
 
-        public Strip (Lead.Values lead, double length)
-            => Initialize (lead, length, length);
+        public Strip (Lead.Values lead, double length, Timer? timer)
+            => Initialize (lead, length, length, timer);
 
-        public Strip (Lead.Values lead, double length, double displayLength)
-            => Initialize (lead, length, displayLength);
+        public Strip (Lead.Values lead, double length, double displayLength, Timer? timer)
+            => Initialize (lead, length, displayLength, timer);
 
-        public void Initialize (Lead.Values lead, double length, double displayLength) {
+        public void Initialize (Lead.Values lead, double length, double displayLength, Timer? timer) {
             Lead = new Lead (lead);
-
+            TimerSimulation = timer;
+            
             Length = length;
             DisplayLength = displayLength;
 
@@ -294,7 +297,7 @@ namespace II.Rhythm {
         public void ClearFuture (Physiology? patient) {
             if (Points is null || patient is null)
                 return;
-
+            
             SetForwardBuffer (patient, true);         // Since accounting for forward edge buffer, recalculate
 
             lock (lockPoints) {
@@ -538,25 +541,23 @@ namespace II.Rhythm {
             if (Points is null)
                 return;
 
-            if (scrollingUnpausing) {
-                scrollingUnpausing = false;
-                scrolledLast = DateTime.UtcNow;
-                return;
-            }
-
             multiplier ??= 1;
 
-            double scrollBy = (double)(((DateTime.UtcNow - scrolledLast).TotalMilliseconds / 1000) * multiplier);
-            scrolledLast = DateTime.UtcNow;
-
+            // Note: scrollBy is in SECONDS (as double); convert and cast appropriately since Epoch is (ulong?)
+            // Note: risk of integer overflow subtracting ulongs!
+            double scrollBy = TimerSimulation?.Epoch > scrolledLast
+                ? (((double)((TimerSimulation?.Epoch - scrolledLast) ?? 0) / 1000) * multiplier ?? 1)
+                : (((double)((scrolledLast - TimerSimulation?.Epoch) ?? 0) / 1000) * multiplier ?? 1);
+            
+            if (TimerSimulation?.Epoch < scrolledLast)
+                Console.WriteLine($"Fast forward.... {TimerSimulation?.Epoch} < {scrolledLast}");
+            
+            scrolledLast = TimerSimulation?.Epoch;
+            
             lock (lockPoints) {
                 for (int i = Points.Count - 1; i >= 0; i--)
                     Points [i].X = Points [i].X - scrollBy;
             }
-        }
-
-        public void Unpause () {
-            scrollingUnpausing = true;
         }
 
         public List<PointD> Scale (Physiology? p, List<PointD> addition) {

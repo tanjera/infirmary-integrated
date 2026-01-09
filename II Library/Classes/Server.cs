@@ -29,9 +29,15 @@ using II.Localization;
 
 namespace II.Server {
     public partial class Server {
+        public Timer? TimerSimulation;
+        
         /* Variables for checking for updates, running bootstrapper */
         public string UpgradeVersion = String.Empty;
         public string UpgradeWebpage = String.Empty;
+
+        public Server (Timer? timerSimulation) {
+            TimerSimulation = timerSimulation;
+        }
 
         private static string FormatForPHP (string inc)
             => inc.Replace ("#", "_").Replace ("$", "_");
@@ -53,7 +59,7 @@ namespace II.Server {
             }
         }
 
-        public static async Task<Scenario.Step?> Get_StepMirror (Mirror m) {
+        public async Task<Scenario.Step?> Get_StepMirror (Mirror m) {
             HttpClient hc = new ();
 
             try {
@@ -80,7 +86,7 @@ namespace II.Server {
                 m.ServerQueried = DateTime.UtcNow;
                 m.PatientUpdated = serverUpdated;
 
-                Scenario.Step s = new ();
+                Scenario.Step s = new (TimerSimulation);
                 await s.Load (Encryption.DecryptAES (step.Replace (' ', '+')));
 
                 hc.Dispose ();

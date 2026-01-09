@@ -181,9 +181,9 @@ namespace IISIM {
             Grid displayGrid = this.GetControl<Grid> ("displayGrid");
 
             // Instantiate and add Tracings to UI
-            listTracings.Add (new Controls.IABPTracing (Instance, new Strip (Lead.Values.ECG_II, 6f), colorScheme));
-            listTracings.Add (new Controls.IABPTracing (Instance, new Strip (Lead.Values.ABP, 6f), colorScheme));
-            listTracings.Add (new Controls.IABPTracing (Instance, new Strip (Lead.Values.IABP, 6f), colorScheme));
+            listTracings.Add (new Controls.IABPTracing (Instance, new Strip (Lead.Values.ECG_II, 6f, Instance?.Timer_Simulation), colorScheme));
+            listTracings.Add (new Controls.IABPTracing (Instance, new Strip (Lead.Values.ABP, 6f, Instance?.Timer_Simulation), colorScheme));
+            listTracings.Add (new Controls.IABPTracing (Instance, new Strip (Lead.Values.IABP, 6f, Instance?.Timer_Simulation), colorScheme));
             for (int i = 0; i < listTracings.Count; i++) {
                 listTracings [i].SetValue (Grid.RowProperty, i);
                 listTracings [i].SetValue (Grid.ColumnProperty, 1);

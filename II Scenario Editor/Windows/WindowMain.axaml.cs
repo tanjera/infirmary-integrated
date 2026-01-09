@@ -104,7 +104,7 @@ namespace IISE {
         private async Task InitScenario () {
             SaveFilePath = null;
 
-            Scenario s = new Scenario (true);
+            Scenario s = new Scenario (new Timer(), true);
             s.Steps.First().Name = "Initial Step";
             
             await SetScenario (s);
@@ -238,7 +238,7 @@ namespace IISE {
 
                 string? line, pline;
                 StringBuilder pbuffer;
-                Scenario loadScene = new ();
+                Scenario loadScene = new (new Timer());
 
                 using (StringReader sRead = new (file)) {
                     while (!String.IsNullOrEmpty (line = await sRead.ReadLineAsync ())) {

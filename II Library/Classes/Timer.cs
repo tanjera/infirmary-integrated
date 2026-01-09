@@ -1,5 +1,5 @@
 ﻿/* Timer.cs
- * Infirmary Integrated
+    * Infirmary Integrated
  * By Ibi Keller (Tanjera), (c) 2023
  */
 
@@ -11,13 +11,27 @@ namespace II {
         private int _Interval = 0;
         private bool _Locked = false;
 
-        private DateTime Last;
+        private DateTime LastAt;
         private bool Running = false;
 
+        /* For Epoch timekeeping (for simulation purposes e.g. pausing) */
+        private DateTime? PausedAt;
+        private ulong? Gap = 0;
+        private ulong _Epoch = 0;
+        public ulong Epoch { get => _Epoch; }
+
+        // Note: once a Gap is calculated (> 0), the Unpause() state has begun; IsPaused will be false 
+        public bool IsPaused { get => PausedAt is not null && Gap == 0; }
+        public bool IsUnpausing { get => PausedAt is null && Gap > 0;}
         public bool IsRunning { get { return Running; } }
 
+        public enum Bases {
+            Realtime,
+            Simulation
+        }
+        
         public event EventHandler<EventArgs>? Tick;
-
+        
         ~Timer () => Dispose ();
 
         public void Dispose () {
@@ -30,8 +44,8 @@ namespace II {
 
         public bool IsLocked { get => _Locked; }
         public int Interval { get => _Interval; }
-        public int Elapsed { get => (int)((DateTime.Now - Last).TotalSeconds * 1000); }
-        public int Remainder { get => _Interval - (int)((DateTime.Now - Last).TotalSeconds * 1000); }
+        public int Elapsed { get => (int)((DateTime.Now - LastAt).TotalSeconds * 1000); }
+        public int Remainder { get => _Interval - (int)((DateTime.Now - LastAt).TotalSeconds * 1000); }
 
         public void Lock () => _Locked = true;
 
@@ -91,7 +105,7 @@ namespace II {
         /// <returns></returns>
         public Task Set (int interval) {
             _Interval = interval;
-            Last = DateTime.Now;
+            LastAt = DateTime.Now;
 
             return Task.CompletedTask;
         }
@@ -101,7 +115,7 @@ namespace II {
         /// </summary>
         /// <returns></returns>
         public Task Reset () {
-            Last = DateTime.Now;
+            LastAt = DateTime.Now;
 
             return Task.CompletedTask;
         }
@@ -169,6 +183,31 @@ namespace II {
             => await ResetStop ((int)interval);
 
         /// <summary>
+        /// Pauses the Timer without actually Stopping it (for Epoch time gap calculation) 
+        /// </summary>
+        /// <returns></returns>
+        public Task Pause () {
+            PausedAt ??= DateTime.Now;        // Don't wipe Paused if Pause() is called multiple times!
+            return Task.CompletedTask;
+        }
+        
+        /// <summary>
+        /// Unpauses the Timer and calculates Epoch time gap
+        /// </summary>
+        /// <returns></returns>
+        public Task Unpause () {
+            // Uses "partial" definition compared to IsPaused {get} because it would fault if Unpause() were called
+            // twice simultaneously... only looking at PausedAt allows a smooth flow continuation
+            if (PausedAt is not null) {
+                Gap ??= 0;
+                Gap += (ulong)(((DateTime.Now - PausedAt)?.TotalSeconds * 1000) ?? 0);
+                PausedAt = null;
+            }
+
+            return Task.CompletedTask;
+        }
+        
+        /// <summary>
         /// Invokes the Timer's Tick event
         /// </summary>
         /// <returns></returns>
@@ -182,12 +221,29 @@ namespace II {
         /// Tick event and then resets time since the last tick.
         /// </summary>
         public void Process () {
-            if (!Running)
+            if (!IsRunning)
                 return;
 
-            if ((DateTime.Now - Last).TotalSeconds * 1000 > _Interval) {
-                Last = DateTime.Now;
-                Tick?.Invoke (this, new EventArgs ());
+            // Only run if the timer:
+            // 1. is not Paused (Paused is null)
+            // or 2. is Unpausing (Gap > 0)
+            if (!IsPaused) {
+                if (!IsUnpausing && (DateTime.Now - LastAt).TotalSeconds * 1000 > _Interval) {
+                    // This condition is the base "Running" state
+                    _Epoch += (ulong)((DateTime.Now - LastAt).TotalSeconds * 1000);
+                    
+                    LastAt = DateTime.Now;
+                    Tick?.Invoke (this, EventArgs.Empty);
+                
+                } else if (IsUnpausing && (((DateTime.Now - LastAt).TotalSeconds * 1000) + Gap > _Interval)) {
+                    // This condition is the unpausing state; Gap is calculated but needs applying, and it is time to
+                    // trigger even with the gap factored in
+                    _Epoch += (ulong)((DateTime.Now - LastAt).TotalSeconds * 1000) - (Gap ?? 0);
+                    Gap = 0;
+
+                    LastAt = DateTime.Now;
+                    Tick?.Invoke (this, EventArgs.Empty);
+                }
             }
         }
 
