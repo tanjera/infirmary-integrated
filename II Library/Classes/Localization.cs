@@ -101,7 +101,7 @@ namespace II.Localization {
                     case Values.KOR: return KOR;
                     case Values.POR: return POR;
                     case Values.RUS: return RUS;
-                    case Values.SWA: return SWK;
+                    case Values.SWA: return SWA;
                     case Values.ZHO: return ZHO;
                 }
             }

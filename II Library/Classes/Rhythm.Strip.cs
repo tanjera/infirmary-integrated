@@ -269,12 +269,21 @@ namespace II.Rhythm {
         }
 
         private void SetForwardBuffer (Physiology patient, bool onClear = false) {
-            /* Set the forward edge buffer (a coefficient of lengthSeconds!) to be the length of 2 beats/breaths */
+            /* Set the forward edge buffer (a coefficient of lengthSeconds!) to be the length of x beats/breaths
+             * Note: forwardBuffer is needed to give the current on-screen polyline tracing an "end" point- if the
+             * line doesn't have an "end" to draw to *off*-screen, then it will look like the tracing stops
+             * in the user's visual space, then when a new beat is drawn, it will connect to the off-screen beat
+             * in a visually glitchy way. The biggest downside to a high forwardBuffer is that it increases latency
+             * on a new tracing's time from draw to being visible to the user! The user needs to wait for the
+             * forwardBuffer portion to scroll into the visual space...
+             */
+            int b = 1;              // Beats/breaths to draw forwardBuffer out by
+            
             if (IsCardiac)
-                forwardBuffer = System.Math.Max (1 + (2 * (patient.GetHRInterval / Length)),
+                forwardBuffer = System.Math.Max (1 + (b * (patient.GetHRInterval / Length)),
                     (onClear ? 1.1f : forwardBuffer));
             else if (IsRespiratory)
-                forwardBuffer = System.Math.Max (1 + (2 * (patient.GetRRInterval / Length)),
+                forwardBuffer = System.Math.Max (1 + (b * (patient.GetRRInterval / Length)),
                     (onClear ? 1.1f : forwardBuffer));
             else if (IsObstetric)
                 forwardBuffer = System.Math.Max (1 + (patient.ObstetricContractionFrequency / Length),
@@ -548,9 +557,6 @@ namespace II.Rhythm {
             double scrollBy = TimerSimulation?.Epoch > scrolledLast
                 ? (((double)((TimerSimulation?.Epoch - scrolledLast) ?? 0) / 1000) * multiplier ?? 1)
                 : (((double)((scrolledLast - TimerSimulation?.Epoch) ?? 0) / 1000) * multiplier ?? 1);
-            
-            if (TimerSimulation?.Epoch < scrolledLast)
-                Console.WriteLine($"Fast forward.... {TimerSimulation?.Epoch} < {scrolledLast}");
             
             scrolledLast = TimerSimulation?.Epoch;
             

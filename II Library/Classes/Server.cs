@@ -35,11 +35,18 @@ namespace II.Server {
         public string UpgradeVersion = String.Empty;
         public string UpgradeWebpage = String.Empty;
 
+        public enum ServerResponse {
+            NA,
+            Success,
+            ErrorCredentials,
+            ErrorNameResolution
+        }
+        
         public Server (Timer? timerSimulation) {
             TimerSimulation = timerSimulation;
         }
 
-        private static string FormatForPHP (string inc)
+        public static string FormatForPHP (string inc)
             => inc.Replace ("#", "_").Replace ("$", "_");
 
         public async Task Get_LatestVersion () {
@@ -59,13 +66,15 @@ namespace II.Server {
             }
         }
 
-        public async Task<Scenario.Step?> Get_StepMirror (Mirror m) {
+        public async Task<(ServerResponse, Scenario.Step?)> Get_StepMirror (Mirror m) {
             HttpClient hc = new ();
 
             try {
-                HttpResponseMessage resp = await hc.GetAsync (FormatForPHP (
-                    $"{m.ServerAddress}{(m.ServerAddress.EndsWith('/') ? String.Empty : '/')}" 
-                    + $"mirror_get.php?accession={m.Accession}&accesshash={Encryption.HashSHA256 (m.PasswordAccess)}"));
+                string requri = FormatForPHP (
+                    $"{m.ServerAddress}{(m.ServerAddress.EndsWith ('/') ? String.Empty : '/')}"
+                    + $"mirror_get.php?accession={m.Accession}&accesshash={Encryption.HashSHA256 (m.PasswordAccess)}");
+                
+                HttpResponseMessage resp = await hc.GetAsync (requri);
 
                 // We want this exception thrown in case of web disconnect- it will finish the task and end the faux ThreadLock
                 resp.EnsureSuccessStatusCode ();
@@ -77,11 +86,11 @@ namespace II.Server {
                 }
 
                 if (String.IsNullOrEmpty (updated) || String.IsNullOrEmpty (step))
-                    return null;
+                    return (ServerResponse.ErrorCredentials, null);
 
                 DateTime serverUpdated = Utility.DateTime_FromString (updated);
                 if (DateTime.Compare (serverUpdated, m.PatientUpdated) <= 0)
-                    return null;
+                    return (ServerResponse.Success, null);
 
                 m.ServerQueried = DateTime.UtcNow;
                 m.PatientUpdated = serverUpdated;
@@ -90,26 +99,51 @@ namespace II.Server {
                 await s.Load (Encryption.DecryptAES (step.Replace (' ', '+')));
 
                 hc.Dispose ();
-                return s;
+                return (ServerResponse.Success, s);
             } catch {
                 hc.Dispose ();
-                return null;
+                return (ServerResponse.ErrorNameResolution, null);
             }
         }
 
-        public static async Task Post_StepMirror (Mirror m, string pStr, DateTime pUp) {
+        public static async Task<ServerResponse> Post_StepMirror (Mirror m, string? pStr, DateTime? pUp) {
             HttpClient hc = new ();
 
+            if (String.IsNullOrEmpty (pStr) || pUp is null) {
+                return ServerResponse.NA;
+            }
+            
             try {
-                HttpResponseMessage resp = await hc.GetAsync (FormatForPHP (
-                    $"{m.ServerAddress}{(m.ServerAddress.EndsWith('/') ? String.Empty : '/')}" 
+                string requri = FormatForPHP (
+                    $"{m.ServerAddress}{(m.ServerAddress.EndsWith ('/') ? String.Empty : '/')}"
                     + $"mirror_post.php?accession={m.Accession}"
                     + $"&key_access={Encryption.HashSHA256 (m.PasswordAccess)}&key_edit={Encryption.HashSHA256 (m.PasswordEdit)}"
-                    + $"&patient={Encryption.EncryptAES (pStr)}&updated={Utility.DateTime_ToString (pUp)}"));
+                    + $"&patient={Encryption.EncryptAES (pStr)}&updated={Utility.DateTime_ToString (pUp)}");
+                
+                HttpResponseMessage resp = await hc.GetAsync (requri);
 
+                resp.EnsureSuccessStatusCode ();
+                string server_code = "";                // Response generated in mirror_post.php by printf()
+                
+                using (StringReader sr = new(await resp.Content.ReadAsStringAsync ())) {
+                    server_code = (await sr.ReadLineAsync ())?.Trim () ?? "";
+                }
+
+                Console.WriteLine (server_code);
+                
                 hc.Dispose ();
+
+                // These response codes are hard-coded into II Server/mirror_post.php
+                if (server_code == "BAD_PASSWORD") {
+                    return ServerResponse.ErrorCredentials;
+                } else if (server_code == "ENTRY_UPDATED" || server_code == "ENTRY_ADDED") {
+                    return ServerResponse.Success;
+                } else {
+                    return ServerResponse.NA;
+                }
             } catch {
                 hc.Dispose ();
+                return ServerResponse.ErrorNameResolution;
             }
         }
     }

@@ -606,8 +606,6 @@ namespace II {
              * timers.
              */
             
-            Console.WriteLine($" {TimerSimulation?.Epoch} ProcessTimers");
-            
             TimerCardiac_Baseline.Process ();
             TimerCardiac_Atrial_Electric.Process ();
             TimerCardiac_Ventricular_Electric.Process ();

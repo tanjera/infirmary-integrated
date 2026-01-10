@@ -17,6 +17,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using II;
 using II.Localization;
+using II.Server;
 using MsBox.Avalonia.Dto;
 using MsBox.Avalonia.Models;
 
@@ -61,6 +62,11 @@ namespace IISIM {
             this.GetControl<TextBox> ("tbServerAddress").Text = Instance.Mirror.ServerAddress;
             this.GetControl<TextBox> ("tbServerAddress").Watermark = II.Server.Mirror.DefaultServer;
             
+            this.GetControl<TextBox> ("tbAccessionKey").Text = !String.IsNullOrEmpty(Instance.Mirror.Accession) 
+                ? Instance.Mirror.Accession : "";
+            this.GetControl<TextBox> ("tbAccessPassword").Text = !String.IsNullOrEmpty(Instance.Mirror.PasswordAccess)
+                ? Instance.Mirror.PasswordAccess : "";
+            
             this.GetControl<Button> ("btnContinue").Content = Instance.Language.Localize ("BUTTON:Continue");
         }
 
@@ -74,10 +80,59 @@ namespace IISIM {
             if ((this.GetControl<TextBox> ("tbAccessionKey").Text ?? "").Length > 0
                 && regex.IsMatch (this.GetControl<TextBox> ("tbAccessionKey")?.Text ?? "")) {
                 Instance.Mirror.Status = II.Server.Mirror.Statuses.CLIENT;
+                Instance.Mirror.ServerAddress =
+                    this.GetControl<TextBox> ("tbServerAddress").Text ?? II.Server.Mirror.DefaultServer;
                 Instance.Mirror.Accession = this.GetControl<TextBox> ("tbAccessionKey").Text ?? "";
                 Instance.Mirror.PasswordAccess = this.GetControl<TextBox> ("tbAccessPassword").Text ?? "";
 
-                this.Close ();
+                // Attempt to connect with the server to validate connection and credentials; present error if problem
+                if (Instance?.Server is not null) {
+                    II.Scenario.Step test = new Scenario.Step (Instance.Timer_Simulation); 
+                    Server.ServerResponse resp = await Instance.Mirror.GetStep (test, Instance.Server);
+                    
+                    Console.WriteLine(resp.ToString());
+                    switch (resp) {
+                        default: 
+                            this.Close ();
+                            break;
+                        
+                        case Server.ServerResponse.ErrorCredentials:
+                            Instance.Mirror.Status = II.Server.Mirror.Statuses.INACTIVE;
+                            
+                            await Dispatcher.UIThread.InvokeAsync (async () => {
+                                DialogMessage dlg = new (Instance) {
+                                    Message = Instance.Language.Localize ("MIRROR:ErrorServerEmptyResponse"),
+                                    Title = Instance.Language.Localize ("MIRROR:Error"),
+                                    Indicator = DialogMessage.Indicators.Error,
+                                    Option = DialogMessage.Options.OK,
+                                };
+
+                                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                                    this.Show ();
+
+                                await dlg.AsyncShow (this);
+                            });
+                            break;
+                        
+                        case Server.ServerResponse.ErrorNameResolution: 
+                            Instance.Mirror.Status = II.Server.Mirror.Statuses.INACTIVE;
+                            
+                            await Dispatcher.UIThread.InvokeAsync (async () => {
+                                DialogMessage dlg = new (Instance) {
+                                    Message = Instance.Language.Localize ("MIRROR:ErrorServerInaccessible"),
+                                    Title = Instance.Language.Localize ("MIRROR:Error"),
+                                    Indicator = DialogMessage.Indicators.Error,
+                                    Option = DialogMessage.Options.OK,
+                                };
+
+                                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                                    this.Show ();
+
+                                await dlg.AsyncShow (this);
+                            });
+                            break;
+                    }
+                }
             } else {
                 await Dispatcher.UIThread.InvokeAsync (async () => {
                     DialogMessage dlg = new (Instance) {

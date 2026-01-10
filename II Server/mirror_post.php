@@ -15,6 +15,9 @@ $get_patient = $_GET['patient'] ?? "";
 $get_updated = $_GET['updated'] ?? "";
 
 try {
+    // Check if:
+    // A row exists with the accession key
+    // And if so, get the administrator password for editing the row
     $sql = $conn->prepare(
             "SELECT key_edit FROM mirrors WHERE accession = ?");
 
@@ -23,12 +26,15 @@ try {
     $sql->bind_result($existing);
     $sql->execute();
 
-    $row_exists = false;
+    // Does the row exist?
+    $row_exists = $sql->fetch() ? true : false;
 
-    if ($sql->fetch()) {            // An entry exists for this accession
+    if ($row_exists) {            // An entry exists for this accession
 
         if ($existing != filter_input(INPUT_GET, 'key_edit')) {
             $conn->close();
+            printf("BAD_PASSWORD\n");
+
             die();
 
         } else if ($existing == filter_input(INPUT_GET, 'key_edit')) {
@@ -37,24 +43,26 @@ try {
             $sql->reset();
 
             if ($sql = $conn->prepare(
-                    "UPDATE mirrors SET key_access = ?, key_edit = ?, " .
+                    "UPDATE mirrors SET key_access = ?, " .
                     "patient = ?, updated = ? " .
-                    "WHERE accession = ?")) {
+                    "WHERE accession = ? AND key_edit = ?")) {
 
-                $sql->bind_param("sssssss",
+                $sql->bind_param("sssss",
                         $get_key_access,
-                        $get_key_edit,
                         $get_patient,
                         $get_updated,
-                        $get_accession);
+                        $get_accession,
+                        $get_key_edit);
 
                 $sql->execute();
                 $sql->close();
+
+                printf("ENTRY_UPDATED\n");
             }
 
             $conn->close();
         }
-    } else if (!$sql->fetch()) {    // No entry exists for this accession
+    } else if (!$row_exists) {    // No entry exists for this accession
 
         $conn->refresh(MYSQLI_REFRESH_STATUS);
         $sql->reset();
@@ -65,7 +73,7 @@ try {
                 "VALUES " .
                 "(?, ?, ?, ?, ?)")) {
 
-            $sql->bind_param("sssssss",
+            $sql->bind_param("sssss",
                     $get_accession,
                     $get_key_access,
                     $get_key_edit,
@@ -74,10 +82,13 @@ try {
 
             $sql->execute();
             $sql->close();
+
+            printf("ENTRY_ADDED\n");
         }
 
         $conn->close();
     }
 } catch (Exception $e) {
+    printf("EXCEPTION\n");
     die();
 }

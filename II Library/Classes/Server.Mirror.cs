@@ -5,6 +5,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using II.Settings;
@@ -36,6 +37,7 @@ namespace II.Server {
             set { _Accession = value.ToUpper (); }
         }
 
+        
         public Mirror (Timer? timerSimulation) {
             TimerSimulation = timerSimulation;
             ResetBackgroundWorker ();
@@ -63,18 +65,18 @@ namespace II.Server {
                 ResetBackgroundWorker ();
             }
         }
-
-        public async Task GetStep (Scenario.Step? step, Server s) {
+        
+        public async Task<Server.ServerResponse> GetStep (Scenario.Step? step, Server s) {
             /* Mirroring not active; neither client or host */
             if (Status != Statuses.CLIENT)
-                return;
+                return Server.ServerResponse.NA;
 
             /* Mirroring as client, check server q RefreshSeconds */
             if (DateTime.Compare (ServerQueried, DateTime.UtcNow.Subtract (new TimeSpan (0, 0, RefreshSeconds))) < 0) {
                 // Using a thread lock to prevent multiple web calls from generating race conditions against each other
                 if (!ThreadLock) {
                     ThreadLock = true;
-                    Scenario.Step? pBuffer = await s.Get_StepMirror (this);
+                    (Server.ServerResponse resp, Scenario.Step? pBuffer) = await s.Get_StepMirror (this);
                     ThreadLock = false;
 
                     if (pBuffer != null) {
@@ -82,23 +84,29 @@ namespace II.Server {
 
                         await step.Load (pBuffer.Save ());
                     }
+                    
+                    return resp;
                 }
-            }
+            } 
+
+            return Server.ServerResponse.NA;
         }
 
-        public async Task PostStep (Scenario.Step? step, Server s) {
+        public async Task<Server.ServerResponse> PostStep (Scenario.Step? step, Server s) {
             if (Status != Statuses.HOST)
-                return;
+                return Server.ServerResponse.NA;
 
             // Must use intermediary objects, if App.Patient is thread-locked, Waveforms stop populating!!
-            string pStr = step.Save ();
-            DateTime pUp = step.Physiology.Updated;
+            string? pStr = step?.Save ();
+            DateTime? pUp = step?.Physiology?.Updated;
 
             Regex regex = new ("^[a-zA-Z0-9]*$");
             if (Accession.Length <= 0 || !regex.IsMatch (Accession))
-                return;
+                return Server.ServerResponse.ErrorCredentials;
 
-            await Server.Post_StepMirror (this, pStr, pUp);
+            Server.ServerResponse resp = await Server.Post_StepMirror (this, pStr, pUp);
+
+            return resp;
         }
     }
 }
