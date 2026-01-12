@@ -3,9 +3,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		    xmlns:iiw="clr-namespace:IISE.Windows"
-        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="800"
+        mc:Ignorable="d"
         x:Class="IISE.WindowMain"
         Title="Infirmary Integrated: Scenario Editor"
+        SizeToContent="WidthAndHeight"
+        Loaded="OnLoaded"
+        Closing="OnClosing"
+        Closed="OnClosed"
 	      Icon="avares://infirmary-integrated-scenario-editor/Resources/Icon_IISE.ico">
 
   <Window.Styles>
@@ -44,16 +48,13 @@
   </Window.Styles>
 
   <TabControl Name="tabControl">
-    <TabItem Header="Simulation Options">
-      <iiw:PanelSimulation x:Name="panelSimulation" />
-    </TabItem>
+    <TabItem Header="Simulation Options"
+             Name="tiPanelSimulation" />
+      
+    <TabItem Header="Steps and Progressions" 
+             Name="tiPanelStepEditor" />
 
-    <TabItem Header="Steps and Progressions">
-      <iiw:PanelStepEditor x:Name="panelStepEditor" />
-    </TabItem>
-
-    <TabItem Header="Physiologic Parameters">
-      <iiw:PanelParameters x:Name="panelParameters" />
-    </TabItem>
+    <TabItem Header="Physiologic Parameters"
+             Name="tiPanelParameters" />
   </TabControl>
 </Window>

@@ -128,8 +128,6 @@ namespace II.Server {
                 using (StringReader sr = new(await resp.Content.ReadAsStringAsync ())) {
                     server_code = (await sr.ReadLineAsync ())?.Trim () ?? "";
                 }
-
-                Console.WriteLine (server_code);
                 
                 hc.Dispose ();
 

@@ -31,12 +31,15 @@ using IISE.Controls;
 namespace IISE.Windows {
 
     public partial class PanelParameters : UserControl {
+        public App? Instance;
+        
         /* Pointer to main data structure for the scenario, patient, devices, etc. */
         public Scenario.Step? Step;
         public Physiology? Physiology;
-        private WindowMain? IMain;
 
-        public PanelParameters () {
+        public PanelParameters (App? app) {
+            Instance = app;
+            
             InitializeComponent ();
 
             DataContext = this;
@@ -46,12 +49,6 @@ namespace IISE.Windows {
 
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
-        }
-
-        public Task InitReferences (WindowMain main) {
-            IMain = main;
-
-            return Task.CompletedTask;
         }
 
         public async Task SetStep (Scenario.Step? step) {
@@ -69,21 +66,21 @@ namespace IISE.Windows {
                 cardiacAxes = new List<string> (),
                 fetalHeartRhythms = new List<string> ();
 
-            if (App.Language != null) {
+            if (Instance?.Language is not null) {
                 foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
-                    cardiacRhythms.Add (App.Language.Dictionary [Cardiac_Rhythms.LookupString (v)]);
+                    cardiacRhythms.Add (Instance?.Language?.Localize(Cardiac_Rhythms.LookupString (v)) ?? "");
 
                 foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
-                    respiratoryRhythms.Add (App.Language.Dictionary [Respiratory_Rhythms.LookupString (v)]);
+                    respiratoryRhythms.Add (Instance?.Language?.Localize(Respiratory_Rhythms.LookupString (v)) ?? "");
 
                 foreach (PulmonaryArtery_Rhythms.Values v in Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)))
-                    pulmonaryRhythms.Add (App.Language.Dictionary [PulmonaryArtery_Rhythms.LookupString (v)]);
+                    pulmonaryRhythms.Add (Instance?.Language?.Localize(PulmonaryArtery_Rhythms.LookupString (v)) ?? "");
 
                 foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
-                    cardiacAxes.Add (App.Language.Dictionary [Cardiac_Axes.LookupString (v)]);
+                    cardiacAxes.Add (Instance?.Language?.Localize(Cardiac_Axes.LookupString (v)) ?? "");
 
                 foreach (FetalHeart_Rhythms.Values v in Enum.GetValues (typeof (FetalHeart_Rhythms.Values)))
-                    fetalHeartRhythms.Add (App.Language.Dictionary [FetalHeart_Rhythms.LookupString (v)]);
+                    fetalHeartRhythms.Add (Instance?.Language?.Localize(FetalHeart_Rhythms.LookupString (v)) ?? "");
             }
 
             // Find all controls and attach to reference
@@ -523,21 +520,21 @@ namespace IISE.Windows {
         /* Generic Menu Items (across all Panels) */
 
         private void MenuFileNew_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileNew_Click (sender, e);
+            => Instance?.WindowMain?.MenuFileNew_Click (sender, e);
 
         private void MenuFileLoad_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileLoad_Click (sender, e);
+            => Instance?.WindowMain?.MenuFileLoad_Click (sender, e);
 
         private void MenuFileSave_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileSave_Click (sender, e);
+            => Instance?.WindowMain?.MenuFileSave_Click (sender, e);
 
         private void MenuFileSaveAs_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileSaveAs_Click (sender, e);
+            => Instance?.WindowMain?.MenuFileSaveAs_Click (sender, e);
 
         private void MenuFileExit_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileExit_Click (sender, e);
+            => Instance?.WindowMain?.MenuFileExit_Click (sender, e);
 
         private void MenuHelpAbout_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuHelpAbout_Click (sender, e);
+            => Instance?.WindowMain?.MenuHelpAbout_Click (sender, e);
     }
 }

@@ -31,9 +31,10 @@ using IISE.Controls;
 namespace IISE.Windows {
 
     public partial class PanelStepEditor : UserControl {
+        public App? Instance;
+        
         /* Pointer to main data structure for the scenario, patient, devices, etc. */
         private Scenario? Scenario;
-        private WindowMain? IMain;
 
         /* Interface items */
         public Canvas ICanvas;
@@ -50,7 +51,9 @@ namespace IISE.Windows {
 
         private Avalonia.Input.Pointer? PointerCaptured = null;
 
-        public PanelStepEditor () {
+        public PanelStepEditor (App? app) {
+            Instance = app;
+            
             InitializeComponent ();
 
             DataContext = this;
@@ -69,17 +72,11 @@ namespace IISE.Windows {
             AvaloniaXamlLoader.Load (this);
         }
 
-        public Task InitReferences (WindowMain main) {
-            IMain = main;
-
-            return Task.CompletedTask;
-        }
-
         private async Task InitInterface () {
             // Reset buffer parameters
             ISelectedStep = null;
             IsSelectedStepEnd = false;
-            await (IMain?.SetStep (null) ?? Task.CompletedTask);
+            await (Instance?.WindowMain?.SetStep (null) ?? Task.CompletedTask);
 
             PointerPosition = null;
 
@@ -135,7 +132,7 @@ namespace IISE.Windows {
                 }
 
                 // Propogate changes to the Step to other panels as needed
-                _ = IMain?.SetStep (ISelectedStep.Step);
+                _ = Instance?.WindowMain?.SetStep (ISelectedStep.Step);
             }
         }
 
@@ -148,7 +145,7 @@ namespace IISE.Windows {
                 }
 
                 // Propogate changes to the Step to other panels as needed
-                _ = IMain?.SetStep (ISelectedStep.Step);
+                _ = Instance?.WindowMain?.SetStep (ISelectedStep.Step);
             }
         }
 
@@ -256,7 +253,7 @@ namespace IISE.Windows {
             }
         }
 
-        private Task ImportSteps () {
+        private async Task ImportSteps () {
             /* For use when loading a saved file- Steps are already embedded in the Scenario,
              * the Scenario should already be set, and now we just need to process the Steps and
              * Progressions into the interface items (IStep) */
@@ -277,7 +274,9 @@ namespace IISE.Windows {
                 Canvas.SetTop (item, item.Step.IISEPositionY);
             }
 
-            return Task.CompletedTask;
+            if (ISteps.Count > 0) {
+                await SelectIStep(ISteps.First ());
+            }
         }
 
         private async Task AddStep (ItemStep? incItem = null) {
@@ -355,9 +354,9 @@ namespace IISE.Windows {
 
             // If that was the last Step... create a new "initial" Step
             if (Scenario.Steps.Count == 0) {
-                await AddStep (new ItemStep () {
-                    Name = $"Initial Step",
-                });
+                ItemStep ist = new ItemStep () { Name = $"Initial Step", };
+                await AddStep (ist);
+                await SelectIStep (ist);
             }
             
             await UpdateIProgressions ();
@@ -476,12 +475,12 @@ namespace IISE.Windows {
         }
 
         private async Task SelectIStep (ItemStep item, Avalonia.Input.Pointer? capture = null) {
-            if (IMain is null)
+            if (Instance?.WindowMain is null)
                 return;
 
             ISelectedStep = item;
             IsSelectedStepEnd = false;
-            await IMain.SetStep (ISelectedStep.Step);
+            await Instance.WindowMain.SetStep (ISelectedStep.Step);
 
             if (capture != null) {
                 PointerCaptured = capture;
@@ -492,12 +491,12 @@ namespace IISE.Windows {
         }
 
         private async Task SelectEndStep (ItemStepEnd end, Avalonia.Input.Pointer? capture = null) {
-            if (IMain is null)
+            if (Instance?.WindowMain is null)
                 return;
 
             ISelectedStep = end.Step;
             IsSelectedStepEnd = true;
-            await IMain.SetStep (ISelectedStep.Step);
+            await Instance.WindowMain.SetStep (ISelectedStep.Step);
 
             if (capture != null) {
                 PointerCaptured = capture;
@@ -508,12 +507,12 @@ namespace IISE.Windows {
         }
 
         private async Task DeselectAll () {
-            if (IMain is null)
+            if (Instance?.WindowMain is null)
                 return;
 
             ISelectedStep = null;
             IsSelectedStepEnd = false;
-            await IMain.SetStep (null);
+            await Instance.WindowMain.SetStep (null);
 
             PointerPosition = null;
 
@@ -585,28 +584,28 @@ namespace IISE.Windows {
             if (CopiedStep != null)
                 await ISelectedStep.Physiology.Load (CopiedStep.Physiology.Save ());
 
-            IMain?.UpdateStep ();
+            Instance?.WindowMain?.UpdateStep ();
         }
 
         /* Generic Menu Items (across all Panels) */
 
         private void MenuFileNew_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileNew_Click (sender, e);
+            => Instance?.WindowMain?.MenuFileNew_Click (sender, e);
 
         private void MenuFileLoad_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileLoad_Click (sender, e);
+            => Instance?.WindowMain?.MenuFileLoad_Click (sender, e);
 
         private void MenuFileSave_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileSave_Click (sender, e);
+            => Instance?.WindowMain?.MenuFileSave_Click (sender, e);
 
         private void MenuFileSaveAs_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileSaveAs_Click (sender, e);
+            => Instance?.WindowMain?.MenuFileSaveAs_Click (sender, e);
 
         private void MenuFileExit_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileExit_Click (sender, e);
+            => Instance?.WindowMain?.MenuFileExit_Click (sender, e);
 
         private void MenuHelpAbout_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuHelpAbout_Click (sender, e);
+            => Instance?.WindowMain?.MenuHelpAbout_Click (sender, e);
 
         /* Menu Items specific to this Panel */
 

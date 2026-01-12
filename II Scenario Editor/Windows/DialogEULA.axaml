@@ -1,0 +1,99 @@
+<Window
+	x:Class="IISE.DialogEULA"
+	xmlns="https://github.com/avaloniaui"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	Name="dlgEULA"
+	Title="Agree to Terms"
+	WindowStartupLocation="CenterScreen"
+	SizeToContent="WidthAndHeight"
+	CanResize="False"
+	Topmost="True"
+	Icon="avares://infirmary-integrated-scenario-editor/Resources/Icon_IISE.ico"
+	mc:Ignorable="d">
+
+  <Window.Styles>
+    <Style Selector="Border.grp">
+      <Setter Property="BorderBrush" Value="Black" />
+      <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
+    </Style>
+
+    <Style Selector="Label.url">
+      <Setter Property="Foreground" Value="Blue" />
+      <Setter Property="BorderBrush" Value="Blue" />
+      <Setter Property="BorderThickness" Value="0, 0, 0, 1" />
+    </Style>
+  </Window.Styles>
+  <Grid
+		Margin="15,10"
+		HorizontalAlignment="Stretch"
+		VerticalAlignment="Stretch">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <Grid.ColumnDefinitions>
+	    <ColumnDefinition Width="*" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+
+    <Label
+			Name="lblAgreeTerms"
+			Grid.Row="0"
+			Grid.Column="0"
+			Grid.ColumnSpan="2"
+			Padding="5,5,5,2"
+			HorizontalAlignment="Center"
+			VerticalAlignment="Center">
+
+      <TextBlock Name="txtAgreeTerms" TextWrapping="Wrap" />
+    </Label>
+
+
+	  <ScrollViewer
+		  Grid.Row="1"
+		  Grid.Column="0"
+		  Grid.ColumnSpan="2" 
+		  MaxHeight="600"
+		  HorizontalAlignment="Center" 
+		  VerticalAlignment="Center" 
+		  HorizontalScrollBarVisibility="Auto" 
+		  VerticalScrollBarVisibility="Auto">
+		  <TextBox Name="tbLicense"
+		           Margin="5,10,5,5"
+		           Padding="5,2"
+		           HorizontalAlignment="Stretch"
+		           VerticalAlignment="Stretch"
+		           />
+	  </ScrollViewer>
+	  
+	  <Button
+		  Name="btnCancel"
+		  Grid.Row="2"
+		  Grid.Column="0"
+		  Margin="5,10"
+		  Padding="5"
+		  HorizontalAlignment="Stretch"
+		  HorizontalContentAlignment="Center"
+		  Background="White"
+		  BorderBrush="Black"
+		  BorderThickness="1"
+		  Click="OnClick_Cancel" />
+	  
+    <Button
+			Name="btnContinue"
+			Grid.Row="2"
+			Grid.Column="1"
+			Margin="5,10"
+			Padding="5"
+			HorizontalAlignment="Stretch"
+			HorizontalContentAlignment="Center"
+			Background="White"
+			BorderBrush="Black"
+			BorderThickness="1"
+			Click="OnClick_Continue" />
+  </Grid>
+</Window>

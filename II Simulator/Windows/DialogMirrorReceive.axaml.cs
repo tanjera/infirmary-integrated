@@ -90,7 +90,6 @@ namespace IISIM {
                     II.Scenario.Step test = new Scenario.Step (Instance.Timer_Simulation); 
                     Server.ServerResponse resp = await Instance.Mirror.GetStep (test, Instance.Server);
                     
-                    Console.WriteLine(resp.ToString());
                     switch (resp) {
                         default: 
                             this.Close ();

@@ -31,9 +31,10 @@ using IISE.Controls;
 namespace IISE.Windows {
 
     public partial class PanelSimulation : UserControl {
+        public App? Instance;
+        
         /* Pointer to main data structure for the scenario, patient, devices, etc. */
         private Scenario? Scenario = new (new Timer());
-        private WindowMain? IMain;
 
         /* View Controls for referencing by ViewModel */
         private PropertyCheck vpchkMonitorEnabled;
@@ -56,7 +57,9 @@ namespace IISE.Windows {
         private List<PropertyNumeric> listDefibNumerics;
         private List<PropertyTracing> listDefibTracings;
         
-        public PanelSimulation () {
+        public PanelSimulation (App? app) {
+            Instance = app;
+            
             InitializeComponent ();
 
             DataContext = this;
@@ -66,12 +69,6 @@ namespace IISE.Windows {
 
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
-        }
-
-        public Task InitReferences (WindowMain main) {
-            IMain = main;
-
-            return Task.CompletedTask;
         }
 
         public async Task SetScenario (Scenario s) {
@@ -611,22 +608,22 @@ namespace IISE.Windows {
         /* Generic Menu Items (across all Panels) */
 
         private void MenuFileNew_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileNew_Click (sender, e);
+            => Instance?.WindowMain?.MenuFileNew_Click (sender, e);
 
         private void MenuFileLoad_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileLoad_Click (sender, e);
+            => Instance?.WindowMain?.MenuFileLoad_Click (sender, e);
 
         private void MenuFileSave_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileSave_Click (sender, e);
+            => Instance?.WindowMain?.MenuFileSave_Click (sender, e);
 
         private void MenuFileSaveAs_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileSaveAs_Click (sender, e);
+            => Instance?.WindowMain?.MenuFileSaveAs_Click (sender, e);
 
         private void MenuFileExit_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuFileExit_Click (sender, e);
+            => Instance?.WindowMain?.MenuFileExit_Click (sender, e);
 
         private void MenuHelpAbout_Click (object sender, RoutedEventArgs e)
-            => IMain?.MenuHelpAbout_Click (sender, e);
+            => Instance?.WindowMain?.MenuHelpAbout_Click (sender, e);
 
         /* Menu Items specific to this Panel */
 

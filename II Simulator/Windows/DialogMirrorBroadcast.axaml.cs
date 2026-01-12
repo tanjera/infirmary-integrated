@@ -106,7 +106,6 @@ namespace IISIM {
                     Server.ServerResponse resp =
                         await Instance.Mirror.PostStep (Instance.Scenario?.Current, Instance.Server);
                     
-                    Console.WriteLine(resp.ToString());
                     switch (resp) {
                         default: 
                             this.Close ();

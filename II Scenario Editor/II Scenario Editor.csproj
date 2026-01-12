@@ -85,6 +85,10 @@
       <DependentUpon>PropertyTracing.axaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Windows\DialogEULA.axaml.cs">
+      <DependentUpon>DialogEULA.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="..\II Library\II Library.projitems" Label="Shared" />
   <ItemGroup>

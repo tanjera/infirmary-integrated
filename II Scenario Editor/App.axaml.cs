@@ -16,15 +16,19 @@ namespace IISE {
     public partial class App : Application {
         public static string []? Start_Args;
 
-        public static Language? Language = new Language ();
+        public II.Settings.Instance Settings = new ();
+        
+        public Language? Language = new Language ();
 
-        public static Scenario? Scenario;
+        public Scenario? Scenario;
 
-        public static WindowSplash? WindowSplash;
-        public static WindowMain? WindowMain;
+        public WindowSplash? WindowSplash;
+        public WindowMain? WindowMain;
 
         public override void Initialize () {
             AvaloniaXamlLoader.Load (this);
+            
+            Settings.Load ();                                           // Load config file
         }
 
 #pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
@@ -32,7 +36,7 @@ namespace IISE {
         public override async void OnFrameworkInitializationCompleted () {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
                 WindowSplash = new ();
-                WindowMain = new ();
+                WindowMain = new (this);
 
                 // Show the splash screen for 2 seconds, then swap out to the main window
                 desktop.MainWindow = WindowSplash;
@@ -62,9 +66,11 @@ namespace IISE {
                 _ = WindowMain.DialogAbout ();
         }
 
-        public static Task Exit () {
+        public Task Exit () {
             WindowSplash?.Close ();
-            WindowMain?.Close ();
+            
+            if (WindowMain?.WindowStatus != WindowMain.WindowStates.Closed)
+                WindowMain?.Close ();
 
             return Task.CompletedTask;
         }

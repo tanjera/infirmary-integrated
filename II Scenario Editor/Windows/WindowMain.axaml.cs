@@ -33,8 +33,12 @@ using IISE.Windows;
 namespace IISE {
 
     public partial class WindowMain : Window {
+        public App? Instance;
+        
         /* Main data structure to build our scene into */
         private Scenario Scenario;
+        
+        public WindowStates WindowStatus = WindowStates.Null;   // Monitors status of the Window; Active? Closed?
 
         /* Pointers for interface items */
         private TabControl ITabControl;
@@ -44,33 +48,61 @@ namespace IISE {
 
         /* Data structures for use */
         private string? SaveFilePath;
-
-        public WindowMain () {
+        
+        public enum WindowStates {
+            Null,
+            Active,
+            Closed
+        }
+        
+        public WindowMain (App? app) {
+            Instance = app;
+            
             InitializeComponent ();
 
-            DataContext = this;
-
-            ITabControl = this.GetControl<TabControl> ("tabControl");
-            IPanelSimulation = this.GetControl<PanelSimulation> ("panelSimulation");
-            IPanelStepEditor = this.GetControl<PanelStepEditor> ("panelStepEditor");
-            IPanelParameters = this.GetControl<PanelParameters> ("panelParameters");
-
-            _ = IPanelSimulation.InitReferences (this);
-            _ = IPanelStepEditor.InitReferences (this);
-            _ = IPanelParameters.InitReferences (this);
-
-            _ = InitScenario ();
+            Init ();
         }
 
         private void InitializeComponent () {
             AvaloniaXamlLoader.Load (this);
         }
 
+        private void Init () {
+            DataContext = this;
+
+            ITabControl = this.GetControl<TabControl> ("tabControl");
+            IPanelParameters = new PanelParameters (Instance) { Name = "panelParameters" };
+            IPanelSimulation = new PanelSimulation (Instance) { Name = "panelSimulation" };
+            IPanelStepEditor = new PanelStepEditor (Instance) { Name = "panelStepEditor" };
+
+            this.GetControl<TabItem> ("tiPanelParameters").Content = IPanelParameters;
+            this.GetControl<TabItem> ("tiPanelSimulation").Content = IPanelSimulation;
+            this.GetControl<TabItem> ("tiPanelStepEditor").Content = IPanelStepEditor;
+            
+            if (!II.Settings.Instance.Exists () || !(Instance?.Settings.AcceptedEULA ?? false)) {
+                DialogEULA ();
+            }
+            
+            _ = InitScenario ();
+        }
+        
         public async Task DialogAbout () {
             DialogAbout dlg = new ();
             await dlg.ShowDialog (this);
         }
+        
+        private void DialogEULA () {
+            Dispatcher.UIThread.InvokeAsync (async () => {
+                DialogEULA dlg = new (Instance);
+                dlg.Activate ();
 
+                if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                    this.Show ();
+
+                await dlg.ShowDialog (this);
+            });
+        }
+        
         private async Task Exit (bool toConfirm = true) {
             if (toConfirm && Scenario.Steps.Count > 0) {
                 DialogMessage dlg = new () {
@@ -82,11 +114,11 @@ namespace IISE {
                 DialogMessage.Responses? response = await dlg.AsyncShow (this);
 
                 if (response != null && response == DialogMessage.Responses.Yes)
-                    await App.Exit ();
+                    await Instance?.Exit ();
                 else
                     return;
             } else
-                await App.Exit ();
+                await Instance?.Exit ();
         }
 
         private async Task<bool> PromptUnsavedWork () {
@@ -115,7 +147,7 @@ namespace IISE {
 
             await IPanelSimulation.SetScenario (Scenario);
             await IPanelStepEditor.SetScenario (Scenario);
-            await IPanelParameters.SetStep (null);
+            await IPanelParameters.SetStep (Scenario.Steps.First());
 
             ITabControl.SelectedIndex = 0;
         }
@@ -316,5 +348,48 @@ namespace IISE {
 
         public void MenuHelpAbout_Click (object sender, RoutedEventArgs e)
             => _ = DialogAbout ();
+        
+        
+        private void OnLoaded (object? sender, RoutedEventArgs e) {
+            WindowStatus = WindowStates.Active;
+            
+            if (Instance?.Settings.UI?.ScenarioEditor is not null) {
+                var pos = new PixelPoint (
+                    Instance.Settings.UI.ScenarioEditor.X < 0 ? 0 : Instance.Settings.UI.ScenarioEditor.X ?? Position.X,
+                    Instance.Settings.UI.ScenarioEditor.Y < 0 ? 0 : Instance.Settings.UI.ScenarioEditor.Y ?? Position.Y);
+
+                if (Screens.All.Any(o => o.WorkingArea.Contains (pos))) { 
+                    Position = pos;
+                }
+
+                if (Instance.Settings.UI.ScenarioEditor.WindowState == WindowState.Normal) {
+                    SizeToContent = SizeToContent.Manual;
+                    Width = Instance.Settings.UI.ScenarioEditor.Width ?? Width;
+                    Height = Instance.Settings.UI.ScenarioEditor.Height ?? Height;
+                } else {
+                    WindowState = Instance.Settings.UI.ScenarioEditor.WindowState ?? WindowState;
+                }
+            }
+        }
+        
+        private void OnClosing (object? sender, WindowClosingEventArgs e) {
+            if (Instance?.Settings.UI is not null && WindowStatus == WindowStates.Active) {
+                Instance.Settings.UI.ScenarioEditor = new() {
+                    X = Position.X,
+                    Y = Position.Y,
+                    Width = Width,
+                    Height = Height,
+                    WindowState = WindowState
+                };
+                
+                Instance.Settings.Save();
+            }
+        }
+
+        private void OnClosed (object sender, EventArgs e) {
+            WindowStatus = WindowStates.Closed;
+            
+            Exit ();
+        }
     }
 }
