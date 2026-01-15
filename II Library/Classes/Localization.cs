@@ -9,28 +9,28 @@ using System.Globalization;
 
 namespace II.Localization {
     public partial class Language {
-        public Values Value;
+        public Languages Selection;
 
         public Language (string s) {
             object? lang = new ();
-            if (Enum.TryParse (typeof (Values), s, out lang))
-                Value = lang is not null ? (Values)lang : Values.ENG;
+            if (Enum.TryParse (typeof (Languages), s, out lang))
+                Selection = lang is not null ? (Languages)lang : Languages.ENG;
             else
-                Value = Values.ENG;
+                Selection = Languages.ENG;
         }
 
-        public Language (Values v) {
-            Value = v;
+        public Language (Languages v) {
+            Selection = v;
         }
 
         public Language () {
-            if (Enum.TryParse<Values> (CultureInfo.InstalledUICulture.ThreeLetterISOLanguageName.ToUpper (), out Values tryParse))
-                Value = tryParse;
+            if (Enum.TryParse<Languages> (CultureInfo.InstalledUICulture.ThreeLetterISOLanguageName.ToUpper (), out Languages tryParse))
+                Selection = tryParse;
             else
-                Value = Values.ENG;
+                Selection = Languages.ENG;
         }
 
-        public enum Values {
+        public enum Languages {
             AMH,    // Amharic
             ARA,    // Arabic
             DEU,    // German
@@ -48,21 +48,21 @@ namespace II.Localization {
             ZHO     // Chinese
         }
 
-        public string Description { get { return Descriptions [(int)Value]; } }
+        public string Description { get { return Descriptions [(int)Selection]; } }
 
         public static List<string> MenuItem_Formats {
             get { return Descriptions; }
         }
 
-        public static Values Parse_MenuItem (string inc) {
+        public static Languages Parse_MenuItem (string inc) {
             try {
                 int i = Descriptions.FindIndex (o => { return o == inc; });
                 if (i >= 0)
-                    return (Values)Enum.GetValues (typeof (Values)).GetValue (i);
+                    return (Languages)Enum.GetValues (typeof (Languages)).GetValue (i);
                 else
-                    return Values.ENG;
+                    return Languages.ENG;
             } catch {
-                return Values.ENG;
+                return Languages.ENG;
             }
         }
 
@@ -84,31 +84,34 @@ namespace II.Localization {
             "中文 (Chinese)"
         };
 
-        public Dictionary<string, string> Dictionary {
-            get {
-                switch (Value) {
-                    default: return new Dictionary<string, string> ();
-                    case Values.AMH: return AMH;
-                    case Values.ARA: return ARA;
-                    case Values.DEU: return DEU;
-                    case Values.ENG: return ENG;
-                    case Values.SPA: return SPA;
-                    case Values.FAS: return FAS;
-                    case Values.FRA: return FRA;
-                    case Values.HEB: return HEB;
-                    case Values.HIN: return HIN;
-                    case Values.ITA: return ITA;
-                    case Values.KOR: return KOR;
-                    case Values.POR: return POR;
-                    case Values.RUS: return RUS;
-                    case Values.SWA: return SWA;
-                    case Values.ZHO: return ZHO;
-                }
+        public Dictionary<string, string> Dictionary { get => GetDictionary(Selection); }
+
+        public static Dictionary<string, string> GetDictionary (Languages lang) {
+            switch (lang) {
+                default: return new Dictionary<string, string> ();
+                case Languages.AMH: return AMH;
+                case Languages.ARA: return ARA;
+                case Languages.DEU: return DEU;
+                case Languages.ENG: return ENG;
+                case Languages.SPA: return SPA;
+                case Languages.FAS: return FAS;
+                case Languages.FRA: return FRA;
+                case Languages.HEB: return HEB;
+                case Languages.HIN: return HIN;
+                case Languages.ITA: return ITA;
+                case Languages.KOR: return KOR;
+                case Languages.POR: return POR;
+                case Languages.RUS: return RUS;
+                case Languages.SWA: return SWA;
+                case Languages.ZHO: return ZHO;
             }
         }
-
-        public string Localize (string key) {
-            return Dictionary.ContainsKey (key) ? Dictionary [key] : "";
-        }
+        
+        public static string Localize (Languages language, string key) 
+            => GetDictionary (language).GetValueOrDefault (key, "");
+        
+        
+        public string Localize (string key) 
+            => Dictionary.GetValueOrDefault(key, "");
     }
 }

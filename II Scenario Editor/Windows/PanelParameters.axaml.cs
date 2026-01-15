@@ -25,6 +25,7 @@ using Avalonia.Platform;
 using Avalonia.Threading;
 
 using II;
+using II.Localization;
 
 using IISE.Controls;
 
@@ -68,19 +69,19 @@ namespace IISE.Windows {
 
             if (Instance?.Language is not null) {
                 foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
-                    cardiacRhythms.Add (Instance?.Language?.Localize(Cardiac_Rhythms.LookupString (v)) ?? "");
+                    cardiacRhythms.Add (Language.Localize(Language.Languages.ENG, Cardiac_Rhythms.LookupString (v)) ?? "");
 
                 foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
-                    respiratoryRhythms.Add (Instance?.Language?.Localize(Respiratory_Rhythms.LookupString (v)) ?? "");
+                    respiratoryRhythms.Add (Language.Localize(Language.Languages.ENG, Respiratory_Rhythms.LookupString (v)) ?? "");
 
                 foreach (PulmonaryArtery_Rhythms.Values v in Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)))
-                    pulmonaryRhythms.Add (Instance?.Language?.Localize(PulmonaryArtery_Rhythms.LookupString (v)) ?? "");
+                    pulmonaryRhythms.Add (Language.Localize(Language.Languages.ENG, PulmonaryArtery_Rhythms.LookupString (v)) ?? "");
 
                 foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
-                    cardiacAxes.Add (Instance?.Language?.Localize(Cardiac_Axes.LookupString (v)) ?? "");
+                    cardiacAxes.Add (Language.Localize(Language.Languages.ENG, Cardiac_Axes.LookupString (v)) ?? "");
 
                 foreach (FetalHeart_Rhythms.Values v in Enum.GetValues (typeof (FetalHeart_Rhythms.Values)))
-                    fetalHeartRhythms.Add (Instance?.Language?.Localize(FetalHeart_Rhythms.LookupString (v)) ?? "");
+                    fetalHeartRhythms.Add (Language.Localize(Language.Languages.ENG, FetalHeart_Rhythms.LookupString (v)) ?? "");
             }
 
             // Find all controls and attach to reference

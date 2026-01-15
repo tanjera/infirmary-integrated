@@ -62,7 +62,7 @@ namespace IISIM {
                 });
                 
             this.GetControl<ComboBox> ("cmbLanguages").SelectedIndex = 
-                Enum.Parse (typeof (Language.Values), Instance?.Settings.Language ?? "ENG").GetHashCode();
+                Enum.Parse (typeof (Language.Languages), Instance?.Settings.Language ?? "ENG").GetHashCode();
         }
 
         private async Task SetLanguage () {
@@ -71,9 +71,9 @@ namespace IISIM {
                 return;
             }
 
-            Instance.Language.Value = Enum.GetValues<Language.Values> () [this.GetControl<ComboBox> ("cmbLanguages").SelectedIndex];
+            Instance.Language.Selection = Enum.GetValues<Language.Languages> () [this.GetControl<ComboBox> ("cmbLanguages").SelectedIndex];
 
-            Instance.Settings.Language = Instance.Language.Value.ToString ();
+            Instance.Settings.Language = Instance.Language.Selection.ToString ();
             Instance.Settings.Save ();
 
             // Show messagebox prompting user to restart the program for changes to take effect

@@ -224,10 +224,10 @@ END OF TERMS AND CONDITIONS";
 
             // Populate UI strings per language selection
 
-            this.GetControl<Window> ("dlgEULA").Title = Instance.Language.Localize ("EULA:Title");
-            this.GetControl<TextBlock> ("txtAgreeTerms").Text = Instance.Language.Localize ("EULA:AgreeToTerms");
-            this.GetControl<Button> ("btnCancel").Content = Instance.Language.Localize ("BUTTON:Cancel");
-            this.GetControl<Button> ("btnContinue").Content = Instance.Language.Localize ("BUTTON:Continue");
+            this.GetControl<Window> ("dlgEULA").Title = Language.Localize (Language.Languages.ENG, "EULA:Title");
+            this.GetControl<TextBlock> ("txtAgreeTerms").Text = Language.Localize (Language.Languages.ENG, "EULA:AgreeToTerms");
+            this.GetControl<Button> ("btnCancel").Content = Language.Localize (Language.Languages.ENG, "BUTTON:Cancel");
+            this.GetControl<Button> ("btnContinue").Content = Language.Localize (Language.Languages.ENG, "BUTTON:Continue");
             
             /* Note: Only the English version is legally binding... can't use localization for
              * functional & legal reasons...

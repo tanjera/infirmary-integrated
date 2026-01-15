@@ -562,7 +562,7 @@ namespace IISIM {
 
         private async Task DialogLanguage (bool reloadUI = false) {
             await Dispatcher.UIThread.InvokeAsync (async () => {
-                var oldLang = Instance?.Language.Value;
+                var oldLang = Instance?.Language.Selection;
                 DialogLanguage dlg = new (Instance);
                 dlg.Activate ();
 
@@ -571,7 +571,7 @@ namespace IISIM {
 
                 await dlg.ShowDialog (this);
 
-                reloadUI = oldLang != Instance?.Language.Value;
+                reloadUI = oldLang != Instance?.Language.Selection;
 
                 if (reloadUI)
                     InitInterface ();

@@ -537,6 +537,9 @@ namespace II.Rhythm {
 
         public void SortPoints () {
             lock (lockPoints) {
+
+                Points?.RemoveAll (p => p.X is double.NaN || p.Y is double.NaN);
+                
                 Points?.Sort (delegate (PointD p1, PointD p2) {
                     if (p1 is null && p2 is null) return 0;
                     else if (p1 is null) return -1;
