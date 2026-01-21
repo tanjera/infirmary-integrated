@@ -1,0 +1,120 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AssemblyName>infirmary-integrated-development-toolbox</AssemblyName>
+        <RootNamespace>IIDT</RootNamespace>
+        <Version>1.3.5</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.3.11"/>
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.11"/>
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.11"/>
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.11"/>
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.11">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="ExcelDataReader" Version="3.8.0" />
+        <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.2" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Windows\DialogMessage.axaml.cs">
+        <DependentUpon>DialogMessage.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Windows\WindowMain.axaml.cs">
+        <DependentUpon>WindowMain.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+    </ItemGroup>
+
+    <ItemGroup>
+      <AvaloniaResource Include="Resources\Icon_II.ico" />
+      <AvaloniaResource Include="Third_Party\Icon_ArrowDown_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_ArrowLeft_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_ArrowRight_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_ArrowUp_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_Clipboard_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_Clock_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_CopyData_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_Device12LeadECG_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_DeviceDefibrillator_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_DeviceEFM_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_DeviceIABP_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_DeviceMonitor_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_Error_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_PasteData_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_PlayerAdd_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_PlayerArrowBack_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_PlayerArrowNext_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_PlayerArrowPlayReverse_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_PlayerArrowPlay_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_PlayerPause_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_RecordMAR_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_Stack_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_TrashBin_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_UpgradeLater_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_UpgradeMute_128.png" />
+      <AvaloniaResource Include="Third_Party\Icon_UpgradeWebsite_128.png" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder-ArrowUp.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder-Ellipses.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder-List.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder-PatientRecord.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder-Stack.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder-TrashBin.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_112_1117289.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_16-01_3407877.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_26_copy_1241439.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_54_1241461.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_59_1241430.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_73_1241428.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_90_1241464.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_91_1241466.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_94_1241465.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_97_1236508.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Anesthesiology_1289463.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Appointment_Request_340916.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Blogging_Services_330819.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Blood_Pressure_345029.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Cardiology_340931.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Custom_Coding_330457.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Diagnostic_340771.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Doctor_2_340770.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Doctor_340769.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_eHealth_340904.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Electrocardiography_340757.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Emergency_Medicine_1289474.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_First_Aid_Kit_345039.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Friend_Profile_268968.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Global_Health_340903.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Heart_Disease_Prevention_1302399.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Hospitalization_340905.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Laptop_267470.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Link_Building_330485.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Obstetrics_352992.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Pharmaceutical_Drugs_345040.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Printer_262125.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Pulmonology_340917.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_School_Admission_Form_487617.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_School_Test_487609.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Seo_Maintenance_330473.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_SEO_Monitoring_330799.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Stethoscope_345035.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Treatment_345038.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Video_Search_2_330465.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\iconfinder_Website_Optimization_330459.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\Icon_Clock.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\Icon_PlayerAdd.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\Icon_PlayerArrowBack.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\Icon_PlayerArrowNext.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\Icon_PlayerArrowPlay.svg" />
+      <AvaloniaResource Include="Third_Party\SVGs\Icon_PlayerPause.svg" />
+    </ItemGroup>
+</Project>

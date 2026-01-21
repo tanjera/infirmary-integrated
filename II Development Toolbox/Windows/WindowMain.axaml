@@ -1,0 +1,243 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="IIDT.WindowMain"
+        Title="Infirmary Development Toolbox"
+        RequestedThemeVariant="Light">
+    
+    <Window.Styles>
+        <Style Selector="TabItem">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+        
+        <Style Selector="Grid">
+            <Setter Property="Margin" Value="2"/>
+        </Style>
+        
+        <Style Selector="Label">
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+
+        <Style Selector="TextBox">
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        
+        <Style Selector="NumericUpDown">
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+        </Style>
+        
+        <Style Selector="Button">
+            <Setter Property="Margin" Value="2"/>
+        </Style>
+    </Window.Styles>
+    
+    <!-- Dictionary Builder -->
+    
+    <TabControl>
+        <TabItem Header="Dictionary Builder">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                
+                <Label Grid.Row="0" Grid.Column="0"
+                       Content="Input File (Localization Strings.xlsx):"/>
+            
+                <TextBox Grid.Row="0" Grid.Column="1"
+                         Name="db_tbInputFilepath" />
+                
+                <Button Grid.Row="0" Grid.Column="2"
+                        Name= "db_btnInputFilepath" 
+                        Content="..."
+                        Click="db_btnInputFilepath_OnClick" />
+                
+                <Label Grid.Row="1" Grid.Column="0"
+                       Content="Output File (Classes/Localization.Dictionary.cs):"/>
+                
+                <TextBox Grid.Row="1" Grid.Column="1"
+                         Name="db_tbOutputFilepath" />
+                
+                
+                <Button Grid.Row="1" Grid.Column="2"
+                        Name= "db_btnOutputFilepath" 
+                        Content="..."
+                        Click="db_btnOutputFilepath_OnClick" />
+                
+                <Button Grid.Row="2" Grid.ColumnSpan="3"
+                        Name="db_btnProcess"
+                        Content="Build Dictionary"
+                        Click="db_btnProcess_OnClick"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                        />
+            </Grid>
+        </TabItem>
+        
+        
+        <!-- Tone Generator -->
+        
+        <TabItem Header="Tone Generator">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                
+                <Label Grid.Row="0" Grid.Column="0"
+                       Content="Length in seconds:"/>
+            
+                <NumericUpDown Grid.Row="0" Grid.Column="1"
+                         Name="tg_numLength"
+                         Value="1"
+                         Minimum="0"
+                         Maximum="120"
+                         Increment="0.1"/>
+                
+                <Label Grid.Row="1" Grid.Column="0"
+                       Content="Output File:"/>
+                
+                <TextBox Grid.Row="1" Grid.Column="1"
+                         Name="tg_tbOutputFilepath" />
+                
+                <Button Grid.Row="1" Grid.Column="2"
+                        Name= "tg_btnOutputFilepath" 
+                        Content="..."
+                        Click="tg_btnOutputFilepath_OnClick" />
+                
+                <Button Grid.Row="2" Grid.ColumnSpan="3"
+                        Name="tg_btnProcess"
+                        Content="Create File"
+                        Click="tg_btnProcess_OnClick"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                />
+            </Grid>
+        </TabItem>
+        
+        
+        <!-- Waveform Dictionary Builder -->
+        
+        <TabItem Header="Waveform Dictionary Builder">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                
+                <Label Grid.Row="0" Grid.Column="0"
+                       Content="Input Folder (Waveforms/):"/>
+            
+                <TextBox Grid.Row="0" Grid.Column="1"
+                         Name="wfdb_tbInputFilepath" />
+                
+                <Button Grid.Row="0" Grid.Column="2"
+                        Name= "wfdb_btnInputFilepath" 
+                        Content="..."
+                        Click="wfdb_btnInputFilepath_OnClick" />
+                
+                <Label Grid.Row="1" Grid.Column="0"
+                       Content="Output File (Classes/Waveform.Dictionary.Plots.cs):"/>
+                
+                <TextBox Grid.Row="1" Grid.Column="1"
+                         Name="wfdb_tbOutputFilepath" />
+                
+                
+                <Button Grid.Row="1" Grid.Column="2"
+                        Name= "wfdb_btnOutputFilepath" 
+                        Content="..."
+                        Click="wfdb_btnOutputFilepath_OnClick" />
+                
+                <Button Grid.Row="2" Grid.ColumnSpan="3"
+                        Name="wfdb_btnProcess"
+                        Content="Build Waveform Dictionary"
+                        Click="wfdb_btnProcess_OnClick"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"/>
+                
+                <TextBlock Grid.Row="3" Grid.ColumnSpan="3"
+                           Margin="2,15,2,2"
+                           Name="wfdb_tbiiwfSpecifications"
+                           FontFamily="Consolas"/>
+            </Grid>
+        </TabItem>
+        
+        
+        <TabItem Header="Waveform Editor"></TabItem>
+        
+        
+        <!-- Waveform Generator -->
+        
+        <TabItem Header="Waveform Generator">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                
+                <Label Grid.Row="0" Grid.Column="0"
+                       Content="Waveform Name:"/>
+            
+                <TextBox Grid.Row="0" Grid.Column="1"
+                         Name="wfg_tbWaveformName" />
+                
+                <Label Grid.Row="1" Grid.Column="0"
+                       Content="Output File (Waveforms/Waveform.iiwf):"/>
+                
+                <TextBox Grid.Row="1" Grid.Column="1"
+                         Name="wfg_tbOutputFilepath" />
+                
+                
+                <Button Grid.Row="1" Grid.Column="2"
+                        Name= "wfg_btnOutputFilepath" 
+                        Content="..."
+                        Click="wfg_btnOutputFilepath_OnClick" />
+                
+                <Button Grid.Row="2" Grid.ColumnSpan="3"
+                        Name="wfg_btnProcess"
+                        Content="Generate Waveform"
+                        Click="wfg_btnProcess_OnClick"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Center"
+                />
+            </Grid>
+        </TabItem>
+    </TabControl>
+</Window>
