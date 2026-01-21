@@ -7,19 +7,42 @@ $fs_dir = "../Package, Linux/_filesystem";
 $deb_dir = "../Package, Linux/DEB";
 $rpm_spec = "../Package, Linux/RPM/infirmary-integrated.spec";
 
+# Ensure filesystem files (scripts, .desktop shortcuts) are executable
+
+@to_chmod = ("$fs_dir/usr/bin/infirmary-integrated", 
+    "$fs_dir/usr/bin/infirmary-integrated-scenario-editor",
+    "$fs_dir/usr/share/applications/infirmary-integrated.desktop",
+    "$fs_dir/usr/share/applications/infirmary-integrated-scenario-editor.desktop");
+
+print "Setting chmod +x for scripts and links: ";
+
+foreach $file (@to_chmod) {
+    if (-e $file) {
+        print "✓";
+        `chmod +x \"$file\"`;
+    } else {
+        print "\nFile not found! \"$file\"\n";
+    }
+}
+print "\n\n";
+
+# Populate @to_process with Release packages found
+
 opendir($dh, $rel_dir) or die "Cannot open directory $rel_dir: $!";
 @rel_files = grep { -f "$rel_dir/$_" } readdir($dh);
 closedir($dh);
 
 @to_process = ();
 
-print "Files found:\n";
-
 foreach $file (@rel_files) {
     if ($file =~ /linux/) {
-        print " - $file\n";
         push(@to_process, $file);
     }
+}
+
+print "Files found for processing: " . scalar(@to_process) . "\n";
+foreach $file (@to_process) {
+    print " - $file\n";
 }
 
 print "\n";
