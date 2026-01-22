@@ -9,12 +9,16 @@ namespace IIDT {
 
     internal class Vertex {
         public double Y;
+        public Point Pixel;
 
         public Vertex () {
+            Pixel  = new  Point (0, 0);
         }
 
         public Vertex (double y) {
             Y = y;
+            
+            Pixel  = new  Point (0, 0);
         }
     }
 }

@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="IIDT.PanelDictionaryBuilder">
+    
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <Label Grid.Row="0" Grid.Column="0"
+               Content="Input File (Localization Strings.xlsx):"/>
+    
+        <TextBox Grid.Row="0" Grid.Column="1"
+                 Name="tbInputFilepath" />
+        
+        <Button Grid.Row="0" Grid.Column="2"
+                Name= "btnInputFilepath" 
+                Content="..."
+                Click="btnInputFilepath_OnClick" />
+        
+        <Label Grid.Row="1" Grid.Column="0"
+               Content="Output File (Classes/Localization.Dictionary.cs):"/>
+        
+        <TextBox Grid.Row="1" Grid.Column="1"
+                 Name="tbOutputFilepath" />
+        
+        
+        <Button Grid.Row="1" Grid.Column="2"
+                Name= "btnOutputFilepath" 
+                Content="..."
+                Click="btnOutputFilepath_OnClick" />
+        
+        <Button Grid.Row="2" Grid.ColumnSpan="3"
+                Name="btnProcess"
+                Content="Build Dictionary"
+                Click="btnProcess_OnClick"
+                HorizontalAlignment="Stretch"
+                HorizontalContentAlignment="Center"
+                />
+        </Grid>
+</UserControl>

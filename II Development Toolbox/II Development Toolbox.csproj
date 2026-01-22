@@ -7,7 +7,7 @@
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <AssemblyName>infirmary-integrated-development-toolbox</AssemblyName>
         <RootNamespace>IIDT</RootNamespace>
-        <Version>1.3.5</Version>
+        <Version>1.3.7</Version>
     </PropertyGroup>
 
     <ItemGroup>
@@ -31,6 +31,26 @@
       </Compile>
       <Compile Update="Windows\WindowMain.axaml.cs">
         <DependentUpon>WindowMain.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Controls\PanelDictionaryBuilder.axaml.cs">
+        <DependentUpon>WindowMain.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Controls\PanelToneGenerator.axaml.cs">
+        <DependentUpon>PanelToneGenerator.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Controls\PanelWaveformDictionaryBuilder.axaml.cs">
+        <DependentUpon>PanelWaveformDictionaryBuilder.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Controls\PanelWaveformGenerator.axaml.cs">
+        <DependentUpon>PanelWaveformGenerator.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Controls\PanelWaveformEditor.axaml.cs">
+        <DependentUpon>PanelWaveformEditoraxaml.axaml</DependentUpon>
         <SubType>Code</SubType>
       </Compile>
     </ItemGroup>

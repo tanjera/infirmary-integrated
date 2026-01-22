@@ -1,0 +1,181 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="IIDT.PanelWaveformEditor">
+    
+<DockPanel LastChildFill="True"
+			   x:Name="LayoutRoot">
+
+		<!-- Main Menu -->
+		<Menu DockPanel.Dock="Top"
+		      BorderThickness="0,0,0,1"
+		      BorderBrush="LightGray">
+			<MenuItem Name="menuFile"
+					  Header="File">
+				<MenuItem Name="menuNew"
+						  Header="New Waveform"
+						  Click="MenuItemNew_Click"
+						  InputGesture="Ctrl+N" />
+				<Separator />
+				<MenuItem Name="menuLoad"
+						  Header="Load Waveform"
+						  Click="MenuItemLoad_Click"
+						  InputGesture="Ctrl+L" />
+				<MenuItem Name="menuSave"
+						  Header="Save Waveform"
+						  Click="MenuItemSave_Click"
+						  InputGesture="Ctrl+S" />
+				<MenuItem Name="menuSaveAs"
+						  Header="Save Waveform As..."
+						  Click="MenuItemSaveAs_Click"/>
+			</MenuItem>
+
+			<MenuItem Name="menuEdit"
+					  Header="Edit">
+				<MenuItem Name="menuTrimStart"
+						  Header="Trim Start"
+						  Click="MenuItemTrimWaveStart_Click" />
+				<MenuItem Name="menuTrimEnd"
+						  Header="Trim End"
+						  Click="MenuItemTrimWaveEnd_Click" />
+				<MenuItem Name="menuTrimAll"
+						  Header="Trim Entire Wave"
+						  Click="MenuItemTrimWave_Click" />
+				<Separator />
+				<MenuItem Name="menuTrimOffset"
+						  Header="Trim To Offset"
+						  Click="MenuItemTrimOffset_Click" />
+			</MenuItem>
+
+			<MenuItem Name="menuBackground"
+					  Header="Background">
+				<MenuItem Name="menuSetBackground"
+						  Header="Set Background Image"
+						  Click="MenuItemSetBackground_Click" />
+				<MenuItem Name="menuRemoveBackground"
+						  Header="Remove Background Image"
+						  Click="MenuItemRemoveBackground_Click" />
+			</MenuItem>
+
+			<MenuItem Name="menuFilter"
+					  Header="Filter">
+				<MenuItem Name="menuFilterNormalize"
+						  Header="Normalize"
+						  Click="menuFilterNormalize_Click" />
+				<MenuItem Name="menuFilterNormalizePositive"
+						  Header="Normalize to Positive"
+						  Click="menuFilterNormalizePositive_Click" />
+			</MenuItem>
+		</Menu>
+
+		<!-- Application View -->
+		<Grid>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*" />
+			</Grid.RowDefinitions>
+			
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto" />
+				<ColumnDefinition Width="*" />
+			</Grid.ColumnDefinitions>
+			
+			<HeaderedContentControl Header="Draw Resolution and Length Settings"
+			                        Grid.Row="0" Grid.Column="0"
+			                        VerticalAlignment="Top">
+				<Grid>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+					</Grid.RowDefinitions>
+
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
+						<ColumnDefinition Width="Auto" />
+					</Grid.ColumnDefinitions>
+					
+					<Label Grid.Row="0" Grid.Column="0"
+						   Content="Name: " />
+					<TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2"
+					                     Name="tbWaveName"
+					                     HorizontalAlignment="Stretch" 
+					                     VerticalContentAlignment="Center" />
+				
+					<Label Grid.Row="1" Grid.Column="0" 
+					       Content="Draw Length: " />
+					<NumericUpDown Grid.Row="1" Grid.Column="1"
+					               Name="numDrawLength"
+					               Value="1000"
+					               Minimum="100" />
+					<Label Grid.Row="1" Grid.Column="2" 
+					       Content=" msec" />
+					
+					<Label Grid.Row="2" Grid.Column="0" 
+					       Content="Systole Length: " />
+					<NumericUpDown Grid.Row="2" Grid.Column="1" 
+					               Name="numSystoleLength"
+					               Value="300"
+					               Minimum="0" 
+					               ValueChanged="numSystoleLength_ValueChanged"/>
+					<Label Grid.Row="2" Grid.Column="2" 
+					       Content=" msec" />
+					
+					<Label Grid.Row="3" Grid.Column="0" 
+					       Content="Draw Resolution (X Axis): " />
+					<NumericUpDown Grid.Row="3" Grid.Column="1" 
+					               Name="numDrawResolution" Value="10" />
+					<Label Grid.Row="3" Grid.Column="2" 
+					       Content=" msec per vertex" />
+					
+					<Label Grid.Row="4" Grid.Column="0" 
+					       Content="Index (X Axis) Offset: " />
+					<NumericUpDown Grid.Row="4" Grid.Column="1" 
+					               Name="numIndexOffset" Value="0" Minimum="0" />
+					<Label Grid.Row="4" Grid.Column="2" 
+					       Content=" vertices" />
+				
+					<Button Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="3"
+					        Name="btnApplyResolutions"
+					        HorizontalContentAlignment="Center"
+					        HorizontalAlignment="Stretch" 
+					        Margin="5,5,5,2"
+					        Content="Apply Draw Resolution and Length Settings"
+							Click="btnApplyResolutions_Click" />
+				</Grid>
+			</HeaderedContentControl>
+			
+			<Canvas Grid.Row="0" Grid.Column="1"
+			         Name="cnvDrawing"
+			         Margin="0,4,0,4"
+			         HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+			         PointerPressed="cnvDrawing_MouseDown"
+			         PointerMoved="cnvDrawing_MouseMove"
+			         PointerWheelChanged="cnvDrawing_MouseWheel"
+			         KeyDown="cnvDrawing_KeyDown"
+			         Background="Transparent"
+			         Focusable="True"
+			         ZIndex="0" >
+				<Image Name="imgReference"
+				       Margin="0,4,0,4"
+				       HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+				       ZIndex="1" />
+				<Path Name="pathWave"
+				      Stroke="Black" StrokeThickness="1" />
+				<Path Name="pathIndexOffset"
+				  Stroke="Black" StrokeThickness="1" />
+				<Path Name="pathReferenceHigh"
+				  Stroke="LightBlue" StrokeThickness="1" />
+				<Path Name="pathReferenceMid"
+				  Stroke="LightGray" StrokeThickness="1" />
+				<Path Name="pathReferenceLow"
+				  Stroke="LightGreen" StrokeThickness="1" />
+			</Canvas>
+		</Grid>
+	</DockPanel>
+</UserControl>
