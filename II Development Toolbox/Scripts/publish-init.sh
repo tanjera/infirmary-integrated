@@ -289,18 +289,18 @@ for arch in ${ARCHITECTURES[*]}; do
 
 
         # ####
-        # Package .app's into a .tar.gz
+        # Package .app's into a .zip
         # ####
 
-        echo -e "${OUT_PREFIX}Packaging tarball ${PACK_NAME}.tar.gz\n"
+        echo -e "${OUT_PREFIX}Packaging zip ${PACK_NAME}.zip\n"
         
         cd "$DIR_WORKING"
 
-        if [ -f "${RELEASE_PATH}/${PACK_NAME}.tar.gz" ]; then
-            rm "${RELEASE_PATH}/${PACK_NAME}.tar.gz"
+        if [ -f "${RELEASE_PATH}/${PACK_NAME}.zip" ]; then
+            rm "${RELEASE_PATH}/${PACK_NAME}.zip"
         fi
 
-        tar -czvf "${RELEASE_PATH}/${PACK_NAME}.tar.gz" "Infirmary Integrated.app" "Infirmary Integrated Scenario Editor.app"
+        zip -r "${RELEASE_PATH}/${PACK_NAME}.zip" "Infirmary Integrated.app" "Infirmary Integrated Scenario Editor.app"
     fi
 
     rm -r "${DIR_WORKING}"
