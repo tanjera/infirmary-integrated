@@ -131,7 +131,7 @@ for arch in ${ARCHITECTURES[*]}; do
     echo -e "${OUT_PREFIX}Building II Simulator for ${arch}\n"
     cd "$DIR_SIMULATOR"
     if [[ $arch == osx* ]]; then
-        dotnet publish -c Release --sc -r $arch -p:UseAppHost=true
+        dotnet publish -c Release --sc -r $arch -p:UseAppHost=true -p:UseHardenedRuntime=true
     else
         dotnet publish -c Release --sc -r $arch
     fi
