@@ -22,6 +22,8 @@
     <string>6.0</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>    
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.developer-tools</string>
     <key>NSHighResolutionCapable</key>
     <true/>
 </dict>
