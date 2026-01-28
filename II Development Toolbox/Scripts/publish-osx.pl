@@ -169,6 +169,3 @@ system("xcrun notarytool submit \"$pkg_fp\" --keychain-profile \"notarytool-pass
 
 print "\nStapling the notary ticket...\n";
 system("xcrun stapler staple \"$pkg_fp\"");
-
-print "\nValidating the package with gatekeeper:\n";
-system("spctl -a -vvv \"$pkg_fp\"");

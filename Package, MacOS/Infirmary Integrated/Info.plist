@@ -5,7 +5,7 @@
     <key>CFBundleIconFile</key>
     <string>Icon_II.icns</string>
     <key>CFBundleIdentifier</key>
-    <string>com.infirmary-integrated</string>
+    <string>com.tanjera.infirmary-integrated</string>
     <key>CFBundleName</key>
     <string>Infirmary Integrated</string>
     <key>CFBundleDisplayName</key>
