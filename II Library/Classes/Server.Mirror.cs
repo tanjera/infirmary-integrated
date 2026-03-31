@@ -33,6 +33,8 @@ namespace II.Server {
         public DateTime PatientUpdated, ServerQueried;
 
         public string Accession {
+            // Can use local CultureInfo for ToUpper()- does not break functionality, works for end user
+            // Rather than using Invariant culture
             get { return _Accession.ToUpper (); }
             set { _Accession = value.ToUpper (); }
         }

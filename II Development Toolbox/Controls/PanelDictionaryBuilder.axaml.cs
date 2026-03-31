@@ -72,7 +72,7 @@ public partial class PanelDictionaryBuilder : UserControl {
                         // $B1 -> $...1: language codes
                         for (int j = 1; j < colCount; j++)
                         {
-                            Languages.Add(reader.GetString(j).ToUpper().Substring(0, 3));
+                            Languages.Add(reader.GetString(j).ToUpperInvariant().Substring(0, 3));
                             Dictionaries.Add(new Dictionary<string, string>());
                         }
                     }

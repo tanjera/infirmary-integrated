@@ -24,7 +24,7 @@ namespace II.Localization {
         }
 
         public Language () {
-            if (Enum.TryParse<Languages> (CultureInfo.InstalledUICulture.ThreeLetterISOLanguageName.ToUpper (), out Languages tryParse))
+            if (Enum.TryParse<Languages> (CultureInfo.InstalledUICulture.ThreeLetterISOLanguageName.ToUpperInvariant (), out Languages tryParse))
                 Selection = tryParse;
             else
                 Selection = Languages.ENG;

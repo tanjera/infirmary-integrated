@@ -58,13 +58,13 @@ namespace II {
 
                 for (int i = 0; i < input.Length; i++) {
                     if (i == 0 || input [i - 1] == ' ')
-                        sb.Append (input [i].ToString ().ToUpper ());
+                        sb.Append (input [i].ToString ().ToUpperInvariant ());
                     else
-                        sb.Append (input [i].ToString ().ToLower ());
+                        sb.Append (input [i].ToString ().ToLowerInvariant ());
                 }
                 return sb.ToString ();
             } else {
-                return input.ToLower ();                // e.g. "marana"
+                return input.ToLowerInvariant ();                // e.g. "marana"
             }
         }
 
