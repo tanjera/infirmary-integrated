@@ -47,7 +47,8 @@ namespace II {
 
         public Cardiac_Axes Cardiac_Axis = new ();
         public double QRS_Interval, QTc_Interval;           // In seconds (e.g. 0.1)
-        public double []? Q_Amplitude, ST_Elevation, T_Elevation;
+        public double []? P_Amplitude, Q_Amplitude, R_Amplitude, S_Amplitude, T_Amplitude; 
+        public double []? ST_Elevation;
 
         /* Obstetric profile */
 
@@ -204,8 +205,15 @@ namespace II {
                             false, false, false,
                             Cardiac_Axes.Values.Normal,
                             0.08d, 0.4d,
+                            
+                            // TODO: POPULATE THESE WITH CORRECTLY TUNED COEFFICIENTS FOR ISSUE #254
+                            
+                            new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                            new double [] { 0.2d, 0.2d, 0.2d, 0.2d, 0.2d, 0.2d, 0.2d, 0.2d, 0.2d, 0.2d, 0.2d, 0.2d },
                             new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d },
                             new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                            new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d },
+                            
                             new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }
                             ));
 
@@ -685,22 +693,40 @@ namespace II {
                             case "QRS_Interval": QRS_Interval = double.Parse (pValue); break;
                             case "QTc_Interval": QTc_Interval = double.Parse (pValue); break;
                             
+                            case "P_Amplitude":
+                                string [] e_p = pValue.Split (',').Where ((o) => o != "").ToArray ();
+                                for (int i = 0; i < e_p.Length && i < P_Amplitude?.Length; i++)
+                                    P_Amplitude [i] = double.Parse (e_p [i]);
+                                break;
+                            
                             case "Q_Amplitude":
                                 string [] e_q = pValue.Split (',').Where ((o) => o != "").ToArray ();
                                 for (int i = 0; i < e_q.Length && i < Q_Amplitude?.Length; i++)
                                     Q_Amplitude [i] = double.Parse (e_q [i]);
                                 break;
                             
+                            case "R_Amplitude":
+                                string [] e_r = pValue.Split (',').Where ((o) => o != "").ToArray ();
+                                for (int i = 0; i < e_r.Length && i < R_Amplitude?.Length; i++)
+                                    R_Amplitude [i] = double.Parse (e_r [i]);
+                                break;
+
+                            case "S_Amplitude":
+                                string [] e_s = pValue.Split (',').Where ((o) => o != "").ToArray ();
+                                for (int i = 0; i < e_s.Length && i < S_Amplitude?.Length; i++)
+                                    S_Amplitude [i] = double.Parse (e_s [i]);
+                                break;
+
+                            case "T_Amplitude":
+                                string [] e_t = pValue.Split (',').Where ((o) => o != "").ToArray ();
+                                for (int i = 0; i < e_t.Length && i < T_Amplitude?.Length; i++)
+                                    T_Amplitude [i] = double.Parse (e_t [i]);
+                                break;
+
                             case "ST_Elevation":
                                 string [] e_st = pValue.Split (',').Where ((o) => o != "").ToArray ();
                                 for (int i = 0; i < e_st.Length && i < ST_Elevation?.Length; i++)
                                     ST_Elevation [i] = double.Parse (e_st [i]);
-                                break;
-
-                            case "T_Elevation":
-                                string [] e_t = pValue.Split (',').Where ((o) => o != "").ToArray ();
-                                for (int i = 0; i < e_t.Length && i < T_Elevation?.Length; i++)
-                                    T_Elevation [i] = double.Parse (e_t [i]);
                                 break;
 
                             // Obstetric profile
@@ -790,9 +816,14 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Cardiac_Axis", Cardiac_Axis.Value));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "QRS_Interval", QRS_Interval));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "QTc_Interval", QTc_Interval));
+
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "P_Amplitude", string.Join (",", P_Amplitude ?? new double [12])));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Q_Amplitude", string.Join (",", Q_Amplitude ?? new double [12])));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "R_Amplitude", string.Join (",", R_Amplitude ?? new double [12])));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "S_Amplitude", string.Join (",", S_Amplitude ?? new double [12])));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "T_Amplitude", string.Join (",", T_Amplitude ?? new double [12])));
+
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ST_Elevation", string.Join (",", ST_Elevation ?? new double [12])));
-            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "T_Elevation", string.Join (",", T_Elevation ?? new double [12])));
 
             // Obstetric profile
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ObstetricFetalHeartRate", VS_Settings.FetalHR));
@@ -837,10 +868,14 @@ namespace II {
                     int pacer_threshold,
                     bool puls_paradoxus, bool puls_alternans, bool elec_alternans,
                     Cardiac_Axes.Values card_axis,
-                    double qrs_int, double qtc_int,
+                    double qrs_int, 
+                    double qtc_int,
+                    double []? p_amp,
                     double []? q_amp,
-                    double []? st_elev, 
-                    double []? t_elev) {
+                    double []? r_amp,
+                    double []? s_amp,
+                    double []? t_amp,
+                    double []? st_elev) {
             Updated = DateTime.UtcNow;
 
             // Basic vital signs
@@ -891,9 +926,12 @@ namespace II {
             QTc_Interval = qtc_int;
 
             Cardiac_Axis.Value = card_axis;
+            P_Amplitude = p_amp;
             Q_Amplitude = q_amp;
+            R_Amplitude = r_amp;
+            S_Amplitude = s_amp;
+            T_Amplitude = t_amp;
             ST_Elevation = st_elev;
-            T_Elevation = t_elev;
 
             // Reset actual vital signs to set parameters
             await VS_Actual.Set (VS_Settings);

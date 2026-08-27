@@ -160,11 +160,17 @@
             <iic:PropertyCheck x:Name="pchkPulsusAlternans" />
             <iic:PropertyCheck x:Name="pchkElectricalAlternans" />
             <iic:PropertyEnum x:Name="penmCardiacAxis" />
+            
             <iic:PropertyDouble x:Name="pdblQRSInterval" />
             <iic:PropertyDouble x:Name="pdblQTcInterval" />
+            
+            <iic:PropertyECGAmplitude x:Name="pecgPAmplitude" />
             <iic:PropertyECGAmplitude x:Name="pecgQAmplitude" />
+            <iic:PropertyECGAmplitude x:Name="pecgRAmplitude" />
+            <iic:PropertyECGAmplitude x:Name="pecgSAmplitude" />
+            <iic:PropertyECGAmplitude x:Name="pecgTAmplitude" />
+            
             <iic:PropertyECGSegment x:Name="pecgSTSegment" />
-            <iic:PropertyECGSegment x:Name="pecgTWave" />
           </StackPanel>
         </Expander>
 

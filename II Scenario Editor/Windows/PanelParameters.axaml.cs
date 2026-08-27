@@ -101,9 +101,13 @@ namespace IISE.Windows {
             PropertyDouble pdblInspiratoryRatio = this.GetControl<PropertyDouble> ("pdblInspiratoryRatio");
             PropertyDouble pdblExpiratoryRatio = this.GetControl<PropertyDouble> ("pdblExpiratoryRatio");
 
+            PropertyECGAmplitude pecgPAmplitude = this.GetControl<PropertyECGAmplitude> ("pecgPAmplitude");
             PropertyECGAmplitude pecgQAmplitude = this.GetControl<PropertyECGAmplitude> ("pecgQAmplitude");
+            PropertyECGAmplitude pecgRAmplitude = this.GetControl<PropertyECGAmplitude> ("pecgRAmplitude");
+            PropertyECGAmplitude pecgSAmplitude = this.GetControl<PropertyECGAmplitude> ("pecgSAmplitude");
+            PropertyECGAmplitude pecgTAmplitude = this.GetControl<PropertyECGAmplitude> ("pecgTAmplitude");
+            
             PropertyECGSegment pecgSTSegment = this.GetControl<PropertyECGSegment> ("pecgSTSegment");
-            PropertyECGSegment pecgTWave = this.GetControl<PropertyECGSegment> ("pecgTWave");
 
             PropertyEnum penmCardiacRhythms = this.GetControl<PropertyEnum> ("penmCardiacRhythms");
             PropertyEnum penmRespiratoryRhythms = this.GetControl<PropertyEnum> ("penmRespiratoryRhythms");
@@ -143,9 +147,13 @@ namespace IISE.Windows {
             pdblInspiratoryRatio.Init (PropertyDouble.Keys.RRInspiratoryRatio, 0.1, 0.1, 10);
             pdblExpiratoryRatio.Init (PropertyDouble.Keys.RRExpiratoryRatio, 0.1, 0.1, 10);
 
+            pecgPAmplitude.Init (PropertyECGAmplitude.Keys.PAmplitude);
             pecgQAmplitude.Init (PropertyECGAmplitude.Keys.QAmplitude);
+            pecgRAmplitude.Init (PropertyECGAmplitude.Keys.RAmplitude);
+            pecgSAmplitude.Init (PropertyECGAmplitude.Keys.SAmplitude);
+            pecgTAmplitude.Init (PropertyECGAmplitude.Keys.TAmplitude);
+            
             pecgSTSegment.Init (PropertyECGSegment.Keys.STElevation);
-            pecgTWave.Init (PropertyECGSegment.Keys.TWave);
 
             penmCardiacRhythms.Init (PropertyEnum.Keys.Cardiac_Rhythms,
                 Enum.GetNames (typeof (Cardiac_Rhythms.Values)), cardiacRhythms);
@@ -189,9 +197,13 @@ namespace IISE.Windows {
             pdblInspiratoryRatio.PropertyChanged += UpdatePhysiology;
             pdblExpiratoryRatio.PropertyChanged += UpdatePhysiology;
             
+            pecgPAmplitude.PropertyChanged += UpdatePhysiology;
             pecgQAmplitude.PropertyChanged += UpdatePhysiology;
+            pecgRAmplitude.PropertyChanged += UpdatePhysiology;
+            pecgSAmplitude.PropertyChanged += UpdatePhysiology;
+            pecgTAmplitude.PropertyChanged += UpdatePhysiology;
+            
             pecgSTSegment.PropertyChanged += UpdatePhysiology;
-            pecgTWave.PropertyChanged += UpdatePhysiology;
 
             penmCardiacRhythms.PropertyChanged += UpdatePhysiology;
             penmRespiratoryRhythms.PropertyChanged += UpdatePhysiology;
@@ -326,7 +338,11 @@ namespace IISE.Windows {
             if (Physiology != null) {
                 switch (e.Key) {
                     default: break;
+                    case PropertyECGAmplitude.Keys.PAmplitude: Physiology.P_Amplitude = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
                     case PropertyECGAmplitude.Keys.QAmplitude: Physiology.Q_Amplitude = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
+                    case PropertyECGAmplitude.Keys.RAmplitude: Physiology.R_Amplitude = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
+                    case PropertyECGAmplitude.Keys.SAmplitude: Physiology.S_Amplitude = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
+                    case PropertyECGAmplitude.Keys.TAmplitude: Physiology.T_Amplitude = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
                 }
             }
         }
@@ -335,7 +351,6 @@ namespace IISE.Windows {
                 switch (e.Key) {
                     default: break;
                     case PropertyECGSegment.Keys.STElevation: Physiology.ST_Elevation = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
-                    case PropertyECGSegment.Keys.TWave: Physiology.T_Elevation = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
                 }
             }
         }
@@ -414,9 +429,13 @@ namespace IISE.Windows {
             PropertyDouble pdblInspiratoryRatio = this.GetControl<PropertyDouble> ("pdblInspiratoryRatio");
             PropertyDouble pdblExpiratoryRatio = this.GetControl<PropertyDouble> ("pdblExpiratoryRatio");
             
-            PropertyECGSegment pecgQAmplitude = this.GetControl<PropertyECGSegment> ("pecgQAmplitude");
+            PropertyECGAmplitude pecgPAmplitude = this.GetControl<PropertyECGAmplitude> ("pecgPAmplitude");
+            PropertyECGAmplitude pecgQAmplitude = this.GetControl<PropertyECGAmplitude> ("pecgQAmplitude");
+            PropertyECGAmplitude pecgRAmplitude = this.GetControl<PropertyECGAmplitude> ("pecgRAmplitude");
+            PropertyECGAmplitude pecgSAmplitude = this.GetControl<PropertyECGAmplitude> ("pecgSAmplitude");
+            PropertyECGAmplitude pecgTAmplitude = this.GetControl<PropertyECGAmplitude> ("pecgTAmplitude");
+            
             PropertyECGSegment pecgSTSegment = this.GetControl<PropertyECGSegment> ("pecgSTSegment");
-            PropertyECGSegment pecgTWave = this.GetControl<PropertyECGSegment> ("pecgTWave");
 
             PropertyEnum penmCardiacRhythms = this.GetControl<PropertyEnum> ("penmCardiacRhythms");
             PropertyEnum penmRespiratoryRhythms = this.GetControl<PropertyEnum> ("penmRespiratoryRhythms");
@@ -462,9 +481,13 @@ namespace IISE.Windows {
             pdblInspiratoryRatio.IsEnabled = (Physiology != null);
             pdblExpiratoryRatio.IsEnabled = (Physiology != null);
 
+            pecgPAmplitude.IsEnabled = (Physiology != null);
             pecgQAmplitude.IsEnabled = (Physiology != null);
+            pecgRAmplitude.IsEnabled = (Physiology != null);
+            pecgSAmplitude.IsEnabled = (Physiology != null);
+            pecgTAmplitude.IsEnabled = (Physiology != null);
+            
             pecgSTSegment.IsEnabled = (Physiology != null);
-            pecgTWave.IsEnabled = (Physiology != null);
 
             penmCardiacRhythms.IsEnabled = (Physiology != null);
             penmRespiratoryRhythms.IsEnabled = (Physiology != null);
@@ -505,9 +528,13 @@ namespace IISE.Windows {
                 await pdblInspiratoryRatio.Set (Physiology.VS_Settings.RR_IE_I);
                 await pdblExpiratoryRatio.Set (Physiology.VS_Settings.RR_IE_E);
 
+                await pecgPAmplitude.Set (Physiology.P_Amplitude);
                 await pecgQAmplitude.Set (Physiology.Q_Amplitude);
+                await pecgRAmplitude.Set (Physiology.R_Amplitude);
+                await pecgSAmplitude.Set (Physiology.S_Amplitude);
+                await pecgTAmplitude.Set (Physiology.T_Amplitude);
+                
                 await pecgSTSegment.Set (Physiology.ST_Elevation);
-                await pecgTWave.Set (Physiology.T_Elevation);
 
                 await penmCardiacRhythms.Set ((int)Physiology.Cardiac_Rhythm.Value);
                 await penmRespiratoryRhythms.Set ((int)Physiology.Respiratory_Rhythm.Value);

@@ -205,10 +205,13 @@ namespace IISIM {
             this.GetControl<Label> ("lblQRSInterval").Content = $"{Instance.Language.Localize ("PE:QRSInterval")}:";
             this.GetControl<Label> ("lblQTcInterval").Content = $"{Instance.Language.Localize ("PE:QTcInterval")}:";
             this.GetControl<Label> ("lblCardiacAxis").Content = $"{Instance.Language.Localize ("PE:CardiacAxis")}:";
+            this.GetControl<HeaderedContentControl> ("grpPWaveAmplitude").Header = Instance.Language.Localize ("PE:PWaveAmplitude");
             this.GetControl<HeaderedContentControl> ("grpQWaveAmplitude").Header = Instance.Language.Localize ("PE:QWaveAmplitude");
+            this.GetControl<HeaderedContentControl> ("grpRWaveAmplitude").Header = Instance.Language.Localize ("PE:RWaveAmplitude");
+            this.GetControl<HeaderedContentControl> ("grpSWaveAmplitude").Header = Instance.Language.Localize ("PE:SWaveAmplitude");
+            this.GetControl<HeaderedContentControl> ("grpTWaveAmplitude").Header = Instance.Language.Localize ("PE:TWaveAmplitude");
             this.GetControl<HeaderedContentControl> ("grpSTSegmentElevation").Header = Instance.Language.Localize ("PE:STSegmentElevation");
-            this.GetControl<HeaderedContentControl> ("grpTWaveElevation").Header = Instance.Language.Localize ("PE:TWaveElevation");
-
+            
             this.GetControl<Label> ("lblGroupObstetricProfile").Content = Instance.Language.Localize ("PE:ObstetricProfile");
             this.GetControl<Label> ("lblFHR").Content = $"{Instance.Language.Localize ("PE:FetalHeartRate")}:";
             this.GetControl<Label> ("lblFHRRhythms").Content = $"{Instance.Language.Localize ("PE:FetalHeartRhythms")}:";
@@ -1394,8 +1397,21 @@ namespace IISIM {
 
                 (double)(this.GetControl<NumericUpDown> ("numQRSInterval")?.Value ?? 0),
                 (double)(this.GetControl<NumericUpDown> ("numQTcInterval")?.Value ?? 0),
-
                 
+                new double [] {
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_I")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_II")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_III")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_aVR")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_aVL")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_aVF")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_V1")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_V2")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_V3")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_V4")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_V5")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_V6")?.Value?? 0)
+                },
                 new double [] {
                     (double)(this.GetControl<NumericUpDown>("numQAmp_I")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numQAmp_II")?.Value ?? 0),
@@ -1411,6 +1427,49 @@ namespace IISIM {
                     (double)(this.GetControl<NumericUpDown>("numQAmp_V6")?.Value?? 0)
                 },
                 new double [] {
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_I")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_II")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_III")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_aVR")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_aVL")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_aVF")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_V1")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_V2")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_V3")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_V4")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_V5")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_V6")?.Value?? 0)
+                },
+                new double [] {
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_I")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_II")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_III")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_aVS")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_aVL")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_aVF")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_V1")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_V2")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_V3")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_V4")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_V5")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_V6")?.Value?? 0)
+                },
+                new double [] {
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_I")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_II")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_III")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_aVT")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_aVL")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_aVF")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_V1")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_V2")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_V3")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_V4")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_V5")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_V6")?.Value?? 0)
+                },
+                
+                new double [] {
                     (double)(this.GetControl<NumericUpDown>("numSTE_I")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numSTE_II")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numSTE_III")?.Value ?? 0),
@@ -1423,20 +1482,6 @@ namespace IISIM {
                     (double)(this.GetControl<NumericUpDown>("numSTE_V4")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numSTE_V5")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numSTE_V6")?.Value?? 0)
-                },
-                new double [] {
-                    (double)(this.GetControl<NumericUpDown>("numTWE_I")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTWE_II")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTWE_III")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTWE_aVR")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTWE_aVL")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTWE_aVF")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTWE_V1")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTWE_V2")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTWE_V3")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTWE_V4")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTWE_V5")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTWE_V6")?.Value ?? 0)
                 }
                 );
 
@@ -1499,9 +1544,14 @@ namespace IISIM {
                     ApplyBuffer.Cardiac_Axis.Value,
                     ApplyBuffer.QRS_Interval, 
                     ApplyBuffer.QTc_Interval,
+                    
+                    ApplyBuffer.P_Amplitude,
                     ApplyBuffer.Q_Amplitude,
-                    ApplyBuffer.ST_Elevation,
-                    ApplyBuffer.T_Elevation);
+                    ApplyBuffer.R_Amplitude,
+                    ApplyBuffer.S_Amplitude,
+                    ApplyBuffer.T_Amplitude,
+                    
+                    ApplyBuffer.ST_Elevation);
             }
 
             if (Instance?.Mirror is not null && Instance?.Server is not null)
@@ -1585,7 +1635,8 @@ namespace IISIM {
                     this.GetControl<NumericUpDown> ("numASBP").Value = p.VS_Settings.ASBP;
                     this.GetControl<NumericUpDown> ("numADBP").Value = p.VS_Settings.ADBP;
                     this.GetControl<NumericUpDown> ("numCO").Value = (decimal)p.VS_Settings.CO;
-                    this.GetControl<ComboBox> ("comboPACatheterPlacement").SelectedIndex = (int)p.PulmonaryArtery_Placement.Value;
+                    this.GetControl<ComboBox> ("comboPACatheterPlacement").SelectedIndex =
+                        (int)p.PulmonaryArtery_Placement.Value;
                     this.GetControl<NumericUpDown> ("numPSP").Value = p.VS_Settings.PSP;
                     this.GetControl<NumericUpDown> ("numPDP").Value = p.VS_Settings.PDP;
                     this.GetControl<NumericUpDown> ("numICP").Value = p.VS_Settings.ICP;
@@ -1601,49 +1652,166 @@ namespace IISIM {
                     this.GetControl<NumericUpDown> ("numQRSInterval").Value = (decimal)p.QRS_Interval;
                     this.GetControl<NumericUpDown> ("numQTcInterval").Value = (decimal)p.QTc_Interval;
 
+                    if (p.P_Amplitude is not null) {
+                        this.GetControl<NumericUpDown> ("numPAmp_I").Value =
+                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_I];
+                        this.GetControl<NumericUpDown> ("numPAmp_II").Value =
+                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_II];
+                        this.GetControl<NumericUpDown> ("numPAmp_III").Value =
+                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_III];
+                        this.GetControl<NumericUpDown> ("numPAmp_aVR").Value =
+                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_AVR];
+                        this.GetControl<NumericUpDown> ("numPAmp_aVL").Value =
+                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_AVL];
+                        this.GetControl<NumericUpDown> ("numPAmp_aVF").Value =
+                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_AVF];
+                        this.GetControl<NumericUpDown> ("numPAmp_V1").Value =
+                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_V1];
+                        this.GetControl<NumericUpDown> ("numPAmp_V2").Value =
+                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_V2];
+                        this.GetControl<NumericUpDown> ("numPAmp_V3").Value =
+                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_V3];
+                        this.GetControl<NumericUpDown> ("numPAmp_V4").Value =
+                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_V4];
+                        this.GetControl<NumericUpDown> ("numPAmp_V5").Value =
+                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_V5];
+                        this.GetControl<NumericUpDown> ("numPAmp_V6").Value =
+                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_V6];
+                    }
+
                     if (p.Q_Amplitude is not null) {
-                        this.GetControl<NumericUpDown> ("numQAmp_I").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_I];
-                        this.GetControl<NumericUpDown> ("numQAmp_II").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_II];
-                        this.GetControl<NumericUpDown> ("numQAmp_III").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_III];
-                        this.GetControl<NumericUpDown> ("numQAmp_aVR").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_AVR];
-                        this.GetControl<NumericUpDown> ("numQAmp_aVL").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_AVL];
-                        this.GetControl<NumericUpDown> ("numQAmp_aVF").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_AVF];
-                        this.GetControl<NumericUpDown> ("numQAmp_V1").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V1];
-                        this.GetControl<NumericUpDown> ("numQAmp_V2").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V2];
-                        this.GetControl<NumericUpDown> ("numQAmp_V3").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V3];
-                        this.GetControl<NumericUpDown> ("numQAmp_V4").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V4];
-                        this.GetControl<NumericUpDown> ("numQAmp_V5").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V5];
-                        this.GetControl<NumericUpDown> ("numQAmp_V6").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V6];
+                        this.GetControl<NumericUpDown> ("numQAmp_I").Value =
+                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_I];
+                        this.GetControl<NumericUpDown> ("numQAmp_II").Value =
+                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_II];
+                        this.GetControl<NumericUpDown> ("numQAmp_III").Value =
+                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_III];
+                        this.GetControl<NumericUpDown> ("numQAmp_aVR").Value =
+                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_AVR];
+                        this.GetControl<NumericUpDown> ("numQAmp_aVL").Value =
+                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_AVL];
+                        this.GetControl<NumericUpDown> ("numQAmp_aVF").Value =
+                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_AVF];
+                        this.GetControl<NumericUpDown> ("numQAmp_V1").Value =
+                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V1];
+                        this.GetControl<NumericUpDown> ("numQAmp_V2").Value =
+                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V2];
+                        this.GetControl<NumericUpDown> ("numQAmp_V3").Value =
+                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V3];
+                        this.GetControl<NumericUpDown> ("numQAmp_V4").Value =
+                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V4];
+                        this.GetControl<NumericUpDown> ("numQAmp_V5").Value =
+                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V5];
+                        this.GetControl<NumericUpDown> ("numQAmp_V6").Value =
+                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V6];
+                    }
+
+                    if (p.R_Amplitude is not null) {
+                        this.GetControl<NumericUpDown> ("numRAmp_I").Value =
+                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_I];
+                        this.GetControl<NumericUpDown> ("numRAmp_II").Value =
+                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_II];
+                        this.GetControl<NumericUpDown> ("numRAmp_III").Value =
+                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_III];
+                        this.GetControl<NumericUpDown> ("numRAmp_aVR").Value =
+                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_AVR];
+                        this.GetControl<NumericUpDown> ("numRAmp_aVL").Value =
+                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_AVL];
+                        this.GetControl<NumericUpDown> ("numRAmp_aVF").Value =
+                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_AVF];
+                        this.GetControl<NumericUpDown> ("numRAmp_V1").Value =
+                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_V1];
+                        this.GetControl<NumericUpDown> ("numRAmp_V2").Value =
+                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_V2];
+                        this.GetControl<NumericUpDown> ("numRAmp_V3").Value =
+                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_V3];
+                        this.GetControl<NumericUpDown> ("numRAmp_V4").Value =
+                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_V4];
+                        this.GetControl<NumericUpDown> ("numRAmp_V5").Value =
+                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_V5];
+                        this.GetControl<NumericUpDown> ("numRAmp_V6").Value =
+                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_V6];
+                    }
+
+                    if (p.S_Amplitude is not null) {
+                        this.GetControl<NumericUpDown> ("numSAmp_I").Value =
+                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_I];
+                        this.GetControl<NumericUpDown> ("numSAmp_II").Value =
+                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_II];
+                        this.GetControl<NumericUpDown> ("numSAmp_III").Value =
+                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_III];
+                        this.GetControl<NumericUpDown> ("numSAmp_aVR").Value =
+                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_AVR];
+                        this.GetControl<NumericUpDown> ("numSAmp_aVL").Value =
+                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_AVL];
+                        this.GetControl<NumericUpDown> ("numSAmp_aVF").Value =
+                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_AVF];
+                        this.GetControl<NumericUpDown> ("numSAmp_V1").Value =
+                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_V1];
+                        this.GetControl<NumericUpDown> ("numSAmp_V2").Value =
+                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_V2];
+                        this.GetControl<NumericUpDown> ("numSAmp_V3").Value =
+                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_V3];
+                        this.GetControl<NumericUpDown> ("numSAmp_V4").Value =
+                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_V4];
+                        this.GetControl<NumericUpDown> ("numSAmp_V5").Value =
+                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_V5];
+                        this.GetControl<NumericUpDown> ("numSAmp_V6").Value =
+                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_V6];
+                    }
+
+                    if (p.T_Amplitude is not null) {
+                        this.GetControl<NumericUpDown> ("numTAmp_I").Value =
+                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_I];
+                        this.GetControl<NumericUpDown> ("numTAmp_II").Value =
+                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_II];
+                        this.GetControl<NumericUpDown> ("numTAmp_III").Value =
+                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_III];
+                        this.GetControl<NumericUpDown> ("numTAmp_aVR").Value =
+                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_AVR];
+                        this.GetControl<NumericUpDown> ("numTAmp_aVL").Value =
+                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_AVL];
+                        this.GetControl<NumericUpDown> ("numTAmp_aVF").Value =
+                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_AVF];
+                        this.GetControl<NumericUpDown> ("numTAmp_V1").Value =
+                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_V1];
+                        this.GetControl<NumericUpDown> ("numTAmp_V2").Value =
+                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_V2];
+                        this.GetControl<NumericUpDown> ("numTAmp_V3").Value =
+                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_V3];
+                        this.GetControl<NumericUpDown> ("numTAmp_V4").Value =
+                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_V4];
+                        this.GetControl<NumericUpDown> ("numTAmp_V5").Value =
+                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_V5];
+                        this.GetControl<NumericUpDown> ("numTAmp_V6").Value =
+                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_V6];
                     }
 
                     if (p.ST_Elevation is not null) {
-                        this.GetControl<NumericUpDown> ("numSTE_I").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_I];
-                        this.GetControl<NumericUpDown> ("numSTE_II").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_II];
-                        this.GetControl<NumericUpDown> ("numSTE_III").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_III];
-                        this.GetControl<NumericUpDown> ("numSTE_aVR").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_AVR];
-                        this.GetControl<NumericUpDown> ("numSTE_aVL").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_AVL];
-                        this.GetControl<NumericUpDown> ("numSTE_aVF").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_AVF];
-                        this.GetControl<NumericUpDown> ("numSTE_V1").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V1];
-                        this.GetControl<NumericUpDown> ("numSTE_V2").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V2];
-                        this.GetControl<NumericUpDown> ("numSTE_V3").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V3];
-                        this.GetControl<NumericUpDown> ("numSTE_V4").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V4];
-                        this.GetControl<NumericUpDown> ("numSTE_V5").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V5];
-                        this.GetControl<NumericUpDown> ("numSTE_V6").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V6];
-                    }
-
-                    if (p.T_Elevation is not null) {
-                        this.GetControl<NumericUpDown> ("numTWE_I").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_I];
-                        this.GetControl<NumericUpDown> ("numTWE_II").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_II];
-                        this.GetControl<NumericUpDown> ("numTWE_III").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_III];
-                        this.GetControl<NumericUpDown> ("numTWE_aVR").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_AVR];
-                        this.GetControl<NumericUpDown> ("numTWE_aVL").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_AVL];
-                        this.GetControl<NumericUpDown> ("numTWE_aVF").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_AVF];
-                        this.GetControl<NumericUpDown> ("numTWE_V1").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_V1];
-                        this.GetControl<NumericUpDown> ("numTWE_V2").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_V2];
-                        this.GetControl<NumericUpDown> ("numTWE_V3").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_V3];
-                        this.GetControl<NumericUpDown> ("numTWE_V4").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_V4];
-                        this.GetControl<NumericUpDown> ("numTWE_V5").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_V5];
-                        this.GetControl<NumericUpDown> ("numTWE_V6").Value = (decimal)p.T_Elevation [(int)Lead.Values.ECG_V6];
+                        this.GetControl<NumericUpDown> ("numSTE_I").Value =
+                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_I];
+                        this.GetControl<NumericUpDown> ("numSTE_II").Value =
+                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_II];
+                        this.GetControl<NumericUpDown> ("numSTE_III").Value =
+                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_III];
+                        this.GetControl<NumericUpDown> ("numSTE_aVR").Value =
+                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_AVR];
+                        this.GetControl<NumericUpDown> ("numSTE_aVL").Value =
+                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_AVL];
+                        this.GetControl<NumericUpDown> ("numSTE_aVF").Value =
+                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_AVF];
+                        this.GetControl<NumericUpDown> ("numSTE_V1").Value =
+                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V1];
+                        this.GetControl<NumericUpDown> ("numSTE_V2").Value =
+                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V2];
+                        this.GetControl<NumericUpDown> ("numSTE_V3").Value =
+                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V3];
+                        this.GetControl<NumericUpDown> ("numSTE_V4").Value =
+                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V4];
+                        this.GetControl<NumericUpDown> ("numSTE_V5").Value =
+                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V5];
+                        this.GetControl<NumericUpDown> ("numSTE_V6").Value =
+                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V6];
                     }
                 }
 

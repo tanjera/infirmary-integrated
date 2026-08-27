@@ -19,7 +19,7 @@
       <Setter Property="MinWidth" Value="45" />
       <Setter Property="Height" Value="20" />
       <Setter Property="Increment" Value="0.1" />
-      <Setter Property="Minimum" Value="0.0" />
+      <Setter Property="Minimum" Value="-0.0" />
       <Setter Property="Maximum"  Value="1.0" />
       <Setter Property="FormatString" Value="{}{0:#0.0}" />
     </Style>

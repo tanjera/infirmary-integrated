@@ -15,7 +15,11 @@ namespace IISE.Controls {
         public Keys Key;
 
         public enum Keys {
+            PAmplitude,
             QAmplitude,
+            RAmplitude,
+            SAmplitude,
+            TAmplitude,
         }
 
         public new event EventHandler<PropertyECGEventArgs>? PropertyChanged;
@@ -56,7 +60,11 @@ namespace IISE.Controls {
             Key = key;
             switch (Key) {
                 default: break;
+                case Keys.PAmplitude: lblKey.Content = "P Wave Amplitude: "; break;
                 case Keys.QAmplitude: lblKey.Content = "Q Wave Amplitude: "; break;
+                case Keys.RAmplitude: lblKey.Content = "R Wave Amplitude: "; break;
+                case Keys.SAmplitude: lblKey.Content = "S Wave Amplitude: "; break;
+                case Keys.TAmplitude: lblKey.Content = "T Wave Amplitude: "; break;
             }
 
             if (!isInitiated) {

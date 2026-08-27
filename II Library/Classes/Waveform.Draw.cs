@@ -472,7 +472,9 @@ namespace II.Waveform {
 
         private static List<PointD> ECG_Q (Physiology p, Lead l, double _L, double _mV, PointD _S) {
             return Plotting.Line (ResolutionTime, _L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.Q]
-                * axisLeadCoeff [(int)p.Cardiac_Axis.Value, (int)l.Value, (int)AxisPart.Q], _S);
+                * axisLeadCoeff [(int)p.Cardiac_Axis.Value, (int)l.Value, (int)AxisPart.Q]
+                * (p.Q_Amplitude[(int)l.Value] * 5d),    // Default q amplitude is 0.2; * 5 = 1
+                _S);
         }
 
         private static List<PointD> ECG_R (Physiology p, Lead l, PointD _S) {
@@ -506,7 +508,7 @@ namespace II.Waveform {
         }
 
         private static List<PointD> ECG_T (Physiology p, Lead l, double _L, double _mV, double _mV_End, PointD _S) {
-            return Plotting.Peak (ResolutionTime, _L, (_mV * baseLeadCoeff [(int)l.Value, (int)WavePart.T]) + (double)p.T_Elevation [(int)l.Value], _mV_End, _S);
+            return Plotting.Peak (ResolutionTime, _L, (_mV * baseLeadCoeff [(int)l.Value, (int)WavePart.T]) + (double)p.T_Amplitude [(int)l.Value], _mV_End, _S);
         }
 
         private static List<PointD> ECG_PR (Physiology p, Lead l, PointD _S) {

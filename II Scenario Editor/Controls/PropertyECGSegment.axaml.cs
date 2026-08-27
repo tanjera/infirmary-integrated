@@ -16,7 +16,6 @@ namespace IISE.Controls {
 
         public enum Keys {
             STElevation,
-            TWave
         }
 
         public new event EventHandler<PropertyECGEventArgs>? PropertyChanged;
@@ -58,7 +57,6 @@ namespace IISE.Controls {
             switch (Key) {
                 default: break;
                 case Keys.STElevation: lblKey.Content = "ST Segment Elevation: "; break;
-                case Keys.TWave: lblKey.Content = "T Wave Elevation: "; break;
             }
 
             if (!isInitiated) {

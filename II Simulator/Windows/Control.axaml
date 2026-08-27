@@ -940,6 +940,9 @@
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
                   </Grid.RowDefinitions>
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition />
@@ -1057,10 +1060,199 @@
 										FormatString="{}{0:0.00}"
 										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
+                  
+                  <!--  P Wave Amplitude  -->
+                  <HeaderedContentControl
+										Name="grpPWaveAmplitude"
+										Grid.Row="7"
+										Grid.Column="0"
+										Grid.ColumnSpan="2"
+										Background="#f2f2f2"
+										Classes="groupbox"
+										Header="Header">
+                    <Grid Margin="3">
+                      <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                      </Grid.RowDefinitions>
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                      </Grid.ColumnDefinitions>
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="0"
+												Classes="wavepart"
+												Content="I" />
+                      <NumericUpDown
+												Name="numPAmp_I"
+												Grid.Row="0"
+												Grid.Column="1"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="0"
+												Classes="wavepart"
+												Content="II" />
+                      <NumericUpDown
+												Name="numPAmp_II"
+												Grid.Row="1"
+												Grid.Column="1"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="0"
+												Classes="wavepart"
+												Content="III" />
+                      <NumericUpDown
+												Name="numPAmp_III"
+												Grid.Row="2"
+												Grid.Column="1"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="2"
+												Classes="wavepart"
+												Content="aVR" />
+                      <NumericUpDown
+												Name="numPAmp_aVR"
+												Grid.Row="0"
+												Grid.Column="3"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="2"
+												Classes="wavepart"
+												Content="aVL" />
+                      <NumericUpDown
+												Name="numPAmp_aVL"
+												Grid.Row="1"
+												Grid.Column="3"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="2"
+												Classes="wavepart"
+												Content="aVF" />
+                      <NumericUpDown
+												Name="numPAmp_aVF"
+												Grid.Row="2"
+												Grid.Column="3"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="4"
+												Classes="wavepart"
+												Content="V1" />
+                      <NumericUpDown
+												Name="numPAmp_V1"
+												Grid.Row="0"
+												Grid.Column="5"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="4"
+												Classes="wavepart"
+												Content="V2" />
+                      <NumericUpDown
+												Name="numPAmp_V2"
+												Grid.Row="1"
+												Grid.Column="5"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="4"
+												Classes="wavepart"
+												Content="V3" />
+                      <NumericUpDown
+												Name="numPAmp_V3"
+												Grid.Row="2"
+												Grid.Column="5"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="6"
+												Classes="wavepart"
+												Content="V4" />
+                      <NumericUpDown
+												Name="numPAmp_V4"
+												Grid.Row="0"
+												Grid.Column="7"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="6"
+												Classes="wavepart"
+												Content="V5" />
+                      <NumericUpDown
+												Name="numPAmp_V5"
+												Grid.Row="1"
+												Grid.Column="7"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="6"
+												Classes="wavepart"
+												Content="V6" />
+                      <NumericUpDown
+												Name="numPAmp_V6"
+												Grid.Row="2"
+												Grid.Column="7"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                    </Grid>
+                  </HeaderedContentControl>
+                  
                   <!--  Q Wave Amplitude -->
                   <HeaderedContentControl
 										Name="grpQWaveAmplitude"
-										Grid.Row="7"
+										Grid.Row="8"
 										Grid.Column="0"
 										Grid.ColumnSpan="2"
 										Background="#f2f2f2"
@@ -1245,10 +1437,574 @@
                     </Grid>
                   </HeaderedContentControl>
                   
+                  <!--  R Wave Amplitude  -->
+                  <HeaderedContentControl
+										Name="grpRWaveAmplitude"
+										Grid.Row="9"
+										Grid.Column="0"
+										Grid.ColumnSpan="2"
+										Background="#f2f2f2"
+										Classes="groupbox"
+										Header="Header">
+                    <Grid Margin="3">
+                      <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                      </Grid.RowDefinitions>
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                      </Grid.ColumnDefinitions>
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="0"
+												Classes="wavepart"
+												Content="I" />
+                      <NumericUpDown
+												Name="numRAmp_I"
+												Grid.Row="0"
+												Grid.Column="1"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="0"
+												Classes="wavepart"
+												Content="II" />
+                      <NumericUpDown
+												Name="numRAmp_II"
+												Grid.Row="1"
+												Grid.Column="1"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="0"
+												Classes="wavepart"
+												Content="III" />
+                      <NumericUpDown
+												Name="numRAmp_III"
+												Grid.Row="2"
+												Grid.Column="1"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="2"
+												Classes="wavepart"
+												Content="aVR" />
+                      <NumericUpDown
+												Name="numRAmp_aVR"
+												Grid.Row="0"
+												Grid.Column="3"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="2"
+												Classes="wavepart"
+												Content="aVL" />
+                      <NumericUpDown
+												Name="numRAmp_aVL"
+												Grid.Row="1"
+												Grid.Column="3"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="2"
+												Classes="wavepart"
+												Content="aVF" />
+                      <NumericUpDown
+												Name="numRAmp_aVF"
+												Grid.Row="2"
+												Grid.Column="3"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="4"
+												Classes="wavepart"
+												Content="V1" />
+                      <NumericUpDown
+												Name="numRAmp_V1"
+												Grid.Row="0"
+												Grid.Column="5"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="4"
+												Classes="wavepart"
+												Content="V2" />
+                      <NumericUpDown
+												Name="numRAmp_V2"
+												Grid.Row="1"
+												Grid.Column="5"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="4"
+												Classes="wavepart"
+												Content="V3" />
+                      <NumericUpDown
+												Name="numRAmp_V3"
+												Grid.Row="2"
+												Grid.Column="5"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="6"
+												Classes="wavepart"
+												Content="V4" />
+                      <NumericUpDown
+												Name="numRAmp_V4"
+												Grid.Row="0"
+												Grid.Column="7"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="6"
+												Classes="wavepart"
+												Content="V5" />
+                      <NumericUpDown
+												Name="numRAmp_V5"
+												Grid.Row="1"
+												Grid.Column="7"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="6"
+												Classes="wavepart"
+												Content="V6" />
+                      <NumericUpDown
+												Name="numRAmp_V6"
+												Grid.Row="2"
+												Grid.Column="7"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                    </Grid>
+                  </HeaderedContentControl>
+                  
+                  <!--  S Wave Amplitude  -->
+                  <HeaderedContentControl
+										Name="grpSWaveAmplitude"
+										Grid.Row="10"
+										Grid.Column="0"
+										Grid.ColumnSpan="2"
+										Background="#f2f2f2"
+										Classes="groupbox"
+										Header="Header">
+                    <Grid Margin="3">
+                      <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                      </Grid.RowDefinitions>
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                      </Grid.ColumnDefinitions>
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="0"
+												Classes="wavepart"
+												Content="I" />
+                      <NumericUpDown
+												Name="numSAmp_I"
+												Grid.Row="0"
+												Grid.Column="1"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="0"
+												Classes="wavepart"
+												Content="II" />
+                      <NumericUpDown
+												Name="numSAmp_II"
+												Grid.Row="1"
+												Grid.Column="1"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="0"
+												Classes="wavepart"
+												Content="III" />
+                      <NumericUpDown
+												Name="numSAmp_III"
+												Grid.Row="2"
+												Grid.Column="1"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="2"
+												Classes="wavepart"
+												Content="aVR" />
+                      <NumericUpDown
+												Name="numSAmp_aVR"
+												Grid.Row="0"
+												Grid.Column="3"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="2"
+												Classes="wavepart"
+												Content="aVL" />
+                      <NumericUpDown
+												Name="numSAmp_aVL"
+												Grid.Row="1"
+												Grid.Column="3"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="2"
+												Classes="wavepart"
+												Content="aVF" />
+                      <NumericUpDown
+												Name="numSAmp_aVF"
+												Grid.Row="2"
+												Grid.Column="3"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="4"
+												Classes="wavepart"
+												Content="V1" />
+                      <NumericUpDown
+												Name="numSAmp_V1"
+												Grid.Row="0"
+												Grid.Column="5"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="4"
+												Classes="wavepart"
+												Content="V2" />
+                      <NumericUpDown
+												Name="numSAmp_V2"
+												Grid.Row="1"
+												Grid.Column="5"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="4"
+												Classes="wavepart"
+												Content="V3" />
+                      <NumericUpDown
+												Name="numSAmp_V3"
+												Grid.Row="2"
+												Grid.Column="5"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="6"
+												Classes="wavepart"
+												Content="V4" />
+                      <NumericUpDown
+												Name="numSAmp_V4"
+												Grid.Row="0"
+												Grid.Column="7"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="6"
+												Classes="wavepart"
+												Content="V5" />
+                      <NumericUpDown
+												Name="numSAmp_V5"
+												Grid.Row="1"
+												Grid.Column="7"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="6"
+												Classes="wavepart"
+												Content="V6" />
+                      <NumericUpDown
+												Name="numSAmp_V6"
+												Grid.Row="2"
+												Grid.Column="7"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                    </Grid>
+                  </HeaderedContentControl>
+                  
+                  <!--  T Wave Amplitude  -->
+                  <HeaderedContentControl
+										Name="grpTWaveAmplitude"
+										Grid.Row="11"
+										Grid.Column="0"
+										Grid.ColumnSpan="2"
+										Background="#f2f2f2"
+										Classes="groupbox"
+										Header="Header">
+                    <Grid Margin="3">
+                      <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                      </Grid.RowDefinitions>
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                      </Grid.ColumnDefinitions>
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="0"
+												Classes="wavepart"
+												Content="I" />
+                      <NumericUpDown
+												Name="numTAmp_I"
+												Grid.Row="0"
+												Grid.Column="1"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="0"
+												Classes="wavepart"
+												Content="II" />
+                      <NumericUpDown
+												Name="numTAmp_II"
+												Grid.Row="1"
+												Grid.Column="1"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="0"
+												Classes="wavepart"
+												Content="III" />
+                      <NumericUpDown
+												Name="numTAmp_III"
+												Grid.Row="2"
+												Grid.Column="1"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="2"
+												Classes="wavepart"
+												Content="aVR" />
+                      <NumericUpDown
+												Name="numTAmp_aVR"
+												Grid.Row="0"
+												Grid.Column="3"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="2"
+												Classes="wavepart"
+												Content="aVL" />
+                      <NumericUpDown
+												Name="numTAmp_aVL"
+												Grid.Row="1"
+												Grid.Column="3"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="2"
+												Classes="wavepart"
+												Content="aVF" />
+                      <NumericUpDown
+												Name="numTAmp_aVF"
+												Grid.Row="2"
+												Grid.Column="3"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="4"
+												Classes="wavepart"
+												Content="V1" />
+                      <NumericUpDown
+												Name="numTAmp_V1"
+												Grid.Row="0"
+												Grid.Column="5"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="4"
+												Classes="wavepart"
+												Content="V2" />
+                      <NumericUpDown
+												Name="numTAmp_V2"
+												Grid.Row="1"
+												Grid.Column="5"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="4"
+												Classes="wavepart"
+												Content="V3" />
+                      <NumericUpDown
+												Name="numTAmp_V3"
+												Grid.Row="2"
+												Grid.Column="5"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="6"
+												Classes="wavepart"
+												Content="V4" />
+                      <NumericUpDown
+												Name="numTAmp_V4"
+												Grid.Row="0"
+												Grid.Column="7"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="6"
+												Classes="wavepart"
+												Content="V5" />
+                      <NumericUpDown
+												Name="numTAmp_V5"
+												Grid.Row="1"
+												Grid.Column="7"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="6"
+												Classes="wavepart"
+												Content="V6" />
+                      <NumericUpDown
+												Name="numTAmp_V6"
+												Grid.Row="2"
+												Grid.Column="7"
+												Classes="vitals wavepart"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                    </Grid>
+                  </HeaderedContentControl>
+                  
                   <!--  ST Segment Elevation  -->
                   <HeaderedContentControl
 										Name="grpSTSegmentElevation"
-										Grid.Row="8"
+										Grid.Row="12"
 										Grid.Column="0"
 										Grid.ColumnSpan="2"
 										Background="#f2f2f2"
@@ -1424,194 +2180,6 @@
 												Content="V6" />
                       <NumericUpDown
 												Name="numSTE_V6"
-												Grid.Row="2"
-												Grid.Column="7"
-												Classes="vitals wavepart"
-												KeyDown="OnUIPhysiologyParameter_KeyDown"
-												LostFocus="OnUIPhysiologyParameter_LostFocus"
-												ValueChanged="OnUIPhysiologyParameter_Changed" />
-                    </Grid>
-                  </HeaderedContentControl>
-
-                  <!--  T Wave Elevation  -->
-                  <HeaderedContentControl
-										Name="grpTWaveElevation"
-										Grid.Row="9"
-										Grid.Column="0"
-										Grid.ColumnSpan="2"
-										Background="#f2f2f2"
-										Classes="groupbox"
-										Header="Header">
-                    <Grid Margin="3">
-                      <Grid.RowDefinitions>
-                        <RowDefinition />
-                        <RowDefinition />
-                        <RowDefinition />
-                      </Grid.RowDefinitions>
-                      <Grid.ColumnDefinitions>
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                        <ColumnDefinition />
-                      </Grid.ColumnDefinitions>
-
-                      <Label
-												Grid.Row="0"
-												Grid.Column="0"
-												Classes="wavepart"
-												Content="I" />
-                      <NumericUpDown
-												Name="numTWE_I"
-												Grid.Row="0"
-												Grid.Column="1"
-												Classes="vitals wavepart"
-												KeyDown="OnUIPhysiologyParameter_KeyDown"
-												LostFocus="OnUIPhysiologyParameter_LostFocus"
-												ValueChanged="OnUIPhysiologyParameter_Changed" />
-                      <Label
-												Grid.Row="1"
-												Grid.Column="0"
-												Classes="wavepart"
-												Content="II" />
-                      <NumericUpDown
-												Name="numTWE_II"
-												Grid.Row="1"
-												Grid.Column="1"
-												Classes="vitals wavepart"
-												KeyDown="OnUIPhysiologyParameter_KeyDown"
-												LostFocus="OnUIPhysiologyParameter_LostFocus"
-												ValueChanged="OnUIPhysiologyParameter_Changed" />
-                      <Label
-												Grid.Row="2"
-												Grid.Column="0"
-												Classes="wavepart"
-												Content="III" />
-                      <NumericUpDown
-												Name="numTWE_III"
-												Grid.Row="2"
-												Grid.Column="1"
-												Classes="vitals wavepart"
-												KeyDown="OnUIPhysiologyParameter_KeyDown"
-												LostFocus="OnUIPhysiologyParameter_LostFocus"
-												ValueChanged="OnUIPhysiologyParameter_Changed" />
-
-                      <Label
-												Grid.Row="0"
-												Grid.Column="2"
-												Classes="wavepart"
-												Content="aVR" />
-                      <NumericUpDown
-												Name="numTWE_aVR"
-												Grid.Row="0"
-												Grid.Column="3"
-												Classes="vitals wavepart"
-												KeyDown="OnUIPhysiologyParameter_KeyDown"
-												LostFocus="OnUIPhysiologyParameter_LostFocus"
-												ValueChanged="OnUIPhysiologyParameter_Changed" />
-                      <Label
-												Grid.Row="1"
-												Grid.Column="2"
-												Classes="wavepart"
-												Content="aVL" />
-                      <NumericUpDown
-												Name="numTWE_aVL"
-												Grid.Row="1"
-												Grid.Column="3"
-												Classes="vitals wavepart"
-												KeyDown="OnUIPhysiologyParameter_KeyDown"
-												LostFocus="OnUIPhysiologyParameter_LostFocus"
-												ValueChanged="OnUIPhysiologyParameter_Changed" />
-                      <Label
-												Grid.Row="2"
-												Grid.Column="2"
-												Classes="wavepart"
-												Content="aVF" />
-                      <NumericUpDown
-												Name="numTWE_aVF"
-												Grid.Row="2"
-												Grid.Column="3"
-												Classes="vitals wavepart"
-												KeyDown="OnUIPhysiologyParameter_KeyDown"
-												LostFocus="OnUIPhysiologyParameter_LostFocus"
-												ValueChanged="OnUIPhysiologyParameter_Changed" />
-
-                      <Label
-												Grid.Row="0"
-												Grid.Column="4"
-												Classes="wavepart"
-												Content="V1" />
-                      <NumericUpDown
-												Name="numTWE_V1"
-												Grid.Row="0"
-												Grid.Column="5"
-												Classes="vitals wavepart"
-												KeyDown="OnUIPhysiologyParameter_KeyDown"
-												LostFocus="OnUIPhysiologyParameter_LostFocus"
-												ValueChanged="OnUIPhysiologyParameter_Changed" />
-                      <Label
-												Grid.Row="1"
-												Grid.Column="4"
-												Classes="wavepart"
-												Content="V2" />
-                      <NumericUpDown
-												Name="numTWE_V2"
-												Grid.Row="1"
-												Grid.Column="5"
-												Classes="vitals wavepart"
-												KeyDown="OnUIPhysiologyParameter_KeyDown"
-												LostFocus="OnUIPhysiologyParameter_LostFocus"
-												ValueChanged="OnUIPhysiologyParameter_Changed" />
-                      <Label
-												Grid.Row="2"
-												Grid.Column="4"
-												Classes="wavepart"
-												Content="V3" />
-                      <NumericUpDown
-												Name="numTWE_V3"
-												Grid.Row="2"
-												Grid.Column="5"
-												Classes="vitals wavepart"
-												KeyDown="OnUIPhysiologyParameter_KeyDown"
-												LostFocus="OnUIPhysiologyParameter_LostFocus"
-												ValueChanged="OnUIPhysiologyParameter_Changed" />
-
-                      <Label
-												Grid.Row="0"
-												Grid.Column="6"
-												Classes="wavepart"
-												Content="V4" />
-                      <NumericUpDown
-												Name="numTWE_V4"
-												Grid.Row="0"
-												Grid.Column="7"
-												Classes="vitals wavepart"
-												KeyDown="OnUIPhysiologyParameter_KeyDown"
-												LostFocus="OnUIPhysiologyParameter_LostFocus"
-												ValueChanged="OnUIPhysiologyParameter_Changed" />
-                      <Label
-												Grid.Row="1"
-												Grid.Column="6"
-												Classes="wavepart"
-												Content="V5" />
-                      <NumericUpDown
-												Name="numTWE_V5"
-												Grid.Row="1"
-												Grid.Column="7"
-												Classes="vitals wavepart"
-												KeyDown="OnUIPhysiologyParameter_KeyDown"
-												LostFocus="OnUIPhysiologyParameter_LostFocus"
-												ValueChanged="OnUIPhysiologyParameter_Changed" />
-                      <Label
-												Grid.Row="2"
-												Grid.Column="6"
-												Classes="wavepart"
-												Content="V6" />
-                      <NumericUpDown
-												Name="numTWE_V6"
 												Grid.Row="2"
 												Grid.Column="7"
 												Classes="vitals wavepart"
