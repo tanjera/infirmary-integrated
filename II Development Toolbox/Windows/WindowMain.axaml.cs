@@ -27,11 +27,16 @@ public partial class WindowMain : Window {
         
         // Find the Infirmary Integrated solution directory by iterating upwards in the directory tree
         string currentDir = Directory.GetCurrentDirectory();
-        while (!Path.GetDirectoryName (currentDir).EndsWith("II Development Toolbox")) {
-            currentDir = Directory.GetParent (currentDir)?.FullName;
+        try {
+            while (!currentDir?.EndsWith ("II Development Toolbox") ?? true) {
+                currentDir = Directory.GetParent (currentDir ?? "")?.FullName ?? "";
+            }
+        } catch (Exception e) {
+            currentDir = Directory.GetCurrentDirectory ();
         }
-        string tbDir = Directory.GetParent (currentDir)?.FullName;
-        SolutionDir = Directory.GetParent (tbDir)?.FullName;
+
+        // After iterating up the filetree, currentDir should be the Toolbox directory
+        SolutionDir = Directory.GetParent (currentDir)?.FullName ?? "";
 
         this.GetControl<TabItem>("tiDictionaryBuilder").Content = new PanelDictionaryBuilder(this, SolutionDir);
         this.GetControl<TabItem>("tiToneGenerator").Content = new PanelToneGenerator(this, SolutionDir);

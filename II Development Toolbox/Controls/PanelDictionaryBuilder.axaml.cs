@@ -37,7 +37,7 @@ public partial class PanelDictionaryBuilder : UserControl {
 
         string FilepathIn = this.GetControl<TextBox> ("tbInputFilepath").Text;
         string FilepathOut = this.GetControl<TextBox> ("tbOutputFilepath").Text;
-
+        
         if (!File.Exists (FilepathIn)) {
             await Dispatcher.UIThread.InvokeAsync (async () => {
                 DialogMessage dlg = new () {

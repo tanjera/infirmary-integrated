@@ -162,6 +162,7 @@
             <iic:PropertyEnum x:Name="penmCardiacAxis" />
             <iic:PropertyDouble x:Name="pdblQRSInterval" />
             <iic:PropertyDouble x:Name="pdblQTcInterval" />
+            <iic:PropertyECGAmplitude x:Name="pecgQAmplitude" />
             <iic:PropertyECGSegment x:Name="pecgSTSegment" />
             <iic:PropertyECGSegment x:Name="pecgTWave" />
           </StackPanel>

@@ -101,6 +101,7 @@ namespace IISE.Windows {
             PropertyDouble pdblInspiratoryRatio = this.GetControl<PropertyDouble> ("pdblInspiratoryRatio");
             PropertyDouble pdblExpiratoryRatio = this.GetControl<PropertyDouble> ("pdblExpiratoryRatio");
 
+            PropertyECGAmplitude pecgQAmplitude = this.GetControl<PropertyECGAmplitude> ("pecgQAmplitude");
             PropertyECGSegment pecgSTSegment = this.GetControl<PropertyECGSegment> ("pecgSTSegment");
             PropertyECGSegment pecgTWave = this.GetControl<PropertyECGSegment> ("pecgTWave");
 
@@ -142,6 +143,7 @@ namespace IISE.Windows {
             pdblInspiratoryRatio.Init (PropertyDouble.Keys.RRInspiratoryRatio, 0.1, 0.1, 10);
             pdblExpiratoryRatio.Init (PropertyDouble.Keys.RRExpiratoryRatio, 0.1, 0.1, 10);
 
+            pecgQAmplitude.Init (PropertyECGAmplitude.Keys.QAmplitude);
             pecgSTSegment.Init (PropertyECGSegment.Keys.STElevation);
             pecgTWave.Init (PropertyECGSegment.Keys.TWave);
 
@@ -186,7 +188,8 @@ namespace IISE.Windows {
             pdblQTcInterval.PropertyChanged += UpdatePhysiology;
             pdblInspiratoryRatio.PropertyChanged += UpdatePhysiology;
             pdblExpiratoryRatio.PropertyChanged += UpdatePhysiology;
-
+            
+            pecgQAmplitude.PropertyChanged += UpdatePhysiology;
             pecgSTSegment.PropertyChanged += UpdatePhysiology;
             pecgTWave.PropertyChanged += UpdatePhysiology;
 
@@ -319,6 +322,14 @@ namespace IISE.Windows {
             }
         }
 
+        private void UpdatePhysiology (object? sender, PropertyECGAmplitude.PropertyECGEventArgs e) {
+            if (Physiology != null) {
+                switch (e.Key) {
+                    default: break;
+                    case PropertyECGAmplitude.Keys.QAmplitude: Physiology.Q_Amplitude = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
+                }
+            }
+        }
         private void UpdatePhysiology (object? sender, PropertyECGSegment.PropertyECGEventArgs e) {
             if (Physiology != null) {
                 switch (e.Key) {
@@ -402,7 +413,8 @@ namespace IISE.Windows {
             PropertyDouble pdblQTcInterval = this.GetControl<PropertyDouble> ("pdblQTcInterval");
             PropertyDouble pdblInspiratoryRatio = this.GetControl<PropertyDouble> ("pdblInspiratoryRatio");
             PropertyDouble pdblExpiratoryRatio = this.GetControl<PropertyDouble> ("pdblExpiratoryRatio");
-
+            
+            PropertyECGSegment pecgQAmplitude = this.GetControl<PropertyECGSegment> ("pecgQAmplitude");
             PropertyECGSegment pecgSTSegment = this.GetControl<PropertyECGSegment> ("pecgSTSegment");
             PropertyECGSegment pecgTWave = this.GetControl<PropertyECGSegment> ("pecgTWave");
 
@@ -450,6 +462,7 @@ namespace IISE.Windows {
             pdblInspiratoryRatio.IsEnabled = (Physiology != null);
             pdblExpiratoryRatio.IsEnabled = (Physiology != null);
 
+            pecgQAmplitude.IsEnabled = (Physiology != null);
             pecgSTSegment.IsEnabled = (Physiology != null);
             pecgTWave.IsEnabled = (Physiology != null);
 
@@ -492,6 +505,7 @@ namespace IISE.Windows {
                 await pdblInspiratoryRatio.Set (Physiology.VS_Settings.RR_IE_I);
                 await pdblExpiratoryRatio.Set (Physiology.VS_Settings.RR_IE_E);
 
+                await pecgQAmplitude.Set (Physiology.Q_Amplitude);
                 await pecgSTSegment.Set (Physiology.ST_Elevation);
                 await pecgTWave.Set (Physiology.T_Elevation);
 

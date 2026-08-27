@@ -14,7 +14,8 @@
   </UserControl.Styles>
 
   <UserControl.Styles>
-    <Style Selector="NumericUpDown.ecg">
+    
+      <Style Selector="NumericUpDown.ecg">
       <Setter Property="MinWidth" Value="45" />
       <Setter Property="Height" Value="20" />
       <Setter Property="Increment" Value="0.1" />

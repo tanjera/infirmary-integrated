@@ -47,7 +47,7 @@ namespace II {
 
         public Cardiac_Axes Cardiac_Axis = new ();
         public double QRS_Interval, QTc_Interval;           // In seconds (e.g. 0.1)
-        public double []? ST_Elevation, T_Elevation;
+        public double []? Q_Amplitude, ST_Elevation, T_Elevation;
 
         /* Obstetric profile */
 
@@ -204,6 +204,7 @@ namespace II {
                             false, false, false,
                             Cardiac_Axes.Values.Normal,
                             0.08d, 0.4d,
+                            new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d },
                             new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d },
                             new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }
                             ));
@@ -683,7 +684,13 @@ namespace II {
                             case "Cardiac_Axis": Cardiac_Axis.Value = (Cardiac_Axes.Values)Enum.Parse (typeof (Cardiac_Axes.Values), pValue); break;
                             case "QRS_Interval": QRS_Interval = double.Parse (pValue); break;
                             case "QTc_Interval": QTc_Interval = double.Parse (pValue); break;
-
+                            
+                            case "Q_Amplitude":
+                                string [] e_q = pValue.Split (',').Where ((o) => o != "").ToArray ();
+                                for (int i = 0; i < e_q.Length && i < Q_Amplitude?.Length; i++)
+                                    Q_Amplitude [i] = double.Parse (e_q [i]);
+                                break;
+                            
                             case "ST_Elevation":
                                 string [] e_st = pValue.Split (',').Where ((o) => o != "").ToArray ();
                                 for (int i = 0; i < e_st.Length && i < ST_Elevation?.Length; i++)
@@ -783,6 +790,7 @@ namespace II {
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Cardiac_Axis", Cardiac_Axis.Value));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "QRS_Interval", QRS_Interval));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "QTc_Interval", QTc_Interval));
+            sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "Q_Amplitude", string.Join (",", Q_Amplitude ?? new double [12])));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "ST_Elevation", string.Join (",", ST_Elevation ?? new double [12])));
             sWrite.AppendLine (String.Format ("{0}{1}:{2}", dent, "T_Elevation", string.Join (",", T_Elevation ?? new double [12])));
 
@@ -830,7 +838,9 @@ namespace II {
                     bool puls_paradoxus, bool puls_alternans, bool elec_alternans,
                     Cardiac_Axes.Values card_axis,
                     double qrs_int, double qtc_int,
-                    double []? st_elev, double []? t_elev) {
+                    double []? q_amp,
+                    double []? st_elev, 
+                    double []? t_elev) {
             Updated = DateTime.UtcNow;
 
             // Basic vital signs
@@ -881,6 +891,7 @@ namespace II {
             QTc_Interval = qtc_int;
 
             Cardiac_Axis.Value = card_axis;
+            Q_Amplitude = q_amp;
             ST_Elevation = st_elev;
             T_Elevation = t_elev;
 

@@ -119,6 +119,15 @@
       <Setter Property="HorizontalContentAlignment" Value="Right" />
     </Style>
 
+	  <Style Selector="NumericUpDown.waveamp">
+		  <Setter Property="Increment" Value="0.1" />
+		  <Setter Property="Maximum" Value="1.0" />
+		  <Setter Property="Minimum" Value="0.0" />
+		  <Setter Property="FormatString" Value="{}{0:0.0}" />
+		  <Setter Property="ShowButtonSpinner" Value="True" />
+		  <Setter Property="Margin" Value="0 2" />
+	  </Style>
+	  
     <Style Selector="NumericUpDown.wavepart">
       <Setter Property="Increment" Value="0.1" />
       <Setter Property="Maximum" Value="1.0" />
@@ -930,6 +939,7 @@
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
+                    <RowDefinition />
                   </Grid.RowDefinitions>
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition />
@@ -1047,10 +1057,198 @@
 										FormatString="{}{0:0.00}"
 										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
+                  <!--  Q Wave Amplitude -->
+                  <HeaderedContentControl
+										Name="grpQWaveAmplitude"
+										Grid.Row="7"
+										Grid.Column="0"
+										Grid.ColumnSpan="2"
+										Background="#f2f2f2"
+										Classes="groupbox"
+										Header="Header">
+                    <Grid Margin="3">
+                      <Grid.RowDefinitions>
+                        <RowDefinition />
+                        <RowDefinition />
+                        <RowDefinition />
+                      </Grid.RowDefinitions>
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                      </Grid.ColumnDefinitions>
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="0"
+												Classes="wavepart"
+												Content="I" />
+                      <NumericUpDown
+												Name="numQAmp_I"
+												Grid.Row="0"
+												Grid.Column="1"
+												Classes="vitals waveamp"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="0"
+												Classes="wavepart"
+												Content="II" />
+                      <NumericUpDown
+												Name="numQAmp_II"
+												Grid.Row="1"
+												Grid.Column="1"
+												Classes="vitals waveamp"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="0"
+												Classes="wavepart"
+												Content="III" />
+                      <NumericUpDown
+												Name="numQAmp_III"
+												Grid.Row="2"
+												Grid.Column="1"
+												Classes="vitals waveamp"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="2"
+												Classes="wavepart"
+												Content="aVR" />
+                      <NumericUpDown
+												Name="numQAmp_aVR"
+												Grid.Row="0"
+												Grid.Column="3"
+												Classes="vitals waveamp"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="2"
+												Classes="wavepart"
+												Content="aVL" />
+                      <NumericUpDown
+												Name="numQAmp_aVL"
+												Grid.Row="1"
+												Grid.Column="3"
+												Classes="vitals waveamp"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="2"
+												Classes="wavepart"
+												Content="aVF" />
+                      <NumericUpDown
+												Name="numQAmp_aVF"
+												Grid.Row="2"
+												Grid.Column="3"
+												Classes="vitals waveamp"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="4"
+												Classes="wavepart"
+												Content="V1" />
+                      <NumericUpDown
+												Name="numQAmp_V1"
+												Grid.Row="0"
+												Grid.Column="5"
+												Classes="vitals waveamp"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="4"
+												Classes="wavepart"
+												Content="V2" />
+                      <NumericUpDown
+												Name="numQAmp_V2"
+												Grid.Row="1"
+												Grid.Column="5"
+												Classes="vitals waveamp"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="4"
+												Classes="wavepart"
+												Content="V3" />
+                      <NumericUpDown
+												Name="numQAmp_V3"
+												Grid.Row="2"
+												Grid.Column="5"
+												Classes="vitals waveamp"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+
+                      <Label
+												Grid.Row="0"
+												Grid.Column="6"
+												Classes="wavepart"
+												Content="V4" />
+                      <NumericUpDown
+												Name="numQAmp_V4"
+												Grid.Row="0"
+												Grid.Column="7"
+												Classes="vitals waveamp"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="1"
+												Grid.Column="6"
+												Classes="wavepart"
+												Content="V5" />
+                      <NumericUpDown
+												Name="numQAmp_V5"
+												Grid.Row="1"
+												Grid.Column="7"
+												Classes="vitals waveamp"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                      <Label
+												Grid.Row="2"
+												Grid.Column="6"
+												Classes="wavepart"
+												Content="V6" />
+                      <NumericUpDown
+												Name="numQAmp_V6"
+												Grid.Row="2"
+												Grid.Column="7"
+												Classes="vitals waveamp"
+												KeyDown="OnUIPhysiologyParameter_KeyDown"
+												LostFocus="OnUIPhysiologyParameter_LostFocus"
+												ValueChanged="OnUIPhysiologyParameter_Changed" />
+                    </Grid>
+                  </HeaderedContentControl>
+                  
                   <!--  ST Segment Elevation  -->
                   <HeaderedContentControl
 										Name="grpSTSegmentElevation"
-										Grid.Row="7"
+										Grid.Row="8"
 										Grid.Column="0"
 										Grid.ColumnSpan="2"
 										Background="#f2f2f2"
@@ -1238,7 +1436,7 @@
                   <!--  T Wave Elevation  -->
                   <HeaderedContentControl
 										Name="grpTWaveElevation"
-										Grid.Row="8"
+										Grid.Row="9"
 										Grid.Column="0"
 										Grid.ColumnSpan="2"
 										Background="#f2f2f2"

@@ -205,6 +205,7 @@ namespace IISIM {
             this.GetControl<Label> ("lblQRSInterval").Content = $"{Instance.Language.Localize ("PE:QRSInterval")}:";
             this.GetControl<Label> ("lblQTcInterval").Content = $"{Instance.Language.Localize ("PE:QTcInterval")}:";
             this.GetControl<Label> ("lblCardiacAxis").Content = $"{Instance.Language.Localize ("PE:CardiacAxis")}:";
+            this.GetControl<HeaderedContentControl> ("grpQWaveAmplitude").Header = Instance.Language.Localize ("PE:QWaveAmplitude");
             this.GetControl<HeaderedContentControl> ("grpSTSegmentElevation").Header = Instance.Language.Localize ("PE:STSegmentElevation");
             this.GetControl<HeaderedContentControl> ("grpTWaveElevation").Header = Instance.Language.Localize ("PE:TWaveElevation");
 
@@ -1394,6 +1395,21 @@ namespace IISIM {
                 (double)(this.GetControl<NumericUpDown> ("numQRSInterval")?.Value ?? 0),
                 (double)(this.GetControl<NumericUpDown> ("numQTcInterval")?.Value ?? 0),
 
+                
+                new double [] {
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_I")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_II")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_III")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_aVR")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_aVL")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_aVF")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_V1")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_V2")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_V3")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_V4")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_V5")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_V6")?.Value?? 0)
+                },
                 new double [] {
                     (double)(this.GetControl<NumericUpDown>("numSTE_I")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numSTE_II")?.Value ?? 0),
@@ -1481,8 +1497,11 @@ namespace IISIM {
                     ApplyBuffer.Electrical_Alternans,
 
                     ApplyBuffer.Cardiac_Axis.Value,
-                    ApplyBuffer.QRS_Interval, ApplyBuffer.QTc_Interval,
-                    ApplyBuffer.ST_Elevation, ApplyBuffer.T_Elevation);
+                    ApplyBuffer.QRS_Interval, 
+                    ApplyBuffer.QTc_Interval,
+                    ApplyBuffer.Q_Amplitude,
+                    ApplyBuffer.ST_Elevation,
+                    ApplyBuffer.T_Elevation);
             }
 
             if (Instance?.Mirror is not null && Instance?.Server is not null)
@@ -1581,6 +1600,21 @@ namespace IISIM {
 
                     this.GetControl<NumericUpDown> ("numQRSInterval").Value = (decimal)p.QRS_Interval;
                     this.GetControl<NumericUpDown> ("numQTcInterval").Value = (decimal)p.QTc_Interval;
+
+                    if (p.Q_Amplitude is not null) {
+                        this.GetControl<NumericUpDown> ("numQAmp_I").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_I];
+                        this.GetControl<NumericUpDown> ("numQAmp_II").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_II];
+                        this.GetControl<NumericUpDown> ("numQAmp_III").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_III];
+                        this.GetControl<NumericUpDown> ("numQAmp_aVR").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_AVR];
+                        this.GetControl<NumericUpDown> ("numQAmp_aVL").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_AVL];
+                        this.GetControl<NumericUpDown> ("numQAmp_aVF").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_AVF];
+                        this.GetControl<NumericUpDown> ("numQAmp_V1").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V1];
+                        this.GetControl<NumericUpDown> ("numQAmp_V2").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V2];
+                        this.GetControl<NumericUpDown> ("numQAmp_V3").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V3];
+                        this.GetControl<NumericUpDown> ("numQAmp_V4").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V4];
+                        this.GetControl<NumericUpDown> ("numQAmp_V5").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V5];
+                        this.GetControl<NumericUpDown> ("numQAmp_V6").Value = (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V6];
+                    }
 
                     if (p.ST_Elevation is not null) {
                         this.GetControl<NumericUpDown> ("numSTE_I").Value = (decimal)p.ST_Elevation [(int)Lead.Values.ECG_I];
