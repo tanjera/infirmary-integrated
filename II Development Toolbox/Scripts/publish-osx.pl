@@ -6,8 +6,8 @@ use Cwd qw(abs_path);
 $script_dir = `pwd`;
 $rel_dir = abs_path("../../Release");
 $entitlements = abs_path("../../Package, MacOS/entitlements.plist");
-$signing_identity = "905C6ACD8AC51DA87E79EAF47F93682CC42D56A2";
-$packing_identity = "922C0261BDA27C1E4C02CB454BB1853F1A5A91D3";
+$signing_identity = "5DD216F3182127A11B54C5610910177D6C9397C3";
+$packing_identity = "85F21AE4900BF0E0D7BEB0661D83ED56BA67245B";
 
 @apps = ("Infirmary Integrated.app",
     "Infirmary Integrated Scenario Editor.app");
