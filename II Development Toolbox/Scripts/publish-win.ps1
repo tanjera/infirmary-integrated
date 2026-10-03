@@ -78,7 +78,7 @@ foreach ($file in Get-ChildItem -Path $pathRelease -Include *-win-*.exe -Name) {
 
     Write-Host "Signing package $l using signtool.exe." -ForegroundColor Blue
     Write-Host ">> Reminder: security cards are blocked on RDP connections!" -ForegroundColor Yellow
-    Invoke-Expression "& '$pathSigntool' sign /n `"Open Source Developer, Ibi Keller`" /t `"http://time.certum.pl`" /fd SHA256 /v '$file'"
+    Invoke-Expression "& '$pathSigntool' sign /n `"Open Source Developer Ibi Keller`" /t `"http://time.certum.pl`" /fd SHA256 /v '$file'"
 
     Write-Host "Checking signature for $l" -ForegroundColor Blue
     Invoke-Expression "& '$pathSigntool' verify /v /pa '$file'"
