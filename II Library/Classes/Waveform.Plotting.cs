@@ -157,6 +157,7 @@ namespace II.Waveform {
             int i;
             double x;
             List<PointD> _Out = new ();
+            
             double Resolution = (2 * (DrawResolution / 1000d)) / _Length;
 
             for (i = 1; (x = i * Resolution) <= 1; i++)

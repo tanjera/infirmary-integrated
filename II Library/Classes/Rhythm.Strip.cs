@@ -471,12 +471,12 @@ namespace II.Rhythm {
             }
         }
 
-        // Splices in a set of points, only showing the splice if it's Y is larger than the existing
+        // Overlay stronger splice values within the waveforms' shared X range
         public void Underwrite (List<PointD> splice) {
             if (Points is null || splice.Count == 0)
                 return;
 
-            // Offset the splice to meet the leading/future edge of the strip
+            // Shift the splice in place to the leading/future edge of the strip
             for (int i = 0; i < splice.Count; i++)
                 splice [i].X += Length * forwardBuffer;
 
@@ -487,7 +487,7 @@ namespace II.Rhythm {
                 else if (p2 is null) return 1;
                 else return p1.X.CompareTo (p2.X);
             });
-
+            
             lock (lockPoints) {
                 Points.Sort (delegate (PointD p1, PointD p2) {
                     if (p1 is null && p2 is null) return 0;
@@ -496,35 +496,159 @@ namespace II.Rhythm {
                     else return p1.X.CompareTo (p2.X);
                 });
 
-                double spliceStart = splice.First ().X,
-                    spliceEnd = splice.Last ().X;
+                if (Points.Count == 0)
+                    return;
 
-                bool hadSplice = false;
-                double lastSplice = 0d;
+                // Preserve original Y values for both comparison passes
+                List<PointD> refPoints = Points.Select (point => new PointD (point.X, point.Y)).ToList ();
+                double referenceStart = refPoints [0].X,
+                    referenceEnd = refPoints [refPoints.Count - 1].X,
+                    spliceStart = splice [0].X,
+                    spliceEnd = splice [splice.Count - 1].X;
 
-                for (int i = Points.Count - 1, j = splice.Count - 1; i >= 0 && j >= 0; i--) {
-                    if (Points [i].X > spliceStart && Points [i].X < spliceEnd) {                                               // Several comparisons to account for different draw resolutions (X intervals)
-                        if (i > 0 && (System.Math.Abs (Points [i - 1].X - splice [j].X)
-                            < System.Math.Abs (Points [i].X - splice [j].X))) {                                                  // If the next Point is closer in X to the current splice
-                            Points [i].Y = hadSplice ? lastSplice : Points [i].Y;                                                // Add the last splice to this Point as well
-                        } else if (j < splice.Count - 1 && (System.Math.Abs (Points [i].X - splice [j + 1].X)                    // If the next Splice is closer in X to the current Point
-                            < System.Math.Abs (Points [i].X - splice [j].X))) {
-                            i++;                                                                                                // Repeat the comparison with current Point ...
-                            j--;                                                                                                // ... against the next splice
-                        } else {                                                                                                // If this Point is closest to this splice
-                            if ((Points [i].Y == 0)
-                                || (Points [i].Y < 0 && splice [j].Y < 0 && splice [j].Y < Points [i].Y)
-                                || (Points [i].Y > 0 && splice [j].Y > 0 && splice [j].Y > Points [i].Y)) {
-                                lastSplice = splice [j].Y;
-                                hadSplice = true;
-                                Points [i].Y = splice [j].Y;
-                            } else {
-                                hadSplice = false;
-                            }
+                // No overlap means there is nothing to overlay
+                if (spliceEnd < referenceStart || spliceStart > referenceEnd)
+                    return;
 
-                            j--;                                                                                                // Iterating to the next splice
-                        }
+                InterpolationCursor spliceCursor = new (splice);
+
+                // At each reference X, use a stronger same-sign splice Y; zero accepts either sign
+                for (int i = 0; i < refPoints.Count; i++) {
+                    PointD referencePoint = refPoints [i];
+
+                    if (spliceCursor.TryInterpolateY (referencePoint.X, out double spliceY, out _)
+                        && ((referencePoint.Y == 0d && spliceY != 0d)
+                            || (referencePoint.Y < 0d && spliceY < referencePoint.Y)
+                            || (referencePoint.Y > 0d && spliceY > referencePoint.Y))) {
+                        Points [i].Y = spliceY;
                     }
+                }
+
+                InterpolationCursor referenceCursor = new (refPoints);
+
+                // Check splice X positions missing from the original reference
+                for (int i = 0; i < splice.Count;) {
+                    double spliceX = splice [i].X;
+                    double spliceY = splice [i].Y;
+                    int next = i + 1;
+
+                    // Keep the greatest-magnitude splice Y at this X; retain the first on ties
+                    while (next < splice.Count && splice [next].X == spliceX) {
+                        if (System.Math.Abs (splice [next].Y) > System.Math.Abs (spliceY))
+                            spliceY = splice [next].Y;
+
+                        next++;
+                    }
+
+                    // Insert only if its magnitude exceeds the interpolated original, regardless of sign
+                    if (referenceCursor.TryInterpolateY (spliceX, out double referenceY, out bool isReferencePoint)
+                        && !isReferencePoint
+                        && System.Math.Abs (spliceY) > System.Math.Abs (referenceY)) {
+                        Points.Add (new PointD (spliceX, spliceY));
+                    }
+
+                    i = next;
+                }
+                
+                // Restore X order after inserting splice points
+                Points.Sort (delegate (PointD p1, PointD p2) {
+                    if (p1 is null && p2 is null) return 0;
+                    else if (p1 is null) return -1;
+                    else if (p2 is null) return 1;
+                    else return p1.X.CompareTo (p2.X);
+                });
+            }
+        }
+
+        // Traverse sorted points with nondecreasing X queries, without extrapolating
+        private sealed class InterpolationCursor {
+            private readonly IReadOnlyList<PointD> points;
+            // Cached left group and next right group; rightEnd is exclusive
+            private double leftX, leftY;
+            private bool hasLeft, hasRight;
+            private int rightEnd;
+            private double rightX, rightFirstY, rightLastY;
+
+            public InterpolationCursor (IReadOnlyList<PointD> points) {
+                this.points = points;
+
+                if (points.Count == 0)
+                    return;
+
+                // Prime the first group and, if available, its right neighbor
+                LoadGroup (0, out int leftEnd, out leftX, out _, out leftY);
+                hasLeft = true;
+
+                if (leftEnd < points.Count) {
+                    LoadGroup (leftEnd, out rightEnd, out rightX, out rightFirstY, out rightLastY);
+                    hasRight = true;
+                }
+            }
+
+            // Find the exact or interpolated Y at X, advancing through sorted points without extrapolation
+            public bool TryInterpolateY (double x, out double y, out bool isExact) {
+                y = 0d;
+                isExact = false;
+
+                // Reject empty, out-of-range, or behind-cursor queries
+                if (!hasLeft || x < points [0].X || x > points [points.Count - 1].X || x < leftX)
+                    return false;
+
+                // Advance groups until X is at or between the cached neighbors
+                while (hasRight && rightX < x) {
+                    leftX = rightX;
+                    leftY = rightLastY;
+
+                    if (rightEnd < points.Count) {
+                        int nextGroupStart = rightEnd;
+                        LoadGroup (nextGroupStart, out rightEnd, out rightX, out rightFirstY, out rightLastY);
+                    } else {
+                        hasRight = false;
+                    }
+                }
+
+                // Exact matches use the last-preferred strongest Y in the group
+                if (x == leftX) {
+                    y = leftY;
+                    isExact = true;
+                    return true;
+                }
+
+                if (hasRight && x == rightX) {
+                    y = rightLastY;
+                    isExact = true;
+                    return true;
+                }
+
+                if (!hasRight || x <= leftX || x >= rightX)
+                    return false;
+
+                // Interpolate between groups; the right endpoint favors the first point on ties
+                y = leftY + ((x - leftX) / (rightX - leftX) * (rightFirstY - leftY));
+                return true;
+            }
+
+            // Summarize points at one X, selecting strongest Y values with first and last tie preferences
+            private void LoadGroup (int start, out int end, out double x, out double firstY, out double lastY) {
+                x = points [start].X;
+                end = start + 1;
+
+                // Find the exclusive end of this duplicate-X group
+                while (end < points.Count && points [end].X == x)
+                    end++;
+
+                // Select the strongest Y, preferring the first point on equal magnitudes
+                firstY = points [start].Y;
+                for (int i = start + 1; i < end; i++) {
+                    if (System.Math.Abs (points [i].Y) > System.Math.Abs (firstY))
+                        firstY = points [i].Y;
+                }
+
+                // Select the strongest Y, preferring the last point on equal magnitudes
+                lastY = points [end - 1].Y;
+                for (int i = end - 2; i >= start; i--) {
+                    if (System.Math.Abs (points [i].Y) > System.Math.Abs (lastY))
+                        lastY = points [i].Y;
                 }
             }
         }

@@ -1357,7 +1357,9 @@ namespace IISIM {
                 (int)(this.GetControl<NumericUpDown> ("numHR")?.Value ?? 0),
                 (int)(this.GetControl<NumericUpDown> ("numNSBP")?.Value ?? 0),
                 (int)(this.GetControl<NumericUpDown> ("numNDBP")?.Value ?? 0),
-                Physiology.CalculateMAP ((int)(this.GetControl<NumericUpDown> ("numNSBP")?.Value ?? 0), (int)(this.GetControl<NumericUpDown> ("numNDBP")?.Value ?? 0)),
+                Physiology.CalculateMAP (
+                    (int)(this.GetControl<NumericUpDown> ("numNSBP")?.Value ?? 0), 
+                    (int)(this.GetControl<NumericUpDown> ("numNDBP")?.Value ?? 0)),
                 (int)(this.GetControl<NumericUpDown> ("numSPO2")?.Value ?? 0),
                 (double)(this.GetControl<NumericUpDown> ("numT")?.Value ?? 0),
 
@@ -1444,7 +1446,7 @@ namespace IISIM {
                     (double)(this.GetControl<NumericUpDown>("numSAmp_I")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numSAmp_II")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numSAmp_III")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numSAmp_aVS")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_aVR")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numSAmp_aVL")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numSAmp_aVF")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numSAmp_V1")?.Value ?? 0),
@@ -1458,7 +1460,7 @@ namespace IISIM {
                     (double)(this.GetControl<NumericUpDown>("numTAmp_I")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numTAmp_II")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numTAmp_III")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTAmp_aVT")?.Value ?? 0),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_aVR")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numTAmp_aVL")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numTAmp_aVF")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numTAmp_V1")?.Value ?? 0),
