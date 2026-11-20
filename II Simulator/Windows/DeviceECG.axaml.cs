@@ -259,11 +259,11 @@ namespace IISIM {
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Pacermaker_Spike:
+                case Physiology.PhysiologyEventTypes.PacermakerSpike:
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Cardiac_Baseline:
+                case Physiology.PhysiologyEventTypes.CardiacBaseline:
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology));
                     break;
 

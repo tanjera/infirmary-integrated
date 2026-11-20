@@ -1,6 +1,6 @@
 ﻿/* Strip.cs
  * Infirmary Integrated
- * By Ibi Keller (Tanjera), (c) 2017-2023
+ * By Ibi Keller (Tanjera), (c) 2017-2026
  *
  * Actual management of geometric plotting of waveforms as a single tracing is in Strip.cs.
  * Concatenation of waveform complexes, overwriting and underwriting (combining) wave points,
@@ -67,6 +67,8 @@ namespace II.Rhythm {
 
         /* Data structures for tracing information */
         public Lead? Lead;
+        public readonly object lockEvents = new ();
+        public List<Event>? Events;
         public readonly object lockPoints = new ();
         public List<PointD>? Points;                      // Clinical waveform tracing points
 
@@ -96,6 +98,9 @@ namespace II.Rhythm {
 
             lock (lockPoints)
                 Points = new List<PointD> ();
+            
+            lock (lockEvents)
+                Events = new List<Event> ();
 
             SetScale ();
             SetOffset ();
@@ -299,23 +304,37 @@ namespace II.Rhythm {
         public Task Reset () {
             lock (lockPoints)
                 Points?.Clear ();
+            
+            lock (lockEvents)
+                Events?.Clear ();
 
             return Task.CompletedTask;
         }
 
         public void ClearFuture (Physiology? patient) {
-            if (Points is null || patient is null)
+            if (patient is null)
                 return;
             
             SetForwardBuffer (patient, true);         // Since accounting for forward edge buffer, recalculate
-
+            
             lock (lockPoints) {
-                for (int i = Points.Count - 1; i >= 0; i--) {
-                    /* Must account for forwardEdgeBuffer... otherwise will cause period of "asystole"
-                     * Also **must** have a grace period coefficient for forwardBuffer - otherwise was
-                     * erasing waveforms as they were being added to List<PointD> */
-                    if (Points [i].X > (Length * forwardBuffer * 1.5))
-                        Points.RemoveAt (i);
+                if (Points is not null) {
+                    for (int i = Points.Count - 1; i >= 0; i--) {
+                        /* Must account for forwardEdgeBuffer... otherwise will cause period of "asystole"
+                         * Also **must** have a grace period coefficient for forwardBuffer - otherwise was
+                         * erasing waveforms as they were being added to List<PointD> */
+                        if (Points [i].X > (Length * forwardBuffer * 1.5))
+                            Points.RemoveAt (i);
+                    }
+                }
+            }
+
+            lock (lockEvents) {
+                if (Events is not null) {
+                    for (int i = Events.Count - 1; i >= 0; i--) {
+                        if (Events [i].X > (Length * forwardBuffer * 1.5))
+                            Events.RemoveAt (i);
+                    }
                 }
             }
         }
@@ -432,20 +451,10 @@ namespace II.Rhythm {
                 splice [i].X += Length * forwardBuffer;
 
             // Sort the splice and the Points so we can walk through them
-            splice.Sort (delegate (PointD p1, PointD p2) {
-                if (p1 is null && p2 is null) return 0;
-                else if (p1 is null) return -1;
-                else if (p2 is null) return 1;
-                else return p1.X.CompareTo (p2.X);
-            });
+            splice.Sort ((p1, p2) => p1.X.CompareTo (p2.X));
 
             lock (lockPoints) {
-                Points.Sort (delegate (PointD p1, PointD p2) {
-                    if (p1 is null && p2 is null) return 0;
-                    else if (p1 is null) return -1;
-                    else if (p2 is null) return 1;
-                    else return p1.X.CompareTo (p2.X);
-                });
+                Points.Sort ((p1, p2) => p1.X.CompareTo (p2.X));
 
                 double spliceStart = splice.First ().X,
                     spliceEnd = splice.Last ().X;
@@ -481,20 +490,10 @@ namespace II.Rhythm {
                 splice [i].X += Length * forwardBuffer;
 
             // Sort the splice and the Points so we can walk through them
-            splice.Sort (delegate (PointD p1, PointD p2) {
-                if (p1 is null && p2 is null) return 0;
-                else if (p1 is null) return -1;
-                else if (p2 is null) return 1;
-                else return p1.X.CompareTo (p2.X);
-            });
+            splice.Sort ((p1, p2) => p1.X.CompareTo (p2.X));
             
             lock (lockPoints) {
-                Points.Sort (delegate (PointD p1, PointD p2) {
-                    if (p1 is null && p2 is null) return 0;
-                    else if (p1 is null) return -1;
-                    else if (p2 is null) return 1;
-                    else return p1.X.CompareTo (p2.X);
-                });
+                Points.Sort ((p1, p2) => p1.X.CompareTo (p2.X));
 
                 if (Points.Count == 0)
                     return;
@@ -551,12 +550,7 @@ namespace II.Rhythm {
                 }
                 
                 // Restore X order after inserting splice points
-                Points.Sort (delegate (PointD p1, PointD p2) {
-                    if (p1 is null && p2 is null) return 0;
-                    else if (p1 is null) return -1;
-                    else if (p2 is null) return 1;
-                    else return p1.X.CompareTo (p2.X);
-                });
+                Points.Sort ((p1, p2) => p1.X.CompareTo (p2.X));
             }
         }
 
@@ -655,28 +649,31 @@ namespace II.Rhythm {
 
         public void TrimPoints () {
             lock (lockPoints) {
-                Points?.RemoveAll (p => { return p is null || p.X < -Length; });
+                Points?.RemoveAll (p => p.X < -Length);
+            }
+        }
+
+        public void TrimEvents () {
+            lock (lockEvents) {
+                Events?.RemoveAll (p => p.X < -Length);
             }
         }
 
         public void SortPoints () {
             lock (lockPoints) {
-
                 Points?.RemoveAll (p => p.X is double.NaN || p.Y is double.NaN);
-                
-                Points?.Sort (delegate (PointD p1, PointD p2) {
-                    if (p1 is null && p2 is null) return 0;
-                    else if (p1 is null) return -1;
-                    else if (p2 is null) return 1;
-                    else return p1.X.CompareTo (p2.X);
-                });
+                Points?.Sort ((p1, p2) => p1.X.CompareTo (p2.X));
             }
         }
 
+        public void SortEvents () {
+            lock (lockEvents) {
+                Events?.RemoveAll (p => p.X is double.NaN);
+                Events?.Sort ((p1, p2) => p1.X.CompareTo (p2.X));
+            }
+        }
+        
         public void Scroll (int? multiplier = 1) {
-            if (Points is null)
-                return;
-
             multiplier ??= 1;
 
             // Note: scrollBy is in SECONDS (as double); convert and cast appropriately since Epoch is (ulong?)
@@ -684,12 +681,21 @@ namespace II.Rhythm {
             double scrollBy = TimerSimulation?.Epoch > scrolledLast
                 ? (((double)((TimerSimulation?.Epoch - scrolledLast) ?? 0) / 1000) * multiplier ?? 1)
                 : (((double)((scrolledLast - TimerSimulation?.Epoch) ?? 0) / 1000) * multiplier ?? 1);
-            
+
             scrolledLast = TimerSimulation?.Epoch;
             
             lock (lockPoints) {
-                for (int i = Points.Count - 1; i >= 0; i--)
-                    Points [i].X = Points [i].X - scrollBy;
+                if (Points is not null) {
+                    for (int i = Points.Count - 1; i >= 0; i--)
+                        Points [i].X -= scrollBy;
+                }
+            }
+
+            lock (lockEvents) {
+                if (Events is not null) {
+                    for (int i = Events.Count - 1; i >= 0; i--)
+                        Events [i].X -= scrollBy;
+                }
             }
         }
 
@@ -747,10 +753,11 @@ namespace II.Rhythm {
 
             SetForwardBuffer (p);
             TrimPoints ();
+            TrimEvents ();
 
             if (IsECG) {
                 // Note: resolution scaling takes place within ECG_Isoelectric()
-                p.Cardiac_Rhythm.ECG_Isoelectric (p, this);
+                p.CardiacRhythm.ECG_Isoelectric (p, this);
             } else if (CanScale) {
                 double fill = (Length * forwardBuffer) - Last (Points).X;
                 
@@ -783,7 +790,7 @@ namespace II.Rhythm {
             if (p is null || Lead is null || !IsECG)
                 return;
 
-            p.Cardiac_Rhythm.ECG_Atrial (p, this);
+            p.CardiacRhythm.ECG_Atrial (p, this);
 
             SortPoints ();
         }
@@ -792,7 +799,7 @@ namespace II.Rhythm {
             if (p is null || Lead is null || !IsECG)
                 return;
 
-            p.Cardiac_Rhythm.ECG_Ventricular (p, this);
+            p.CardiacRhythm.ECG_Ventricular (p, this);
 
             SortPoints ();
         }
@@ -819,7 +826,7 @@ namespace II.Rhythm {
                     if (p.IABP_Active)
                         // IABP causes important downward deflections- do not use ReplaceAtOver!
                         Replace (Scale (p, Draw.IABP_ABP_Rhythm (p, 1d)));
-                    else if (p.Cardiac_Rhythm.HasPulse_Ventricular)
+                    else if (p.CardiacRhythm.HasVentricularPulse)
                         ReplaceAtOver (Scale (p, Draw.ABP_Rhythm (p, 1d)));
                     break;
 
@@ -855,11 +862,11 @@ namespace II.Rhythm {
                     default: return;
 
                     case Lead.Values.IABP:
-                        if (p.Cardiac_Rhythm.HasWaveform_Ventricular && p.IABP_Trigger == Physiology.IABP_Triggers.ECG) {
+                        if (p.CardiacRhythm.HasVentricularWaveform && p.IABP_Trigger == Physiology.IABP_Triggers.ECG) {
                             /* ECG Trigger works only if ventricular ECG waveform */
                             // IABP causes important downward deflections- do not use ReplaceAtOver!
                             Replace (Draw.IABP_Balloon_Rhythm (p, 1d));
-                        } else if (p.Cardiac_Rhythm.HasPulse_Ventricular && p.IABP_Trigger == Physiology.IABP_Triggers.Pressure) {
+                        } else if (p.CardiacRhythm.HasVentricularPulse && p.IABP_Trigger == Physiology.IABP_Triggers.Pressure) {
                             /* Pressure Trigger works only if ventricular pressure impulse */
                             // IABP causes important downward deflections- do not use ReplaceAtOver!
                             Replace (Draw.IABP_Balloon_Rhythm (p, 1d));
@@ -867,7 +874,7 @@ namespace II.Rhythm {
                         break;
 
                     case Lead.Values.ABP:
-                        if (!p.Cardiac_Rhythm.HasPulse_Ventricular) {
+                        if (!p.CardiacRhythm.HasVentricularPulse) {
                             // IABP causes important downward deflections- do not use ReplaceAtOver!
                             Replace (Scale (p, Draw.IABP_ABP_Rhythm (p, 1d)));
                         }
@@ -897,9 +904,11 @@ namespace II.Rhythm {
             if (!IsECG)
                 return;
 
-            Replace (Draw.ECG_Pacemaker (p, Lead));
+            lock (lockEvents) {
+                Events?.Add (new Event (Length * forwardBuffer, Event.Types.PacerSpike));
+            }
 
-            SortPoints ();
+            SortEvents ();
         }
 
         public void Add_Breath__Respiratory_Baseline (Physiology? p) {

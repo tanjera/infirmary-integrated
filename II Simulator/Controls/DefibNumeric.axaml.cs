@@ -333,16 +333,16 @@ namespace IISIM.Controls {
                                 if (device.Analyze == DeviceDefib.AnalyzeStates.Analyzing) {
                                     lblLine3.Text = Instance.Language.Localize ("DEFIB:Analyzing");
                                 } else if (device.Analyze == DeviceDefib.AnalyzeStates.Analyzed) {
-                                    switch (Instance.Physiology.Cardiac_Rhythm.Value) {
+                                    switch (Instance.Physiology.CardiacRhythm.Value) {
                                         default:
                                             lblLine3.Text = Instance.Language.Localize ("DEFIB:NoShockAdvised");
                                             break;
 
-                                        case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Coarse:
-                                        case Cardiac_Rhythms.Values.Ventricular_Fibrillation_Fine:
-                                        case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
-                                        case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
-                                        case Cardiac_Rhythms.Values.Ventricular_Tachycardia_Polymorphic:
+                                        case CardiacRhythms.Values.Ventricular_Fibrillation_Coarse:
+                                        case CardiacRhythms.Values.Ventricular_Fibrillation_Fine:
+                                        case CardiacRhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
+                                        case CardiacRhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
+                                        case CardiacRhythms.Values.Ventricular_Tachycardia_Polymorphic:
                                             lblLine3.Text = Instance.Language.Localize ("DEFIB:ShockAdvised");
                                             break;
                                     }

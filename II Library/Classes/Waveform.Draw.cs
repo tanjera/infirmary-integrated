@@ -31,14 +31,14 @@ namespace II.Waveform {
             => _Amplitude *= ((double)new Random ().NextDouble () * _Margin) + (1 - _Margin);
 
         private static void DampenAmplitude_EctopicBeat (Physiology _P, ref double _Amplitude)
-            => _Amplitude *= _P.Cardiac_Rhythm.AberrantBeat ? 0.7d : 1d;
+            => _Amplitude *= _P.CardiacRhythm.AberrantBeat ? 0.7d : 1d;
 
         // Decreases pulsatility based on decreased diastolic filling time. Linear interpolation of where actual HR
         // is compared to set HR (e.g. for tachycardic runs of irregular rhythms, or premature contractions)
         private static void DampenAmplitude_DiastolicFillTime (Physiology _P, ref double _Amplitude) {
             // Utilize actual vital signs from 1 entry ago (because of electromechanical delay, most recent actual HR is for forthcoming pulsatile beat)
             _Amplitude *= Math.Lerp (1.0d, 0.5d,
-                Math.Clamp ((_P.GetLastVS (Physiology.PhysiologyEventTypes.Cardiac_Baseline).HR - _P.VS_Settings.HR) / (double)_P.VS_Settings.HR));
+                Math.Clamp ((_P.GetLastVS (Physiology.PhysiologyEventTypes.CardiacBaseline).HR - _P.VS_Settings.HR) / (double)_P.VS_Settings.HR));
         }
 
         private static void DampenAmplitude_PulsusParadoxus (Physiology _P, ref double _Amplitude) {
@@ -50,13 +50,13 @@ namespace II.Waveform {
         }
 
         private static void DampenAmplitude_PulsusAlternans (Physiology _P, ref double _Amplitude)
-            => _Amplitude *= (_P.Pulsus_Alternans && _P.Cardiac_Rhythm.AlternansBeat) ? 0.5d : 1d;
+            => _Amplitude *= (_P.Pulsus_Alternans && _P.CardiacRhythm.AlternansBeat) ? 0.5d : 1d;
 
         private static double GetAmplitude_ElectricalAlternans (Physiology _P)
-            => (_P.Electrical_Alternans && _P.Cardiac_Rhythm.AlternansBeat) ? 0.6d : 1d;
+            => (_P.Electrical_Alternans && _P.CardiacRhythm.AlternansBeat) ? 0.6d : 1d;
 
         private static void DampenAmplitude_ElectricalAlternans (Physiology _P, ref double _Amplitude)
-            => _Amplitude *= (_P.Electrical_Alternans && _P.Cardiac_Rhythm.AlternansBeat) ? 0.6d : 1d;
+            => _Amplitude *= (_P.Electrical_Alternans && _P.CardiacRhythm.AlternansBeat) ? 0.6d : 1d;
 
         // For arterial rhythms- increased intrathoracic pressure impairs cardiac output
         private static void DampenAmplitude_IntrathoracicPressure (Physiology _P, ref double _Amplitude) {
@@ -160,7 +160,7 @@ namespace II.Waveform {
             DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
             DampenAmplitude_DiastolicFillTime (_P, ref _Amplitude);
 
-            if (_P.Cardiac_Rhythm.HasPulse_Atrial && !_P.Cardiac_Rhythm.AberrantBeat)
+            if (_P.CardiacRhythm.HasAtrialPulse && !_P.CardiacRhythm.AberrantBeat)
                 return Plotting.Concatenate (new List<PointD> (),
                     Plotting.Stretch_BySystoleRatio (Dictionary.CVP_Atrioventricular, _P),
                     _Amplitude);
@@ -208,11 +208,11 @@ namespace II.Waveform {
             DampenAmplitude_PulsusAlternans (_P, ref _Amplitude);
             DampenAmplitude_PulsusParadoxus (_P, ref _Amplitude);
 
-            if (!_P.Cardiac_Rhythm.HasPulse_Ventricular)
+            if (!_P.CardiacRhythm.HasVentricularPulse)
                 return Plotting.Concatenate (new List<PointD> (),
                     Plotting.Stretch (Dictionary.IABP_ABP_Nonpulsatile, (double)_P.GetHRInterval),
                     _Amplitude);
-            else if (_P.Cardiac_Rhythm.AberrantBeat)
+            else if (_P.CardiacRhythm.AberrantBeat)
                 return Plotting.Concatenate (new List<PointD> (),
                     Plotting.Stretch (Dictionary.IABP_ABP_Ectopic, (double)_P.GetHRInterval),
                     _Amplitude);

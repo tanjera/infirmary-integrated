@@ -142,7 +142,15 @@
       <Setter Property="MinWidth" Value="100" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
     </Style>
-
+	  
+	  <Style Selector="Label.advisory">
+		  <Setter Property="Background" Value="#FFFBEB" />
+		  <Setter Property="BorderBrush" Value="#F59E0B" />
+		  <Setter Property="BorderThickness" Value="1" />
+		  <Setter Property="CornerRadius" Value="6" />
+		  <Setter Property="Padding" Value="12,8" />
+	  </Style>
+	  
     <Style Selector="Button.apply">
       <Setter Property="HorizontalAlignment" Value="Stretch" />
       <Setter Property="Background" Value="White" />
@@ -943,6 +951,7 @@
                     <RowDefinition />
                     <RowDefinition />
                     <RowDefinition />
+                    <RowDefinition />
                   </Grid.RowDefinitions>
                   <Grid.ColumnDefinitions>
                     <ColumnDefinition />
@@ -1061,10 +1070,20 @@
 										ValueChanged="OnUIPhysiologyParameter_Changed" />
 
                   
+                  
+                  <Label
+	                  Name="lblExperimental_WaveAmplitudes"
+	                  Grid.Row="7"
+	                  Grid.Column="0"
+	                  Grid.ColumnSpan="2"
+	                  Margin="2,12,2,4"
+	                  Classes="advisory"
+	                  />
+                  
                   <!--  P Wave Amplitude  -->
                   <HeaderedContentControl
 										Name="grpPWaveAmplitude"
-										Grid.Row="7"
+										Grid.Row="8"
 										Grid.Column="0"
 										Grid.ColumnSpan="2"
 										Background="#f2f2f2"
@@ -1252,7 +1271,7 @@
                   <!--  Q Wave Amplitude -->
                   <HeaderedContentControl
 										Name="grpQWaveAmplitude"
-										Grid.Row="8"
+										Grid.Row="9"
 										Grid.Column="0"
 										Grid.ColumnSpan="2"
 										Background="#f2f2f2"
@@ -1440,7 +1459,7 @@
                   <!--  R Wave Amplitude  -->
                   <HeaderedContentControl
 										Name="grpRWaveAmplitude"
-										Grid.Row="9"
+										Grid.Row="10"
 										Grid.Column="0"
 										Grid.ColumnSpan="2"
 										Background="#f2f2f2"
@@ -1628,7 +1647,7 @@
                   <!--  S Wave Amplitude  -->
                   <HeaderedContentControl
 										Name="grpSWaveAmplitude"
-										Grid.Row="10"
+										Grid.Row="11"
 										Grid.Column="0"
 										Grid.ColumnSpan="2"
 										Background="#f2f2f2"
@@ -1816,7 +1835,7 @@
                   <!--  T Wave Amplitude  -->
                   <HeaderedContentControl
 										Name="grpTWaveAmplitude"
-										Grid.Row="11"
+										Grid.Row="12"
 										Grid.Column="0"
 										Grid.ColumnSpan="2"
 										Background="#f2f2f2"
@@ -2004,7 +2023,7 @@
                   <!--  ST Segment Elevation  -->
                   <HeaderedContentControl
 										Name="grpSTSegmentElevation"
-										Grid.Row="12"
+										Grid.Row="13"
 										Grid.Column="0"
 										Grid.ColumnSpan="2"
 										Background="#f2f2f2"

@@ -838,11 +838,11 @@ namespace IISIM {
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Pacermaker_Spike:
+                case Physiology.PhysiologyEventTypes.PacermakerSpike:
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Cardiac_Baseline:
+                case Physiology.PhysiologyEventTypes.CardiacBaseline:
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology));
                     break;
 
@@ -874,7 +874,7 @@ namespace IISIM {
                     // Note: May draw either IABP or ABP waveforms (e.g. ABP with augmentation in non-pulsatile rhythm cases)
                     listTracings.ForEach (c => c.Strip?.Add_Beat__IABP_Balloon (Instance?.Physiology));
 
-                    if (Instance?.Physiology is not null && !Instance.Physiology.Cardiac_Rhythm.HasPulse_Ventricular)
+                    if (Instance?.Physiology is not null && !Instance.Physiology.CardiacRhythm.HasVentricularPulse)
                         IterateAutoScale ();
                     break;
 

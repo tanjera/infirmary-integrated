@@ -37,7 +37,7 @@ namespace Tests {
         private static DateTime Updated = DateTime.Now;
 
         /* Basic vital signs and advanced hemodynamics (partial) */
-        private static Cardiac_Rhythms.Values Cardiac_Rhythm = Cardiac_Rhythms.Values.Atrial_Fibrillation;
+        private static CardiacRhythms.Values Cardiac_Rhythm = CardiacRhythms.Values.Atrial_Fibrillation;
         private static Respiratory_Rhythms.Values Respiratory_Rhythm = Respiratory_Rhythms.Values.Apnea;
         private static PulmonaryArtery_Rhythms.Values PulmonaryArtery_Placement = PulmonaryArtery_Rhythms.Values.Pulmonary_Capillary_Wedge;
 

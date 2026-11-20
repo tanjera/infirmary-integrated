@@ -68,8 +68,8 @@ namespace IISE.Windows {
                 fetalHeartRhythms = new List<string> ();
 
             if (Instance?.Language is not null) {
-                foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
-                    cardiacRhythms.Add (Language.Localize(Language.Languages.ENG, Cardiac_Rhythms.LookupString (v)) ?? "");
+                foreach (CardiacRhythms.Values v in Enum.GetValues (typeof (CardiacRhythms.Values)))
+                    cardiacRhythms.Add (Language.Localize(Language.Languages.ENG, CardiacRhythms.LookupString (v)) ?? "");
 
                 foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
                     respiratoryRhythms.Add (Language.Localize(Language.Languages.ENG, Respiratory_Rhythms.LookupString (v)) ?? "");
@@ -156,7 +156,7 @@ namespace IISE.Windows {
             pecgSTSegment.Init (PropertyECGSegment.Keys.STElevation);
 
             penmCardiacRhythms.Init (PropertyEnum.Keys.Cardiac_Rhythms,
-                Enum.GetNames (typeof (Cardiac_Rhythms.Values)), cardiacRhythms);
+                Enum.GetNames (typeof (CardiacRhythms.Values)), cardiacRhythms);
             penmRespiratoryRhythms.Init (PropertyEnum.Keys.Respiratory_Rhythms,
                 Enum.GetNames (typeof (Respiratory_Rhythms.Values)), respiratoryRhythms);
             penmPACatheterRhythm.Init (PropertyEnum.Keys.PACatheter_Rhythms,
@@ -296,7 +296,7 @@ namespace IISE.Windows {
                         break;
 
                     case PropertyEnum.Keys.Cardiac_Rhythms:
-                        Physiology.Cardiac_Rhythm.Value = (Cardiac_Rhythms.Values)Enum.Parse (typeof (Cardiac_Rhythms.Values), e.Value);
+                        Physiology.Cardiac_Rhythm.Value = (CardiacRhythms.Values)Enum.Parse (typeof (CardiacRhythms.Values), e.Value);
                         break;
 
                     case PropertyEnum.Keys.Respiratory_Rhythms:
@@ -360,8 +360,8 @@ namespace IISE.Windows {
             if ((!chkClampVitals.IsChecked ?? false) || e.Value == null || this.Physiology == null)
                 return;
 
-            Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
-                (Cardiac_Rhythms.Values)Enum.Parse (typeof (Cardiac_Rhythms.Values), e.Value));
+            CardiacRhythms.DefaultVitals v = CardiacRhythms.Defaults (
+                (CardiacRhythms.Values)Enum.Parse (typeof (CardiacRhythms.Values), e.Value));
 
             Physiology.HR = (int)II.Math.Clamp ((double)Physiology.VS_Settings.HR, v.HRMin, v.HRMax);
             Physiology.RR = (int)II.Math.Clamp ((double)Physiology.VS_Settings.RR, v.RRMin, v.RRMax);

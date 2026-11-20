@@ -23,46 +23,87 @@ namespace IISIM {
 
     public class Trace {
 
-        public static void DrawPath (Strip? strip, RenderTargetBitmap bitmap,
+        public static void DrawWaveform (Strip? strip, RenderTargetBitmap bitmap,
                 Pen pen, PointD? offset, PointD? multiplier) {
-            if (strip is null || strip?.Points is null || strip?.Points?.Count < 2) {
-                Debug.WriteLine ($"Null return at Trace.{nameof (DrawPath)} d/t null Strip or Strip.Points; normal on initialization.");
+            if (strip is null) {
+                Debug.WriteLine ($"Null return at Trace.{nameof (DrawWaveform)} d/t null Strip or Strip.Points; normal on initialization.");
                 return;
             }
 
             if (bitmap == null) {    // Can't initiate Bitmap here; don't have width/height
-                Debug.WriteLine ($"Null return at Trace.{nameof (DrawPath)} d/t null bitmap; normal on initialization.");
+                Debug.WriteLine ($"Null return at Trace.{nameof (DrawWaveform)} d/t null bitmap; normal on initialization.");
                 return;
             }
 
             offset ??= new ();
-
             multiplier ??= new (1d, 1d);
 
-            using (DrawingContext ctx = bitmap.CreateDrawingContext (true)) {
+            using (DrawingContext ctx = bitmap.CreateDrawingContext (false)) {
                 var sg = new StreamGeometry ();
 
                 using (var sgc = sg.Open ()) {
-                    lock (strip.lockPoints) {
-                        sgc.BeginFigure (new Point (
-                                (strip.Points [0].X * multiplier.X) + offset.X,
-                                (strip.Points [0].Y * multiplier.Y) + offset.Y),
-                            false);
+                    if (strip?.Points is not null && strip?.Points?.Count > 1) {
+                        lock (strip.lockPoints) {
+                            sgc.BeginFigure (new Point (
+                                    (strip.Points [0].X * multiplier.X) + offset.X,
+                                    (strip.Points [0].Y * multiplier.Y) + offset.Y),
+                                false);
 
-                        for (int i = 1; i < strip.Points.Count; i++) {
-                            sgc.LineTo (new Point (
-                                (strip.Points [i].X * multiplier.X) + offset.X,
-                                (strip.Points [i].Y * multiplier.Y) + offset.Y
-                            ));
+                            for (int i = 1; i < strip.Points.Count; i++) {
+                                sgc.LineTo (new Point (
+                                    (strip.Points [i].X * multiplier.X) + offset.X,
+                                    (strip.Points [i].Y * multiplier.Y) + offset.Y
+                                ));
+                            }
                         }
+
+                        sgc.EndFigure (false);
                     }
-
-                    sgc.EndFigure (false);
-
                 }
 
                 ctx.DrawGeometry (Brushes.Transparent, pen, sg.Clone ());
-                
+            }
+        }
+        
+        public static void DrawPacerSpikes (Strip? strip, RenderTargetBitmap bitmap,
+                Pen pen, PointD? offset, PointD? multiplier) {
+            if (strip is null) {
+                Debug.WriteLine ($"Null return at Trace.{nameof (DrawWaveform)} d/t null Strip or Strip.Points; normal on initialization.");
+                return;
+            }
+
+            if (bitmap == null) {    // Can't initiate Bitmap here; don't have width/height
+                Debug.WriteLine ($"Null return at Trace.{nameof (DrawWaveform)} d/t null bitmap; normal on initialization.");
+                return;
+            }
+
+            offset ??= new ();
+            multiplier ??= new (1d, 1d);
+            
+            double spikeEnd = bitmap.Size.Height / 4;
+
+            using (DrawingContext ctx = bitmap.CreateDrawingContext (false)) {
+                var sg = new StreamGeometry ();
+
+                using (var sgc = sg.Open ()) {
+                    lock (strip.lockEvents) {
+                        for (int i = 0; i < strip?.Events?.Count && strip?.Events[i].Type == Event.Types.PacerSpike; i++) {
+                            sgc.BeginFigure (new Point (
+                                    (strip.Events [i].X * multiplier.X) + offset.X,
+                                    0 + offset.Y),
+                                false);
+
+                            sgc.LineTo (new Point (
+                                (strip.Events [i].X * multiplier.X) + offset.X,
+                                -spikeEnd + offset.Y
+                            ));
+                            
+                            sgc.EndFigure (false);
+                        }
+                    }
+                }
+
+                ctx.DrawGeometry (Brushes.Transparent, pen, sg.Clone ());
             }
         }
     }

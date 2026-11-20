@@ -1,6 +1,6 @@
 ﻿/* Drawing.cs
  * Infirmary Integrated
- * By Ibi Keller (Tanjera), (c) 2023
+ * By Ibi Keller (Tanjera), (c) 2023-2026
  */
 
 using System;
@@ -8,6 +8,26 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace II.Drawing {
+    public class Event {
+        public double X { get; set; }
+        public Types? Type { get; set; }
+        
+        public enum Types {
+            PacerSpike,
+            SyncArrow
+        }
+        
+        public Event (Types t) {
+            X = 0;
+            Type = t;
+        }
+
+        public Event (double x, Types t) {
+            X = x;
+            Type = t;
+        }
+    }
+    
     public class PointD {
         public double X { get; set; }
         public double Y { get; set; }

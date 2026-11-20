@@ -205,6 +205,8 @@ namespace IISIM {
             this.GetControl<Label> ("lblQRSInterval").Content = $"{Instance.Language.Localize ("PE:QRSInterval")}:";
             this.GetControl<Label> ("lblQTcInterval").Content = $"{Instance.Language.Localize ("PE:QTcInterval")}:";
             this.GetControl<Label> ("lblCardiacAxis").Content = $"{Instance.Language.Localize ("PE:CardiacAxis")}:";
+            
+            this.GetControl<Label>("lblExperimental_WaveAmplitudes").Content = $"{Instance.Language.Localize ("PE:ExperimentalFeatures")}";
             this.GetControl<HeaderedContentControl> ("grpPWaveAmplitude").Header = Instance.Language.Localize ("PE:PWaveAmplitude");
             this.GetControl<HeaderedContentControl> ("grpQWaveAmplitude").Header = Instance.Language.Localize ("PE:QWaveAmplitude");
             this.GetControl<HeaderedContentControl> ("grpRWaveAmplitude").Header = Instance.Language.Localize ("PE:RWaveAmplitude");
@@ -230,9 +232,9 @@ namespace IISIM {
 
 
             ItemCollection icCardiacRhythms = this.GetControl<ComboBox> ("comboCardiacRhythm").Items;
-            foreach (Cardiac_Rhythms.Values v in Enum.GetValues (typeof (Cardiac_Rhythms.Values)))
+            foreach (CardiacRhythms.Values v in Enum.GetValues (typeof (CardiacRhythms.Values)))
                 icCardiacRhythms.Add (new ComboBoxItem () {
-                    Content = Instance.Language.Localize (Cardiac_Rhythms.LookupString (v))
+                    Content = Instance.Language.Localize (CardiacRhythms.LookupString (v))
                 });
 
             ItemCollection icRespiratoryRhythms = this.GetControl<ComboBox> ("comboRespiratoryRhythm").Items;
@@ -1363,9 +1365,9 @@ namespace IISIM {
                 (int)(this.GetControl<NumericUpDown> ("numSPO2")?.Value ?? 0),
                 (double)(this.GetControl<NumericUpDown> ("numT")?.Value ?? 0),
 
-                (Cardiac_Rhythms.Values)(Enum.GetValues (typeof (Cardiac_Rhythms.Values)).GetValue (
+                (CardiacRhythms.Values)(Enum.GetValues (typeof (CardiacRhythms.Values)).GetValue (
                     comboCardiacRhythm.SelectedIndex < 0 ? 0 : comboCardiacRhythm.SelectedIndex)
-                    ?? Cardiac_Rhythms.Values.Sinus_Rhythm),
+                    ?? CardiacRhythms.Values.Sinus_Rhythm),
 
                 // Advanced hemodynamics
                 (int)(this.GetControl<NumericUpDown> ("numCVP")?.Value ?? 0),
@@ -1526,7 +1528,7 @@ namespace IISIM {
                     ApplyBuffer.NSBP, ApplyBuffer.NDBP, ApplyBuffer.NMAP,
                     ApplyBuffer.SPO2,
                     ApplyBuffer.T,
-                    ApplyBuffer.Cardiac_Rhythm.Value,
+                    ApplyBuffer.CardiacRhythm.Value,
 
                     ApplyBuffer.CVP,
                     ApplyBuffer.ASBP, ApplyBuffer.ADBP, ApplyBuffer.AMAP,
@@ -1538,7 +1540,7 @@ namespace IISIM {
                     ApplyBuffer.ICP,
                     ApplyBuffer.IAP,
 
-                    ApplyBuffer.Pacemaker_Threshold,
+                    ApplyBuffer.PacemakerThreshold,
                     ApplyBuffer.Pulsus_Paradoxus,
                     ApplyBuffer.Pulsus_Alternans,
                     ApplyBuffer.Electrical_Alternans,
@@ -1630,7 +1632,7 @@ namespace IISIM {
                     this.GetControl<NumericUpDown> ("numNDBP").Value = p.VS_Settings.NDBP;
                     this.GetControl<NumericUpDown> ("numSPO2").Value = p.VS_Settings.SPO2;
                     this.GetControl<NumericUpDown> ("numT").Value = (decimal)p.VS_Settings.T;
-                    this.GetControl<ComboBox> ("comboCardiacRhythm").SelectedIndex = (int)p.Cardiac_Rhythm.Value;
+                    this.GetControl<ComboBox> ("comboCardiacRhythm").SelectedIndex = (int)p.CardiacRhythm.Value;
 
                     // Advanced hemodynamics
                     this.GetControl<NumericUpDown> ("numCVP").Value = p.VS_Settings.CVP;
@@ -1645,7 +1647,7 @@ namespace IISIM {
                     this.GetControl<NumericUpDown> ("numIAP").Value = p.VS_Settings.IAP;
 
                     // Cardiac profile
-                    this.GetControl<NumericUpDown> ("numPacemakerCaptureThreshold").Value = p.Pacemaker_Threshold;
+                    this.GetControl<NumericUpDown> ("numPacemakerCaptureThreshold").Value = p.PacemakerThreshold;
                     this.GetControl<CheckBox> ("chkPulsusParadoxus").IsChecked = p.Pulsus_Paradoxus;
                     this.GetControl<CheckBox> ("chkPulsusAlternans").IsChecked = p.Pulsus_Alternans;
                     this.GetControl<CheckBox> ("chkElectricalAlternans").IsChecked = p.Electrical_Alternans;
@@ -2024,12 +2026,12 @@ namespace IISIM {
                 return;
 
             int si = this.GetControl<ComboBox> ("comboCardiacRhythm").SelectedIndex;
-            Array ev = Enum.GetValues (typeof (Cardiac_Rhythms.Values));
+            Array ev = Enum.GetValues (typeof (CardiacRhythms.Values));
             if (si < 0 || si > ev.Length - 1)
                 return;
 
-            Cardiac_Rhythms.Default_Vitals v = Cardiac_Rhythms.DefaultVitals (
-                (Cardiac_Rhythms.Values)(ev.GetValue (si) ?? Cardiac_Rhythms.Values.Sinus_Rhythm));
+            CardiacRhythms.DefaultVitals v = CardiacRhythms.Defaults (
+                (CardiacRhythms.Values)(ev.GetValue (si) ?? CardiacRhythms.Values.Sinus_Rhythm));
 
             this.GetControl<NumericUpDown> ("numHR").Value = (int)II.Math.Clamp ((double)(this.GetControl<NumericUpDown> ("numHR")?.Value ?? 0), v.HRMin, v.HRMax);
             this.GetControl<NumericUpDown> ("numNSBP").Value = (int)II.Math.Clamp ((double)(this.GetControl<NumericUpDown> ("numNSBP")?.Value ?? 0), v.SBPMin, v.SBPMax);
@@ -2104,7 +2106,7 @@ namespace IISIM {
                 default:
                     break;
 
-                case Physiology.PhysiologyEventTypes.Cardiac_Baseline:
+                case Physiology.PhysiologyEventTypes.CardiacBaseline:
                     ApplyPhysiologyParameters_Cardiac (sender, new EventArgs ());
                     break;
 

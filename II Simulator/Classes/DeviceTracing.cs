@@ -32,7 +32,9 @@ namespace IISIM {
         /* Drawing variables, offsets and multipliers */
         public Color.Schemes? ColorScheme;
         public Pen? TracingPen = new ();
+        public Pen? TracingPenAlt = new ();
         public IBrush? TracingBrush = Brushes.Black;
+        public IBrush? TracingBrushAlt = Brushes.Black;
 
         public PointD? DrawOffset;
         public PointD? DrawMultiplier;
@@ -46,6 +48,7 @@ namespace IISIM {
 
         ~DeviceTracing () {
             Strip?.Points?.Clear ();
+            Strip?.Events?.Clear ();
         }
 
         public void UpdateScale () {
@@ -70,9 +73,9 @@ namespace IISIM {
         }
 
         public async Task DrawTracing ()
-            => await Draw (Strip, TracingBrush, 1);
+            => await Draw (Strip, TracingBrush, TracingBrushAlt, 1);
 
-        public Task Draw (Strip? _Strip, IBrush? _Brush, double? _Thickness) {
+        public Task Draw (Strip? _Strip, IBrush? _Brush, IBrush? _BrushAlt, double? _Thickness) {
             if (_Strip is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (Draw)}");
                 return Task.CompletedTask;
@@ -90,9 +93,15 @@ namespace IISIM {
                 TracingPen.Brush = _Brush ?? Brushes.Black;
                 TracingPen.Thickness = _Thickness ?? 1d;
 
-                Trace.DrawPath (_Strip, Tracing, TracingPen, DrawOffset, DrawMultiplier);
+                Trace.DrawWaveform (_Strip, Tracing, TracingPen, DrawOffset, DrawMultiplier);
             }
+            
+            if (TracingPen is not null) {
+                TracingPen.Brush = _BrushAlt ?? Brushes.Black;
+                TracingPen.Thickness = _Thickness ?? 1d;
 
+                Trace.DrawPacerSpikes(_Strip, Tracing, TracingPen, DrawOffset, DrawMultiplier);
+            }
             imgTracing.Source = Tracing;
 
             return Task.CompletedTask;

@@ -735,15 +735,15 @@ namespace IISIM {
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Pacermaker_Spike:
+                case Physiology.PhysiologyEventTypes.PacermakerSpike:
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Cardiac_Baseline:
+                case Physiology.PhysiologyEventTypes.CardiacBaseline:
                     if (Instance?.Physiology is not null) {
                         Instance.Physiology.IABP_Active = Running && (Frequency_Iter % Frequency == 0)
-                            && ((Trigger.Value == Triggering.Values.ECG && Instance.Physiology.Cardiac_Rhythm.HasWaveform_Ventricular)
-                            || (Trigger.Value == Triggering.Values.Pressure && Instance.Physiology.Cardiac_Rhythm.HasPulse_Ventricular));
+                            && ((Trigger.Value == Triggering.Values.ECG && Instance.Physiology.CardiacRhythm.HasVentricularWaveform)
+                            || (Trigger.Value == Triggering.Values.Pressure && Instance.Physiology.CardiacRhythm.HasVentricularPulse));
                     }
 
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology));
@@ -772,7 +772,7 @@ namespace IISIM {
                 case Physiology.PhysiologyEventTypes.IABP_Balloon_Inflation:
                     listTracings.ForEach (c => c.Strip?.Add_Beat__IABP_Balloon (Instance?.Physiology));
 
-                    if (Instance?.Physiology is not null && !Instance.Physiology.Cardiac_Rhythm.HasPulse_Ventricular)
+                    if (Instance?.Physiology is not null && !Instance.Physiology.CardiacRhythm.HasVentricularPulse)
                         IterateAutoScale ();
                     break;
             }

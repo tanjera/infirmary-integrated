@@ -53,6 +53,7 @@ namespace IISIM.Controls {
         private void UpdateInterface (object sender, EventArgs e) {
             Dispatcher.UIThread.InvokeAsync (() => {
                 TracingBrush = Color.GetLead (Lead?.Value ?? Lead.Values.ECG_I, ColorScheme ?? Color.Schemes.Light);
+                TracingBrushAlt = TracingBrush == Brushes.Green ? Brushes.White : Brushes.Black;
 
                 Label lblLead = this.GetControl<Label> ("lblLead");
 
