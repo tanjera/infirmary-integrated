@@ -13,8 +13,8 @@ namespace II.Drawing {
         public Types? Type { get; set; }
         
         public enum Types {
-            PacerSpike,
-            SyncArrow
+            Pacer,
+            Sync
         }
         
         public Event (Types t) {

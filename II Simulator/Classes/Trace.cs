@@ -65,7 +65,7 @@ namespace IISIM {
             }
         }
         
-        public static void DrawPacerSpikes (Strip? strip, RenderTargetBitmap bitmap,
+        public static void DrawEvents (Strip? strip, RenderTargetBitmap bitmap,
                 Pen pen, PointD? offset, PointD? multiplier) {
             if (strip is null) {
                 Debug.WriteLine ($"Null return at Trace.{nameof (DrawWaveform)} d/t null Strip or Strip.Points; normal on initialization.");
@@ -81,23 +81,37 @@ namespace IISIM {
             multiplier ??= new (1d, 1d);
             
             double spikeEnd = bitmap.Size.Height / 4;
+            double syncStart = bitmap.Size.Height / 2;
+            double syncEnd = bitmap.Size.Height / 8;
 
             using (DrawingContext ctx = bitmap.CreateDrawingContext (false)) {
                 var sg = new StreamGeometry ();
 
                 using (var sgc = sg.Open ()) {
                     lock (strip.lockEvents) {
-                        for (int i = 0; i < strip?.Events?.Count && strip?.Events[i].Type == Event.Types.PacerSpike; i++) {
-                            sgc.BeginFigure (new Point (
-                                    (strip.Events [i].X * multiplier.X) + offset.X,
-                                    0 + offset.Y),
-                                false);
+                        for (int i = 0; i < strip?.Events?.Count; i++) {
+                            if (strip?.Events [i].Type == Event.Types.Pacer) {
+                                sgc.BeginFigure (new Point (
+                                        (strip.Events [i].X * multiplier.X) + offset.X,
+                                        0 + offset.Y),
+                                    false);
 
-                            sgc.LineTo (new Point (
-                                (strip.Events [i].X * multiplier.X) + offset.X,
-                                -spikeEnd + offset.Y
-                            ));
-                            
+                                sgc.LineTo (new Point (
+                                    (strip.Events [i].X * multiplier.X) + offset.X,
+                                    -spikeEnd + offset.Y
+                                ));
+                            } else if (strip?.Events [i].Type == Event.Types.Sync) {
+                                sgc.BeginFigure (new Point (
+                                        (strip.Events [i].X * multiplier.X) + offset.X,
+                                        -syncStart + offset.Y),
+                                    false);
+
+                                sgc.LineTo (new Point (
+                                    (strip.Events [i].X * multiplier.X) + offset.X,
+                                    -syncStart + syncEnd + offset.Y
+                                ));
+                            }
+
                             sgc.EndFigure (false);
                         }
                     }

@@ -100,7 +100,7 @@ namespace IISIM {
                 TracingPen.Brush = _BrushAlt ?? Brushes.Black;
                 TracingPen.Thickness = _Thickness ?? 1d;
 
-                Trace.DrawPacerSpikes(_Strip, Tracing, TracingPen, DrawOffset, DrawMultiplier);
+                Trace.DrawEvents(_Strip, Tracing, TracingPen, DrawOffset, DrawMultiplier);
             }
             imgTracing.Source = Tracing;
 

@@ -905,7 +905,21 @@ namespace II.Rhythm {
                 return;
 
             lock (lockEvents) {
-                Events?.Add (new Event (Length * forwardBuffer, Event.Types.PacerSpike));
+                Events?.Add (new Event (Length * forwardBuffer, Event.Types.Pacer));
+            }
+
+            SortEvents ();
+        }
+        
+        public void Add_Beat__Defib_Sync (Physiology? p) {
+            if (p is null || Lead is null)
+                return;
+
+            if (!IsECG)
+                return;
+            
+            lock (lockEvents) {
+                Events?.Add (new Event ((Length * forwardBuffer) + (p.QRS_Interval / 2), Event.Types.Sync));
             }
 
             SortEvents ();

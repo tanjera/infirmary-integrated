@@ -1100,6 +1100,10 @@ namespace IISIM {
                     // QRS audio tone is only triggered by rhythms w/ a ventricular electrical (QRS complex) action
                     _ = PlayAudioTone (II.Settings.Instance.ToneSources.ECG, e.Physiology);
 
+                    if (Mode == Modes.SYNC) {
+                        listTracings.ForEach (c => c.Strip?.Add_Beat__Defib_Sync (Instance?.Physiology));    
+                    }
+
                     listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Physiology));
                     break;
 
