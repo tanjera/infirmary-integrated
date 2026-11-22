@@ -60,13 +60,15 @@ namespace IISIM.Controls {
             this.GetControl<Image> ("imgTracing").ContextMenu = menuContext;
             this.GetControl<Label> ("lblLead").ContextMenu = menuContext;
 
-            uiMenuZeroTransducer = new MenuItem ();
-            uiMenuZeroTransducer.Header = Instance?.Language.Localize ("MENU:MenuZeroTransducer");
-            uiMenuZeroTransducer.Classes.Add ("item");
-            uiMenuZeroTransducer.Click += MenuZeroTransducer_Click;
-            menuContext.Items.Add (uiMenuZeroTransducer);
+            if (Lead?.IsTransduced () ?? false) {
+                uiMenuZeroTransducer = new MenuItem ();
+                uiMenuZeroTransducer.Header = Instance?.Language.Localize ("MENU:MenuZeroTransducer");
+                uiMenuZeroTransducer.Classes.Add ("item");
+                uiMenuZeroTransducer.Click += MenuZeroTransducer_Click;
+                menuContext.Items.Add (uiMenuZeroTransducer);
 
-            menuContext.Items.Add (new Separator ());
+                menuContext.Items.Add (new Separator ());
+            }
 
             MenuItem menuAddTracing = new ();
             menuAddTracing.Header = Instance?.Language.Localize ("MENU:MenuAddTracing");
@@ -106,13 +108,15 @@ namespace IISIM.Controls {
 
             menuContext.Items.Add (new Separator ());
 
-            uiMenuToggleAutoScale = new MenuItem ();
-            uiMenuToggleAutoScale.Header = Instance?.Language.Localize ("MENU:ToggleAutoScaling");
-            uiMenuToggleAutoScale.Classes.Add ("item");
-            uiMenuToggleAutoScale.Click += MenuToggleAutoScale_Click;
-            menuContext.Items.Add (uiMenuToggleAutoScale);
-
-            menuContext.Items.Add (new Separator ());
+            if (Strip?.CanScale ?? false) {
+                uiMenuToggleAutoScale = new MenuItem ();
+                uiMenuToggleAutoScale.Header = Instance?.Language.Localize ("MENU:ToggleAutoScaling");
+                uiMenuToggleAutoScale.Classes.Add ("item");
+                uiMenuToggleAutoScale.Click += MenuToggleAutoScale_Click;
+                
+                menuContext.Items.Add (uiMenuToggleAutoScale);
+                menuContext.Items.Add (new Separator ());
+            }
 
             MenuItem menuSelectInput = new (),
                      menuECGLeads = new ();
@@ -124,7 +128,7 @@ namespace IISIM.Controls {
             menuECGLeads.Classes.Add ("item");
 
             menuSelectInput.Items.Add (menuECGLeads);
-
+            
             foreach (Lead.Values v in Enum.GetValues (typeof (Lead.Values))) {
                 // Only include certain leads- e.g. bedside monitors don't interface with IABP or EFM
                 string el = v.ToString ();
@@ -169,11 +173,6 @@ namespace IISIM.Controls {
 
                 lblLead.Foreground = TracingBrush;
                 lblLead.Content = Instance?.Language.Localize (Lead.LookupString (Lead.Value));
-
-                if (uiMenuZeroTransducer is not null)
-                    uiMenuZeroTransducer.IsEnabled = Strip?.Lead?.IsTransduced () ?? false;
-                if (uiMenuToggleAutoScale is not null)
-                    uiMenuToggleAutoScale.IsEnabled = Strip?.CanScale ?? false;
 
                 lblScaleAuto.IsVisible = Strip?.CanScale ?? false;
                 lblScaleMin.IsVisible = Strip?.CanScale ?? false;
@@ -262,6 +261,7 @@ namespace IISIM.Controls {
             Strip?.Add_Breath__Respiratory_Baseline (Instance?.Physiology);
 
             CalculateOffsets ();
+            InitInterface();
             UpdateInterface ();
         }
     }

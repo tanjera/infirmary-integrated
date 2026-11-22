@@ -99,6 +99,11 @@
           </MenuItem>
         </MenuItem>
         <Separator />
+	      <MenuItem Name="menuPacemakerDetection">
+		      <MenuItem Name="menuPacemakerDetectionOn" Click="MenuPacerDetectionOn" />
+		      <MenuItem Name="menuPacemakerDetectionOff" Click="MenuPacerDetectionOff" />
+	      </MenuItem>
+	    <Separator />
         <MenuItem Name="menuToggleFullscreen" Click="MenuToggleFullscreen_Click" InputGesture="Alt+Enter" />
         <Separator />
         <MenuItem Name="menuCloseDevice" Click="MenuClose_Click" InputGesture="Alt+F4" />

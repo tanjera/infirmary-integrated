@@ -64,13 +64,16 @@ namespace II.Rhythm {
         public double ScaleMargin = DefaultScaleMargin;
         public int ScaleMin;                              // For scaling waveforms to pressure limits
         public int ScaleMax;
-
+        
         /* Data structures for tracing information */
+        public bool PacerDetection = true;
+
         public Lead? Lead;
         public readonly object lockEvents = new ();
         public List<Event>? Events;
         public readonly object lockPoints = new ();
         public List<PointD>? Points;                      // Clinical waveform tracing points
+        
 
         public enum Offsets {
             Center,
@@ -106,7 +109,7 @@ namespace II.Rhythm {
             SetOffset ();
         }
 
-        private bool IsECG {
+        public bool IsECG {
             get {
                 if (Lead is null)
                     return false;
@@ -120,7 +123,7 @@ namespace II.Rhythm {
             }
         }
 
-        private bool IsCardiac {
+        public bool IsCardiac {
             get {
                 if (Lead is null)
                     return false;
@@ -141,7 +144,7 @@ namespace II.Rhythm {
             }
         }
 
-        private bool IsRespiratory {
+        public bool IsRespiratory {
             get {
                 if (Lead is null)
                     return false;
@@ -151,7 +154,7 @@ namespace II.Rhythm {
             }
         }
 
-        private bool IsObstetric {
+        public bool IsObstetric {
             get {
                 if (Lead is null)
                     return false;

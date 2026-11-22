@@ -63,6 +63,9 @@ namespace IISIM {
             this.GetControl<Window> ("wdwDeviceECG").Title = Instance.Language.Localize ("ECG:WindowTitle");
             this.GetControl<MenuItem> ("menuDevice").Header = Instance.Language.Localize ("MENU:MenuDeviceOptions");
             this.GetControl<MenuItem> ("menuPauseSimulation").Header = Instance.Language.Localize ("MENU:PauseSimulation");
+            this.GetControl<MenuItem> ("menuPacemakerDetection").Header = Instance.Language.Localize ("MENU:PacemakerDetection");
+            this.GetControl<MenuItem> ("menuPacemakerDetectionOn").Header = Instance.Language.Localize ("BOOLEAN:On");
+            this.GetControl<MenuItem> ("menuPacemakerDetectionOff").Header = Instance.Language.Localize ("BOOLEAN:Off");
             this.GetControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
             this.GetControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
             this.GetControl<MenuItem> ("menuColor").Header = Instance.Language.Localize ("MENU:MenuColorScheme");
@@ -166,7 +169,19 @@ namespace IISIM {
             colorScheme = scheme;
             UpdateInterface ();
         }
-
+        
+        private void MenuPacerDetectionOn (object? sender, RoutedEventArgs e) {
+            foreach (var t in listTracings) {
+                t.Strip?.PacerDetection = true;
+            }
+        }
+        
+        private void MenuPacerDetectionOff (object? sender, RoutedEventArgs e) {
+            foreach (var t in listTracings) {
+                t.Strip?.PacerDetection = false;
+            }
+        }
+        
         public void ToggleFullscreen () {
             if (WindowState == WindowState.FullScreen)
                 WindowState = WindowState.Normal;

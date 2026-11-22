@@ -90,7 +90,7 @@ namespace IISIM {
                 using (var sgc = sg.Open ()) {
                     lock (strip.lockEvents) {
                         for (int i = 0; i < strip?.Events?.Count; i++) {
-                            if (strip?.Events [i].Type == Event.Types.Pacer) {
+                            if (strip?.Events [i].Type == Event.Types.Pacer && strip.PacerDetection) {
                                 sgc.BeginFigure (new Point (
                                         (strip.Events [i].X * multiplier.X) + offset.X,
                                         0 + offset.Y),

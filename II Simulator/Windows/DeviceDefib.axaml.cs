@@ -19,6 +19,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Threading;
 
 using II;
+using II.Drawing;
 using II.Rhythm;
 using II.Settings;
 using II.Waveform;
@@ -178,6 +179,9 @@ namespace IISIM {
             this.GetControl<MenuItem> ("menuDefibIncrement").Header = Instance.Language.Localize ("DEFIB:Increment");
             this.GetControl<MenuItem> ("menuDefibIncrement_10").Header = $"10 {Instance.Language.Localize ("DEFIB:Joules")}";
             this.GetControl<MenuItem> ("menuDefibIncrement_20").Header = $"20 {Instance.Language.Localize ("DEFIB:Joules")}";
+            this.GetControl<MenuItem> ("menuPacemakerDetection").Header = Instance.Language.Localize ("MENU:PacemakerDetection");
+            this.GetControl<MenuItem> ("menuPacemakerDetectionOn").Header = Instance.Language.Localize ("BOOLEAN:On");
+            this.GetControl<MenuItem> ("menuPacemakerDetectionOff").Header = Instance.Language.Localize ("BOOLEAN:Off");
             this.GetControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
             this.GetControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
 
@@ -849,7 +853,19 @@ namespace IISIM {
 
         private void MenuDefibEnergyIncrement_20 (object s, RoutedEventArgs e)
              => _ = SetDefibEnergyIncrement (20);
-
+        
+        private void MenuPacerDetectionOn (object? sender, RoutedEventArgs e) {
+            foreach (var t in listTracings) {
+                t.Strip?.PacerDetection = true;
+            }
+        }
+        
+        private void MenuPacerDetectionOff (object? sender, RoutedEventArgs e) {
+            foreach (var t in listTracings) {
+                t.Strip?.PacerDetection = false;
+            }
+        }
+        
         private void MenuEnableAudio (object sender, RoutedEventArgs e)
             => SetAudio_On ();
 

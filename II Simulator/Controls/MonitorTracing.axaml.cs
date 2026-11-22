@@ -59,12 +59,14 @@ namespace IISIM.Controls {
             this.GetControl<Image> ("imgTracing").ContextMenu = menuContext;
             this.GetControl<Label> ("lblLead").ContextMenu = menuContext;
 
-            uiMenuZeroTransducer = new MenuItem ();
-            uiMenuZeroTransducer.Header = Instance?.Language.Localize ("MENU:MenuZeroTransducer");
-            uiMenuZeroTransducer.Classes.Add ("item");
-            uiMenuZeroTransducer.Click += MenuZeroTransducer_Click;
-            menuContext.Items.Add (uiMenuZeroTransducer);
-            menuContext.Items.Add (new Separator ());
+            if (Lead?.IsTransduced () ?? false) {
+                uiMenuZeroTransducer = new MenuItem ();
+                uiMenuZeroTransducer.Header = Instance?.Language.Localize ("MENU:MenuZeroTransducer");
+                uiMenuZeroTransducer.Classes.Add ("item");
+                uiMenuZeroTransducer.Click += MenuZeroTransducer_Click;
+                menuContext.Items.Add (uiMenuZeroTransducer);
+                menuContext.Items.Add (new Separator ());
+            }
 
             MenuItem menuAddTracing = new ();
             menuAddTracing.Header = Instance?.Language.Localize ("MENU:MenuAddTracing");
@@ -103,12 +105,14 @@ namespace IISIM.Controls {
             menuContext.Items.Add (menuDecreaseAmplitude);
             menuContext.Items.Add (new Separator ());
 
-            uiMenuToggleAutoScale = new MenuItem ();
-            uiMenuToggleAutoScale.Header = Instance?.Language.Localize ("MENU:ToggleAutoScaling");
-            uiMenuToggleAutoScale.Classes.Add ("item");
-            uiMenuToggleAutoScale.Click += MenuToggleAutoScale_Click;
-            menuContext.Items.Add (uiMenuToggleAutoScale);
-            menuContext.Items.Add (new Separator ());
+            if (Strip?.CanScale ?? false) {
+                uiMenuToggleAutoScale = new MenuItem ();
+                uiMenuToggleAutoScale.Header = Instance?.Language.Localize ("MENU:ToggleAutoScaling");
+                uiMenuToggleAutoScale.Classes.Add ("item");
+                uiMenuToggleAutoScale.Click += MenuToggleAutoScale_Click;
+                menuContext.Items.Add (uiMenuToggleAutoScale);
+                menuContext.Items.Add (new Separator ());
+            }
 
             MenuItem menuSelectInput = new (),
                      menuECGLeads = new ();
@@ -250,7 +254,7 @@ namespace IISIM.Controls {
 
             UpdateInterface ();
         }
-
+        
         private void MenuSelectInputSource (object? sender, RoutedEventArgs e) {
             if (sender == null || sender is not MenuItem || !Enum.TryParse<Lead.Values> (((MenuItem)sender).Name, out Lead.Values selectedValue))
                 return;
@@ -261,6 +265,7 @@ namespace IISIM.Controls {
             Strip?.Add_Breath__Respiratory_Baseline (Instance?.Physiology);
 
             CalculateOffsets ();
+            InitInterface ();
             UpdateInterface ();
         }
     }

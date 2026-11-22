@@ -155,6 +155,9 @@ namespace IISIM {
             this.GetControl<MenuItem> ("menuPauseSimulation").Header = Instance.Language.Localize ("MENU:PauseSimulation");
             this.GetControl<MenuItem> ("menuAddNumeric").Header = Instance.Language.Localize ("MENU:MenuAddNumeric");
             this.GetControl<MenuItem> ("menuAddTracing").Header = Instance.Language.Localize ("MENU:MenuAddTracing");
+            this.GetControl<MenuItem> ("menuPacemakerDetection").Header = Instance.Language.Localize ("MENU:PacemakerDetection");
+            this.GetControl<MenuItem> ("menuPacemakerDetectionOn").Header = Instance.Language.Localize ("BOOLEAN:On");
+            this.GetControl<MenuItem> ("menuPacemakerDetectionOff").Header = Instance.Language.Localize ("BOOLEAN:Off");
             this.GetControl<MenuItem> ("menuToggleFullscreen").Header = Instance.Language.Localize ("MENU:MenuToggleFullscreen");
             this.GetControl<MenuItem> ("menuCloseDevice").Header = Instance.Language.Localize ("MENU:MenuCloseDevice");
 
@@ -590,7 +593,19 @@ namespace IISIM {
 
         private void MenuDisableAlarms (object sender, RoutedEventArgs e)
             => SetAlarms (false);
-
+         
+        private void MenuPacerDetectionOn (object? sender, RoutedEventArgs e) {
+            foreach (var t in listTracings) {
+                t.Strip?.PacerDetection = true;
+            }
+        }
+        
+        private void MenuPacerDetectionOff (object? sender, RoutedEventArgs e) {
+            foreach (var t in listTracings) {
+                t.Strip?.PacerDetection = false;
+            }
+        }
+        
         private void MenuEnableAudio (object sender, RoutedEventArgs e)
             => SetAudio_On ();
 
