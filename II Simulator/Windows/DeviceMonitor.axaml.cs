@@ -31,27 +31,27 @@ namespace IISIM {
 
     public partial class DeviceMonitor : DeviceWindow {
         /* Device variables */
-        private int rowsTracings = 0;
-        private int rowsNumerics = 0;
+        private int _rowsTracings = 0;
+        private int _rowsNumerics = 0;
 
-        private int autoScale_iter = Strip.DefaultAutoScale_Iterations;
+        private int _autoScaleIter = Strip.DefaultAutoScaleIterations;
 
-        private Color.Schemes colorScheme = Color.Schemes.Dark;
+        private Color.Schemes _colorScheme = Color.Schemes.Dark;
 
-        private List<Controls.MonitorTracing> listTracings = new ();
-        private List<Controls.MonitorNumeric> listNumerics = new ();
+        private List<Controls.MonitorTracing> _listTracings = new ();
+        private List<Controls.MonitorNumeric> _listNumerics = new ();
 
         /* Variables for audio tones (QRS or SPO2 beeps)*/
-        private ToneSources ToneSource = ToneSources.None;
+        private ToneSources _toneSource = ToneSources.None;
         public MediaPlayer? TonePlayer;
-        private MemoryStream? ToneMedia;
+        private MemoryStream? _toneMedia;
 
         /* Variables controlling for audio alarms */
-        private Alarm.Priorities? AlarmActive;
-        private List<Alarm> AlarmRefs = new ();
-        private List<StreamMediaInput>? AlarmMedia;
+        private Alarm.Priorities? _alarmActive;
+        private List<Alarm> _alarmRefs = new ();
+        private List<StreamMediaInput>? _alarmMedia;
 
-        private List<II.Settings.Device.Numeric>? Numerics {
+        private List<Device.Numeric>? Numerics {
             set { 
                 if (Instance?.Scenario?.DeviceMonitor is not null)
                     Instance.Scenario.DeviceMonitor.Numerics = value ?? new List<Device.Numeric> (); 
@@ -59,12 +59,12 @@ namespace IISIM {
             get { return Instance?.Scenario?.DeviceMonitor.Numerics; }
         }
         
-        private List<II.Settings.Device.Numeric>? Transducers_Zeroed {
+        private List<Device.Numeric>? TransducersZeroed {
             set { 
                 if (Instance?.Scenario?.DeviceMonitor is not null)
-                    Instance.Scenario.DeviceMonitor.Transducers_Zeroed = value ?? new List<Device.Numeric> (); 
+                    Instance.Scenario.DeviceMonitor.TransducersZeroed = value ?? new List<Device.Numeric> (); 
             }
-            get { return Instance?.Scenario?.DeviceMonitor.Transducers_Zeroed; }
+            get { return Instance?.Scenario?.DeviceMonitor.TransducersZeroed; }
         }
         
         private List<II.Settings.Device.Tracing>? Tracings {
@@ -111,7 +111,7 @@ namespace IISIM {
 
             TonePlayer = new MediaPlayer (Instance.AudioLib);
             
-            AlarmMedia = new () {
+            _alarmMedia = new () {
                 new (AssetLoader.Open (new Uri ("avares://infirmary-integrated/Resources/Alarm_Low_Priority.wav"))),
                 new (AssetLoader.Open (new Uri ("avares://infirmary-integrated/Resources/Alarm_Medium_Priority.wav"))),
                 new (AssetLoader.Open (new Uri ("avares://infirmary-integrated/Resources/Alarm_High_Priority.wav")))
@@ -133,13 +133,13 @@ namespace IISIM {
                 TonePlayer = null;
             }
 
-            if (AlarmMedia is not null) {
-                foreach (StreamMediaInput smi in AlarmMedia) {
+            if (_alarmMedia is not null) {
+                foreach (StreamMediaInput smi in _alarmMedia) {
                     smi.Close ();
                     smi.Dispose ();
                 }
 
-                AlarmMedia = null;
+                _alarmMedia = null;
             }
         }
 
@@ -179,14 +179,14 @@ namespace IISIM {
 
         private void UpdateInterface () {
             Dispatcher.UIThread.InvokeAsync (() => {
-                for (int i = 0; i < listTracings.Count; i++)
-                    listTracings [i].SetColorScheme (colorScheme);
+                for (int i = 0; i < _listTracings.Count; i++)
+                    _listTracings [i].SetColorScheme (_colorScheme);
 
-                for (int i = 0; i < listNumerics.Count; i++)
-                    listNumerics [i].SetColorScheme (colorScheme);
+                for (int i = 0; i < _listNumerics.Count; i++)
+                    _listNumerics [i].SetColorScheme (_colorScheme);
 
                 Avalonia.Controls.Window window = this.GetControl<Avalonia.Controls.Window> ("wdwDeviceMonitor");
-                window.Background = Color.GetBackground (Color.Devices.DeviceMonitor, colorScheme);
+                window.Background = Color.GetBackground (Color.Devices.DeviceMonitor, _colorScheme);
             });
         }
 
@@ -216,7 +216,7 @@ namespace IISIM {
                                 if (Instance?.Scenario is not null) {
                                     Numerics = new();
                                     foreach (string s in pValue.Split (',')) {
-                                        if (Enum.TryParse (s, true, out II.Settings.Device.Numeric res)) {
+                                        if (Enum.TryParse (s, true, out Device.Numeric res)) {
                                             Numerics.Add (res);
                                         }
                                     }
@@ -225,10 +225,10 @@ namespace IISIM {
                                 break;
                             
                             case "Numerics_Zeroed":
-                                Transducers_Zeroed = new();
+                                TransducersZeroed = new();
                                 foreach (string s in pValue.Split (',')) {
-                                    if (Enum.TryParse (s, true, out II.Settings.Device.Numeric res)) {
-                                        Transducers_Zeroed.Add (res);
+                                    if (Enum.TryParse (s, true, out Device.Numeric res)) {
+                                        TransducersZeroed.Add (res);
                                     }
                                 }
                                 break;
@@ -251,7 +251,7 @@ namespace IISIM {
 
                 if (rNumerics > 0 && tNumerics.Count > 0 && Instance?.Scenario is not null) {
                     for (int i = 0; i < rNumerics && i < tNumerics.Count; i++) {
-                        if (Enum.TryParse (tNumerics[i], true, out II.Settings.Device.Numeric res)) {
+                        if (Enum.TryParse (tNumerics[i], true, out Device.Numeric res)) {
                             Numerics?.Add (res);
                         }
                     } 
@@ -282,10 +282,10 @@ namespace IISIM {
                     string.Join (',', Numerics ?? new List<Device.Numeric> ())));
             }
             
-            if (Transducers_Zeroed?.Count > 0) {
+            if (TransducersZeroed?.Count > 0) {
                 sw.AppendLine (String.Format ("{0}:{1}", 
                     "Numerics_Zeroed", 
-                    string.Join (',', Transducers_Zeroed)));
+                    string.Join (',', TransducersZeroed)));
             }
             
             if (Tracings?.Count > 0) {
@@ -324,10 +324,10 @@ namespace IISIM {
         public void SetAudioTone_SPO2 () => _ = SetAudioTone (ToneSources.SPO2);
 
         public async Task SetAudioTone (ToneSources source) {
-            ToneSource = source;
+            _toneSource = source;
 
             if (TonePlayer is not null && Instance?.AudioLib is not null) {
-                switch (ToneSource) {
+                switch (_toneSource) {
                     default:
                     case ToneSources.SPO2:
                         await ReleaseAudioTone ();
@@ -335,8 +335,8 @@ namespace IISIM {
 
                     case ToneSources.ECG:
                         await ReleaseAudioTone ();
-                        ToneMedia = await Audio.ToneGenerator (0.15, 330, true);
-                        TonePlayer.Media = new Media (Instance.AudioLib, new StreamMediaInput (ToneMedia));
+                        _toneMedia = await Audio.ToneGenerator (0.15, 330, true);
+                        TonePlayer.Media = new Media (Instance.AudioLib, new StreamMediaInput (_toneMedia));
                         break;
                 }
             }
@@ -350,8 +350,8 @@ namespace IISIM {
                 return;
             }
 
-            if (ToneSource == trigger && (Instance?.Settings.AudioEnabled ?? false)) {
-                switch (ToneSource) {
+            if (_toneSource == trigger && (Instance?.Settings.AudioEnabled ?? false)) {
+                switch (_toneSource) {
                     default: break;
 
                     case ToneSources.ECG:           // Plays a fixed tone each QRS complex
@@ -362,8 +362,8 @@ namespace IISIM {
                     case ToneSources.SPO2:          // Plays a variable tone depending on SpO2
                         TonePlayer.Stop ();
                         await ReleaseAudioTone ();
-                        ToneMedia = await Audio.ToneGenerator (0.15, II.Math.Lerp (110, 330, (double)(p?.SPO2 ?? 100) / 100), true);
-                        TonePlayer.Media = new Media (Instance.AudioLib, new StreamMediaInput (ToneMedia));
+                        _toneMedia = await Audio.ToneGenerator (0.15, II.Math.Lerp (110, 330, (double)(p?.SPO2 ?? 100) / 100), true);
+                        TonePlayer.Media = new Media (Instance.AudioLib, new StreamMediaInput (_toneMedia));
                         TonePlayer.Play ();
                         break;
                 }
@@ -375,8 +375,8 @@ namespace IISIM {
             if (TonePlayer is not null)
                 TonePlayer.Media = null;
 
-            ToneMedia?.Close ();
-            ToneMedia?.Dispose ();
+            _toneMedia?.Close ();
+            _toneMedia?.Dispose ();
 
             return Task.CompletedTask;
         }
@@ -386,7 +386,7 @@ namespace IISIM {
         private void SetColorScheme_Dark () => SetColorScheme (Color.Schemes.Dark);
 
         public void SetColorScheme (Color.Schemes scheme) {
-            colorScheme = scheme;
+            _colorScheme = scheme;
             UpdateInterface ();
         }
 
@@ -414,40 +414,40 @@ namespace IISIM {
         public void SetTracing_8 (object s, RoutedEventArgs e) => SetTracing (8);
 
         
-        public void SetTracings (II.Settings.Device settings) {
-            rowsTracings = 0;           // Reset for re-instantiation
-            listTracings.Clear ();
+        public void SetTracings (Device settings) {
+            _rowsTracings = 0;           // Reset for re-instantiation
+            _listTracings.Clear ();
         }
         
         public void SetTracing (int amount) {
-            rowsTracings = amount;
+            _rowsTracings = amount;
             OnLayoutChange ();
         }
 
         public void AddTracing () {
-            rowsTracings += 1;
+            _rowsTracings += 1;
             OnLayoutChange ();
         }
 
         public void RemoveTracing (Controls.MonitorTracing requestSender) {
-            if (rowsTracings == 1) // Don't remove the last Control!
+            if (_rowsTracings == 1) // Don't remove the last Control!
                 return;
             
-            rowsTracings -= 1;
+            _rowsTracings -= 1;
 
             Dispatcher.UIThread.InvokeAsync (() => {
-                listTracings.Remove (requestSender);
+                _listTracings.Remove (requestSender);
                 OnLayoutChange ();
             });
         }
         
         public void MoveTracing (Controls.MonitorTracing req, int delta) {
-            int i = listTracings.FindIndex (o => o == req);
+            int i = _listTracings.FindIndex (o => o == req);
 
-            if (i + delta >= 0 && i + delta < listTracings.Count) {    // Ensure the proposed move is sane
-                if (i + delta < rowsTracings) {                        // Ensure the proposed move is valid in the existing visuals
-                    listTracings.RemoveAt (i);
-                    listTracings.Insert (i + delta, req);
+            if (i + delta >= 0 && i + delta < _listTracings.Count) {    // Ensure the proposed move is sane
+                if (i + delta < _rowsTracings) {                        // Ensure the proposed move is valid in the existing visuals
+                    _listTracings.RemoveAt (i);
+                    _listTracings.Insert (i + delta, req);
                     OnLayoutChange ();
                 }
             }
@@ -475,41 +475,41 @@ namespace IISIM {
 
         public void SetNumeric_8 (object s, RoutedEventArgs e) => SetNumeric (8);
 
-        public void SetNumerics (II.Settings.Device settings) {
-            rowsNumerics = 0;           // Reset for re-instantiation
-            listNumerics.Clear ();
+        public void SetNumerics (Device settings) {
+            _rowsNumerics = 0;           // Reset for re-instantiation
+            _listNumerics.Clear ();
         }
         
         public void SetNumeric (int amount) {
-            rowsNumerics = amount;
+            _rowsNumerics = amount;
             OnLayoutChange ();
         }
 
         public void AddNumeric () {
-            rowsNumerics += 1;
+            _rowsNumerics += 1;
             OnLayoutChange ();
         }
 
         public void RemoveNumeric (Controls.MonitorNumeric requestSender) {
-            if (rowsNumerics == 1) // Don't remove the last Control!
+            if (_rowsNumerics == 1) // Don't remove the last Control!
                 return;
             
-            rowsNumerics -= 1;
+            _rowsNumerics -= 1;
 
             Dispatcher.UIThread.InvokeAsync (() => {
-                listNumerics.Remove (requestSender);
+                _listNumerics.Remove (requestSender);
                 OnLayoutChange ();
             });
         }
 
         public void MoveNumeric (Controls.MonitorNumeric req, int delta) {
-            int i = listNumerics.FindIndex (o => o == req);
+            int i = _listNumerics.FindIndex (o => o == req);
 
-            if (i + delta >= 0 && i + delta < listNumerics.Count) {    // Ensure the proposed move is sane
-                if (i + delta < rowsNumerics) {
+            if (i + delta >= 0 && i + delta < _listNumerics.Count) {    // Ensure the proposed move is sane
+                if (i + delta < _rowsNumerics) {
                     // Ensure the proposed move is valid in the existing visuals
-                    listNumerics.RemoveAt (i);
-                    listNumerics.Insert (i + delta, req);
+                    _listNumerics.RemoveAt (i);
+                    _listNumerics.Insert (i + delta, req);
                     OnLayoutChange ();
                 }
             }
@@ -523,15 +523,15 @@ namespace IISIM {
         
         private void IterateAutoScale () {
             /* Iterations and trigger for auto-scaling pressure waveform strips */
-            autoScale_iter -= 1;
+            _autoScaleIter -= 1;
 
-            if (autoScale_iter <= 0) {
-                for (int i = 0; i < listTracings.Count; i++) {
-                    listTracings [i].Strip?.SetAutoScale (Instance?.Physiology);
-                    Dispatcher.UIThread.InvokeAsync (listTracings [i].UpdateScale);
+            if (_autoScaleIter <= 0) {
+                for (int i = 0; i < _listTracings.Count; i++) {
+                    _listTracings [i].Strip?.SetAutoScale (Instance?.Physiology);
+                    Dispatcher.UIThread.InvokeAsync (_listTracings [i].UpdateScale);
                 }
 
-                autoScale_iter = Strip.DefaultAutoScale_Iterations;
+                _autoScaleIter = Strip.DefaultAutoScaleIterations;
             }
         }
 
@@ -541,8 +541,8 @@ namespace IISIM {
         private void UpdateSettings () {
             // Carry current visually present and set Numerics & Tracings into Device.Settings
             if (Numerics is not null) {
-                for (int i = 0; i < rowsNumerics && i < listNumerics.Count; i++) {
-                    if (Enum.TryParse (listNumerics [i]?.ControlType?.Value.ToString (),
+                for (int i = 0; i < _rowsNumerics && i < _listNumerics.Count; i++) {
+                    if (Enum.TryParse (_listNumerics [i]?.ControlType?.Value.ToString (),
                             true, out Device.Numeric res)) {
                         if (Numerics.Count <= i) {
                             Numerics.Add (res);
@@ -554,8 +554,8 @@ namespace IISIM {
             }
             
             if (Tracings is not null) {
-                for (int i = 0; i < rowsTracings && i < listTracings.Count; i++) {
-                    if (Enum.TryParse (listTracings [i].Lead?.Value.ToString (),
+                for (int i = 0; i < _rowsTracings && i < _listTracings.Count; i++) {
+                    if (Enum.TryParse (_listTracings [i].Lead?.Value.ToString (),
                             true, out Device.Tracing res)) {
                         if (Tracings.Count <= i) {
                             Tracings.Add (res);
@@ -595,13 +595,13 @@ namespace IISIM {
             => SetAlarms (false);
          
         private void MenuPacerDetectionOn (object? sender, RoutedEventArgs e) {
-            foreach (var t in listTracings) {
+            foreach (var t in _listTracings) {
                 t.Strip?.PacerDetection = true;
             }
         }
         
         private void MenuPacerDetectionOff (object? sender, RoutedEventArgs e) {
-            foreach (var t in listTracings) {
+            foreach (var t in _listTracings) {
                 t.Strip?.PacerDetection = false;
             }
         }
@@ -664,45 +664,45 @@ namespace IISIM {
         }
 
         public override void OnTick_Alarm (object? sender, EventArgs e) {
-            if (AudioPlayer is null || Instance?.AudioLib is null || AlarmMedia is null) {
+            if (AudioPlayer is null || Instance?.AudioLib is null || _alarmMedia is null) {
                 Debug.WriteLine ($"Null return at {this.Name}.{nameof (OnTick_Alarm)}");
                 return;
             }
 
             if (Instance?.Settings.AudioEnabled == false) {
                 AudioPlayer.Stop ();
-                AlarmActive = null;
+                _alarmActive = null;
                 return;
             }
 
-            AlarmRefs.Clear ();
+            _alarmRefs.Clear ();
 
-            foreach (Controls.MonitorNumeric n in listNumerics) {
+            foreach (Controls.MonitorNumeric n in _listNumerics) {
                 if (n.AlarmRef is not null)
-                    AlarmRefs.Add (n.AlarmRef);
+                    _alarmRefs.Add (n.AlarmRef);
             }
 
-            Alarm? alarm = AlarmRefs.Find (a => a.Alarming ?? false && a.Priority == Alarm.Priorities.High);
-            alarm ??= AlarmRefs.Find (a => a.Alarming ?? false && a.Priority == Alarm.Priorities.Medium);
-            alarm ??= AlarmRefs.Find (a => a.Alarming ?? false && a.Priority == Alarm.Priorities.Low);
+            Alarm? alarm = _alarmRefs.Find (a => a.Alarming ?? false && a.Priority == Alarm.Priorities.High);
+            alarm ??= _alarmRefs.Find (a => a.Alarming ?? false && a.Priority == Alarm.Priorities.Medium);
+            alarm ??= _alarmRefs.Find (a => a.Alarming ?? false && a.Priority == Alarm.Priorities.Low);
 
             if (alarm is null) {
                 AudioPlayer.Stop ();
-                AlarmActive = null;
+                _alarmActive = null;
                 return;
-            } else if (alarm.Priority == AlarmActive) {
+            } else if (alarm.Priority == _alarmActive) {
                 if (!AudioPlayer.IsPlaying && Instance is not null) {
-                    AudioPlayer.Media = new Media (Instance.AudioLib, AlarmMedia [alarm.Priority.GetHashCode ()]);
+                    AudioPlayer.Media = new Media (Instance.AudioLib, _alarmMedia [alarm.Priority.GetHashCode ()]);
                     AudioPlayer.Play ();
                 }
 
                 return;
-            } else if (alarm.Priority != AlarmActive && Instance is not null) {
+            } else if (alarm.Priority != _alarmActive && Instance is not null) {
                 AudioPlayer.Stop ();
-                AudioPlayer.Media = new Media (Instance.AudioLib, AlarmMedia [alarm.Priority.GetHashCode ()]);
+                AudioPlayer.Media = new Media (Instance.AudioLib, _alarmMedia [alarm.Priority.GetHashCode ()]);
                 AudioPlayer.Play ();
 
-                AlarmActive = alarm.Priority;
+                _alarmActive = alarm.Priority;
                 return;
             }
         }
@@ -711,9 +711,9 @@ namespace IISIM {
             if (Instance?.Settings.State != II.Settings.Instance.States.Running)
                 return;
 
-            for (int i = 0; i < listTracings.Count; i++) {
-                listTracings [i].Strip?.Scroll ();
-                Dispatcher.UIThread.InvokeAsync (listTracings [i].DrawTracing);
+            for (int i = 0; i < _listTracings.Count; i++) {
+                _listTracings [i].Strip?.Scroll ();
+                Dispatcher.UIThread.InvokeAsync (_listTracings [i].DrawTracing);
             }
         }
 
@@ -721,7 +721,7 @@ namespace IISIM {
             if (Instance?.Settings.State != II.Settings.Instance.States.Running)
                 return;
 
-            listNumerics
+            _listNumerics
                 .Where (n
                     => n.ControlType?.Value != Controls.MonitorNumeric.ControlTypes.Values.ETCO2
                     && n.ControlType?.Value != Controls.MonitorNumeric.ControlTypes.Values.RR)
@@ -733,7 +733,7 @@ namespace IISIM {
             if (Instance?.Settings.State != II.Settings.Instance.States.Running)
                 return;
 
-            listNumerics
+            _listNumerics
                 .Where (n
                     => n.ControlType?.Value == Controls.MonitorNumeric.ControlTypes.Values.ETCO2
                     || n.ControlType?.Value == Controls.MonitorNumeric.ControlTypes.Values.RR)
@@ -751,32 +751,32 @@ namespace IISIM {
             
             /* Process all Numerics; Load settings, instantiate Controls, and populate Grid */
             
-            if (rowsNumerics == 0) {    // On instantiation only, use pre-defined or Load()ed settings!
+            if (_rowsNumerics == 0) {    // On instantiation only, use pre-defined or Load()ed settings!
                 // If Device settings are present, then a Scenario is loaded
                 if (Numerics is not null && Numerics.Count > 0) {
                     foreach (var n in Numerics)
                         numericTypes.Add (n.ToString ());
                     
-                    rowsNumerics = Numerics.Count;
+                    _rowsNumerics = Numerics.Count;
                 } else {
-                    rowsNumerics = 3;
-                    numericTypes.AddRange(defaultNumerics.Slice (0, rowsNumerics));
+                    _rowsNumerics = 3;
+                    numericTypes.AddRange(defaultNumerics.Slice (0, _rowsNumerics));
                 }
             }
 
             // Cap available amount of numerics
-            rowsNumerics = II.Math.Clamp (rowsNumerics, 1, defaultNumerics.Count);
+            _rowsNumerics = II.Math.Clamp (_rowsNumerics, 1, defaultNumerics.Count);
             
             // Rebuild the Numeric visual controls; auto-rectifies as it iterates i vs. rowNumerics 
-            for (int i = 0; i < rowsNumerics; i++) {
-                if (listNumerics.Count <= i) {      // Create new MonitorNumerics only; we don't want to modify existing ones
+            for (int i = 0; i < _rowsNumerics; i++) {
+                if (_listNumerics.Count <= i) {      // Create new MonitorNumerics only; we don't want to modify existing ones
                                                     // Because they may have been modified by the user through Add/Remove/Select Input
                     Controls.MonitorNumeric n = new (
                         Instance,
                         (Controls.MonitorNumeric.ControlTypes.Values)Enum.Parse (
                             typeof(Controls.MonitorNumeric.ControlTypes.Values),
-                            numericTypes.Count > i ? numericTypes [i] : defaultNumerics[i]), colorScheme);
-                    listNumerics.Add (n);
+                            numericTypes.Count > i ? numericTypes [i] : defaultNumerics[i]), _colorScheme);
+                    _listNumerics.Add (n);
                 }
             }
             
@@ -786,40 +786,40 @@ namespace IISIM {
             gridNumerics.Children.Clear ();         // Avalonia Controls do *not* need Dispose()/Destroy() called
             gridNumerics.RowDefinitions.Clear ();
             
-            for (int i = 0; i < rowsNumerics && i < listNumerics.Count; i++) {
+            for (int i = 0; i < _rowsNumerics && i < _listNumerics.Count; i++) {
                 gridNumerics.RowDefinitions.Add (new RowDefinition ());
-                listNumerics [i].SetValue (Grid.RowProperty, i);
-                gridNumerics.Children.Add (listNumerics [i]);
+                _listNumerics [i].SetValue (Grid.RowProperty, i);
+                gridNumerics.Children.Add (_listNumerics [i]);
             }
 
             
             /* Process all Tracings; Load settings, instantiate Controls, and populate Grid */
             
-            if (rowsTracings == 0) {    // On instantiation only, use pre-defined or Load()ed settings!
+            if (_rowsTracings == 0) {    // On instantiation only, use pre-defined or Load()ed settings!
                 // If Device settings are present, then a Scenario is loaded
                 if (Tracings is not null && Tracings.Count > 0) {
                     foreach (var n in Tracings)
                         tracingTypes.Add (n.ToString ());
                     
-                    rowsTracings = Tracings.Count;
+                    _rowsTracings = Tracings.Count;
                 } else {
-                    rowsTracings = 3;
-                    tracingTypes.AddRange(defaultTracings.Slice (0, rowsTracings));
+                    _rowsTracings = 3;
+                    tracingTypes.AddRange(defaultTracings.Slice (0, _rowsTracings));
                 }
             }
 
             // Cap available amount of tracings
-            rowsTracings = II.Math.Clamp (rowsTracings, 1, defaultTracings.Count);
+            _rowsTracings = II.Math.Clamp (_rowsTracings, 1, defaultTracings.Count);
             
             // Rebuild the Tracing visual controls; auto-rectifies as it iterates i vs. rowTracings 
-            for (int i = 0; i < rowsTracings; i++) {
-                if (listTracings.Count <= i) {      // Create new MonitorTracings only; we don't want to modify existing ones
+            for (int i = 0; i < _rowsTracings; i++) {
+                if (_listTracings.Count <= i) {      // Create new MonitorTracings only; we don't want to modify existing ones
                                                     // Because they may have been modified by the user through Add/Remove/Select Input
                     Strip s = new ((Lead.Values)Enum.Parse (typeof (Lead.Values), 
                         tracingTypes.Count > i ? tracingTypes [i] : defaultTracings[i]), 
                         6f, Instance?.Timer_Simulation);
-                    Controls.MonitorTracing t = new (Instance, s, colorScheme);
-                    listTracings.Add (t);
+                    Controls.MonitorTracing t = new (Instance, s, _colorScheme);
+                    _listTracings.Add (t);
                 }
             }
 
@@ -828,10 +828,10 @@ namespace IISIM {
 
             gridTracings.Children.Clear ();         // Avalonia Controls do *not* need Dispose()/Destroy() called
             gridTracings.RowDefinitions.Clear ();
-            for (int i = 0; i < rowsTracings && i < listTracings.Count; i++) {
+            for (int i = 0; i < _rowsTracings && i < _listTracings.Count; i++) {
                 gridTracings.RowDefinitions.Add (new RowDefinition ());
-                listTracings [i].SetValue (Grid.RowProperty, i);
-                gridTracings.Children.Add (listTracings [i]);
+                _listTracings [i].SetValue (Grid.RowProperty, i);
+                gridTracings.Children.Add (_listTracings [i]);
             }
             
             UpdateSettings();
@@ -840,69 +840,69 @@ namespace IISIM {
         public override void OnPhysiologyEvent (object? sender, Physiology.PhysiologyEventArgs e) {
             switch (e.EventType) {
                 default: break;
-                case Physiology.PhysiologyEventTypes.Vitals_Change:
-                    listTracings.ForEach (c => {
+                case Physiology.PhysiologyEventTypes.VitalsChange:
+                    _listTracings.ForEach (c => {
                         c.Strip?.ClearFuture (Instance?.Physiology);
                         c.Strip?.Add_Baseline (Instance?.Physiology);
                     });
 
-                    listNumerics.ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
+                    _listNumerics.ForEach (n => Dispatcher.UIThread.InvokeAsync (n.UpdateVitals));
                     break;
 
                 case Physiology.PhysiologyEventTypes.Defibrillation:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (Instance?.Physiology));
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (Instance?.Physiology));
                     break;
 
                 case Physiology.PhysiologyEventTypes.PacermakerSpike:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (Instance?.Physiology));
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (Instance?.Physiology));
                     break;
 
                 case Physiology.PhysiologyEventTypes.CardiacBaseline:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology));
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Cardiac_Atrial_Electric:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Electrical (Instance?.Physiology));
+                case Physiology.PhysiologyEventTypes.CardiacAtrialElectric:
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Electrical (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Electric:
+                case Physiology.PhysiologyEventTypes.CardiacVentricularElectric:
                     // QRS audio tone is only triggered by rhythms w/ a ventricular electrical (QRS complex) action
                     _ = PlayAudioTone (ToneSources.ECG, e.Physiology);
 
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Physiology));
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Cardiac_Atrial_Mechanical:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Mechanical (Instance?.Physiology));
+                case Physiology.PhysiologyEventTypes.CardiacAtrialMechanical:
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Mechanical (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Mechanical:
+                case Physiology.PhysiologyEventTypes.CardiacVentricularMechanical:
                     // SPO2 audio tone is only triggered  by rhythms w/ a ventricular mechanical action (systole)
                     _ = PlayAudioTone (ToneSources.SPO2, e.Physiology);
 
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Physiology));
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Physiology));
                     IterateAutoScale ();
 
                     break;
 
-                case Physiology.PhysiologyEventTypes.IABP_Balloon_Inflation:
+                case Physiology.PhysiologyEventTypes.IABPBalloonInflation:
                     // Note: May draw either IABP or ABP waveforms (e.g. ABP with augmentation in non-pulsatile rhythm cases)
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__IABP_Balloon (Instance?.Physiology));
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__IABP_Balloon (Instance?.Physiology));
 
                     if (Instance?.Physiology is not null && !Instance.Physiology.CardiacRhythm.HasVentricularPulse)
                         IterateAutoScale ();
                     break;
 
-                case Physiology.PhysiologyEventTypes.Respiratory_Baseline:
-                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Baseline (Instance?.Physiology));
+                case Physiology.PhysiologyEventTypes.RespiratoryBaseline:
+                    _listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Baseline (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Respiratory_Inspiration:
-                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Inspiration (Instance?.Physiology));
+                case Physiology.PhysiologyEventTypes.RespiratoryInspiration:
+                    _listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Inspiration (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Respiratory_Expiration:
-                    listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Expiration (Instance?.Physiology));
+                case Physiology.PhysiologyEventTypes.RespiratoryExpiration:
+                    _listTracings.ForEach (c => c.Strip?.Add_Breath__Respiratory_Expiration (Instance?.Physiology));
                     break;
             }
         }

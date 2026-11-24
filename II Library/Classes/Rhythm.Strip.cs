@@ -8,9 +8,7 @@
  * for continuity of drawing) and cleaning old data points from data collections.
  */
 
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,36 +24,36 @@ namespace II.Rhythm {
         public const double DefaultRespiratoryCoefficient = 3d;
 
         /* Default offsets and amplitudes */
-        public const double DefaultOffset_ReferenceZero = -0.015d;      // Accounts for line thickness, for clarity
+        public const double DefaultOffsetReferenceZero = -0.015d;      // Accounts for line thickness, for clarity
 
         /* Reference pressures for scaling transduced waveforms based on systolic/diastolic */
-        public const int DefaultAutoScale_Iterations = 10;
+        public const int DefaultAutoScaleIterations = 10;
         public const double DefaultScaleMargin = 0.2d;
-        public const int DefaultScaleMin_ABP = 0;
-        public const int DefaultScaleMin_PA = -10;
-        public const int DefaultScaleMax_ABP = 200;
-        public const int DefaultScaleMax_PA = 50;
+        public const int DefaultScaleMinABP = 0;
+        public const int DefaultScaleMinPA = -10;
+        public const int DefaultScaleMaxABP = 200;
+        public const int DefaultScaleMaxPA = 50;
 
         /* Treat FHR and TOCO similarly to transduced waveforms to prevent auto-scaling */
-        public const int DefaultScaleMin_FHR = 30;
-        public const int DefaultScaleMax_FHR = 240;
-        public const int DefaultScaleMin_TOCO = 0;
-        public const int DefaultScaleMax_TOCO = 100;
+        public const int DefaultScaleMinFHR = 30;
+        public const int DefaultScaleMaxFHR = 240;
+        public const int DefaultScaleMinToco = 0;
+        public const int DefaultScaleMaxToco = 100;
 
         /* Variables for real-time strip tracing processing */
         public double Length = 6.0d;                      // Strip length in seconds
         public double DisplayLength = 6.0d;
 
         /* Coefficients for decreasing tracing resolution (performance vs quality) */
-        public int Resolution_Cardiac = 1;
-        public int Resolution_Respiratory = 3;
-        public int Resolution_Obstetric = 100;
+        public int ResolutionCardiac = 1;
+        public int ResolutionRespiratory = 3;
+        public int ResolutionObstetric = 100;
 
-        private double forwardBuffer = 1.0d;              // Coefficient of Length to draw into future as "now" for buffer
+        private double _forwardBuffer = 1.0d;              // Coefficient of Length to draw into future as "now" for buffer
         
         /* References and variables for time resolution */
         public Timer? TimerSimulation; 
-        private ulong? scrolledLast;
+        private ulong? _scrolledLast;
 
         public Offsets Offset = Offsets.Center;
         public double Amplitude = 1d;
@@ -69,9 +67,9 @@ namespace II.Rhythm {
         public bool PacerDetection = true;
 
         public Lead? Lead;
-        public readonly object lockEvents = new ();
+        public readonly object LockEvents = new ();
         public List<Event>? Events;
-        public readonly object lockPoints = new ();
+        public readonly object LockPoints = new ();
         public List<PointD>? Points;                      // Clinical waveform tracing points
         
 
@@ -99,10 +97,10 @@ namespace II.Rhythm {
             Length = length;
             DisplayLength = displayLength;
 
-            lock (lockPoints)
+            lock (LockPoints)
                 Points = new List<PointD> ();
             
-            lock (lockEvents)
+            lock (LockEvents)
                 Events = new List<Event> ();
 
             SetScale ();
@@ -114,12 +112,12 @@ namespace II.Rhythm {
                 if (Lead is null)
                     return false;
 
-                return Lead.Value == Lead.Values.ECG_I || Lead.Value == Lead.Values.ECG_II
-                    || Lead.Value == Lead.Values.ECG_III || Lead.Value == Lead.Values.ECG_AVR
-                    || Lead.Value == Lead.Values.ECG_AVL || Lead.Value == Lead.Values.ECG_AVF
-                    || Lead.Value == Lead.Values.ECG_V1 || Lead.Value == Lead.Values.ECG_V2
-                    || Lead.Value == Lead.Values.ECG_V3 || Lead.Value == Lead.Values.ECG_V4
-                    || Lead.Value == Lead.Values.ECG_V5 || Lead.Value == Lead.Values.ECG_V6;
+                return Lead.Value == Lead.Values.ECGI || Lead.Value == Lead.Values.ECGII
+                    || Lead.Value == Lead.Values.ECGIII || Lead.Value == Lead.Values.ECGAVR
+                    || Lead.Value == Lead.Values.ECGAVL || Lead.Value == Lead.Values.ECGAVF
+                    || Lead.Value == Lead.Values.ECGV1 || Lead.Value == Lead.Values.ECGV2
+                    || Lead.Value == Lead.Values.ECGV3 || Lead.Value == Lead.Values.ECGV4
+                    || Lead.Value == Lead.Values.ECGV5 || Lead.Value == Lead.Values.ECGV6;
             }
         }
 
@@ -128,12 +126,12 @@ namespace II.Rhythm {
                 if (Lead is null)
                     return false;
 
-                return Lead.Value == Lead.Values.ECG_I || Lead.Value == Lead.Values.ECG_II
-                    || Lead.Value == Lead.Values.ECG_III || Lead.Value == Lead.Values.ECG_AVR
-                    || Lead.Value == Lead.Values.ECG_AVL || Lead.Value == Lead.Values.ECG_AVF
-                    || Lead.Value == Lead.Values.ECG_V1 || Lead.Value == Lead.Values.ECG_V2
-                    || Lead.Value == Lead.Values.ECG_V3 || Lead.Value == Lead.Values.ECG_V4
-                    || Lead.Value == Lead.Values.ECG_V5 || Lead.Value == Lead.Values.ECG_V6
+                return Lead.Value == Lead.Values.ECGI || Lead.Value == Lead.Values.ECGII
+                    || Lead.Value == Lead.Values.ECGIII || Lead.Value == Lead.Values.ECGAVR
+                    || Lead.Value == Lead.Values.ECGAVL || Lead.Value == Lead.Values.ECGAVF
+                    || Lead.Value == Lead.Values.ECGV1 || Lead.Value == Lead.Values.ECGV2
+                    || Lead.Value == Lead.Values.ECGV3 || Lead.Value == Lead.Values.ECGV4
+                    || Lead.Value == Lead.Values.ECGV5 || Lead.Value == Lead.Values.ECGV6
                     || Lead.Value == Lead.Values.ABP
                     || Lead.Value == Lead.Values.CVP
                     || Lead.Value == Lead.Values.IABP
@@ -160,7 +158,7 @@ namespace II.Rhythm {
                     return false;
 
                 return Lead.Value == Lead.Values.FHR
-                    || Lead.Value == Lead.Values.TOCO;
+                    || Lead.Value == Lead.Values.Toco;
             }
         }
 
@@ -187,20 +185,20 @@ namespace II.Rhythm {
                 default: break;
                 case Lead.Values.ABP:
                     ScaleAuto = true;
-                    ScaleMin = DefaultScaleMin_ABP;
-                    ScaleMax = DefaultScaleMax_ABP;
+                    ScaleMin = DefaultScaleMinABP;
+                    ScaleMax = DefaultScaleMaxABP;
                     break;
 
                 case Lead.Values.PA:
                     ScaleAuto = false;
-                    ScaleMin = DefaultScaleMin_PA;
-                    ScaleMax = DefaultScaleMax_PA;
+                    ScaleMin = DefaultScaleMinPA;
+                    ScaleMax = DefaultScaleMaxPA;
                     break;
             }
         }
 
-        public void SetAutoScale (Physiology? _P) {
-            if (_P is null || !CanScale || !ScaleAuto)
+        public void SetAutoScale (Physiology? p) {
+            if (p is null || !CanScale || !ScaleAuto)
                 return;
 
             int peak = 0;
@@ -208,11 +206,11 @@ namespace II.Rhythm {
 
             int j = 0;
 
-            lock (_P.lockListPhysiologyEvents) {
-                for (int i = _P.ListPhysiologyEvents.Count; i > 0 && j < DefaultAutoScale_Iterations;) {
+            lock (p.LockListPhysiologyEvents) {
+                for (int i = p.ListPhysiologyEvents.Count; i > 0 && j < DefaultAutoScaleIterations;) {
                     i--;
 
-                    if (_P.ListPhysiologyEvents [i].EventType != Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Electric)
+                    if (p.ListPhysiologyEvents [i].EventType != Physiology.PhysiologyEventTypes.CardiacVentricularElectric)
                         continue;
                     else
                         j++;
@@ -220,20 +218,20 @@ namespace II.Rhythm {
                     switch (Lead.Value) {
                         default: return;
                         case Lead.Values.ABP:
-                            peak += _P.ListPhysiologyEvents [i].Vitals.ASBP;
-                            trough += _P.ListPhysiologyEvents [i].Vitals.ADBP;
+                            peak += p.ListPhysiologyEvents [i].Vitals.ASBP;
+                            trough += p.ListPhysiologyEvents [i].Vitals.ADBP;
                             break;
 
                         case Lead.Values.PA:
-                            peak += _P.ListPhysiologyEvents [i].Vitals.PSP;
-                            trough += _P.ListPhysiologyEvents [i].Vitals.PDP;
+                            peak += p.ListPhysiologyEvents [i].Vitals.PSP;
+                            trough += p.ListPhysiologyEvents [i].Vitals.PDP;
                             break;
                     }
                 }
             }
 
-            trough /= DefaultAutoScale_Iterations;
-            peak /= DefaultAutoScale_Iterations;
+            trough /= DefaultAutoScaleIterations;
+            peak /= DefaultAutoScaleIterations;
 
             ScaleMin = trough - (int)(trough * DefaultScaleMargin);
             ScaleMax = peak + (int)(peak * DefaultScaleMargin);
@@ -254,7 +252,7 @@ namespace II.Rhythm {
                     break;
 
                 case Lead.Values.FHR:
-                case Lead.Values.TOCO:
+                case Lead.Values.Toco:
                     Offset = Offsets.Stretch;
                     ScaleMargin = 0.05d;
                     break;
@@ -288,14 +286,14 @@ namespace II.Rhythm {
             int b = 1;              // Beats/breaths to draw forwardBuffer out by
             
             if (IsCardiac)
-                forwardBuffer = System.Math.Max (1 + (b * (patient.GetHRInterval / Length)),
-                    (onClear ? 1.1f : forwardBuffer));
+                _forwardBuffer = System.Math.Max (1 + (b * (patient.GetHRInterval / Length)),
+                    (onClear ? 1.1f : _forwardBuffer));
             else if (IsRespiratory)
-                forwardBuffer = System.Math.Max (1 + (b * (patient.GetRRInterval / Length)),
-                    (onClear ? 1.1f : forwardBuffer));
+                _forwardBuffer = System.Math.Max (1 + (b * (patient.GetRRInterval / Length)),
+                    (onClear ? 1.1f : _forwardBuffer));
             else if (IsObstetric)
-                forwardBuffer = System.Math.Max (1 + (patient.ObstetricContractionFrequency / Length),
-                    (onClear ? 1.1f : forwardBuffer));
+                _forwardBuffer = System.Math.Max (1 + (patient.ObstetricContractionFrequency / Length),
+                    (onClear ? 1.1f : _forwardBuffer));
         }
 
         public void DecreaseAmplitude ()
@@ -305,10 +303,10 @@ namespace II.Rhythm {
             => Amplitude = System.Math.Min (Amplitude + 0.2d, 2.0d);
 
         public Task Reset () {
-            lock (lockPoints)
+            lock (LockPoints)
                 Points?.Clear ();
             
-            lock (lockEvents)
+            lock (LockEvents)
                 Events?.Clear ();
 
             return Task.CompletedTask;
@@ -320,33 +318,33 @@ namespace II.Rhythm {
             
             SetForwardBuffer (patient, true);         // Since accounting for forward edge buffer, recalculate
             
-            lock (lockPoints) {
+            lock (LockPoints) {
                 if (Points is not null) {
                     for (int i = Points.Count - 1; i >= 0; i--) {
                         /* Must account for forwardEdgeBuffer... otherwise will cause period of "asystole"
                          * Also **must** have a grace period coefficient for forwardBuffer - otherwise was
                          * erasing waveforms as they were being added to List<PointD> */
-                        if (Points [i].X > (Length * forwardBuffer * 1.5))
+                        if (Points [i].X > (Length * _forwardBuffer * 1.5))
                             Points.RemoveAt (i);
                     }
                 }
             }
 
-            lock (lockEvents) {
+            lock (LockEvents) {
                 if (Events is not null) {
                     for (int i = Events.Count - 1; i >= 0; i--) {
-                        if (Events [i].X > (Length * forwardBuffer * 1.5))
+                        if (Events [i].X > (Length * _forwardBuffer * 1.5))
                             Events.RemoveAt (i);
                     }
                 }
             }
         }
 
-        public PointD Last (List<PointD>? _In) {
-            if (_In is null || _In.Count < 1)
+        public PointD Last (List<PointD>? @in) {
+            if (@in is null || @in.Count < 1)
                 return new PointD ((double)Length, 0);
             else
-                return _In [_In.Count - 1];
+                return @in [@in.Count - 1];
         }
 
         public void Concatenate (List<PointD> addition) {
@@ -354,7 +352,7 @@ namespace II.Rhythm {
                 return;
 
             double offsetX = Last (Points).X;
-            lock (lockPoints) {
+            lock (LockPoints) {
                 for (int i = 0; i < addition.Count; i++)
                     Points.Add (new PointD (addition [i].X + offsetX, addition [i].Y));
             }
@@ -367,9 +365,9 @@ namespace II.Rhythm {
 
             // Offset the splice to meet the leading/future edge of the strip
             for (int i = 0; i < splice.Count; i++)
-                splice [i].X += Length * forwardBuffer;
+                splice [i].X += Length * _forwardBuffer;
 
-            lock (lockPoints) {
+            lock (LockPoints) {
                 Points.RemoveAll (p => { return p.X > splice [0].X && p.X < splice.Last ().X; });
                 Points.AddRange (splice);
             }
@@ -382,7 +380,7 @@ namespace II.Rhythm {
 
             // Offset the splice to meet the leading/future edge of the strip
             for (int i = 0; i < splice.Count; i++)
-                splice [i].X += Length * forwardBuffer;
+                splice [i].X += Length * _forwardBuffer;
 
             // Sort the splice and the Points so we can walk through them
             splice.Sort (delegate (PointD p1, PointD p2) {
@@ -396,7 +394,7 @@ namespace II.Rhythm {
                 || Points.Min (x => x.X) > splice.Last ().X
                 || Points.Max (x => x.X) < splice.First ().X) {
                 // Utilizes the regular Replace() routine... calling the whole routine would shift the offset again...
-                lock (lockPoints) {
+                lock (LockPoints) {
                     Points.RemoveAll (p => { return p.X > splice [0].X && p.X < splice.Last ().X; });
                     Points.AddRange (splice);
                 }
@@ -404,7 +402,7 @@ namespace II.Rhythm {
                 return;
             }
 
-            lock (lockPoints) {
+            lock (LockPoints) {
                 Points.Sort (delegate (PointD p1, PointD p2) {
                     if (p1 is null && p2 is null) return 0;
                     else if (p1 is null) return -1;
@@ -451,12 +449,12 @@ namespace II.Rhythm {
 
             // Offset the splice to meet the leading/future edge of the strip
             for (int i = 0; i < splice.Count; i++)
-                splice [i].X += Length * forwardBuffer;
+                splice [i].X += Length * _forwardBuffer;
 
             // Sort the splice and the Points so we can walk through them
             splice.Sort ((p1, p2) => p1.X.CompareTo (p2.X));
 
-            lock (lockPoints) {
+            lock (LockPoints) {
                 Points.Sort ((p1, p2) => p1.X.CompareTo (p2.X));
 
                 double spliceStart = splice.First ().X,
@@ -490,12 +488,12 @@ namespace II.Rhythm {
 
             // Shift the splice in place to the leading/future edge of the strip
             for (int i = 0; i < splice.Count; i++)
-                splice [i].X += Length * forwardBuffer;
+                splice [i].X += Length * _forwardBuffer;
 
             // Sort the splice and the Points so we can walk through them
             splice.Sort ((p1, p2) => p1.X.CompareTo (p2.X));
             
-            lock (lockPoints) {
+            lock (LockPoints) {
                 Points.Sort ((p1, p2) => p1.X.CompareTo (p2.X));
 
                 if (Points.Count == 0)
@@ -559,26 +557,26 @@ namespace II.Rhythm {
 
         // Traverse sorted points with nondecreasing X queries, without extrapolating
         private sealed class InterpolationCursor {
-            private readonly IReadOnlyList<PointD> points;
+            private readonly IReadOnlyList<PointD> _points;
             // Cached left group and next right group; rightEnd is exclusive
-            private double leftX, leftY;
-            private bool hasLeft, hasRight;
-            private int rightEnd;
-            private double rightX, rightFirstY, rightLastY;
+            private double _leftX, _leftY;
+            private bool _hasLeft, _hasRight;
+            private int _rightEnd;
+            private double _rightX, _rightFirstY, _rightLastY;
 
             public InterpolationCursor (IReadOnlyList<PointD> points) {
-                this.points = points;
+                this._points = points;
 
                 if (points.Count == 0)
                     return;
 
                 // Prime the first group and, if available, its right neighbor
-                LoadGroup (0, out int leftEnd, out leftX, out _, out leftY);
-                hasLeft = true;
+                LoadGroup (0, out int leftEnd, out _leftX, out _, out _leftY);
+                _hasLeft = true;
 
                 if (leftEnd < points.Count) {
-                    LoadGroup (leftEnd, out rightEnd, out rightX, out rightFirstY, out rightLastY);
-                    hasRight = true;
+                    LoadGroup (leftEnd, out _rightEnd, out _rightX, out _rightFirstY, out _rightLastY);
+                    _hasRight = true;
                 }
             }
 
@@ -588,89 +586,89 @@ namespace II.Rhythm {
                 isExact = false;
 
                 // Reject empty, out-of-range, or behind-cursor queries
-                if (!hasLeft || x < points [0].X || x > points [points.Count - 1].X || x < leftX)
+                if (!_hasLeft || x < _points [0].X || x > _points [_points.Count - 1].X || x < _leftX)
                     return false;
 
                 // Advance groups until X is at or between the cached neighbors
-                while (hasRight && rightX < x) {
-                    leftX = rightX;
-                    leftY = rightLastY;
+                while (_hasRight && _rightX < x) {
+                    _leftX = _rightX;
+                    _leftY = _rightLastY;
 
-                    if (rightEnd < points.Count) {
-                        int nextGroupStart = rightEnd;
-                        LoadGroup (nextGroupStart, out rightEnd, out rightX, out rightFirstY, out rightLastY);
+                    if (_rightEnd < _points.Count) {
+                        int nextGroupStart = _rightEnd;
+                        LoadGroup (nextGroupStart, out _rightEnd, out _rightX, out _rightFirstY, out _rightLastY);
                     } else {
-                        hasRight = false;
+                        _hasRight = false;
                     }
                 }
 
                 // Exact matches use the last-preferred strongest Y in the group
-                if (x == leftX) {
-                    y = leftY;
+                if (x == _leftX) {
+                    y = _leftY;
                     isExact = true;
                     return true;
                 }
 
-                if (hasRight && x == rightX) {
-                    y = rightLastY;
+                if (_hasRight && x == _rightX) {
+                    y = _rightLastY;
                     isExact = true;
                     return true;
                 }
 
-                if (!hasRight || x <= leftX || x >= rightX)
+                if (!_hasRight || x <= _leftX || x >= _rightX)
                     return false;
 
                 // Interpolate between groups; the right endpoint favors the first point on ties
-                y = leftY + ((x - leftX) / (rightX - leftX) * (rightFirstY - leftY));
+                y = _leftY + ((x - _leftX) / (_rightX - _leftX) * (_rightFirstY - _leftY));
                 return true;
             }
 
             // Summarize points at one X, selecting strongest Y values with first and last tie preferences
             private void LoadGroup (int start, out int end, out double x, out double firstY, out double lastY) {
-                x = points [start].X;
+                x = _points [start].X;
                 end = start + 1;
 
                 // Find the exclusive end of this duplicate-X group
-                while (end < points.Count && points [end].X == x)
+                while (end < _points.Count && _points [end].X == x)
                     end++;
 
                 // Select the strongest Y, preferring the first point on equal magnitudes
-                firstY = points [start].Y;
+                firstY = _points [start].Y;
                 for (int i = start + 1; i < end; i++) {
-                    if (System.Math.Abs (points [i].Y) > System.Math.Abs (firstY))
-                        firstY = points [i].Y;
+                    if (System.Math.Abs (_points [i].Y) > System.Math.Abs (firstY))
+                        firstY = _points [i].Y;
                 }
 
                 // Select the strongest Y, preferring the last point on equal magnitudes
-                lastY = points [end - 1].Y;
+                lastY = _points [end - 1].Y;
                 for (int i = end - 2; i >= start; i--) {
-                    if (System.Math.Abs (points [i].Y) > System.Math.Abs (lastY))
-                        lastY = points [i].Y;
+                    if (System.Math.Abs (_points [i].Y) > System.Math.Abs (lastY))
+                        lastY = _points [i].Y;
                 }
             }
         }
 
         public void TrimPoints () {
-            lock (lockPoints) {
+            lock (LockPoints) {
                 Points?.RemoveAll (p => p.X < -Length);
             }
         }
 
         public void TrimEvents () {
-            lock (lockEvents) {
+            lock (LockEvents) {
                 Events?.RemoveAll (p => p.X < -Length);
             }
         }
 
         public void SortPoints () {
-            lock (lockPoints) {
+            lock (LockPoints) {
                 Points?.RemoveAll (p => p.X is double.NaN || p.Y is double.NaN);
                 Points?.Sort ((p1, p2) => p1.X.CompareTo (p2.X));
             }
         }
 
         public void SortEvents () {
-            lock (lockEvents) {
+            lock (LockEvents) {
                 Events?.RemoveAll (p => p.X is double.NaN);
                 Events?.Sort ((p1, p2) => p1.X.CompareTo (p2.X));
             }
@@ -681,20 +679,20 @@ namespace II.Rhythm {
 
             // Note: scrollBy is in SECONDS (as double); convert and cast appropriately since Epoch is (ulong?)
             // Note: risk of integer overflow subtracting ulongs!
-            double scrollBy = TimerSimulation?.Epoch > scrolledLast
-                ? (((double)((TimerSimulation?.Epoch - scrolledLast) ?? 0) / 1000) * multiplier ?? 1)
-                : (((double)((scrolledLast - TimerSimulation?.Epoch) ?? 0) / 1000) * multiplier ?? 1);
+            double scrollBy = TimerSimulation?.Epoch > _scrolledLast
+                ? (((double)((TimerSimulation?.Epoch - _scrolledLast) ?? 0) / 1000) * multiplier ?? 1)
+                : (((double)((_scrolledLast - TimerSimulation?.Epoch) ?? 0) / 1000) * multiplier ?? 1);
 
-            scrolledLast = TimerSimulation?.Epoch;
+            _scrolledLast = TimerSimulation?.Epoch;
             
-            lock (lockPoints) {
+            lock (LockPoints) {
                 if (Points is not null) {
                     for (int i = Points.Count - 1; i >= 0; i--)
                         Points [i].X -= scrollBy;
                 }
             }
 
-            lock (lockEvents) {
+            lock (LockEvents) {
                 if (Events is not null) {
                     for (int i = Events.Count - 1; i >= 0; i--)
                         Events [i].X -= scrollBy;
@@ -728,8 +726,8 @@ namespace II.Rhythm {
             max = (min != max) ? max : 1;           // Scaled waveforms should be 0.0 to 1.0
 
             // Get new min and max values for the desired tracing
-            double newMin = II.Math.InverseLerp (ScaleMin, ScaleMax, trough);
-            double newMax = II.Math.InverseLerp (ScaleMin, ScaleMax, peak);
+            double newMin = Math.InverseLerp (ScaleMin, ScaleMax, trough);
+            double newMax = Math.InverseLerp (ScaleMin, ScaleMax, peak);
 
             // Run the List<PointD> through the normalization equation
             for (int i = 0; i < addition.Count; i++)
@@ -762,7 +760,7 @@ namespace II.Rhythm {
                 // Note: resolution scaling takes place within ECG_Isoelectric()
                 p.CardiacRhythm.ECG_Isoelectric (p, this);
             } else if (CanScale) {
-                double fill = (Length * forwardBuffer) - Last (Points).X;
+                double fill = (Length * _forwardBuffer) - Last (Points).X;
                 
                 // Interpolate HR Interval (.75 - 5 seconds) to a resolution coefficient of 1 - 10
                 // w/ default resolution of 10ms: @ HR 60 bpm, resolve @ 10ms, @ ~12 bpm, resolve @ 100ms 
@@ -774,7 +772,7 @@ namespace II.Rhythm {
                 Concatenate (Scale (p, Draw.Flat_Line (length, 0d, scaleRes)));
             } else {
                 /* Fill waveform through to future buffer with flatline */
-                double fill = (Length * forwardBuffer) - Last (Points).X;
+                double fill = (Length * _forwardBuffer) - Last (Points).X;
                 
                 // Interpolate HR Interval (.75 - 5 seconds) to a resolution coefficient of 1 - 10
                 // w/ default resolution of 10ms: @ HR 60 bpm, resolve @ 10ms, @ ~12 bpm, resolve @ 100ms 
@@ -826,7 +824,7 @@ namespace II.Rhythm {
                     break;
 
                 case Lead.Values.ABP:
-                    if (p.IABP_Active)
+                    if (p.IABPActive)
                         // IABP causes important downward deflections- do not use ReplaceAtOver!
                         Replace (Scale (p, Draw.IABP_ABP_Rhythm (p, 1d)));
                     else if (p.CardiacRhythm.HasVentricularPulse)
@@ -838,13 +836,13 @@ namespace II.Rhythm {
                     break;
 
                 case Lead.Values.PA:    // Vary PA waveforms based on PA catheter placement
-                    if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Atrium) {
+                    if (p.PulmonaryArteryPlacement.Value == PulmonaryArteryRhythms.Values.Right_Atrium) {
                         ReplaceAtOver (Scale (p, Draw.CVP_Rhythm (p, 1d)));
-                    } else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Ventricle)
+                    } else if (p.PulmonaryArteryPlacement.Value == PulmonaryArteryRhythms.Values.Right_Ventricle)
                         ReplaceAtOver (Scale (p, Draw.RV_Rhythm (p, 1d)));
-                    else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Pulmonary_Artery)
+                    else if (p.PulmonaryArteryPlacement.Value == PulmonaryArteryRhythms.Values.Pulmonary_Artery)
                         ReplaceAtOver (Scale (p, Draw.PA_Rhythm (p, 1d)));
-                    else if (p.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Pulmonary_Capillary_Wedge)
+                    else if (p.PulmonaryArteryPlacement.Value == PulmonaryArteryRhythms.Values.PulmonaryCapillaryWedge)
                         ReplaceAtOver (Scale (p, Draw.PCW_Rhythm (p, 1d)));
                     break;
 
@@ -860,16 +858,16 @@ namespace II.Rhythm {
             if (p is null || Lead is null)
                 return;
 
-            if (p.IABP_Active) {
+            if (p.IABPActive) {
                 switch (Lead?.Value) {
                     default: return;
 
                     case Lead.Values.IABP:
-                        if (p.CardiacRhythm.HasVentricularWaveform && p.IABP_Trigger == Physiology.IABP_Triggers.ECG) {
+                        if (p.CardiacRhythm.HasVentricularWaveform && p.IABPTrigger == Physiology.IABPTriggers.ECG) {
                             /* ECG Trigger works only if ventricular ECG waveform */
                             // IABP causes important downward deflections- do not use ReplaceAtOver!
                             Replace (Draw.IABP_Balloon_Rhythm (p, 1d));
-                        } else if (p.CardiacRhythm.HasVentricularPulse && p.IABP_Trigger == Physiology.IABP_Triggers.Pressure) {
+                        } else if (p.CardiacRhythm.HasVentricularPulse && p.IABPTrigger == Physiology.IABPTriggers.Pressure) {
                             /* Pressure Trigger works only if ventricular pressure impulse */
                             // IABP causes important downward deflections- do not use ReplaceAtOver!
                             Replace (Draw.IABP_Balloon_Rhythm (p, 1d));
@@ -907,8 +905,8 @@ namespace II.Rhythm {
             if (!IsECG)
                 return;
 
-            lock (lockEvents) {
-                Events?.Add (new Event (Length * forwardBuffer, Event.Types.Pacer));
+            lock (LockEvents) {
+                Events?.Add (new Event (Length * _forwardBuffer, Event.Types.Pacer));
             }
 
             SortEvents ();
@@ -921,8 +919,8 @@ namespace II.Rhythm {
             if (!IsECG)
                 return;
             
-            lock (lockEvents) {
-                Events?.Add (new Event ((Length * forwardBuffer) + (p.QRS_Interval / 2), Event.Types.Sync));
+            lock (LockEvents) {
+                Events?.Add (new Event ((Length * _forwardBuffer) + (p.QRSInterval / 2), Event.Types.Sync));
             }
 
             SortEvents ();
@@ -936,8 +934,8 @@ namespace II.Rhythm {
             TrimPoints ();
 
             /* Fill waveform through to future buffer with flatline */
-            double fill = (Length * forwardBuffer) - Last (Points).X;
-            Concatenate (Draw.Flat_Line (fill > (double)p.GetRRInterval ? fill : (double)p.GetRRInterval, 0d, Resolution_Respiratory));
+            double fill = (Length * _forwardBuffer) - Last (Points).X;
+            Concatenate (Draw.Flat_Line (fill > (double)p.GetRRInterval ? fill : (double)p.GetRRInterval, 0d, ResolutionRespiratory));
 
             SortPoints ();
         }
@@ -948,7 +946,7 @@ namespace II.Rhythm {
 
             switch (Lead?.Value) {
                 default: return;
-                case Lead.Values.RR: Replace (Draw.RR_Rhythm (p, true, Resolution_Respiratory)); break;
+                case Lead.Values.RR: Replace (Draw.RR_Rhythm (p, true, ResolutionRespiratory)); break;
                 case Lead.Values.ETCO2: break;    // End-tidal waveform is only present on expiration!! Is flatline on inspiration.
                 
                 case Lead.Values.IAP:
@@ -965,7 +963,7 @@ namespace II.Rhythm {
 
             switch (Lead?.Value) {
                 default: break;
-                case Lead.Values.RR: Replace (Draw.RR_Rhythm (p, false, Resolution_Respiratory)); break;
+                case Lead.Values.RR: Replace (Draw.RR_Rhythm (p, false, ResolutionRespiratory)); break;
                 case Lead.Values.ETCO2: Replace (Draw.ETCO2_Rhythm (p)); break;
                 
                 case Lead.Values.IAP:
@@ -985,17 +983,17 @@ namespace II.Rhythm {
             TrimPoints ();
 
             /* Fill waveform through to future buffer with flatline */
-            double fill = (Length * forwardBuffer) - Last (Points).X;
+            double fill = (Length * _forwardBuffer) - Last (Points).X;
 
             switch (Lead.Value) {
                 default:
                 case Lead.Values.FHR:
                     break;
 
-                case Lead.Values.TOCO:
+                case Lead.Values.Toco:
                     Concatenate (Draw.Flat_Line (fill,
-                        Math.Clamp (Math.InverseLerp (DefaultScaleMin_TOCO, DefaultScaleMax_TOCO, p.ObstetricUterineRestingTone)),
-                         Resolution_Obstetric));
+                        Math.Clamp (Math.InverseLerp (DefaultScaleMinToco, DefaultScaleMaxToco, p.ObstetricUterineRestingTone)),
+                         ResolutionObstetric));
                     break;
             }
 
@@ -1011,7 +1009,7 @@ namespace II.Rhythm {
             TrimPoints ();
 
             /* Fill waveform through to future buffer with flatline */
-            double fill = (Length * forwardBuffer) - Last (Points).X;
+            double fill = (Length * _forwardBuffer) - Last (Points).X;
 
             // Calculate fetal heart rate variability in amplitude, then draw fetal heart rate line for next period of time
             Replace (Draw.FHR_Rhythm (p));
@@ -1021,7 +1019,7 @@ namespace II.Rhythm {
 
         public void Add_Beat__Obstetric_Contraction_Start (Physiology? p) {
             /* Only TOCO needs to be drawn on ContractionStart, in DeviceEFM */
-            if (p is null || Lead is null || Lead.Value != Lead.Values.TOCO)
+            if (p is null || Lead is null || Lead.Value != Lead.Values.Toco)
                 return;
 
             Replace (Draw.TOCO_Rhythm (p));

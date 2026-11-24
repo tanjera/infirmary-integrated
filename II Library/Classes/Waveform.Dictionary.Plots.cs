@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace II.Waveform {
 	public static partial class Dictionary {
 		public static Plot ABP_Default = new Plot () {
@@ -189,7 +186,7 @@ namespace II.Waveform {
 			}
 		};
 
-		public static Plot IABP_ABP_Nonpulsatile = new Plot () {
+		public static Plot IABPABPNonpulsatile = new Plot () {
 			DrawResolution = 10,
 			IndexOffset = 0,
 			SystoleLength = 0,
@@ -262,7 +259,7 @@ namespace II.Waveform {
 			}
 		};
 
-		public static Plot PA_Default = new Plot () {
+		public static Plot PADefault = new Plot () {
 			DrawResolution = 10,
 			IndexOffset = 0,
 			SystoleLength = 220,
@@ -303,7 +300,7 @@ namespace II.Waveform {
 			}
 		};
 
-		public static Plot SPO2_Rhythm = new Plot () {
+		public static Plot SPO2Rhythm = new Plot () {
 			DrawResolution = 10,
 			IndexOffset = 0,
 			SystoleLength = 330,

@@ -74,25 +74,25 @@ public partial class PanelToneGenerator : UserControl {
         for (int k = 0; k < 2; k++) {
             for (int i = 0; i < (samplesTotal / Length) * .75; i++) {
                 double t = (double)i / (double)samplesPerSecond;
-                short s = (short)(ampl * (System.Math.Sin (t * 330 * 2.0 * System.Math.PI)));
+                short s = (short)(ampl * (Math.Sin (t * 330 * 2.0 * Math.PI)));
                 writer.Write (s);
             }
 
             for (int i = 0; i < (samplesTotal / Length) * .25; i++) {
                 double t = (double)i / (double)samplesPerSecond;
-                short s = (short)(0 * (System.Math.Sin (t * 220 * 2.0 * System.Math.PI)));
+                short s = (short)(0 * (Math.Sin (t * 220 * 2.0 * Math.PI)));
                 writer.Write (s);
             }
 
             for (int i = 0; i < (samplesTotal / Length) * 1; i++) {
                 double t = (double)i / (double)samplesPerSecond;
-                short s = (short)(ampl * (System.Math.Sin (t * 220 * 2.0 * System.Math.PI)));
+                short s = (short)(ampl * (Math.Sin (t * 220 * 2.0 * Math.PI)));
                 writer.Write (s);
             }
 
             for (int i = 0; i < (samplesTotal / Length) * 3; i++) {
                 double t = (double)i / (double)samplesPerSecond;
-                short s = (short)(0 * (System.Math.Sin (t * 220 * 2.0 * System.Math.PI)));
+                short s = (short)(0 * (Math.Sin (t * 220 * 2.0 * Math.PI)));
                 writer.Write (s);
             }
         }

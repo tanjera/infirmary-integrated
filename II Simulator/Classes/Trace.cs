@@ -43,7 +43,7 @@ namespace IISIM {
 
                 using (var sgc = sg.Open ()) {
                     if (strip?.Points is not null && strip?.Points?.Count > 1) {
-                        lock (strip.lockPoints) {
+                        lock (strip.LockPoints) {
                             sgc.BeginFigure (new Point (
                                     (strip.Points [0].X * multiplier.X) + offset.X,
                                     (strip.Points [0].Y * multiplier.Y) + offset.Y),
@@ -88,7 +88,7 @@ namespace IISIM {
                 var sg = new StreamGeometry ();
 
                 using (var sgc = sg.Open ()) {
-                    lock (strip.lockEvents) {
+                    lock (strip.LockEvents) {
                         for (int i = 0; i < strip?.Events?.Count; i++) {
                             if (strip?.Events [i].Type == Event.Types.Pacer && strip.PacerDetection) {
                                 sgc.BeginFigure (new Point (

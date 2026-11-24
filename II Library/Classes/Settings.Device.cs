@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,17 +14,15 @@ using System.Threading.Tasks;
 namespace II.Settings {
     public class Device {
         /* Scenario-specific Settings:
-         * Specific to a running Scenario- may be unloaded and loaded from different Scenario (.ii) files!
+         * Specific to a running Scenario - may be unloaded and loaded from different Scenario (.ii) files!
          *
          * Do *NOT* place Simulation-wide (e.g. device) settings here!
          * (e.g. the user has turned off the audio for the device)
          */
-        
-        private Devices DeviceType;
 
         public List<Alarm> Alarms = new List<Alarm> ();
         public List<Numeric> Numerics = new List<Numeric> ();
-        public List<Numeric> Transducers_Zeroed = new List<Numeric> ();
+        public List<Numeric> TransducersZeroed = new List<Numeric> ();
         public List<Tracing> Tracings = new List<Tracing> ();
         
         public bool IsEnabled { get; set; }
@@ -40,14 +37,14 @@ namespace II.Settings {
         public enum Numeric {
             ECG, T, RR, ETCO2, 
             SPO2, NIBP, ABP, CVP,
-            CO, PA, ICP, IAP, DEFIB
+            CO, PA, ICP, IAP, Defib
         }
         
         public enum Tracing {
-            ECG_I, ECG_II, ECG_III,
-            ECG_AVR, ECG_AVL, ECG_AVF,
-            ECG_V1, ECG_V2, ECG_V3,
-            ECG_V4, ECG_V5, ECG_V6,
+            ECGI, ECGII, ECGIII,
+            ECGAVR, ECGAVL, ECGAVF,
+            ECGV1, ECGV2, ECGV3,
+            ECGV4, ECGV5, ECGV6,
 
             SPO2, RR, ETCO2,
 
@@ -67,23 +64,23 @@ namespace II.Settings {
                 { Numeric.PA, "Pulmonary Arterial Pressures (PA)"},
                 { Numeric.ICP, "Intra-cranial Pressure (ICP)"},
                 { Numeric.IAP, "Intra-abdominal Pressure (IAP)"},
-                { Numeric.DEFIB, "Defibrillator Settings" }
+                { Numeric.Defib, "Defibrillator Settings" }
             };
         
         
         public static Dictionary<Tracing, string> TracingLookup = new () {
-            { Tracing.ECG_I, "Electrocardiograph (ECG): Lead I"},
-            { Tracing.ECG_II, "Electrocardiograph (ECG): Lead II"},
-            { Tracing.ECG_III, "Electrocardiograph (ECG): Lead III"},
-            { Tracing.ECG_AVR, "Electrocardiograph (ECG): Lead aVR"},
-            { Tracing.ECG_AVL, "Electrocardiograph (ECG): Lead aVL"},
-            { Tracing.ECG_AVF, "Electrocardiograph (ECG): Lead aVF"},
-            { Tracing.ECG_V1, "Electrocardiograph (ECG): Lead V1"},
-            { Tracing.ECG_V2, "Electrocardiograph (ECG): Lead V2"},
-            { Tracing.ECG_V3, "Electrocardiograph (ECG): Lead V3"},
-            { Tracing.ECG_V4, "Electrocardiograph (ECG): Lead V4"},
-            { Tracing.ECG_V5, "Electrocardiograph (ECG): Lead V5"},
-            { Tracing.ECG_V6, "Electrocardiograph (ECG): Lead V6"},
+            { Tracing.ECGI, "Electrocardiograph (ECG): Lead I"},
+            { Tracing.ECGII, "Electrocardiograph (ECG): Lead II"},
+            { Tracing.ECGIII, "Electrocardiograph (ECG): Lead III"},
+            { Tracing.ECGAVR, "Electrocardiograph (ECG): Lead aVR"},
+            { Tracing.ECGAVL, "Electrocardiograph (ECG): Lead aVL"},
+            { Tracing.ECGAVF, "Electrocardiograph (ECG): Lead aVF"},
+            { Tracing.ECGV1, "Electrocardiograph (ECG): Lead V1"},
+            { Tracing.ECGV2, "Electrocardiograph (ECG): Lead V2"},
+            { Tracing.ECGV3, "Electrocardiograph (ECG): Lead V3"},
+            { Tracing.ECGV4, "Electrocardiograph (ECG): Lead V4"},
+            { Tracing.ECGV5, "Electrocardiograph (ECG): Lead V5"},
+            { Tracing.ECGV6, "Electrocardiograph (ECG): Lead V6"},
             { Tracing.RR, "Respiratory Rate (RR)"},
             { Tracing.ETCO2, "End-tidal Carbon Dioxide (ETCO2)" },
             { Tracing.SPO2, "Pulse Oximetry (SpO2)" },
@@ -95,37 +92,33 @@ namespace II.Settings {
         };
 
         public Device (Devices d) {
-            DeviceType = d;
-
-            switch (DeviceType) {
-                default: break;
-                
+            switch (d) {
                 case Devices.Monitor:
-                    Numerics = new List<Numeric> () {
+                    Numerics = new List<Numeric> {
                         Numeric.ECG,
                         Numeric.NIBP,
                         Numeric.SPO2
                     };
                     
-                    Tracings = new List<Tracing> () {
-                        Tracing.ECG_II,
-                        Tracing.ECG_III,
+                    Tracings = new List<Tracing> {
+                        Tracing.ECGII,
+                        Tracing.ECGIII,
                         Tracing.SPO2
                     };
                     
-                    Alarms = new (Alarm.DefaultListing_Adult);
+                    Alarms = new (Alarm.DefaultListingAdult);
                     break;
             
                 case Devices.Defib:
-                    Numerics = new List<Numeric> () {
-                        Numeric.DEFIB,
+                    Numerics = new List<Numeric> {
+                        Numeric.Defib,
                         Numeric.ECG,
                         Numeric.NIBP,
                         Numeric.SPO2
                     };
                     
-                    Tracings = new List<Tracing> () {
-                        Tracing.ECG_II,
+                    Tracings = new List<Tracing> {
+                        Tracing.ECGII,
                         Tracing.SPO2
                     };
                     break;
@@ -161,7 +154,7 @@ namespace II.Settings {
                         or Numeric.ABP
                         or Numeric.CVP
                         or Numeric.PA
-                        or Numeric.DEFIB;
+                        or Numeric.Defib;
             }
         }
         
@@ -171,10 +164,10 @@ namespace II.Settings {
                 default: return false;
                     
                     case Devices.Monitor:
-                    return t is Tracing.ECG_I or Tracing.ECG_II or Tracing.ECG_III
-                        or Tracing.ECG_AVF or Tracing.ECG_AVL or Tracing.ECG_AVR
-                        or Tracing.ECG_V1 or Tracing.ECG_V2 or Tracing.ECG_V3
-                        or Tracing.ECG_V4 or Tracing.ECG_V5 or Tracing.ECG_V6
+                    return t is Tracing.ECGI or Tracing.ECGII or Tracing.ECGIII
+                        or Tracing.ECGAVF or Tracing.ECGAVL or Tracing.ECGAVR
+                        or Tracing.ECGV1 or Tracing.ECGV2 or Tracing.ECGV3
+                        or Tracing.ECGV4 or Tracing.ECGV5 or Tracing.ECGV6
                         or Tracing.SPO2
                         or Tracing.CVP
                         or Tracing.ABP
@@ -184,10 +177,10 @@ namespace II.Settings {
                         or Tracing.ICP or Tracing.IAP;
                 
                 case Devices.Defib:
-                    return t is Tracing.ECG_I or Tracing.ECG_II or Tracing.ECG_III
-                        or Tracing.ECG_AVF or Tracing.ECG_AVL or Tracing.ECG_AVR
-                        or Tracing.ECG_V1 or Tracing.ECG_V2 or Tracing.ECG_V3
-                        or Tracing.ECG_V4 or Tracing.ECG_V5 or Tracing.ECG_V6
+                    return t is Tracing.ECGI or Tracing.ECGII or Tracing.ECGIII
+                        or Tracing.ECGAVF or Tracing.ECGAVL or Tracing.ECGAVR
+                        or Tracing.ECGV1 or Tracing.ECGV2 or Tracing.ECGV3
+                        or Tracing.ECGV4 or Tracing.ECGV5 or Tracing.ECGV6
                         or Tracing.SPO2
                         or Tracing.CVP
                         or Tracing.ABP
@@ -219,13 +212,12 @@ namespace II.Settings {
                             pValue = line.Substring (line.IndexOf (':') + 1).Trim ();
 
                         switch (pName) {
-                            default: break;
                             case "IsEnabled": IsEnabled = bool.Parse (pValue); break;
 
                             case "Numerics":
                                 Numerics = new();
                                 foreach (string s in pValue.Split (',')) {
-                                    if (Enum.TryParse<Numeric> (s, true, out Numeric res)) {
+                                    if (Enum.TryParse (s, true, out Numeric res)) {
                                         Numerics.Add (res);
                                     }
                                 }
@@ -233,10 +225,10 @@ namespace II.Settings {
                                 break;
                             
                             case "Numerics_Zeroed":
-                                Transducers_Zeroed = new();
+                                TransducersZeroed = new();
                                 foreach (string s in pValue.Split (',')) {
-                                    if (Enum.TryParse<Numeric> (s, true, out Numeric res)) {
-                                        Transducers_Zeroed.Add (res);
+                                    if (Enum.TryParse (s, true, out Numeric res)) {
+                                        TransducersZeroed.Add (res);
                                     }
                                 }
                                 break;
@@ -244,7 +236,7 @@ namespace II.Settings {
                             case "Tracings":
                                 Tracings = new();
                                 foreach (string s in pValue.Split (',')) {
-                                    if (Enum.TryParse<Tracing> (s, true, out Tracing res)) {
+                                    if (Enum.TryParse (s, true, out Tracing res)) {
                                         Tracings.Add (res);
                                     }
                                 }
@@ -273,11 +265,11 @@ namespace II.Settings {
                     string.Join (',', Numerics)));
             }
             
-            if (Transducers_Zeroed.Count > 0) {
+            if (TransducersZeroed.Count > 0) {
                 sw.AppendLine (String.Format ("{0}{1}:{2}", 
                     dent,
                     "Numerics_Zeroed", 
-                    string.Join (',', Transducers_Zeroed)));
+                    string.Join (',', TransducersZeroed)));
             }
             
             /* Save() the Tracings */
@@ -306,7 +298,7 @@ namespace II.Settings {
 
             try {
                 while (!String.IsNullOrEmpty (line = await sRead.ReadLineAsync ())) {
-                    Alarm? alarm = new ();
+                    Alarm alarm = new ();
                     await alarm.Load (line);
                     if (alarm.Parameter is not null)
                         Alarms.Add (alarm);

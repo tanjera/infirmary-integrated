@@ -47,7 +47,7 @@ namespace IISE.Windows {
         
         private StackPanel vspMonitorNumerics;
         private StackPanel vspMonitorTracings;
-        private StackPanel vspMonitorAlarms;
+        private StackPanel _vspMonitorAlarms;
         private List<PropertyNumeric> listMonitorNumerics;
         private List<PropertyTracing> listMonitorTracings;
         private List<PropertyAlarm> listMonitorAlarms;
@@ -89,7 +89,7 @@ namespace IISE.Windows {
 
             vspMonitorNumerics = this.GetControl<StackPanel> ("spMonitorNumerics");
             vspMonitorTracings = this.GetControl<StackPanel> ("spMonitorTracings");
-            vspMonitorAlarms = this.GetControl<StackPanel> ("spMonitorAlarms");
+            _vspMonitorAlarms = this.GetControl<StackPanel> ("spMonitorAlarms");
 
             vspDefibNumerics = this.GetControl<StackPanel> ("spDefibNumerics");
             vspDefibTracings = this.GetControl<StackPanel> ("spDefibTracings");
@@ -127,7 +127,7 @@ namespace IISE.Windows {
                 await pn.Init(Device.Devices.Monitor, 
                     i, 
                     Scenario.DeviceMonitor.Numerics[i],
-                    Scenario.DeviceMonitor.Transducers_Zeroed.Contains(Scenario.DeviceMonitor.Numerics [i]));
+                    Scenario.DeviceMonitor.TransducersZeroed.Contains(Scenario.DeviceMonitor.Numerics [i]));
 
                 pn.PropertyChanged += UpdateScenario;
                 
@@ -156,7 +156,7 @@ namespace IISE.Windows {
 
                 pa.PropertyChanged += UpdateScenario;
 
-                vspMonitorAlarms.Children.Add (pa);
+                _vspMonitorAlarms.Children.Add (pa);
                 listMonitorAlarms.Add (pa);
             }
             
@@ -169,7 +169,7 @@ namespace IISE.Windows {
                 await pn.Init(Device.Devices.Defib, 
                     i, 
                     Scenario.DeviceDefib.Numerics[i],
-                    Scenario.DeviceDefib.Transducers_Zeroed.Contains(Scenario.DeviceDefib.Numerics [i]));
+                    Scenario.DeviceDefib.TransducersZeroed.Contains(Scenario.DeviceDefib.Numerics [i]));
 
                 pn.PropertyChanged += UpdateScenario;
                 
@@ -206,11 +206,11 @@ namespace IISE.Windows {
                                 RemoveNumeric(sender, e);
 
                             // If needed, toggle if the transducer is zeroed
-                            if (e.Numeric_Zeroed && !Scenario.DeviceMonitor.Transducers_Zeroed.Contains(e.Numeric)) {
-                                Scenario.DeviceMonitor.Transducers_Zeroed.Add(e.Numeric);
+                            if (e.Numeric_Zeroed && !Scenario.DeviceMonitor.TransducersZeroed.Contains(e.Numeric)) {
+                                Scenario.DeviceMonitor.TransducersZeroed.Add(e.Numeric);
                             } else if (!e.Numeric_Zeroed &&
-                                       Scenario.DeviceMonitor.Transducers_Zeroed.Contains (e.Numeric)) {
-                                Scenario.DeviceMonitor.Transducers_Zeroed.Remove(e.Numeric);
+                                       Scenario.DeviceMonitor.TransducersZeroed.Contains (e.Numeric)) {
+                                Scenario.DeviceMonitor.TransducersZeroed.Remove(e.Numeric);
                             }
                             
                             Scenario.DeviceMonitor.Numerics = new ();
@@ -220,7 +220,7 @@ namespace IISE.Windows {
                                 Scenario.DeviceMonitor.Numerics.Add (pn.Numeric);
                                 
                                 // Ensure duplicate PropertyNumerics have matching chkTransducers
-                                pn.SetTransducer (Scenario.DeviceMonitor.Transducers_Zeroed.Contains (pn.Numeric));
+                                pn.SetTransducer (Scenario.DeviceMonitor.TransducersZeroed.Contains (pn.Numeric));
                             }
                         }
                         break;
@@ -236,11 +236,11 @@ namespace IISE.Windows {
                                 RemoveNumeric(sender, e);
 
                             // If needed, toggle if the transducer is zeroed
-                            if (e.Numeric_Zeroed && !Scenario.DeviceDefib.Transducers_Zeroed.Contains(e.Numeric)) {
-                                Scenario.DeviceDefib.Transducers_Zeroed.Add(e.Numeric);
+                            if (e.Numeric_Zeroed && !Scenario.DeviceDefib.TransducersZeroed.Contains(e.Numeric)) {
+                                Scenario.DeviceDefib.TransducersZeroed.Add(e.Numeric);
                             } else if (!e.Numeric_Zeroed &&
-                                       Scenario.DeviceDefib.Transducers_Zeroed.Contains (e.Numeric)) {
-                                Scenario.DeviceDefib.Transducers_Zeroed.Remove(e.Numeric);
+                                       Scenario.DeviceDefib.TransducersZeroed.Contains (e.Numeric)) {
+                                Scenario.DeviceDefib.TransducersZeroed.Remove(e.Numeric);
                             }
                             
                             Scenario.DeviceDefib.Numerics = new ();
@@ -250,7 +250,7 @@ namespace IISE.Windows {
                                 Scenario.DeviceDefib.Numerics.Add (pn.Numeric);
                                 
                                 // Ensure duplicate PropertyNumerics have matching chkTransducers
-                                pn.SetTransducer (Scenario.DeviceDefib.Transducers_Zeroed.Contains (pn.Numeric));
+                                pn.SetTransducer (Scenario.DeviceDefib.TransducersZeroed.Contains (pn.Numeric));
                             }
                         }
                         break;
@@ -356,7 +356,7 @@ namespace IISE.Windows {
                         Index = i,
                         Device = Device.Devices.Monitor,
                         Numeric = Scenario.DeviceMonitor.Numerics [i],
-                        Numeric_Zeroed = Scenario.DeviceMonitor.Transducers_Zeroed.Contains(Scenario.DeviceMonitor.Numerics [i])
+                        Numeric_Zeroed = Scenario.DeviceMonitor.TransducersZeroed.Contains(Scenario.DeviceMonitor.Numerics [i])
                     });
                 } else {                                   // Add new as needed
                     PropertyNumeric pn = new ();
@@ -364,7 +364,7 @@ namespace IISE.Windows {
                     await pn.Init(Device.Devices.Monitor, 
                         i, 
                         Scenario.DeviceMonitor.Numerics[i],
-                        Scenario.DeviceMonitor.Transducers_Zeroed.Contains(Scenario.DeviceMonitor.Numerics [i]));
+                        Scenario.DeviceMonitor.TransducersZeroed.Contains(Scenario.DeviceMonitor.Numerics [i]));
 
                     pn.PropertyChanged += UpdateScenario;
                 
@@ -424,7 +424,7 @@ namespace IISE.Windows {
                         Index = i,
                         Device = Device.Devices.Defib,
                         Numeric = Scenario.DeviceDefib.Numerics [i],
-                        Numeric_Zeroed = Scenario.DeviceDefib.Transducers_Zeroed.Contains(Scenario.DeviceDefib.Numerics [i])
+                        Numeric_Zeroed = Scenario.DeviceDefib.TransducersZeroed.Contains(Scenario.DeviceDefib.Numerics [i])
                     });
                 } else {                                   // Add new as needed
                     PropertyNumeric pn = new ();
@@ -432,7 +432,7 @@ namespace IISE.Windows {
                     await pn.Init(Device.Devices.Defib, 
                         i, 
                         Scenario.DeviceDefib.Numerics[i],
-                        Scenario.DeviceDefib.Transducers_Zeroed.Contains(Scenario.DeviceDefib.Numerics [i]));
+                        Scenario.DeviceDefib.TransducersZeroed.Contains(Scenario.DeviceDefib.Numerics [i]));
 
                     pn.PropertyChanged += UpdateScenario;
                 
@@ -489,8 +489,8 @@ namespace IISE.Windows {
             };
             
             List<Device.Numeric>? ldnz = e.Device switch {
-                Device.Devices.Monitor => Scenario?.DeviceMonitor?.Transducers_Zeroed,
-                Device.Devices.Defib => Scenario?.DeviceDefib?.Transducers_Zeroed,
+                Device.Devices.Monitor => Scenario?.DeviceMonitor?.TransducersZeroed,
+                Device.Devices.Defib => Scenario?.DeviceDefib?.TransducersZeroed,
                 _ => null
             };
             

@@ -56,7 +56,7 @@ namespace IISIM {
             this.GetControl<Button> ("btnContinue").Content = Instance.Language.Localize ("BUTTON:Continue");
 
             ComboBox cmbLanguages = this.GetControl<ComboBox> ("cmbLanguages");
-                foreach (string each in II.Localization.Language.Descriptions)
+                foreach (string each in Language.Descriptions)
                 cmbLanguages.Items.Add(new MenuItem() {
                     Header =  each,
                 });
@@ -82,7 +82,7 @@ namespace IISIM {
                     Message = Instance.Language.Localize ("MESSAGE:RestartForChanges"),
                     Title = Instance.Language.Localize ("MESSAGE:Restart"),
                     Indicator = DialogMessage.Indicators.InfirmaryIntegrated,
-                    Option = DialogMessage.Options.OK,
+                    Option = DialogMessage.Options.Ok,
                 };
 
                 if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window

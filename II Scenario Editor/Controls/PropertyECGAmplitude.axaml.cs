@@ -60,11 +60,11 @@ namespace IISE.Controls {
             Key = key;
             switch (Key) {
                 default: break;
-                case Keys.PAmplitude: lblKey.Content = "P Wave Amplitude: "; break;
-                case Keys.QAmplitude: lblKey.Content = "Q Wave Amplitude: "; break;
-                case Keys.RAmplitude: lblKey.Content = "R Wave Amplitude: "; break;
-                case Keys.SAmplitude: lblKey.Content = "S Wave Amplitude: "; break;
-                case Keys.TAmplitude: lblKey.Content = "T Wave Amplitude: "; break;
+                case Keys.PAmplitude: lblKey.Content = "P Wave Amplitude (Multiplier): "; break;
+                case Keys.QAmplitude: lblKey.Content = "Q Wave Amplitude (Multiplier): "; break;
+                case Keys.RAmplitude: lblKey.Content = "R Wave Amplitude (Multiplier): "; break;
+                case Keys.SAmplitude: lblKey.Content = "S Wave Amplitude (Multiplier): "; break;
+                case Keys.TAmplitude: lblKey.Content = "T Wave Amplitude (Multiplier): "; break;
             }
 
             if (!isInitiated) {

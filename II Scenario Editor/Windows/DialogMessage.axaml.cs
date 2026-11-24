@@ -23,7 +23,7 @@ namespace IISE {
         public string? Message { get; set; }
         public Indicators Indicator { get; set; }
         public Options Option { get; set; }
-        private Responses? Response;
+        private Responses? _response;
 
         public enum Indicators {
             None,
@@ -83,7 +83,7 @@ namespace IISE {
                     btnRight.IsVisible = true;
                     btnRight.Content = "OK";
 
-                    Response = Responses.OK;            // Default response
+                    _response = Responses.OK;            // Default response
                     break;
 
                 case Options.YesNo:
@@ -92,7 +92,7 @@ namespace IISE {
                     btnRight.IsVisible = true;
                     btnRight.Content = "Yes";
 
-                    Response = Responses.No;            // Default response
+                    _response = Responses.No;            // Default response
                     break;
             }
         }
@@ -106,12 +106,12 @@ namespace IISE {
             this.Activate ();
             await this.ShowDialog (parent);
 
-            return Response;
+            return _response;
         }
 
         public void btnLeft_Click (object sender, RoutedEventArgs e) {
             switch (Option) {
-                case Options.YesNo: Response = Responses.No; break;
+                case Options.YesNo: _response = Responses.No; break;
             }
 
             this.Close ();
@@ -119,8 +119,8 @@ namespace IISE {
 
         public void btnRight_Click (object sender, RoutedEventArgs e) {
             switch (Option) {
-                case Options.OK: Response = Responses.OK; break;
-                case Options.YesNo: Response = Responses.Yes; break;
+                case Options.OK: _response = Responses.OK; break;
+                case Options.YesNo: _response = Responses.Yes; break;
             }
 
             this.Close ();

@@ -24,14 +24,14 @@ namespace IISIM.Controls {
 
     public partial class DefibTracing : DeviceTracing {
         private MenuItem? uiMenuZeroTransducer;
-        private MenuItem? uiMenuToggleAutoScale;
+        private MenuItem? _uiMenuToggleAutoScale;
 
-        private List<II.Settings.Device.Numeric>? Transducers_Zeroed {
+        private List<Device.Numeric>? Transducers_Zeroed {
             set { 
                 if (Instance?.Scenario?.DeviceDefib is not null)
-                    Instance.Scenario.DeviceDefib.Transducers_Zeroed = value ?? new List<II.Settings.Device.Numeric> (); 
+                    Instance.Scenario.DeviceDefib.TransducersZeroed = value ?? new List<Device.Numeric> (); 
             }
-            get { return Instance?.Scenario?.DeviceDefib.Transducers_Zeroed; }
+            get { return Instance?.Scenario?.DeviceDefib.TransducersZeroed; }
         }
         
         public DefibTracing () {
@@ -109,12 +109,12 @@ namespace IISIM.Controls {
             menuContext.Items.Add (new Separator ());
 
             if (Strip?.CanScale ?? false) {
-                uiMenuToggleAutoScale = new MenuItem ();
-                uiMenuToggleAutoScale.Header = Instance?.Language.Localize ("MENU:ToggleAutoScaling");
-                uiMenuToggleAutoScale.Classes.Add ("item");
-                uiMenuToggleAutoScale.Click += MenuToggleAutoScale_Click;
+                _uiMenuToggleAutoScale = new MenuItem ();
+                _uiMenuToggleAutoScale.Header = Instance?.Language.Localize ("MENU:ToggleAutoScaling");
+                _uiMenuToggleAutoScale.Classes.Add ("item");
+                _uiMenuToggleAutoScale.Click += MenuToggleAutoScale_Click;
                 
-                menuContext.Items.Add (uiMenuToggleAutoScale);
+                menuContext.Items.Add (_uiMenuToggleAutoScale);
                 menuContext.Items.Add (new Separator ());
             }
 
@@ -160,7 +160,7 @@ namespace IISIM.Controls {
 
         private void UpdateInterface (object sender, EventArgs e) {
             Dispatcher.UIThread.InvokeAsync (() => {
-                TracingBrush = Color.GetLead (Lead?.Value ?? Lead.Values.ECG_I, ColorScheme ?? Color.Schemes.Light);
+                TracingBrush = Color.GetLead (Lead?.Value ?? Lead.Values.ECGI, ColorScheme ?? Color.Schemes.Light);
                 TracingBrushAlt = TracingBrush == Brushes.Green ? Brushes.White : Brushes.Black;
 
                 Border borderTracing = this.GetControl<Border> ("borderTracing");
@@ -252,7 +252,7 @@ namespace IISIM.Controls {
         }
 
         private void MenuSelectInputSource (object? sender, RoutedEventArgs e) {
-            if (sender is null || !Enum.TryParse<Lead.Values> (((MenuItem)sender).Name, out Lead.Values selectedValue))
+            if (sender is null || !Enum.TryParse (((MenuItem)sender).Name, out Lead.Values selectedValue))
                 return;
 
             Strip?.SetLead (selectedValue);

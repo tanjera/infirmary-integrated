@@ -47,7 +47,7 @@ namespace IISE.Controls {
             StrokeThickness_Default = .5d,
             StrokeThickness_Selected = 2.0d;
       
-        public II.Physiology Physiology {
+        public Physiology Physiology {
             get { return Step.Physiology; }
             set { Step.Physiology = value; }
         }

@@ -18,12 +18,12 @@ using Avalonia.Threading;
 namespace IIDT;
 
 public partial class PanelDictionaryBuilder : UserControl {
-    private Window Control;
-    private string SolutionDir = "";
+    private Window _control;
+    private string _solutionDir = "";
     
     public PanelDictionaryBuilder (Window control, string solutionDir) {
-        Control = control;
-        SolutionDir = solutionDir;
+        _control = control;
+        _solutionDir = solutionDir;
         
         InitializeComponent ();
         
@@ -47,10 +47,10 @@ public partial class PanelDictionaryBuilder : UserControl {
                     Option = DialogMessage.Options.OK,
                 };
 
-                if (!Control.IsVisible)                    // Avalonia's parent must be visible to attach a window
-                    Control.Show ();
+                if (!_control.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                    _control.Show ();
 
-                await dlg.AsyncShow (Control);
+                await dlg.AsyncShow (_control);
             });
 
             return;
@@ -132,15 +132,15 @@ public partial class PanelDictionaryBuilder : UserControl {
                 Option = DialogMessage.Options.OK,
             };
 
-            if (!Control.IsVisible)                    // Avalonia's parent must be visible to attach a window
-                Control.Show ();
+            if (!_control.IsVisible)                    // Avalonia's parent must be visible to attach a window
+                _control.Show ();
 
-            await dlg.AsyncShow (Control);
+            await dlg.AsyncShow (_control);
         });
     }
     
     private async Task SelectInputFile () {
-        if (!Control.StorageProvider.CanOpen) {
+        if (!_control.StorageProvider.CanOpen) {
             return;
         }
             
@@ -156,10 +156,10 @@ public partial class PanelDictionaryBuilder : UserControl {
             },
             AllowMultiple = false,
             SuggestedStartLocation = 
-                await Control.StorageProvider.TryGetFolderFromPathAsync (Path.Combine(SolutionDir, "II Library/"))
+                await _control.StorageProvider.TryGetFolderFromPathAsync (Path.Combine(_solutionDir, "II Library/"))
         };
 
-        var files = await Control.StorageProvider.OpenFilePickerAsync(fpoo);
+        var files = await _control.StorageProvider.OpenFilePickerAsync(fpoo);
 
         if (files.First()?.TryGetLocalPath() is not null) {
             this.GetControl<TextBox> ("tbInputFilepath").Text = files?.First()?.TryGetLocalPath();
@@ -167,7 +167,7 @@ public partial class PanelDictionaryBuilder : UserControl {
     }
 
     private async Task SelectOutputFile () {
-        if (!Control.StorageProvider.CanSave) {
+        if (!_control.StorageProvider.CanSave) {
             return;
         }
         
@@ -183,11 +183,11 @@ public partial class PanelDictionaryBuilder : UserControl {
                 }
             },
             SuggestedStartLocation =
-                await Control.StorageProvider.TryGetFolderFromPathAsync (Path.Combine(SolutionDir, "II Library/Classes/")),
+                await _control.StorageProvider.TryGetFolderFromPathAsync (Path.Combine(_solutionDir, "II Library/Classes/")),
             ShowOverwritePrompt = false
         };
         
-        IStorageFile? file = await Control.StorageProvider.SaveFilePickerAsync(fpso);
+        IStorageFile? file = await _control.StorageProvider.SaveFilePickerAsync(fpso);
 
         if (file is not null && file.TryGetLocalPath () is not null) {
             this.GetControl<TextBox> ("tbOutputFilepath").Text = file.TryGetLocalPath (); 

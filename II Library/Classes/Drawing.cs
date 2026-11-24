@@ -4,8 +4,6 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace II.Drawing {
     public class Event {
@@ -57,7 +55,7 @@ namespace II.Drawing {
             return HashCode.Combine (X, Y);
         }
 
-        public static bool operator == (PointD lhs, PointD rhs) {
+        public static bool operator == (PointD? lhs, PointD? rhs) {
             if (lhs is null && rhs is null)
                 return true;
             else if (lhs is null || rhs is null)
@@ -66,7 +64,7 @@ namespace II.Drawing {
             return lhs.Equals (rhs);
         }
 
-        public static bool operator != (PointD lhs, PointD rhs) {
+        public static bool operator != (PointD? lhs, PointD? rhs) {
             if (lhs is null && rhs is null)
                 return false;
             else if (lhs is null || rhs is null)

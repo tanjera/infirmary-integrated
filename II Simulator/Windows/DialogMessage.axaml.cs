@@ -25,7 +25,7 @@ namespace IISIM {
         public string? Message { get; set; }
         public Indicators Indicator { get; set; }
         public Options Option { get; set; }
-        private Responses? Response;
+        private Responses? _response;
 
         public enum Indicators {
             None,
@@ -35,12 +35,12 @@ namespace IISIM {
         }
 
         public enum Options {
-            OK,
+            Ok,
             YesNo
         }
 
         public enum Responses {
-            OK,
+            Ok,
             Yes,
             No
         }
@@ -87,11 +87,11 @@ namespace IISIM {
 
             switch (Option) {
                 default:
-                case Options.OK:
+                case Options.Ok:
                     btnRight.IsVisible = true;
                     btnRight.Content = Instance?.Language.Localize ("BUTTON:Continue"); ;
 
-                    Response = Responses.OK;            // Default response
+                    _response = Responses.Ok;            // Default response
                     break;
 
                 case Options.YesNo:
@@ -100,7 +100,7 @@ namespace IISIM {
                     btnRight.IsVisible = true;
                     btnRight.Content = Instance?.Language.Localize ("BUTTON:Yes");
 
-                    Response = Responses.No;            // Default response
+                    _response = Responses.No;            // Default response
                     break;
             }
         }
@@ -114,12 +114,12 @@ namespace IISIM {
             this.Activate ();
             await this.ShowDialog (parent);
 
-            return Response;
+            return _response;
         }
 
         public void btnLeft_Click (object sender, RoutedEventArgs e) {
             switch (Option) {
-                case Options.YesNo: Response = Responses.No; break;
+                case Options.YesNo: _response = Responses.No; break;
             }
 
             this.Close ();
@@ -127,8 +127,8 @@ namespace IISIM {
 
         public void btnRight_Click (object sender, RoutedEventArgs e) {
             switch (Option) {
-                case Options.OK: Response = Responses.OK; break;
-                case Options.YesNo: Response = Responses.Yes; break;
+                case Options.Ok: _response = Responses.Ok; break;
+                case Options.YesNo: _response = Responses.Yes; break;
             }
 
             this.Close ();

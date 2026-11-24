@@ -62,7 +62,7 @@ namespace IISIM {
             this.GetControl<TextBlock> ("txtAdminPassword").Text = Instance.Language.Localize ("MIRROR:AdminPassword");
 
             this.GetControl<TextBox> ("tbServerAddress").Text = Instance.Mirror.ServerAddress;
-            this.GetControl<TextBox> ("tbServerAddress").Watermark = II.Server.Mirror.DefaultServer;
+            this.GetControl<TextBox> ("tbServerAddress").Watermark = Mirror.DefaultServer;
             
             this.GetControl<TextBox> ("tbAccessionKey").Text = !String.IsNullOrEmpty(Instance.Mirror.Accession) 
                 ? Instance.Mirror.Accession : "";
@@ -87,16 +87,16 @@ namespace IISIM {
             }
 
             if (this.GetControl<TextBox> ("tbServerAddress").Text?.Length == 0)
-                this.GetControl<TextBox> ("tbServerAddress").Text = II.Server.Mirror.DefaultServer;
+                this.GetControl<TextBox> ("tbServerAddress").Text = Mirror.DefaultServer;
                 
             
             Regex regex = new ("^[a-zA-Z0-9]*$");
             if (this.GetControl<TextBox> ("tbServerAddress").Text?.Length > 0
                 && this.GetControl<TextBox> ("tbAccessionKey").Text?.Length > 0
                     && regex.IsMatch (this.GetControl<TextBox> ("tbAccessionKey")?.Text ?? "")) {
-                Instance.Mirror.Status = II.Server.Mirror.Statuses.HOST;
+                Instance.Mirror.Status = Mirror.Statuses.HOST;
                 Instance.Mirror.ServerAddress =
-                    this.GetControl<TextBox> ("tbServerAddress").Text ?? II.Server.Mirror.DefaultServer;
+                    this.GetControl<TextBox> ("tbServerAddress").Text ?? Mirror.DefaultServer;
                 Instance.Mirror.Accession = this.GetControl<TextBox> ("tbAccessionKey").Text ?? "";
                 Instance.Mirror.PasswordAccess = this.GetControl<TextBox> ("tbAccessPassword").Text ?? "";
                 Instance.Mirror.PasswordEdit = this.GetControl<TextBox> ("tbAdminPassword").Text ?? "";
@@ -112,14 +112,14 @@ namespace IISIM {
                             break;
                         
                         case Server.ServerResponse.ErrorCredentials:
-                            Instance.Mirror.Status = II.Server.Mirror.Statuses.INACTIVE;
+                            Instance.Mirror.Status = Mirror.Statuses.INACTIVE;
                             
                             await Dispatcher.UIThread.InvokeAsync (async () => {
                                 DialogMessage dlg = new (Instance) {
                                     Message = Instance.Language.Localize ("MIRROR:ErrorServerEmptyResponse"),
                                     Title = Instance.Language.Localize ("MIRROR:Error"),
                                     Indicator = DialogMessage.Indicators.Error,
-                                    Option = DialogMessage.Options.OK,
+                                    Option = DialogMessage.Options.Ok,
                                 };
 
                                 if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
@@ -130,14 +130,14 @@ namespace IISIM {
                             break;
                         
                         case Server.ServerResponse.ErrorNameResolution: 
-                            Instance.Mirror.Status = II.Server.Mirror.Statuses.INACTIVE;
+                            Instance.Mirror.Status = Mirror.Statuses.INACTIVE;
                             
                             await Dispatcher.UIThread.InvokeAsync (async () => {
                                 DialogMessage dlg = new (Instance) {
                                     Message = Instance.Language.Localize ("MIRROR:ErrorServerInaccessible"),
                                     Title = Instance.Language.Localize ("MIRROR:Error"),
                                     Indicator = DialogMessage.Indicators.Error,
-                                    Option = DialogMessage.Options.OK,
+                                    Option = DialogMessage.Options.Ok,
                                 };
 
                                 if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
@@ -154,7 +154,7 @@ namespace IISIM {
                         Message = Instance.Language.Localize ("MIRROR:SettingsInvalid"),
                         Title = Instance.Language.Localize ("MIRROR:BroadcastTitle"),
                         Indicator = DialogMessage.Indicators.Error,
-                        Option = DialogMessage.Options.OK,
+                        Option = DialogMessage.Options.Ok,
                     };
 
                     if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window

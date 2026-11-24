@@ -15,7 +15,7 @@ namespace IIDT {
 
         public enum Values {
             ECG_I, ECG_II, ECG_III,
-            ECG_AVR, ECG_AVL, ECG_AVF,
+            ECGAVR, ECGAVL, ECG_AVF,
             ECG_V1, ECG_V2, ECG_V3,
             ECG_V4, ECG_V5, ECG_V6,
 

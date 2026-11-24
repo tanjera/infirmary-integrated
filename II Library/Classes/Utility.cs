@@ -5,11 +5,7 @@
 
 using System;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
 
 namespace II {
     public static class Utility {
@@ -34,7 +30,7 @@ namespace II {
         }
 
         public static double UtcStartTime {
-            get { return (double)(DateTime.UtcNow - System.Diagnostics.Process.GetCurrentProcess ().StartTime.ToUniversalTime ()).TotalSeconds; }
+            get { return (double)(DateTime.UtcNow - Process.GetCurrentProcess ().StartTime.ToUniversalTime ()).TotalSeconds; }
         }
 
         public static string? DateOnly_ToString (DateOnly? dt)

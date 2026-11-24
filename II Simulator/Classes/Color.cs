@@ -81,7 +81,7 @@ namespace IISIM {
         }
 
         public static IBrush GetLead (II.Lead.Values? lead, Schemes? scheme) {
-            return GetLead (SwitchLead (lead ?? II.Lead.Values.ECG_I), scheme ?? Schemes.Light);
+            return GetLead (SwitchLead (lead ?? II.Lead.Values.ECGI), scheme ?? Schemes.Light);
         }
 
         public static IBrush GetLead (Leads? lead, Schemes? scheme) {
@@ -93,18 +93,18 @@ namespace IISIM {
         }
 
         public static Leads SwitchLead (II.Lead.Values? lead) => lead switch {
-            II.Lead.Values.ECG_I => Leads.ECG,
-            II.Lead.Values.ECG_II => Leads.ECG,
-            II.Lead.Values.ECG_III => Leads.ECG,
-            II.Lead.Values.ECG_AVF => Leads.ECG,
-            II.Lead.Values.ECG_AVL => Leads.ECG,
-            II.Lead.Values.ECG_AVR => Leads.ECG,
-            II.Lead.Values.ECG_V1 => Leads.ECG,
-            II.Lead.Values.ECG_V2 => Leads.ECG,
-            II.Lead.Values.ECG_V3 => Leads.ECG,
-            II.Lead.Values.ECG_V4 => Leads.ECG,
-            II.Lead.Values.ECG_V5 => Leads.ECG,
-            II.Lead.Values.ECG_V6 => Leads.ECG,
+            II.Lead.Values.ECGI => Leads.ECG,
+            II.Lead.Values.ECGII => Leads.ECG,
+            II.Lead.Values.ECGIII => Leads.ECG,
+            II.Lead.Values.ECGAVF => Leads.ECG,
+            II.Lead.Values.ECGAVL => Leads.ECG,
+            II.Lead.Values.ECGAVR => Leads.ECG,
+            II.Lead.Values.ECGV1 => Leads.ECG,
+            II.Lead.Values.ECGV2 => Leads.ECG,
+            II.Lead.Values.ECGV3 => Leads.ECG,
+            II.Lead.Values.ECGV4 => Leads.ECG,
+            II.Lead.Values.ECGV5 => Leads.ECG,
+            II.Lead.Values.ECGV6 => Leads.ECG,
             II.Lead.Values.SPO2 => Leads.SPO2,
             II.Lead.Values.RR => Leads.RR,
             II.Lead.Values.ETCO2 => Leads.ETCO2,
@@ -115,7 +115,7 @@ namespace IISIM {
             II.Lead.Values.IAP => Leads.IAP,
             II.Lead.Values.IABP => Leads.IABP,
             II.Lead.Values.FHR => Leads.EFM,
-            II.Lead.Values.TOCO => Leads.EFM,
+            II.Lead.Values.Toco => Leads.EFM,
             _ => Leads.ECG
         };
     }

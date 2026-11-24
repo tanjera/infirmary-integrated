@@ -10,12 +10,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
-
 using II.Rhythm;
 using II.Drawing;
-using System.Diagnostics;
-using System.Linq;
 
 namespace II.Waveform {
 
@@ -27,51 +23,40 @@ namespace II.Waveform {
          * Rhythm amplitude modifications
          */
 
-        private static void VaryAmplitude_Random (double _Margin, ref double _Amplitude)
-            => _Amplitude *= ((double)new Random ().NextDouble () * _Margin) + (1 - _Margin);
+        private static void VaryAmplitude_Random (double margin, ref double amplitude)
+            => amplitude *= (new Random ().NextDouble () * margin) + (1 - margin);
 
-        private static void DampenAmplitude_EctopicBeat (Physiology _P, ref double _Amplitude)
-            => _Amplitude *= _P.CardiacRhythm.AberrantBeat ? 0.7d : 1d;
+        private static void DampenAmplitude_EctopicBeat (Physiology p, ref double amplitude)
+            => amplitude *= p.CardiacRhythm.AberrantBeat ? 0.7d : 1d;
 
         // Decreases pulsatility based on decreased diastolic filling time. Linear interpolation of where actual HR
         // is compared to set HR (e.g. for tachycardic runs of irregular rhythms, or premature contractions)
-        private static void DampenAmplitude_DiastolicFillTime (Physiology _P, ref double _Amplitude) {
+        private static void DampenAmplitude_DiastolicFillTime (Physiology p, ref double amplitude) {
             // Utilize actual vital signs from 1 entry ago (because of electromechanical delay, most recent actual HR is for forthcoming pulsatile beat)
-            _Amplitude *= Math.Lerp (1.0d, 0.5d,
-                Math.Clamp ((_P.GetLastVS (Physiology.PhysiologyEventTypes.CardiacBaseline).HR - _P.VS_Settings.HR) / (double)_P.VS_Settings.HR));
+            amplitude *= Math.Lerp (1.0d, 0.5d,
+                Math.Clamp ((p.GetLastVS (Physiology.PhysiologyEventTypes.CardiacBaseline).HR - p.VitalSignsSettings.HR) / (double)p.VitalSignsSettings.HR));
         }
 
-        private static void DampenAmplitude_PulsusParadoxus (Physiology _P, ref double _Amplitude) {
-            if (_P.Pulsus_Paradoxus)
-                _Amplitude *=
-                    ((!_P.Mechanically_Ventilated && !_P.Respiration_Inflated)
-                    || (_P.Mechanically_Ventilated && _P.Respiration_Inflated))
+        private static void DampenAmplitude_PulsusParadoxus (Physiology p, ref double amplitude) {
+            if (p.PulsusParadoxus)
+                amplitude *=
+                    ((!p.MechanicallyVentilated && !p.RespirationInflated)
+                    || (p.MechanicallyVentilated && p.RespirationInflated))
                         ? 0.65d : 1.0d;
         }
 
-        private static void DampenAmplitude_PulsusAlternans (Physiology _P, ref double _Amplitude)
-            => _Amplitude *= (_P.Pulsus_Alternans && _P.CardiacRhythm.AlternansBeat) ? 0.5d : 1d;
+        private static void DampenAmplitude_PulsusAlternans (Physiology p, ref double amplitude)
+            => amplitude *= (p.PulsusAlternans && p.CardiacRhythm.AlternansBeat) ? 0.5d : 1d;
 
-        private static double GetAmplitude_ElectricalAlternans (Physiology _P)
-            => (_P.Electrical_Alternans && _P.CardiacRhythm.AlternansBeat) ? 0.6d : 1d;
-
-        private static void DampenAmplitude_ElectricalAlternans (Physiology _P, ref double _Amplitude)
-            => _Amplitude *= (_P.Electrical_Alternans && _P.CardiacRhythm.AlternansBeat) ? 0.6d : 1d;
-
-        // For arterial rhythms- increased intrathoracic pressure impairs cardiac output
-        private static void DampenAmplitude_IntrathoracicPressure (Physiology _P, ref double _Amplitude) {
-            if (_P.Mechanically_Ventilated)
-                _Amplitude *= _P.Respiration_Inflated ? 1d : 0.7d;
-            else
-                _Amplitude *= !_P.Respiration_Inflated ? 1d : 0.85d;
-        }
+        private static double GetAmplitude_ElectricalAlternans (Physiology? p)
+            => ((p?.ElectricalAlternans ?? false) && p.CardiacRhythm.AlternansBeat) ? 0.6d : 1d;
 
         // For venous rhythms- increased intrathoracic pressure congests venous return
-        private static void MagnifyAmplitude_IntrathoracicPressure (Physiology _P, ref double _Amplitude) {
-            if (_P.Mechanically_Ventilated)
-                _Amplitude *= _P.Respiration_Inflated ? 1d : 1.1d;
+        private static void MagnifyAmplitude_IntrathoracicPressure (Physiology p, ref double amplitude) {
+            if (p.MechanicallyVentilated)
+                amplitude *= p.RespirationInflated ? 1d : 1.1d;
             else
-                _Amplitude *= !_P.Respiration_Inflated ? 1d : 1.1d;
+                amplitude *= !p.RespirationInflated ? 1d : 1.1d;
         }
 
         /*
@@ -80,160 +65,160 @@ namespace II.Waveform {
          * ResolutionTime (default 10) * _Resolution (2) = 20ms between each PointD plotted
          */
 
-        public static List<PointD> Flat_Line (double _Length, double _Isoelectric, double _Resolution = 1) {
+        public static List<PointD> Flat_Line (double length, double isoelectric, double resolution = 1) {
             // Ensure _Resolution as a double does not cause hyper-resolution (clamp at >= 1)
-            _Resolution = System.Math.Max (1, _Resolution);
+            resolution = System.Math.Max (1, resolution);
             
-            return Plotting.Line ((int)(ResolutionTime * _Resolution), _Length, _Isoelectric, new PointD (0, _Isoelectric));
+            return Plotting.Line ((int)(ResolutionTime * resolution), length, isoelectric, new PointD (0, isoelectric));
         }
 
         /*
          * Pulsatile Rhythms
          */
 
-        public static List<PointD> SPO2_Rhythm (Physiology _P, double _Amplitude) {
-            DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
-            DampenAmplitude_PulsusAlternans (_P, ref _Amplitude);
-            DampenAmplitude_PulsusParadoxus (_P, ref _Amplitude);
-            DampenAmplitude_DiastolicFillTime (_P, ref _Amplitude);
+        public static List<PointD> SPO2_Rhythm (Physiology p, double amplitude) {
+            DampenAmplitude_EctopicBeat (p, ref amplitude);
+            DampenAmplitude_PulsusAlternans (p, ref amplitude);
+            DampenAmplitude_PulsusParadoxus (p, ref amplitude);
+            DampenAmplitude_DiastolicFillTime (p, ref amplitude);
 
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch_BySystoleRatio (Dictionary.SPO2_Rhythm, _P), 
-                _Amplitude);
+                Plotting.Stretch_BySystoleRatio (Dictionary.SPO2Rhythm, p), 
+                amplitude);
         }
 
-        public static List<PointD> RR_Rhythm (Physiology _P, bool _Inspire, int _Resolution) {
-            double _Portion = 0.1d;
+        public static List<PointD> RR_Rhythm (Physiology p, bool inspire, int resolution) {
+            double portion = 0.1d;
 
             List<PointD> thisBeat = new ();
-            Plotting.Concatenate (ref thisBeat, Plotting.Line (ResolutionTime * _Resolution, _Portion, 0.3d * (_Inspire ? 1 : -1), Plotting.Last (thisBeat)));
-            Plotting.Concatenate (ref thisBeat, Plotting.Line (ResolutionTime * _Resolution, _Portion, 0d, Plotting.Last (thisBeat)));
+            Plotting.Concatenate (ref thisBeat, Plotting.Line (ResolutionTime * resolution, portion, 0.3d * (inspire ? 1 : -1), Plotting.Last (thisBeat)));
+            Plotting.Concatenate (ref thisBeat, Plotting.Line (ResolutionTime * resolution, portion, 0d, Plotting.Last (thisBeat)));
             return thisBeat;
         }
 
-        public static List<PointD> ETCO2_Rhythm (Physiology _P) {
+        public static List<PointD> ETCO2_Rhythm (Physiology p) {
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch (Dictionary.ETCO2_Default, (double)_P.GetRRInterval_Expiratory),
-                Math.InverseLerp(0, 80, Math.Clamp(_P.ETCO2, 0, 80)) * 1.5);
+                Plotting.Stretch (Dictionary.ETCO2_Default, p.GetRRIntervalExpiratory),
+                Math.InverseLerp(0, 80, Math.Clamp(p.ETCO2, 0, 80)) * 1.5);
         }
 
-        public static List<PointD> ICP_Rhythm (Physiology _P, double _Amplitude) {
-            DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
-            DampenAmplitude_PulsusAlternans (_P, ref _Amplitude);
-            DampenAmplitude_PulsusParadoxus (_P, ref _Amplitude);
-            VaryAmplitude_Random (0.1d, ref _Amplitude);
+        public static List<PointD> ICP_Rhythm (Physiology p, double amplitude) {
+            DampenAmplitude_EctopicBeat (p, ref amplitude);
+            DampenAmplitude_PulsusAlternans (p, ref amplitude);
+            DampenAmplitude_PulsusParadoxus (p, ref amplitude);
+            VaryAmplitude_Random (0.1d, ref amplitude);
 
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Stretch (  // Lerp to change waveform based on intracranial compliance due to ICP
                     Dictionary.Lerp (Dictionary.ICP_HighCompliance, Dictionary.ICP_LowCompliance,
-                        Math.Clamp (Math.InverseLerp (15, 25, _P.ICP), 0, 1)),    // ICP compliance coefficient
-                    _P.GetHRInterval),
-                _Amplitude);
+                        Math.Clamp (Math.InverseLerp (15, 25, p.ICP), 0, 1)),    // ICP compliance coefficient
+                    p.GetHRInterval),
+                amplitude);
         }
 
-        public static List<PointD> IAP_Rhythm (bool isInspiration, Physiology _P, double _Amplitude) {
-            DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
-            DampenAmplitude_PulsusAlternans (_P, ref _Amplitude);
-            DampenAmplitude_PulsusParadoxus (_P, ref _Amplitude);
-            VaryAmplitude_Random (0.1d, ref _Amplitude);
+        public static List<PointD> IAP_Rhythm (bool isInspiration, Physiology p, double amplitude) {
+            DampenAmplitude_EctopicBeat (p, ref amplitude);
+            DampenAmplitude_PulsusAlternans (p, ref amplitude);
+            DampenAmplitude_PulsusParadoxus (p, ref amplitude);
+            VaryAmplitude_Random (0.1d, ref amplitude);
 
             // Abdominal pressure increase on inspiration
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Stretch (Dictionary.IAP_Default, 
-                    isInspiration ? _P.GetRRInterval_Inspiratory : _P.GetRRInterval_Expiratory),
-                _Amplitude);
+                    isInspiration ? p.GetRRIntervalInspiratory : p.GetRRIntervalExpiratory),
+                amplitude);
         }
 
-        public static List<PointD> ABP_Rhythm (Physiology _P, double _Amplitude) {
-            DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
-            DampenAmplitude_PulsusAlternans (_P, ref _Amplitude);
-            DampenAmplitude_PulsusParadoxus (_P, ref _Amplitude);
-            DampenAmplitude_DiastolicFillTime (_P, ref _Amplitude);
+        public static List<PointD> ABP_Rhythm (Physiology p, double amplitude) {
+            DampenAmplitude_EctopicBeat (p, ref amplitude);
+            DampenAmplitude_PulsusAlternans (p, ref amplitude);
+            DampenAmplitude_PulsusParadoxus (p, ref amplitude);
+            DampenAmplitude_DiastolicFillTime (p, ref amplitude);
 
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch_BySystoleRatio(Dictionary.ABP_Default, _P),
-                _Amplitude);
+                Plotting.Stretch_BySystoleRatio(Dictionary.ABP_Default, p),
+                amplitude);
         }
 
-        public static List<PointD> CVP_Rhythm (Physiology _P, double _Amplitude) {
-            MagnifyAmplitude_IntrathoracicPressure (_P, ref _Amplitude);
-            DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
-            DampenAmplitude_DiastolicFillTime (_P, ref _Amplitude);
+        public static List<PointD> CVP_Rhythm (Physiology p, double amplitude) {
+            MagnifyAmplitude_IntrathoracicPressure (p, ref amplitude);
+            DampenAmplitude_EctopicBeat (p, ref amplitude);
+            DampenAmplitude_DiastolicFillTime (p, ref amplitude);
 
-            if (_P.CardiacRhythm.HasAtrialPulse && !_P.CardiacRhythm.AberrantBeat)
+            if (p.CardiacRhythm.HasAtrialPulse && !p.CardiacRhythm.AberrantBeat)
                 return Plotting.Concatenate (new List<PointD> (),
-                    Plotting.Stretch_BySystoleRatio (Dictionary.CVP_Atrioventricular, _P),
-                    _Amplitude);
+                    Plotting.Stretch_BySystoleRatio (Dictionary.CVP_Atrioventricular, p),
+                    amplitude);
             else
                 return Plotting.Concatenate (new List<PointD> (),
-                    Plotting.Stretch_BySystoleRatio (Dictionary.CVP_Ventricular, _P),
-                    _Amplitude);
+                    Plotting.Stretch_BySystoleRatio (Dictionary.CVP_Ventricular, p),
+                    amplitude);
         }
 
-        public static List<PointD> RV_Rhythm (Physiology _P, double _Amplitude) {
-            MagnifyAmplitude_IntrathoracicPressure (_P, ref _Amplitude);
-            DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
+        public static List<PointD> RV_Rhythm (Physiology p, double amplitude) {
+            MagnifyAmplitude_IntrathoracicPressure (p, ref amplitude);
+            DampenAmplitude_EctopicBeat (p, ref amplitude);
 
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch_BySystoleRatio (Dictionary.RV_Default, _P),
-                _Amplitude);
+                Plotting.Stretch_BySystoleRatio (Dictionary.RV_Default, p),
+                amplitude);
         }
 
-        public static List<PointD> PA_Rhythm (Physiology _P, double _Amplitude) {
-            MagnifyAmplitude_IntrathoracicPressure (_P, ref _Amplitude);
-            DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
+        public static List<PointD> PA_Rhythm (Physiology p, double amplitude) {
+            MagnifyAmplitude_IntrathoracicPressure (p, ref amplitude);
+            DampenAmplitude_EctopicBeat (p, ref amplitude);
 
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch_BySystoleRatio (Dictionary.PA_Default, _P),
-                _Amplitude);
+                Plotting.Stretch_BySystoleRatio (Dictionary.PADefault, p),
+                amplitude);
         }
 
-        public static List<PointD> PCW_Rhythm (Physiology _P, double _Amplitude) {
-            MagnifyAmplitude_IntrathoracicPressure (_P, ref _Amplitude);
-            DampenAmplitude_EctopicBeat (_P, ref _Amplitude);
+        public static List<PointD> PCW_Rhythm (Physiology p, double amplitude) {
+            MagnifyAmplitude_IntrathoracicPressure (p, ref amplitude);
+            DampenAmplitude_EctopicBeat (p, ref amplitude);
 
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch_BySystoleRatio (Dictionary.PCW_Default, _P),
-                _Amplitude);
+                Plotting.Stretch_BySystoleRatio (Dictionary.PCW_Default, p),
+                amplitude);
         }
 
-        public static List<PointD> IABP_Balloon_Rhythm (Physiology _P, double _Amplitude) {
+        public static List<PointD> IABP_Balloon_Rhythm (Physiology p, double amplitude) {
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Stretch (Dictionary.IABP_Balloon_Default,
-                Physiology.CalculateHRInterval (_P.GetLastVS (Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Electric).HR) * 0.7f),
-                _Amplitude);
+                Physiology.CalculateHRInterval (p.GetLastVS (Physiology.PhysiologyEventTypes.CardiacVentricularElectric).HR) * 0.7f),
+                amplitude);
         }
 
-        public static List<PointD> IABP_ABP_Rhythm (Physiology _P, double _Amplitude) {
-            DampenAmplitude_PulsusAlternans (_P, ref _Amplitude);
-            DampenAmplitude_PulsusParadoxus (_P, ref _Amplitude);
+        public static List<PointD> IABP_ABP_Rhythm (Physiology p, double amplitude) {
+            DampenAmplitude_PulsusAlternans (p, ref amplitude);
+            DampenAmplitude_PulsusParadoxus (p, ref amplitude);
 
-            if (!_P.CardiacRhythm.HasVentricularPulse)
+            if (!p.CardiacRhythm.HasVentricularPulse)
                 return Plotting.Concatenate (new List<PointD> (),
-                    Plotting.Stretch (Dictionary.IABP_ABP_Nonpulsatile, (double)_P.GetHRInterval),
-                    _Amplitude);
-            else if (_P.CardiacRhythm.AberrantBeat)
+                    Plotting.Stretch (Dictionary.IABPABPNonpulsatile, p.GetHRInterval),
+                    amplitude);
+            else if (p.CardiacRhythm.AberrantBeat)
                 return Plotting.Concatenate (new List<PointD> (),
-                    Plotting.Stretch (Dictionary.IABP_ABP_Ectopic, (double)_P.GetHRInterval),
-                    _Amplitude);
+                    Plotting.Stretch (Dictionary.IABP_ABP_Ectopic, p.GetHRInterval),
+                    amplitude);
             else
                 return Plotting.Concatenate (new List<PointD> (),
-                    Plotting.Stretch (Dictionary.IABP_ABP_Default, Physiology.CalculateHRInterval (_P.GetLastVS (Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Electric).HR)),
-                    _Amplitude);
+                    Plotting.Stretch (Dictionary.IABP_ABP_Default, Physiology.CalculateHRInterval (p.GetLastVS (Physiology.PhysiologyEventTypes.CardiacVentricularElectric).HR)),
+                    amplitude);
         }
 
-        public static List<PointD> FHR_Rhythm (Physiology _P) {
+        public static List<PointD> FHR_Rhythm (Physiology p) {
             return new List<PointD> () {
-                new PointD(0, Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMin_FHR, Strip.DefaultScaleMax_FHR, _P.VS_Actual.FetalHR)))
+                new PointD(0, Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMinFHR, Strip.DefaultScaleMaxFHR, p.VitalSignsActual.FetalHR)))
             };
         }
 
-        public static List<PointD> TOCO_Rhythm (Physiology _P) {
+        public static List<PointD> TOCO_Rhythm (Physiology p) {
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Normalize (
-                    Plotting.Stretch (Dictionary.EFM_Contraction, _P.ObstetricContractionDuration),
-                    Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMin_TOCO, Strip.DefaultScaleMax_TOCO, _P.ObstetricUterineRestingTone)),
-                    Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMin_TOCO, Strip.DefaultScaleMax_TOCO, _P.ObstetricContractionIntensity))));
+                    Plotting.Stretch (Dictionary.EFM_Contraction, p.ObstetricContractionDuration),
+                    Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMinToco, Strip.DefaultScaleMaxToco, p.ObstetricUterineRestingTone)),
+                    Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMinToco, Strip.DefaultScaleMaxToco, p.ObstetricContractionIntensity))));
         }
 
         /* ********************************************************************
@@ -242,209 +227,249 @@ namespace II.Waveform {
          *
          */
 
-        public static List<PointD> ECG_Isoelectric__Atrial_Fibrillation (Physiology? _P, Lead? _L) {
-            if (_P is null || _L is null)
+        public static List<PointD> ECG_Isoelectric__Atrial_Fibrillation (Physiology? p, Lead? l) {
+            if (p is null || l is null)
                 return new ();
-
-            int Fibrillations = (int)System.Math.Ceiling (_P.GetHRInterval / 0.08);
+            
+            int fibrillations = (int)System.Math.Ceiling (p.GetHRInterval / 0.08);
             List<PointD> thisBeat = new ();
-            for (int i = 1; i < Fibrillations; i++)
-                thisBeat = Plotting.Concatenate (thisBeat, ECG_P (_P, _L,
+            for (int i = 1; i < fibrillations; i++)
+                // Note: Wave amplitude coefficient is utilized in the individual wave function (e.g. ECG_P())
+                thisBeat = Plotting.Concatenate (thisBeat, ECG_P (p, l,
                     Math.RandomDbl (0.04d, 0.12d),                                                                          // fibrillatory wave interval
-                    (Math.RandomInt (0, 3) == 0 ? Math.RandomDbl (-0.04d, -0.02d) : Math.RandomDbl (0.02d, 0.06d)),         // fibrillation amplitude
+                    (Math.RandomInt (0, 3) == 0 ? Math.RandomDbl (-0.04d, -0.02d) : Math.RandomDbl (0.02d, 0.06d)),        // fibrillation amplitude
                     0d, Plotting.Last (thisBeat)));
 
             return thisBeat;
         }
 
-        public static List<PointD> ECG_Isoelectric__Atrial_Flutter (Physiology? _P, Lead? _L) {
-            if (_P is null || _L is null)
+        public static List<PointD> ECG_Isoelectric__Atrial_Flutter (Physiology? p, Lead? l) {
+            if (p is null || l is null)
                 return new ();
 
-            int Flutters = (int)Math.Clamp (System.Math.Floor (60 / _P.GetHRInterval * 4), 2, 5);
-            double lengthFlutter = _P.GetHRInterval / Flutters;
+            int flutters = (int)Math.Clamp (System.Math.Floor (60 / p.GetHRInterval * 4), 2, 5);
+            double lengthFlutter = p.GetHRInterval / flutters;
 
             List<PointD> thisBeat = new ();
-            for (int i = 1; i < Flutters; i++)
-                thisBeat = Plotting.Concatenate (thisBeat, ECG_P (_P, _L, lengthFlutter, .1d, 0d, Plotting.Last (thisBeat)));
+            for (int i = 1; i < flutters; i++)
+                // Note: Wave amplitude coefficient is utilized in the individual wave function (e.g. ECG_P())
+                thisBeat = Plotting.Concatenate (thisBeat, ECG_P (p, l, lengthFlutter, .1d,       // Amplitude coefficient 
+                    0d, Plotting.Last (thisBeat)));
             return thisBeat;
         }
 
-        public static List<PointD> ECG_Complex__P_Normal (Physiology? _P, Lead? _L) {
-            if (_P is null || _L is null)
+        public static List<PointD> ECG_Complex__P_Normal (Physiology? p, Lead? l) {
+            if (p is null || l is null)
                 return new ();
 
-            double PR = Math.Lerp (0.16d, 0.2d, Math.Clamp (Math.InverseLerp (60, 160, _P.HR)));
-            return ECG_P (_P, _L, (PR * 2) / 3, .1d, 0d, new PointD (0, 0d));
+            double pr = Math.Lerp (0.16d, 0.2d, Math.Clamp (Math.InverseLerp (60, 160, p.HR)));
+            // Note: Wave amplitude coefficient is utilized in the individual wave function (e.g. ECG_P())
+            return ECG_P (p, l, (pr * 2) / 3, .1d,                                                          // Amplitude coefficient
+                0d, new PointD (0, 0d));
         }
 
-        public static List<PointD> ECG_Complex__QRST_Normal (Physiology? _P, Lead? _L) {
-            if (_P is null || _L is null)
+        public static List<PointD> ECG_Complex__QRST_Normal (Physiology? p, Lead? l) {
+            if (p is null || l is null)
                 return new ();
 
-            double ampl_coeff = GetAmplitude_ElectricalAlternans (_P);
+            double amplitudeAlternans = GetAmplitude_ElectricalAlternans (p);
 
             List<PointD> thisBeat = new ();
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (_P, _L, _P.QRS_Interval / 4, -0.05d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_R (_P, _L, _P.QRS_Interval / 4, 0.9d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_S (_P, _L, _P.QRS_Interval / 4, -0.3d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_J (_P, _L, _P.QRS_Interval / 4, -0.1d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_ST (_P, _L, _P.GetSTSegment, 0d, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_T (_P, _L, _P.GetTInterval, 0.2d, 0d, Plotting.Last (thisBeat)));
+            // Note: Wave amplitude coefficient is utilized in the individual wave function (e.g. ECG_P())
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (p, l, p.QRSInterval / 4, 
+                -0.05d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_R (p, l, p.QRSInterval / 4, 
+                0.9d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_S (p, l, p.QRSInterval / 4, 
+                -0.3d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_J (p, l, p.QRSInterval / 4, 
+                -0.1d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_ST (p, l, p.GetSTSegment, 
+                0d, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_T (p, l, p.GetTInterval, 
+                0.2d, 0d, Plotting.Last (thisBeat)));
             return thisBeat;
         }
 
-        public static List<PointD> ECG_Complex__QRST_Aberrant_1 (Physiology? _P, Lead? _L) {
-            if (_P is null || _L is null)
+        public static List<PointD> ECG_Complex__QRST_Aberrant_1 (Physiology? p, Lead? l) {
+            if (p is null || l is null)
                 return new ();
 
-            double ampl_coeff = GetAmplitude_ElectricalAlternans (_P);
+            double amplitudeAlternans = GetAmplitude_ElectricalAlternans (p);
 
             List<PointD> thisBeat = new ();
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (_P, _L, _P.QRS_Interval / 6, 0.1d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_R (_P, _L, _P.QRS_Interval / 3, -0.9d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_S (_P, _L, _P.QRS_Interval / 6, 0.3d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_J (_P, _L, _P.QRS_Interval / 3, 0.1d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_ST (_P, _L, _P.GetSTSegment, 0d, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_T (_P, _L, _P.GetTInterval, 0.1d, 0d, Plotting.Last (thisBeat)));
+            // Note: Wave amplitude coefficient is utilized in the individual wave function (e.g. ECG_P())
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (p, l, p.QRSInterval / 6, 
+                0.1d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_R (p, l, p.QRSInterval / 3, 
+                -0.9d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_S (p, l, p.QRSInterval / 6, 
+                0.3d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_J (p, l, p.QRSInterval / 3, 
+                0.1d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_ST (p, l, p.GetSTSegment, 
+                0d, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_T (p, l, p.GetTInterval, 
+                0.1d, 0d, Plotting.Last (thisBeat)));
             return thisBeat;
         }
 
-        public static List<PointD> ECG_Complex__QRST_Aberrant_2 (Physiology? _P, Lead? _L) {
-            if (_P is null || _L is null)
+        public static List<PointD> ECG_Complex__QRST_Aberrant_2 (Physiology? p, Lead? l) {
+            if (p is null || l is null)
                 return new ();
 
-            double ampl_coeff = GetAmplitude_ElectricalAlternans (_P);
+            double amplitudeAlternans = GetAmplitude_ElectricalAlternans (p);
 
             List<PointD> thisBeat = new ();
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (_P, _L, _P.QRS_Interval / 3, -0.8d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_R (_P, _L, _P.QRS_Interval / 6, -0.2d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_J (_P, _L, _P.QRS_Interval / 6, 0.1d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_ST (_P, _L, _P.GetSTSegment, 0d, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_T (_P, _L, _P.GetTInterval, -0.1d, 0d, Plotting.Last (thisBeat)));
+            // Note: Wave amplitude coefficient is utilized in the individual wave function (e.g. ECG_P())
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (p, l, p.QRSInterval / 3, 
+                -0.8d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_R (p, l, p.QRSInterval / 6, 
+                -0.2d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_J (p, l, p.QRSInterval / 6, 
+                0.1d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_ST (p, l, p.GetSTSegment, 
+                0d, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_T (p, l, p.GetTInterval, 
+                -0.1d, 0d, Plotting.Last (thisBeat)));
             return thisBeat;
         }
 
-        public static List<PointD> ECG_Complex__QRST_Aberrant_3 (Physiology? _P, Lead? _L) {
-            if (_P is null || _L is null)
+        public static List<PointD> ECG_Complex__QRST_Aberrant_3 (Physiology? p, Lead? l) {
+            if (p is null || l is null)
                 return new ();
 
-            double ampl_coeff = GetAmplitude_ElectricalAlternans (_P);
+            double amplitudeAlternans = GetAmplitude_ElectricalAlternans (p);
 
             List<PointD> thisBeat = new ();
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (_P, _L, _P.QRS_Interval / 3, 0.1d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_R (_P, _L, _P.QRS_Interval / 6, -0.7d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_J (_P, _L, _P.QRS_Interval / 6, -0.6d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_ST (_P, _L, _P.GetSTSegment, 0.1d, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_T (_P, _L, _P.GetTInterval, 0.3d, 0d, Plotting.Last (thisBeat)));
+            // Note: Wave amplitude coefficient is utilized in the individual wave function (e.g. ECG_P())
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (p, l, p.QRSInterval / 3, 
+                0.1d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_R (p, l, p.QRSInterval / 6, 
+                -0.7d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_J (p, l, p.QRSInterval / 6, 
+                -0.6d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_ST (p, l, p.GetSTSegment, 
+                0.1d, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_T (p, l, p.GetTInterval, 
+                0.3d, 0d, Plotting.Last (thisBeat)));
             return thisBeat;
         }
 
-        public static List<PointD> ECG_Complex__QRST_BBB (Physiology? _P, Lead? _L) {
-            if (_P is null || _L is null)
+        public static List<PointD> ECG_Complex__QRST_BBB (Physiology? p, Lead? l) {
+            if (p is null || l is null)
                 return new ();
 
-            double ampl_coeff = GetAmplitude_ElectricalAlternans (_P);
+            double amplitudeAlternans = GetAmplitude_ElectricalAlternans (p);
 
             List<PointD> thisBeat = new ();
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (_P, _L, _P.QRS_Interval / 6, -0.1d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_R (_P, _L, _P.QRS_Interval / 6, 0.9d * ampl_coeff, Plotting.Last (thisBeat)));
+            // Note: Wave amplitude coefficient is utilized in the individual wave function (e.g. ECG_P())
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (p, l, p.QRSInterval / 6, 
+                -0.1d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_R (p, l, p.QRSInterval / 6, 
+                0.9d * amplitudeAlternans, Plotting.Last (thisBeat)));
 
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (_P, _L, _P.QRS_Interval / 6, 0.3d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_R (_P, _L, _P.QRS_Interval / 6, 0.7d * ampl_coeff, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (p, l, p.QRSInterval / 6, 
+                0.3d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_R (p, l, p.QRSInterval / 6, 
+                0.7d * amplitudeAlternans, Plotting.Last (thisBeat)));
 
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_S (_P, _L, _P.QRS_Interval / 6, -0.3d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_J (_P, _L, _P.QRS_Interval / 6, -0.1d, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_ST (_P, _L, _P.GetSTSegment, 0d, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_T (_P, _L, _P.GetTInterval, 0.1d, 0d, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_S (p, l, p.QRSInterval / 6, 
+                -0.3d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_J (p, l, p.QRSInterval / 6, 
+                -0.1d, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_ST (p, l, p.GetSTSegment, 
+                0d, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_T (p, l, p.GetTInterval, 
+                0.1d, 0d, Plotting.Last (thisBeat)));
             return thisBeat;
         }
 
-        public static List<PointD> ECG_Complex__QRST_SVT (Physiology? _P, Lead? _L) {
-            if (_P is null || _L is null)
+        public static List<PointD> ECG_Complex__QRST_SVT (Physiology? p, Lead? l) {
+            if (p is null || l is null)
                 return new ();
 
-            double ampl_coeff = GetAmplitude_ElectricalAlternans (_P);
+            double amplitudeAlternans = GetAmplitude_ElectricalAlternans (p);
 
             List<PointD> thisBeat = new ();
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (_P, _L, _P.QRS_Interval / 4, -0.1d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_R (_P, _L, _P.QRS_Interval / 4, 0.9d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_S (_P, _L, _P.QRS_Interval / 4, -0.3d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_J (_P, _L, _P.QRS_Interval / 4, -0.1d * ampl_coeff, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_ST (_P, _L, _P.GetSTSegment, -0.06d, Plotting.Last (thisBeat)));
-            thisBeat = Plotting.Concatenate (thisBeat, ECG_T (_P, _L, _P.GetTInterval, 0.15d, 0d, Plotting.Last (thisBeat)));
+            // Note: Wave amplitude coefficient is utilized in the individual wave function (e.g. ECG_P())
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_Q (p, l, p.QRSInterval / 4, 
+                -0.1d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_R (p, l, p.QRSInterval / 4, 
+                0.9d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_S (p, l, p.QRSInterval / 4, 
+                -0.3d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_J (p, l, p.QRSInterval / 4, 
+                -0.1d * amplitudeAlternans, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_ST (p, l, p.GetSTSegment, 
+                -0.06d, Plotting.Last (thisBeat)));
+            thisBeat = Plotting.Concatenate (thisBeat, ECG_T (p, l, p.GetTInterval, 
+                0.15d, 0d, Plotting.Last (thisBeat)));
             return thisBeat;
         }
 
-        public static List<PointD> ECG_Complex__QRST_VT (Physiology? _P, Lead? _L) {
-            if (_P is null || _L is null)
+        public static List<PointD> ECG_Complex__QRST_VT (Physiology? p, Lead? l) {
+            if (p is null || l is null)
                 return new ();
 
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Multiply (
                     // Draws better w/ regular Stretch(); too much cropping/overdraw w/ Stretch_BySystoleRatio
-                    Plotting.Stretch (Dictionary.ECG_Complex_VT, _P.GetSystole_Seconds),
-                baseLeadCoeff [(int)_L.Value, (int)WavePart.QRST]),
-                GetAmplitude_ElectricalAlternans (_P));
+                    Plotting.Stretch (Dictionary.ECG_Complex_VT, p.GetSystoleSeconds),
+                    BaseLeadCoeff [(int)l.Value, (int)WavePart.QRST] * (p.RAmplitude? [(int)l.Value] ?? 1d)),
+                GetAmplitude_ElectricalAlternans (p));
         }
 
-        public static List<PointD> ECG_Complex__QRST_VF (Physiology? _P, Lead? _L, double _Amp) {
-            if (_P is null || _L is null)
+        public static List<PointD> ECG_Complex__QRST_VF (Physiology? p, Lead? l, double amp) {
+            if (p is null || l is null)
                 return new ();
 
-            double _Length = (double)_P.GetHRInterval,
-                    _Wave = (double)_P.GetHRInterval / 2d,
-                    _Amplitude = (double)(Math.RandomDbl (0.3d, 0.6d) * _Amp);
-
+            double length = p.GetHRInterval,
+                    wave = p.GetHRInterval / 2d,
+                    amplitude = Math.RandomDbl (0.3d, 0.6d) * amp * (p.RAmplitude?[(int)l.Value] ?? 1d);
+            
             List<PointD> thisBeat = new ();
-            while (_Length > 0f) {
-                thisBeat = Plotting.Concatenate (thisBeat, Plotting.Curve (ResolutionTime, _Wave, _Amplitude, 0d, Plotting.Last (thisBeat)));
+            while (length > 0f) {
+                thisBeat = Plotting.Concatenate (thisBeat, 
+                    Plotting.Curve (ResolutionTime, wave, 
+                        amplitude, 0d, Plotting.Last (thisBeat)));
 
                 // Flip the sign of amplitude and randomly crawl larger/smaller, models the
                 // flippant waves in v-fib.
-                _Amplitude = 0 - (double)Math.Clamp (Math.RandomDbl (_Amplitude - 0.1d, _Amplitude + 0.1d), -1d, 1d);
-                _Length -= _Wave;
+                amplitude = 0 - Math.Clamp (Math.RandomDbl (amplitude - 0.1d, amplitude + 0.1d), -1d, 1d);
+                length -= wave;
             }
             return thisBeat;
         }
 
-        public static List<PointD> ECG_Complex__Idioventricular (Physiology? _P, Lead? _L) {
-            if (_P is null || _L is null)
+        public static List<PointD> ECG_Complex__Idioventricular (Physiology? p, Lead? l) {
+            if (p is null || l is null)
                 return new ();
-
+            
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Multiply (
-                    Plotting.Stretch_BySystoleRatio(Dictionary.ECG_Complex_Idioventricular, _P),
-                baseLeadCoeff [(int)_L.Value, (int)WavePart.QRST]),
-                GetAmplitude_ElectricalAlternans (_P));
+                    Plotting.Stretch_BySystoleRatio(Dictionary.ECG_Complex_Idioventricular, p),
+                BaseLeadCoeff [(int)l.Value, (int)WavePart.QRST] * (p.RAmplitude?[(int)l.Value] ?? 1d)),
+                GetAmplitude_ElectricalAlternans (p));
         }
 
-        public static List<PointD> ECG_CPR_Artifact (Physiology? _P, Lead? _L) {
-            if (_P is null || _L is null)
+        public static List<PointD> ECG_CPR_Artifact (Physiology? p, Lead? l) {
+            if (p is null || l is null)
                 return new ();
-
+            
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Multiply (
-                    Plotting.Stretch_BySystoleRatio (Dictionary.ECG_CPR_Artifact, _P),
-                baseLeadCoeff [(int)_L.Value, (int)WavePart.QRST]));
+                    Plotting.Stretch_BySystoleRatio (Dictionary.ECG_CPR_Artifact, p),
+                BaseLeadCoeff [(int)l.Value, (int)WavePart.QRST] * (p.RAmplitude?[(int)l.Value] ?? 1d)));
         }
 
-        public static List<PointD> ECG_Defibrillation (Physiology? _P, Lead? _L) {
-            if (_P is null || _L is null)
+        public static List<PointD> ECG_Defibrillation (Physiology? p, Lead? l) {
+            if (p is null || l is null)
                 return new ();
 
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Multiply (Plotting.Convert (Dictionary.ECG_Defibrillation),
-                baseLeadCoeff [(int)_L.Value, (int)WavePart.QRST]));
-        }
-
-        public static List<PointD> ECG_Pacemaker (Physiology? _P, Lead? _L) {
-            if (_P is null || _L is null)
-                return new ();
-
-            return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Multiply (Plotting.Convert (Dictionary.ECG_Pacemaker),
-                baseLeadCoeff [(int)_L.Value, (int)WavePart.QRST]));
+                BaseLeadCoeff [(int)l.Value, (int)WavePart.QRST]));
         }
 
         /*
@@ -458,81 +483,53 @@ namespace II.Waveform {
          * _mV_End == end deflection height
 	     */
 
-        private static List<PointD> ECG_P (Physiology p, Lead l, PointD _S) {
-            return ECG_P (p, l, .08d, .15d, 0d, _S);
+        private static List<PointD> ECG_P (Physiology p, Lead l, double len, double mV, double mVEnd, PointD s) {
+            return Plotting.Peak (ResolutionTime, len, 
+                mV * BaseLeadCoeff [(int)l.Value, (int)WavePart.P] * (p.PAmplitude?[(int)l.Value] ?? 1d), 
+                mVEnd, s);
         }
 
-        private static List<PointD> ECG_P (Physiology p, Lead l, double _L, double _mV, double _mV_End, PointD _S) {
-            return Plotting.Peak (ResolutionTime, _L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.P], _mV_End, _S);
+        private static List<PointD> ECG_Q (Physiology p, Lead l, double len, double mV, PointD s) {
+            return Plotting.Line (ResolutionTime, len, 
+                mV * BaseLeadCoeff [(int)l.Value, (int)WavePart.Q]
+                * AxisLeadCoeff [(int)p.CardiacAxis.Value, (int)l.Value, (int)AxisPart.Q]
+                * (p.QAmplitude?[(int)l.Value] ?? 1d),
+                s);
         }
 
-        private static List<PointD> ECG_Q (Physiology p, Lead l, PointD _S) {
-            return ECG_Q (p, l, 1d, -.1d, _S);
+        private static List<PointD> ECG_R (Physiology p, Lead l, double len, double mV, PointD s) {
+            return Plotting.Line (ResolutionTime, len, mV * BaseLeadCoeff [(int)l.Value, (int)WavePart.R]
+                * AxisLeadCoeff [(int)p.CardiacAxis.Value, (int)l.Value, (int)AxisPart.R]
+                * (p.RAmplitude?[(int)l.Value] ?? 1d), 
+                s);
         }
 
-        private static List<PointD> ECG_Q (Physiology p, Lead l, double _L, double _mV, PointD _S) {
-            return Plotting.Line (ResolutionTime, _L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.Q]
-                * axisLeadCoeff [(int)p.Cardiac_Axis.Value, (int)l.Value, (int)AxisPart.Q]
-                * (p.Q_Amplitude[(int)l.Value] * 5d),    // Default q amplitude is 0.2; * 5 = 1
-                _S);
+        private static List<PointD> ECG_S (Physiology p, Lead l, double len, double mV, PointD s) {
+            return Plotting.Line (ResolutionTime, len, mV * BaseLeadCoeff [(int)l.Value, (int)WavePart.S]
+                * AxisLeadCoeff [(int)p.CardiacAxis.Value, (int)l.Value, (int)AxisPart.S]
+                * (p.SAmplitude?[(int)l.Value] ?? 1d), 
+                s);
         }
 
-        private static List<PointD> ECG_R (Physiology p, Lead l, PointD _S) {
-            return ECG_R (p, l, 1d, .9d, _S);
+        private static List<PointD> ECG_J (Physiology p, Lead l, double len, double mV, PointD s) {
+            return Plotting.Line (ResolutionTime, len, 
+                (mV * BaseLeadCoeff [(int)l.Value, (int)WavePart.J]) 
+                + (p.STElevation?[(int)l.Value] ?? 0), 
+                s);
         }
 
-        private static List<PointD> ECG_R (Physiology p, Lead l, double _L, double _mV, PointD _S) {
-            return Plotting.Line (ResolutionTime, _L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.R]
-                * axisLeadCoeff [(int)p.Cardiac_Axis.Value, (int)l.Value, (int)AxisPart.R], _S);
+        private static List<PointD> ECG_T (Physiology p, Lead l, double len, double mV, double mVEnd, PointD s) {
+            return Plotting.Peak (ResolutionTime, len, 
+                (mV * BaseLeadCoeff [(int)l.Value, (int)WavePart.T]) 
+                * (p.TAmplitude? [(int)l.Value] ?? 1), 
+                mVEnd, s);
         }
 
-        private static List<PointD> ECG_S (Physiology p, Lead l, PointD _S) {
-            return ECG_S (p, l, 1d, -.3d, _S);
-        }
-
-        private static List<PointD> ECG_S (Physiology p, Lead l, double _L, double _mV, PointD _S) {
-            return Plotting.Line (ResolutionTime, _L, _mV * baseLeadCoeff [(int)l.Value, (int)WavePart.S]
-                * axisLeadCoeff [(int)p.Cardiac_Axis.Value, (int)l.Value, (int)AxisPart.S], _S);
-        }
-
-        private static List<PointD> ECG_J (Physiology p, Lead l, PointD _S) {
-            return ECG_J (p, l, 1d, -.1d, _S);
-        }
-
-        private static List<PointD> ECG_J (Physiology p, Lead l, double _L, double _mV, PointD _S) {
-            return Plotting.Line (ResolutionTime, _L, (_mV * baseLeadCoeff [(int)l.Value, (int)WavePart.J]) + (double)p.ST_Elevation [(int)l.Value], _S);
-        }
-
-        private static List<PointD> ECG_T (Physiology p, Lead l, PointD _S) {
-            return ECG_T (p, l, .16d, .3d, 0d, _S);
-        }
-
-        private static List<PointD> ECG_T (Physiology p, Lead l, double _L, double _mV, double _mV_End, PointD _S) {
-            return Plotting.Peak (ResolutionTime, _L, (_mV * baseLeadCoeff [(int)l.Value, (int)WavePart.T]) + (double)p.T_Amplitude [(int)l.Value], _mV_End, _S);
-        }
-
-        private static List<PointD> ECG_PR (Physiology p, Lead l, PointD _S) {
-            return ECG_PR (p, l, .08d, 0d, _S);
-        }
-
-        private static List<PointD> ECG_PR (Physiology p, Lead l, double _L, double _mV, PointD _S) {
-            return Plotting.Line (ResolutionTime, _L, _mV + baseLeadCoeff [(int)l.Value, (int)WavePart.PR], _S);
-        }
-
-        private static List<PointD> ECG_ST (Physiology p, Lead l, PointD _S) {
-            return ECG_ST (p, l, .1d, 0d, _S);
-        }
-
-        private static List<PointD> ECG_ST (Physiology p, Lead l, double _L, double _mV, PointD _S) {
-            return Plotting.Line (ResolutionTime, _L, _mV + baseLeadCoeff [(int)l.Value, (int)WavePart.ST] + (double)p.ST_Elevation [(int)l.Value], _S);
-        }
-
-        private static List<PointD> ECG_TP (Physiology p, Lead l, PointD _S) {
-            return ECG_TP (p, l, .48d, .0d, _S);
-        }
-
-        private static List<PointD> ECG_TP (Physiology p, Lead l, double _L, double _mV, PointD _S) {
-            return Plotting.Line (ResolutionTime, _L, _mV + baseLeadCoeff [(int)l.Value, (int)WavePart.TP], _S);
+        private static List<PointD> ECG_ST (Physiology p, Lead l, double len, double mV, PointD s) {
+            return Plotting.Line (ResolutionTime, len, 
+                mV + BaseLeadCoeff [(int)l.Value, (int)WavePart.ST] 
+                    + (p.STElevation?[(int)l.Value] ?? 0), 
+                s);
         }
 
         /*
@@ -540,24 +537,24 @@ namespace II.Waveform {
          */
 
         private enum WavePart {
-            QRST, P, Q, R, S, J, T, PR, ST, TP
+            QRST, P, Q, R, S, J, T, ST
         }
 
         // Coefficients to transform base lead (Lead 2) into 12 lead ECG
-        private static readonly double [,] baseLeadCoeff = new double [,] {
+        private static readonly double [,] BaseLeadCoeff = new [,] {
             // P through T are multipliers; segments are additions
-            { 0.7d,     0.7d,     0.7d,   0.7d,   0.7d,   0.7d,   0.8d,       0d,     0d,     0d },     // L1
-            { 1d,       1d,       1d,     1d,     1d,     1d,     1d,         0d,     0d,     0d },     // L2
-            { 0.5d,     0.5d,     0.5d,   0.5d,   0.5d,   0.5d,   0.2d,       0d,     0d,     0d },     // L3
-            { -0.9d,    -1d,      -1d,    -0.8d,  -1d,    -1d,    -0.9d,      0d,     0d,     0d },     // AVR
-            { 0.2d,     -1d,      0.3d,   0.2d,   0.4d,   0.3d,   0.6d,       0d,     0d,     0d },     // AVL
-            { 0.8d,     0.7d,     0.8d,   0.8d,   0.8d,   0.8d,   0.4d,       0d,     0d,     0d },     // AVF
-            { -1d,      0.2d,     -0.7d,  -1d,    0d,     0d,     0.3d,       0d,     0d,     0d },     // V1
-            { -1.2d,    0.2d,     -1.8d,  -1.2d,  0d,     -1d,    1.4d,       0d,     0.1d,   0d },     // V2
-            { -1.4d,    0.2d,     -3.0d,  -1.4d,  0d,     0d,     1.8d,       0d,     0.1d,   0d },     // V3
-            { -0.8d,    0.7d,     -9.0d,  -0.8d,  0d,     0d,     1.4d,       0d,     0.1d,   0d },     // V4
-            { -0.2d,    0.7d,     -10.0d, -0.2d,  0d,     0d,     1.0d,       0d,     0.1d,   0d },     // V5
-            { -0.1d,    1d,       -9.0d,  -0.1d,  0d,     0d,     0.8d,       0d,     0d,     0d }      // V6
+            { 0.7d,     0.7d,     0.7d,   0.7d,   0.7d,   0.7d,   0.8d,       0d },     // L1
+            { 1d,       1d,       1d,     1d,     1d,     1d,     1d,         0d },     // L2
+            { 0.5d,     0.5d,     0.5d,   0.5d,   0.5d,   0.5d,   0.2d,       0d },     // L3
+            { -0.9d,    -1d,      -1d,    -0.8d,  -1d,    -1d,    -0.9d,      0d },     // AVR
+            { 0.2d,     -1d,      0.3d,   0.2d,   0.4d,   0.3d,   0.6d,       0d },     // AVL
+            { 0.8d,     0.7d,     0.8d,   0.8d,   0.8d,   0.8d,   0.4d,       0d },     // AVF
+            { -1d,      0.2d,     -0.7d,  -1d,    0d,     0d,     0.3d,       0d },     // V1
+            { -1.2d,    0.2d,     -1.8d,  -1.2d,  0d,     -1d,    1.4d,       0.1d },     // V2
+            { -1.4d,    0.2d,     -3.0d,  -1.4d,  0d,     0d,     1.8d,       0.1d },     // V3
+            { -0.8d,    0.7d,     -9.0d,  -0.8d,  0d,     0d,     1.4d,       0.1d },     // V4
+            { -0.2d,    0.7d,     -10.0d, -0.2d,  0d,     0d,     1.0d,       0.1d },     // V5
+            { -0.1d,    1d,       -9.0d,  -0.1d,  0d,     0d,     0.8d,       0d }      // V6
         };
 
         private enum AxisPart {
@@ -565,7 +562,7 @@ namespace II.Waveform {
         }
 
         // Coefficients to modify 12 lead ECG per cardiac axis deviation
-        private static readonly double [,,] axisLeadCoeff = new double [,,] {
+        private static readonly double [,,] AxisLeadCoeff = new [,,] {
             // P through T are multipliers; segments are additions
             {   // Normal axis
                 {   1d,     1d,     1d  },              // L1

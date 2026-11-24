@@ -12,20 +12,9 @@
  */
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Net.NetworkInformation;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-
-using II.Localization;
 
 namespace II.Server {
     public partial class Server {

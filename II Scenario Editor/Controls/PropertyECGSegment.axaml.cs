@@ -56,7 +56,7 @@ namespace IISE.Controls {
             Key = key;
             switch (Key) {
                 default: break;
-                case Keys.STElevation: lblKey.Content = "ST Segment Elevation: "; break;
+                case Keys.STElevation: lblKey.Content = "ST Segment Elevation (Offset): "; break;
             }
 
             if (!isInitiated) {

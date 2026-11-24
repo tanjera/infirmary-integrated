@@ -11,10 +11,10 @@ namespace II {
         public Lead (Values v) { Value = v; }
 
         public enum Values {
-            ECG_I, ECG_II, ECG_III,
-            ECG_AVR, ECG_AVL, ECG_AVF,
-            ECG_V1, ECG_V2, ECG_V3,
-            ECG_V4, ECG_V5, ECG_V6,
+            ECGI, ECGII, ECGIII,
+            ECGAVR, ECGAVL, ECGAVF,
+            ECGV1, ECGV2, ECGV3,
+            ECGV4, ECGV5, ECGV6,
 
             SPO2,
             RR,
@@ -29,7 +29,7 @@ namespace II {
             IABP,
 
             FHR,
-            TOCO
+            Toco
         }
 
         public static string LookupString (Values value, bool shortName = false) {

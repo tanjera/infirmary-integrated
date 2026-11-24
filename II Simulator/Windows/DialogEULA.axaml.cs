@@ -18,7 +18,7 @@ namespace IISIM {
     public partial class DialogEULA : Window {
         public App? Instance;
         
-        private string LicenseText =
+        private string _licenseText =
 @"Apache License
 Version 2.0, January 2004
 http://www.apache.org/licenses/
@@ -233,7 +233,7 @@ END OF TERMS AND CONDITIONS";
              * functional & legal reasons...
              */
 
-            this.GetControl<TextBox> ("tbLicense").Text = LicenseText;
+            this.GetControl<TextBox> ("tbLicense").Text = _licenseText;
         }
         private void OnClick_Cancel (object sender, RoutedEventArgs e) {
             Instance?.Exit ();

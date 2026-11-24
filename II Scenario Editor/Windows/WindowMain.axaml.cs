@@ -47,7 +47,7 @@ namespace IISE {
         private PanelParameters IPanelParameters;
 
         /* Data structures for use */
-        private string? SaveFilePath;
+        private string? _saveFilePath;
         
         public enum WindowStates {
             Null,
@@ -134,7 +134,7 @@ namespace IISE {
         }
 
         private async Task InitScenario () {
-            SaveFilePath = null;
+            _saveFilePath = null;
 
             Scenario s = new Scenario (new Timer(), true);
             s.Steps.First().Name = "Initial Step";
@@ -179,7 +179,7 @@ namespace IISE {
             if (res == null)
                 await LoadFail ();
             else {
-                SaveFilePath = filepath;
+                _saveFilePath = filepath;
                 await SetScenario (res);
             }
 
@@ -210,15 +210,15 @@ namespace IISE {
 
                 string filepath;
 
-                if (useCurrentFile && !String.IsNullOrEmpty (SaveFilePath))
-                    filepath = SaveFilePath;
+                if (useCurrentFile && !String.IsNullOrEmpty (_saveFilePath))
+                    filepath = _saveFilePath;
                 else
                     filepath = await SaveDialog ();
 
                 if (String.IsNullOrEmpty (filepath))
                     return;
 
-                SaveFilePath = filepath;
+                _saveFilePath = filepath;
                 await SaveFile (filepath);
             }
         }

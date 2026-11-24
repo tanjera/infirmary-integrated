@@ -5,10 +5,8 @@
 
 using System;
 using System.ComponentModel;
-using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using II.Settings;
 
 namespace II.Server {
     public class Mirror {
@@ -19,7 +17,7 @@ namespace II.Server {
         public enum Statuses { INACTIVE, HOST, CLIENT };
 
         private int RefreshSeconds = 5;
-        private string _Accession = "";
+        private string _accession = "";
         private BackgroundWorker _BackgroundWorker = new ();
 
         public Statuses Status = Statuses.INACTIVE;
@@ -35,8 +33,8 @@ namespace II.Server {
         public string Accession {
             // Can use local CultureInfo for ToUpper()- does not break functionality, works for end user
             // Rather than using Invariant culture
-            get { return _Accession.ToUpper (); }
-            set { _Accession = value.ToUpper (); }
+            get { return _accession.ToUpper (); }
+            set { _accession = value.ToUpper (); }
         }
 
         

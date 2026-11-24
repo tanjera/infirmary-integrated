@@ -45,8 +45,8 @@ namespace IIDT {
             return ((_P2.Y - _P1.Y) / (_P2.X - _P1.X));
         }
 
-        public static Point Bezier (Point _Start, Point _Control, Point _End, double _Percent) {
-            return (((1 - _Percent) * (1 - _Percent)) * _Start) + (2 * _Percent * (1 - _Percent) * _Control) + ((_Percent * _Percent) * _End);
+        public static Point Bezier (Point _Start, Point _Control, Point end, double _Percent) {
+            return (((1 - _Percent) * (1 - _Percent)) * _Start) + (2 * _Percent * (1 - _Percent) * _Control) + ((_Percent * _Percent) * end);
         }
 
         public static List<Point> Curve (int DrawResolution, double _Length, double _mV_Middle, double _mV_End, Point _Start) {
@@ -55,18 +55,18 @@ namespace IIDT {
 
             int i;
             double x;
-            List<Point> Out = new List<Point> ();
+            List<Point> @out = new List<Point> ();
             double Resolution = (2 * (DrawResolution / 1000d)) / _Length;
 
             for (i = 1; (x = i * Resolution) <= 1; i++)
-                Out.Add (Bezier (new Point (0, _Start.Y), new Point (_Length / 4, _mV_Middle), new Point (_Length / 2, _mV_Middle), x));
+                @out.Add (Bezier (new Point (0, _Start.Y), new Point (_Length / 4, _mV_Middle), new Point (_Length / 2, _mV_Middle), x));
 
             for (i = 1; (x = i * Resolution) <= 1; i++)
-                Out.Add (Bezier (new Point (_Length / 2, _mV_Middle), new Point (_Length / 4 * 3, _mV_Middle), new Point (_Length, _mV_End), x));
+                @out.Add (Bezier (new Point (_Length / 2, _mV_Middle), new Point (_Length / 4 * 3, _mV_Middle), new Point (_Length, _mV_End), x));
 
-            Out.Add (new Point (_Length, _mV_End));        // Finish the curve
+            @out.Add (new Point (_Length, _mV_End));        // Finish the curve
 
-            return Out;
+            return @out;
         }
 
         public static List<Point> Peak (int DrawResolution, double _Length, double _mV, double _mV_End, Point _Start) {
@@ -76,12 +76,12 @@ namespace IIDT {
             int i;
             double x;
             List<Point> Out = new List<Point> ();
-            double Resolution = (2 * (DrawResolution / 1000d)) / _Length;
+            double resolution = (2 * (DrawResolution / 1000d)) / _Length;
 
-            for (i = 1; (x = i * Resolution) <= 1; i++)
+            for (i = 1; (x = i * resolution) <= 1; i++)
                 Out.Add (Bezier (new Point (0, _Start.Y), new Point (_Length / 3, _mV / 1), new Point (_Length / 2, _mV), x));
 
-            for (i = 1; (x = i * Resolution) <= 1; i++)
+            for (i = 1; (x = i * resolution) <= 1; i++)
                 Out.Add (Bezier (new Point (_Length / 2, _mV), new Point (_Length / 5 * 3, _mV / 1), new Point (_Length, _mV_End), x));
 
             Out.Add (new Point (_Length, _mV_End));        // Finish the curve
@@ -89,7 +89,7 @@ namespace IIDT {
             return Out;
         }
 
-        public static List<Point> Line (int DrawResolution, double _Length, double _mV, Point _Start) {
+        public static List<Point> Line (int drawResolution, double _Length, double _mV, Point _Start) {
             if (_Length < 0)
                 return new List<Point> ();
 
@@ -97,7 +97,7 @@ namespace IIDT {
             Point Start = new Point (0, _Start.Y);
             Point End = new Point (_Length, _mV);
 
-            for (double x = 0; x <= _Length; x += (DrawResolution / 1000d))
+            for (double x = 0; x <= _Length; x += (drawResolution / 1000d))
                 Out.Add (Point.Lerp (Start, End, x / _Length));
 
             return Out;

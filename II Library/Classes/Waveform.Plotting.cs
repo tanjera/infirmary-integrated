@@ -3,10 +3,7 @@
  * By Ibi Keller (Tanjera), (c) 2023
  */
 
-using System;
 using System.Collections.Generic;
-using System.Text;
-
 using II.Drawing;
 
 namespace II.Waveform {
@@ -72,7 +69,7 @@ namespace II.Waveform {
             // Patient model's systolic time compared to waveform systolic time
             // extrapolated 't' to ratio of waveform length versus waveform's systolic portion of length 
             
-            int ptSystole = (int)(_P.GetSystole_Seconds * 1000d);
+            int ptSystole = (int)(_P.GetSystoleSeconds * 1000d);
 
             double length;
 
@@ -80,13 +77,13 @@ namespace II.Waveform {
                 length = _P.GetHRInterval;
             } else {
                 double ratioPatientToPlot = (double)ptSystole / (double)_Addition.SystoleLength;
-                length = _Addition.Length_Seconds * ratioPatientToPlot;
+                length = _Addition.LengthSeconds * ratioPatientToPlot;
             }
 
             return Stretch (_Addition, length);
         }
 
-        public static List<PointD> Normalize (List<PointD> _Addition, double _Min, double _Max) {
+        public static List<PointD> Normalize (List<PointD> _Addition, double _Min, double max) {
             if (_Addition.Count == 0)
                 return new List<PointD> ();
 
@@ -100,14 +97,14 @@ namespace II.Waveform {
             }
 
             // Rescale (min-max normalization) of vertex set
-            List<PointD> _Output = new ();
+            List<PointD> output = new ();
             for (int i = 0; i < _Addition.Count; i++) {
-                _Output.Add (new PointD (
+                output.Add (new PointD (
                     _Addition [i].X,
-                    (_Min + (((_Addition [i].Y - oldMin) * (_Max - _Min)) / (oldMax - oldMin)))));
+                    (_Min + (((_Addition [i].Y - oldMin) * (max - _Min)) / (oldMax - oldMin)))));
             }
 
-            return _Output;
+            return output;
         }
 
         public static List<PointD> Convert (Dictionary.Plot _Addition) {
@@ -124,65 +121,65 @@ namespace II.Waveform {
             return ((_P2.Y - _P1.Y) / (_P2.X - _P1.X));
         }
 
-        public static PointD Bezier (PointD _Start, PointD _Control, PointD _End, double _Percent) {
-            return (_Start * ((1 - _Percent) * (1 - _Percent)))
-                + (_Control * (2 * _Percent * (1 - _Percent)))
-                + (_End * (_Percent * _Percent));
+        public static PointD Bezier (PointD _Start, PointD _Control, PointD _End, double percent) {
+            return (_Start * ((1 - percent) * (1 - percent)))
+                + (_Control * (2 * percent * (1 - percent)))
+                + (_End * (percent * percent));
         }
 
-        public static List<PointD> Curve (int DrawResolution, double _Length, double _mV_Middle, double _mV_End, PointD _Start) {
-            if (_Length < 0)
+        public static List<PointD> Curve (int drawResolution, double length, double mVMiddle, double mVEnd, PointD start) {
+            if (length < 0)
                 return new List<PointD> ();
 
             int i;
             double x;
-            List<PointD> _Out = new ();
-            double Resolution = (2 * (DrawResolution / 1000d)) / _Length;
+            List<PointD> result = new ();
+            double resolution = (2 * (drawResolution / 1000d)) / length;
 
-            for (i = 1; (x = i * Resolution) <= 1; i++)
-                _Out.Add (Bezier (new PointD (0, _Start.Y), new PointD (_Length / 4, _mV_Middle), new PointD (_Length / 2, _mV_Middle), x));
+            for (i = 1; (x = i * resolution) <= 1; i++)
+                result.Add (Bezier (new PointD (0, start.Y), new PointD (length / 4, mVMiddle), new PointD (length / 2, mVMiddle), x));
 
-            for (i = 1; (x = i * Resolution) <= 1; i++)
-                _Out.Add (Bezier (new PointD (_Length / 2, _mV_Middle), new PointD (_Length / 4 * 3, _mV_Middle), new PointD (_Length, _mV_End), x));
+            for (i = 1; (x = i * resolution) <= 1; i++)
+                result.Add (Bezier (new PointD (length / 2, mVMiddle), new PointD (length / 4 * 3, mVMiddle), new PointD (length, mVEnd), x));
 
-            _Out.Add (new PointD (_Length, _mV_End));        // Finish the curve
+            result.Add (new PointD (length, mVEnd));        // Finish the curve
 
-            return _Out;
+            return result;
         }
 
-        public static List<PointD> Peak (int DrawResolution, double _Length, double _mV, double _mV_End, PointD _Start) {
-            if (_Length < 0)
+        public static List<PointD> Peak (int drawResolution, double length, double mV, double mVEnd, PointD start) {
+            if (length < 0)
                 return new List<PointD> ();
 
             int i;
             double x;
-            List<PointD> _Out = new ();
+            List<PointD> result = new ();
             
-            double Resolution = (2 * (DrawResolution / 1000d)) / _Length;
+            double resolution = (2 * (drawResolution / 1000d)) / length;
 
-            for (i = 1; (x = i * Resolution) <= 1; i++)
-                _Out.Add (Bezier (new PointD (0, _Start.Y), new PointD (_Length / 3, (double)_mV / 1), new PointD (_Length / 2, _mV), x));
+            for (i = 1; (x = i * resolution) <= 1; i++)
+                result.Add (Bezier (new PointD (0, start.Y), new PointD (length / 3, (double)mV / 1), new PointD (length / 2, mV), x));
 
-            for (i = 1; (x = i * Resolution) <= 1; i++)
-                _Out.Add (Bezier (new PointD (_Length / 2, _mV), new PointD (_Length / 5 * 3, _mV / 1), new PointD (_Length, _mV_End), x));
+            for (i = 1; (x = i * resolution) <= 1; i++)
+                result.Add (Bezier (new PointD (length / 2, mV), new PointD (length / 5 * 3, mV / 1), new PointD (length, mVEnd), x));
 
-            _Out.Add (new PointD (_Length, _mV_End));        // Finish the curve
+            result.Add (new PointD (length, mVEnd));        // Finish the curve
 
-            return _Out;
+            return result;
         }
 
-        public static List<PointD> Line (int DrawResolution, double _Length, double _mV, PointD _Start) {
-            if (_Length < 0)
+        public static List<PointD> Line (int drawResolution, double length, double mV, PointD start) {
+            if (length < 0)
                 return new List<PointD> ();
 
-            List<PointD> Out = new ();
-            PointD Start = new (0, _Start.Y);
-            PointD End = new (_Length, _mV);
+            List<PointD> result = new ();
+            PointD begin = new (0, start.Y);
+            PointD end = new (length, mV);
 
-            for (double x = 0; x <= _Length; x += (DrawResolution / 1000d))
-                Out.Add (PointD.Lerp (Start, End, x / _Length));
+            for (double x = 0; x <= length; x += (drawResolution / 1000d))
+                result.Add (PointD.Lerp (begin, end, x / length));
 
-            return Out;
+            return result;
         }
     }
 }

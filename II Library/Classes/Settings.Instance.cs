@@ -6,11 +6,7 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.IO;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace II.Settings {
     public class Instance {
@@ -56,13 +52,13 @@ namespace II.Settings {
         }
         
         public class WindowStates {
-            public II.Settings.Window? Control;
-            public II.Settings.Window? DeviceMonitor;
-            public II.Settings.Window? DeviceDefib;
-            public II.Settings.Window? DeviceECG;
-            public II.Settings.Window? DeviceEFM;
-            public II.Settings.Window? DeviceIABP;
-            public II.Settings.Window? ScenarioEditor;
+            public Window? Control;
+            public Window? DeviceMonitor;
+            public Window? DeviceDefib;
+            public Window? DeviceECG;
+            public Window? DeviceEFM;
+            public Window? DeviceIABP;
+            public Window? ScenarioEditor;
         }
 
         public Instance () {

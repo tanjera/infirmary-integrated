@@ -8,7 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using II.Settings;
@@ -29,10 +28,10 @@ namespace II {
         public List<Step> Steps = new ();
         public Timer ProgressTimer = new ();
 
-        public Settings.Device DeviceMonitor = new (Settings.Device.Devices.Monitor);
-        public Settings.Device DeviceDefib = new (Settings.Device.Devices.Defib);
-        public Settings.Device DeviceECG = new (Settings.Device.Devices.ECG);
-        public Settings.Device DeviceIABP = new (Settings.Device.Devices.IABP);
+        public Device DeviceMonitor = new (Device.Devices.Monitor);
+        public Device DeviceDefib = new (Device.Devices.Defib);
+        public Device DeviceECG = new (Device.Devices.ECG);
+        public Device DeviceIABP = new (Device.Devices.IABP);
 
         public event EventHandler<EventArgs>? StepChangeRequest;
 
@@ -242,7 +241,7 @@ namespace II {
 
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
-            await (Current?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change, null) ?? Task.CompletedTask);
+            await (Current?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.VitalsChange, null) ?? Task.CompletedTask);
         }
 
         public async Task LastStep () {
@@ -271,7 +270,7 @@ namespace II {
             
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
-            await (Current?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change, null) ?? Task.CompletedTask);
+            await (Current?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.VitalsChange, null) ?? Task.CompletedTask);
         }
 
         public async Task SetStep (string? incUUID) {
@@ -304,7 +303,7 @@ namespace II {
             
             // Trigger events for loading current Patient, and trigger propagation to devices
             StepChanged?.Invoke (this, new EventArgs ());
-            await (Current?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.Vitals_Change, null) ?? Task.CompletedTask);
+            await (Current?.Physiology?.OnPhysiologyEvent (Physiology.PhysiologyEventTypes.VitalsChange, null) ?? Task.CompletedTask);
         }
 
         public async Task PauseStep () => await ProgressTimer.Stop ();

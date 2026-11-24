@@ -11,7 +11,7 @@ namespace Tests {
     public class Patient {
         /* Default Vital Sign parameters */
 
-        private II.Patient.Vital_Signs Default_VS = new II.Patient.Vital_Signs () {
+        private II.Physiology.Vital_Signs Default_VS = new II.Physiology(new Timer()).Vital_Signs () {
             HR = 100,
             NSBP = 200,
             NDBP = 100,
@@ -39,7 +39,7 @@ namespace Tests {
         /* Basic vital signs and advanced hemodynamics (partial) */
         private static CardiacRhythms.Values Cardiac_Rhythm = CardiacRhythms.Values.Atrial_Fibrillation;
         private static Respiratory_Rhythms.Values Respiratory_Rhythm = Respiratory_Rhythms.Values.Apnea;
-        private static PulmonaryArtery_Rhythms.Values PulmonaryArtery_Placement = PulmonaryArtery_Rhythms.Values.Pulmonary_Capillary_Wedge;
+        private static PulmonaryArteryRhythms.Values PulmonaryArtery_Placement = PulmonaryArteryRhythms.Values.Pulmonary_Capillary_Wedge;
 
         /* Respiratory profile (partial) */
         private static bool Mechanically_Ventilated = true;
@@ -48,7 +48,7 @@ namespace Tests {
         /* Cardiac profile */
         private static int Pacemaker_Threshold = 75;
         private static bool Pulsus_Paradoxus = true;
-        private static bool Pulsus_Alternans = true;
+        private static bool _pulsusAlternans = true;
         private static Cardiac_Axes.Values Cardiac_Axis = Cardiac_Axes.Values.Indeterminate;
         private static double [] ST_Elevation = new double [] { 0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.1d };
         private static double [] T_Elevation = new double [] { 0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.1d, 0.1d };
@@ -264,7 +264,7 @@ namespace Tests {
                 Mechanically_Ventilated,
                 Default_VS.RR_IE_I, Default_VS.RR_IE_E,
                 Pacemaker_Threshold,
-                Pulsus_Paradoxus, Pulsus_Alternans,
+                Pulsus_Paradoxus, _pulsusAlternans,
                 Cardiac_Axis,
                 ST_Elevation, T_Elevation,
                 FHR,
@@ -296,7 +296,7 @@ namespace Tests {
             Assert.AreEqual (Default_VS.RR_IE_E, p.VS_Settings.RR_IE_E);
             Assert.AreEqual (Pacemaker_Threshold, p.Pacemaker_Threshold);
             Assert.AreEqual (Pulsus_Paradoxus, p.Pulsus_Paradoxus);
-            Assert.AreEqual (Pulsus_Alternans, p.Pulsus_Alternans);
+            Assert.AreEqual (_pulsusAlternans, p.Pulsus_Alternans);
             Assert.AreEqual (Cardiac_Axis, p.Cardiac_Axis.Value);
             Assert.AreEqual (ST_Elevation, p.ST_Elevation);
             Assert.AreEqual (T_Elevation, p.T_Elevation);

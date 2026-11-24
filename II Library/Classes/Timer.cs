@@ -8,8 +8,8 @@ using System.Threading.Tasks;
 
 namespace II {
     public class Timer {
-        private int _Interval = 0;
-        private bool _Locked = false;
+        private int _interval = 0;
+        private bool _locked = false;
 
         private DateTime LastAt;
         private bool Running = false;
@@ -42,14 +42,14 @@ namespace II {
             }
         }
 
-        public bool IsLocked { get => _Locked; }
-        public int Interval { get => _Interval; }
+        public bool IsLocked { get => _locked; }
+        public int Interval { get => _interval; }
         public int Elapsed { get => (int)((DateTime.Now - LastAt).TotalSeconds * 1000); }
-        public int Remainder { get => _Interval - (int)((DateTime.Now - LastAt).TotalSeconds * 1000); }
+        public int Remainder { get => _interval - (int)((DateTime.Now - LastAt).TotalSeconds * 1000); }
 
-        public void Lock () => _Locked = true;
+        public void Lock () => _locked = true;
 
-        public void Unlock () => _Locked = false;
+        public void Unlock () => _locked = false;
 
         /// <summary>
         /// Starts a Timer (or continues a running Timer).
@@ -69,7 +69,7 @@ namespace II {
         /// <param name="interval"></param>
         /// <returns></returns>
         public Task Adjust (int interval) {
-            _Interval = interval;
+            _interval = interval;
 
             return Task.CompletedTask;
         }
@@ -81,7 +81,7 @@ namespace II {
         /// <param name="interval"></param>
         /// <returns></returns>
         public Task Continue (int interval) {
-            _Interval = interval;
+            _interval = interval;
             Running = true;
 
             return Task.CompletedTask;
@@ -104,7 +104,7 @@ namespace II {
         /// <param name="interval"></param>
         /// <returns></returns>
         public Task Set (int interval) {
-            _Interval = interval;
+            _interval = interval;
             LastAt = DateTime.Now;
 
             return Task.CompletedTask;
@@ -228,14 +228,14 @@ namespace II {
             // 1. is not Paused (Paused is null)
             // or 2. is Unpausing (Gap > 0)
             if (!IsPaused) {
-                if (!IsUnpausing && (DateTime.Now - LastAt).TotalSeconds * 1000 > _Interval) {
+                if (!IsUnpausing && (DateTime.Now - LastAt).TotalSeconds * 1000 > _interval) {
                     // This condition is the base "Running" state
                     _Epoch += (ulong)((DateTime.Now - LastAt).TotalSeconds * 1000);
                     
                     LastAt = DateTime.Now;
                     Tick?.Invoke (this, EventArgs.Empty);
                 
-                } else if (IsUnpausing && (((DateTime.Now - LastAt).TotalSeconds * 1000) + Gap > _Interval)) {
+                } else if (IsUnpausing && (((DateTime.Now - LastAt).TotalSeconds * 1000) + Gap > _interval)) {
                     // This condition is the unpausing state; Gap is calculated but needs applying, and it is time to
                     // trigger even with the gap factored in
                     _Epoch += (ulong)((DateTime.Now - LastAt).TotalSeconds * 1000) - (Gap ?? 0);

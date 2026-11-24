@@ -21,12 +21,12 @@ namespace IISIM.Controls {
     public partial class IABPNumeric : DeviceNumeric {
         public ControlTypes? ControlType;
         
-        private List<II.Settings.Device.Numeric>? Transducers_Zeroed {
+        private List<Device.Numeric>? Transducers_Zeroed {
             set { 
                 if (Instance?.Scenario?.DeviceIABP is not null)
-                    Instance.Scenario.DeviceIABP.Transducers_Zeroed = value ?? new List<II.Settings.Device.Numeric> (); 
+                    Instance.Scenario.DeviceIABP.TransducersZeroed = value ?? new List<Device.Numeric> (); 
             }
-            get { return Instance?.Scenario?.DeviceIABP.Transducers_Zeroed; }
+            get { return Instance?.Scenario?.DeviceIABP.TransducersZeroed; }
         }
         
         public class ControlTypes {
@@ -45,9 +45,9 @@ namespace IISIM.Controls {
             }
 
             private static Color.Leads SwitchLead_Color (Values value) => value switch {
-                ControlTypes.Values.ECG => Color.Leads.ECG,
-                ControlTypes.Values.ABP => Color.Leads.ABP,
-                ControlTypes.Values.IABP_AP => Color.Leads.IABP,
+                Values.ECG => Color.Leads.ECG,
+                Values.ABP => Color.Leads.ABP,
+                Values.IABP_AP => Color.Leads.IABP,
                 _ => Color.Leads.ECG
             };
 
@@ -149,11 +149,11 @@ namespace IISIM.Controls {
                         lblLine2.Text = String.Format ("/ {0:0}", II.Math.RandomPercentRange (
                             (!Instance?.Device_IABP?.Running ?? false
                             ? Instance?.Physiology?.ADBP ?? 0
-                            : Instance?.Physiology?.IABP_DBP ?? 0)
+                            : Instance?.Physiology?.IABPDBP ?? 0)
                             , 0.02f));
 
                         // IABP shows MAP calculated by IABP!! Different from how monitors calculate MAP...
-                        lblLine3.Text = String.Format ("({0:0})", II.Math.RandomPercentRange (Instance?.Physiology?.IABP_MAP ?? 0, 0.02f));
+                        lblLine3.Text = String.Format ("({0:0})", II.Math.RandomPercentRange (Instance?.Physiology?.IABPMAP ?? 0, 0.02f));
                     } else {
                         lblLine1.Text = Utility.WrapString (Instance?.Language.Localize ("NUMERIC:ZeroTransducer") ?? "");
                         lblLine2.Text = "";
@@ -167,7 +167,7 @@ namespace IISIM.Controls {
                         ? Brushes.Red : Brushes.SkyBlue;
 
                     lblLine1.Text = Instance?.Device_IABP?.Running ?? false
-                        ? String.Format ("{0:0}", Instance?.Physiology.IABP_AP) : "";
+                        ? String.Format ("{0:0}", Instance?.Physiology.IABPAP) : "";
 
                     lblLine2.Text = String.Format ("{0:0}%", Instance?.Device_IABP?.Augmentation);
                     lblLine3.Text = String.Format ("{0}: {1:0}", Instance?.Language.Localize ("IABP:Alarm"),
@@ -185,7 +185,7 @@ namespace IISIM.Controls {
 
                 case ControlTypes.Values.IABP_AP:
                     if ((Instance?.Device_IABP?.Running ?? false)
-                            && Instance?.Physiology?.IABP_AP < Instance?.Device_IABP?.AugmentationAlarm) {
+                            && Instance?.Physiology?.IABPAP < Instance?.Device_IABP?.AugmentationAlarm) {
                         AlarmLine1 = true;
                         this.GetControl<TextBlock> ("lblLine1").Foreground = (AlarmIterator ?? false) ? Brushes.Red : Brushes.SkyBlue;
                     } else {

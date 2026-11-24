@@ -52,12 +52,12 @@ namespace IISIM.Controls {
 
         private void UpdateInterface (object sender, EventArgs e) {
             Dispatcher.UIThread.InvokeAsync (() => {
-                TracingBrush = Color.GetLead (Lead?.Value ?? Lead.Values.ECG_I, ColorScheme ?? Color.Schemes.Light);
+                TracingBrush = Color.GetLead (Lead?.Value ?? Lead.Values.ECGI, ColorScheme ?? Color.Schemes.Light);
 
                 Label lblLead = this.GetControl<Label> ("lblLead");
 
                 lblLead.Foreground = TracingBrush;
-                lblLead.Content = Instance?.Language.Localize (Lead.LookupString (Lead?.Value ?? Lead.Values.ECG_I, true));
+                lblLead.Content = Instance?.Language.Localize (Lead.LookupString (Lead?.Value ?? Lead.Values.ECGI, true));
 
                 CalculateOffsets ();
             });

@@ -27,12 +27,12 @@ namespace IISIM.Controls {
         /* Variables controlling for visual alarms */
         public Alarm? AlarmRef;
         
-        private List<II.Settings.Device.Numeric>? Transducers_Zeroed {
+        private List<Device.Numeric>? Transducers_Zeroed {
             set { 
                 if (Instance?.Scenario?.DeviceMonitor is not null)
-                    Instance.Scenario.DeviceMonitor.Transducers_Zeroed = value ?? new List<II.Settings.Device.Numeric> (); 
+                    Instance.Scenario.DeviceMonitor.TransducersZeroed = value ?? new List<Device.Numeric> (); 
             }
-            get { return Instance?.Scenario?.DeviceMonitor.Transducers_Zeroed; }
+            get { return Instance?.Scenario?.DeviceMonitor.TransducersZeroed; }
         }
         
         public class ControlTypes {
@@ -53,18 +53,18 @@ namespace IISIM.Controls {
             }
 
             private static Color.Leads SwitchLead_Color (Values value) => value switch {
-                ControlTypes.Values.ECG => Color.Leads.ECG,
-                ControlTypes.Values.T => Color.Leads.T,
-                ControlTypes.Values.RR => Color.Leads.RR,
-                ControlTypes.Values.ETCO2 => Color.Leads.ETCO2,
-                ControlTypes.Values.SPO2 => Color.Leads.SPO2,
-                ControlTypes.Values.NIBP => Color.Leads.NIBP,
-                ControlTypes.Values.ABP => Color.Leads.ABP,
-                ControlTypes.Values.CVP => Color.Leads.CVP,
-                ControlTypes.Values.CO => Color.Leads.CO,
-                ControlTypes.Values.PA => Color.Leads.PA,
-                ControlTypes.Values.ICP => Color.Leads.ICP,
-                ControlTypes.Values.IAP => Color.Leads.IAP,
+                Values.ECG => Color.Leads.ECG,
+                Values.T => Color.Leads.T,
+                Values.RR => Color.Leads.RR,
+                Values.ETCO2 => Color.Leads.ETCO2,
+                Values.SPO2 => Color.Leads.SPO2,
+                Values.NIBP => Color.Leads.NIBP,
+                Values.ABP => Color.Leads.ABP,
+                Values.CVP => Color.Leads.CVP,
+                Values.CO => Color.Leads.CO,
+                Values.PA => Color.Leads.PA,
+                Values.ICP => Color.Leads.ICP,
+                Values.IAP => Color.Leads.IAP,
                 _ => Color.Leads.ECG
             };
 
@@ -295,7 +295,7 @@ namespace IISIM.Controls {
                 case ControlTypes.Values.ABP:
                     if (Transducers_Zeroed?.Contains(Device.Numeric.ABP) ?? false) {
                         int asbp = (int)II.Math.RandomPercentRange (Instance?.Physiology?.ASBP, 0.02f);
-                        int adbp = (int)II.Math.RandomPercentRange ((Instance?.Physiology?.IABP_Active ?? false ? Instance?.Physiology.IABP_DBP : Instance?.Physiology?.ADBP), 0.02f);
+                        int adbp = (int)II.Math.RandomPercentRange ((Instance?.Physiology?.IABPActive ?? false ? Instance?.Physiology.IABPDBP : Instance?.Physiology?.ADBP), 0.02f);
                         int amap = (int)II.Math.RandomPercentRange (Instance?.Physiology?.AMAP, 0.02f);
 
                         lblLine1.Text = String.Format ("{0:0}", asbp);
@@ -449,28 +449,28 @@ namespace IISIM.Controls {
 
             switch (ControlType?.Value) {
                 case ControlTypes.Values.ABP:
-                    if (!(Transducers_Zeroed?.Contains (II.Settings.Device.Numeric.ABP) ?? true))
-                        Transducers_Zeroed.Add (II.Settings.Device.Numeric.ABP);
+                    if (!(Transducers_Zeroed?.Contains (Device.Numeric.ABP) ?? true))
+                        Transducers_Zeroed.Add (Device.Numeric.ABP);
                     return;
 
                 case ControlTypes.Values.CVP:
-                    if (!(Transducers_Zeroed?.Contains (II.Settings.Device.Numeric.CVP) ?? true))
-                        Transducers_Zeroed.Add (II.Settings.Device.Numeric.CVP);
+                    if (!(Transducers_Zeroed?.Contains (Device.Numeric.CVP) ?? true))
+                        Transducers_Zeroed.Add (Device.Numeric.CVP);
                     return;
 
                 case ControlTypes.Values.PA:
-                    if (!(Transducers_Zeroed?.Contains (II.Settings.Device.Numeric.PA) ?? true))
-                        Transducers_Zeroed.Add (II.Settings.Device.Numeric.PA);
+                    if (!(Transducers_Zeroed?.Contains (Device.Numeric.PA) ?? true))
+                        Transducers_Zeroed.Add (Device.Numeric.PA);
                     return;
 
                 case ControlTypes.Values.ICP:
-                    if (!(Transducers_Zeroed?.Contains (II.Settings.Device.Numeric.ICP) ?? true))
-                        Transducers_Zeroed.Add (II.Settings.Device.Numeric.ICP);
+                    if (!(Transducers_Zeroed?.Contains (Device.Numeric.ICP) ?? true))
+                        Transducers_Zeroed.Add (Device.Numeric.ICP);
                     return;
 
                 case ControlTypes.Values.IAP:
-                    if (!(Transducers_Zeroed?.Contains (II.Settings.Device.Numeric.IAP) ?? true))
-                        Transducers_Zeroed.Add (II.Settings.Device.Numeric.IAP);
+                    if (!(Transducers_Zeroed?.Contains (Device.Numeric.IAP) ?? true))
+                        Transducers_Zeroed.Add (Device.Numeric.IAP);
                     return;
             }
         }
@@ -491,7 +491,7 @@ namespace IISIM.Controls {
             if (sender is not MenuItem)
                 return;
 
-            if (!Enum.TryParse<ControlTypes.Values> (((MenuItem)sender).Name, out ControlTypes.Values selectedValue))
+            if (!Enum.TryParse (((MenuItem)sender).Name, out ControlTypes.Values selectedValue))
                 return;
 
             if (ControlType is null)

@@ -4,7 +4,6 @@
  */
 
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
@@ -46,8 +45,8 @@ namespace II {
 
             byte [] output;
             using (Aes aes = Aes.Create ()) {
-                aes.Key = Encryption.Key;
-                aes.IV = Encryption.IV;
+                aes.Key = Key;
+                aes.IV = IV;
                 ICryptoTransform encryptor = aes.CreateEncryptor (aes.Key, aes.IV);
                 using MemoryStream ms = new ();
                 using CryptoStream cs = new (ms, encryptor, CryptoStreamMode.Write);
@@ -66,8 +65,8 @@ namespace II {
 
             string output;
             using (Aes aes = Aes.Create ()) {
-                aes.Key = Encryption.Key;
-                aes.IV = Encryption.IV;
+                aes.Key = Key;
+                aes.IV = IV;
                 ICryptoTransform decryptor = aes.CreateDecryptor (aes.Key, aes.IV);
                 using MemoryStream ms = new (Convert.FromBase64String (str));
                 using CryptoStream cs = new (ms, decryptor, CryptoStreamMode.Read);

@@ -13,13 +13,13 @@ using II.Settings;
 namespace IISE.Controls {
 
     public partial class PropertyAlarm : UserControl {
-        private bool isInitiated = false;
+        private bool _isInitiated = false;
 
         public Device.Devices Device;
         public Alarm.Parameters Key;
         public List<string>? Values;
 
-        private Label? plblKey;
+        private Label? _plblKey;
         private NumericUpDown? pnumHigh;
         private NumericUpDown? pnumLow;
         private CheckBox? pchkEnabled;
@@ -42,7 +42,7 @@ namespace IISE.Controls {
         }
 
         private Task ReferenceView () {
-            plblKey = this.GetControl<Label> ("lblKey");
+            _plblKey = this.GetControl<Label> ("lblKey");
             pnumHigh = this.GetControl<NumericUpDown> ("numHigh");
             pnumLow = this.GetControl<NumericUpDown> ("numLow");
             pchkEnabled = this.GetControl<CheckBox> ("chkEnabled");
@@ -62,25 +62,25 @@ namespace IISE.Controls {
             Device = device;
             Key = key;
 
-            if (plblKey is not null) {
+            if (_plblKey is not null) {
                 switch (Key) {
                     default: break;
-                    case Alarm.Parameters.HR: plblKey.Content = "Heart Rate (HR):"; break;
-                    case Alarm.Parameters.RR: plblKey.Content = "Respiratory Rate (RR):"; break;
-                    case Alarm.Parameters.SPO2: plblKey.Content = "Pulse Oximetry (SpO2):"; break;
-                    case Alarm.Parameters.ETCO2: plblKey.Content = "End-Tidal CO2 (ETCO2):"; break;
-                    case Alarm.Parameters.CVP: plblKey.Content = "Central Venous Pressure (CVP):"; break;
-                    case Alarm.Parameters.ICP: plblKey.Content = "Intracranial Pressure (ICP):"; break;
-                    case Alarm.Parameters.IAP: plblKey.Content = "Intraabdominal Pressure (IAP):"; break;
-                    case Alarm.Parameters.NSBP: plblKey.Content = "Non-invasive Blood Pressure (NiBP) Systolic:"; break;
-                    case Alarm.Parameters.NDBP: plblKey.Content = "Non-invasive Blood Pressure (NiBP) Diastolic:"; break;
-                    case Alarm.Parameters.NMAP: plblKey.Content = "Non-invasive Blood Pressure (NiBP) Mean (MAP):"; break;
-                    case Alarm.Parameters.ASBP: plblKey.Content = "Arterial Blood Pressure (ABP) Systolic:"; break;
-                    case Alarm.Parameters.ADBP: plblKey.Content = "Arterial Blood Pressure (ABP) Diastolic:"; break;
-                    case Alarm.Parameters.AMAP: plblKey.Content = "Arterial Blood Pressure (ABP) Mean (MAP):"; break;
-                    case Alarm.Parameters.PSP: plblKey.Content = "Pulmonary Arterial Pressure (PAP) Systolic:"; break;
-                    case Alarm.Parameters.PDP: plblKey.Content = "Pulmonary Arterial Pressure (PAP) Diastolic:"; break;
-                    case Alarm.Parameters.PMP: plblKey.Content = "Pulmonary Arterial Pressure (PAP) Mean (mPAP):"; break;
+                    case Alarm.Parameters.HR: _plblKey.Content = "Heart Rate (HR):"; break;
+                    case Alarm.Parameters.RR: _plblKey.Content = "Respiratory Rate (RR):"; break;
+                    case Alarm.Parameters.SPO2: _plblKey.Content = "Pulse Oximetry (SpO2):"; break;
+                    case Alarm.Parameters.ETCO2: _plblKey.Content = "End-Tidal CO2 (ETCO2):"; break;
+                    case Alarm.Parameters.CVP: _plblKey.Content = "Central Venous Pressure (CVP):"; break;
+                    case Alarm.Parameters.ICP: _plblKey.Content = "Intracranial Pressure (ICP):"; break;
+                    case Alarm.Parameters.IAP: _plblKey.Content = "Intraabdominal Pressure (IAP):"; break;
+                    case Alarm.Parameters.NSBP: _plblKey.Content = "Non-invasive Blood Pressure (NiBP) Systolic:"; break;
+                    case Alarm.Parameters.NDBP: _plblKey.Content = "Non-invasive Blood Pressure (NiBP) Diastolic:"; break;
+                    case Alarm.Parameters.NMAP: _plblKey.Content = "Non-invasive Blood Pressure (NiBP) Mean (MAP):"; break;
+                    case Alarm.Parameters.ASBP: _plblKey.Content = "Arterial Blood Pressure (ABP) Systolic:"; break;
+                    case Alarm.Parameters.ADBP: _plblKey.Content = "Arterial Blood Pressure (ABP) Diastolic:"; break;
+                    case Alarm.Parameters.AMAP: _plblKey.Content = "Arterial Blood Pressure (ABP) Mean (MAP):"; break;
+                    case Alarm.Parameters.PSP: _plblKey.Content = "Pulmonary Arterial Pressure (PAP) Systolic:"; break;
+                    case Alarm.Parameters.PDP: _plblKey.Content = "Pulmonary Arterial Pressure (PAP) Diastolic:"; break;
+                    case Alarm.Parameters.PMP: _plblKey.Content = "Pulmonary Arterial Pressure (PAP) Mean (mPAP):"; break;
                 }
             }
 
@@ -92,7 +92,7 @@ namespace IISE.Controls {
                 }
                 
 
-                if (!isInitiated) {
+                if (!_isInitiated) {
                     pcmbPriority.SelectionChanged += SendPropertyChange;
                     pcmbPriority.LostFocus += SendPropertyChange;
 
@@ -106,7 +106,7 @@ namespace IISE.Controls {
                     pchkEnabled.LostFocus += SendPropertyChange;
                 }
 
-                isInitiated = true;
+                _isInitiated = true;
             }
         }
 

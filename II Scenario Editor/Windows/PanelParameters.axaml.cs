@@ -74,8 +74,8 @@ namespace IISE.Windows {
                 foreach (Respiratory_Rhythms.Values v in Enum.GetValues (typeof (Respiratory_Rhythms.Values)))
                     respiratoryRhythms.Add (Language.Localize(Language.Languages.ENG, Respiratory_Rhythms.LookupString (v)) ?? "");
 
-                foreach (PulmonaryArtery_Rhythms.Values v in Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)))
-                    pulmonaryRhythms.Add (Language.Localize(Language.Languages.ENG, PulmonaryArtery_Rhythms.LookupString (v)) ?? "");
+                foreach (PulmonaryArteryRhythms.Values v in Enum.GetValues (typeof (PulmonaryArteryRhythms.Values)))
+                    pulmonaryRhythms.Add (Language.Localize(Language.Languages.ENG, PulmonaryArteryRhythms.LookupString (v)) ?? "");
 
                 foreach (Cardiac_Axes.Values v in Enum.GetValues (typeof (Cardiac_Axes.Values)))
                     cardiacAxes.Add (Language.Localize(Language.Languages.ENG, Cardiac_Axes.LookupString (v)) ?? "");
@@ -160,7 +160,7 @@ namespace IISE.Windows {
             penmRespiratoryRhythms.Init (PropertyEnum.Keys.Respiratory_Rhythms,
                 Enum.GetNames (typeof (Respiratory_Rhythms.Values)), respiratoryRhythms);
             penmPACatheterRhythm.Init (PropertyEnum.Keys.PACatheter_Rhythms,
-                Enum.GetNames (typeof (PulmonaryArtery_Rhythms.Values)), pulmonaryRhythms);
+                Enum.GetNames (typeof (PulmonaryArteryRhythms.Values)), pulmonaryRhythms);
             penmCardiacAxis.Init (PropertyEnum.Keys.Cardiac_Axis,
                 Enum.GetNames (typeof (Cardiac_Axes.Values)), cardiacAxes);
             penmFetalHeartRhythm.Init (PropertyEnum.Keys.FetalHeart_Rhythms,
@@ -244,8 +244,8 @@ namespace IISE.Windows {
                     case PropertyInt.Keys.CVP: Physiology.CVP = e.Value; break;
                     case PropertyInt.Keys.ICP: Physiology.ICP = e.Value; break;
                     case PropertyInt.Keys.IAP: Physiology.IAP = e.Value; break;
-                    case PropertyInt.Keys.PacemakerThreshold: Physiology.Pacemaker_Threshold = e.Value; break;
-                    case PropertyInt.Keys.FHR: Physiology.Fetal_HR = e.Value; break;
+                    case PropertyInt.Keys.PacemakerThreshold: Physiology.PacemakerThreshold = e.Value; break;
+                    case PropertyInt.Keys.FHR: Physiology.FetalHR = e.Value; break;
                     case PropertyInt.Keys.ObstetricFHRVariability: Physiology.ObstetricFetalRateVariability = e.Value; break;
                     case PropertyInt.Keys.ObstetricContractionFrequency: Physiology.ObstetricContractionFrequency = e.Value; break;
                     case PropertyInt.Keys.ObstetricContractionDuration: Physiology.ObstetricContractionDuration = e.Value; break;
@@ -261,10 +261,10 @@ namespace IISE.Windows {
                     default: break;
                     case PropertyDouble.Keys.T: Physiology.T = e.Value ?? 0d; break;
                     case PropertyDouble.Keys.CO: Physiology.CO = e.Value ?? 0d; break;
-                    case PropertyDouble.Keys.QRSInterval: Physiology.QRS_Interval = e.Value ?? 0d; break;
-                    case PropertyDouble.Keys.QTcInterval: Physiology.QTc_Interval = e.Value ?? 0d; break;
-                    case PropertyDouble.Keys.RRInspiratoryRatio: Physiology.RR_IE_I = e.Value ?? 0d; break;
-                    case PropertyDouble.Keys.RRExpiratoryRatio: Physiology.RR_IE_E = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.QRSInterval: Physiology.QRSInterval = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.QTcInterval: Physiology.QTcInterval = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.RRInspiratoryRatio: Physiology.RRIEI = e.Value ?? 0d; break;
+                    case PropertyDouble.Keys.RRExpiratoryRatio: Physiology.RRIEE = e.Value ?? 0d; break;
                 }
             }
         }
@@ -292,19 +292,19 @@ namespace IISE.Windows {
                     default: break;
 
                     case PropertyEnum.Keys.Cardiac_Axis:
-                        Physiology.Cardiac_Axis.Value = (Cardiac_Axes.Values)Enum.Parse (typeof (Cardiac_Axes.Values), e.Value);
+                        Physiology.CardiacAxis.Value = (Cardiac_Axes.Values)Enum.Parse (typeof (Cardiac_Axes.Values), e.Value);
                         break;
 
                     case PropertyEnum.Keys.Cardiac_Rhythms:
-                        Physiology.Cardiac_Rhythm.Value = (CardiacRhythms.Values)Enum.Parse (typeof (CardiacRhythms.Values), e.Value);
+                        Physiology.CardiacRhythm.Value = (CardiacRhythms.Values)Enum.Parse (typeof (CardiacRhythms.Values), e.Value);
                         break;
 
                     case PropertyEnum.Keys.Respiratory_Rhythms:
-                        Physiology.Respiratory_Rhythm.Value = (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), e.Value);
+                        Physiology.RespiratoryRhythm.Value = (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), e.Value);
                         break;
 
                     case PropertyEnum.Keys.PACatheter_Rhythms:
-                        Physiology.PulmonaryArtery_Placement.Value = (PulmonaryArtery_Rhythms.Values)Enum.Parse (typeof (PulmonaryArtery_Rhythms.Values), e.Value);
+                        Physiology.PulmonaryArteryPlacement.Value = (PulmonaryArteryRhythms.Values)Enum.Parse (typeof (PulmonaryArteryRhythms.Values), e.Value);
                         break;
 
                     case PropertyEnum.Keys.FetalHeart_Rhythms:
@@ -326,10 +326,10 @@ namespace IISE.Windows {
             if (Physiology != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyCheck.Keys.PulsusParadoxus: Physiology.Pulsus_Paradoxus = e.Value; break;
-                    case PropertyCheck.Keys.PulsusAlternans: Physiology.Pulsus_Alternans = e.Value; break;
-                    case PropertyCheck.Keys.ElectricalAlternans: Physiology.Electrical_Alternans = e.Value; break;
-                    case PropertyCheck.Keys.MechanicallyVentilated: Physiology.Mechanically_Ventilated = e.Value; break;
+                    case PropertyCheck.Keys.PulsusParadoxus: Physiology.PulsusParadoxus = e.Value; break;
+                    case PropertyCheck.Keys.PulsusAlternans: Physiology.PulsusAlternans = e.Value; break;
+                    case PropertyCheck.Keys.ElectricalAlternans: Physiology.ElectricalAlternans = e.Value; break;
+                    case PropertyCheck.Keys.MechanicallyVentilated: Physiology.MechanicallyVentilated = e.Value; break;
                 }
             }
         }
@@ -338,11 +338,11 @@ namespace IISE.Windows {
             if (Physiology != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyECGAmplitude.Keys.PAmplitude: Physiology.P_Amplitude = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
-                    case PropertyECGAmplitude.Keys.QAmplitude: Physiology.Q_Amplitude = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
-                    case PropertyECGAmplitude.Keys.RAmplitude: Physiology.R_Amplitude = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
-                    case PropertyECGAmplitude.Keys.SAmplitude: Physiology.S_Amplitude = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
-                    case PropertyECGAmplitude.Keys.TAmplitude: Physiology.T_Amplitude = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
+                    case PropertyECGAmplitude.Keys.PAmplitude: Physiology.PAmplitude = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
+                    case PropertyECGAmplitude.Keys.QAmplitude: Physiology.QAmplitude = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
+                    case PropertyECGAmplitude.Keys.RAmplitude: Physiology.RAmplitude = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
+                    case PropertyECGAmplitude.Keys.SAmplitude: Physiology.SAmplitude = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
+                    case PropertyECGAmplitude.Keys.TAmplitude: Physiology.TAmplitude = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
                 }
             }
         }
@@ -350,7 +350,7 @@ namespace IISE.Windows {
             if (Physiology != null) {
                 switch (e.Key) {
                     default: break;
-                    case PropertyECGSegment.Keys.STElevation: Physiology.ST_Elevation = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
+                    case PropertyECGSegment.Keys.STElevation: Physiology.STElevation = e.Values ?? new double [] { 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d, 0d }; break;
                 }
             }
         }
@@ -363,18 +363,18 @@ namespace IISE.Windows {
             CardiacRhythms.DefaultVitals v = CardiacRhythms.Defaults (
                 (CardiacRhythms.Values)Enum.Parse (typeof (CardiacRhythms.Values), e.Value));
 
-            Physiology.HR = (int)II.Math.Clamp ((double)Physiology.VS_Settings.HR, v.HRMin, v.HRMax);
-            Physiology.RR = (int)II.Math.Clamp ((double)Physiology.VS_Settings.RR, v.RRMin, v.RRMax);
-            Physiology.SPO2 = (int)II.Math.Clamp ((double)Physiology.VS_Settings.SPO2, v.SPO2Min, v.SPO2Max);
-            Physiology.ETCO2 = (int)II.Math.Clamp ((double)Physiology.VS_Settings.ETCO2, v.ETCO2Min, v.ETCO2Max);
-            Physiology.NSBP = (int)II.Math.Clamp ((double)Physiology.VS_Settings.NSBP, v.SBPMin, v.SBPMax);
-            Physiology.NDBP = (int)II.Math.Clamp ((double)Physiology.VS_Settings.NDBP, v.DBPMin, v.DBPMax);
-            Physiology.ASBP = (int)II.Math.Clamp ((double)Physiology.VS_Settings.ASBP, v.SBPMin, v.SBPMax);
-            Physiology.ADBP = (int)II.Math.Clamp ((double)Physiology.VS_Settings.ADBP, v.DBPMin, v.DBPMax);
-            Physiology.PSP = (int)II.Math.Clamp ((double)Physiology.VS_Settings.PSP, v.PSPMin, v.PSPMax);
-            Physiology.PDP = (int)II.Math.Clamp ((double)Physiology.VS_Settings.PDP, v.PDPMin, v.PDPMax);
-            Physiology.QRS_Interval = (double)II.Math.Clamp ((double)Physiology.QRS_Interval, v.QRSIntervalMin, v.QRSIntervalMax);
-            Physiology.QTc_Interval = (double)II.Math.Clamp ((double)Physiology.QTc_Interval, v.QTCIntervalMin, v.QTCIntervalMax);
+            Physiology.HR = (int)II.Math.Clamp ((double)Physiology.VitalSignsSettings.HR, v.HRMin, v.HRMax);
+            Physiology.RR = (int)II.Math.Clamp ((double)Physiology.VitalSignsSettings.RR, v.RRMin, v.RRMax);
+            Physiology.SPO2 = (int)II.Math.Clamp ((double)Physiology.VitalSignsSettings.SPO2, v.SPO2Min, v.SPO2Max);
+            Physiology.ETCO2 = (int)II.Math.Clamp ((double)Physiology.VitalSignsSettings.ETCO2, v.ETCO2Min, v.ETCO2Max);
+            Physiology.NSBP = (int)II.Math.Clamp ((double)Physiology.VitalSignsSettings.NSBP, v.SBPMin, v.SBPMax);
+            Physiology.NDBP = (int)II.Math.Clamp ((double)Physiology.VitalSignsSettings.NDBP, v.DBPMin, v.DBPMax);
+            Physiology.ASBP = (int)II.Math.Clamp ((double)Physiology.VitalSignsSettings.ASBP, v.SBPMin, v.SBPMax);
+            Physiology.ADBP = (int)II.Math.Clamp ((double)Physiology.VitalSignsSettings.ADBP, v.DBPMin, v.DBPMax);
+            Physiology.PSP = (int)II.Math.Clamp ((double)Physiology.VitalSignsSettings.PSP, v.PSPMin, v.PSPMax);
+            Physiology.PDP = (int)II.Math.Clamp ((double)Physiology.VitalSignsSettings.PDP, v.PDPMin, v.PDPMax);
+            Physiology.QRSInterval = (double)II.Math.Clamp ((double)Physiology.QRSInterval, v.QRSIntervalMin, v.QRSIntervalMax);
+            Physiology.QTcInterval = (double)II.Math.Clamp ((double)Physiology.QTcInterval, v.QTCIntervalMin, v.QTCIntervalMax);
 
             _ = UpdateView ();
         }
@@ -389,8 +389,8 @@ namespace IISE.Windows {
                 (Respiratory_Rhythms.Values)Enum.Parse (typeof (Respiratory_Rhythms.Values), e.Value));
 
             Physiology.RR = (int)II.Math.Clamp ((double)Physiology.RR, v.RRMin, v.RRMax);
-            Physiology.RR_IE_I = (int)II.Math.Clamp ((double)Physiology.RR_IE_I, v.RR_IE_I_Min, v.RR_IE_I_Max);
-            Physiology.RR_IE_E = (int)II.Math.Clamp ((double)Physiology.RR_IE_E, v.RR_IE_E_Min, v.RR_IE_E_Max);
+            Physiology.RRIEI = (int)II.Math.Clamp ((double)Physiology.RRIEI, v.RRIEIMin, v.RRIEIMax);
+            Physiology.RRIEE = (int)II.Math.Clamp ((double)Physiology.RRIEE, v.RRIEEMin, v.RRIEEMax);
 
             _ = UpdateView ();
         }
@@ -399,8 +399,8 @@ namespace IISE.Windows {
             if (e.Value == null || Physiology == null)
                 return;
 
-            PulmonaryArtery_Rhythms.Default_Vitals v = PulmonaryArtery_Rhythms.DefaultVitals (
-                (PulmonaryArtery_Rhythms.Values)Enum.Parse (typeof (PulmonaryArtery_Rhythms.Values), e.Value));
+            PulmonaryArteryRhythms.Default_Vitals v = PulmonaryArteryRhythms.DefaultVitals (
+                (PulmonaryArteryRhythms.Values)Enum.Parse (typeof (PulmonaryArteryRhythms.Values), e.Value));
 
             Physiology.PSP = (int)II.Math.Clamp ((double)Physiology.PSP, v.PSPMin, v.PSPMax);
             Physiology.PDP = (int)II.Math.Clamp ((double)Physiology.PDP, v.PDPMin, v.PDPMax);
@@ -512,45 +512,45 @@ namespace IISE.Windows {
 
             if (Physiology != null) {
                 // Update all controls with Patient values
-                await pbpNBP.Set (Physiology.VS_Settings.NSBP, Physiology.VS_Settings.NDBP);
-                await pbpABP.Set (Physiology.VS_Settings.ASBP, Physiology.VS_Settings.ADBP);
-                await pbpPBP.Set (Physiology.VS_Settings.PSP, Physiology.VS_Settings.PDP);
+                await pbpNBP.Set (Physiology.VitalSignsSettings.NSBP, Physiology.VitalSignsSettings.NDBP);
+                await pbpABP.Set (Physiology.VitalSignsSettings.ASBP, Physiology.VitalSignsSettings.ADBP);
+                await pbpPBP.Set (Physiology.VitalSignsSettings.PSP, Physiology.VitalSignsSettings.PDP);
 
-                await pchkMechanicallyVentilated.Set (Physiology.Mechanically_Ventilated);
-                await pchkPulsusParadoxus.Set (Physiology.Pulsus_Paradoxus);
-                await pchkPulsusAlternans.Set (Physiology.Pulsus_Alternans);
-                await pchkElectricalAlternans.Set (Physiology.Electrical_Alternans);
+                await pchkMechanicallyVentilated.Set (Physiology.MechanicallyVentilated);
+                await pchkPulsusParadoxus.Set (Physiology.PulsusParadoxus);
+                await pchkPulsusAlternans.Set (Physiology.PulsusAlternans);
+                await pchkElectricalAlternans.Set (Physiology.ElectricalAlternans);
 
-                await pdblT.Set (Physiology.VS_Settings.T);
-                await pdblCO.Set (Physiology.VS_Settings.CO);
-                await pdblQRSInterval.Set (Physiology.QRS_Interval);
-                await pdblQTcInterval.Set (Physiology.QTc_Interval);
-                await pdblInspiratoryRatio.Set (Physiology.VS_Settings.RR_IE_I);
-                await pdblExpiratoryRatio.Set (Physiology.VS_Settings.RR_IE_E);
+                await pdblT.Set (Physiology.VitalSignsSettings.T);
+                await pdblCO.Set (Physiology.VitalSignsSettings.CO);
+                await pdblQRSInterval.Set (Physiology.QRSInterval);
+                await pdblQTcInterval.Set (Physiology.QTcInterval);
+                await pdblInspiratoryRatio.Set (Physiology.VitalSignsSettings.RRIEI);
+                await pdblExpiratoryRatio.Set (Physiology.VitalSignsSettings.RRIEE);
 
-                await pecgPAmplitude.Set (Physiology.P_Amplitude);
-                await pecgQAmplitude.Set (Physiology.Q_Amplitude);
-                await pecgRAmplitude.Set (Physiology.R_Amplitude);
-                await pecgSAmplitude.Set (Physiology.S_Amplitude);
-                await pecgTAmplitude.Set (Physiology.T_Amplitude);
+                await pecgPAmplitude.Set (Physiology.PAmplitude);
+                await pecgQAmplitude.Set (Physiology.QAmplitude);
+                await pecgRAmplitude.Set (Physiology.RAmplitude);
+                await pecgSAmplitude.Set (Physiology.SAmplitude);
+                await pecgTAmplitude.Set (Physiology.TAmplitude);
                 
-                await pecgSTSegment.Set (Physiology.ST_Elevation);
+                await pecgSTSegment.Set (Physiology.STElevation);
 
-                await penmCardiacRhythms.Set ((int)Physiology.Cardiac_Rhythm.Value);
-                await penmRespiratoryRhythms.Set ((int)Physiology.Respiratory_Rhythm.Value);
-                await penmPACatheterRhythm.Set ((int)Physiology.PulmonaryArtery_Placement.Value);
-                await penmCardiacAxis.Set ((int)Physiology.Cardiac_Axis.Value);
+                await penmCardiacRhythms.Set ((int)Physiology.CardiacRhythm.Value);
+                await penmRespiratoryRhythms.Set ((int)Physiology.RespiratoryRhythm.Value);
+                await penmPACatheterRhythm.Set ((int)Physiology.PulmonaryArteryPlacement.Value);
+                await penmCardiacAxis.Set ((int)Physiology.CardiacAxis.Value);
                 await penmFetalHeartRhythm.Set ((int)Physiology.ObstetricFetalHeartRhythm.Value);
 
-                await pintHR.Set (Physiology.VS_Settings.HR);
-                await pintRR.Set (Physiology.VS_Settings.RR);
-                await pintSPO2.Set (Physiology.VS_Settings.SPO2);
-                await pintETCO2.Set (Physiology.VS_Settings.ETCO2);
-                await pintCVP.Set (Physiology.VS_Settings.CVP);
-                await pintICP.Set (Physiology.VS_Settings.ICP);
-                await pintIAP.Set (Physiology.VS_Settings.IAP);
-                await pintPacemakerThreshold.Set (Physiology.Pacemaker_Threshold);
-                await pintFHR.Set (Physiology.VS_Settings.FetalHR);
+                await pintHR.Set (Physiology.VitalSignsSettings.HR);
+                await pintRR.Set (Physiology.VitalSignsSettings.RR);
+                await pintSPO2.Set (Physiology.VitalSignsSettings.SPO2);
+                await pintETCO2.Set (Physiology.VitalSignsSettings.ETCO2);
+                await pintCVP.Set (Physiology.VitalSignsSettings.CVP);
+                await pintICP.Set (Physiology.VitalSignsSettings.ICP);
+                await pintIAP.Set (Physiology.VitalSignsSettings.IAP);
+                await pintPacemakerThreshold.Set (Physiology.PacemakerThreshold);
+                await pintFHR.Set (Physiology.VitalSignsSettings.FetalHR);
                 await pintFHRVariability.Set (Physiology.ObstetricFetalRateVariability);
                 await pintUCFreq.Set (Physiology.ObstetricContractionFrequency);
                 await pintUCDur.Set (Physiology.ObstetricContractionDuration);

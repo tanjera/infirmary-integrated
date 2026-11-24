@@ -27,10 +27,10 @@ using II.Waveform;
 namespace IISIM {
 
     public partial class DeviceECG : DeviceWindow {
-        private Color.Schemes colorScheme = Color.Schemes.Dark;
-        private ImageBrush? gridBackground;
+        private Color.Schemes _colorScheme = Color.Schemes.Dark;
+        private ImageBrush? _gridBackground;
 
-        private List<Controls.ECGTracing> listTracings = new ();
+        private List<Controls.ECGTracing> _listTracings = new ();
 
         public DeviceECG () {
             InitializeComponent ();
@@ -45,7 +45,7 @@ namespace IISIM {
             DataContext = this;
 
             InitInterface ();
-            SetColorScheme (colorScheme);
+            SetColorScheme (_colorScheme);
         }
 
         private void InitializeComponent () {
@@ -76,8 +76,8 @@ namespace IISIM {
             Grid layoutGrid = this.GetControl<Grid> ("layoutGrid");
 
             /* Set background image for grid lines */
-            gridBackground = new ImageBrush (new Bitmap (AssetLoader.Open (new Uri ("avares://infirmary-integrated/Resources/12L_ECG_Grid.png"))));
-            gridBackground.Stretch = Stretch.Fill;
+            _gridBackground = new ImageBrush (new Bitmap (AssetLoader.Open (new Uri ("avares://infirmary-integrated/Resources/12L_ECG_Grid.png"))));
+            _gridBackground.Stretch = Stretch.Fill;
 
             /* 12 Lead ECG Interface layout */
             List<Lead.Values> listLeads = new ();
@@ -99,34 +99,34 @@ namespace IISIM {
             // Populate the grid with tracings for each lead
             for (int iColumns = 0; iColumns < amtColumns; iColumns++) {
                 for (int iRows = 0; iRows < amtRows && indexLeads < listLeads.Count; iRows++) {
-                    listTracings.Add (new Controls.ECGTracing (Instance, new Strip (listLeads [indexLeads], (4 - iColumns) * 2.5f, 2.5f, Instance?.Timer_Simulation), colorScheme));
-                    listTracings [indexLeads].SetValue (Grid.ColumnProperty, iColumns);
-                    listTracings [indexLeads].SetValue (Grid.RowProperty, iRows);
-                    layoutGrid.Children.Add (listTracings [indexLeads]);
+                    _listTracings.Add (new Controls.ECGTracing (Instance, new Strip (listLeads [indexLeads], (4 - iColumns) * 2.5f, 2.5f, Instance?.Timer_Simulation), _colorScheme));
+                    _listTracings [indexLeads].SetValue (Grid.ColumnProperty, iColumns);
+                    _listTracings [indexLeads].SetValue (Grid.RowProperty, iRows);
+                    layoutGrid.Children.Add (_listTracings [indexLeads]);
                     indexLeads++;
                 }
             }
 
             // Add Lead II running along bottom spanning all columns
-            Controls.ECGTracing leadII = new (Instance, new Strip (Lead.Values.ECG_II, 10f, Instance?.Timer_Simulation), colorScheme);
+            Controls.ECGTracing leadII = new (Instance, new Strip (Lead.Values.ECGII, 10f, Instance?.Timer_Simulation), _colorScheme);
             leadII.SetValue (Grid.ColumnProperty, 0);
             leadII.SetValue (Grid.RowProperty, 4);
             leadII.SetValue (Grid.ColumnSpanProperty, 4);
-            listTracings.Add (leadII);
+            _listTracings.Add (leadII);
             layoutGrid.RowDefinitions.Add (new RowDefinition ());
-            layoutGrid.Children.Add (listTracings [indexLeads]);
+            layoutGrid.Children.Add (_listTracings [indexLeads]);
         }
 
         private void UpdateInterface () {
             Dispatcher.UIThread.InvokeAsync (() => {
-                for (int i = 0; i < listTracings.Count; i++)
-                    listTracings [i].SetColorScheme (colorScheme);
+                for (int i = 0; i < _listTracings.Count; i++)
+                    _listTracings [i].SetColorScheme (_colorScheme);
 
                 Window window = this.GetControl<Window> ("wdwDeviceECG");
-                if (colorScheme == Color.Schemes.Grid)
-                    window.Background = gridBackground;
+                if (_colorScheme == Color.Schemes.Grid)
+                    window.Background = _gridBackground;
                 else
-                    window.Background = Color.GetBackground (Color.Devices.DeviceECG, colorScheme);
+                    window.Background = Color.GetBackground (Color.Devices.DeviceECG, _colorScheme);
             });
         }
 
@@ -141,7 +141,7 @@ namespace IISIM {
                                 pValue = line.Substring (line.IndexOf (':') + 1);
                         switch (pName) {
                             default: break;
-                            case "colorScheme": colorScheme = (Color.Schemes)Enum.Parse (typeof (Color.Schemes), pValue); break;
+                            case "colorScheme": _colorScheme = (Color.Schemes)Enum.Parse (typeof (Color.Schemes), pValue); break;
                         }
                     }
                 }
@@ -154,7 +154,7 @@ namespace IISIM {
         public string Save () {
             StringBuilder sWrite = new ();
 
-            sWrite.AppendLine (String.Format ("{0}:{1}", "colorScheme", colorScheme));
+            sWrite.AppendLine (String.Format ("{0}:{1}", "colorScheme", _colorScheme));
 
             return sWrite.ToString ();
         }
@@ -166,18 +166,18 @@ namespace IISIM {
         public void SetColorScheme_Dark () => SetColorScheme (Color.Schemes.Dark);
 
         public void SetColorScheme (Color.Schemes scheme) {
-            colorScheme = scheme;
+            _colorScheme = scheme;
             UpdateInterface ();
         }
         
         private void MenuPacerDetectionOn (object? sender, RoutedEventArgs e) {
-            foreach (var t in listTracings) {
+            foreach (var t in _listTracings) {
                 t.Strip?.PacerDetection = true;
             }
         }
         
         private void MenuPacerDetectionOff (object? sender, RoutedEventArgs e) {
-            foreach (var t in listTracings) {
+            foreach (var t in _listTracings) {
                 t.Strip?.PacerDetection = false;
             }
         }
@@ -253,17 +253,17 @@ namespace IISIM {
             if (Instance?.Settings.State != II.Settings.Instance.States.Running)
                 return;
 
-            for (int i = 0; i < listTracings.Count; i++) {
-                listTracings [i].Strip?.Scroll ();
-                Dispatcher.UIThread.InvokeAsync (listTracings [i].DrawTracing);
+            for (int i = 0; i < _listTracings.Count; i++) {
+                _listTracings [i].Strip?.Scroll ();
+                Dispatcher.UIThread.InvokeAsync (_listTracings [i].DrawTracing);
             }
         }
 
         public override void OnPhysiologyEvent (object? sender, Physiology.PhysiologyEventArgs e) {
             switch (e.EventType) {
                 default: break;
-                case Physiology.PhysiologyEventTypes.Vitals_Change:
-                    listTracings.ForEach (c => {
+                case Physiology.PhysiologyEventTypes.VitalsChange:
+                    _listTracings.ForEach (c => {
                         c.Strip?.ClearFuture (Instance?.Physiology);
                         c.Strip?.Add_Baseline (Instance?.Physiology);
                     });
@@ -271,31 +271,31 @@ namespace IISIM {
                     break;
 
                 case Physiology.PhysiologyEventTypes.Defibrillation:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (Instance?.Physiology));
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Defibrillation (Instance?.Physiology));
                     break;
 
                 case Physiology.PhysiologyEventTypes.PacermakerSpike:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (Instance?.Physiology));
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Pacemaker (Instance?.Physiology));
                     break;
 
                 case Physiology.PhysiologyEventTypes.CardiacBaseline:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology));
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Baseline (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Cardiac_Atrial_Electric:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Electrical (Instance?.Physiology));
+                case Physiology.PhysiologyEventTypes.CardiacAtrialElectric:
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Electrical (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Electric:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Physiology));
+                case Physiology.PhysiologyEventTypes.CardiacVentricularElectric:
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Electrical (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Cardiac_Atrial_Mechanical:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Mechanical (Instance?.Physiology));
+                case Physiology.PhysiologyEventTypes.CardiacAtrialMechanical:
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Atrial_Mechanical (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Cardiac_Ventricular_Mechanical:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Physiology));
+                case Physiology.PhysiologyEventTypes.CardiacVentricularMechanical:
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__Cardiac_Ventricular_Mechanical (Instance?.Physiology));
                     break;
             }
         }

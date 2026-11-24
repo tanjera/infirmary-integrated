@@ -28,9 +28,9 @@ namespace IISIM.Controls {
         private List<II.Settings.Device.Numeric>? Transducers_Zeroed {
             set { 
                 if (Instance?.Scenario?.DeviceMonitor is not null)
-                    Instance.Scenario.DeviceMonitor.Transducers_Zeroed = value ?? new List<II.Settings.Device.Numeric> (); 
+                    Instance.Scenario.DeviceMonitor.TransducersZeroed = value ?? new List<II.Settings.Device.Numeric> (); 
             }
-            get { return Instance?.Scenario?.DeviceMonitor.Transducers_Zeroed; }
+            get { return Instance?.Scenario?.DeviceMonitor.TransducersZeroed; }
         }
         
         public MonitorTracing () {
@@ -157,7 +157,7 @@ namespace IISIM.Controls {
 
         private void UpdateInterface (object sender, EventArgs e) {
             Dispatcher.UIThread.InvokeAsync (() => {
-                TracingBrush = Color.GetLead (Lead?.Value ?? Lead.Values.ECG_I, ColorScheme ?? Color.Schemes.Light);
+                TracingBrush = Color.GetLead (Lead?.Value ?? Lead.Values.ECGI, ColorScheme ?? Color.Schemes.Light);
                 TracingBrushAlt = TracingBrush == Brushes.Green ? Brushes.White : Brushes.Black;
 
                 Border borderTracing = this.GetControl<Border> ("borderTracing");
@@ -256,7 +256,7 @@ namespace IISIM.Controls {
         }
         
         private void MenuSelectInputSource (object? sender, RoutedEventArgs e) {
-            if (sender == null || sender is not MenuItem || !Enum.TryParse<Lead.Values> (((MenuItem)sender).Name, out Lead.Values selectedValue))
+            if (sender == null || sender is not MenuItem || !Enum.TryParse (((MenuItem)sender).Name, out Lead.Values selectedValue))
                 return;
 
             Strip?.SetLead (selectedValue);

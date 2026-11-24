@@ -41,7 +41,7 @@ namespace IISE.Windows {
         public ItemStep? ISelectedStep;
         public bool IsSelectedStepEnd = false;
         public List<ItemStep> ISteps = new List<ItemStep> ();
-        public List<ItemStep.Progression> IProgressions = new List<ItemStep.Progression> ();
+        public List<ItemStep.Progression> Progressions = new List<ItemStep.Progression> ();
 
         // For copy/pasting Patient parameters
         private Scenario.Step? CopiedStep;
@@ -333,7 +333,7 @@ namespace IISE.Windows {
             ICanvas.Children.Remove (item);
 
             foreach (ItemStep.Progression line in item.Progressions) {
-                IProgressions.Remove (line);
+                Progressions.Remove (line);
                 ICanvas.Children.Remove (line);
             }
 
@@ -436,7 +436,7 @@ namespace IISE.Windows {
              * To be called when visual elements have moved on the Canvas
              */
 
-            foreach (ItemStep.Progression ip in IProgressions) {
+            foreach (ItemStep.Progression ip in Progressions) {
                 ip.StartPoint = new Point (ip.Step.Bounds.Left + ip.StepEnd.Bounds.Left + ip.StepEnd.Width, ip.Step.Bounds.Center.Y);
                 ip.EndPoint = new Point (ip.StepTo.Bounds.Left, ip.StepTo.Bounds.Center.Y);
                 ip.InvalidateVisual ();
@@ -450,10 +450,10 @@ namespace IISE.Windows {
              * To be called when the list of Progressions has changed
              */
 
-            foreach (ItemStep.Progression ip in IProgressions)
+            foreach (ItemStep.Progression ip in Progressions)
                 ICanvas.Children.Remove (ip);
 
-            IProgressions.Clear ();
+            Progressions.Clear ();
 
             foreach (ItemStep istep in ISteps) {
                 istep.Progressions.Clear ();
@@ -466,7 +466,7 @@ namespace IISE.Windows {
 
                     ItemStep.Progression p = new (istep, itemTo, istep.IStepEnd, prog);
                     istep.Progressions.Add (p);
-                    IProgressions.Add (p);
+                    Progressions.Add (p);
                     ICanvas.Children.Add (p);
                 }
             }

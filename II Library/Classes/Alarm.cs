@@ -6,10 +6,6 @@
  */
 
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace II {
@@ -45,24 +41,24 @@ namespace II {
 
         public Priorities? Priority { get; set; }
 
-        public static readonly Alarm [] DefaultListing_Adult =  {
-            new Alarm(Alarm.Parameters.HR,true, 50, 130, Alarm.Priorities.High),
-            new Alarm(Alarm.Parameters.RR, true, 8, 24, Alarm.Priorities.Medium),
-            new Alarm(Alarm.Parameters.SPO2,true, 92, null, Alarm.Priorities.Low),
-            new Alarm(Alarm.Parameters.ETCO2,true, 30, 50, Alarm.Priorities.Medium),
-            new Alarm(Alarm.Parameters.CVP,true, 0, 12, Alarm.Priorities.Low),
-            new Alarm(Alarm.Parameters.ICP,true, null, 20, Alarm.Priorities.Medium),
-            new Alarm(Alarm.Parameters.IAP,true, null, 20, Alarm.Priorities.Medium),
+        public static readonly Alarm [] DefaultListingAdult =  {
+            new Alarm(Parameters.HR,true, 50, 130, Priorities.High),
+            new Alarm(Parameters.RR, true, 8, 24, Priorities.Medium),
+            new Alarm(Parameters.SPO2,true, 92, null, Priorities.Low),
+            new Alarm(Parameters.ETCO2,true, 30, 50, Priorities.Medium),
+            new Alarm(Parameters.CVP,true, 0, 12, Priorities.Low),
+            new Alarm(Parameters.ICP,true, null, 20, Priorities.Medium),
+            new Alarm(Parameters.IAP,true, null, 20, Priorities.Medium),
 
-            new Alarm(Alarm.Parameters.NSBP,true, 90, 160, Alarm.Priorities.Medium),
-            new Alarm(Alarm.Parameters.NDBP,true, 45, 100, Alarm.Priorities.Medium),
-            new Alarm(Alarm.Parameters.NMAP, true, 65, 120, Alarm.Priorities.Medium),
-            new Alarm(Alarm.Parameters.ASBP,true, 90, 160, Alarm.Priorities.Medium),
-            new Alarm(Alarm.Parameters.ADBP,true, 45, 100, Alarm.Priorities.Medium),
-            new Alarm(Alarm.Parameters.AMAP,true, 65, 120, Alarm.Priorities.Medium),
-            new Alarm(Alarm.Parameters.PSP,true, 15, 40, Alarm.Priorities.Medium),
-            new Alarm(Alarm.Parameters.PDP,true, 5, 15, Alarm.Priorities.Medium),
-            new Alarm( Alarm.Parameters.PMP,true, 10, 25, Alarm.Priorities.Medium),
+            new Alarm(Parameters.NSBP,true, 90, 160, Priorities.Medium),
+            new Alarm(Parameters.NDBP,true, 45, 100, Priorities.Medium),
+            new Alarm(Parameters.NMAP, true, 65, 120, Priorities.Medium),
+            new Alarm(Parameters.ASBP,true, 90, 160, Priorities.Medium),
+            new Alarm(Parameters.ADBP,true, 45, 100, Priorities.Medium),
+            new Alarm(Parameters.AMAP,true, 65, 120, Priorities.Medium),
+            new Alarm(Parameters.PSP,true, 15, 40, Priorities.Medium),
+            new Alarm(Parameters.PDP,true, 5, 15, Priorities.Medium),
+            new Alarm( Parameters.PMP,true, 10, 25, Priorities.Medium),
         };
 
         public bool IsSet {
@@ -87,7 +83,7 @@ namespace II {
             Enabled = false;
         }
 
-        public Alarm (Alarm.Parameters? param, bool? enabled, int? low, int? high, Priorities? priority) {
+        public Alarm (Parameters? param, bool? enabled, int? low, int? high, Priorities? priority) {
             Parameter = param;
             Enabled = enabled ?? false;
             Low = low ?? 0;
@@ -95,7 +91,7 @@ namespace II {
             Priority = priority ?? Priorities.Low;
         }
 
-        public Task Set (Alarm.Parameters? param, bool? enabled, int? low, int? high, Priorities? priority) {
+        public Task Set (Parameters? param, bool? enabled, int? low, int? high, Priorities? priority) {
             Parameter = param;
             Enabled = enabled ?? false;
             Low = low ?? 0;
@@ -110,7 +106,7 @@ namespace II {
                 string [] parts = inc.Trim ().Split (' ');
 
                 if (parts.Length == 5) {
-                    Parameter = String.IsNullOrEmpty (parts [0]) ? null : (Alarm.Parameters)Enum.Parse (typeof (Alarm.Parameters), parts [0]);
+                    Parameter = String.IsNullOrEmpty (parts [0]) ? null : (Parameters)Enum.Parse (typeof (Parameters), parts [0]);
                     Enabled = String.IsNullOrEmpty (parts [1]) ? false : bool.Parse (parts [1]);
                     Low = String.IsNullOrEmpty (parts [2]) ? 0 : int.Parse (parts [2]);
                     High = String.IsNullOrEmpty (parts [3]) ? 0 : int.Parse (parts [3]);

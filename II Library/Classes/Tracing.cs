@@ -3,13 +3,6 @@
  * By Ibi Keller (Tanjera), (c) 2023
  */
 
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Text;
-using System.Threading.Tasks;
-
 using II.Drawing;
 
 namespace II.Rhythm {

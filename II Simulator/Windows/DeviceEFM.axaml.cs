@@ -29,11 +29,11 @@ namespace IISIM {
     public partial class DeviceEFM : DeviceWindow {
         
         
-        private Color.Schemes colorScheme = Color.Schemes.Light;
+        private Color.Schemes _colorScheme = Color.Schemes.Light;
 
-        private List<Controls.EFMTracing> listTracings = new ();
+        private List<Controls.EFMTracing> _listTracings = new ();
 
-        private ImageBrush? gridFHR, gridToco;
+        private ImageBrush? _gridFHR, _gridToco;
 
         public DeviceEFM () {
             InitializeComponent ();
@@ -82,35 +82,35 @@ namespace IISIM {
             Grid displayGrid = this.GetControl<Grid> ("displayGrid");
 
             // Instantiate and load backgroung images
-            gridFHR = new ImageBrush (new Bitmap (AssetLoader.Open (new Uri ("avares://infirmary-integrated/Resources/FHR_Grid.png"))));
-            gridFHR.Stretch = Stretch.Fill;
+            _gridFHR = new ImageBrush (new Bitmap (AssetLoader.Open (new Uri ("avares://infirmary-integrated/Resources/FHR_Grid.png"))));
+            _gridFHR.Stretch = Stretch.Fill;
 
-            gridToco = new ImageBrush (new Bitmap (AssetLoader.Open (new Uri ("avares://infirmary-integrated/Resources/Toco_Grid.png"))));
-            gridToco.Stretch = Stretch.Fill;
+            _gridToco = new ImageBrush (new Bitmap (AssetLoader.Open (new Uri ("avares://infirmary-integrated/Resources/Toco_Grid.png"))));
+            _gridToco.Stretch = Stretch.Fill;
 
             // Instantiate and add Tracings to UI
-            Controls.EFMTracing fhrTracing = new (Instance, new Strip (Lead.Values.FHR, 600d, Instance?.Timer_Simulation), colorScheme);
+            Controls.EFMTracing fhrTracing = new (Instance, new Strip (Lead.Values.FHR, 600d, Instance?.Timer_Simulation), _colorScheme);
             fhrTracing.SetValue (Grid.RowProperty, 0);
             fhrTracing.SetValue (Grid.ColumnProperty, 0);
-            fhrTracing.Background = gridFHR;
-            listTracings.Add (fhrTracing);
+            fhrTracing.Background = _gridFHR;
+            _listTracings.Add (fhrTracing);
             displayGrid.Children.Add (fhrTracing);
 
-            Controls.EFMTracing tocoTracing = new (Instance, new Strip (Lead.Values.TOCO, 600d, Instance?.Timer_Simulation), colorScheme);
+            Controls.EFMTracing tocoTracing = new (Instance, new Strip (Lead.Values.Toco, 600d, Instance?.Timer_Simulation), _colorScheme);
             tocoTracing.SetValue (Grid.RowProperty, 2);
             tocoTracing.SetValue (Grid.ColumnProperty, 0);
-            tocoTracing.Background = gridToco;
-            listTracings.Add (tocoTracing);
+            tocoTracing.Background = _gridToco;
+            _listTracings.Add (tocoTracing);
             displayGrid.Children.Add (tocoTracing);
         }
 
         private void UpdateInterface () {
             Dispatcher.UIThread.InvokeAsync (() => {
-                for (int i = 0; i < listTracings.Count; i++)
-                    listTracings [i].SetColorScheme (colorScheme);
+                for (int i = 0; i < _listTracings.Count; i++)
+                    _listTracings [i].SetColorScheme (_colorScheme);
 
                 Window window = this.GetControl<Window> ("wdwDeviceEFM");
-                window.Background = Color.GetBackground (Color.Devices.DeviceEFM, colorScheme);
+                window.Background = Color.GetBackground (Color.Devices.DeviceEFM, _colorScheme);
             });
         }
 
@@ -145,7 +145,7 @@ namespace IISIM {
         public void SetColorScheme_Dark () => SetColorScheme (Color.Schemes.Dark);
 
         public void SetColorScheme (Color.Schemes scheme) {
-            colorScheme = scheme;
+            _colorScheme = scheme;
             UpdateInterface ();
         }
 
@@ -236,31 +236,31 @@ namespace IISIM {
             if (Instance?.Settings.State != II.Settings.Instance.States.Running)
                 return;
 
-            for (int i = 0; i < listTracings.Count; i++) {
-                listTracings [i].Strip?.Scroll (Instance?.Physiology?.TimerObstetric_Multiplier);
-                Dispatcher.UIThread.InvokeAsync (listTracings [i].DrawTracing);
+            for (int i = 0; i < _listTracings.Count; i++) {
+                _listTracings [i].Strip?.Scroll (Instance?.Physiology?.TimerObstetricMultiplier);
+                Dispatcher.UIThread.InvokeAsync (_listTracings [i].DrawTracing);
             }
         }
 
         public override void OnPhysiologyEvent (object? sender, Physiology.PhysiologyEventArgs e) {
             switch (e.EventType) {
                 default: break;
-                case Physiology.PhysiologyEventTypes.Obstetric_Baseline:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Baseline (Instance?.Physiology));
+                case Physiology.PhysiologyEventTypes.ObstetricBaseline:
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Baseline (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Obstetric_Fetal_Baseline:
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Fetal_Baseline (Instance?.Physiology));
+                case Physiology.PhysiologyEventTypes.ObstetricFetalBaseline:
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Fetal_Baseline (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Obstetric_Contraction_Start:
-                    listTracings.ForEach (c => c.Strip?.ClearFuture (Instance?.Physiology));
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Contraction_Start (Instance?.Physiology));
+                case Physiology.PhysiologyEventTypes.ObstetricContractionStart:
+                    _listTracings.ForEach (c => c.Strip?.ClearFuture (Instance?.Physiology));
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Contraction_Start (Instance?.Physiology));
                     break;
 
-                case Physiology.PhysiologyEventTypes.Obstetric_Contraction_End:
-                    listTracings.ForEach (c => c.Strip?.ClearFuture (Instance?.Physiology));
-                    listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Baseline (Instance?.Physiology));
+                case Physiology.PhysiologyEventTypes.ObstetricContractionEnd:
+                    _listTracings.ForEach (c => c.Strip?.ClearFuture (Instance?.Physiology));
+                    _listTracings.ForEach (c => c.Strip?.Add_Beat__Obstetric_Baseline (Instance?.Physiology));
                     break;
             }
         }

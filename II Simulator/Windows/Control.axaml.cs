@@ -35,22 +35,22 @@ namespace IISIM {
 
         public WindowStates WindowStatus = WindowStates.Null;   // Monitors status of the Window; Active? Closed?
         
-        private bool HideDeviceLabels = false;
+        private bool _hideDeviceLabels = false;
 
         /* Buffers for ViewModel handling and temporal smoothing of upstream Model data changes */
-        private Physiology? ApplyBuffer;
+        private Physiology? _applyBuffer;
 
-        private bool ApplyPending_Cardiac = false,
-                     ApplyPending_Respiratory = false,
-                     ApplyPending_Obstetric = false;
+        private bool _applyPendingCardiac = false,
+                     _applyPendingRespiratory = false,
+                     _applyPendingObstetric = false;
 
-        private Timer ApplyTimer_Cardiac = new (),
-                      ApplyTimer_Respiratory = new (),
-                      ApplyTimer_Obstetric = new ();
+        private Timer _applyTimerCardiac = new (),
+                      _applyTimerRespiratory = new (),
+                      _applyTimerObstetric = new ();
 
         
         /* Variables for Auto-Apply functionality */
-        private ParameterStatuses ParameterStatus = ParameterStatuses.Loading;
+        private ParameterStatuses _parameterStatus = ParameterStatuses.Loading;
 
         public enum WindowStates {
             Null,
@@ -206,13 +206,19 @@ namespace IISIM {
             this.GetControl<Label> ("lblQTcInterval").Content = $"{Instance.Language.Localize ("PE:QTcInterval")}:";
             this.GetControl<Label> ("lblCardiacAxis").Content = $"{Instance.Language.Localize ("PE:CardiacAxis")}:";
             
-            this.GetControl<Label>("lblExperimental_WaveAmplitudes").Content = $"{Instance.Language.Localize ("PE:ExperimentalFeatures")}";
-            this.GetControl<HeaderedContentControl> ("grpPWaveAmplitude").Header = Instance.Language.Localize ("PE:PWaveAmplitude");
-            this.GetControl<HeaderedContentControl> ("grpQWaveAmplitude").Header = Instance.Language.Localize ("PE:QWaveAmplitude");
-            this.GetControl<HeaderedContentControl> ("grpRWaveAmplitude").Header = Instance.Language.Localize ("PE:RWaveAmplitude");
-            this.GetControl<HeaderedContentControl> ("grpSWaveAmplitude").Header = Instance.Language.Localize ("PE:SWaveAmplitude");
-            this.GetControl<HeaderedContentControl> ("grpTWaveAmplitude").Header = Instance.Language.Localize ("PE:TWaveAmplitude");
-            this.GetControl<HeaderedContentControl> ("grpSTSegmentElevation").Header = Instance.Language.Localize ("PE:STSegmentElevation");
+            this.GetControl<HeaderedContentControl> ("grpPWaveAmplitude").Header
+                = $"{Instance.Language.Localize ("PE:PWaveAmplitude")} ({Instance.Language.Localize ("PE:Multiplier")})";
+            this.GetControl<HeaderedContentControl> ("grpQWaveAmplitude").Header 
+                = $"{Instance.Language.Localize ("PE:QWaveAmplitude")} ({Instance.Language.Localize ("PE:Multiplier")})";
+            this.GetControl<HeaderedContentControl> ("grpRWaveAmplitude").Header 
+                = $"{Instance.Language.Localize ("PE:RWaveAmplitude")} ({Instance.Language.Localize ("PE:Multiplier")})";
+            this.GetControl<HeaderedContentControl> ("grpSWaveAmplitude").Header 
+                = $"{Instance.Language.Localize ("PE:SWaveAmplitude")} ({Instance.Language.Localize ("PE:Multiplier")})";
+            this.GetControl<HeaderedContentControl> ("grpTWaveAmplitude").Header 
+                = $"{Instance.Language.Localize ("PE:TWaveAmplitude")} ({Instance.Language.Localize ("PE:Multiplier")})";
+            
+            this.GetControl<HeaderedContentControl> ("grpSTSegmentElevation").Header 
+                = $"{Instance.Language.Localize ("PE:STSegmentElevation")} ({Instance.Language.Localize ("PE:Offset")})";
             
             this.GetControl<Label> ("lblGroupObstetricProfile").Content = Instance.Language.Localize ("PE:ObstetricProfile");
             this.GetControl<Label> ("lblFHR").Content = $"{Instance.Language.Localize ("PE:FetalHeartRate")}:";
@@ -245,10 +251,10 @@ namespace IISIM {
                 });
 
             ItemCollection icPACatheterPlacement = this.GetControl<ComboBox> ("comboPACatheterPlacement").Items;
-            foreach (PulmonaryArtery_Rhythms.Values v in Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)))
+            foreach (PulmonaryArteryRhythms.Values v in Enum.GetValues (typeof (PulmonaryArteryRhythms.Values)))
                 icPACatheterPlacement.Add (new ComboBoxItem () {
                     Tag = v.ToString (),
-                    Content = Instance.Language.Localize (PulmonaryArtery_Rhythms.LookupString (v))
+                    Content = Instance.Language.Localize (PulmonaryArteryRhythms.LookupString (v))
                 });
 
             
@@ -357,18 +363,18 @@ namespace IISIM {
                 return;
             }
 
-            Instance.Timer_Simulation.Tick += ApplyTimer_Cardiac.Process;
-            Instance.Timer_Simulation.Tick += ApplyTimer_Respiratory.Process;
-            Instance.Timer_Simulation.Tick += ApplyTimer_Obstetric.Process;
+            Instance.Timer_Simulation.Tick += _applyTimerCardiac.Process;
+            Instance.Timer_Simulation.Tick += _applyTimerRespiratory.Process;
+            Instance.Timer_Simulation.Tick += _applyTimerObstetric.Process;
 
-            ApplyTimer_Cardiac.Tick += ApplyPhysiologyParameters_Cardiac;
-            ApplyTimer_Respiratory.Tick += ApplyPhysiologyParameters_Respiratory;
-            ApplyTimer_Obstetric.Tick += ApplyPhysiologyParameters_Obstetric;
+            _applyTimerCardiac.Tick += ApplyPhysiologyParameters_Cardiac;
+            _applyTimerRespiratory.Tick += ApplyPhysiologyParameters_Respiratory;
+            _applyTimerObstetric.Tick += ApplyPhysiologyParameters_Obstetric;
 
             Task.WhenAll(
-                ApplyTimer_Cardiac.Set (5000),
-                ApplyTimer_Respiratory.Set (5000),
-                ApplyTimer_Obstetric.Set (30000)
+                _applyTimerCardiac.Set (5000),
+                _applyTimerRespiratory.Set (5000),
+                _applyTimerObstetric.Set (30000)
             );
         }
 
@@ -410,7 +416,7 @@ namespace IISIM {
             }
             
             OnPhysiologyEvent (this, new Physiology.PhysiologyEventArgs (Instance.Physiology, 
-                Physiology.PhysiologyEventTypes.Vitals_Change, 
+                Physiology.PhysiologyEventTypes.VitalsChange, 
                 Instance.Timer_Simulation));
         }
 
@@ -544,7 +550,7 @@ namespace IISIM {
                     Message = Instance.Language.Localize ("MESSAGE:AudioUnavailableMessage"),
                     Title = Instance.Language.Localize ("MESSAGE:AudioUnavailableTitle"),
                     Indicator = DialogMessage.Indicators.Error,
-                    Option = DialogMessage.Options.OK,
+                    Option = DialogMessage.Options.Ok,
                 };
 
                 if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
@@ -566,7 +572,7 @@ namespace IISIM {
             });
         }
 
-        private async Task DialogLanguage (bool reloadUI = false) {
+        private async Task DialogLanguage (bool reloadUi = false) {
             await Dispatcher.UIThread.InvokeAsync (async () => {
                 var oldLang = Instance?.Language.Selection;
                 DialogLanguage dlg = new (Instance);
@@ -577,9 +583,9 @@ namespace IISIM {
 
                 await dlg.ShowDialog (this);
 
-                reloadUI = oldLang != Instance?.Language.Selection;
+                reloadUi = oldLang != Instance?.Language.Selection;
 
-                if (reloadUI)
+                if (reloadUi)
                     InitInterface ();
             });
         }
@@ -694,11 +700,11 @@ namespace IISIM {
         }
 
         private async Task ToggleHideDevices () {
-            HideDeviceLabels = !HideDeviceLabels;
+            _hideDeviceLabels = !_hideDeviceLabels;
 
             await Dispatcher.UIThread.InvokeAsync (() => {
-                this.GetControl<Panel> ("panelDevicesExpanded").IsVisible = !HideDeviceLabels;
-                this.GetControl<Panel> ("panelDevicesHidden").IsVisible = HideDeviceLabels;
+                this.GetControl<Panel> ("panelDevicesExpanded").IsVisible = !_hideDeviceLabels;
+                this.GetControl<Panel> ("panelDevicesHidden").IsVisible = _hideDeviceLabels;
             });
         }
 
@@ -720,7 +726,7 @@ namespace IISIM {
                         Title =  Instance.Language.Localize ("UPGRADE:Upgrade"),
                         Message = Instance.Language.Localize ("UPGRADE:NoUpdateAvailable"),
                         Indicator = DialogMessage.Indicators.Information,
-                        Option = DialogMessage.Options.OK,
+                        Option = DialogMessage.Options.Ok,
                     };
                     dlg.Activate ();
 
@@ -793,7 +799,7 @@ namespace IISIM {
         }
 
         private async Task SetParameterStatus (bool autoApplyChanges) {
-            ParameterStatus = autoApplyChanges
+            _parameterStatus = autoApplyChanges
                ? ParameterStatuses.AutoApply
                : ParameterStatuses.ChangesApplied;
 
@@ -803,10 +809,10 @@ namespace IISIM {
         private async Task AdvanceParameterStatus (ParameterStatuses status) {
             /* Toggles between pending changes or changes applied; bypasses if auto-applying or null */
 
-            if (status == ParameterStatuses.ChangesApplied && ParameterStatus == ParameterStatuses.ChangesPending)
-                ParameterStatus = ParameterStatuses.ChangesApplied;
-            else if (status == ParameterStatuses.ChangesPending && ParameterStatus == ParameterStatuses.ChangesApplied)
-                ParameterStatus = ParameterStatuses.ChangesPending;
+            if (status == ParameterStatuses.ChangesApplied && _parameterStatus == ParameterStatuses.ChangesPending)
+                _parameterStatus = ParameterStatuses.ChangesApplied;
+            else if (status == ParameterStatuses.ChangesPending && _parameterStatus == ParameterStatuses.ChangesApplied)
+                _parameterStatus = ParameterStatuses.ChangesPending;
 
             await UpdateParameterIndicators ();
         }
@@ -815,7 +821,7 @@ namespace IISIM {
             Dispatcher.UIThread.InvokeAsync (() => {
                 Border brdPendingChangesIndicator = this.GetControl<Border> ("brdPendingChangesIndicator");
 
-                brdPendingChangesIndicator.BorderBrush = ParameterStatus switch {
+                brdPendingChangesIndicator.BorderBrush = _parameterStatus switch {
                     ParameterStatuses.ChangesPending => Brushes.Red,
                     ParameterStatuses.ChangesApplied => Brushes.Green,
                     ParameterStatuses.AutoApply => Brushes.Orange,
@@ -837,13 +843,13 @@ namespace IISIM {
                 SuggestedFileName = "simulation",
                 AllowMultiple = false,
                 
-                FileTypeFilter = new[] {
+                FileTypeFilter = [
                     new FilePickerFileType("Infirmary Integrated Simulations")
                     {
-                        Patterns = new[] { "*.ii" },
-                        MimeTypes = new[] { "text/plain" }
+                        Patterns = ["*.ii"],
+                        MimeTypes = ["text/plain"]
                     }
-                },
+                ],
                 SuggestedStartLocation = await wdwControl.StorageProvider.TryGetWellKnownFolderAsync(WellKnownFolder.Documents)
             };
 
@@ -863,7 +869,7 @@ namespace IISIM {
 
             OnPhysiologyEvent (this, new Physiology.PhysiologyEventArgs (
                 Instance?.Physiology, 
-                Physiology.PhysiologyEventTypes.Vitals_Change,
+                Physiology.PhysiologyEventTypes.VitalsChange,
                 Instance?.Timer_Simulation));
         }
 
@@ -1027,7 +1033,7 @@ namespace IISIM {
              * Fire events to begin synchronizing devices with physiology
              */
             Instance?.Physiology?.OnPhysiologyEvent (
-                Physiology.PhysiologyEventTypes.Vitals_Change,
+                Physiology.PhysiologyEventTypes.VitalsChange,
                 Instance?.Timer_Simulation);
         }
 
@@ -1060,7 +1066,7 @@ namespace IISIM {
                     Message = Instance?.Language.Localize ("PE:LoadFailMessage"),
                     Title = Instance?.Language.Localize ("PE:LoadFailTitle"),
                     Indicator = DialogMessage.Indicators.Error,
-                    Option = DialogMessage.Options.OK,
+                    Option = DialogMessage.Options.Ok,
                 };
 
                 if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
@@ -1079,7 +1085,7 @@ namespace IISIM {
                         Message = Instance.Language.Localize ("PE:SaveFailScenarioMessage"),
                         Title = Instance.Language.Localize ("PE:SaveFailScenarioTitle"),
                         Indicator = DialogMessage.Indicators.Error,
-                        Option = DialogMessage.Options.OK,
+                        Option = DialogMessage.Options.Ok,
                     };
 
                     if (!this.IsVisible)                    // Avalonia's parent must be visible to attach a window
@@ -1102,13 +1108,13 @@ namespace IISIM {
             {
                 SuggestedFileName = "simulation",
                 DefaultExtension = ".ii",
-                FileTypeChoices = new[] {
+                FileTypeChoices = [
                     new FilePickerFileType("Infirmary Integrated Simulations")
                     {
-                        Patterns = new[] { "*.ii" },
-                        MimeTypes = new[] { "text/plain" }
+                        Patterns = ["*.ii"],
+                        MimeTypes = ["text/plain"]
                     }
-                },
+                ],
                 SuggestedStartLocation = await wdwControl.StorageProvider.TryGetWellKnownFolderAsync(WellKnownFolder.Documents)
             };
 
@@ -1332,16 +1338,16 @@ namespace IISIM {
         private async Task ApplyPhysiologyParameters () {
             await AdvanceParameterStatus (ParameterStatuses.ChangesApplied);
 
-            ApplyBuffer ??= new (Instance?.Timer_Simulation);
+            _applyBuffer ??= new (Instance?.Timer_Simulation);
 
-            await ApplyPhysiologyParameters_Buffer (ApplyBuffer);
-            ApplyPending_Cardiac = true;
-            ApplyPending_Respiratory = true;
-            ApplyPending_Obstetric = true;
+            await ApplyPhysiologyParameters_Buffer (_applyBuffer);
+            _applyPendingCardiac = true;
+            _applyPendingRespiratory = true;
+            _applyPendingObstetric = true;
 
-            await ApplyTimer_Cardiac.ResetStart ();
-            await ApplyTimer_Respiratory.ResetStart ();
-            await ApplyTimer_Obstetric.ResetStart ();
+            await _applyTimerCardiac.ResetStart ();
+            await _applyTimerRespiratory.ResetStart ();
+            await _applyTimerObstetric.ResetStart ();
         }
 
         private async Task ApplyPhysiologyParameters_Buffer (Physiology? p) {
@@ -1377,9 +1383,9 @@ namespace IISIM {
 
                 (float)(this.GetControl<NumericUpDown> ("numCO")?.Value ?? 0),
 
-                (PulmonaryArtery_Rhythms.Values)(Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values)).GetValue (
+                (PulmonaryArteryRhythms.Values)(Enum.GetValues (typeof (PulmonaryArteryRhythms.Values)).GetValue (
                     comboPACatheterPlacement.SelectedIndex < 0 ? 0 : comboPACatheterPlacement.SelectedIndex)
-                    ?? PulmonaryArtery_Rhythms.Values.Right_Atrium),
+                    ?? PulmonaryArteryRhythms.Values.Right_Atrium),
 
                 (int)(this.GetControl<NumericUpDown> ("numPSP")?.Value ?? 0),
                 (int)(this.GetControl<NumericUpDown> ("numPDP")?.Value ?? 0),
@@ -1401,79 +1407,79 @@ namespace IISIM {
 
                 (double)(this.GetControl<NumericUpDown> ("numQRSInterval")?.Value ?? 0),
                 (double)(this.GetControl<NumericUpDown> ("numQTcInterval")?.Value ?? 0),
-                
-                new double [] {
-                    (double)(this.GetControl<NumericUpDown>("numPAmp_I")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numPAmp_II")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numPAmp_III")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numPAmp_aVR")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numPAmp_aVL")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numPAmp_aVF")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numPAmp_V1")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numPAmp_V2")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numPAmp_V3")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numPAmp_V4")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numPAmp_V5")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numPAmp_V6")?.Value?? 0)
-                },
-                new double [] {
-                    (double)(this.GetControl<NumericUpDown>("numQAmp_I")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numQAmp_II")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numQAmp_III")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numQAmp_aVR")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numQAmp_aVL")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numQAmp_aVF")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numQAmp_V1")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numQAmp_V2")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numQAmp_V3")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numQAmp_V4")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numQAmp_V5")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numQAmp_V6")?.Value?? 0)
-                },
-                new double [] {
-                    (double)(this.GetControl<NumericUpDown>("numRAmp_I")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numRAmp_II")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numRAmp_III")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numRAmp_aVR")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numRAmp_aVL")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numRAmp_aVF")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numRAmp_V1")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numRAmp_V2")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numRAmp_V3")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numRAmp_V4")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numRAmp_V5")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numRAmp_V6")?.Value?? 0)
-                },
-                new double [] {
-                    (double)(this.GetControl<NumericUpDown>("numSAmp_I")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numSAmp_II")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numSAmp_III")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numSAmp_aVR")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numSAmp_aVL")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numSAmp_aVF")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numSAmp_V1")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numSAmp_V2")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numSAmp_V3")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numSAmp_V4")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numSAmp_V5")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numSAmp_V6")?.Value?? 0)
-                },
-                new double [] {
-                    (double)(this.GetControl<NumericUpDown>("numTAmp_I")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTAmp_II")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTAmp_III")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTAmp_aVR")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTAmp_aVL")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTAmp_aVF")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTAmp_V1")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTAmp_V2")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTAmp_V3")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTAmp_V4")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTAmp_V5")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numTAmp_V6")?.Value?? 0)
-                },
-                
-                new double [] {
+
+                [
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_I")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_II")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_III")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_aVR")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_aVL")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_aVF")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_V1")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_V2")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_V3")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_V4")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_V5")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numPAmp_V6")?.Value ?? 1)
+                ],
+                [
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_I")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_II")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_III")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_aVR")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_aVL")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_aVF")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_V1")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_V2")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_V3")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_V4")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_V5")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numQAmp_V6")?.Value ?? 1)
+                ],
+                [
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_I")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_II")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_III")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_aVR")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_aVL")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_aVF")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_V1")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_V2")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_V3")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_V4")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_V5")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numRAmp_V6")?.Value ?? 0)
+                ],
+                [
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_I")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_II")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_III")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_aVR")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_aVL")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_aVF")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_V1")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_V2")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_V3")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_V4")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_V5")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numSAmp_V6")?.Value ?? 1)
+                ],
+                [
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_I")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_II")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_III")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_aVR")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_aVL")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_aVF")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_V1")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_V2")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_V3")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_V4")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_V5")?.Value ?? 1),
+                    (double)(this.GetControl<NumericUpDown>("numTAmp_V6")?.Value ?? 1)
+                ],
+
+                [
                     (double)(this.GetControl<NumericUpDown>("numSTE_I")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numSTE_II")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numSTE_III")?.Value ?? 0),
@@ -1485,9 +1491,9 @@ namespace IISIM {
                     (double)(this.GetControl<NumericUpDown>("numSTE_V3")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numSTE_V4")?.Value ?? 0),
                     (double)(this.GetControl<NumericUpDown>("numSTE_V5")?.Value ?? 0),
-                    (double)(this.GetControl<NumericUpDown>("numSTE_V6")?.Value?? 0)
-                }
-                );
+                    (double)(this.GetControl<NumericUpDown>("numSTE_V6")?.Value ?? 0)
+                ]
+            );
 
             await p.UpdateParameters_Respiratory (
 
@@ -1516,46 +1522,46 @@ namespace IISIM {
         }
 
         private void ApplyPhysiologyParameters_Cardiac (object? sender, EventArgs e) {
-            if (ApplyPending_Cardiac != true || ApplyBuffer is null)
+            if (_applyPendingCardiac != true || _applyBuffer is null)
                 return;
 
-            ApplyPending_Cardiac = false;
-            _ = ApplyTimer_Cardiac.ResetStop ();
+            _applyPendingCardiac = false;
+            _ = _applyTimerCardiac.ResetStop ();
 
             if (Instance?.Physiology is not null) {
                 _ = Instance.Physiology.UpdateParameters_Cardiac (
-                    ApplyBuffer.HR,
-                    ApplyBuffer.NSBP, ApplyBuffer.NDBP, ApplyBuffer.NMAP,
-                    ApplyBuffer.SPO2,
-                    ApplyBuffer.T,
-                    ApplyBuffer.CardiacRhythm.Value,
+                    _applyBuffer.HR,
+                    _applyBuffer.NSBP, _applyBuffer.NDBP, _applyBuffer.NMAP,
+                    _applyBuffer.SPO2,
+                    _applyBuffer.T,
+                    _applyBuffer.CardiacRhythm.Value,
 
-                    ApplyBuffer.CVP,
-                    ApplyBuffer.ASBP, ApplyBuffer.ADBP, ApplyBuffer.AMAP,
+                    _applyBuffer.CVP,
+                    _applyBuffer.ASBP, _applyBuffer.ADBP, _applyBuffer.AMAP,
 
-                    ApplyBuffer.CO,
-                    ApplyBuffer.PulmonaryArtery_Placement.Value,
-                    ApplyBuffer.PSP, ApplyBuffer.PDP, ApplyBuffer.PMP,
+                    _applyBuffer.CO,
+                    _applyBuffer.PulmonaryArteryPlacement.Value,
+                    _applyBuffer.PSP, _applyBuffer.PDP, _applyBuffer.PMP,
 
-                    ApplyBuffer.ICP,
-                    ApplyBuffer.IAP,
+                    _applyBuffer.ICP,
+                    _applyBuffer.IAP,
 
-                    ApplyBuffer.PacemakerThreshold,
-                    ApplyBuffer.Pulsus_Paradoxus,
-                    ApplyBuffer.Pulsus_Alternans,
-                    ApplyBuffer.Electrical_Alternans,
+                    _applyBuffer.PacemakerThreshold,
+                    _applyBuffer.PulsusParadoxus,
+                    _applyBuffer.PulsusAlternans,
+                    _applyBuffer.ElectricalAlternans,
 
-                    ApplyBuffer.Cardiac_Axis.Value,
-                    ApplyBuffer.QRS_Interval, 
-                    ApplyBuffer.QTc_Interval,
+                    _applyBuffer.CardiacAxis.Value,
+                    _applyBuffer.QRSInterval, 
+                    _applyBuffer.QTcInterval,
                     
-                    ApplyBuffer.P_Amplitude,
-                    ApplyBuffer.Q_Amplitude,
-                    ApplyBuffer.R_Amplitude,
-                    ApplyBuffer.S_Amplitude,
-                    ApplyBuffer.T_Amplitude,
+                    _applyBuffer.PAmplitude,
+                    _applyBuffer.QAmplitude,
+                    _applyBuffer.RAmplitude,
+                    _applyBuffer.SAmplitude,
+                    _applyBuffer.TAmplitude,
                     
-                    ApplyBuffer.ST_Elevation);
+                    _applyBuffer.STElevation);
             }
 
             if (Instance?.Mirror is not null && Instance?.Server is not null)
@@ -1567,19 +1573,19 @@ namespace IISIM {
         }
 
         private void ApplyPhysiologyParameters_Respiratory (object? sender, EventArgs e) {
-            if (ApplyPending_Respiratory != true || ApplyBuffer is null)
+            if (_applyPendingRespiratory != true || _applyBuffer is null)
                 return;
 
-            ApplyPending_Respiratory = false;
-            _ = ApplyTimer_Respiratory.ResetStop ();
+            _applyPendingRespiratory = false;
+            _ = _applyTimerRespiratory.ResetStop ();
 
             if (Instance?.Physiology is not null) {
                 _ = Instance.Physiology.UpdateParameters_Respiratory (
-                    ApplyBuffer.RR,
-                    ApplyBuffer.Respiratory_Rhythm.Value,
-                    ApplyBuffer.ETCO2,
-                    ApplyBuffer.Mechanically_Ventilated,
-                    ApplyBuffer.RR_IE_I, ApplyBuffer.RR_IE_E);
+                    _applyBuffer.RR,
+                    _applyBuffer.RespiratoryRhythm.Value,
+                    _applyBuffer.ETCO2,
+                    _applyBuffer.MechanicallyVentilated,
+                    _applyBuffer.RRIEI, _applyBuffer.RRIEE);
             }
 
             if (Instance?.Mirror is not null && Instance?.Server is not null)
@@ -1591,21 +1597,21 @@ namespace IISIM {
         }
 
         private void ApplyPhysiologyParameters_Obstetric (object? sender, EventArgs e) {
-            if (ApplyPending_Obstetric != true || ApplyBuffer is null)
+            if (_applyPendingObstetric != true || _applyBuffer is null)
                 return;
 
-            ApplyPending_Obstetric = false;
-            _ = ApplyTimer_Obstetric.ResetStop ();
+            _applyPendingObstetric = false;
+            _ = _applyTimerObstetric.ResetStop ();
 
             if (Instance?.Physiology is not null) {
                 _ = Instance.Physiology.UpdateParameters_Obstetric (
-                    ApplyBuffer.Fetal_HR,
-                    ApplyBuffer.ObstetricFetalRateVariability,
-                    ApplyBuffer.ObstetricFetalHeartRhythm.Value,
-                    ApplyBuffer.ObstetricContractionFrequency,
-                    ApplyBuffer.ObstetricContractionDuration,
-                    ApplyBuffer.ObstetricContractionIntensity,
-                    ApplyBuffer.ObstetricUterineRestingTone);
+                    _applyBuffer.FetalHR,
+                    _applyBuffer.ObstetricFetalRateVariability,
+                    _applyBuffer.ObstetricFetalHeartRhythm.Value,
+                    _applyBuffer.ObstetricContractionFrequency,
+                    _applyBuffer.ObstetricContractionDuration,
+                    _applyBuffer.ObstetricContractionIntensity,
+                    _applyBuffer.ObstetricUterineRestingTone);
             }
 
             if (Instance?.Mirror is not null && Instance?.Server is not null)
@@ -1618,220 +1624,220 @@ namespace IISIM {
 
         private void UpdateView (Physiology? p) {
             Dispatcher.UIThread.InvokeAsync (() => {                        // Updating the UI requires being on the proper thread
-                ParameterStatus = ParameterStatuses.Loading;                // To prevent each form update from auto-applying back to Patient
+                _parameterStatus = ParameterStatuses.Loading;                // To prevent each form update from auto-applying back to Patient
 
                 if (p is null) {
                     Debug.WriteLine ($"Null return at {this.Name}.{nameof (InitDeviceMonitor)}");
                     return;
                 }
 
-                if (!ApplyPending_Cardiac) {
+                if (!_applyPendingCardiac) {
                     // Basic vital signs
-                    this.GetControl<NumericUpDown> ("numHR").Value = p.VS_Settings.HR;
-                    this.GetControl<NumericUpDown> ("numNSBP").Value = p.VS_Settings.NSBP;
-                    this.GetControl<NumericUpDown> ("numNDBP").Value = p.VS_Settings.NDBP;
-                    this.GetControl<NumericUpDown> ("numSPO2").Value = p.VS_Settings.SPO2;
-                    this.GetControl<NumericUpDown> ("numT").Value = (decimal)p.VS_Settings.T;
+                    this.GetControl<NumericUpDown> ("numHR").Value = p.VitalSignsSettings.HR;
+                    this.GetControl<NumericUpDown> ("numNSBP").Value = p.VitalSignsSettings.NSBP;
+                    this.GetControl<NumericUpDown> ("numNDBP").Value = p.VitalSignsSettings.NDBP;
+                    this.GetControl<NumericUpDown> ("numSPO2").Value = p.VitalSignsSettings.SPO2;
+                    this.GetControl<NumericUpDown> ("numT").Value = (decimal)p.VitalSignsSettings.T;
                     this.GetControl<ComboBox> ("comboCardiacRhythm").SelectedIndex = (int)p.CardiacRhythm.Value;
 
                     // Advanced hemodynamics
-                    this.GetControl<NumericUpDown> ("numCVP").Value = p.VS_Settings.CVP;
-                    this.GetControl<NumericUpDown> ("numASBP").Value = p.VS_Settings.ASBP;
-                    this.GetControl<NumericUpDown> ("numADBP").Value = p.VS_Settings.ADBP;
-                    this.GetControl<NumericUpDown> ("numCO").Value = (decimal)p.VS_Settings.CO;
+                    this.GetControl<NumericUpDown> ("numCVP").Value = p.VitalSignsSettings.CVP;
+                    this.GetControl<NumericUpDown> ("numASBP").Value = p.VitalSignsSettings.ASBP;
+                    this.GetControl<NumericUpDown> ("numADBP").Value = p.VitalSignsSettings.ADBP;
+                    this.GetControl<NumericUpDown> ("numCO").Value = (decimal)p.VitalSignsSettings.CO;
                     this.GetControl<ComboBox> ("comboPACatheterPlacement").SelectedIndex =
-                        (int)p.PulmonaryArtery_Placement.Value;
-                    this.GetControl<NumericUpDown> ("numPSP").Value = p.VS_Settings.PSP;
-                    this.GetControl<NumericUpDown> ("numPDP").Value = p.VS_Settings.PDP;
-                    this.GetControl<NumericUpDown> ("numICP").Value = p.VS_Settings.ICP;
-                    this.GetControl<NumericUpDown> ("numIAP").Value = p.VS_Settings.IAP;
+                        (int)p.PulmonaryArteryPlacement.Value;
+                    this.GetControl<NumericUpDown> ("numPSP").Value = p.VitalSignsSettings.PSP;
+                    this.GetControl<NumericUpDown> ("numPDP").Value = p.VitalSignsSettings.PDP;
+                    this.GetControl<NumericUpDown> ("numICP").Value = p.VitalSignsSettings.ICP;
+                    this.GetControl<NumericUpDown> ("numIAP").Value = p.VitalSignsSettings.IAP;
 
                     // Cardiac profile
                     this.GetControl<NumericUpDown> ("numPacemakerCaptureThreshold").Value = p.PacemakerThreshold;
-                    this.GetControl<CheckBox> ("chkPulsusParadoxus").IsChecked = p.Pulsus_Paradoxus;
-                    this.GetControl<CheckBox> ("chkPulsusAlternans").IsChecked = p.Pulsus_Alternans;
-                    this.GetControl<CheckBox> ("chkElectricalAlternans").IsChecked = p.Electrical_Alternans;
-                    this.GetControl<ComboBox> ("comboCardiacAxis").SelectedIndex = (int)p.Cardiac_Axis.Value;
+                    this.GetControl<CheckBox> ("chkPulsusParadoxus").IsChecked = p.PulsusParadoxus;
+                    this.GetControl<CheckBox> ("chkPulsusAlternans").IsChecked = p.PulsusAlternans;
+                    this.GetControl<CheckBox> ("chkElectricalAlternans").IsChecked = p.ElectricalAlternans;
+                    this.GetControl<ComboBox> ("comboCardiacAxis").SelectedIndex = (int)p.CardiacAxis.Value;
 
-                    this.GetControl<NumericUpDown> ("numQRSInterval").Value = (decimal)p.QRS_Interval;
-                    this.GetControl<NumericUpDown> ("numQTcInterval").Value = (decimal)p.QTc_Interval;
+                    this.GetControl<NumericUpDown> ("numQRSInterval").Value = (decimal)p.QRSInterval;
+                    this.GetControl<NumericUpDown> ("numQTcInterval").Value = (decimal)p.QTcInterval;
 
-                    if (p.P_Amplitude is not null) {
+                    if (p.PAmplitude is not null) {
                         this.GetControl<NumericUpDown> ("numPAmp_I").Value =
-                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_I];
+                            (decimal)p.PAmplitude [(int)Lead.Values.ECGI];
                         this.GetControl<NumericUpDown> ("numPAmp_II").Value =
-                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_II];
+                            (decimal)p.PAmplitude [(int)Lead.Values.ECGII];
                         this.GetControl<NumericUpDown> ("numPAmp_III").Value =
-                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_III];
+                            (decimal)p.PAmplitude [(int)Lead.Values.ECGIII];
                         this.GetControl<NumericUpDown> ("numPAmp_aVR").Value =
-                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_AVR];
+                            (decimal)p.PAmplitude [(int)Lead.Values.ECGAVR];
                         this.GetControl<NumericUpDown> ("numPAmp_aVL").Value =
-                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_AVL];
+                            (decimal)p.PAmplitude [(int)Lead.Values.ECGAVL];
                         this.GetControl<NumericUpDown> ("numPAmp_aVF").Value =
-                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_AVF];
+                            (decimal)p.PAmplitude [(int)Lead.Values.ECGAVF];
                         this.GetControl<NumericUpDown> ("numPAmp_V1").Value =
-                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_V1];
+                            (decimal)p.PAmplitude [(int)Lead.Values.ECGV1];
                         this.GetControl<NumericUpDown> ("numPAmp_V2").Value =
-                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_V2];
+                            (decimal)p.PAmplitude [(int)Lead.Values.ECGV2];
                         this.GetControl<NumericUpDown> ("numPAmp_V3").Value =
-                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_V3];
+                            (decimal)p.PAmplitude [(int)Lead.Values.ECGV3];
                         this.GetControl<NumericUpDown> ("numPAmp_V4").Value =
-                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_V4];
+                            (decimal)p.PAmplitude [(int)Lead.Values.ECGV4];
                         this.GetControl<NumericUpDown> ("numPAmp_V5").Value =
-                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_V5];
+                            (decimal)p.PAmplitude [(int)Lead.Values.ECGV5];
                         this.GetControl<NumericUpDown> ("numPAmp_V6").Value =
-                            (decimal)p.P_Amplitude [(int)Lead.Values.ECG_V6];
+                            (decimal)p.PAmplitude [(int)Lead.Values.ECGV6];
                     }
 
-                    if (p.Q_Amplitude is not null) {
+                    if (p.QAmplitude is not null) {
                         this.GetControl<NumericUpDown> ("numQAmp_I").Value =
-                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_I];
+                            (decimal)p.QAmplitude [(int)Lead.Values.ECGI];
                         this.GetControl<NumericUpDown> ("numQAmp_II").Value =
-                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_II];
+                            (decimal)p.QAmplitude [(int)Lead.Values.ECGII];
                         this.GetControl<NumericUpDown> ("numQAmp_III").Value =
-                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_III];
+                            (decimal)p.QAmplitude [(int)Lead.Values.ECGIII];
                         this.GetControl<NumericUpDown> ("numQAmp_aVR").Value =
-                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_AVR];
+                            (decimal)p.QAmplitude [(int)Lead.Values.ECGAVR];
                         this.GetControl<NumericUpDown> ("numQAmp_aVL").Value =
-                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_AVL];
+                            (decimal)p.QAmplitude [(int)Lead.Values.ECGAVL];
                         this.GetControl<NumericUpDown> ("numQAmp_aVF").Value =
-                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_AVF];
+                            (decimal)p.QAmplitude [(int)Lead.Values.ECGAVF];
                         this.GetControl<NumericUpDown> ("numQAmp_V1").Value =
-                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V1];
+                            (decimal)p.QAmplitude [(int)Lead.Values.ECGV1];
                         this.GetControl<NumericUpDown> ("numQAmp_V2").Value =
-                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V2];
+                            (decimal)p.QAmplitude [(int)Lead.Values.ECGV2];
                         this.GetControl<NumericUpDown> ("numQAmp_V3").Value =
-                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V3];
+                            (decimal)p.QAmplitude [(int)Lead.Values.ECGV3];
                         this.GetControl<NumericUpDown> ("numQAmp_V4").Value =
-                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V4];
+                            (decimal)p.QAmplitude [(int)Lead.Values.ECGV4];
                         this.GetControl<NumericUpDown> ("numQAmp_V5").Value =
-                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V5];
+                            (decimal)p.QAmplitude [(int)Lead.Values.ECGV5];
                         this.GetControl<NumericUpDown> ("numQAmp_V6").Value =
-                            (decimal)p.Q_Amplitude [(int)Lead.Values.ECG_V6];
+                            (decimal)p.QAmplitude [(int)Lead.Values.ECGV6];
                     }
 
-                    if (p.R_Amplitude is not null) {
+                    if (p.RAmplitude is not null) {
                         this.GetControl<NumericUpDown> ("numRAmp_I").Value =
-                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_I];
+                            (decimal)p.RAmplitude [(int)Lead.Values.ECGI];
                         this.GetControl<NumericUpDown> ("numRAmp_II").Value =
-                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_II];
+                            (decimal)p.RAmplitude [(int)Lead.Values.ECGII];
                         this.GetControl<NumericUpDown> ("numRAmp_III").Value =
-                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_III];
+                            (decimal)p.RAmplitude [(int)Lead.Values.ECGIII];
                         this.GetControl<NumericUpDown> ("numRAmp_aVR").Value =
-                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_AVR];
+                            (decimal)p.RAmplitude [(int)Lead.Values.ECGAVR];
                         this.GetControl<NumericUpDown> ("numRAmp_aVL").Value =
-                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_AVL];
+                            (decimal)p.RAmplitude [(int)Lead.Values.ECGAVL];
                         this.GetControl<NumericUpDown> ("numRAmp_aVF").Value =
-                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_AVF];
+                            (decimal)p.RAmplitude [(int)Lead.Values.ECGAVF];
                         this.GetControl<NumericUpDown> ("numRAmp_V1").Value =
-                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_V1];
+                            (decimal)p.RAmplitude [(int)Lead.Values.ECGV1];
                         this.GetControl<NumericUpDown> ("numRAmp_V2").Value =
-                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_V2];
+                            (decimal)p.RAmplitude [(int)Lead.Values.ECGV2];
                         this.GetControl<NumericUpDown> ("numRAmp_V3").Value =
-                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_V3];
+                            (decimal)p.RAmplitude [(int)Lead.Values.ECGV3];
                         this.GetControl<NumericUpDown> ("numRAmp_V4").Value =
-                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_V4];
+                            (decimal)p.RAmplitude [(int)Lead.Values.ECGV4];
                         this.GetControl<NumericUpDown> ("numRAmp_V5").Value =
-                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_V5];
+                            (decimal)p.RAmplitude [(int)Lead.Values.ECGV5];
                         this.GetControl<NumericUpDown> ("numRAmp_V6").Value =
-                            (decimal)p.R_Amplitude [(int)Lead.Values.ECG_V6];
+                            (decimal)p.RAmplitude [(int)Lead.Values.ECGV6];
                     }
 
-                    if (p.S_Amplitude is not null) {
+                    if (p.SAmplitude is not null) {
                         this.GetControl<NumericUpDown> ("numSAmp_I").Value =
-                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_I];
+                            (decimal)p.SAmplitude [(int)Lead.Values.ECGI];
                         this.GetControl<NumericUpDown> ("numSAmp_II").Value =
-                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_II];
+                            (decimal)p.SAmplitude [(int)Lead.Values.ECGII];
                         this.GetControl<NumericUpDown> ("numSAmp_III").Value =
-                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_III];
+                            (decimal)p.SAmplitude [(int)Lead.Values.ECGIII];
                         this.GetControl<NumericUpDown> ("numSAmp_aVR").Value =
-                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_AVR];
+                            (decimal)p.SAmplitude [(int)Lead.Values.ECGAVR];
                         this.GetControl<NumericUpDown> ("numSAmp_aVL").Value =
-                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_AVL];
+                            (decimal)p.SAmplitude [(int)Lead.Values.ECGAVL];
                         this.GetControl<NumericUpDown> ("numSAmp_aVF").Value =
-                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_AVF];
+                            (decimal)p.SAmplitude [(int)Lead.Values.ECGAVF];
                         this.GetControl<NumericUpDown> ("numSAmp_V1").Value =
-                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_V1];
+                            (decimal)p.SAmplitude [(int)Lead.Values.ECGV1];
                         this.GetControl<NumericUpDown> ("numSAmp_V2").Value =
-                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_V2];
+                            (decimal)p.SAmplitude [(int)Lead.Values.ECGV2];
                         this.GetControl<NumericUpDown> ("numSAmp_V3").Value =
-                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_V3];
+                            (decimal)p.SAmplitude [(int)Lead.Values.ECGV3];
                         this.GetControl<NumericUpDown> ("numSAmp_V4").Value =
-                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_V4];
+                            (decimal)p.SAmplitude [(int)Lead.Values.ECGV4];
                         this.GetControl<NumericUpDown> ("numSAmp_V5").Value =
-                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_V5];
+                            (decimal)p.SAmplitude [(int)Lead.Values.ECGV5];
                         this.GetControl<NumericUpDown> ("numSAmp_V6").Value =
-                            (decimal)p.S_Amplitude [(int)Lead.Values.ECG_V6];
+                            (decimal)p.SAmplitude [(int)Lead.Values.ECGV6];
                     }
 
-                    if (p.T_Amplitude is not null) {
+                    if (p.TAmplitude is not null) {
                         this.GetControl<NumericUpDown> ("numTAmp_I").Value =
-                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_I];
+                            (decimal)p.TAmplitude [(int)Lead.Values.ECGI];
                         this.GetControl<NumericUpDown> ("numTAmp_II").Value =
-                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_II];
+                            (decimal)p.TAmplitude [(int)Lead.Values.ECGII];
                         this.GetControl<NumericUpDown> ("numTAmp_III").Value =
-                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_III];
+                            (decimal)p.TAmplitude [(int)Lead.Values.ECGIII];
                         this.GetControl<NumericUpDown> ("numTAmp_aVR").Value =
-                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_AVR];
+                            (decimal)p.TAmplitude [(int)Lead.Values.ECGAVR];
                         this.GetControl<NumericUpDown> ("numTAmp_aVL").Value =
-                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_AVL];
+                            (decimal)p.TAmplitude [(int)Lead.Values.ECGAVL];
                         this.GetControl<NumericUpDown> ("numTAmp_aVF").Value =
-                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_AVF];
+                            (decimal)p.TAmplitude [(int)Lead.Values.ECGAVF];
                         this.GetControl<NumericUpDown> ("numTAmp_V1").Value =
-                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_V1];
+                            (decimal)p.TAmplitude [(int)Lead.Values.ECGV1];
                         this.GetControl<NumericUpDown> ("numTAmp_V2").Value =
-                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_V2];
+                            (decimal)p.TAmplitude [(int)Lead.Values.ECGV2];
                         this.GetControl<NumericUpDown> ("numTAmp_V3").Value =
-                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_V3];
+                            (decimal)p.TAmplitude [(int)Lead.Values.ECGV3];
                         this.GetControl<NumericUpDown> ("numTAmp_V4").Value =
-                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_V4];
+                            (decimal)p.TAmplitude [(int)Lead.Values.ECGV4];
                         this.GetControl<NumericUpDown> ("numTAmp_V5").Value =
-                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_V5];
+                            (decimal)p.TAmplitude [(int)Lead.Values.ECGV5];
                         this.GetControl<NumericUpDown> ("numTAmp_V6").Value =
-                            (decimal)p.T_Amplitude [(int)Lead.Values.ECG_V6];
+                            (decimal)p.TAmplitude [(int)Lead.Values.ECGV6];
                     }
 
-                    if (p.ST_Elevation is not null) {
+                    if (p.STElevation is not null) {
                         this.GetControl<NumericUpDown> ("numSTE_I").Value =
-                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_I];
+                            (decimal)p.STElevation [(int)Lead.Values.ECGI];
                         this.GetControl<NumericUpDown> ("numSTE_II").Value =
-                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_II];
+                            (decimal)p.STElevation [(int)Lead.Values.ECGII];
                         this.GetControl<NumericUpDown> ("numSTE_III").Value =
-                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_III];
+                            (decimal)p.STElevation [(int)Lead.Values.ECGIII];
                         this.GetControl<NumericUpDown> ("numSTE_aVR").Value =
-                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_AVR];
+                            (decimal)p.STElevation [(int)Lead.Values.ECGAVR];
                         this.GetControl<NumericUpDown> ("numSTE_aVL").Value =
-                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_AVL];
+                            (decimal)p.STElevation [(int)Lead.Values.ECGAVL];
                         this.GetControl<NumericUpDown> ("numSTE_aVF").Value =
-                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_AVF];
+                            (decimal)p.STElevation [(int)Lead.Values.ECGAVF];
                         this.GetControl<NumericUpDown> ("numSTE_V1").Value =
-                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V1];
+                            (decimal)p.STElevation [(int)Lead.Values.ECGV1];
                         this.GetControl<NumericUpDown> ("numSTE_V2").Value =
-                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V2];
+                            (decimal)p.STElevation [(int)Lead.Values.ECGV2];
                         this.GetControl<NumericUpDown> ("numSTE_V3").Value =
-                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V3];
+                            (decimal)p.STElevation [(int)Lead.Values.ECGV3];
                         this.GetControl<NumericUpDown> ("numSTE_V4").Value =
-                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V4];
+                            (decimal)p.STElevation [(int)Lead.Values.ECGV4];
                         this.GetControl<NumericUpDown> ("numSTE_V5").Value =
-                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V5];
+                            (decimal)p.STElevation [(int)Lead.Values.ECGV5];
                         this.GetControl<NumericUpDown> ("numSTE_V6").Value =
-                            (decimal)p.ST_Elevation [(int)Lead.Values.ECG_V6];
+                            (decimal)p.STElevation [(int)Lead.Values.ECGV6];
                     }
                 }
 
-                if (!ApplyPending_Respiratory) {
+                if (!_applyPendingRespiratory) {
                     // Respiratory profile
-                    this.GetControl<NumericUpDown> ("numRR").Value = p.VS_Settings.RR;
-                    this.GetControl<ComboBox> ("comboRespiratoryRhythm").SelectedIndex = (int)p.Respiratory_Rhythm.Value;
-                    this.GetControl<NumericUpDown> ("numETCO2").Value = p.VS_Settings.ETCO2;
-                    this.GetControl<CheckBox> ("chkMechanicallyVentilated").IsChecked = p.Mechanically_Ventilated;
-                    this.GetControl<NumericUpDown> ("numInspiratoryRatio").Value = (decimal)p.VS_Settings.RR_IE_I;
-                    this.GetControl<NumericUpDown> ("numExpiratoryRatio").Value = (decimal)p.VS_Settings.RR_IE_E;
+                    this.GetControl<NumericUpDown> ("numRR").Value = p.VitalSignsSettings.RR;
+                    this.GetControl<ComboBox> ("comboRespiratoryRhythm").SelectedIndex = (int)p.RespiratoryRhythm.Value;
+                    this.GetControl<NumericUpDown> ("numETCO2").Value = p.VitalSignsSettings.ETCO2;
+                    this.GetControl<CheckBox> ("chkMechanicallyVentilated").IsChecked = p.MechanicallyVentilated;
+                    this.GetControl<NumericUpDown> ("numInspiratoryRatio").Value = (decimal)p.VitalSignsSettings.RRIEI;
+                    this.GetControl<NumericUpDown> ("numExpiratoryRatio").Value = (decimal)p.VitalSignsSettings.RRIEE;
                 }
 
-                if (!ApplyPending_Obstetric) {
+                if (!_applyPendingObstetric) {
                     // Obstetric profile
-                    this.GetControl<NumericUpDown> ("numFHR").Value = p.VS_Settings.FetalHR;
+                    this.GetControl<NumericUpDown> ("numFHR").Value = p.VitalSignsSettings.FetalHR;
                     this.GetControl<NumericUpDown> ("numFHRVariability").Value = p.ObstetricFetalRateVariability;
                     this.GetControl<NumericUpDown> ("numUCFrequency").Value = (decimal)p.ObstetricContractionFrequency;
                     this.GetControl<NumericUpDown> ("numUCDuration").Value = p.ObstetricContractionDuration;
@@ -1976,7 +1982,7 @@ namespace IISIM {
         }
 
         private void OnAutoApplyChanges_Changed (object sender, RoutedEventArgs e) {
-            if (ParameterStatus == ParameterStatuses.Loading || Instance is null)
+            if (_parameterStatus == ParameterStatuses.Loading || Instance is null)
                 return;
 
             Instance.Settings.AutoApplyChanges = this.GetControl<CheckBox> ("chkAutoApplyChanges").IsChecked ?? true;
@@ -2004,7 +2010,7 @@ namespace IISIM {
             => OnUIPhysiologyParameter_Process (sender, e);
 
         private void OnUIPhysiologyParameter_Process (object sender, RoutedEventArgs e) {
-            switch (ParameterStatus) {
+            switch (_parameterStatus) {
                 default:
                 case ParameterStatuses.Loading:            // For loading state
                     break;
@@ -2055,7 +2061,7 @@ namespace IISIM {
 
         private void OnCentralVenousPressure_Changed (object sender, NumericUpDownValueChangedEventArgs e) {
             if (Instance?.Physiology is not null
-                && Instance.Physiology.PulmonaryArtery_Placement.Value == PulmonaryArtery_Rhythms.Values.Right_Atrium) {
+                && Instance.Physiology.PulmonaryArteryPlacement.Value == PulmonaryArteryRhythms.Values.Right_Atrium) {
                 NumericUpDown numPSP = this.GetControl<NumericUpDown> ("numPSP");
                 NumericUpDown numPDP = this.GetControl<NumericUpDown> ("numPDP");
 
@@ -2071,29 +2077,29 @@ namespace IISIM {
                 return;
 
             int si = this.GetControl<ComboBox> ("comboPACatheterPlacement").SelectedIndex;
-            Array ev = Enum.GetValues (typeof (PulmonaryArtery_Rhythms.Values));
+            Array ev = Enum.GetValues (typeof (PulmonaryArteryRhythms.Values));
             if (si < 0 || si > ev.Length - 1)
                 return;
 
-            PulmonaryArtery_Rhythms.Values sel = (PulmonaryArtery_Rhythms.Values)(ev.GetValue (si) ?? PulmonaryArtery_Rhythms.Values.Pulmonary_Artery);
+            PulmonaryArteryRhythms.Values sel = (PulmonaryArteryRhythms.Values)(ev.GetValue (si) ?? PulmonaryArteryRhythms.Values.Pulmonary_Artery);
 
             NumericUpDown numPSP = this.GetControl<NumericUpDown> ("numPSP");
             NumericUpDown numPDP = this.GetControl<NumericUpDown> ("numPDP");
 
             // If the PA placement is RV, PA, or PAWP, utilize default vital sign ranges
             // But if it is in the RA... utilize the current CVP reading
-            if (sel != PulmonaryArtery_Rhythms.Values.Right_Atrium) {
-                PulmonaryArtery_Rhythms.Default_Vitals v = PulmonaryArtery_Rhythms.DefaultVitals (sel);
+            if (sel != PulmonaryArteryRhythms.Values.Right_Atrium) {
+                PulmonaryArteryRhythms.Default_Vitals v = PulmonaryArteryRhythms.DefaultVitals (sel);
                 numPSP.Value = (int)II.Math.Clamp ((double)(numPSP?.Value ?? 0), v.PSPMin, v.PSPMax);
                 numPDP.Value = (int)II.Math.Clamp ((double)(numPDP?.Value ?? 0), v.PDPMin, v.PDPMax);
-            } else if (sel == PulmonaryArtery_Rhythms.Values.Right_Atrium) {
+            } else if (sel == PulmonaryArteryRhythms.Values.Right_Atrium) {
                 numPSP.Value = (int)System.Math.Ceiling (Instance.Physiology.CVP + System.Math.Max (1, Instance.Physiology.CVP * 0.25));
                 numPDP.Value = (int)System.Math.Floor (Instance.Physiology.CVP - System.Math.Max (1, Instance.Physiology.CVP * 0.25));
             }
 
             // Disable the PA pressure input if the catheter is in the RA (and pressures are all based on CVP!)
-            numPSP.IsEnabled = sel != PulmonaryArtery_Rhythms.Values.Right_Atrium;
-            numPDP.IsEnabled = sel != PulmonaryArtery_Rhythms.Values.Right_Atrium;
+            numPSP.IsEnabled = sel != PulmonaryArteryRhythms.Values.Right_Atrium;
+            numPDP.IsEnabled = sel != PulmonaryArteryRhythms.Values.Right_Atrium;
 
             OnUIPhysiologyParameter_Process (sender, e);
         }
@@ -2110,15 +2116,15 @@ namespace IISIM {
                     ApplyPhysiologyParameters_Cardiac (sender, new EventArgs ());
                     break;
 
-                case Physiology.PhysiologyEventTypes.Respiratory_Baseline:
+                case Physiology.PhysiologyEventTypes.RespiratoryBaseline:
                     ApplyPhysiologyParameters_Respiratory (sender, new EventArgs ());
                     break;
 
-                case Physiology.PhysiologyEventTypes.Obstetric_Baseline:
+                case Physiology.PhysiologyEventTypes.ObstetricBaseline:
                     ApplyPhysiologyParameters_Obstetric (sender, new EventArgs ());
                     break;
 
-                case Physiology.PhysiologyEventTypes.Vitals_Change:
+                case Physiology.PhysiologyEventTypes.VitalsChange:
                     UpdateView (e.Physiology);
                     break;
             }

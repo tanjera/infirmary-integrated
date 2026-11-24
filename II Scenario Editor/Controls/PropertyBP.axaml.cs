@@ -100,16 +100,16 @@ namespace IISE.Controls {
 
             switch (Key) {
                 default: break;
-                case PropertyBP.Keys.NSBP:
-                    keys = new List<Keys> () { PropertyBP.Keys.NSBP, PropertyBP.Keys.NDBP, PropertyBP.Keys.NMAP };
+                case Keys.NSBP:
+                    keys = new List<Keys> () { Keys.NSBP, Keys.NDBP, Keys.NMAP };
                     break;
 
-                case PropertyBP.Keys.ASBP:
-                    keys = new List<Keys> () { PropertyBP.Keys.ASBP, PropertyBP.Keys.ADBP, PropertyBP.Keys.AMAP };
+                case Keys.ASBP:
+                    keys = new List<Keys> () { Keys.ASBP, Keys.ADBP, Keys.AMAP };
                     break;
 
-                case PropertyBP.Keys.PSP:
-                    keys = new List<Keys> () { PropertyBP.Keys.PSP, PropertyBP.Keys.PDP, PropertyBP.Keys.PMP };
+                case Keys.PSP:
+                    keys = new List<Keys> () { Keys.PSP, Keys.PDP, Keys.PMP };
                     break;
             }
 

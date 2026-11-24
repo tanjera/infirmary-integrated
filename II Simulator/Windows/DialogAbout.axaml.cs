@@ -53,9 +53,9 @@ namespace IISIM {
         }
 
         private void Hyperlink_Website (object sender, RoutedEventArgs e)
-            => II.InterOp.OpenBrowser ("http://www.infirmary-integrated.com/");
+            => InterOp.OpenBrowser ("http://www.infirmary-integrated.com/");
 
         private void Hyperlink_GitRepo (object sender, RoutedEventArgs e)
-            => II.InterOp.OpenBrowser ("https://github.com/tanjera/infirmary-integrated");
+            => InterOp.OpenBrowser ("https://github.com/tanjera/infirmary-integrated");
     }
 }
