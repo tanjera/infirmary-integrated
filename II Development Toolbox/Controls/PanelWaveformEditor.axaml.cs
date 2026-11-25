@@ -18,6 +18,9 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
+
+using II.Drawing;
+using II.Waveform;
 // ReSharper disable LocalVariableHidesMember
 // ReSharper disable InconsistentNaming
 
@@ -27,7 +30,8 @@ namespace IIDT;
 public partial class PanelWaveformEditor : UserControl {
     private Window Control;
     private string SolutionDir = "";
-    
+
+    private List<PointD>? Pixels;
     private List<Vertex>? Vertices;
 
     /* Waveform settings */
@@ -88,7 +92,11 @@ public partial class PanelWaveformEditor : UserControl {
 
         Vertices = new List<Vertex> ();
         for (int i = 0; i < (DrawLength / DrawResolution); i++)
-            Vertices.Add (new Vertex () { Y = 0 });
+            Vertices.Add (new Vertex ());
+        
+        Pixels = new List<PointD> ();
+        for (int i = 0; i < (DrawLength / DrawResolution); i++)
+            Pixels.Add (new PointD ());
         
         UpdateWave ();
     }
@@ -149,7 +157,10 @@ public partial class PanelWaveformEditor : UserControl {
 
             StringBuilder sbVert = new StringBuilder ();
             for (int i = 0; i < Vertices.Count; i++)
-                sbVert.Append (String.Format ("({0} {1}) ", i, Math.Round (Vertices [i].Y, 2)));
+                sbVert.Append (String.Format ("({0} {1} {2}) ", 
+                    i, 
+                    Math.Round (Vertices [i].Y, 2), 
+                    Vertices [i].Waveform.ToString()));
 
             sb.AppendLine (String.Format ("{0}:{1}", "Vertices", sbVert.ToString ().Trim ()));
 
@@ -259,12 +270,16 @@ public partial class PanelWaveformEditor : UserControl {
                                 pValue = pValue.Substring (coord.Length).Trim ();   // And remove the current coordinate from pValue
 
                                 /* Process the current coordinate and add to Vertices */
-                                string [] coords = coord.Trim ('(', ')').Split (' ');
-                                int x = int.Parse (coords [0]);
-                                double y = double.Parse (coords [1]);
-
+                                string? [] split = coord.Trim ('(', ')').Split (' ');
+                                int x = int.Parse (split? [0] ?? "0");
+                                double y = double.Parse (split? [1] ?? "0");
+                                
+                                Vertex.Waveforms wf = Vertex.Waveforms.Null;
+                                if (split?.Length > 2 && Enum.TryParse (split? [2], out Vertex.Waveforms tryParse))
+                                    wf = tryParse;
+                                
                                 if (Vertices.Count == x)
-                                    Vertices.Add (new Vertex (y));
+                                    Vertices.Add (new Vertex (y, wf));
                                 else {
                                     LoadFail ();
                                     return;
@@ -274,6 +289,7 @@ public partial class PanelWaveformEditor : UserControl {
                     }
                 }
             }
+            
             DrawLength = Vertices.Count * DrawResolution;
             FilePath = files.First()?.TryGetLocalPath();
         } catch {
@@ -378,7 +394,7 @@ public partial class PanelWaveformEditor : UserControl {
     }
 
     private void TranslatePixelToPoint (int vertexIndex) {
-        SetVertex (vertexIndex, (Vertices [vertexIndex].Pixel.Y - drawYOffset) / drawYMultiplier);
+        SetVertex (vertexIndex, ((Pixels? [vertexIndex].Y ?? 0d) - drawYOffset) / drawYMultiplier);
     }
 
     private void TranslatePointsToPixels () {
@@ -388,7 +404,7 @@ public partial class PanelWaveformEditor : UserControl {
         Canvas cnvDrawing = this.GetControl<Canvas> ("cnvDrawing");
         
         for (int i = 0; i < Vertices.Count; i++) {
-            Vertices [i].Pixel = new Point (
+            Pixels? [i] = new PointD (
                 Utility.Clamp ((int)((i * drawXMultiplier) + drawXOffset), 0, cnvDrawing.Bounds.Width),
                 Utility.Clamp ((int)((Vertices [i].Y * drawYMultiplier) + drawYOffset), 0, cnvDrawing.Bounds.Height));    
         }
@@ -437,10 +453,10 @@ public partial class PanelWaveformEditor : UserControl {
         drawGeometry = new StreamGeometry ();
 
         using (drawContext = drawGeometry.Open ()) {
-            drawContext.BeginFigure (new Avalonia.Point(Vertices [0].Pixel.X, Vertices[0].Pixel.Y), true);
+            drawContext.BeginFigure (new Point(Pixels? [0].X ?? 0d, Pixels? [0].Y ?? 0d), true);
 
             for (int i = 1; i < Vertices.Count; i++)
-                drawContext.LineTo (new Avalonia.Point(Vertices [i].Pixel.X, Vertices[i].Pixel.Y), true);
+                drawContext.LineTo (new Point(Pixels? [i].X ?? 0d, Pixels? [i].Y ?? 0d), true);
             
             drawContext.EndFigure (false);
         }
@@ -517,18 +533,18 @@ public partial class PanelWaveformEditor : UserControl {
 
         Vertices? [index].Y = Utility.Clamp (amount, -1.0, 1.0);
         
-        Vertices? [index].Pixel = new Point (
+        Pixels? [index] = new PointD (
             Utility.Clamp ((int)((index * drawXMultiplier) + drawXOffset), 0, cnvDrawing.Bounds.Width),
             Utility.Clamp ((int)((Vertices [index].Y * drawYMultiplier) + drawYOffset), 0, cnvDrawing.Bounds.Height));  
         
         DrawWave ();
     }
 
-    private void SetVertexToPixel (int index, Point position) {
+    private void SetVertexToPixel (int index, PointD position) {
         if (index < 0 || index > Vertices?.Count)
             return;
 
-        Vertices? [index].Pixel.Y = position.Y;
+        Pixels? [index].Y = position.Y;
         TranslatePixelToPoint (index);
     }
 
@@ -540,7 +556,7 @@ public partial class PanelWaveformEditor : UserControl {
 
         Vertices? [index].Y = Utility.Clamp ((Vertices [index].Y + (EditYAmplitude * amount)), -1.0, 1.0);
         
-        Vertices? [index].Pixel = new Point (
+        Pixels? [index] = new PointD (
             Utility.Clamp ((int)((index * drawXMultiplier) + drawXOffset), 0, cnvDrawing.Bounds.Width),
             Utility.Clamp ((int)((Vertices [index].Y * drawYMultiplier) + drawYOffset), 0, cnvDrawing.Bounds.Height));
         
@@ -559,18 +575,22 @@ public partial class PanelWaveformEditor : UserControl {
         numIndexOffset.Value = index;
         IndexOffset = index;
 
+        if (Vertices?.Count >= index) {
+            this.GetControl<Label> ("lblWaveformIndex").Content = Vertices? [index].Waveform.ToString ();
+        }
+
         DrawOffsetReference ();
     }
 
-    private int NearestVertexByDistance (Point refPoint) {
+    private int NearestVertexByDistance (PointD refPoint) {
         if (Vertices == null || Vertices.Count == 0)
             return -1;
 
         int nearestIndex = 0;
-        double nearestDistance = Point.Distance (Vertices [0].Pixel, refPoint);
+        double nearestDistance = PointD.Distance (Pixels? [0] ?? new PointD(), refPoint);
 
         for (int i = 1; i < Vertices.Count; i++) {
-            double nd = Point.Distance(Vertices [i].Pixel, refPoint);
+            double nd = PointD.Distance(Pixels? [i] ?? new PointD(), refPoint);
 
             if (nd < nearestDistance) {
                 nearestDistance = nd;
@@ -581,15 +601,15 @@ public partial class PanelWaveformEditor : UserControl {
         return nearestIndex;
     }
 
-    private int NearestVertexByXAxis (Point refPoint) {
+    private int NearestVertexByXAxis (PointD refPoint) {
         if (Vertices == null || Vertices.Count == 0)
             return -1;
 
         int nearestIndex = 0;
-        double nearestDistance = Math.Abs (Vertices [0].Pixel.X - refPoint.X);
+        double nearestDistance = Math.Abs ((Pixels?[0].X ?? 0d) - refPoint.X);
 
         for (int i = 1; i < Vertices.Count; i++) {
-            double nd = Math.Abs (Vertices [i].Pixel.X - refPoint.X);
+            double nd = Math.Abs ((Pixels? [i].X ?? 0d) - refPoint.X);
 
             if (nd < nearestDistance) {
                 nearestDistance = nd;
@@ -684,7 +704,7 @@ public partial class PanelWaveformEditor : UserControl {
 
         Vertices = new List<Vertex> ();
         for (int i = 0; i < (DrawLength / DrawResolution); i++)
-            Vertices.Add (new Vertex () { Y = 0 });
+            Vertices.Add (new Vertex (0));
 
         UpdateWave ();
     }
@@ -710,9 +730,27 @@ public partial class PanelWaveformEditor : UserControl {
         if (e.KeyModifiers.HasFlag(KeyModifiers.Shift)) {
             switch (e.Key) {
                 default: break;
-
+                
+                case Key.OemTilde:
+                    for (int i = IndexOffset; i < Vertices?.Count; i++) {
+                        Vertices[i].Waveform = Vertex.Waveforms.Isoelectric;
+                    }
+                    break;
+                
+                case Key.D1:
+                    for (int i = IndexOffset; i < Vertices?.Count; i++) {
+                        Vertices[i].Waveform = Vertex.Waveforms.Systolic;
+                    }
+                    break;
+                
+                case Key.D2:
+                    for (int i = IndexOffset; i < Vertices?.Count; i++) {
+                        Vertices[i].Waveform = Vertex.Waveforms.Diastolic;
+                    }
+                    break;
+                
                 case Key.Up:
-                    imgReference.Height = imgReference.Bounds.Height - 10;
+                    imgReference.Height = Math.Max (imgReference.Bounds.Height - 10, 0);
                     break;
 
                 case Key.Down:
@@ -720,7 +758,7 @@ public partial class PanelWaveformEditor : UserControl {
                     break;
 
                 case Key.Left:
-                    imgReference.Width = imgReference.Bounds.Width - 10;
+                    imgReference.Width = Math.Max(imgReference.Bounds.Width - 10, 0);
                     break;
 
                 case Key.Right:
@@ -731,6 +769,48 @@ public partial class PanelWaveformEditor : UserControl {
             switch (e.Key) {
                 default: break;
 
+                case Key.OemTilde:
+                    for (int i = IndexOffset; i < Vertices?.Count; i++) {
+                        Vertices[i].Waveform = Vertex.Waveforms.Null;
+                    }
+                    break;
+                
+                case Key.D1:
+                    for (int i = IndexOffset; i < Vertices?.Count; i++) {
+                        Vertices[i].Waveform = Vertex.Waveforms.P;
+                    }
+                    break;
+                
+                case Key.D2:
+                    for (int i = IndexOffset; i < Vertices?.Count; i++) {
+                        Vertices[i].Waveform = Vertex.Waveforms.Q;
+                    }
+                    break;
+                
+                case Key.D3:
+                    for (int i = IndexOffset; i < Vertices?.Count; i++) {
+                        Vertices[i].Waveform = Vertex.Waveforms.R;
+                    }
+                    break;
+                
+                case Key.D4:
+                    for (int i = IndexOffset; i < Vertices?.Count; i++) {
+                        Vertices[i].Waveform = Vertex.Waveforms.S;
+                    }
+                    break;
+                
+                case Key.D5:
+                    for (int i = IndexOffset; i < Vertices?.Count; i++) {
+                        Vertices[i].Waveform = Vertex.Waveforms.ST;
+                    }
+                    break;
+                
+                case Key.D6:
+                    for (int i = IndexOffset; i < Vertices?.Count; i++) {
+                        Vertices[i].Waveform = Vertex.Waveforms.T;
+                    }
+                    break;
+                
                 case Key.Up:
                     Canvas.SetTop (imgReference,
                         Utility.Clamp (imgReference.Bounds.Top - 10, 0,
@@ -750,7 +830,6 @@ public partial class PanelWaveformEditor : UserControl {
                     break;
 
                 case Key.Right:
-
                     Canvas.SetLeft (imgReference,
                         Utility.Clamp (imgReference.Bounds.Left + 10, 0,
                             cnvDrawing.Bounds.Width - imgReference.Bounds.Width));
@@ -764,7 +843,7 @@ public partial class PanelWaveformEditor : UserControl {
     private void cnvDrawing_MouseDown (object sender, PointerPressedEventArgs e) {
         Canvas cnvDrawing = this.GetControl<Canvas> ("cnvDrawing");
 
-        Point pos = new(e.GetCurrentPoint (cnvDrawing).Position);
+        PointD pos = new(e.GetCurrentPoint (cnvDrawing).Position.X, e.GetCurrentPoint (cnvDrawing).Position.Y);
         int index = NearestVertexByXAxis (pos);
 
         if (e.Properties.IsLeftButtonPressed) {
@@ -781,7 +860,7 @@ public partial class PanelWaveformEditor : UserControl {
     private void cnvDrawing_MouseMove (object sender, PointerEventArgs e) {
         Canvas cnvDrawing = this.GetControl<Canvas> ("cnvDrawing");
 
-        Point pos = new(e.GetCurrentPoint (cnvDrawing).Position);
+        PointD pos = new(e.GetCurrentPoint (cnvDrawing).Position.X, e.GetCurrentPoint (cnvDrawing).Position.Y);
         int index = NearestVertexByXAxis (pos);
         
         if (e.Properties.IsLeftButtonPressed) {

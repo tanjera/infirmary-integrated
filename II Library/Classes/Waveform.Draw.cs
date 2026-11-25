@@ -98,7 +98,7 @@ namespace II.Waveform {
 
         public static List<PointD> ETCO2_Rhythm (Physiology p) {
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch (Dictionary.ETCO2_Default, p.GetRRIntervalExpiratory),
+                Plotting.Stretch (Dictionary.ETCO2Default, p.GetRRIntervalExpiratory),
                 Math.InverseLerp(0, 80, Math.Clamp(p.ETCO2, 0, 80)) * 1.5);
         }
 
@@ -110,7 +110,7 @@ namespace II.Waveform {
 
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Stretch (  // Lerp to change waveform based on intracranial compliance due to ICP
-                    Dictionary.Lerp (Dictionary.ICP_HighCompliance, Dictionary.ICP_LowCompliance,
+                    Plot.Lerp (Dictionary.ICPHighCompliance, Dictionary.ICPLowCompliance,
                         Math.Clamp (Math.InverseLerp (15, 25, p.ICP), 0, 1)),    // ICP compliance coefficient
                     p.GetHRInterval),
                 amplitude);
@@ -124,7 +124,7 @@ namespace II.Waveform {
 
             // Abdominal pressure increase on inspiration
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch (Dictionary.IAP_Default, 
+                Plotting.Stretch (Dictionary.IAPDefault, 
                     isInspiration ? p.GetRRIntervalInspiratory : p.GetRRIntervalExpiratory),
                 amplitude);
         }
@@ -136,7 +136,7 @@ namespace II.Waveform {
             DampenAmplitude_DiastolicFillTime (p, ref amplitude);
 
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch_BySystoleRatio(Dictionary.ABP_Default, p),
+                Plotting.Stretch_BySystoleRatio(Dictionary.ABPDefault, p),
                 amplitude);
         }
 
@@ -147,11 +147,11 @@ namespace II.Waveform {
 
             if (p.CardiacRhythm.HasAtrialPulse && !p.CardiacRhythm.AberrantBeat)
                 return Plotting.Concatenate (new List<PointD> (),
-                    Plotting.Stretch_BySystoleRatio (Dictionary.CVP_Atrioventricular, p),
+                    Plotting.Stretch_BySystoleRatio (Dictionary.CVPAtrioventricular, p),
                     amplitude);
             else
                 return Plotting.Concatenate (new List<PointD> (),
-                    Plotting.Stretch_BySystoleRatio (Dictionary.CVP_Ventricular, p),
+                    Plotting.Stretch_BySystoleRatio (Dictionary.CVPVentricular, p),
                     amplitude);
         }
 
@@ -160,7 +160,7 @@ namespace II.Waveform {
             DampenAmplitude_EctopicBeat (p, ref amplitude);
 
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch_BySystoleRatio (Dictionary.RV_Default, p),
+                Plotting.Stretch_BySystoleRatio (Dictionary.RVDefault, p),
                 amplitude);
         }
 
@@ -178,13 +178,13 @@ namespace II.Waveform {
             DampenAmplitude_EctopicBeat (p, ref amplitude);
 
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch_BySystoleRatio (Dictionary.PCW_Default, p),
+                Plotting.Stretch_BySystoleRatio (Dictionary.PCWDefault, p),
                 amplitude);
         }
 
         public static List<PointD> IABP_Balloon_Rhythm (Physiology p, double amplitude) {
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Stretch (Dictionary.IABP_Balloon_Default,
+                Plotting.Stretch (Dictionary.IABPBalloonDefault,
                 Physiology.CalculateHRInterval (p.GetLastVS (Physiology.PhysiologyEventTypes.CardiacVentricularElectric).HR) * 0.7f),
                 amplitude);
         }
@@ -195,15 +195,15 @@ namespace II.Waveform {
 
             if (!p.CardiacRhythm.HasVentricularPulse)
                 return Plotting.Concatenate (new List<PointD> (),
-                    Plotting.Stretch (Dictionary.IABPABPNonpulsatile, p.GetHRInterval),
+                    Plotting.Stretch (Dictionary.IABPArterialNonpulsatile, p.GetHRInterval),
                     amplitude);
             else if (p.CardiacRhythm.AberrantBeat)
                 return Plotting.Concatenate (new List<PointD> (),
-                    Plotting.Stretch (Dictionary.IABP_ABP_Ectopic, p.GetHRInterval),
+                    Plotting.Stretch (Dictionary.IABPArterialEctopic, p.GetHRInterval),
                     amplitude);
             else
                 return Plotting.Concatenate (new List<PointD> (),
-                    Plotting.Stretch (Dictionary.IABP_ABP_Default, Physiology.CalculateHRInterval (p.GetLastVS (Physiology.PhysiologyEventTypes.CardiacVentricularElectric).HR)),
+                    Plotting.Stretch (Dictionary.IABPArterialDefault, Physiology.CalculateHRInterval (p.GetLastVS (Physiology.PhysiologyEventTypes.CardiacVentricularElectric).HR)),
                     amplitude);
         }
 
@@ -216,7 +216,7 @@ namespace II.Waveform {
         public static List<PointD> TOCO_Rhythm (Physiology p) {
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Normalize (
-                    Plotting.Stretch (Dictionary.EFM_Contraction, p.ObstetricContractionDuration),
+                    Plotting.Stretch (Dictionary.EFMContraction, p.ObstetricContractionDuration),
                     Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMinToco, Strip.DefaultScaleMaxToco, p.ObstetricUterineRestingTone)),
                     Math.Clamp (Math.InverseLerp (Strip.DefaultScaleMinToco, Strip.DefaultScaleMaxToco, p.ObstetricContractionIntensity))));
         }
@@ -415,7 +415,7 @@ namespace II.Waveform {
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Multiply (
                     // Draws better w/ regular Stretch(); too much cropping/overdraw w/ Stretch_BySystoleRatio
-                    Plotting.Stretch (Dictionary.ECG_Complex_VT, p.GetSystoleSeconds),
+                    Plotting.Stretch (Dictionary.ECGVentricularTachycardia, p.GetSystoleSeconds),
                     BaseLeadCoeff [(int)l.Value, (int)WavePart.QRST] * (p.RAmplitude? [(int)l.Value] ?? 1d)),
                 GetAmplitude_ElectricalAlternans (p));
         }
@@ -448,7 +448,7 @@ namespace II.Waveform {
             
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Multiply (
-                    Plotting.Stretch_BySystoleRatio(Dictionary.ECG_Complex_Idioventricular, p),
+                    Plotting.Stretch_BySystoleRatio(Dictionary.ECGIdioventricular, p),
                 BaseLeadCoeff [(int)l.Value, (int)WavePart.QRST] * (p.RAmplitude?[(int)l.Value] ?? 1d)),
                 GetAmplitude_ElectricalAlternans (p));
         }
@@ -459,7 +459,7 @@ namespace II.Waveform {
             
             return Plotting.Concatenate (new List<PointD> (),
                 Plotting.Multiply (
-                    Plotting.Stretch_BySystoleRatio (Dictionary.ECG_CPR_Artifact, p),
+                    Plotting.Stretch_BySystoleRatio (Dictionary.ECGChestCompressions, p),
                 BaseLeadCoeff [(int)l.Value, (int)WavePart.QRST] * (p.RAmplitude?[(int)l.Value] ?? 1d)));
         }
 
@@ -468,7 +468,7 @@ namespace II.Waveform {
                 return new ();
 
             return Plotting.Concatenate (new List<PointD> (),
-                Plotting.Multiply (Plotting.Convert (Dictionary.ECG_Defibrillation),
+                Plotting.Multiply (Plotting.Convert (Dictionary.ECGDefibrillation),
                 BaseLeadCoeff [(int)l.Value, (int)WavePart.QRST]));
         }
 

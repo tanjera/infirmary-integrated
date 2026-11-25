@@ -51,20 +51,20 @@ namespace II.Waveform {
                     eachVector.Y * _Amplitude));
         }
 
-        public static List<PointD> Stretch (Dictionary.Plot _Addition, double _Length) {
-            int lengthAddition = (_Addition.Vertices.Length - 1) * _Addition.DrawResolution;
+        public static List<PointD> Stretch (Plot _Addition, double _Length) {
+            int lengthAddition = (_Addition.Vertices.Count - 1) * _Addition.DrawResolution;
             double lengthCoeff = (_Length * 1000) / lengthAddition;
 
             List<PointD> _Output = new ();
-            for (int i = 0; i < _Addition.Vertices.Length; i++)
+            for (int i = 0; i < _Addition.Vertices.Count; i++)
                 _Output.Add (new PointD (
                     (double)_Addition.DrawResolution / 1000 * i * lengthCoeff,
-                    _Addition.Vertices [i]));
+                    _Addition.Vertices [i].Y));
 
             return _Output;
         }
 
-        public static List<PointD> Stretch_BySystoleRatio (Dictionary.Plot _Addition, Physiology _P) {
+        public static List<PointD> Stretch_BySystoleRatio (Plot _Addition, Physiology _P) {
             // Interpolate desired length of waveform in seconds to draw from:
             // Patient model's systolic time compared to waveform systolic time
             // extrapolated 't' to ratio of waveform length versus waveform's systolic portion of length 
@@ -107,12 +107,12 @@ namespace II.Waveform {
             return output;
         }
 
-        public static List<PointD> Convert (Dictionary.Plot _Addition) {
+        public static List<PointD> Convert (Plot _Addition) {
             List<PointD> _Output = new ();
-            for (int i = 0; i < _Addition.Vertices.Length; i++)
+            for (int i = 0; i < _Addition.Vertices.Count; i++)
                 _Output.Add (new PointD (
                     (double)_Addition.DrawResolution / 1000 * i,
-                    _Addition.Vertices [i]));
+                    _Addition.Vertices [i].Y));
 
             return _Output;
         }

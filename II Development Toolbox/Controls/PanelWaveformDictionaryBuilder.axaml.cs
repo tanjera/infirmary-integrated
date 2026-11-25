@@ -14,6 +14,7 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 
+using II.Waveform;
 
 namespace IIDT;
 
@@ -134,12 +135,16 @@ Vertices: actual vertices, x is the integer index, y is the double amplitude";
                                         .Trim (); // And remove the current coordinate from pValue
 
                                     /* Process the current coordinate and add to Vertices */
-                                    string [] coords = coord.Trim ('(', ')').Split (' ');
-                                    int x = int.Parse (coords [0]);
-                                    double y = double.Parse (coords [1]);
-
+                                    string? [] split = coord.Trim ('(', ')').Split (' ');
+                                    int x = int.Parse (split? [0] ?? "0");
+                                    double y = double.Parse (split? [1] ?? "0");
+                                    
+                                    Vertex.Waveforms wf = Vertex.Waveforms.Null;
+                                    if (split?.Length > 2 && Enum.TryParse (split? [2], out Vertex.Waveforms tryParse))
+                                        wf = tryParse;
+                                    
                                     if (Vertices.Count == x)
-                                        Vertices.Add (new Vertex (y));
+                                        Vertices.Add (new Vertex (y, wf));
                                 }
 
                                 break;
@@ -153,17 +158,17 @@ Vertices: actual vertices, x is the integer index, y is the double amplitude";
                 dictOut.AppendLine (String.Format ("\t\t\tDrawResolution = {0},", DrawResolution));
                 dictOut.AppendLine (String.Format ("\t\t\tIndexOffset = {0},", IndexOffset));
                 dictOut.AppendLine (String.Format ("\t\t\tSystoleLength = {0},", SystoleLength));
-                dictOut.AppendLine (String.Format ("\t\t\tVertices = new double[] {{", IndexOffset));
+                dictOut.AppendLine (String.Format ("\t\t\tVertices = new List<Vertex> ([", IndexOffset));
 
                 for (int v = 0; v < Vertices.Count; v++) {
-                    dictOut.Append (String.Format ("{0}{1}{2}d{3}",
-                        (v > 0 && v % 15 == 0 ? "\n" : ""),
-                        (v % 15 == 0 ? "\t\t\t\t" : ""),
-                        Vertices [v].Y,
+                    dictOut.Append (String.Format ("{0}{1}{2}{3}",
+                        (v > 0 && v % 2 == 0 ? "\n" : ""),
+                        (v % 2 == 0 ? "\t\t\t\t" : ""),
+                        $"new Vertex ({Vertices [v].Y}, Vertex.Waveforms.{Vertices [v].Waveform})",
                         (v < Vertices.Count - 1 ? ", " : "")));
                 }
 
-                dictOut.AppendLine ("\n\t\t\t}\n\t\t};\n");
+                dictOut.AppendLine ("\n\t\t\t])\n\t\t};\n");
             } finally {
                 sRead?.Close ();
             }

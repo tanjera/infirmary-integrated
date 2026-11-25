@@ -92,6 +92,10 @@
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="Auto" />
 						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
+						<RowDefinition Height="Auto" />
 					</Grid.RowDefinitions>
 
 					<Grid.ColumnDefinitions>
@@ -147,6 +151,34 @@
 					        Margin="5,5,5,2"
 					        Content="Apply Draw Resolution and Length Settings"
 							Click="btnApplyResolutions_Click" />
+					
+					<Separator Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="3"></Separator>
+					
+					<Label Grid.Row="7" Grid.Column="0" Grid.ColumnSpan="2" Content="Waveform at Index: " />
+					<Label Grid.Row="7" Grid.Column="2" Name="lblWaveformIndex"/>
+					
+					<Separator Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3" />
+					
+					<TextBlock Grid.Row="9" Grid.Column="0" Grid.ColumnSpan="3" xml:space="preserve">
+Hotkeys:
+- Ctrl + LClick: Set Index
+- Shift + MScroll: Adjust Z-Offset
+- Arrow Keys: Move Reference Image
+- Shift + Arrow Keys: Resize Reference Image
+
+Assign Waveform Parts to [Index...]:
+- `: Null
+- Shift + `: Isoelectric
+- 1: P wave
+- 2: Q wave
+- 3: R wave
+- 4: S wave
+- 5: ST interval
+- 6: T wave
+- Shift-1: Systolic
+- Shift-2: Diastolic
+					</TextBlock>
+
 				</Grid>
 			</HeaderedContentControl>
 			

@@ -14,6 +14,8 @@ using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 
+using II.Waveform;
+using II.Drawing;
 
 namespace IIDT;
 
@@ -62,7 +64,7 @@ public partial class PanelWaveformGenerator : UserControl {
         List<Vertex> Vertices = new List<Vertex> ();
 
         /* Generate waveform into List<Point> via Waveform.cs */
-        List<Point> Wave = Waveform.Generate (DrawResolution);
+        List<PointD> Wave = Waveform.Generate (DrawResolution);
         WaveName = WaveName.Trim ().Replace (' ', '_');
 
         /* Convert List<Point> to List<Vertex> and calculate associated WaveData parameters */

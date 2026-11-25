@@ -51,6 +51,10 @@ namespace II.Drawing {
             return new PointD (Math.Lerp (a.X, b.X, t), Math.Lerp (a.Y, b.Y, t));
         }
 
+        public static double Distance (PointD a, PointD b) {
+            return System.Math.Sqrt (System.Math.Pow (a.X - b.X, 2) + System.Math.Pow (a.Y - b.Y, 2));
+        }
+        
         public override int GetHashCode () {
             return HashCode.Combine (X, Y);
         }
@@ -85,6 +89,9 @@ namespace II.Drawing {
         public static PointD operator * (PointD a, double b)
         => new (a.X * b, a.Y * b);
 
+        public static PointD operator * (double a, PointD b)
+            => new (b.X * a, b.Y * a);
+        
         public static PointD operator / (PointD a, PointD b) {
             if (b.X == 0 || b.Y == 0)
                 throw new DivideByZeroException ();
