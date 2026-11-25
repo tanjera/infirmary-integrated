@@ -192,13 +192,13 @@ namespace II {
                     120, 80, 95,
                     98,
                     37.0d,
-                    CardiacRhythms.Values.Sinus_Rhythm,
+                    CardiacRhythms.Values.SinusRhythm,
 
                     // Advanced hemodynamics
                     6,
                     120, 80, 95,
                     6d,
-                    PulmonaryArteryRhythms.Values.Pulmonary_Artery,
+                    PulmonaryArteryRhythms.Values.PulmonaryArtery,
                     22, 12, 16,
                     8,
                     1,
@@ -1249,44 +1249,44 @@ namespace II {
                     break;
 
                 // Traced as "regular V" Rhythms
-                case CardiacRhythms.Values.Atrial_Flutter:
-                case CardiacRhythms.Values.CPR_Artifact:
+                case CardiacRhythms.Values.AtrialFlutter:
+                case CardiacRhythms.Values.CPRArtifact:
                 case CardiacRhythms.Values.Junctional:
                 case CardiacRhythms.Values.Idioventricular:
-                case CardiacRhythms.Values.Supraventricular_Tachycardia:
-                case CardiacRhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
-                case CardiacRhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
-                case CardiacRhythms.Values.Ventricular_Tachycardia_Polymorphic:
-                case CardiacRhythms.Values.Ventricular_Fibrillation_Coarse:
-                case CardiacRhythms.Values.Ventricular_Fibrillation_Fine:
+                case CardiacRhythms.Values.SupraventricularTachycardia:
+                case CardiacRhythms.Values.VentricularTachycardiaMonomorphicPulsed:
+                case CardiacRhythms.Values.VentricularTachycardiaMonomorphicPulseless:
+                case CardiacRhythms.Values.VentricularTachycardiaPolymorphic:
+                case CardiacRhythms.Values.VentricularFibrillationCoarse:
+                case CardiacRhythms.Values.VentricularFibrillationFine:
                     await _timerCardiacVentricularElectric.ResetStart (1);
                     break;
 
                 // Traced as "regular A" or "regular A -> V" Rhythms
-                case CardiacRhythms.Values.AV_Block__1st_Degree:
-                case CardiacRhythms.Values.AV_Block__Mobitz_II:
-                case CardiacRhythms.Values.AV_Block__Wenckebach:
-                case CardiacRhythms.Values.Bundle_Branch_Block:
-                case CardiacRhythms.Values.Sinus_Rhythm:
+                case CardiacRhythms.Values.AVBlock1Degree:
+                case CardiacRhythms.Values.AVBlock2Mobitz:
+                case CardiacRhythms.Values.AVBlock2Wenckebach:
+                case CardiacRhythms.Values.BundleBranchBlock:
+                case CardiacRhythms.Values.SinusRhythm:
                 case CardiacRhythms.Values.PulselessElectricalActivity:
-                case CardiacRhythms.Values.Ventricular_Standstill:
+                case CardiacRhythms.Values.VentricularStandstill:
                     await _timerCardiacAtrialElectric.ResetStart (1);
                     break;
 
                 // Traced as "irregular V" rhythms
-                case CardiacRhythms.Values.Atrial_Fibrillation:
+                case CardiacRhythms.Values.AtrialFibrillation:
                     VitalSignsActual.HR = (int)(VitalSignsSettings.HR * Math.RandomDbl (0.6, 1.4));
                     await _timerCardiacVentricularElectric.ResetStart (1);
                     break;
 
                 /* Special Cases */
-                case CardiacRhythms.Values.AV_Block__3rd_Degree:
+                case CardiacRhythms.Values.AVBlock3Degree:
                     if (!_timerCardiacAtrialElectric.IsRunning)
                         await _timerCardiacAtrialElectric.ResetStart ((int)(_timerCardiacBaseline.Interval * 0.6d));
                     await _timerCardiacVentricularElectric.ResetStart (160);
                     break;
 
-                case CardiacRhythms.Values.Sick_Sinus_Syndrome:
+                case CardiacRhythms.Values.SickSinusSyndrome:
                     /* Countdown to 0; on 0, switch between tachy/brady; brady runs 8-12 beats, tachy runs 20-30 beats */
                     if (_counterCardiacArrhythmia <= 0) {
                         _switchCardiacArrhythmia = !_switchCardiacArrhythmia;
@@ -1303,7 +1303,7 @@ namespace II {
                     await _timerCardiacAtrialElectric.ResetStart (1);
                     break;
 
-                case CardiacRhythms.Values.Sinus_Arrhythmia:
+                case CardiacRhythms.Values.SinusArrhythmia:
                     if (RespirationInflated)
                         VitalSignsActual.HR = (int)(VitalSignsSettings.HR * 1.075d);
                     else
@@ -1312,7 +1312,7 @@ namespace II {
                     await _timerCardiacAtrialElectric.ResetStart (1);
                     break;
 
-                case CardiacRhythms.Values.Sinus_Rhythm_with_Arrest:
+                case CardiacRhythms.Values.SinusRhythmWithArrest:
 
                     // Every 10-25 beats, sinus arrest
                     if (_counterCardiacArrhythmia <= 0) {
@@ -1327,7 +1327,7 @@ namespace II {
                     await _timerCardiacAtrialElectric.ResetStart (1);
                     break;
 
-                case CardiacRhythms.Values.Sinus_Rhythm_with_PACs:
+                case CardiacRhythms.Values.SinusRhythmWithPACs:
                     _counterCardiacAberrancy -= 1;
                     VitalSignsActual.HR = VitalSignsSettings.HR;
                     if (_counterCardiacAberrancy <= 0) {
@@ -1339,7 +1339,7 @@ namespace II {
                     await _timerCardiacAtrialElectric.ResetStart (1);
                     break;
 
-                case CardiacRhythms.Values.Sinus_Rhythm_with_PJCs:
+                case CardiacRhythms.Values.SinusRhythmWithPJCs:
                     _counterCardiacAberrancy -= 1;
                     VitalSignsActual.HR = VitalSignsSettings.HR;
                     if (_counterCardiacAberrancy <= 0) {
@@ -1352,13 +1352,13 @@ namespace II {
                     }
                     break;
 
-                case CardiacRhythms.Values.Sinus_Rhythm_with_Bigeminy:
+                case CardiacRhythms.Values.SinusRhythmWithBigeminy:
                 case CardiacRhythms.Values.SinusRhythmWithTrigeminy:
                     _counterCardiacAberrancy -= 1;
                     if (_counterCardiacAberrancy == 0) {
                         await _timerCardiacBaseline.Set ((int)(_timerCardiacBaseline.Interval * 0.8d));
                     } else if (_counterCardiacAberrancy < 0) {   // Then throw the PVC and reset the counters
-                        if (CardiacRhythm.Value == CardiacRhythms.Values.Sinus_Rhythm_with_Bigeminy)
+                        if (CardiacRhythm.Value == CardiacRhythms.Values.SinusRhythmWithBigeminy)
                             _counterCardiacAberrancy = 1;
                         else if (CardiacRhythm.Value == CardiacRhythms.Values.SinusRhythmWithTrigeminy)
                             _counterCardiacAberrancy = 2;
@@ -1370,8 +1370,8 @@ namespace II {
                     CardiacRhythm.AberrantBeat = false;
                     break;
 
-                case CardiacRhythms.Values.Sinus_Rhythm_with_PVCs_Unifocal:
-                case CardiacRhythms.Values.Sinus_Rhythm_with_PVCs_Multifocal:
+                case CardiacRhythms.Values.SinusRhythmWithPVCsUnifocal:
+                case CardiacRhythms.Values.SinusRhythmWithPVCsMultifocal:
                     _counterCardiacAberrancy -= 1;
                     VitalSignsActual.HR = VitalSignsSettings.HR;
                     if (_counterCardiacAberrancy == 0) {  // Shorten the beat preceding the PVC, making it premature
@@ -1400,22 +1400,22 @@ namespace II {
                     break;
 
                 // Regular A Rhythms
-                case CardiacRhythms.Values.Ventricular_Standstill:
+                case CardiacRhythms.Values.VentricularStandstill:
                     await _timerCardiacAtrialElectric.Stop ();
                     break;
 
                 // Regular A -> V rhythms
-                case CardiacRhythms.Values.Bundle_Branch_Block:
-                case CardiacRhythms.Values.Sick_Sinus_Syndrome:
-                case CardiacRhythms.Values.Sinus_Arrhythmia:
-                case CardiacRhythms.Values.Sinus_Rhythm:
-                case CardiacRhythms.Values.Sinus_Rhythm_with_Arrest:
-                case CardiacRhythms.Values.Sinus_Rhythm_with_PACs:
-                case CardiacRhythms.Values.Sinus_Rhythm_with_PJCs:
-                case CardiacRhythms.Values.Sinus_Rhythm_with_Bigeminy:
+                case CardiacRhythms.Values.BundleBranchBlock:
+                case CardiacRhythms.Values.SickSinusSyndrome:
+                case CardiacRhythms.Values.SinusArrhythmia:
+                case CardiacRhythms.Values.SinusRhythm:
+                case CardiacRhythms.Values.SinusRhythmWithArrest:
+                case CardiacRhythms.Values.SinusRhythmWithPACs:
+                case CardiacRhythms.Values.SinusRhythmWithPJCs:
+                case CardiacRhythms.Values.SinusRhythmWithBigeminy:
                 case CardiacRhythms.Values.SinusRhythmWithTrigeminy:
-                case CardiacRhythms.Values.Sinus_Rhythm_with_PVCs_Unifocal:
-                case CardiacRhythms.Values.Sinus_Rhythm_with_PVCs_Multifocal:
+                case CardiacRhythms.Values.SinusRhythmWithPVCsUnifocal:
+                case CardiacRhythms.Values.SinusRhythmWithPVCsMultifocal:
                 case CardiacRhythms.Values.PulselessElectricalActivity:
                     await _timerCardiacAtrialElectric.Stop ();
                     await _timerCardiacVentricularElectric.ResetStart (160);
@@ -1423,12 +1423,12 @@ namespace II {
 
                 /* Special cases */
 
-                case CardiacRhythms.Values.AV_Block__1st_Degree:
+                case CardiacRhythms.Values.AVBlock1Degree:
                     await _timerCardiacAtrialElectric.Stop ();
                     await _timerCardiacVentricularElectric.ResetStart (240);
                     break;
 
-                case CardiacRhythms.Values.AV_Block__Mobitz_II:
+                case CardiacRhythms.Values.AVBlock2Mobitz:
                     await _timerCardiacAtrialElectric.Stop ();
                     _counterCardiacAberrancy -= 1;
                     if (_counterCardiacAberrancy < 0) {
@@ -1440,7 +1440,7 @@ namespace II {
                     }
                     break;
 
-                case CardiacRhythms.Values.AV_Block__Wenckebach:
+                case CardiacRhythms.Values.AVBlock2Wenckebach:
                     await _timerCardiacAtrialElectric.Stop ();
                     _counterCardiacAberrancy -= 1;
                     if (_counterCardiacAberrancy < 0) {
@@ -1453,7 +1453,7 @@ namespace II {
                     }
                     break;
 
-                case CardiacRhythms.Values.AV_Block__3rd_Degree:
+                case CardiacRhythms.Values.AVBlock3Degree:
                     /* Specifically let atrial timer continue to run and propogate P-waves! */
                     break;
             }
@@ -1551,7 +1551,7 @@ namespace II {
                     }
                     break;
 
-                case Respiratory_Rhythms.Values.Cheyne_Stokes:
+                case Respiratory_Rhythms.Values.CheyneStokes:
                     if (!_switchRespiratoryArrhythmia && _counterRespiratoryArrhythmia <= 10) {
                         VitalSignsActual.RR += 2;                              // Ramp up breath rate
                         if (_counterRespiratoryArrhythmia == 10)        // Flip the switch when ramped up entirely
@@ -1609,7 +1609,7 @@ namespace II {
                 case Respiratory_Rhythms.Values.Apneustic:
                 case Respiratory_Rhythms.Values.Ataxic:
                 case Respiratory_Rhythms.Values.Biot:
-                case Respiratory_Rhythms.Values.Cheyne_Stokes:
+                case Respiratory_Rhythms.Values.CheyneStokes:
                 case Respiratory_Rhythms.Values.Regular:
                     await _timerRespiratoryExpiration.ResetStart ((int)(GetRRIntervalInspiratory * 1000d));     // Expiration.Interval marks end inspiration
                     break;

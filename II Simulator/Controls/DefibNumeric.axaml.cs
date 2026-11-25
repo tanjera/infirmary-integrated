@@ -338,11 +338,11 @@ namespace IISIM.Controls {
                                             lblLine3.Text = Instance.Language.Localize ("DEFIB:NoShockAdvised");
                                             break;
 
-                                        case CardiacRhythms.Values.Ventricular_Fibrillation_Coarse:
-                                        case CardiacRhythms.Values.Ventricular_Fibrillation_Fine:
-                                        case CardiacRhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
-                                        case CardiacRhythms.Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
-                                        case CardiacRhythms.Values.Ventricular_Tachycardia_Polymorphic:
+                                        case CardiacRhythms.Values.VentricularFibrillationCoarse:
+                                        case CardiacRhythms.Values.VentricularFibrillationFine:
+                                        case CardiacRhythms.Values.VentricularTachycardiaMonomorphicPulsed:
+                                        case CardiacRhythms.Values.VentricularTachycardiaMonomorphicPulseless:
+                                        case CardiacRhythms.Values.VentricularTachycardiaPolymorphic:
                                             lblLine3.Text = Instance.Language.Localize ("DEFIB:ShockAdvised");
                                             break;
                                     }

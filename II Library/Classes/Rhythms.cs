@@ -23,39 +23,39 @@ namespace II {
         }
 
         public CardiacRhythms () {
-            Value = Values.Sinus_Rhythm;
+            Value = Values.SinusRhythm;
         }
 
         public enum Values {
             Asystole,
-            Atrial_Fibrillation,
-            Atrial_Flutter,
-            AV_Block__1st_Degree,
-            AV_Block__3rd_Degree,
-            AV_Block__Mobitz_II,
-            AV_Block__Wenckebach,
-            Bundle_Branch_Block,
-            CPR_Artifact,
+            AtrialFibrillation,
+            AtrialFlutter,
+            AVBlock1Degree,
+            AVBlock3Degree,
+            AVBlock2Mobitz,
+            AVBlock2Wenckebach,
+            BundleBranchBlock,
+            CPRArtifact,
             Idioventricular,
             Junctional,
             PulselessElectricalActivity,
-            Sick_Sinus_Syndrome,
-            Sinus_Arrhythmia,
-            Sinus_Rhythm,
-            Sinus_Rhythm_with_Arrest,
-            Sinus_Rhythm_with_Bigeminy,
+            SickSinusSyndrome,
+            SinusArrhythmia,
+            SinusRhythm,
+            SinusRhythmWithArrest,
+            SinusRhythmWithBigeminy,
             SinusRhythmWithTrigeminy,
-            Sinus_Rhythm_with_PACs,
-            Sinus_Rhythm_with_PJCs,
-            Sinus_Rhythm_with_PVCs_Multifocal,
-            Sinus_Rhythm_with_PVCs_Unifocal,
-            Supraventricular_Tachycardia,
-            Ventricular_Fibrillation_Coarse,
-            Ventricular_Fibrillation_Fine,
-            Ventricular_Standstill,
-            Ventricular_Tachycardia_Monomorphic_Pulsed,
-            Ventricular_Tachycardia_Monomorphic_Pulseless,
-            Ventricular_Tachycardia_Polymorphic
+            SinusRhythmWithPACs,
+            SinusRhythmWithPJCs,
+            SinusRhythmWithPVCsMultifocal,
+            SinusRhythmWithPVCsUnifocal,
+            SupraventricularTachycardia,
+            VentricularFibrillationCoarse,
+            VentricularFibrillationFine,
+            VentricularStandstill,
+            VentricularTachycardiaMonomorphicPulsed,
+            VentricularTachycardiaMonomorphicPulseless,
+            VentricularTachycardiaPolymorphic
         }
 
         public static string LookupString (Values value) {
@@ -66,11 +66,11 @@ namespace II {
             get {
                 switch (Value) {
                     // This is unrealistic, but fits the modeling
-                    case Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
-                    case Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
+                    case Values.VentricularTachycardiaMonomorphicPulsed:
+                    case Values.VentricularTachycardiaMonomorphicPulseless:
                         return true;
 
-                    case Values.CPR_Artifact:
+                    case Values.CPRArtifact:
                         return false;
 
                     default: return HasVentricularPulse;
@@ -82,34 +82,34 @@ namespace II {
             get {
                 switch (Value) {
                     case Values.Asystole:
-                    case Values.Atrial_Fibrillation:
-                    case Values.Atrial_Flutter:
-                    case Values.AV_Block__3rd_Degree:
-                    case Values.CPR_Artifact:
+                    case Values.AtrialFibrillation:
+                    case Values.AtrialFlutter:
+                    case Values.AVBlock3Degree:
+                    case Values.CPRArtifact:
                     case Values.Idioventricular:
                     case Values.Junctional:
                     case Values.PulselessElectricalActivity:
-                    case Values.Supraventricular_Tachycardia:
-                    case Values.Ventricular_Fibrillation_Coarse:
-                    case Values.Ventricular_Fibrillation_Fine:
-                    case Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
-                    case Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
-                    case Values.Ventricular_Tachycardia_Polymorphic:
+                    case Values.SupraventricularTachycardia:
+                    case Values.VentricularFibrillationCoarse:
+                    case Values.VentricularFibrillationFine:
+                    case Values.VentricularTachycardiaMonomorphicPulsed:
+                    case Values.VentricularTachycardiaMonomorphicPulseless:
+                    case Values.VentricularTachycardiaPolymorphic:
                         return false;
 
                     default:
-                    case Values.AV_Block__1st_Degree:
-                    case Values.AV_Block__Mobitz_II:
-                    case Values.AV_Block__Wenckebach:
-                    case Values.Bundle_Branch_Block:
-                    case Values.Sinus_Rhythm:
-                    case Values.Sinus_Rhythm_with_Bigeminy:
+                    case Values.AVBlock1Degree:
+                    case Values.AVBlock2Mobitz:
+                    case Values.AVBlock2Wenckebach:
+                    case Values.BundleBranchBlock:
+                    case Values.SinusRhythm:
+                    case Values.SinusRhythmWithBigeminy:
                     case Values.SinusRhythmWithTrigeminy:
-                    case Values.Sinus_Rhythm_with_PACs:
-                    case Values.Sinus_Rhythm_with_PJCs:
-                    case Values.Sinus_Rhythm_with_PVCs_Multifocal:
-                    case Values.Sinus_Rhythm_with_PVCs_Unifocal:
-                    case Values.Ventricular_Standstill:
+                    case Values.SinusRhythmWithPACs:
+                    case Values.SinusRhythmWithPJCs:
+                    case Values.SinusRhythmWithPVCsMultifocal:
+                    case Values.SinusRhythmWithPVCsUnifocal:
+                    case Values.VentricularStandstill:
                         return true;
                 }
             }
@@ -120,33 +120,33 @@ namespace II {
                 switch (Value) {
                     case Values.Asystole:
                     case Values.PulselessElectricalActivity:
-                    case Values.Ventricular_Fibrillation_Coarse:
-                    case Values.Ventricular_Fibrillation_Fine:
-                    case Values.Ventricular_Standstill:
-                    case Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
-                    case Values.Ventricular_Tachycardia_Polymorphic:
+                    case Values.VentricularFibrillationCoarse:
+                    case Values.VentricularFibrillationFine:
+                    case Values.VentricularStandstill:
+                    case Values.VentricularTachycardiaMonomorphicPulseless:
+                    case Values.VentricularTachycardiaPolymorphic:
                         return false;
 
                     default:
-                    case Values.Atrial_Fibrillation:
-                    case Values.Atrial_Flutter:
-                    case Values.AV_Block__1st_Degree:
-                    case Values.AV_Block__3rd_Degree:
-                    case Values.AV_Block__Mobitz_II:
-                    case Values.AV_Block__Wenckebach:
-                    case Values.Bundle_Branch_Block:
-                    case Values.CPR_Artifact:
+                    case Values.AtrialFibrillation:
+                    case Values.AtrialFlutter:
+                    case Values.AVBlock1Degree:
+                    case Values.AVBlock3Degree:
+                    case Values.AVBlock2Mobitz:
+                    case Values.AVBlock2Wenckebach:
+                    case Values.BundleBranchBlock:
+                    case Values.CPRArtifact:
                     case Values.Idioventricular:
                     case Values.Junctional:
-                    case Values.Sinus_Rhythm:
-                    case Values.Sinus_Rhythm_with_Bigeminy:
+                    case Values.SinusRhythm:
+                    case Values.SinusRhythmWithBigeminy:
                     case Values.SinusRhythmWithTrigeminy:
-                    case Values.Sinus_Rhythm_with_PACs:
-                    case Values.Sinus_Rhythm_with_PJCs:
-                    case Values.Sinus_Rhythm_with_PVCs_Multifocal:
-                    case Values.Sinus_Rhythm_with_PVCs_Unifocal:
-                    case Values.Supraventricular_Tachycardia:
-                    case Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
+                    case Values.SinusRhythmWithPACs:
+                    case Values.SinusRhythmWithPJCs:
+                    case Values.SinusRhythmWithPVCsMultifocal:
+                    case Values.SinusRhythmWithPVCsUnifocal:
+                    case Values.SupraventricularTachycardia:
+                    case Values.VentricularTachycardiaMonomorphicPulsed:
                         return true;
                 }
             }
@@ -156,34 +156,34 @@ namespace II {
             get {
                 switch (Value) {
                     case Values.Asystole:
-                    case Values.Ventricular_Fibrillation_Fine:
-                    case Values.Ventricular_Standstill:
+                    case Values.VentricularFibrillationFine:
+                    case Values.VentricularStandstill:
                         return false;
 
                     default:
-                    case Values.Atrial_Fibrillation:
-                    case Values.Atrial_Flutter:
-                    case Values.AV_Block__1st_Degree:
-                    case Values.AV_Block__3rd_Degree:
-                    case Values.AV_Block__Mobitz_II:
-                    case Values.AV_Block__Wenckebach:
-                    case Values.Bundle_Branch_Block:
-                    case Values.CPR_Artifact:
+                    case Values.AtrialFibrillation:
+                    case Values.AtrialFlutter:
+                    case Values.AVBlock1Degree:
+                    case Values.AVBlock3Degree:
+                    case Values.AVBlock2Mobitz:
+                    case Values.AVBlock2Wenckebach:
+                    case Values.BundleBranchBlock:
+                    case Values.CPRArtifact:
                     case Values.Idioventricular:
                     case Values.Junctional:
                     case Values.PulselessElectricalActivity:
-                    case Values.Sinus_Rhythm:
-                    case Values.Sinus_Rhythm_with_Bigeminy:
+                    case Values.SinusRhythm:
+                    case Values.SinusRhythmWithBigeminy:
                     case Values.SinusRhythmWithTrigeminy:
-                    case Values.Sinus_Rhythm_with_PACs:
-                    case Values.Sinus_Rhythm_with_PJCs:
-                    case Values.Sinus_Rhythm_with_PVCs_Multifocal:
-                    case Values.Sinus_Rhythm_with_PVCs_Unifocal:
-                    case Values.Supraventricular_Tachycardia:
-                    case Values.Ventricular_Fibrillation_Coarse:
-                    case Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
-                    case Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
-                    case Values.Ventricular_Tachycardia_Polymorphic:
+                    case Values.SinusRhythmWithPACs:
+                    case Values.SinusRhythmWithPJCs:
+                    case Values.SinusRhythmWithPVCsMultifocal:
+                    case Values.SinusRhythmWithPVCsUnifocal:
+                    case Values.SupraventricularTachycardia:
+                    case Values.VentricularFibrillationCoarse:
+                    case Values.VentricularTachycardiaMonomorphicPulsed:
+                    case Values.VentricularTachycardiaMonomorphicPulseless:
+                    case Values.VentricularTachycardiaPolymorphic:
                         return true;
                 }
             }
@@ -224,34 +224,34 @@ namespace II {
             switch (Rhythm) {
                 default: return new DefaultVitals (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                 case Values.Asystole: return new DefaultVitals (0, 0, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0, 0, 0, 0, 0);
-                case Values.Atrial_Fibrillation: return new DefaultVitals (80, 140, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
-                case Values.Atrial_Flutter: return new DefaultVitals (80, 140, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
-                case Values.AV_Block__1st_Degree: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
-                case Values.AV_Block__3rd_Degree: return new DefaultVitals (30, 50, 6, 28, 78, 82, 30, 35, 70, 80, 35, 40, 10, 20, 4, 6, .12, .2, .36, .44);
-                case Values.AV_Block__Mobitz_II: return new DefaultVitals (60, 80, 6, 28, 88, 98, 35, 45, 80, 120, 50, 70, 20, 30, 8, 12, 0.06, .1, .36, .44);
-                case Values.AV_Block__Wenckebach: return new DefaultVitals (60, 80, 6, 28, 88, 98, 35, 45, 80, 120, 50, 70, 20, 30, 8, 12, 0.06, .1, .36, .44);
-                case Values.Bundle_Branch_Block: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.12, .2, .36, .44);
-                case Values.CPR_Artifact: return new DefaultVitals (100, 120, 0, 20, 0, 45, 0, 15, 0, 50, 0, 25, 0, 8, 0, 4, 0.08, 0.08, 0.36, 0.44);
+                case Values.AtrialFibrillation: return new DefaultVitals (80, 140, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
+                case Values.AtrialFlutter: return new DefaultVitals (80, 140, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
+                case Values.AVBlock1Degree: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
+                case Values.AVBlock3Degree: return new DefaultVitals (30, 50, 6, 28, 78, 82, 30, 35, 70, 80, 35, 40, 10, 20, 4, 6, .12, .2, .36, .44);
+                case Values.AVBlock2Mobitz: return new DefaultVitals (60, 80, 6, 28, 88, 98, 35, 45, 80, 120, 50, 70, 20, 30, 8, 12, 0.06, .1, .36, .44);
+                case Values.AVBlock2Wenckebach: return new DefaultVitals (60, 80, 6, 28, 88, 98, 35, 45, 80, 120, 50, 70, 20, 30, 8, 12, 0.06, .1, .36, .44);
+                case Values.BundleBranchBlock: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.12, .2, .36, .44);
+                case Values.CPRArtifact: return new DefaultVitals (100, 120, 0, 20, 0, 45, 0, 15, 0, 50, 0, 25, 0, 8, 0, 4, 0.08, 0.08, 0.36, 0.44);
                 case Values.Idioventricular: return new DefaultVitals (20, 40, 6, 28, 78, 82, 30, 35, 70, 80, 35, 40, 10, 20, 4, 6, 0.14, 0.2, 0.36, 0.44);
                 case Values.Junctional: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
                 case Values.PulselessElectricalActivity: return new DefaultVitals (60, 100, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0, 0.06, .1, .36, .44);
-                case Values.Sick_Sinus_Syndrome: return new DefaultVitals (60, 90, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
-                case Values.Sinus_Arrhythmia: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
-                case Values.Sinus_Rhythm: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
-                case Values.Sinus_Rhythm_with_Arrest: return new DefaultVitals (50, 80, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
-                case Values.Sinus_Rhythm_with_Bigeminy: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
+                case Values.SickSinusSyndrome: return new DefaultVitals (60, 90, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
+                case Values.SinusArrhythmia: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
+                case Values.SinusRhythm: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
+                case Values.SinusRhythmWithArrest: return new DefaultVitals (50, 80, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
+                case Values.SinusRhythmWithBigeminy: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
                 case Values.SinusRhythmWithTrigeminy: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
-                case Values.Sinus_Rhythm_with_PACs: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
-                case Values.Sinus_Rhythm_with_PJCs: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
-                case Values.Sinus_Rhythm_with_PVCs_Multifocal: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
-                case Values.Sinus_Rhythm_with_PVCs_Unifocal: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
-                case Values.Supraventricular_Tachycardia: return new DefaultVitals (180, 280, 8, 30, 88, 98, 35, 45, 80, 120, 50, 70, 20, 30, 8, 12, 0.08, .1, .32, .4);
-                case Values.Ventricular_Fibrillation_Coarse: return new DefaultVitals (400, 500, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0, 0.14, 0.2, 0.36, 0.44);
-                case Values.Ventricular_Fibrillation_Fine: return new DefaultVitals (400, 500, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0, 0.14, 0.2, 0.36, 0.44);
-                case Values.Ventricular_Standstill: return new DefaultVitals (40, 100, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0, 0, 0, 0, 0);
-                case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: return new DefaultVitals (110, 250, 8, 22, 88, 98, 35, 45, 80, 110, 60, 80, 20, 30, 8, 12, 0.12, .2, .44, .6);
-                case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: return new DefaultVitals (110, 250, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0, 0.12, .2, .44, .6);
-                case Values.Ventricular_Tachycardia_Polymorphic: return new DefaultVitals (200, 240, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0, 0.12, 0.2, 0.44, 0.66);
+                case Values.SinusRhythmWithPACs: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
+                case Values.SinusRhythmWithPJCs: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
+                case Values.SinusRhythmWithPVCsMultifocal: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
+                case Values.SinusRhythmWithPVCsUnifocal: return new DefaultVitals (60, 100, 8, 22, 93, 98, 35, 45, 100, 140, 70, 90, 20, 30, 8, 12, 0.06, .1, .36, .44);
+                case Values.SupraventricularTachycardia: return new DefaultVitals (180, 280, 8, 30, 88, 98, 35, 45, 80, 120, 50, 70, 20, 30, 8, 12, 0.08, .1, .32, .4);
+                case Values.VentricularFibrillationCoarse: return new DefaultVitals (400, 500, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0, 0.14, 0.2, 0.36, 0.44);
+                case Values.VentricularFibrillationFine: return new DefaultVitals (400, 500, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0, 0.14, 0.2, 0.36, 0.44);
+                case Values.VentricularStandstill: return new DefaultVitals (40, 100, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0, 0, 0, 0, 0);
+                case Values.VentricularTachycardiaMonomorphicPulsed: return new DefaultVitals (110, 250, 8, 22, 88, 98, 35, 45, 80, 110, 60, 80, 20, 30, 8, 12, 0.12, .2, .44, .6);
+                case Values.VentricularTachycardiaMonomorphicPulseless: return new DefaultVitals (110, 250, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0, 0.12, .2, .44, .6);
+                case Values.VentricularTachycardiaPolymorphic: return new DefaultVitals (200, 240, 0, 0, 0, 35, 0, 30, 0, 30, 0, 10, 0, 10, 0, 0, 0.12, 0.2, 0.44, 0.66);
             }
         }
 
@@ -264,68 +264,68 @@ namespace II {
             
             switch (Value) {
                 case Values.Asystole: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.Atrial_Fibrillation: s.Concatenate (Draw.ECG_Isoelectric__Atrial_Fibrillation (p, s.Lead)); return;
-                case Values.Atrial_Flutter: s.Concatenate (Draw.ECG_Isoelectric__Atrial_Flutter (p, s.Lead)); return;
-                case Values.AV_Block__1st_Degree: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.AV_Block__3rd_Degree: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.AV_Block__Mobitz_II: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.AV_Block__Wenckebach: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.Bundle_Branch_Block: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.CPR_Artifact: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.AtrialFibrillation: s.Concatenate (Draw.ECG_Isoelectric__Atrial_Fibrillation (p, s.Lead)); return;
+                case Values.AtrialFlutter: s.Concatenate (Draw.ECG_Isoelectric__Atrial_Flutter (p, s.Lead)); return;
+                case Values.AVBlock1Degree: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.AVBlock3Degree: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.AVBlock2Mobitz: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.AVBlock2Wenckebach: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.BundleBranchBlock: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.CPRArtifact: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
                 case Values.Idioventricular: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
                 case Values.Junctional: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
                 case Values.PulselessElectricalActivity: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.Sick_Sinus_Syndrome: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.Sinus_Arrhythmia: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.Sinus_Rhythm: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.Sinus_Rhythm_with_Arrest: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.Sinus_Rhythm_with_Bigeminy: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.SickSinusSyndrome: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.SinusArrhythmia: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.SinusRhythm: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.SinusRhythmWithArrest: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.SinusRhythmWithBigeminy: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
                 case Values.SinusRhythmWithTrigeminy: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.Sinus_Rhythm_with_PACs: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.Sinus_Rhythm_with_PJCs: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.Sinus_Rhythm_with_PVCs_Multifocal: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.Sinus_Rhythm_with_PVCs_Unifocal: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.Supraventricular_Tachycardia: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.Ventricular_Fibrillation_Coarse: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.Ventricular_Fibrillation_Fine: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.Ventricular_Standstill: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
-                case Values.Ventricular_Tachycardia_Polymorphic: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.SinusRhythmWithPACs: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.SinusRhythmWithPJCs: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.SinusRhythmWithPVCsMultifocal: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.SinusRhythmWithPVCsUnifocal: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.SupraventricularTachycardia: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.VentricularFibrillationCoarse: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.VentricularFibrillationFine: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.VentricularStandstill: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.VentricularTachycardiaMonomorphicPulsed: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.VentricularTachycardiaMonomorphicPulseless: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
+                case Values.VentricularTachycardiaPolymorphic: s.Concatenate (Draw.Flat_Line (p.GetHRInterval, 0f, scaleRes)); return;
             }
         }
 
         public void ECG_Atrial (Physiology p, Rhythm.Strip s) {
             switch (Value) {
                 case Values.Asystole: return;
-                case Values.Atrial_Fibrillation: return;
-                case Values.Atrial_Flutter: return;
-                case Values.AV_Block__1st_Degree: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.AV_Block__Wenckebach: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.AV_Block__Mobitz_II: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.AV_Block__3rd_Degree: s.Combine (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Bundle_Branch_Block: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.CPR_Artifact: return;
+                case Values.AtrialFibrillation: return;
+                case Values.AtrialFlutter: return;
+                case Values.AVBlock1Degree: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.AVBlock2Wenckebach: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.AVBlock2Mobitz: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.AVBlock3Degree: s.Combine (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.BundleBranchBlock: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.CPRArtifact: return;
                 case Values.Idioventricular: return;
                 case Values.Junctional: return;
                 case Values.PulselessElectricalActivity:
-                case Values.Sick_Sinus_Syndrome: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Sinus_Arrhythmia: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_Arrest: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_Bigeminy: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.SickSinusSyndrome: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.SinusArrhythmia: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.SinusRhythm: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.SinusRhythmWithArrest: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.SinusRhythmWithBigeminy: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
                 case Values.SinusRhythmWithTrigeminy: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_PACs: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_PJCs: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_PVCs_Multifocal: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_PVCs_Unifocal: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Supraventricular_Tachycardia: return;
-                case Values.Ventricular_Fibrillation_Coarse: return;
-                case Values.Ventricular_Fibrillation_Fine: return;
-                case Values.Ventricular_Standstill: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
-                case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: return;
-                case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: return;
-                case Values.Ventricular_Tachycardia_Polymorphic: return;
+                case Values.SinusRhythmWithPACs: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.SinusRhythmWithPJCs: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.SinusRhythmWithPVCsMultifocal: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.SinusRhythmWithPVCsUnifocal: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.SupraventricularTachycardia: return;
+                case Values.VentricularFibrillationCoarse: return;
+                case Values.VentricularFibrillationFine: return;
+                case Values.VentricularStandstill: s.Replace (Draw.ECG_Complex__P_Normal (p, s.Lead)); return;
+                case Values.VentricularTachycardiaMonomorphicPulsed: return;
+                case Values.VentricularTachycardiaMonomorphicPulseless: return;
+                case Values.VentricularTachycardiaPolymorphic: return;
             }
         }
 
@@ -335,33 +335,33 @@ namespace II {
                 switch (Value) {
                     default: return;
                     case Values.Asystole:
-                    case Values.Atrial_Flutter:
-                    case Values.Atrial_Fibrillation:
-                    case Values.AV_Block__1st_Degree:
-                    case Values.AV_Block__Wenckebach:
-                    case Values.AV_Block__Mobitz_II:
-                    case Values.AV_Block__3rd_Degree:
-                    case Values.Bundle_Branch_Block:
+                    case Values.AtrialFlutter:
+                    case Values.AtrialFibrillation:
+                    case Values.AVBlock1Degree:
+                    case Values.AVBlock2Wenckebach:
+                    case Values.AVBlock2Mobitz:
+                    case Values.AVBlock3Degree:
+                    case Values.BundleBranchBlock:
                     case Values.Idioventricular:
                     case Values.Junctional:
                     case Values.PulselessElectricalActivity:
-                    case Values.Sick_Sinus_Syndrome:
-                    case Values.Sinus_Arrhythmia:
-                    case Values.Sinus_Rhythm:
-                    case Values.Sinus_Rhythm_with_Arrest:
-                    case Values.Sinus_Rhythm_with_Bigeminy:
+                    case Values.SickSinusSyndrome:
+                    case Values.SinusArrhythmia:
+                    case Values.SinusRhythm:
+                    case Values.SinusRhythmWithArrest:
+                    case Values.SinusRhythmWithBigeminy:
                     case Values.SinusRhythmWithTrigeminy:
-                    case Values.Sinus_Rhythm_with_PACs:
-                    case Values.Sinus_Rhythm_with_PJCs:
-                    case Values.Sinus_Rhythm_with_PVCs_Unifocal:
-                    case Values.Supraventricular_Tachycardia:
-                    case Values.Ventricular_Standstill:
-                    case Values.Ventricular_Tachycardia_Monomorphic_Pulsed:
-                    case Values.Ventricular_Tachycardia_Monomorphic_Pulseless:
+                    case Values.SinusRhythmWithPACs:
+                    case Values.SinusRhythmWithPJCs:
+                    case Values.SinusRhythmWithPVCsUnifocal:
+                    case Values.SupraventricularTachycardia:
+                    case Values.VentricularStandstill:
+                    case Values.VentricularTachycardiaMonomorphicPulsed:
+                    case Values.VentricularTachycardiaMonomorphicPulseless:
                         s.Replace (Draw.ECG_Complex__QRST_Aberrant_3 (p, s.Lead));
                         return;
 
-                    case Values.Sinus_Rhythm_with_PVCs_Multifocal:
+                    case Values.SinusRhythmWithPVCsMultifocal:
                         switch (new Random ().Next (0, 3)) {
                             default:
                             case 0: s.Replace (Draw.ECG_Complex__QRST_Aberrant_1 (p, s.Lead)); break;
@@ -375,34 +375,34 @@ namespace II {
             switch (Value) {
                 default: return;
                 case Values.Asystole: return;
-                case Values.Atrial_Flutter: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Atrial_Fibrillation: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.AV_Block__1st_Degree: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.AV_Block__Wenckebach: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.AV_Block__Mobitz_II: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.AV_Block__3rd_Degree: s.Replace (Draw.ECG_Complex__QRST_Aberrant_1 (p, s.Lead)); return;
-                case Values.Bundle_Branch_Block: s.Replace (Draw.ECG_Complex__QRST_BBB (p, s.Lead)); return;
-                case Values.CPR_Artifact: s.Replace (Draw.ECG_CPR_Artifact (p, s.Lead)); return;
+                case Values.AtrialFlutter: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.AtrialFibrillation: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.AVBlock1Degree: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.AVBlock2Wenckebach: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.AVBlock2Mobitz: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.AVBlock3Degree: s.Replace (Draw.ECG_Complex__QRST_Aberrant_1 (p, s.Lead)); return;
+                case Values.BundleBranchBlock: s.Replace (Draw.ECG_Complex__QRST_BBB (p, s.Lead)); return;
+                case Values.CPRArtifact: s.Replace (Draw.ECG_CPR_Artifact (p, s.Lead)); return;
                 case Values.Idioventricular: s.Replace (Draw.ECG_Complex__Idioventricular (p, s.Lead)); return;
                 case Values.Junctional: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
                 case Values.PulselessElectricalActivity: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sick_Sinus_Syndrome: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sinus_Arrhythmia: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_Arrest: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_Bigeminy: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.SickSinusSyndrome: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.SinusArrhythmia: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.SinusRhythm: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.SinusRhythmWithArrest: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.SinusRhythmWithBigeminy: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
                 case Values.SinusRhythmWithTrigeminy: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_PACs: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_PJCs: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_PVCs_Multifocal: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Sinus_Rhythm_with_PVCs_Unifocal: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
-                case Values.Supraventricular_Tachycardia: s.Replace (Draw.ECG_Complex__QRST_SVT (p, s.Lead)); return;
-                case Values.Ventricular_Fibrillation_Coarse: s.Replace (Draw.ECG_Complex__QRST_VF (p, s.Lead, 0.7f)); return;
-                case Values.Ventricular_Fibrillation_Fine: s.Replace (Draw.ECG_Complex__QRST_VF (p, s.Lead, 0.1f)); return;
-                case Values.Ventricular_Standstill: return;
-                case Values.Ventricular_Tachycardia_Monomorphic_Pulsed: s.Replace (Draw.ECG_Complex__QRST_VT (p, s.Lead)); return;
-                case Values.Ventricular_Tachycardia_Monomorphic_Pulseless: s.Replace (Draw.ECG_Complex__QRST_VT (p, s.Lead)); return;
-                case Values.Ventricular_Tachycardia_Polymorphic: s.Replace (Draw.ECG_Complex__QRST_VF (p, s.Lead, 1f)); return;
+                case Values.SinusRhythmWithPACs: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.SinusRhythmWithPJCs: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.SinusRhythmWithPVCsMultifocal: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.SinusRhythmWithPVCsUnifocal: s.Replace (Draw.ECG_Complex__QRST_Normal (p, s.Lead)); return;
+                case Values.SupraventricularTachycardia: s.Replace (Draw.ECG_Complex__QRST_SVT (p, s.Lead)); return;
+                case Values.VentricularFibrillationCoarse: s.Replace (Draw.ECG_Complex__QRST_VF (p, s.Lead, 0.7f)); return;
+                case Values.VentricularFibrillationFine: s.Replace (Draw.ECG_Complex__QRST_VF (p, s.Lead, 0.1f)); return;
+                case Values.VentricularStandstill: return;
+                case Values.VentricularTachycardiaMonomorphicPulsed: s.Replace (Draw.ECG_Complex__QRST_VT (p, s.Lead)); return;
+                case Values.VentricularTachycardiaMonomorphicPulseless: s.Replace (Draw.ECG_Complex__QRST_VT (p, s.Lead)); return;
+                case Values.VentricularTachycardiaPolymorphic: s.Replace (Draw.ECG_Complex__QRST_VF (p, s.Lead, 1f)); return;
             }
         }
     }
@@ -428,7 +428,7 @@ namespace II {
             Apneustic,
             Ataxic,
             Biot,
-            Cheyne_Stokes,
+            CheyneStokes,
             Regular
         }
 
@@ -459,7 +459,7 @@ namespace II {
                 case Values.Apneustic: return new Default_Vitals (4, 8, 1f, 1f, 0.5f, 1f);
                 case Values.Ataxic: return new Default_Vitals (6, 20, 1f, 1f, 2f, 4f);
                 case Values.Biot: return new Default_Vitals (8, 40, 1f, 1f, 1f, 4f);
-                case Values.Cheyne_Stokes: return new Default_Vitals (14, 20, 1f, 1f, 2f, 4f);
+                case Values.CheyneStokes: return new Default_Vitals (14, 20, 1f, 1f, 2f, 4f);
                 case Values.Regular: return new Default_Vitals (8, 22, 1f, 1f, 2f, 4f);
             }
         }
@@ -473,7 +473,7 @@ namespace II {
         }
 
         public PulmonaryArteryRhythms () {
-            Value = Values.Pulmonary_Artery;
+            Value = Values.PulmonaryArtery;
         }
 
         public static string LookupString (Values value) {
@@ -481,9 +481,9 @@ namespace II {
         }
 
         public enum Values {
-            Right_Atrium,
-            Right_Ventricle,
-            Pulmonary_Artery,
+            RightAtrium,
+            RightVentricle,
+            PulmonaryArtery,
             PulmonaryCapillaryWedge
         }
 
@@ -498,11 +498,11 @@ namespace II {
 
         public static Default_Vitals DefaultVitals (Values Rhythm) {
             switch (Rhythm) {
-                case Values.Right_Atrium: return new Default_Vitals (7, 11, 0, 3);
-                case Values.Right_Ventricle: return new Default_Vitals (21, 25, -7, -3);
+                case Values.RightAtrium: return new Default_Vitals (7, 11, 0, 3);
+                case Values.RightVentricle: return new Default_Vitals (21, 25, -7, -3);
 
                 default:
-                case Values.Pulmonary_Artery: return new Default_Vitals (21, 25, 10, 12);
+                case Values.PulmonaryArtery: return new Default_Vitals (21, 25, 10, 12);
                 case Values.PulmonaryCapillaryWedge: return new Default_Vitals (10, 12, 6, 8);
             }
         }
@@ -525,8 +525,8 @@ namespace II {
 
         public enum Values {
             Normal,
-            Left_Physiologic,
-            Left_Pathologic,
+            LeftPhysiologic,
+            LeftPathologic,
             Right,
             Extreme,
             Indeterminate

@@ -836,11 +836,11 @@ namespace II.Rhythm {
                     break;
 
                 case Lead.Values.PA:    // Vary PA waveforms based on PA catheter placement
-                    if (p.PulmonaryArteryPlacement.Value == PulmonaryArteryRhythms.Values.Right_Atrium) {
+                    if (p.PulmonaryArteryPlacement.Value == PulmonaryArteryRhythms.Values.RightAtrium) {
                         ReplaceAtOver (Scale (p, Draw.CVP_Rhythm (p, 1d)));
-                    } else if (p.PulmonaryArteryPlacement.Value == PulmonaryArteryRhythms.Values.Right_Ventricle)
+                    } else if (p.PulmonaryArteryPlacement.Value == PulmonaryArteryRhythms.Values.RightVentricle)
                         ReplaceAtOver (Scale (p, Draw.RV_Rhythm (p, 1d)));
-                    else if (p.PulmonaryArteryPlacement.Value == PulmonaryArteryRhythms.Values.Pulmonary_Artery)
+                    else if (p.PulmonaryArteryPlacement.Value == PulmonaryArteryRhythms.Values.PulmonaryArtery)
                         ReplaceAtOver (Scale (p, Draw.PA_Rhythm (p, 1d)));
                     else if (p.PulmonaryArteryPlacement.Value == PulmonaryArteryRhythms.Values.PulmonaryCapillaryWedge)
                         ReplaceAtOver (Scale (p, Draw.PCW_Rhythm (p, 1d)));

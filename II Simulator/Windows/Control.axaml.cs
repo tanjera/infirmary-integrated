@@ -1373,7 +1373,7 @@ namespace IISIM {
 
                 (CardiacRhythms.Values)(Enum.GetValues (typeof (CardiacRhythms.Values)).GetValue (
                     comboCardiacRhythm.SelectedIndex < 0 ? 0 : comboCardiacRhythm.SelectedIndex)
-                    ?? CardiacRhythms.Values.Sinus_Rhythm),
+                    ?? CardiacRhythms.Values.SinusRhythm),
 
                 // Advanced hemodynamics
                 (int)(this.GetControl<NumericUpDown> ("numCVP")?.Value ?? 0),
@@ -1385,7 +1385,7 @@ namespace IISIM {
 
                 (PulmonaryArteryRhythms.Values)(Enum.GetValues (typeof (PulmonaryArteryRhythms.Values)).GetValue (
                     comboPACatheterPlacement.SelectedIndex < 0 ? 0 : comboPACatheterPlacement.SelectedIndex)
-                    ?? PulmonaryArteryRhythms.Values.Right_Atrium),
+                    ?? PulmonaryArteryRhythms.Values.RightAtrium),
 
                 (int)(this.GetControl<NumericUpDown> ("numPSP")?.Value ?? 0),
                 (int)(this.GetControl<NumericUpDown> ("numPDP")?.Value ?? 0),
@@ -2037,7 +2037,7 @@ namespace IISIM {
                 return;
 
             CardiacRhythms.DefaultVitals v = CardiacRhythms.Defaults (
-                (CardiacRhythms.Values)(ev.GetValue (si) ?? CardiacRhythms.Values.Sinus_Rhythm));
+                (CardiacRhythms.Values)(ev.GetValue (si) ?? CardiacRhythms.Values.SinusRhythm));
 
             this.GetControl<NumericUpDown> ("numHR").Value = (int)II.Math.Clamp ((double)(this.GetControl<NumericUpDown> ("numHR")?.Value ?? 0), v.HRMin, v.HRMax);
             this.GetControl<NumericUpDown> ("numNSBP").Value = (int)II.Math.Clamp ((double)(this.GetControl<NumericUpDown> ("numNSBP")?.Value ?? 0), v.SBPMin, v.SBPMax);
@@ -2061,7 +2061,7 @@ namespace IISIM {
 
         private void OnCentralVenousPressure_Changed (object sender, NumericUpDownValueChangedEventArgs e) {
             if (Instance?.Physiology is not null
-                && Instance.Physiology.PulmonaryArteryPlacement.Value == PulmonaryArteryRhythms.Values.Right_Atrium) {
+                && Instance.Physiology.PulmonaryArteryPlacement.Value == PulmonaryArteryRhythms.Values.RightAtrium) {
                 NumericUpDown numPSP = this.GetControl<NumericUpDown> ("numPSP");
                 NumericUpDown numPDP = this.GetControl<NumericUpDown> ("numPDP");
 
@@ -2081,25 +2081,25 @@ namespace IISIM {
             if (si < 0 || si > ev.Length - 1)
                 return;
 
-            PulmonaryArteryRhythms.Values sel = (PulmonaryArteryRhythms.Values)(ev.GetValue (si) ?? PulmonaryArteryRhythms.Values.Pulmonary_Artery);
+            PulmonaryArteryRhythms.Values sel = (PulmonaryArteryRhythms.Values)(ev.GetValue (si) ?? PulmonaryArteryRhythms.Values.PulmonaryArtery);
 
             NumericUpDown numPSP = this.GetControl<NumericUpDown> ("numPSP");
             NumericUpDown numPDP = this.GetControl<NumericUpDown> ("numPDP");
 
             // If the PA placement is RV, PA, or PAWP, utilize default vital sign ranges
             // But if it is in the RA... utilize the current CVP reading
-            if (sel != PulmonaryArteryRhythms.Values.Right_Atrium) {
+            if (sel != PulmonaryArteryRhythms.Values.RightAtrium) {
                 PulmonaryArteryRhythms.Default_Vitals v = PulmonaryArteryRhythms.DefaultVitals (sel);
                 numPSP.Value = (int)II.Math.Clamp ((double)(numPSP?.Value ?? 0), v.PSPMin, v.PSPMax);
                 numPDP.Value = (int)II.Math.Clamp ((double)(numPDP?.Value ?? 0), v.PDPMin, v.PDPMax);
-            } else if (sel == PulmonaryArteryRhythms.Values.Right_Atrium) {
+            } else if (sel == PulmonaryArteryRhythms.Values.RightAtrium) {
                 numPSP.Value = (int)System.Math.Ceiling (Instance.Physiology.CVP + System.Math.Max (1, Instance.Physiology.CVP * 0.25));
                 numPDP.Value = (int)System.Math.Floor (Instance.Physiology.CVP - System.Math.Max (1, Instance.Physiology.CVP * 0.25));
             }
 
             // Disable the PA pressure input if the catheter is in the RA (and pressures are all based on CVP!)
-            numPSP.IsEnabled = sel != PulmonaryArteryRhythms.Values.Right_Atrium;
-            numPDP.IsEnabled = sel != PulmonaryArteryRhythms.Values.Right_Atrium;
+            numPSP.IsEnabled = sel != PulmonaryArteryRhythms.Values.RightAtrium;
+            numPDP.IsEnabled = sel != PulmonaryArteryRhythms.Values.RightAtrium;
 
             OnUIPhysiologyParameter_Process (sender, e);
         }

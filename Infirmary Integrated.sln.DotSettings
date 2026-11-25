@@ -103,4 +103,8 @@
     <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=RRIEE/@EntryIndexedValue">RRIEE</s:String>
     <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=RRIEI/@EntryIndexedValue">RRIEI</s:String>
     <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=CPP/@EntryIndexedValue">CPP</s:String>
+    <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=AV/@EntryIndexedValue">AV</s:String>
+    <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=PJC/@EntryIndexedValue">PJC</s:String>
+    <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=PAC/@EntryIndexedValue">PAC</s:String>
+    <s:String x:Key="/Default/CodeStyle/Naming/CSharpNaming/Abbreviations/=PVC/@EntryIndexedValue">PVC</s:String>
 </wpf:ResourceDictionary>
